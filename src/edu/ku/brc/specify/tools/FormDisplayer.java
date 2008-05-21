@@ -44,6 +44,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.utilapps.ERDVisualizer;
@@ -80,8 +81,10 @@ public class FormDisplayer
     protected int VGAP    = 30;
     
     protected String  mapTemplate = ""; //$NON-NLS-1$
-    protected File    outputDir   = new File("formImages"); //$NON-NLS-1$
+    protected File    baseDir;
+    protected File    outputDir;
     protected boolean doPNG       = true;
+    protected boolean doAll       = false;
     
     protected List<Pair<String, File>> entries = new Vector<Pair<String, File>>();
     protected List<ViewIFace> viewList;
@@ -136,13 +139,13 @@ public class FormDisplayer
                                                        getResourceString("FormDisplayer.CHOOSE_VIEWLIST_TITLE"),  //$NON-NLS-1$
                                                        JOptionPane.YES_NO_OPTION);
         
-        boolean useAll = userChoice == JOptionPane.YES_OPTION ? true : false;
+        doAll = userChoice == JOptionPane.YES_OPTION ? true : false;
 
         setup();
         
         SpecifyAppContextMgr appContext = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         
-        viewList = useAll ? appContext.getEntirelyAllViews() : appContext.getAllViews();
+        viewList = doAll ? appContext.getEntirelyAllViews() : appContext.getAllViews();
         SwingUtilities.invokeLater(new Runnable() {
 
             /* (non-Javadoc)
@@ -295,7 +298,7 @@ public class FormDisplayer
     }
     
     /**
-     * 
+     * Setup output directory and get template etc.
      */
     protected void createIndexFile()
     {
@@ -336,7 +339,64 @@ public class FormDisplayer
             e.printStackTrace();
         }
         
+        createFormImagesIndexFile();
+        
         JOptionPane.showMessageDialog(getTopWindow(), String.format(getResourceString("FormDisplayer.OUTPUT"), outputDir.getAbsoluteFile()));
+    }
+    
+    /**
+     * Setup output directory and get template etc.
+     */
+    protected void createFormImagesIndexFile()
+    {
+        String fName = baseDir.getAbsolutePath() + File.separator + "index.html"; //$NON-NLS-1$
+        try
+        {
+            File html = new File(fName);
+            BufferedWriter output = new BufferedWriter( new FileWriter(html) );
+            
+            int inx = mapTemplate.indexOf(contentTag);
+            String subContent = mapTemplate.substring(0, inx);
+            output.write(StringUtils.replace(subContent, "<!-- Title -->", getResourceString("FormDisplayer.FORM_INDEX"))); //$NON-NLS-1$ //$NON-NLS-2$
+            output.write("<UL>"); //$NON-NLS-1$
+            
+            List<File> files = new Vector<File>();
+            for (File f : baseDir.listFiles())
+            {
+                String nm = f.getName();
+                if (nm.endsWith("_all") || nm.endsWith("_user")) //$NON-NLS-1$ //$NON-NLS-2$
+                {
+                    files.add(f);
+                }
+            }
+            
+            Collections.sort(files, new Comparator<File>() {
+                public int compare(File o1, File o2)
+                {
+                    return o1.getName().compareTo(o2.getName());
+                }
+                
+            });
+            
+            for (File f : files)
+            {
+                String[] segments = StringUtils.split(f.getName(), "_");//$NON-NLS-1$
+                if (segments != null && segments.length == 3)
+                {
+                    DisciplineType dt = DisciplineType.getDisciplineHash().get(segments[0]);
+                    String title = String.format("%s %s %s", dt.getTitle(), segments[1], (segments[2].equals("all") ? "All" : "User"));//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    output.write("<LI><a href=\""+f.getName() + File.separator + "index.html\">"+title+"</a></LI>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                }
+            }
+            output.write("</UL>"); //$NON-NLS-1$
+            output.write(mapTemplate.substring(inx+contentTag.length()+1, mapTemplate.length()));
+            
+            output.close();
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
     
     /**
@@ -345,10 +405,22 @@ public class FormDisplayer
     protected void setup()
     {
         String pathStr = Discipline.getCurrentDiscipline() != null ? Discipline.getCurrentDiscipline().getName() : ""; //$NON-NLS-1$
-        outputDir = new File(getUserHomeDir() + File.separator + "formImages" + File.separator + pathStr); //$NON-NLS-1$
+        pathStr += "_" + UIHelper.getOSType().toString() + "_" + (doAll ? "all" : "user");//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        
+        baseDir   = new File(getUserHomeDir() + File.separator + "FormImages"); //$NON-NLS-1$
+        outputDir = new File(baseDir.getAbsoluteFile() + File.separator + pathStr);
+        
+        if (!baseDir.exists())
+        {
+            if (!baseDir.mkdir())
+            {
+                UIRegistry.showError(String.format(getResourceString("FormDisplayer.OUTPUT_ERROR"), baseDir.getAbsoluteFile()));
+            }
+        }
+        
         if (!outputDir.exists())
         {
-            if (!outputDir.mkdirs())
+            if (!outputDir.mkdir())
             {
                 UIRegistry.showError(String.format(getResourceString("FormDisplayer.OUTPUT_ERROR"), outputDir.getAbsoluteFile()));
             }
@@ -388,6 +460,12 @@ public class FormDisplayer
                 if (!f.getName().startsWith(".")) //$NON-NLS-1$
                 {
                     File dst = new File(outputDir.getAbsolutePath() + File.separator + f.getName()); //$NON-NLS-1$
+                    if (!FilenameUtils.getExtension(f.getName()).toLowerCase().equals("html")) //$NON-NLS-1$
+                    {
+                        FileUtils.copyFile(f, dst);
+                    }
+                    
+                    dst = new File(baseDir.getAbsolutePath() + File.separator + f.getName()); //$NON-NLS-1$
                     if (!FilenameUtils.getExtension(f.getName()).toLowerCase().equals("html")) //$NON-NLS-1$
                     {
                         FileUtils.copyFile(f, dst);
