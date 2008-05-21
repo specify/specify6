@@ -398,6 +398,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
 
                 for (SearchFieldConfig searchField : searchFields)
                 {
+                    String numericTermStr   = null;
                     String      clause      = null;
                     DBFieldInfo fi          = searchField.getFieldInfo();
                     boolean     isFieldDate = fi.getDataClass() == Date.class || searchField.getFieldInfo().getDataClass() == Calendar.class;
@@ -413,7 +414,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                             isFormatted = isNumeric && !hasDecimalPoint;
                             if (isFormatted)
                             {
-                                termStr = (String)formatter.formatFromUI(termStr);
+                                numericTermStr = (String)formatter.formatFromUI(termStr);
                             }
                             
                         } else
@@ -475,7 +476,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                                 
                             } else if (isFormatted)
                             {
-                                clause = abbrev + '.' + fieldName + " = " + "'" + termStr + "'";
+                                clause = abbrev + '.' + fieldName + " = " + "'" + (numericTermStr != null ? numericTermStr : termStr) + "'";
                                 
                             } else
                             {
