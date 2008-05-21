@@ -254,7 +254,10 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
            locality.setLatitude1(new BigDecimal(Double.parseDouble(gcData.getLatitude())));
            locality.setLongitude1(new BigDecimal(Double.parseDouble(gcData.getLongitude())));
            
-           parent.setData(locality);
+           if (parent.getData() != locality)
+           {
+               parent.setData(locality);
+           }
            
            if (parent.getCurrentValidator() != null)
            {

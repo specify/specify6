@@ -3452,7 +3452,7 @@ public class FormViewObj implements Viewable,
             // OK, it is a single data object
             this.dataObj = dataObj;
             
-            if (!alreadyInTheList)
+            if (!alreadyInTheList && (this.list != null && this.dataObj != dataObj))
             {
                 this.list = null;
             }
