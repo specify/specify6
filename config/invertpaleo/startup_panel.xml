@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel>
+    
+    <row>
+        <box title="Task List" desccol="1" valcol="1">
+            <sql><![CDATA[SELECT name FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></sql>
+        </box>
+        <box title="Pre-Catalog Works Benches" desccol="1" valcol="1">
+            <sql><![CDATA[SELECT name FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></sql>
+        </box>
+    </row>
+    
+    <row>
+
+    
+    <row>
+        <box title="Data Entry">
+            <item title="Cataloged in Last 7 Days">
+                <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= TimestampCreated]]></statement></sql>
+                <link>CatalogedLast7DaysDetail</link>
+            </item>
+            <item title="Cataloged in Last 30 Days">
+                <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= TimestampCreated]]></statement></sql>
+                <link>CatalogedLastMonth</link>
+            </item>
+            <item title="Cataloged in Last Year">
+                <sql><statement><![CDATA[select count(*) from collectionobject WHERE DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= TimestampCreated;]]></statement></sql>
+                <link>CatalogedLastYear</link>
+            </item>
+        </box>
+    </row>
+    
+    
+    <!--
+        <row>
+        <box type="Bar Chart" name="Specimens by Country" colspan="3"/>
+        </row>
+    -->
+    
+    <!-- Director's View -->
+    <!--
+        <row>
+        <box type="Bar Chart" name="Top 5 Species"/>
+        <box type="Bar Chart" name="Temporial Periods"/>
+        </row>
+        
+        <row>
+        <box type="Bar Chart" name="Specimens by Country"/>
+        <box type="Bar Chart" name="Specimens by Continent"/>
+        </row>
+    -->
+</panel>
