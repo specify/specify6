@@ -1103,7 +1103,10 @@ public class QueryTask extends BaseTask
             ex.printStackTrace();
             log.error(ex);
         }
-        session.close();
+        finally
+        {
+            session.close();
+        }
     }
     /**
      * Save a record set.

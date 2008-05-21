@@ -89,6 +89,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -472,16 +473,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 QueryBldrPane.this.validate();
             }
         });
-    }
-
-    /**
-     * @param queryArg
-     */
-    public void setQuery(final SpQuery queryArg)
-    {
-        query = queryArg;
-        name = query.getName();
-        setQueryIntoUI();
     }
 
     /**
@@ -1122,6 +1113,29 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             printTree(kid, lvl + 1);
         }
     }
+    
+    protected SpQuery cloneTheQuery()
+    {
+        SpQuery result = new SpQuery();
+        result.initialize();
+        result.setSpecifyUser(SpecifyUser.getCurrentUser());
+        result.setName(query.getName());
+        result.setContextTableId(query.getContextTableId());
+        result.setContextName(query.getContextName());
+        //result.setCreatedByAgent(query.getCreatedByAgent());
+        for (QueryFieldPanel qfp : queryFieldItems)
+        {
+            SpQueryField qf = qfp.getQueryField();
+            if (qf == null) { throw new RuntimeException("Shouldn't get here!"); }
+            SpQueryField newQf = new SpQueryField();
+            newQf.initialize();
+            newQf.setFieldName(qf.getFieldName());
+            newQf.setPosition(qf.getPosition());
+            qfp.updateQueryField(newQf);
+            result.addReference(newQf, "fields");
+        }
+        return result;
+    }
 
     /**
      * 
@@ -1152,12 +1166,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
             if (query.getSpQueryId() == null || saveAs)
             {
+                if (query.getSpQueryId() != null && saveAs)
+                {
+                    query = cloneTheQuery();
+                    queryNavBtn.setEnabled(true);
+                }
+                
                 queryNavBtn = ((QueryTask) task).saveNewQuery(query, false); // false tells it to
                                                                                 // disable the
                                                                                 // navbtn
 
                 query.setNamed(true);
-                SubPaneMgr.getInstance().renamePane(this, query.getName());
+                if (query.getSpQueryId() != null && saveAs)
+                {
+                    this.setQueryIntoUI();
+                }   
+                else
+                {
+                    SubPaneMgr.getInstance().renamePane(this, query.getName());
+                }
             }
             else
             {

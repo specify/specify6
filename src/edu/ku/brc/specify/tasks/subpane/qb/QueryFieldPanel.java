@@ -185,22 +185,27 @@ public class QueryFieldPanel extends JPanel
     
     public void updateQueryField()
     {
-        if (queryField != null && !ownerQuery.isPromptMode())
+        updateQueryField(queryField);
+    }
+    
+    public void updateQueryField(final SpQueryField qField)
+    {
+        if (qField != null && !ownerQuery.isPromptMode())
         {
-            queryField.setIsDisplay(isDisplayedCkbx.isSelected());
-            queryField.setIsPrompt(isPromptCkbx.isSelected());
-            queryField.setIsNot(isNotCheckbox.isSelected());
-            if (validator.hasChanged() && queryField.getSpQueryFieldId() != null)
+            qField.setIsDisplay(isDisplayedCkbx.isSelected());
+            qField.setIsPrompt(isPromptCkbx.isSelected());
+            qField.setIsNot(isNotCheckbox.isSelected());
+            if (validator.hasChanged() && qField.getSpQueryFieldId() != null)
             {
-                FormHelper.updateLastEdittedInfo(queryField);
+                FormHelper.updateLastEdittedInfo(qField);
             }
             
-            queryField.setSortType((byte)sortCheckbox.getState());
-            queryField.setOperStart((byte)operatorCBX.getSelectedIndex());
-            queryField.setStartValue(criteria.getText());
-            queryField.setColumnAlias(this.getLabel());
-            queryField.setContextTableIdent(fieldQRI.getTableInfo().getTableId());
-            queryField.setIsRelFld(fieldQRI instanceof RelQRI);
+            qField.setSortType((byte)sortCheckbox.getState());
+            qField.setOperStart((byte)operatorCBX.getSelectedIndex());
+            qField.setStartValue(criteria.getText());
+            qField.setColumnAlias(this.getLabel());
+            qField.setContextTableIdent(fieldQRI.getTableInfo().getTableId());
+            qField.setIsRelFld(fieldQRI instanceof RelQRI);
             
             Vector<Integer> idList = new Vector<Integer>();
             TableQRI parent = fieldQRI.getTable();
@@ -217,13 +222,14 @@ public class QueryFieldPanel extends JPanel
                 tablesIds.append(idList.get(i));
             }
             log.debug(tablesIds.toString());
-            queryField.setTableList(tablesIds.toString());
+            qField.setTableList(tablesIds.toString());
             
         } else
         {
             log.error("QueryField is null or ownerQuery is prompt only. Unable to update database object.");
         }
     }
+    
     
     /**
      * @return the queryField

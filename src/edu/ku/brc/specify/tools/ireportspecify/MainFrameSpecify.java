@@ -67,10 +67,11 @@ import edu.ku.brc.ui.weblink.WebLinkMgr;
  * need to be handled.
  */
 public class MainFrameSpecify extends MainFrame
-{
-    private static final String REP_CHOOSE_REPORT = "REP_CHOOSE_REPORT";
-    
+{    
     private static final Logger log = Logger.getLogger(MainFrameSpecify.class);
+    protected static final String REP_CHOOSE_REPORT = "REP_CHOOSE_REPORT";
+    
+    protected boolean refreshingConnections = false;
 
     /**
      * @param args -
@@ -85,9 +86,18 @@ public class MainFrameSpecify extends MainFrame
 
     public void refreshSpQBConnections()
     {
-        this.getConnections().clear();
-        addSpQBConns();
+        refreshingConnections = true;
+        try
+        {
+            this.getConnections().clear();
+            addSpQBConns();
+        }
+        finally
+        {
+            refreshingConnections = false;
+        }
     }
+        
     /**
      * adds JR data connections for specify queries.
      */
@@ -97,6 +107,17 @@ public class MainFrameSpecify extends MainFrame
         try
         {
             List<SpQuery> qs = session.getDataList(SpQuery.class);
+            Collections.sort(qs, new Comparator<SpQuery>() {
+
+                /* (non-Javadoc)
+                 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+                 */
+                @Override
+                public int compare(SpQuery o1, SpQuery o2)
+                {
+                    return o1.toString().compareTo(o2.toString());
+                }
+            });
             for (SpQuery q : qs)
             {
                 addSpQBConn(q);
@@ -348,19 +369,21 @@ public class MainFrameSpecify extends MainFrame
             }
             
             Collections.sort(list, new Comparator<AppResourceIFace>()
-                    {
+            {
 
-                        /* (non-Javadoc)
-                         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-                         */
-                        //@Override
-                        public int compare(AppResourceIFace o1, AppResourceIFace o2)
-                        {
-                            // TODO Auto-generated method stub
-                            return o1.toString().compareTo(o2.toString());
-                        }
-                        
-                    });
+                /*
+                 * (non-Javadoc)
+                 * 
+                 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+                 */
+                // @Override
+                public int compare(AppResourceIFace o1, AppResourceIFace o2)
+                {
+                    // TODO Auto-generated method stub
+                    return o1.toString().compareTo(o2.toString());
+                }
+
+            });
             if (list.size() > 0)
             {
                 ChooseFromListDlg<AppResourceIFace> dlg = new ChooseFromListDlg<AppResourceIFace>(
@@ -568,6 +591,21 @@ public class MainFrameSpecify extends MainFrame
         return false;
     }
         
+    
+    /* (non-Javadoc)
+     * @see it.businesslogic.ireport.gui.MainFrame#getConnections()
+     */
+    @Override
+    @SuppressWarnings("unchecked") //iReport ignores Template/Generic stuff
+    public Vector getConnections()
+    {
+        if (!refreshingConnections)
+        {
+            this.refreshSpQBConnections(); //in case new query has been in concurrent instance of Specify6
+        }
+        return super.getConnections();
+    }
+
     /**
      * @param args
      */
