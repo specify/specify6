@@ -973,6 +973,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     public boolean getExportInfo(final Properties props)
     {
         String extension = "";
+        String fileTypeCaption = "";
         if (true)
         {
             for (ExportFileConfigurationFactory.ExportableType type : ExportFileConfigurationFactory.getExportList())
@@ -981,6 +982,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 {
                     props.setProperty("mimetype", type.getMimeType());
                     extension = type.getExtension();
+                    fileTypeCaption = type.getCaption();
                     break;
                 }
             }
@@ -1009,7 +1011,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         }
         
         FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
-                                               getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), FileDialog.SAVE);
+                                               String.format(getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), fileTypeCaption), FileDialog.SAVE);
         fileDialog.setDirectory(getDefaultDirPath(EXPORT_FILE_PATH));
         UIHelper.centerAndShow(fileDialog);
         fileDialog.dispose();
@@ -1025,7 +1027,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         
         if (StringUtils.isEmpty(fileName))
         {
-            UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_EXPORT_NOFILENAME"));
+            UIRegistry.getStatusBar().setText(getResourceString("WB_EXPORT_NOFILENAME"));
             return false;
         }
         
