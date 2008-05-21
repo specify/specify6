@@ -134,6 +134,13 @@ public class FormDisplayer
      */
     public void generateFormImages()
     {
+        if (true)
+        {
+            setup();
+            createFormImagesIndexFile();
+            return;
+        }
+        
         int userChoice = JOptionPane.showConfirmDialog(getTopWindow(), 
                                                        getResourceString("FormDisplayer.CHOOSE_VIEWLIST"), //$NON-NLS-1$
                                                        getResourceString("FormDisplayer.CHOOSE_VIEWLIST_TITLE"),  //$NON-NLS-1$
@@ -204,7 +211,7 @@ public class FormDisplayer
             frame.setLocation(1024, 0);
             
             Dimension size = frame.getContentPane().getPreferredSize();
-            size.height += 30;
+            size.height += 40;
             size.width  += 30;
             frame.setSize(size);
             
@@ -358,7 +365,7 @@ public class FormDisplayer
             int inx = mapTemplate.indexOf(contentTag);
             String subContent = mapTemplate.substring(0, inx);
             output.write(StringUtils.replace(subContent, "<!-- Title -->", getResourceString("FormDisplayer.FORM_INDEX"))); //$NON-NLS-1$ //$NON-NLS-2$
-            output.write("<UL>"); //$NON-NLS-1$
+            output.write("<UL>\n"); //$NON-NLS-1$
             
             List<File> files = new Vector<File>();
             for (File f : baseDir.listFiles())
@@ -378,17 +385,26 @@ public class FormDisplayer
                 
             });
             
+            String currDiscipline = "";
             for (File f : files)
             {
                 String[] segments = StringUtils.split(f.getName(), "_");//$NON-NLS-1$
                 if (segments != null && segments.length == 3)
                 {
                     DisciplineType dt = DisciplineType.getDisciplineHash().get(segments[0]);
-                    String title = String.format("%s %s %s", dt.getTitle(), segments[1], (segments[2].equals("all") ? "All" : "User"));//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    output.write("<LI><a href=\""+f.getName() + File.separator + "index.html\">"+title+"</a></LI>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    if (!dt.getName().equals(currDiscipline))
+                    {
+                        if (currDiscipline.length() > 0) output.write("</UL>\n"); //$NON-NLS-1$
+                        output.write("<LI>"+dt.getTitle()+"</LI>\n"); //$NON-NLS-1$ //$NON-NLS-2$
+                        output.write("<UL>\n"); //$NON-NLS-1$
+                        currDiscipline = dt.getName();
+                    }
+                    String title = String.format("%s %s", segments[1], (segments[2].equals("all") ? "All" : "User"));//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    output.write("<LI><a href=\""+f.getName() + File.separator + "index.html\">"+title+"</a></LI>\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 }
             }
-            output.write("</UL>"); //$NON-NLS-1$
+            output.write("</UL>\n"); //$NON-NLS-1$
+            output.write("</UL>\n"); //$NON-NLS-1$
             output.write(mapTemplate.substring(inx+contentTag.length()+1, mapTemplate.length()));
             
             output.close();
