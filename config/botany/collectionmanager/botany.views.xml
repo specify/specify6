@@ -110,7 +110,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="18" label="Specimen\nDescription"/>
-                    <cell type="field" id="18" name="description" uitype="textarea" rows="3" colspan="16"/>
+                    <cell type="field" id="18" name="description" uitype="textarea" colspan="16"/>
                 </row>
                 <row>
                     <cell type="separator" label="Collecting Event" colspan="18" collapse="collectingEvent"/>
@@ -219,7 +219,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="6" label="Locality and\n Habitat Notes"/>
-                    <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50" rows="3"/>
+                    <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>

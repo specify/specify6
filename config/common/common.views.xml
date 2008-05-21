@@ -420,7 +420,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="remarks" uitype="textarea" cols="30" rows="3" colspan="10"/>
+                    <cell type="field" id="7" name="remarks" uitype="textarea" cols="30" colspan="10"/>
                 </row>
                 <row>
                     <cell type="panel" id="16" name="outerPanel" coldef="p,5px,p" rowdef="p,4px,p" colspan="12">
@@ -484,7 +484,7 @@
 
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="5" rows="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="5"/>
                 </row>
             </rows>
         </viewdef>
@@ -508,7 +508,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="3" rows="3"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="3"/>
                 </row>
 
             </rows>
@@ -542,7 +542,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="notes" uitype="textarea" colspan="10" rows="3"/>
+                    <cell type="field" id="5" name="notes" uitype="textarea" colspan="10"/>
                 </row>
 
             </rows>
@@ -763,7 +763,7 @@
                 </row> 
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="conditionReport" uitype="textarea" rows="3" colspan="10"/>
+                    <cell type="field" id="2" name="conditionReport" uitype="textarea" colspan="10"/>
                 </row>
      
             </rows>
@@ -808,7 +808,7 @@
                 
                 <row>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="description" uitype="textarea" rows="3" colspan="10"/>
+                    <cell type="field" id="7" name="description" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
                     <cell type="separator" label="Conservation Event" collapse="events" colspan="12"/>
@@ -975,7 +975,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="description" uitype="textarea" colspan="10" rows="3"/>
+                    <cell type="field" id="1" name="description" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
                     <cell type="subview" id="11" name="pageSets" viewname="FieldNotebookPageSet" colspan="12"/>
@@ -1027,7 +1027,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="description" uitype="textarea" colspan="10" rows="3"/>
+                    <cell type="field" id="1" name="description" uitype="textarea" colspan="10"/>
                 </row>
              <!--   <row>
                     <cell type="separator" label="Collection Objects" collapse="collectionObjects" colspan="12"/>
@@ -1496,7 +1496,7 @@
                 
                 <row>
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="projectDescription" uitype="textarea" colspan="10" rows="3"/>
+                    <cell type="field" id="4" name="projectDescription" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="8"/>
@@ -1516,7 +1516,7 @@
                 </row>               
                 <row>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="remarks" uitype="textarea" colspan="10" rows="3"/>
+                    <cell type="field" id="7" name="remarks" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
                     <cell type="separator" label="Collection Object" colspan="12"/>

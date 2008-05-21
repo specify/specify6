@@ -103,7 +103,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="22"/>
-                    <cell type="field" id="22" name="remarks" uitype="textarea" colspan="10" rows="3"/>
+                    <cell type="field" id="22" name="remarks" uitype="textarea" colspan="10"/>
                 </row> 
 
             </rows>

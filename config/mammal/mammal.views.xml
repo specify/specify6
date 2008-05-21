@@ -106,7 +106,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="13" label="Specimen\nRemarks"/>
-                    <cell type="field" id="13" name="remarks" uitype="textarea" colspan="12" rows="3"/>
+                    <cell type="field" id="13" name="remarks" uitype="textarea" colspan="12"/>
                 </row>
                 
                 <row>

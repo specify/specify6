@@ -239,7 +239,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" rows="3" cols="50"/>
+                    <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50"/>
                 </row>
             </rows>
         </viewdef>
@@ -315,7 +315,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="22"/>
-                    <cell type="field" id="22" name="remarks" uitype="textarea" colspan="10" rows="3"/>
+                    <cell type="field" id="22" name="remarks" uitype="textarea" colspan="10"/>
                 </row> 
             </rows>
         </viewdef>
