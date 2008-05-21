@@ -134,7 +134,7 @@ public class FormDisplayer
      */
     public void generateFormImages()
     {
-        if (true)
+        if (false)
         {
             setup();
             createFormImagesIndexFile();
