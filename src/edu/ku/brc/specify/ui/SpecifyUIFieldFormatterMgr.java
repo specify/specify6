@@ -17,14 +17,24 @@
  */
 package edu.ku.brc.specify.ui;
 
+import java.io.File;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.dbsupport.AutoNumberIFace;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.dbsupport.CollectionAutoNumber;
 import edu.ku.brc.specify.dbsupport.CollectionAutoNumberAlphaNum;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
@@ -36,16 +46,21 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
  * Created Date: Jul 11, 2007
  *
  */
-public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
+public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements CommandListener
 {
     private static final Logger  log      = Logger.getLogger(SpecifyUIFieldFormatterMgr.class);
     
     //protected UIFieldFormatterIFace catalogNumberAlphaNumeric;
     protected UIFieldFormatterIFace catalogNumberNumeric;
     
+    /**
+     * 
+     */
     public SpecifyUIFieldFormatterMgr()
     {
         super();
+        
+        CommandDispatcher.register("Collection", this);
     }
 
     /* (non-Javadoc)
@@ -100,6 +115,62 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
         //}
     }
     
+    protected Element getDOM() throws Exception
+    {
+        if (doingLocal)
+        {
+            return XMLHelper.readDOMFromConfigDir("backstop/uiformatters.xml");
+        }
+
+        AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "UIFormatters");
+        if (appRes != null)
+        {
+            return AppContextMgr.getInstance().getResourceAsDOM(appRes);
+        } 
+        
+        return XMLHelper.readDOMFromConfigDir("backstop/uiformatters.xml");
+        /*
+        // Get the default resource by name and copy it to a new User Area Resource
+        AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Collection", "UIFormatters");
+        // Save it in the User Area
+        AppContextMgr.getInstance().saveResource(newAppRes);
+        return AppContextMgr.getInstance().getResourceAsDOM(newAppRes);
+        */
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr#saveXML(java.lang.String)
+     */
+    public void saveXML(final String xml) 
+    {
+
+        if (doingLocal)
+        {
+            File outputFile = XMLHelper.getConfigDir("backstop/uiformatters.xml");
+            try
+            {
+                FileUtils.writeStringToFile(outputFile, xml);
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        } else
+        {
+            AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "UIFormatters");
+            if (appRes != null)
+            {
+                appRes.setDataAsString(xml);
+                AppContextMgr.getInstance().saveResource(appRes);
+               
+            } else
+            {
+                AppContextMgr.getInstance().putResourceAsXML("UIFormatters", xml);    
+            }
+        }
+    }
+    
+
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr#createAutoNumber(java.lang.String, java.lang.String, java.lang.String)
      */
@@ -143,5 +214,20 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
             }
         }
         return super.getFormatterInternal(name);
+    }
+    
+    //-------------------------------------------------------
+    // CommandListener Interface
+    //-------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.CommandListener#doCommand(edu.ku.brc.af.ui.CommandAction)
+     */
+    public void doCommand(final CommandAction cmdAction)
+    {
+        if (cmdAction.isType("Collection") && cmdAction.isAction("Changed"))
+        {
+            load();
+        }
     }
 }

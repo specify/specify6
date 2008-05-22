@@ -35,6 +35,7 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.tasks.subpane.StatsPane;
 import edu.ku.brc.stats.StatsMgr;
+import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 /**
@@ -128,14 +129,18 @@ public class StatsTask extends BaseTask
             }
         }
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.BaseTask#getStarterPane()
      */
     @Override
     public SubPaneIFace getStarterPane()
     {
-        return starterPane = new StatsPane(name, this, "StatsSummaryPanel", true, null, null); //$NON-NLS-1$
+        if (starterPane == null)
+        {
+            starterPane = new StatsPane(name, this, "StatsSummaryPanel", true, null, null); //$NON-NLS-1$
+        }
+        return starterPane;
     }
 
     /**
@@ -201,7 +206,22 @@ public class StatsTask extends BaseTask
     // Inner Classes
     //--------------------------------------------------------------
 
-     /**
+     /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    protected void doProcessAppCommands(CommandAction cmdAction)
+    {
+        super.doProcessAppCommands(cmdAction);
+        
+        if (cmdAction.isAction(APP_RESTART_ACT))
+        {
+            starterPane = null; // should have already been removed
+        }
+    }
+
+
+    /**
      *
      * @author rods
      *

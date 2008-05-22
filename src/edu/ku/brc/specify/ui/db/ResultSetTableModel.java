@@ -46,6 +46,7 @@ import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
@@ -86,7 +87,9 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     protected List<ERTICaptionInfo>       captionInfo = null;
     protected int[]                       columnIndexMapper = null;
     
-    protected PropertyChangeListener      propertyListener = null;
+    protected PropertyChangeListener      propertyListener  = null;
+    
+    protected JStatusBar                  statusBar         = UIRegistry.getStatusBar();
     
     // Frame buffer
     protected int startInx = 0;
@@ -128,7 +131,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     protected void startDataAquisition(final boolean doSequentially)
     {
         //System.out.println("\n"+results.getTitle()+" " +results.isHQL());
-        UIRegistry.getStatusBar().incrementRange(getClass().getSimpleName());
+        if (statusBar != null)
+        {
+            statusBar.incrementRange(getClass().getSimpleName());
+        }
         
         if (results.isHQL())
         {
@@ -487,8 +493,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     //@SuppressWarnings("null")
     public synchronized void exectionDone(final SQLExecutionProcessor process, final ResultSet resultSet)
     {
-        
-        UIRegistry.getStatusBar().incrementValue(getClass().getSimpleName());
+        if (statusBar != null)
+        {
+            statusBar.incrementValue(getClass().getSimpleName());
+        }
         
         List<ERTICaptionInfo> captions = results.getVisibleCaptionInfo();
         
@@ -800,8 +808,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     //@Override
     public synchronized void executionError(SQLExecutionProcessor process, Exception ex)
     {
-        UIRegistry.getStatusBar().incrementValue(getClass().getSimpleName());
-        
+        if (statusBar != null)
+        {
+            statusBar.incrementValue(getClass().getSimpleName());
+        }
     }
 
     /* (non-Javadoc)
@@ -810,7 +820,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     //@Override
     public void exectionDone(final CustomQueryIFace customQuery)
     {
-        UIRegistry.getStatusBar().incrementValue(getClass().getSimpleName());
+        if (statusBar != null)
+        {
+            statusBar.incrementValue(getClass().getSimpleName());
+        }
         
         JPAQuery jpaQuery = (JPAQuery)customQuery;
         List<?> list      = jpaQuery.getDataObjects();

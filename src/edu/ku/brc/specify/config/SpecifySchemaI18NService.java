@@ -126,7 +126,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
               "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemNameID "+
               " where splocaleitemstr.Language = '"+locale.getLanguage()+"' AND " +
               "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.DisciplineID = " + disciplineId + " order by splocalecontainer.Name";
-        
+        log.debug(sql);
         retrieveString(sql);
         
         String      name = "";

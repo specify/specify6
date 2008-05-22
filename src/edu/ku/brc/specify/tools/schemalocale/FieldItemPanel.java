@@ -1261,12 +1261,14 @@ public class FieldItemPanel extends LocalizerBasePanel
                         {
                             plCbxModel.addElement(pl);
                             String plName = fld.getPickListName();
+                            System.out.println(plName+"  "+pl.getName());
                             if (StringUtils.isNotEmpty(plName) && plName.equals(pl.getName()))
                             {
                                 selectedIndex = inx;
                             }
+                            inx++;
                         }
-                        inx++;
+                        
                     }
                     switcherInx = 3;
                 }

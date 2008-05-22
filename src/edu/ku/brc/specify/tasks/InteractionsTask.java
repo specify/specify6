@@ -183,7 +183,6 @@ public class InteractionsTask extends BaseTask
         
         CommandDispatcher.register(INTERACTIONS, this);
         CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
-        CommandDispatcher.register(APP_CMD_TYPE, this);
         CommandDispatcher.register(DB_CMD_TYPE, this);
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
@@ -1477,10 +1476,12 @@ public class InteractionsTask extends BaseTask
                 if (dstObj instanceof RecordSet)
                 {
                     RecordSet rs = (RecordSet)dstObj;
-                    
-                    DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId());
-                    
-                    super.createFormPanel("XXX", "view", (RecordSetIFace)rs, IconManager.getIcon(ti.getShortClassName(), IconManager.IconSize.Std16));
+                    if (rs.getDbTableId() == Loan.getClassTableId())
+                    {
+                        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId());
+                        
+                        super.createFormPanel(ti.getTitle(), "view", (RecordSetIFace)rs, IconManager.getIcon(ti.getShortClassName(), IconManager.IconSize.Std16));
+                    }
                 }
             }
         }
@@ -1617,7 +1618,6 @@ public class InteractionsTask extends BaseTask
             }
         }
     }
-
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
@@ -1626,8 +1626,6 @@ public class InteractionsTask extends BaseTask
     @SuppressWarnings("unchecked")
     public void doCommand(final CommandAction cmdAction)
     {
-        //log.debug("Processing Command ["+cmdAction.getType()+"]["+cmdAction.getAction()+"]");
-        
         super.doCommand(cmdAction);
         
         if (cmdAction.isConsumed())
@@ -1659,12 +1657,6 @@ public class InteractionsTask extends BaseTask
         } else if (cmdAction.isType(RecordSetTask.RECORD_SET))
         {
             processRecordSetCommands(cmdAction);
-            
-        } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
-        {
-            //setUpCachedPrefs();
-            // Now simulate the prefs changing to adjust the UI
-            prefsChanged(new CommandAction(PreferencesDlg.PREFERENCES, "Change", AppPreferences.getRemote()));
         }
     }
 }

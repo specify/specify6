@@ -26,6 +26,7 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.StatsPane;
+import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 
@@ -62,6 +63,7 @@ public class StartUpTask extends BaseTask
     public StartUpTask()
     {
         super(STARTUP, getResourceString(STARTUP));
+        
         icon = IconManager.getImage(STARTUP, IconManager.IconSize.Std16);
     }
     
@@ -136,6 +138,20 @@ public class StartUpTask extends BaseTask
     public Class<? extends StartUpTask> getTaskClass()
     {
         return this.getClass();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    protected void doProcessAppCommands(CommandAction cmdAction)
+    {
+        super.doProcessAppCommands(cmdAction);
+        
+        if (cmdAction.isAction(APP_RESTART_ACT))
+        {
+            starterPane = null; // should have already been removed
+        }
     }
 
 }

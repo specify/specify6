@@ -31,13 +31,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.dbsupport.RecordSetLoader;
-import edu.ku.brc.specify.tasks.services.CollectingEventKMLGenerator;
+import edu.ku.brc.specify.tasks.services.CollectingEventLocalityKMLGenerator;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -72,20 +72,24 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         log.info("Exporting RecordSet");
         int dataTableId = data.getDbTableId();
 
-        if (dataTableId == DBTableIdMgr.getInstance().getIdByClassName(CollectingEvent.class.getName()))
+        if (dataTableId == CollectingEvent.getClassTableId())
         {
-            exportCollectingEvents(description, 
-                                   RecordSetLoader.loadRecordSet(data), 
-                                   true, 
-                                   getPlacemarkIcon());
+            exportDataObjects(description, 
+                              RecordSetLoader.loadRecordSet(data), 
+                              true, 
+                              getPlacemarkIcon());
             
-        } else if (dataTableId == DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName()))
+        } else if (dataTableId == CollectionObject.getClassTableId())
         {
             exportCollectionObjectRecordSet(description, data);
-        }
-        else
+            
+        } else if (dataTableId == Locality.getClassTableId())
         {
-            throw new RuntimeException("Unsupported data type");
+            exportLocalityRecordSet(description, data);
+            
+        } else
+        {
+            throw new RuntimeException("Only Collection Objects, Colelcting Events and Localities are supported for GoogleEarth export."); // I18N
         }
 	}
 	
@@ -187,8 +191,29 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
             {
                 ceList.add(ce);    
             }
-
-            exportCollectingEvents(description, ceList, true, getIconFromPrefs());
+            exportDataObjects(description, ceList, true, getIconFromPrefs());
+        }
+    }
+    
+    
+    /**
+     * Converts a RecordSet of CollectionObjects to a list of CollecitnEvents.
+     * @param description
+     * @param recordSet the RecordSet
+     */
+    protected void exportLocalityRecordSet(final String description,
+                                           final RecordSet recordSet)
+    {
+        List<Object> list    = new Vector<Object>();
+        List<Object> records = RecordSetLoader.loadRecordSet(recordSet);
+        for (Object o : records)
+        {
+            list.add((Locality)o);
+        }
+        
+        if (list.size() > 0)
+        {
+            exportDataObjects(description, list, true, getIconFromPrefs());
         }
     }
     
@@ -216,20 +241,20 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
      * opens the KML file using the default system viewer (most likely Google Earth).
      * 
      * @param description KMZ description
-     * @param ceList list of {@link CollectingEvent}s
+     * @param dataObjList list of {@link CollectingEvent}s
      * @param doKMZ whether to export as KMZ or KML
      * @param imgIconArg the icon to use for placemarks
      */
-    protected void exportCollectingEvents(final String description,
-                                          final List<Object> ceList, 
-                                          final boolean      doKMZ,
-                                          final ImageIcon    imgIconArg) 
+    protected void exportDataObjects(final String description,
+                                     final List<Object> dataObjList, 
+                                     final boolean      doKMZ,
+                                     final ImageIcon    imgIconArg) 
     {
         try
         {
-            if (ceList != null && ceList.size() > 0)
+            if (dataObjList != null && dataObjList.size() > 0)
             {
-                CollectingEventKMLGenerator kmlGen = new CollectingEventKMLGenerator();
+                CollectingEventLocalityKMLGenerator kmlGen = new CollectingEventLocalityKMLGenerator();
                 kmlGen.setDescription(description);
                 
                 ImageIcon defaultIcon = IconManager.getImage("DefaultPlacemark");
@@ -285,10 +310,17 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 kmlGen.setBalloonStyleText(getBalloonText(fgColor));
                 kmlGen.setTextColor(fgColor);
                 
-                for (Object o : ceList)
+                for (Object obj : dataObjList)
                 {
-                    CollectingEvent ce = (CollectingEvent)o;
-                    kmlGen.addCollectingEvent(ce, null);
+                    if (obj instanceof Locality)
+                    {
+                        kmlGen.addDataObj((Locality)obj, null);
+                        
+                    } else if (obj instanceof CollectingEvent)
+                    {
+                        kmlGen.addDataObj((CollectingEvent)obj, null);
+                        
+                    }
                 }
                 
                 File outputFile = File.createTempFile("sp6export", doKMZ ? ".kmz" : ".kml");
@@ -316,7 +348,8 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
 
         } catch (Exception ex)
         {
-         // XXX Error dialog saying there was a problem with the export
+            // XXX Error dialog saying there was a problem with the export
+            ex.printStackTrace();
         }
     }
     

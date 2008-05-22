@@ -52,7 +52,6 @@ import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
@@ -93,7 +92,9 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     //private static final Logger log = Logger.getLogger(BaseTask.class);
     
     protected static final String APP_CMD_TYPE      = "App"; //$NON-NLS-1$
-    protected static final String APP_RESTART_ACT   = "Restart"; //$NON-NLS-1$
+    protected static final String APP_START_ACT     = "StartUp"; //$NON-NLS-1$
+    protected static final String APP_RESTART_ACT   = "AppRestart"; //$NON-NLS-1$
+    protected static final String APP_SHUTDOWN_ACT  = "Shutdown"; //$NON-NLS-1$
     protected static final String DB_CMD_TYPE       = "Database"; //$NON-NLS-1$
 
     
@@ -136,6 +137,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     {
         ContextMgr.register(this);
         SubPaneMgr.getInstance().addListener(this);
+        CommandDispatcher.register(APP_CMD_TYPE, this);
     }
 
     /**
@@ -538,7 +540,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             {
                 FormPane fp = (FormPane)sp;
 
-                if ((viewSetName == null ||viewSetName.equals(fp.getViewSetName())) &&
+                if ((viewSetName == null || viewSetName.equals(fp.getViewSetName())) &&
                     viewName == fp.getViewName() &&
                     data == fp.getData())
                 {
@@ -547,17 +549,6 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             }
         }
         return null;
-    }
-
-    /**
-     * Looks to see if a form already exists for this request and shows it
-     * otherwise it creates a form and add it to the SubPaneMgr.
-     */
-    protected FormPane createFormPanel(final String tabName,
-                                       final NavBoxButton nbb)
-    {
-        DroppableFormObject dfo = (DroppableFormObject)nbb.getData();
-        return createFormPanel(tabName, dfo.getViewSetName(), DBTableIdMgr.getInstance().getDefaultFormNameById(dfo.getFormId()), null, dfo.getData(), null);
     }
 
     /**
@@ -614,7 +605,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             if (ti != null)
             {
                 FormPane fp = createFormPanel(tabName, null, ti.getShortClassName(), mode, null, MultiView.VIEW_SWITCHER, paneIcon);
-                fp.setData(recordSet);
+                fp.setRecordSet(recordSet);
                 return fp;
             }
         }
@@ -970,6 +961,19 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         // else
         return null;
     }
+    
+    /**
+     * Used for processing the Application Commands. 
+     * This method also unregisters all services for the task.
+     * @param cmdAction the command to be processed
+     */
+    protected void doProcessAppCommands(final CommandAction cmdAction)
+    {
+        if (cmdAction.isAction(APP_RESTART_ACT))
+        {
+            ContextMgr.removeServicesByTask(this);
+        }
+    }
 
     //-------------------------------------------------------
     // CommandListener Interface
@@ -987,6 +991,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             cmdAction = (CommandAction)cmdAction.getData();
         }
         
+        // Why is this here n the BaseTask?
         if (cmdAction.isAction(OPEN_FORM_CMD_ACT))
         {
             FormDataObjIFace formData = null;
@@ -1015,6 +1020,9 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             {
                 // Error Dialog - The Data Object was not found.
             }
+        } else if (cmdAction.isType(APP_CMD_TYPE))
+        {
+            doProcessAppCommands(cmdActionArg);
         }
     }
 

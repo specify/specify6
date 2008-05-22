@@ -105,8 +105,10 @@ public class StatsPane extends BaseSubPane
         setLayout(new BorderLayout());
 
         init(upperDisplayComp);
+        
+        registerPrintContextMenu();
     }
-    
+
     /**
      * Converts a string to a QueryType (default conversion is SQL)
      * @param type the string to be converted

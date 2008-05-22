@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 
@@ -40,6 +41,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -61,11 +63,14 @@ import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
@@ -867,6 +872,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // work with for this "Context" then we need to go get all the Default View and
             // additional XML Resources.
             
+            int prevCollectionId = Collection.getCurrentCollection() != null ? Collection.getCurrentCollection().getCollectionId() : -1;
+            
             // Ask the User to choose which Collection they will be working with
             Collection collection = setupCurrentCollection(session, user, startingOver);
             if (collection == null)
@@ -886,6 +893,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             spAppResourceList.clear();
             viewSetHash.clear();
+            
+            int prevDisciplineId = Discipline.getCurrentDiscipline() != null ? Discipline.getCurrentDiscipline().getDisciplineId() : -1;
     
             Discipline discipline = session.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ;
             discipline.getDeterminationStatuss().size(); // make sure they are loaded
@@ -981,6 +990,22 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
                 spAppResourceList.add(appResDir);
                 spAppResourceHash.put(BACKSTOPDIR, appResDir);
+            }
+            
+            if (prevDisciplineId != -1)
+            {
+                CommandDispatcher.dispatch(new CommandAction("Discipline", "Changed"));
+            }
+            
+            if (prevCollectionId != -1)
+            {
+                CommandDispatcher.dispatch(new CommandAction("Collection", "Changed"));
+            }
+            
+            int disciplineeId = Discipline.getCurrentDiscipline().getDisciplineId();
+            if (disciplineeId != prevDisciplineId)
+            {
+                SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
             }
             
             // We close the session here so all SpAppResourceDir get unattached to hibernate

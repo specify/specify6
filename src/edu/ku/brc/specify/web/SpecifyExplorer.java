@@ -80,6 +80,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
@@ -369,6 +370,7 @@ public class SpecifyExplorer extends HttpServlet
         System.setProperty(QueryAdjusterForDomain.factoryName,          "edu.ku.brc.specify.dbsupport.SpecifyQueryAdjusterForDomain"); // Needed for ExpressSearch
         System.setProperty(SchemaI18NService.factoryName,               "edu.ku.brc.specify.config.SpecifySchemaI18NService");         // Needed for Localization and Schema
         System.setProperty(WebLinkMgr.factoryName,                      "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                // Needed for WebLnkButton
+        System.setProperty(DataObjFieldFormatMgr.factoryName,           "edu.ku.brc.specify.ui.SpecifyDataObjFieldFormatMgr");                // Needed for WebLnkButton //$NON-NLS-1$
     }
     
     /**
@@ -418,6 +420,7 @@ public class SpecifyExplorer extends HttpServlet
                 {
                     
                     Discipline.setCurrentDiscipline(discipline);
+                    Division.setCurrentDivision(discipline.getDivision());
                     
                 	Agent.setUserAgent(user, discipline.getAgents());
                     TaxonTreeDef.setCurrentTaxonTreeDef(discipline.getTaxonTreeDef());
@@ -584,6 +587,7 @@ public class SpecifyExplorer extends HttpServlet
                 Discipline discipline = hibSession.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ;
                 discipline.getDeterminationStatuss().size(); // make sure they are loaded
                 Discipline.setCurrentDiscipline(discipline);
+                Division.setCurrentDivision(discipline.getDivision());
                 
             } catch (Exception ex)
             {
@@ -970,8 +974,8 @@ public class SpecifyExplorer extends HttpServlet
         {
             for (Field field : dataObj.getClass().getDeclaredFields())
             {
-                String fieldName = field.getName();
-                FieldDisplayInfo fdi = cdi.getField(fieldName);
+                String           fieldName = field.getName();
+                FieldDisplayInfo fdi       = cdi.getField(fieldName);
                 
                 
                 if (fdi != null && (fdi.isSkipped() || !fdi.isForDisplay()))
@@ -1328,7 +1332,7 @@ public class SpecifyExplorer extends HttpServlet
             String catNum = co.getCatalogNumber();
             if (fmtr != null)
             {
-                //catNum = (String)fmtr.formatToUI(catNum);
+                catNum = (String)fmtr.formatToUI(catNum);
             }
             if (cnt > 0) sb.append(", ");
             sb.append(formatFDI(co, catNum));
@@ -2032,6 +2036,9 @@ public class SpecifyExplorer extends HttpServlet
             ClassDisplayInfo cdi       = classHash.get(clsObj.getSimpleName());
             String           className = cdi.getClassName();
             
+            //System.out.println("class: "+className);
+            DBTableInfo      ti        = DBTableIdMgr.getInstance().getByShortClassName(className);
+            
             //fillLabelMap((FormDataObjIFace)clsObj.newInstance(), labelMap);
             
             StringBuilder sql = new StringBuilder("FROM "+className+" WHERE ");
@@ -2041,10 +2048,10 @@ public class SpecifyExplorer extends HttpServlet
             boolean addMatch = false;
             for (Field field : clsObj.getDeclaredFields())
             {
-                String fieldName = field.getName();
-                FieldDisplayInfo fdi = cdi.getField(fieldName);
+                String           fieldName = field.getName();
+                FieldDisplayInfo fdi       = cdi.getField(fieldName);
                 
-                System.out.println(fieldName + "  "+fdi+"  "+(fdi != null ? (fdi.isSkipped()+"  "+fdi.isForDisplay()+"  "+fdi.isAvailForSearch()) : ""));
+                //System.out.println(fieldName + "  "+fdi+"  "+(fdi != null ? (fdi.isSkipped()+"  "+fdi.isForDisplay()+"  "+fdi.isAvailForSearch()) : ""));
                 if (fdi != null && (fdi.isSkipped() || !fdi.isAvailForSearch()))
                 {
                     continue;
@@ -2150,6 +2157,13 @@ public class SpecifyExplorer extends HttpServlet
                                     {
                                         sql.append(matchStr);
                                         addMatch = false;
+                                    }
+                                    
+                                    DBFieldInfo fi = ti.getFieldByName(fieldName);
+                                    
+                                    if (fi != null && fi.getFormatter() != null)
+                                    {
+                                        field1Str = (String)fi.getFormatter().formatFromUI(field1Str);
                                     }
                                     String value = field1Str;
                                     if (compareStr1.equals("LIKE"))
@@ -3594,6 +3608,7 @@ public class SpecifyExplorer extends HttpServlet
         }
         
         String searchStr = request.getParameter("searchStr");
+        System.out.println("searchStr["+searchStr+"]");
         if (expressSearch == null)
         {
             expressSearch         = new ExpressSearchTask();
@@ -3605,9 +3620,9 @@ public class SpecifyExplorer extends HttpServlet
         
         if (expressSearch.doQuery(searchStr, expressSearchExplorer))
         {
+            System.out.println("HERE "+searchStr);
             if (StringUtils.isNotEmpty(searchStr))
             {
-                
                 JSONArray tableArray = expressSearchExplorer.getTables();
                 
                 response.setContentType("text/html");
@@ -3828,8 +3843,6 @@ public class SpecifyExplorer extends HttpServlet
         String query     = request.getParameter("query");
         String cmd       = request.getParameter("cmd");
         
-        
-        
         //System.out.println("doGet -------------------------------["+treeStr+"]["+idStr+"]");
         if (StringUtils.isNotEmpty(cmd))
         {
@@ -3859,7 +3872,7 @@ public class SpecifyExplorer extends HttpServlet
         {
             response.setContentType("text/html");
             PrintWriter out = response.getWriter();
-            int id = Integer.parseInt(idStr);
+            int         id  = Integer.parseInt(idStr);
             if (id > 0)
             {
                 DBTableInfo tableInfo  = DBTableIdMgr.getInstance().getByShortClassName(treeStr);
@@ -3895,7 +3908,6 @@ public class SpecifyExplorer extends HttpServlet
         
         if (StringUtils.isNotEmpty(idStr))
         {
-            
             if (idStr.equals("genCEChart"))
             {
                 generateCEChart(request, response);

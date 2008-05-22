@@ -84,6 +84,14 @@ public class WebLinkMgr
     }
     
     /**
+     * Resets the cache.
+     */
+    protected void reset()
+    {
+        webLinkDefs.clear();
+    }
+    
+    /**
      * @param name
      * @return
      */

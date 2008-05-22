@@ -110,14 +110,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         //draggableFlavors.add(RecordSetTask.RECORDSET_FLAVOR);
         
         CommandDispatcher.register(RECORD_SET, this);
-        CommandDispatcher.register(APP_CMD_TYPE, this);
         
-        // Register all Tables as being able to be saved in a RecordSet
-        // Althought some system tables we may not want, they won't be searchable anyway.
-        for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
-        {
-            ContextMgr.registerService(ti.getTitle(), ti.getTableId(), new CommandAction(RECORD_SET, SAVE_RECORDSET), this, RECORD_SET, getResourceString("CreateRecordSetTT"));    
-        }
     }
 
 
@@ -130,6 +123,13 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         {
             super.initialize(); // sets isInitialized to false
 
+            // Register all Tables as being able to be saved in a RecordSet
+            // Although some system tables we may not want, they won't be searchable anyway.
+            for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
+            {
+                ContextMgr.registerService(ti.getTitle(), ti.getTableId(), new CommandAction(RECORD_SET, SAVE_RECORDSET), this, RECORD_SET, getResourceString("CreateRecordSetTT"));    
+            }
+            
             // TODO RELEASE Search for the the users or group's RecordSets!
             DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
             List<?> recordSets = session.getDataList("From RecordSet where type = 0");
@@ -663,20 +663,32 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    protected void doProcessAppCommands(CommandAction cmdAction)
+    {
+        super.doProcessAppCommands(cmdAction);
+        
+        if (cmdAction.isAction(APP_RESTART_ACT))
+        {
+            isInitialized = false;
+            this.initialize();
+        } 
+    }
+
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
      */
     public void doCommand(CommandAction cmdAction)
     {
+        super.doCommand(cmdAction);
+        
         if (cmdAction.isType(RECORD_SET))
         {
             processRecordSetCommands(cmdAction);
-            
-        } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
-        {
-            isInitialized = false;
-            this.initialize();
-            
-        } 
+        }
     }
     
     //--------------------------------------------------------------

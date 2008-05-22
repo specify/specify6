@@ -52,7 +52,6 @@ public class SecurityAdminTask extends BaseTask
     {
     	super(SECURITY_ADMIN, getResourceString(SECURITY_ADMIN));
     	CommandDispatcher.register(SECURITY_ADMIN, this);
-    	CommandDispatcher.register(APP_CMD_TYPE, this);    
     }
     
     /* (non-Javadoc)

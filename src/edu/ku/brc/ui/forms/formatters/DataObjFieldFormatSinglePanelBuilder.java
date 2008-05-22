@@ -393,9 +393,9 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 		Vector<DataObjDataField> fields = new Vector<DataObjDataField>();
     	while (matcher.find()) 
     	{
-    		int mStart   = matcher.start();
-    		int mEnd     = matcher.end();
-    		String group = matcher.group();
+    		//int mStart   = matcher.start();
+    		//int mEnd     = matcher.end();
+    		//String group = matcher.group();
     		
     		int openBracketPos = text.indexOf('[', matcher.start());
     		String sepStr   = text.substring(matcher.start(), openBracketPos);
@@ -406,20 +406,20 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
     		{
     			String fieldName = "";
     			String formatStr = "";
-    			String formatterName = "";    // if another formatter has been used, use it's name here
+    			//String formatterName = "";    // if another formatter has been used, use it's name here
     			String uifieldformatter = ""; // not implemented yet
 
     			if (value instanceof DBFieldInfoWrapper)
     			{
     				DBFieldInfoWrapper fieldWrapper = (DBFieldInfoWrapper) value;
         			fieldName     = fieldWrapper.getFieldInfo().getName();
-    				formatterName = "";
+    				//formatterName = "";
     			}
     			else if (value instanceof DataObjSwitchFormatter)
     			{
     				DataObjSwitchFormatter fmt = (DataObjSwitchFormatter) value;
         			fieldName     = fmt.getFieldName();
-    				formatterName = fmt.getName();
+    				//formatterName = fmt.getName();
     			}
     				
     			Class<?> classObj = null;
@@ -483,7 +483,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	public class DBFieldInfoWrapper
 	{
 		protected DBRelationshipInfo relationshipInfo;
-		protected DBTableInfo        tableInfo;
+		protected DBTableInfo        tblIndo;
 		protected DBFieldInfo		 fieldInfo;
 		
 		DBFieldInfoWrapper(DBRelationshipInfo relationshipInfo,
@@ -491,7 +491,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 				           DBFieldInfo		  fieldInfo)
 		{
 			this.relationshipInfo = relationshipInfo;
-			this.tableInfo        = tableInfo;
+			this.tblIndo        = tableInfo;
 			this.fieldInfo        = fieldInfo;
 		}
 
@@ -502,7 +502,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 
 		public DBTableInfo getTableInfo() 
 		{
-			return tableInfo;
+			return tblIndo;
 		}
 
 		public DBFieldInfo getFieldInfo() 
@@ -512,7 +512,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 		
 		public String toString()
 		{
-			String result = (relationshipInfo != null)? relationshipInfo.getTitle() : tableInfo.getTitle();    
+			String result = (relationshipInfo != null)? relationshipInfo.getTitle() : tblIndo.getTitle();    
 			return "[" + result + "." + fieldInfo.getTitle() + "]";
 		}
 	}

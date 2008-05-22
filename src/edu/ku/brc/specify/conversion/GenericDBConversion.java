@@ -2386,16 +2386,29 @@ public class GenericDBConversion
         try
         {
             pl.setName(pickListName);
-            pl.setReadOnly(false);
-            pl.setSizeLimit(-1);
+            
+            if (pickListName.equals("PrepType"))
+            {
+                pl.setReadOnly(true);
+                pl.setSizeLimit(-1);
+                pl.setIsSystem(true);
+                pl.setTableName("preptype");
+                pl.setType(1);
+                
+            } else
+            {
+                pl.setReadOnly(false);
+                pl.setSizeLimit(-1);
+            }
             pl.setCollection(collection);
             collection.getPickLists().add(pl);
 
-            HibernateUtil.beginTransaction();
+            Transaction trans = localSession.beginTransaction();
             localSession.saveOrUpdate(pl);
             localSession.saveOrUpdate(collection);
-            HibernateUtil.commitTransaction();
-
+            trans.commit();
+            localSession.flush();
+            
         } catch (Exception ex)
         {
             log.error("******* " + ex);
@@ -2452,12 +2465,14 @@ public class GenericDBConversion
 
             log.info("Processed " + usysTableName + "  " + count + " records.");
 
-            HibernateUtil.beginTransaction();
+            Transaction trans = localSession.beginTransaction();
 
             localSession.saveOrUpdate(pl);
 
-            HibernateUtil.commitTransaction();
-
+            trans.commit();
+            
+            localSession.flush();
+            
             return true;
 
         } catch (SQLException e)

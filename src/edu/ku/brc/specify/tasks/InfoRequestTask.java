@@ -110,7 +110,6 @@ public class InfoRequestTask extends BaseTask
     {
         super(INFOREQUEST, getResourceString(INFOREQUEST));
         CommandDispatcher.register(INFOREQUEST, this);
-        CommandDispatcher.register(APP_CMD_TYPE, this);
         CommandDispatcher.register(DB_CMD_TYPE, this);
     }
 
@@ -607,6 +606,8 @@ public class InfoRequestTask extends BaseTask
      */
     public void doCommand(CommandAction cmdAction)
     {
+        super.doCommand(cmdAction);
+        
         if (cmdAction.isType(DB_CMD_TYPE))
         {
             processDatabaseCommands(cmdAction);

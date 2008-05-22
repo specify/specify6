@@ -11,8 +11,22 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.dbsupport.DBTableInfo;
 
+/**
+ * Original author was JDS.
+ * 
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ * Feb 27, 2007
+ *
+ */
 public class RecordSetLoader
 {
+	/**
+	 * @param recordSet
+	 * @return
+	 */
 	public static List<Object> loadRecordSet(RecordSetIFace recordSet)
 	{
 		DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());

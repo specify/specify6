@@ -294,6 +294,10 @@ public class JStatusBar extends JPanel
      */
     protected boolean isCurrent(final ProgressItem item)
     {
+        //if (prgItems.size() > 0)
+        //{
+        //    System.err.println("Current: "+prgItems.get(0).getName());
+        //}
         return prgItems.size() > 0 && prgItems.get(0) == item;
     }
 
@@ -315,38 +319,52 @@ public class JStatusBar extends JPanel
                                               final boolean isIndeterminate, 
                                               final boolean usePlatformLnF)
     {
-        ProgressItem item = getProgressItem(name);
-        item.setIndeterminate(isIndeterminate);
-        item.setUsePlatformUI(usePlatformLnF);
-        updateProgress(item);
-    }
-    
-    public synchronized void incrementRange(final String name)
-    {
-        if (prgHash.get(name) == null)
-        {
-            setProgressRange(name, 0, 1, 0);
-            
-        } else
+        if (progressBar != null)
         {
             ProgressItem item = getProgressItem(name);
-            item.setMax(item.getMax()+1);
-            updateProgress(item);    
+            item.setIndeterminate(isIndeterminate);
+            item.setUsePlatformUI(usePlatformLnF);
+            updateProgress(item);
         }
-        
     }
     
+    /**
+     * @param name
+     */
+    public synchronized void incrementRange(final String name)
+    {
+        if (progressBar != null)
+        {
+            if (prgHash.get(name) == null)
+            {
+                setProgressRange(name, 0, 1, 0);
+                
+            } else
+            {
+                ProgressItem item = getProgressItem(name);
+                item.setMax(item.getMax()+1);
+                updateProgress(item);    
+            }
+        }
+    }
+    
+    /**
+     * @param name
+     */
     public synchronized void incrementValue(final String name)
     {
-        if (prgHash.get(name) == null)
+        if (progressBar != null)
         {
-            setProgressRange(name, 0, 1);
+            if (prgHash.get(name) == null)
+            {
+                setProgressRange(name, 0, 1);
+                
+            } 
             
-        } 
-        
-        ProgressItem item = getProgressItem(name);
-        item.setValue(item.getValue()+1);
-        updateProgress(item);    
+            ProgressItem item = getProgressItem(name);
+            item.setValue(item.getValue()+1);
+            updateProgress(item); 
+        }
     }
     
     /**
@@ -356,15 +374,18 @@ public class JStatusBar extends JPanel
      */
     public synchronized void setProgressDone(final String name)
     {
-        ProgressItem item = getProgressItem(name);
-        item.clear();
-        item.setIndStatusChanged(true);
-        
-        updateProgress(item);
-        
-        prgHash.remove(name);
-        prgItems.remove(item);
-        prgItemsRecycler.add(item);
+        if (progressBar != null)
+        {
+            ProgressItem item = getProgressItem(name);
+            item.clear();
+            item.setIndStatusChanged(true);
+            
+            updateProgress(item);
+            
+            prgHash.remove(name);
+            prgItems.remove(item);
+            prgItemsRecycler.add(item);
+        }
     }
     
     /**
@@ -438,9 +459,12 @@ public class JStatusBar extends JPanel
      */
     public synchronized void setProgressRange(final String name, final int min, final int max, final int value)
     {
-        ProgressItem item = getProgressItem(name);
-        item.setProgressRange(min, max, value);
-        updateProgress(item);
+        if (progressBar != null)
+        {
+            ProgressItem item = getProgressItem(name);
+            item.setProgressRange(min, max, value);
+            updateProgress(item);
+        }
     }
 
     /**
@@ -451,9 +475,12 @@ public class JStatusBar extends JPanel
      */
     public synchronized void setValue(final String name, final int value)
     {
-        final ProgressItem item = getProgressItem(name);
-        item.setValue(value);
-        updateProgress(item);
+        if (progressBar != null)
+        {
+            ProgressItem item = getProgressItem(name);
+            item.setValue(value);
+            updateProgress(item);
+        }
     }
 
     /**

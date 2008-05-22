@@ -99,7 +99,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 		super(name,title);
 		
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
-        CommandDispatcher.register(APP_CMD_TYPE, this);
 	}
 
 	/* (non-Javadoc)
@@ -493,17 +492,26 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	}
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    protected void doProcessAppCommands(CommandAction cmdAction)
+    {
+        super.doProcessAppCommands(cmdAction);
+        
+        currentDef = getCurrentTreeDef();
+        adjustMenus();
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
     @Override
     public void doCommand(CommandAction cmdAction)
     {
+        super.doCommand(cmdAction);
+
         UIRegistry.getStatusBar().setText("");
         
-        if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
-        {
-            currentDef = getCurrentTreeDef();
-            adjustMenus();
-        }
     }
 }

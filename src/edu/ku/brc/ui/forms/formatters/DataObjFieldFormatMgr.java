@@ -30,13 +30,10 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.DataObjectGettable;
@@ -97,6 +94,8 @@ public class DataObjFieldFormatMgr
             i++;
         }
         load();
+        
+        
     }
     
     /**
@@ -128,18 +127,18 @@ public class DataObjFieldFormatMgr
      */
     protected Element getDOM() throws Exception
     {
-        if (doingLocal)
-        {
-            return XMLHelper.readDOMFromConfigDir(localFileName);
-        }
-        
-        AppContextMgr mgr = AppContextMgr.getInstance();
-        if (mgr != null)
-        {
-            return mgr.getResourceAsDOM("DataObjFormatters");
-            
-        }
-        return XMLHelper.readDOMFromConfigDir(localFileName);
+        throw new RuntimeException("Not Implemented.");
+    }
+    
+    /**
+     * Resets the cache.
+     */
+    protected void reset()
+    {
+        formatHash.clear();
+        formatClassHash.clear();
+        aggHash.clear();
+        aggClassHash.clear();
     }
 
     /**
@@ -148,6 +147,8 @@ public class DataObjFieldFormatMgr
      */
     public void load()
     {
+        reset();
+        
         try
         {
             Element root  = getDOM();
@@ -365,8 +366,7 @@ public class DataObjFieldFormatMgr
     }
     
     /**
-     * Saves formatters
-     * @param 
+     * Saves formatters.
      */
     public void save() 
     {
@@ -409,32 +409,18 @@ public class DataObjFieldFormatMgr
 		
 		sb.append("  </aggregators>\n");
 		sb.append("\n\n</formatters>\n");
+		
+		saveXML(sb.toString());
+    }
+    
+    /**
+     * Persists the XML.
+     * @param xml the xml string.
+     */
+    protected void saveXML(final String xml)
+    {
+        throw new RuntimeException("Not implementd!");
 
-		// save resource back to database
-		if (AppContextMgr.getInstance() != null)
-		{
-            AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "DataObjFormatters");
-            if (escAppRes != null)
-            {
-                escAppRes.setDataAsString(sb.toString());
-                AppContextMgr.getInstance().saveResource(escAppRes);
-               
-            } else
-            {
-                AppContextMgr.getInstance().putResourceAsXML("DataObjFormatters", sb.toString());    
-            }
-		} else
-		{
-		    File outFile = XMLHelper.getConfigDir(localFileName);
-		    try
-		    {
-		        FileUtils.writeStringToFile(outFile, sb.toString());
-		        
-		    } catch (Exception ex)
-		    {
-		        ex.printStackTrace();
-		    }
-		}
     }
     
     /**

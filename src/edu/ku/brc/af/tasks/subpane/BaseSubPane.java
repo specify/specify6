@@ -20,11 +20,27 @@ import static edu.ku.brc.ui.UIHelper.createProgressBar;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
@@ -35,6 +51,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.ui.GraphicsUtils;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
@@ -47,7 +65,7 @@ import edu.ku.brc.ui.forms.MultiView;
  *
  */
 @SuppressWarnings("serial") //$NON-NLS-1$
-public class BaseSubPane extends JPanel implements SubPaneIFace
+public class BaseSubPane extends JPanel implements SubPaneIFace, Printable
 {
     //private static final Logger log = Logger.getLogger(BaseSubPane.class);
 
@@ -109,6 +127,136 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     
             progressBarPanel = builder2.getPanel();
             add(progressBarPanel, BorderLayout.CENTER);
+        }
+    }
+    
+    //----------------------------------
+    // Printable
+    //----------------------------------
+    
+    /* (non-Javadoc)
+     * @see java.awt.print.Printable#print(java.awt.Graphics, java.awt.print.PageFormat, int)
+     */
+    public int print(Graphics g, PageFormat pf, int index) throws PrinterException
+    {
+        Graphics2D g2 = (Graphics2D) g;
+        if (index >= 1)
+        {
+            return Printable.NO_SUCH_PAGE;
+        }
+        
+        
+        System.out.println(pf.getPaper().getImageableWidth()+", "+pf.getPaper().getImageableHeight());
+        double imgWidth  = pf.getImageableWidth();
+        double imgHeight = pf.getImageableHeight();
+        
+        if (true)
+        {
+            Dimension size        = getSize();
+            Image     fullSizeImg = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
+            Graphics  fsG         = fullSizeImg.getGraphics();
+            printAll(fsG);
+            fsG.dispose();
+            
+            int imgW = (int)imgWidth;
+            int imgH = (int)imgHeight;
+            /*
+            int w = size.width;
+            int h = size.height;
+            
+            if (imgW > w || imgH > h)
+            {
+                double scaleW = 1.0;
+                double scaleH = 1.0;
+                double scale  = 1.0;
+
+                if (imgW > w)
+                {
+                    scaleW = (double) w / imgW;
+                }
+                if (imgH > h)
+                {
+                    scaleH = (double) h / imgH;
+                }
+                scale = Math.min(scaleW, scaleH);
+
+                imgW = (int) ((double) imgW * scale);
+                imgH = (int) ((double) imgH * scale);
+            }*/
+            
+            Image scaledImg = GraphicsUtils.getScaledImage(new ImageIcon(fullSizeImg), (int)imgW, (int)imgH, true);
+            System.out.println(scaledImg.getWidth(null)+", "+scaledImg.getHeight(null));
+            g2.drawImage(scaledImg, 0, 0, null);
+        } else
+        {
+            printAll(g2);
+        }
+        
+        //g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        //g2.drawImage(fullSize, 0, 0, (int)imgWidth, (int)imgHeight, 0, 0, size.width, size.height, null);
+        return Printable.PAGE_EXISTS;
+    }
+    
+    protected void printStats(final Printable printable)
+    {
+        PrinterJob printJob = PrinterJob.getPrinterJob();
+        printJob.setPrintable(printable);
+        if (printJob.printDialog())
+        {
+            try
+            {
+                printJob.print();
+            } catch (Exception ex)
+            {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+    
+    protected void registerPrintContextMenu()
+    {
+        if (this instanceof Printable)
+        {
+            addMouseListener(new MouseAdapter() 
+            {
+                private void displayMenu(MouseEvent e)
+                {
+                    if (e.isPopupTrigger())
+                    {
+                        JPopupMenu menu = new JPopupMenu();
+                        JMenuItem printMenu = new JMenuItem(UIRegistry.getResourceString("Print"));
+                        menu.add(printMenu);
+                        menu.show(e.getComponent(), e.getX(), e.getY());
+                        printMenu.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent ev)
+                            {
+                                printStats(BaseSubPane.this);
+                            }
+                        });
+                        
+                    }
+                }
+                
+                @Override
+                public void mouseClicked(MouseEvent e)
+                {
+                    super.mouseClicked(e);
+                    displayMenu(e);
+                }
+                @Override
+                public void mousePressed(MouseEvent e)
+                {
+                    super.mousePressed(e);
+                    displayMenu(e);
+                }
+                @Override
+                public void mouseReleased(MouseEvent e)
+                {
+                    super.mouseReleased(e);
+                    displayMenu(e);
+                }
+                
+            });
         }
     }
     

@@ -135,7 +135,6 @@ public class QueryTask extends BaseTask
         super(QUERY, getResourceString(QUERY));
         
         CommandDispatcher.register(QUERY, this);        
-        CommandDispatcher.register(APP_CMD_TYPE, this);
     }
     
     
@@ -1264,19 +1263,33 @@ public class QueryTask extends BaseTask
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    protected void doProcessAppCommands(CommandAction cmdAction)
+    {
+        super.doProcessAppCommands(cmdAction);
+        
+        if (cmdAction.isAction(APP_RESTART_ACT))
+        {
+            isInitialized = false;
+            this.initialize();
+        }
+    }
+
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
      */
     @Override
     public void doCommand(CommandAction cmdAction)
     {
+        super.doCommand(cmdAction);
+        
         if (cmdAction.isType(QUERY))
         {
             processQueryCommands(cmdAction);
             
-        } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
-        {
-            isInitialized = false;
-            this.initialize();
         }
     }
 

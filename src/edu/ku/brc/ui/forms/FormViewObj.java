@@ -654,7 +654,7 @@ public class FormViewObj implements Viewable,
         
         if (formValidator != null)
         {
-            formValidator.setSaveComp(saveBtn, FormValidator.EnableType.ValidItems);
+            formValidator.setSaveComp(saveBtn, FormValidator.EnableType.ValidAndChangedItems);
         }
     }
 
@@ -1825,9 +1825,9 @@ public class FormViewObj implements Viewable,
     /**
      * The user tried to update or delete an object that was already changed by someone else. 
      */
-    protected void recoverFromStaleObject(final String msgResStr)
+    protected void recoverFromStaleObject(final String msgResStr, final String actualMsg)
     {
-        JOptionPane.showMessageDialog(null, getResourceString(msgResStr), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+        JOptionPane.showMessageDialog(null, actualMsg != null ? actualMsg : getResourceString(msgResStr), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
 
         if (!isNewlyCreatedDataObj)
         {
@@ -1842,9 +1842,15 @@ public class FormViewObj implements Viewable,
             if (dataObj instanceof FormDataObjIFace)
             {
                 Integer id = ((FormDataObjIFace)dataObj).getId();
-                Class<?> cls = dataObj.getClass();
-                dataObj = session.get(cls, id);
-                
+                if (id != null)
+                {
+                    Class<?> cls = dataObj.getClass();
+                    dataObj = session.get(cls, id);
+                } else
+                {
+                    // Bail out if the id is null meaning it is a new object
+                    return; 
+                }
                 
             } else
             {
@@ -2035,7 +2041,7 @@ public class FormViewObj implements Viewable,
             } catch (StaleObjectException e) // was StaleObjectStateException
             {
                 session.rollback();
-                recoverFromStaleObject("UPDATE_DATA_STALE");
+                recoverFromStaleObject("UPDATE_DATA_STALE", null);
                 tryAgain = false;
                 dObj     = dataObj;
                 saveState = SAVE_STATE.StaleRecovery;
@@ -2069,11 +2075,45 @@ public class FormViewObj implements Viewable,
                 {
                     session.rollback();
                     
-                    recoverFromStaleObject("DUPLICATE_KEY_ERROR");
+                    recoverFromStaleObject("DUPLICATE_KEY_ERROR", null);
                     dObj      = dataObj;
                     saveState = SAVE_STATE.StaleRecovery;
                 }
 
+            }
+            catch (org.hibernate.ObjectNotFoundException ex)
+            {
+                String errMsg = null;
+                String msg    = ex.toString();
+                if (StringUtils.contains(msg, "No row with the given identifier exists"))
+                {
+                    int sInx = msg.indexOf('[');
+                    int eInx = msg.lastIndexOf(']');
+                    if (sInx > -1 && eInx > -1)
+                    {
+                        msg = msg.substring(sInx+1, eInx);
+                        eInx = msg.lastIndexOf('#');
+                        if (eInx > -1)
+                        {
+                            msg = msg.substring(0, eInx);
+                            DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(msg);
+                            if (ti != null)
+                            {
+                                errMsg = String.format(getResourceString("FormViewObj.FIELD_STALE_TITLE"), ti.getTitle());
+                            }
+                        }
+                    }
+                }
+                
+                if (errMsg == null)
+                {
+                    errMsg = getResourceString("FormViewObj.FIELD_STALE");
+                }
+                
+                session.rollback();
+                
+                recoverFromStaleObject("UNRECOVERABLE_DB_ERROR", errMsg);
+                saveState = SAVE_STATE.StaleRecovery;
             }
             catch (Exception e)
             {
@@ -2081,7 +2121,7 @@ public class FormViewObj implements Viewable,
                 e.printStackTrace();
                 session.rollback();
                 
-                recoverFromStaleObject("UNRECOVERABLE_DB_ERROR");
+                recoverFromStaleObject("UNRECOVERABLE_DB_ERROR", null);
                 saveState = SAVE_STATE.StaleRecovery;
             }
             
@@ -2498,13 +2538,13 @@ public class FormViewObj implements Viewable,
             {
                 doClearObj = false;
                 session.rollback();
-                recoverFromStaleObject("DELETE_DATA_STALE");
+                recoverFromStaleObject("DELETE_DATA_STALE", null);
                 
             } catch (Exception e)
             {
                 doClearObj = false;
                 session.rollback();
-                recoverFromStaleObject("DELETE_DATA_STALE");
+                recoverFromStaleObject("DELETE_DATA_STALE", null);
             }
             
             log.debug("Session Flushed["+(session != null ? session.hashCode() : "no session")+"]");

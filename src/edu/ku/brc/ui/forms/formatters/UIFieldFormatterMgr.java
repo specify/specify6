@@ -14,7 +14,6 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.security.AccessController;
 import java.text.SimpleDateFormat;
@@ -31,13 +30,10 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.AutoNumberIFace;
 import edu.ku.brc.dbsupport.DBFieldInfo;
@@ -329,22 +325,7 @@ public class UIFieldFormatterMgr
      */
     protected Element getDOM() throws Exception
     {
-        if (doingLocal)
-        {
-            return XMLHelper.readDOMFromConfigDir("backstop/uiformatters.xml");
-        }
-
-        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "UIFormatters");
-        if (escAppRes != null)
-        {
-            return AppContextMgr.getInstance().getResourceAsDOM(escAppRes);
-        } 
-        
-        // Get the default resource by name and copy it to a new User Area Resource
-        AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Collection", "UIFormatters");
-        // Save it in the User Area
-        AppContextMgr.getInstance().saveResource(newAppRes);
-        return AppContextMgr.getInstance().getResourceAsDOM(newAppRes);
+        throw new RuntimeException("Not implemented.");
     }
     
     /**
@@ -353,6 +334,8 @@ public class UIFieldFormatterMgr
      */
     public void load()
     {
+        hash.clear();
+        
         try
         {
             Element root  = getDOM();
@@ -522,48 +505,35 @@ public class UIFieldFormatterMgr
      */
     public void save() 
     {
-		StringBuilder sb = new StringBuilder(1024);
-    	
-		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<formats>\n");
+        StringBuilder sb = new StringBuilder(1024);
+        
+        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<formats>\n");
 
-		// sort formatters by name, then save them to db
-		Vector<UIFieldFormatterIFace> formatVector = new Vector<UIFieldFormatterIFace>(hash.values());
-		Collections.sort(formatVector, new Comparator<UIFieldFormatterIFace>()
-		{
-			public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
-			{
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
-		for (UIFieldFormatterIFace format : formatVector)
-    	{
-			format.toXML(sb);
-    	}
-		sb.append("\n</formats>\n");
-
-		if (doingLocal)
-		{
-		    File outputFile = XMLHelper.getConfigDir("backstop/uiformatters.xml");
-		    try
-		    {
-		        FileUtils.writeStringToFile(outputFile, sb.toString());
-		    } catch (Exception ex)
-		    {
-		        ex.printStackTrace();
-		    }
-		} else
-		{
-            AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "UIFormatters");
-            if (escAppRes != null)
+        // sort formatters by name, then save them to db
+        Vector<UIFieldFormatterIFace> formatVector = new Vector<UIFieldFormatterIFace>(hash.values());
+        Collections.sort(formatVector, new Comparator<UIFieldFormatterIFace>()
+        {
+            public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
             {
-                escAppRes.setDataAsString(sb.toString());
-                AppContextMgr.getInstance().saveResource(escAppRes);
-               
-            } else
-            {
-                AppContextMgr.getInstance().putResourceAsXML("UIFormatters", sb.toString());    
+                return o1.getName().compareTo(o2.getName());
             }
-		}
+        });
+        for (UIFieldFormatterIFace format : formatVector)
+        {
+            format.toXML(sb);
+        }
+        sb.append("\n</formats>\n");
+        
+		saveXML(sb.toString());
+    }
+    
+    /**
+     * Persists the XML.
+     * @param xml the xml to be persisted.
+     */
+    protected void saveXML(final String xml)
+    {
+        throw new RuntimeException("Not implemented.");  
     }
     
     /**

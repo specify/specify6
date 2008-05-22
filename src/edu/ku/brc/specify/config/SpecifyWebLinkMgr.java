@@ -18,6 +18,8 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
@@ -28,7 +30,7 @@ import edu.ku.brc.ui.weblink.WebLinkMgr;
  * Apr 13, 2008
  *
  */
-public class SpecifyWebLinkMgr extends WebLinkMgr
+public class SpecifyWebLinkMgr extends WebLinkMgr implements CommandListener
 {
     private static final Logger log = Logger.getLogger(SpecifyWebLinkMgr.class);
             
@@ -62,6 +64,8 @@ public class SpecifyWebLinkMgr extends WebLinkMgr
     @Override
     public void read()
     {
+        reset();
+        
         if (doingLocal)
         {
             File file = XMLHelper.getConfigDir(DISKLOC);
@@ -149,6 +153,21 @@ public class SpecifyWebLinkMgr extends WebLinkMgr
                 }
                 hasChanged = false;
             }
+        }
+    }
+    
+    //-------------------------------------------------------
+    // CommandListener Interface
+    //-------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.CommandListener#doCommand(edu.ku.brc.af.ui.CommandAction)
+     */
+    public void doCommand(final CommandAction cmdAction)
+    {
+        if (cmdAction.isType("Collection") && cmdAction.isAction("Changed"))
+        {
+            read();
         }
     }
 

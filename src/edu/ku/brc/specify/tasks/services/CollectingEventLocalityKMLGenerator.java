@@ -25,6 +25,7 @@ import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tasks.ToolsTask;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.services.GenericKMLGenerator;
@@ -36,18 +37,19 @@ import edu.ku.brc.util.services.GenericKMLGenerator;
  * 
  * @code_status Complete
  */
-public class CollectingEventKMLGenerator
+public class CollectingEventLocalityKMLGenerator
 {
 	/** Logger used to emit any messages from this class. */
-	private static final Logger log = Logger.getLogger(CollectingEventKMLGenerator.class);
+	private static final Logger log = Logger.getLogger(CollectingEventLocalityKMLGenerator.class);
 
 	/** Standard XML file type declaration. */
 	protected static String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+	
 	/** Keyhole Markup Language namespace declaration. */
 	protected static String KML_NAMESPACE_DECL = "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n";
 
 	/** <code>CollectingEvents</code> to map in the KML output. */
-	protected List<CollectingEvent> events;
+	protected List<FormDataObjIFace> dataObjs;
 	
 	/** Labels to apply to the events mapped. */
 	protected List<String> labels;
@@ -75,12 +77,11 @@ public class CollectingEventKMLGenerator
 	/**
 	 * Constructs a new KML generator object.
 	 */
-	public CollectingEventKMLGenerator()
+	public CollectingEventLocalityKMLGenerator()
 	{
-		events = new Vector<CollectingEvent>();
-		labels = new Vector<String>();
+		dataObjs = new Vector<FormDataObjIFace>();
+		labels   = new Vector<String>();
 	}
-
 
     /**
      * @param description the description to set
@@ -89,7 +90,6 @@ public class CollectingEventKMLGenerator
     {
         this.description = description;
     }
-
 
     /**
      * @param textColor the textColor to set
@@ -105,9 +105,9 @@ public class CollectingEventKMLGenerator
 	 * @param ce the event
 	 * @param label the label for the event
 	 */
-	public void addCollectingEvent( CollectingEvent ce, String label )
+	public void addDataObj(FormDataObjIFace ce, String label )
 	{
-		events.add(ce);
+		dataObjs.add(ce);
 		labels.add(label);
 	}
     
@@ -116,7 +116,7 @@ public class CollectingEventKMLGenerator
      */
     public void clear()
     {
-        events.clear();
+        dataObjs.clear();
         labels.clear();
     }
 
@@ -150,13 +150,30 @@ public class CollectingEventKMLGenerator
         }
 		writer.write(GenericKMLGenerator.generateStyle(placemarkIconURL, balloonStyleBgColor, balloonStyleTextColor, balloonStyleText));
 		
-		for( int i = 0; i < events.size(); ++i )
+		boolean isDoingCollectingEvents = false;
+		
+		for( int i = 0; i < dataObjs.size(); ++i )
 		{
-			CollectingEvent ce    = events.get(i);
-			String          label = labels.get(i);
-			writer.write(generatePlacemark(ce, label));
+            String           label   = labels.get(i);
+            FormDataObjIFace dataObj = dataObjs.get(i);
+            
+            if (dataObj instanceof CollectingEvent)
+            {
+    			writer.write(generatePlacemark((CollectingEvent)dataObj, label));
+    			isDoingCollectingEvents = true;
+    			
+            } else if (dataObj instanceof Locality)
+            {
+                writer.write(generatePlacemark((Locality)dataObj, label));
+                
+            }
 		}
-		writer.write(generatePathForLocalities());
+		
+		if (isDoingCollectingEvents)
+		{
+		    writer.write(generatePathForLocalities());
+		}
+		
 		writer.write("</Document>\n");
 		writer.write("</kml>\n");
 		writer.flush();
@@ -173,9 +190,9 @@ public class CollectingEventKMLGenerator
 		StringBuilder sb = new StringBuilder("<Placemark>\n");
 		sb.append("<LineString>\n");
 		sb.append("<coordinates>");
-		for( CollectingEvent ce: events )
+		for( FormDataObjIFace dataObj : dataObjs )
 		{
-			Locality loc = ce.getLocality();
+		    Locality loc = dataObj instanceof CollectingEvent ? ((CollectingEvent)dataObj).getLocality() : (Locality)dataObj;
 			sb.append(loc.getLongitude1());
 			sb.append(",");
 			sb.append(loc.getLatitude1());
@@ -187,17 +204,88 @@ public class CollectingEventKMLGenerator
 		sb.append("</Placemark>\n\n\n");
 
 		return sb.toString();
-	}
+    }
 
-	/**
-	 * Generates a KML chunk describing the given collecting event.
-	 *
-	 * @param ce the event
-	 * @param label the label for the event
-	 * @return the KML string
-	 */
-	protected String generatePlacemark(final CollectingEvent ce, final String label)
-	{
+    /**
+     * Generates a KML chunk describing the given collecting event.
+     *
+     * @param ce the event
+     * @param label the label for the event
+     * @return the KML string
+     */
+    protected String generatePlacemark(final Locality loc, final String label)
+    {
+        BigDecimal lat = loc.getLatitude1();
+        BigDecimal lon = loc.getLongitude1();
+        
+        if (lat == null || lon == null)
+        {
+            return "";
+        }
+        // TODO Finishing implementing this method with Geography
+        
+        //Geography  geo = loc.getGeography(); 
+
+        // build the placemark
+        StringBuilder sb = new StringBuilder("<Placemark>\n");
+        {
+            sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
+            sb.append("\n");
+        }
+        sb.append("<name>");
+        if (label != null)
+        {
+            sb.append(label);
+        } else
+        {
+            sb.append(loc.getLocalityName());
+        }
+        sb.append("</name>\n");
+
+        // build the fancy HTML popup description
+        /*
+        sb.append("<description><![CDATA[");
+        sb.append("<h3>"+UIRegistry.getResourceString("GE_LOCALITY")+":</h3>\n<ul>\n");
+        sb.append("<br/><table>\n");
+        
+        sb.append("<tr>\n");
+        sb.append("<td style=\"color:#"+textColor+"\" >"++"</td>\n");
+        sb.append("<td style=\"color:#"+textColor+"\" >"++"</td>\n");
+        sb.append("</tr>\n");
+        
+        sb.append("</table>]]></description>\n");
+        */
+        sb.append("<LookAt>\n");
+        sb.append("<latitude>");
+        sb.append(lat.doubleValue());
+        sb.append("</latitude>\n");
+        sb.append("<longitude>");
+        sb.append(lon.doubleValue());
+        sb.append("</longitude>\n");
+        sb.append("<range>300000.00</range>\n");
+        sb.append("</LookAt>\n");
+        sb.append("<Point>\n");
+        sb.append("<coordinates>");
+        sb.append(lon.doubleValue());
+        sb.append(",");
+        sb.append(lat.doubleValue());
+        sb.append("</coordinates>\n");
+        sb.append("</Point>\n");
+        sb.append("</Placemark>\n\n\n");
+
+        log.debug("Generated placemark:\n " + sb.toString() );
+        return sb.toString();
+    }
+
+    /**
+     * Generates a KML chunk describing the given collecting event.
+     *
+     * @param ce the event
+     * @param label the label for the event
+     * @return the KML string
+     */
+    protected String generatePlacemark(final CollectingEvent ce, final String label)
+    {
 		// get all of the important information
 
 		// get storage information

@@ -142,7 +142,6 @@ public class ReportsBaseTask extends BaseTask
     {
         CommandDispatcher.register(REPORTS, this);
         CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
-        CommandDispatcher.register(APP_CMD_TYPE, this);
         
         //RecordSetTask.addDroppableDataFlavor(defaultFlavor);
         
@@ -1140,12 +1139,39 @@ public class ReportsBaseTask extends BaseTask
         }
     }*/
 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    protected void doProcessAppCommands(CommandAction cmdAction)
+    {
+        super.doProcessAppCommands(cmdAction);
+        
+        if (cmdAction.isAction(APP_RESTART_ACT))
+        {
+            CommandDispatcher.unregister(REPORTS, this);
+            CommandDispatcher.unregister(RecordSetTask.RECORD_SET, this);
+            
+            if (isInitialized)
+            {
+                reportsList.clear();
+                reportsNavBox.clear();
+                labelsNavBox.clear();
+                isInitialized = false;
+            }
+            this.initialize();
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
     @Override
     public void doCommand(final CommandAction cmdAction)
     {
+        super.doCommand(cmdAction);
+        
         /*if (true)
         {
             log.debug("Direct Properties:");
@@ -1161,19 +1187,9 @@ public class ReportsBaseTask extends BaseTask
         {
             processRecordSetCommands(cmdAction);
             
-        } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
-        {
-            if (isInitialized)
-            {
-                reportsList.clear();
-                reportsNavBox.clear();
-                labelsNavBox.clear();
-                isInitialized = false;
-            }
-            this.initialize();
-            ContextMgr.removeServicesByTask(this);
         }
     }
+    
     /**
      * Returns the boolean value of "reqrs" from the metaData and true if it doesn't exist.
      * @param needsRSStr the string value of the map
@@ -1188,5 +1204,6 @@ public class ReportsBaseTask extends BaseTask
         } 
         return needsRS;
     }
+
 
 }

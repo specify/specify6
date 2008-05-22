@@ -9,10 +9,14 @@
  */
 package edu.ku.brc.specify.web;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * @author rod
@@ -25,9 +29,12 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 public class ColObjTitleGetter implements TitleGetterIFace
 {
 
+    protected DBFieldInfo field;
+    
     public ColObjTitleGetter()
     {
-        
+        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
+        field = ti.getFieldByColumnName("CatalogNumber");
     }
     
     /* (non-Javadoc)
@@ -45,7 +52,8 @@ public class ColObjTitleGetter implements TitleGetterIFace
                 {
                     if (det.getStatus().getType().equals(DeterminationStatus.CURRENT))
                     {
-                        return colObj.getCatalogNumber() + " - " + det.getTaxon().getFullName();
+                        UIFieldFormatterIFace fmt = field.getFormatter();
+                        return fmt.formatToUI(colObj.getCatalogNumber()) + " - " + det.getTaxon().getFullName();
                     }
                 }
             }

@@ -326,8 +326,8 @@ public class SpecifyDBConverter
                               final DatabaseConnectionProperties sourceDbProps,
                               final DatabaseConnectionProperties destDbProps) throws Exception
     {
-        boolean doAll            = true; 
-        boolean startfromScratch = true; 
+        boolean doAll            = false; 
+        boolean startfromScratch = false; 
         
         System.out.println("************************************************************");
         System.out.println("From "+databaseNameSource+" to "+databaseNameDest);
@@ -512,6 +512,80 @@ public class SpecifyDBConverter
                 //-- Create basic set of information.
                 //---------------------------------------------------------------------------------------
                 conversion.doInitialize();
+                
+                if (true)
+                {
+                    frame.incOverall();
+                    
+                    BasicSQLUtils.deleteAllRecordsFromTable("picklist", BasicSQLUtils.myDestinationServerType);
+                    BasicSQLUtils.deleteAllRecordsFromTable("picklistitem", BasicSQLUtils.myDestinationServerType);
+
+                    if (DataBuilder.getSession() != null)
+                    {
+                        DataBuilder.getSession().close();
+                        DataBuilder.setSession(null);
+                    }
+                    
+                    Collection collection   = null;
+                    Discipline dscp         = null;
+                    Session    localSession = HibernateUtil.getNewSession();
+                    try
+                    {
+                        if (conversion.getCurDisciplineID() == null || conversion.getCurDisciplineID() == 0)
+                        {
+                            List<?> list = localSession.createQuery("FROM Discipline").list();
+                            dscp = (Discipline)list.get(0);
+                            
+                        } else
+                        {
+                            List<?> list = localSession.createQuery("FROM Discipline WHERE disciplineId = "+conversion.getCurDisciplineID()).list();
+                            dscp = (Discipline)list.get(0);
+                        }
+                        Discipline.setCurrentDiscipline(dscp);
+                        
+                        if (dscp.getCollections().size() == 1)
+                        {
+                            collection = dscp.getCollections().iterator().next();
+                        }
+                        
+                        if (collection == null)
+                        {
+                            if (conversion.getCurCollectionID() == null || conversion.getCurCollectionID() == 0)
+                            {
+                                List<?> list = localSession.createQuery("FROM Collection").list();
+                                collection = (Collection)list.get(0);
+                                
+                            } else
+                            {
+                                List<?> list = localSession.createQuery("FROM Collection WHERE collectionId = "+conversion.getCurDisciplineID()).list();
+                                collection = (Collection)list.get(0);
+                            }
+                        }
+                        Collection.setCurrentCollection(collection);
+                        
+                        conversion.convertUSYSTables(localSession, collection);
+                        
+                        Transaction trans = localSession.beginTransaction();
+                        
+                        frame.setDesc("Creating PickLists from XML.");
+                        BuildSampleDatabase.createPickLists(localSession, null, true, collection);
+                        BuildSampleDatabase.createPickLists(localSession, dscp, true, collection);
+                        
+                        localSession.saveOrUpdate(collection);
+                        trans.commit();
+                        localSession.flush();
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    } finally
+                    {
+                        localSession.close();
+                    }
+                    frame.incOverall();
+                    return;
+                }
+  
 
                 if (startfromScratch)
                 {

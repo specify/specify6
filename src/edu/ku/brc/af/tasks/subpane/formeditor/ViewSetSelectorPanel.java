@@ -1644,7 +1644,9 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         private void displayMenu(MouseEvent e)
         {
             if (e.isPopupTrigger())
+            {
                 menu.show(e.getComponent(), e.getX(), e.getY());
+            }
         }
 
 

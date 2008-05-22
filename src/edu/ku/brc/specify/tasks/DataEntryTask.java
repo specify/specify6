@@ -128,7 +128,6 @@ public class DataEntryTask extends BaseTask
         
         CommandDispatcher.register(DATA_ENTRY, this);
         CommandDispatcher.register(RecordSetTask.RECORD_SET , this);
-        CommandDispatcher.register(APP_CMD_TYPE, this);
         CommandDispatcher.register(DATA, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
         
@@ -146,24 +145,32 @@ public class DataEntryTask extends BaseTask
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
-
+            
+            navBoxes.add(viewsNavBox);
+            navBoxes.add(treeNavBox);
+            
             // No Series Processing
             //NavBox navBox = new NavBox(getResourceString("Actions"));
             //navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.STD_ICON_SIZE));
             //navBoxes.add(navBox);
-           
-            navBoxes.add(viewsNavBox);
-            navBoxes.add(treeNavBox);
             
-            // Add Tree NavBoxes
-            createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(TaxonTreeTask.TAXON));
-            createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(GeographyTreeTask.GEOGRAPHY));
-            createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(LithoStratTreeTask.LITHO));
-            createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(GtpTreeTask.GTP));
-            createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(StorageTreeTask.STORAGE));
-
+            loadTreeNavBoxes();
+           
         }
         isShowDefault = true;
+    }
+    
+    /**
+     * Loads the appropriate tree NavBtns into the UI.
+     */
+    protected void loadTreeNavBoxes()
+    {
+        // Add Tree NavBoxes
+        createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(TaxonTreeTask.TAXON));
+        createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(GeographyTreeTask.GEOGRAPHY));
+        createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(LithoStratTreeTask.LITHO));
+        createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(GtpTreeTask.GTP));
+        createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(StorageTreeTask.STORAGE));
     }
     
     /**
@@ -1147,11 +1154,32 @@ public class DataEntryTask extends BaseTask
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    protected void doProcessAppCommands(CommandAction cmdAction)
+    {
+        super.doProcessAppCommands(cmdAction);
+        
+        if (cmdAction.isAction(APP_RESTART_ACT) ||
+            cmdAction.isAction(APP_START_ACT))
+        {
+            viewsNavBox.clear();
+            initializeViewsNavBoxFromXML();
+            
+            treeNavBox.clear();
+            loadTreeNavBoxes();
+        }
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
     @Override
     public void doCommand(CommandAction cmdAction)
     {
+        super.doCommand(cmdAction);
+        
         if (cmdAction.isType(DATA_ENTRY))
         {
             processDataEntryCommands(cmdAction);
@@ -1167,15 +1195,7 @@ public class DataEntryTask extends BaseTask
         } else if (cmdAction.isType(PreferencesDlg.PREFERENCES))
         {
             prefsChanged((AppPreferences)cmdAction.getData());
-            
-        } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
-        {
-            viewsNavBox.clear();
-            ContextMgr.removeServicesByTask(this);
-            initializeViewsNavBoxFromXML();
         }
-            
-
     }
     
     //-------------------------------------------------------------------------

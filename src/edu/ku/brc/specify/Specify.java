@@ -155,6 +155,7 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ResultSetController;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.persist.ViewLoader;
 import edu.ku.brc.ui.forms.validation.TypeSearchForQueryFactory;
@@ -210,7 +211,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify"; //$NON-NLS-1$
     private String               appVersion          = "6.0"; //$NON-NLS-1$
 
-    private String               appBuildVersion     = "200805091130 (SVN: 4024)"; //$NON-NLS-1$
+    private String               appBuildVersion     = "200805220930 (SVN: 4125X)"; //$NON-NLS-1$
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -298,7 +299,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void startUp()
     {
-    	log.debug("StartUp"); //$NON-NLS-1$
+    	log.debug("StartUp..."); //$NON-NLS-1$
         
         // Adjust Default Swing UI Default Resources (Color, Fonts, etc) per Platform
         UIHelper.adjustUIDefaults();
@@ -460,6 +461,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         System.setProperty(QueryAdjusterForDomain.factoryName,          "edu.ku.brc.specify.dbsupport.SpecifyQueryAdjusterForDomain"); // Needed for ExpressSearch //$NON-NLS-1$
         System.setProperty(SchemaI18NService.factoryName,               "edu.ku.brc.specify.config.SpecifySchemaI18NService");         // Needed for Localization and Schema //$NON-NLS-1$
         System.setProperty(WebLinkMgr.factoryName,                      "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                // Needed for WebLnkButton //$NON-NLS-1$
+        System.setProperty(DataObjFieldFormatMgr.factoryName,           "edu.ku.brc.specify.ui.SpecifyDataObjFieldFormatMgr");                // Needed for WebLnkButton //$NON-NLS-1$
         
     }
 
@@ -1836,6 +1838,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         //moved here because context needs to be set before loading prefs, we need to know the SpecifyUser
         AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
+        
        // AppContextMgr.getInstance().
         SpecifyAppPrefs.initialPrefs();
         
@@ -1857,8 +1860,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 return;
             }
             
-            int disciplineeId = Discipline.getCurrentDiscipline().getDisciplineId();
-            SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
+            //int disciplineeId = Discipline.getCurrentDiscipline().getDisciplineId();
+            //SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
             //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
             
             //Collection.setCurrentCollection(null);
@@ -1909,7 +1912,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         }
         
-        CommandDispatcher.dispatch(new CommandAction("App", "Restart", null)); //$NON-NLS-1$ //$NON-NLS-2$
+        CommandDispatcher.dispatch(new CommandAction("App", firstTime ? "StartUp" : "AppRestart", null)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
         if (dbLoginPanel != null)
         {

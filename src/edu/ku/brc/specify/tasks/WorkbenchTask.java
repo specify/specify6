@@ -186,7 +186,6 @@ public class WorkbenchTask extends BaseTask
 		super(WORKBENCH, getResourceString(WORKBENCH));
         
 		CommandDispatcher.register(WORKBENCH, this);        
-        CommandDispatcher.register(APP_CMD_TYPE, this);
         CommandDispatcher.register("Preferences", this);
 	}
 
@@ -3169,11 +3168,28 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doProcessAppCommands(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    protected void doProcessAppCommands(CommandAction cmdAction)
+    {
+        super.doProcessAppCommands(cmdAction);
+        
+        if (cmdAction.isAction(APP_RESTART_ACT))
+        {
+            //viewsNavBox.clear();
+            //initializeViewsNavBox();
+        }
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
     @Override
     public void doCommand(final CommandAction cmdAction)
     {
+        super.doCommand(cmdAction);
+        
         UIRegistry.getStatusBar().setText("");
         
         if (cmdAction.isType(WORKBENCH))
@@ -3185,10 +3201,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             //    }
             //});
             
-        } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
-        {
-            //viewsNavBox.clear();
-            //initializeViewsNavBox();
         } else if (cmdAction.isType("Preferences"))
         {
             AppPreferences appPrefs = (AppPreferences)cmdAction.getData();
