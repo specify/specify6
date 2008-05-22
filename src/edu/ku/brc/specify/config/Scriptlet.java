@@ -43,6 +43,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -62,7 +63,7 @@ public class Scriptlet extends JRDefaultScriptlet
 {
     private static final Logger log = Logger.getLogger(Scriptlet.class);
     
-    protected UIFieldFormatterIFace catalogFormatter = UIFieldFormatterMgr.getFormatter("CatalogNumber");
+    protected UIFieldFormatterIFace catalogFormatter = AppContextMgr.getInstance().getFormatter("CollectionObject", "CatalogNumber");
 
     /**
      * beforeReportInit.

@@ -217,7 +217,8 @@ public class FormViewObj implements Viewable,
     protected boolean                       wasNull         = false;
     protected MenuSwitcherPanel             switcherUI;
     protected int                           mainCompRowInx  = 1;
-    protected boolean                       saveAndNew     = false;  
+    protected boolean                       saveAndNew      = false;  
+    protected boolean                       isAutoNumberOn  = true; 
     
     
     protected String                        searchName      = null;
@@ -881,7 +882,7 @@ public class FormViewObj implements Viewable,
      */
     protected void showContextMenu(MouseEvent e)
     {
-        if (e.isPopupTrigger() && mvParent != null && mvParent.isTopLevel())
+        if (e.isPopupTrigger() && mvParent != null && mvParent.isTopLevel() && isEditting)
         {
             JPopupMenu popup = new JPopupMenu();
             JMenuItem menuItem = new JMenuItem(UIRegistry.getResourceString("CONFIG_CARRY_FORWARD_MENU"));
@@ -904,8 +905,32 @@ public class FormViewObj implements Viewable,
             chkMI.setEnabled(isCarryForwardConfgured());
             popup.add(chkMI);
 
-            popup.show(e.getComponent(), e.getX(), e.getY());
+            popup.addSeparator();
+            chkMI = new JCheckBoxMenuItem(UIRegistry.getResourceString("SET_AUTONUMBER_ONOFF"));
+            chkMI.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ex)
+                {
+                    changeAutoNumberOnOffState();
+                }
+            });
+            chkMI.setSelected(isAutoNumberOn);
+            popup.add(chkMI);
 
+            popup.show(e.getComponent(), e.getX(), e.getY());
+        }
+    }
+    
+    protected void changeAutoNumberOnOffState()
+    {
+        isAutoNumberOn = !isAutoNumberOn;
+        
+        for (FVOFieldInfo fieldInfo : controlsById.values())
+        {
+            Component comp = fieldInfo.getComp();
+            if (comp instanceof AutoNumberableIFace)
+            {
+                ((AutoNumberableIFace)comp).setAutoNumberEnabled(isAutoNumberOn);
+            }
         }
     }
 
@@ -4044,7 +4069,7 @@ public class FormViewObj implements Viewable,
                     
                     String id = fieldInfo.getFormCell().getIdent();
                     
-                    log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
+                    //log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
                     
                     if (!isReadOnly && !isInoreGetSet && hasFormControlChanged(id))
                     {

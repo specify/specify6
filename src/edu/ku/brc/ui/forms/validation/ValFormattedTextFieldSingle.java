@@ -89,8 +89,9 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     protected Color                       bgColor        = null;
     protected boolean                     needsUpdating  = false;
 
-    protected int                         requiredLength = 0;
-    protected boolean                     doSetText      = false; 
+    protected boolean                     doSetText      = false;
+    
+    protected boolean                     isAutoFmtOn    = true;
 
     protected JFormattedDoc               document;
     protected String                      defaultValue   = null;
@@ -219,19 +220,12 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     {
         if (formatterArg != null && formatter != formatterArg)
         {
-            int oldReqLen = requiredLength;
-            
             formatter = formatterArg;
             
             fields = formatter.getFields();
     
-            requiredLength = formatter.getLength();
+            int requiredLength = formatter.getLength();
             bgStr = formatter.toPattern();
-    
-            if (requiredLength > oldReqLen) // don't let the field shrink
-            {
-                this.setColumns(Math.min(10, requiredLength));
-            }
     
             document = new JFormattedDoc(this, formatter, requiredLength);
             setDocument(document);
@@ -414,6 +408,14 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     {
         return formatter != null && formatter.getAutoNumber() != null;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.AutoNumberableIFace#setAutoNumberEnabled(boolean)
+     */
+    public void setAutoNumberEnabled(boolean turnOn)
+    {
+        isAutoFmtOn = turnOn;
+    }
     
     //--------------------------------------------------
     //-- UIValidatable Interface
@@ -536,7 +538,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             {
                 if (!document.isIgnoreLenForValidation())
                 {
-                    valState = data.length() != requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                    valState = formatter.isLengthOK(data.length()) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
                     // Only validate against the formatter if the it is the right length
                     if (valState == UIValidatable.ErrorType.Valid)
                     {
@@ -789,7 +791,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     private void changed()
     {
         isChanged = true;
-        if (getText().length() == formatter.getLength())
+        if (formatter.isLengthOK(getText().length()))
         {
             setState(formatter.isValid(getText()) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error);
             repaint();

@@ -419,7 +419,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                             
                         } else
                         {
-                            if (termStr.length() == formatter.getLength())
+                            if (formatter.isLengthOK(termStr.length()))
                             {
                                 isFormatted = true;
                                 if (!formatter.isValid(termStr))

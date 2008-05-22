@@ -180,6 +180,14 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isLengthOK(int)
+     */
+    public boolean isLengthOK(int lengthOfData)
+    {
+        return lengthOfData == getLength();
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getName()
      */
     public String getName()

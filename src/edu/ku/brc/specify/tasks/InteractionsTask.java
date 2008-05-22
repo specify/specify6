@@ -810,7 +810,7 @@ public class InteractionsTask extends BaseTask
             }
         }
         
-        DBTableIdMgr.getInClause(recordSet);
+        DBTableIdMgr.getInstance().getInClause(recordSet);
 
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
         

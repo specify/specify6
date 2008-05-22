@@ -114,12 +114,12 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
         Vector<Integer> ids = new Vector<Integer>();
         if (recordSet.getDbTableId() == CollectionObject.getClassTableId())
         {
-            String sql = "SELECT loc.localityId FROM Locality as loc INNER JOIN loc.collectingEvents as ce INNER JOIN ce.collectionObjects as co where co.collectionObjectId " + DBTableIdMgr.getInClause(recordSet);
+            String sql = "SELECT loc.localityId FROM Locality as loc INNER JOIN loc.collectingEvents as ce INNER JOIN ce.collectionObjects as co where co.collectionObjectId " + DBTableIdMgr.getInstance().getInClause(recordSet);
             retrieveIds(sql, ids);
             
         } else if (recordSet.getDbTableId() == CollectingEvent.getClassTableId())
         {
-            String sql = "SELECT loc.localityId FROM Locality as loc INNER JOIN loc.collectingEvents as ce where ce.collectingEventId " + DBTableIdMgr.getInClause(recordSet);
+            String sql = "SELECT loc.localityId FROM Locality as loc INNER JOIN loc.collectingEvents as ce where ce.collectingEventId " + DBTableIdMgr.getInstance().getInClause(recordSet);
             retrieveIds(sql, ids);
             
         } else if (recordSet.getDbTableId() == Locality.getClassTableId())

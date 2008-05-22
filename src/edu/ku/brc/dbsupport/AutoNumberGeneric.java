@@ -290,8 +290,8 @@ public class AutoNumberGeneric implements AutoNumberIFace
                                  final Pair<Integer, Integer> yearAndIncVal)
     {
         String trimmedValue = StringUtils.deleteWhitespace(value);
-        
-        if (trimmedValue.length() == 0 || (StringUtils.isNotEmpty(value) && value.length() == formatter.getLength()))
+        int    fmtLen       = formatter.getLength();
+        if (trimmedValue.length() == 0 || (StringUtils.isNotEmpty(value) && formatter.isLengthOK(value.length())))
         {
             Pair<Integer, Integer> pos = formatter.getIncPosition();
             if (pos != null)
@@ -303,9 +303,9 @@ public class AutoNumberGeneric implements AutoNumberIFace
                     StringBuilder sb        = new StringBuilder(value.substring(0, pos.first));
                     String        formatStr = "%0" + (pos.second - pos.first) + "d"; //$NON-NLS-1$ //$NON-NLS-2$
                     sb.append(String.format(formatStr, incVal));
-                    if (formatter.getLength() > pos.second)
+                    if (fmtLen > pos.second)
                     {
-                        sb.append(value.substring(pos.second, formatter.getLength()));
+                        sb.append(value.substring(pos.second, fmtLen));
                     }
                     
                     UIFieldFormatterField  yearField = formatter.getYear();
@@ -336,7 +336,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
      */
     public String getNextNumber(final UIFieldFormatterIFace formatter, final String formValue)
     {
-        if (StringUtils.isNotEmpty(formValue) && formValue.length() == formatter.getLength())
+        if (StringUtils.isNotEmpty(formValue) && formatter.isLengthOK(formValue.length()))
         {
             Session session = null;
             try

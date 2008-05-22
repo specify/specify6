@@ -79,35 +79,35 @@ public class ValTextArea extends JTextArea implements UIValidatable,
 
     /**
      * Constructor
-     * @param arg0 initial value
+     * @param text initial value
      */
-    public ValTextArea(String arg0)
+    public ValTextArea(String text)
     {
-        super(arg0);
+        super(text);
         init();
     }
 
-    public ValTextArea(int arg0, int arg1)
+    public ValTextArea(int rows, int cols)
     {
-        super(arg0, arg1);
+        super(rows, cols);
         init();
     }
 
-    public ValTextArea(String arg0, int arg1, int arg2)
+    public ValTextArea(String text, int rows, int cols)
     {
-        super(arg0, arg1, arg2);
+        super(text, rows, cols);
         init();
     }
 
-    public ValTextArea(Document arg0)
+    public ValTextArea(Document doc)
     {
-        super(arg0);
+        super(doc);
         init();
     }
 
-    public ValTextArea(Document arg0, String arg1, int arg2, int arg3)
+    public ValTextArea(Document doc, String text, int rows, int cols)
     {
-        super(arg0, arg1, arg2, arg3);
+        super(doc, text, rows, cols);
         init();
     }
 

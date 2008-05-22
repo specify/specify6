@@ -235,7 +235,8 @@ public class TaskConfigureDlg extends CustomDialog
     /**
      * @param list
      */
-    protected void addItem(final JList list, final Vector<TaskConfigItemIFace> itemList)
+    protected void addItem(final JList list, @SuppressWarnings("unused")
+                                             final Vector<TaskConfigItemIFace> itemList)
     {
 
     }

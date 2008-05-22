@@ -457,7 +457,7 @@ public class DBTableIdMgr
 	 * @param recordSet the recordset of ids
 	 * @return a string "in" clause
 	 */
-	public static String getInClause(final RecordSetIFace recordSet)
+	public String getInClause(final RecordSetIFace recordSet)
 	{
 		if (recordSet != null)
 		{

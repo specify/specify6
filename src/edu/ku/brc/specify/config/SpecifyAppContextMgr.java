@@ -41,6 +41,9 @@ import org.dom4j.Element;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.exceptions.ConfigurationException;
@@ -74,6 +77,7 @@ import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.ViewSetMgr;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewLoader;
@@ -1180,6 +1184,25 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
 
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#getFormatter(java.lang.String, java.lang.String)
+     */
+    @Override
+    public UIFieldFormatterIFace getFormatter(String shortClassName, String fieldName)
+    {
+        DBTableInfo ti = DBTableIdMgr.getInstance().getByShortClassName(shortClassName);
+        if (ti != null)
+        {
+            DBFieldInfo fi = ti.getFieldByName(fieldName);
+            if (fi != null)
+            {
+                return fi.getFormatter();
+            }
+        }
+        
+        return null;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceDefaultIFace#getView(java.lang.String, java.lang.String)
      */

@@ -69,7 +69,7 @@ import edu.ku.brc.ui.forms.validation.TypeSearchForQueryFactory;
  */
 public class ViewLoader
 {
-    public static final int DEFAULT_ROWS         = 3;
+    public static final int DEFAULT_ROWS         = 4;
     public static final int DEFAULT_COLS         = 10;
     public static final int DEFAULT_SUBVIEW_ROWS = 5;
     

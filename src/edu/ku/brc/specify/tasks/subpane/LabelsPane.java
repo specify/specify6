@@ -287,7 +287,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     
                     if (recordSet != null)
                     {
-                        parameters.put("itemnum", DBTableIdMgr.getInClause(recordSet));
+                        parameters.put("itemnum", DBTableIdMgr.getInstance().getInClause(recordSet));
                     }
                     
                     // Add external parameters

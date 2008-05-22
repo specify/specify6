@@ -108,10 +108,18 @@ public interface UIFieldFormatterIFace
     public abstract boolean isIncrementer();
 
     /**
+     * NOTE: If you are getting the length just to compare if the length is OK, then use @see #isLengthOK(int)
      * @return the character length of the entire format.
      */
     public abstract int getLength();
 
+    /**
+     * Return true if the length is ok, for some formatters the length may not matter.
+     * @param lengthOfData the length of the data string
+     * @return true if it is ok (even though it may not be equal), false if it isn't ok.
+     */
+    public abstract boolean isLengthOK(int lengthOfData);
+    
     /**
      * @return the pair of values where the first number is the index into the Fields list and the second
      * is the index of where the field's format ends.

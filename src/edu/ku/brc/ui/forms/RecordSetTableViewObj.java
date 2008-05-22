@@ -167,7 +167,7 @@ public class RecordSetTableViewObj extends TableViewObj
             
             RecordSetIFace recordSet = (RecordSetIFace)dataObj;
             
-            DBTableIdMgr.getInClause(recordSet);
+            DBTableIdMgr.getInstance().getInClause(recordSet);
             DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
             
             DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
@@ -215,7 +215,7 @@ public class RecordSetTableViewObj extends TableViewObj
         {
             RecordSetIFace recordSet = (RecordSetIFace)dataObj;
             
-            DBTableIdMgr.getInClause(recordSet);
+            DBTableIdMgr.getInstance().getInClause(recordSet);
             DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
             
             DataProviderFactory.getInstance().evict(tableInfo.getClassObj());

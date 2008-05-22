@@ -709,8 +709,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         if (isNotEmpty(text))
         {
             int txtLen = text.length();
-            int len    = formatter.getLength();
-            if (txtLen == len)
+            if (formatter.isLengthOK(txtLen))
             {
                 if (formatter.isDate())
                 {
@@ -769,6 +768,14 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
             }
         }
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isLengthOK(int)
+     */
+    public boolean isLengthOK(int lengthOfData)
+    {
+        return lengthOfData == getLength();
     }
 
     /* (non-Javadoc)

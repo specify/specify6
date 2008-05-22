@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.dom4j.Element;
 
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewSetIFace;
 
@@ -178,6 +179,14 @@ public abstract class AppContextMgr
      * @return a textual description of the currrent context, or null.
      */
     public abstract String getCurrentContextDescription();
+    
+    /**
+     * Returns the formatter for a given class and field (may return null)
+     * @param shortClassName the short class name (no package)
+     * @param fieldName the field name with the desired formatter.
+     * @return the formatter or null
+     */
+    public abstract UIFieldFormatterIFace getFormatter(String shortClassName, String fieldName);
     
     /**
      * Copies all the fields except the data.

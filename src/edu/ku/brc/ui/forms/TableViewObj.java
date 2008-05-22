@@ -1060,7 +1060,7 @@ public class TableViewObj implements Viewable,
                 /*
                 RecordSetIFace recordSet = (RecordSetIFace)dataObj;
                 
-                DBTableIdMgr.getInClause(recordSet);
+                DBTableIdMgr.getInstance().getInClause(recordSet);
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().lookupInfoById(recordSet.getDbTableId());
                 
                 DataProviderFactory.getInstance().evict(tableInfo.getClassObj());

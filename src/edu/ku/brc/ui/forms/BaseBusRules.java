@@ -309,7 +309,6 @@ public class BaseBusRules implements BusinessRulesIFace
     {
         Connection conn = null;
         Statement  stmt = null;
-        int x = 0;
         try
         {
             conn = DBConnection.getInstance().createConnection();

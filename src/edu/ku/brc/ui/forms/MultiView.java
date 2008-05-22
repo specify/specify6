@@ -1351,7 +1351,7 @@ public class MultiView extends JPanel
         if (formViewObj != null && formViewObj.getRsController() != null)
         {
             int curInx = formViewObj.getRsController().getCurrentIndex();
-            log.debug("  curInx: "+curInx);
+            //log.debug("  curInx: "+curInx);
             viewState.setInx(curInx);
         }
         

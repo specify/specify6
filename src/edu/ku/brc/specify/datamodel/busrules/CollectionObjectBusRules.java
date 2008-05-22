@@ -34,6 +34,7 @@ import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  * @author rods
@@ -242,6 +243,27 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             return Collection.getCurrentCollection().getIsEmbeddedCollectingEvent();
         }
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object, java.lang.Object, boolean)
+     */
+    @Override
+    public STATUS processBusinessRules(Object parentDataObj, Object dataObj, boolean isEdit)
+    {
+        reasonList.clear();
+        
+        if (!(dataObj instanceof CollectionObject))
+        {
+            return STATUS.Error;
+        }
+        
+        STATUS duplicateNumberStatus = isCheckDuplicateNumberOK("catalogNumber", 
+                                                                (FormDataObjIFace)dataObj, 
+                                                                Accession.class, 
+                                                                "collectionObjectId");
+        
+        return duplicateNumberStatus;
     }
 
 }

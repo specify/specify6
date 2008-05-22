@@ -227,7 +227,7 @@ public class JasperReportHelper implements AsynchronousFilllListener, JasperComp
                     
                     if (recordSet != null)
                     {
-                        parameters.put("itemnum", DBTableIdMgr.getInClause(recordSet));
+                        parameters.put("itemnum", DBTableIdMgr.getInstance().getInClause(recordSet));
                     }
                     
                     // Add external parameters

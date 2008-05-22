@@ -54,10 +54,10 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.AttributeProviderIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
 
@@ -1121,7 +1121,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     {
         if (StringUtils.isNotEmpty(catalogNumber))
         {
-            UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getFormatter("CatalogNumber");
+            UIFieldFormatterIFace fmt = AppContextMgr.getInstance().getFormatter("CollectionObject", "CatalogNumber");
             if (fmt != null)
             {
                 return fmt.formatToUI(catalogNumber).toString();

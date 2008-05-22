@@ -18,6 +18,7 @@ package edu.ku.brc.ui.forms.validation;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
 
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -96,7 +97,6 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     
     protected JTextField                  viewtextField  = null;
 
-    protected int                         requiredLength = 0;
     protected boolean                     shouldIgnoreNotifyDoc = true;
     protected boolean                     needsUpdating  = false;
     
@@ -110,13 +110,20 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     protected List<UIFieldFormatterField> fields         = null;
     protected boolean                     isFromUIFmtOverride = false;
     
+    protected boolean                     isAutoFmtOn    = true;
+    
     protected Object                      origValue      = null;
     protected ChangeListener              changeListener = null;
-
-    //---
-    protected Color  textColor = new Color(0,0,0,64);
     
-    protected JComponent[] comps = null;
+    protected CardLayout                  cardLayout;
+    protected JPanel                      cardPanel      = null;
+    protected JTextField                  viewTF         = null;
+    protected JTextField                  editTF         = null;
+    
+    //---
+    protected Color                       textColor = new Color(0,0,0,64);
+    
+    protected JComponent[]                comps = null;
 
     /**
      * Constructor
@@ -166,6 +173,8 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     /**
      * Constructor
      * @param formatterName the formatters name
+s     * @param isViewOnly
+     * @param isAllEditable
      */
     public ValFormattedTextField(final String formatterName, final boolean isViewOnly, final boolean isAllEditable)
     {
@@ -205,7 +214,8 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     }
 
     /**
-     * 
+     * @param formatterArg
+     * @param isAllEditable
      */
     protected void init(final UIFieldFormatterIFace formatterArg, final boolean isAllEditable)
     {
@@ -230,6 +240,10 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                     if (comps[inx] instanceof JTextField)
                     {
                         ViewFactory.changeTextFieldUIForDisplay(((JTextField)comps[inx]), false);
+                        
+                    } else if (comps[inx] instanceof JPanel)
+                    {
+                        ViewFactory.changeTextFieldUIForDisplay(viewTF, false);
                     }
                 }
                 inx++;
@@ -253,6 +267,31 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         return comps;
     }
 
+    /**
+     * @param textField
+     */
+    protected void addFocusAdapter(final JTextField textField)
+    {
+        textField.addFocusListener(new FocusAdapter()
+        {
+            @Override
+            public void focusGained(FocusEvent e)
+            {
+                ((JTextField)e.getSource()).selectAll();
+                repaint();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                isNew = false;
+                validateState();
+                repaint();
+
+            }
+        });
+    }
+    
     /**
      * Creates the various UI Components for the formatter.
      */
@@ -317,44 +356,52 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             int inx = 0;
             for (UIFieldFormatterField f : fields)
             {
-                JComponent comp = null;
+                JComponent comp    = null;
+                JComponent tfToAdd = null;
+                
                 if (f.getType() == UIFieldFormatterField.FieldType.separator)
                 {
                     comp = createLabel(f.getValue());
-
+                    tfToAdd = comp;
+                    
                 } else
                 {
                     JTextField tf = new BGTextField(f.getSize(), isViewOnly ? "" : f.getValue());
+                    tfToAdd = tf;
+                    
                     JFormattedDoc document = new JFormattedDoc(tf, formatter, f);
                     tf.setDocument(document);
                     document.addDocumentListener(this);
                     documents.add(document);
 
-                    tf.addFocusListener(new FocusAdapter()
-                    {
-                        @Override
-                        public void focusGained(FocusEvent e)
-                        {
-                            ((JTextField)e.getSource()).selectAll();
-                            repaint();
-                        }
-    
-                        @Override
-                        public void focusLost(FocusEvent e)
-                        {
-                            isNew = false;
-                            validateState();
-                            repaint();
-    
-                        }
-                    });
+                    addFocusAdapter(tf);
+                    
                     comp = tf;
                     comp.setFont(font);
                     
+                    if (f.isIncrementer())
+                    {
+                        if (true)
+                        {
+                            editTF     = tf;
+                            cardLayout = new CardLayout();
+                            cardPanel  = new JPanel(cardLayout);
+                            cardPanel.add("edit", tf);
+                            
+                            viewTF = new BGTextField(f.getSize(), isViewOnly ? "" : f.getValue());
+                            viewTF.setDocument(document);
+                            cardPanel.add("view", viewTF);
+                            
+                            cardLayout.show(cardPanel, "view");
+                            comp = cardPanel;
+                            tfToAdd = cardPanel;
+                        }
+                    }
                 }
-                setControlSize(comp);
+                
+                setControlSize(tfToAdd);
                 builder.add(comp, cc.xy(inx+2, 2));
-                comps[inx] = comp;
+                comps[inx] = tfToAdd;
                 inx++;
             }
         }
@@ -379,8 +426,6 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             formatter = formatterArg;
             
             fields = formatter.getFields();
-    
-            requiredLength = formatter.getLength();
         }
     }
     
@@ -451,9 +496,14 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                     {
                         val = ((JLabel)c).getText();
                     }
-                } else
+                } else if (c instanceof JTextField)
                 {
                     val = ((JTextField)c).getText();
+                    
+                } else if (c instanceof JPanel)
+                {
+                    JTextField tf = isAutoFmtOn ? viewTF : editTF;
+                    val = tf.getText();
                 }
                 
                 if (val != null)
@@ -507,7 +557,12 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 if (comp instanceof JTextField)
                 {
                     ((JTextField)comp).setEnabled(isEnabled);
-                } 
+                    
+                } else if (comp instanceof JPanel)
+                {
+                    viewTF.setEnabled(isEnabled);
+                    editTF.setEnabled(isEnabled);
+                }
             }
         }
     }
@@ -567,7 +622,12 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 {
                     valState = UIValidatable.ErrorType.Error;
                 }
-            } else
+            }  else if (comps[inx] instanceof JPanel)
+            {
+                JTextField tf = isAutoFmtOn ? viewTF : editTF;
+                tf.setText(val);
+                
+            } else 
             {
                 ((JTextField)comps[inx]).setText(val);
             }
@@ -658,7 +718,19 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     {
         return !isPartialOK && formatter != null && formatter.getAutoNumber() != null;
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.AutoNumberableIFace#setAutoNumberEnabled(boolean)
+     */
+    public void setAutoNumberEnabled(boolean turnOn)
+    {
+        if (cardPanel != null && isAutoFmtOn != turnOn)
+        {
+            cardLayout.show(cardPanel, turnOn ? "view" : "edit");   
+        }
+        isAutoFmtOn = turnOn;
+    }
+
     //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
@@ -771,13 +843,12 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     
             } else
             {
-                valState = data.length() != requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                valState = formatter.isLengthOK(data.length()) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
                 // Only validate against the formatter if the it is the right length
                 if (valState == UIValidatable.ErrorType.Valid)
                 {
                     valState = formatter.isValid(data) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
                 }
-
             }
         } else
         {

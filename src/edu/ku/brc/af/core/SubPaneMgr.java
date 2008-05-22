@@ -360,9 +360,9 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      * @param doAboutToShutdown should it call aboutToShutdown
      * @return true if the pane was removed false if the user decided it shouldn't via a call to aboutToShutdown.
      */
-    protected boolean removePane(final SubPaneIFace pane, 
-                                 final boolean      askForSave,
-                                 final boolean      doAboutToShutdown)
+    protected synchronized boolean removePane(final SubPaneIFace pane, 
+                                              final boolean      askForSave,
+                                              final boolean      doAboutToShutdown)
     {
         UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
         
@@ -388,14 +388,20 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             // things have happened.
             try
             {
-                if (indexOfComponent(pane.getUIComponent()) != -1)
+                
+                int inx = indexOfTab(pane.getTitle());
+                
+                //System.err.println(getTabCount()+"  "+inx+" - "+ getComponentCount()+"  " + indexOfComponent(pane.getUIComponent()));
+                if (inx != -1 && inx < getTabCount())
                 {
-                    this.remove(pane.getUIComponent());
+                    this.removeTabAt(inx);
                 }
-                pane.getUIComponent().setVisible(false);
+                //pane.getUIComponent().setVisible(false);
                 
             } catch (ArrayIndexOutOfBoundsException ex)
             {
+                System.err.println(getTabCount()+"   - "+ getComponentCount());
+                
                 log.error(ex);
                 ex.printStackTrace();
             }
@@ -431,10 +437,10 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 subPane.shutdown();
                 try
                 {
-                    int inx = indexOfComponent(pane.getUIComponent());
-                    if (inx != -1 && inx < getComponentCount())
+                    int inx = indexOfTab(pane.getTitle());
+                    if (inx != -1 && inx < getTabCount())
                     {
-                        this.remove(pane.getUIComponent());
+                        this.removeTabAt(inx);
                     }
                     
                 } catch (ArrayIndexOutOfBoundsException ex)
@@ -696,49 +702,63 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      * @see edu.ku.brc.ui.ExtendedTabbedPane#closeCurrent()
      */
     @Override
-    public void closeCurrent()
+    public synchronized void closeCurrent()
     {
-        SubPaneIFace subPane = this.getCurrentSubPane();
-        if(subPane != null)
+        Action closeCurrent = UIRegistry.getAction("CloseCurrent");
+        if (!closeCurrent.isEnabled())
         {
-            if (!subPane.aboutToShutdown())
+            return;
+        }
+        
+        closeCurrent.setEnabled(false);
+        
+        try
+        {
+            SubPaneIFace subPane = this.getCurrentSubPane();
+            if (subPane != null)
             {
-                return;
-            }
-            
-            //subPane.shutdown();
-            
-            boolean isCurrentPaneStarter = subPane.getTask().isStarterPane();
-            
-            // If there is only one pane left and there is only one tasks that provide UI
-            // then we cannot let it close.
-            boolean wasLastSingleTaskPane = (panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1) || subPane.getTask().isSingletonPane();
-
-            Taskable task = subPane.getTask();
-            if (task != null)
-            {
-                //System.out.println("wasLastSingleTaskPane: "+wasLastSingleTaskPane+"  Count: "+countPanesByTask(task)+"   isStarterPane "+task.isStarterPane()+"   isShowDefault "+task.isShowDefault());
-                if (!wasLastSingleTaskPane && !task.isStarterPane() && task.isShowDefault() && countPanesByTask(task) == 1)
-                {
-                    int index = this.indexOfComponent(subPane.getUIComponent());
-                    if (index < 0)
-                    {
-                        log.error("Couldn't find index for panel ["+subPane.getPaneName()+"] "); //$NON-NLS-1$ //$NON-NLS-2$
-                    }
-                    
-                    replacePane(subPane, task.getStarterPane());
-                    
-                } else if (!this.removePane(subPane, true, false) && panes.size() > 0)
+                if (!subPane.aboutToShutdown())
                 {
                     return;
                 }
                 
-                if (wasLastSingleTaskPane && !isCurrentPaneStarter)
+                //subPane.shutdown();
+                
+                boolean isCurrentPaneStarter = subPane.getTask().isStarterPane();
+                
+                // If there is only one pane left and there is only one tasks that provide UI
+                // then we cannot let it close.
+                boolean wasLastSingleTaskPane = (panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1) || subPane.getTask().isSingletonPane();
+    
+                Taskable task = subPane.getTask();
+                if (task != null)
                 {
-                    subPane = task.getStarterPane();
-                    addPane(subPane);
+                    //System.out.println("wasLastSingleTaskPane: "+wasLastSingleTaskPane+"  Count: "+countPanesByTask(task)+"   isStarterPane "+task.isStarterPane()+"   isShowDefault "+task.isShowDefault());
+                    if (!wasLastSingleTaskPane && !task.isStarterPane() && task.isShowDefault() && countPanesByTask(task) == 1)
+                    {
+                        int index = this.indexOfComponent(subPane.getUIComponent());
+                        if (index < 0)
+                        {
+                            log.error("Couldn't find index for panel ["+subPane.getPaneName()+"] "); //$NON-NLS-1$ //$NON-NLS-2$
+                        }
+                        
+                        replacePane(subPane, task.getStarterPane());
+                        
+                    } else if (!this.removePane(subPane, true, false) && panes.size() > 0)
+                    {
+                        return;
+                    }
+                    
+                    if (wasLastSingleTaskPane && !isCurrentPaneStarter)
+                    {
+                        subPane = task.getStarterPane();
+                        addPane(subPane);
+                    }
                 }
             }
+        } finally
+        {
+            closeCurrent.setEnabled(true);
         }
     }
     

@@ -23,11 +23,17 @@ public interface AutoNumberableIFace
     /**
      * @return whether the formatter is an auto-numberer
      */
-    public boolean isFormatterAutoNumber();
+    public abstract boolean isFormatterAutoNumber();
     
     /**
      * Increments to the next number in the series.
      */
-    public void updateAutoNumbers();
+    public abstract void updateAutoNumbers();
+    
+    /**
+     * Tells the control to turn on or off the auto-numbering.
+     * @param turnOn true turns it on
+     */
+    public abstract void setAutoNumberEnabled(boolean turnOn);
     
 }
