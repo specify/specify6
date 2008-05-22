@@ -211,7 +211,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify"; //$NON-NLS-1$
     private String               appVersion          = "6.0"; //$NON-NLS-1$
 
-    private String               appBuildVersion     = "200805220930 (SVN: 4125X)"; //$NON-NLS-1$
+    private String               appBuildVersion     = "200805220930 (SVN: 4125)"; //$NON-NLS-1$
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -438,7 +438,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
         }
         adjustLocaleFromPrefs();         
-        dbLoginPanel = UIHelper.doLogin(true, false, false, this); // true means do auto login if it can, second bool means use dialog instead of frame
+        dbLoginPanel = UIHelper.doLogin(true, false, false, this, "SpecifyLargeIcon"); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
     
@@ -711,7 +711,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             AppPreferences.setConnectedToDB(false);
                             adjustLocaleFromPrefs();
                             //JaasContext jassEm = new JaasContext();
-                            UIHelper.doLogin(false, true, true, new DBListener()); // true means do auto login if it can, second bool means use dialog instead of frame
+                            UIHelper.doLogin(false, true, true, new DBListener(), "SpecifyLargeIcon"); // true means do auto login if it can, second bool means use dialog instead of frame
                             //dbLoginPanel = UIHelper.doLogin(true, false, false, new DBListener(), jassEm); // true means do auto login if it can, second bool means use dialog instead of frame
                         }
                     }

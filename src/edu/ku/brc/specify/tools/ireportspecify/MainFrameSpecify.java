@@ -630,7 +630,7 @@ public class MainFrameSpecify extends MainFrame
         }
 
         // Set App Name, MUST be done very first thing!
-        UIRegistry.setAppName("iReportLauncher");  //$NON-NLS-1$
+        UIRegistry.setAppName("iReports4Specify");  //$NON-NLS-1$
         //UIRegistry.setAppName("Specify");  //$NON-NLS-1$
         
         // Then set this
@@ -673,7 +673,7 @@ public class MainFrameSpecify extends MainFrame
             HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener()); //$NON-NLS-1$
             //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
         
-        UIHelper.doLogin(true, false, false, new IReportLauncher(), "iReport"); // true means do auto login if it can, second bool means use dialog instead of frame
+        UIHelper.doLogin(true, false, false, new IReportLauncher(), null, "iReport"); // true means do auto login if it can, second bool means use dialog instead of frame
         
         localPrefs.load();
 

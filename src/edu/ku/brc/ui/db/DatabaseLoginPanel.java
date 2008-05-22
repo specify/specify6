@@ -129,7 +129,7 @@ public class DatabaseLoginPanel extends JPanel
     protected boolean                    isAutoClose    = false;
 
     protected DatabaseLoginListener      dbListener;
-    protected JaasContext         jaasContext;
+    protected JaasContext                jaasContext;
     protected Window                     window;
 
     protected Vector<DatabaseDriverInfo> dbDrivers      = new Vector<DatabaseDriverInfo>();
@@ -148,13 +148,16 @@ public class DatabaseLoginPanel extends JPanel
      * Constructor that has the form created from the view system
      * @param dbListener listener to the panel (usually the frame or dialog)
      * @param isDlg whether the parent is a dialog (false mean JFrame)
+     * @param iconName name of icon to use
      */
-    public DatabaseLoginPanel(final DatabaseLoginListener dbListener,  final boolean isDlg)
+    public DatabaseLoginPanel(final DatabaseLoginListener dbListener,  
+                              final boolean isDlg,
+                              final String iconName)
     {
         log.debug("constructor with jaas");
         this.dbListener = dbListener;
         this.jaasContext = new JaasContext(); 
-        createUI(isDlg);
+        createUI(isDlg, iconName);
 
     }
     
@@ -163,15 +166,19 @@ public class DatabaseLoginPanel extends JPanel
      * @param dbListener listener to the panel (usually the frame or dialog)
      * @param isDlg whether the parent is a dialog (false mean JFrame)
      * @param isSpecifyApp whether Specify or another application is using the login.
+     * @param iconName name of icon to use
      */
-    public DatabaseLoginPanel(final DatabaseLoginListener dbListener,  final boolean isDlg, final String nonSpecifyAppName)
+    public DatabaseLoginPanel(final DatabaseLoginListener dbListener,  
+                              final boolean isDlg, 
+                              final String nonSpecifyAppName,
+                              final String iconName)
     {
         log.debug("constructor with jaas");
         this.dbListener = dbListener;
         this.jaasContext = new JaasContext(); 
         this.isSpecifyApp = false;
         this.nonSpecifyAppName = nonSpecifyAppName;
-        createUI(isDlg);
+        createUI(isDlg, iconName);
     }
 
     /**
@@ -237,7 +244,8 @@ public class DatabaseLoginPanel extends JPanel
      * Creates the UI for the login and hooks up any listeners.
      * @param isDlg  whether the parent is a dialog (false mean JFrame)
      */
-    protected void createUI(final boolean isDlg)
+    protected void createUI(final boolean isDlg,
+                            final String iconName)
     {
 
         // First create the controls and hook up listeners
@@ -465,9 +473,9 @@ public class DatabaseLoginPanel extends JPanel
 
         PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "p,2dlu,p,2dlu,p"), this);
         JLabel icon; 
-        if (isSpecifyApp)
+        if (StringUtils.isNotEmpty(iconName))
         {
-            icon = new JLabel(IconManager.getIcon("SpecifyLargeIcon"));
+            icon = new JLabel(IconManager.getIcon(iconName));
         }
         else
         {

@@ -84,6 +84,6 @@ public class BasicHibernateMain implements DatabaseLoginListener
         localPrefs.load();
 
         BasicHibernateMain tester = new BasicHibernateMain();
-		UIHelper.doLogin(false, true, false, tester);
+		UIHelper.doLogin(false, true, false, tester, null);
 	}
 }

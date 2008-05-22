@@ -24,7 +24,6 @@ import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.auth.JaasContext;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -50,8 +49,11 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
      * Constructor that has the form created from the view system.
      * @param frame the parent frame
      * @param listener the listener usually the parent like the Dialog
+     * @param iconName name of icon to use
      */
-    public DatabaseLoginDlg(final Frame frame, final DatabaseLoginListener listener)
+    public DatabaseLoginDlg(final Frame frame, 
+                            final DatabaseLoginListener listener,
+                            final String iconName)
     {
         super(frame);
         
@@ -59,7 +61,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
 
         setTitle(getResourceString("LOGINTITLE"));
 
-        dbPanel = new DatabaseLoginPanel(this, true);
+        dbPanel = new DatabaseLoginPanel(this, true, iconName);
         setContentPane(dbPanel);
 
         setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));

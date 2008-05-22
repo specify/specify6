@@ -221,6 +221,41 @@
 
     </target>
 	
+	<!-- *************************************************************
+	     Mac Distribution for the iReports4Specify
+	     ************************************************************* -->
+	<target name="dist-mac-irep" depends="">
+		
+		<property name="appdir" value="${dist-mac}/iReports4Specify.app" />
+		<property name="derby.data.path" value="${dist-mac}" />
+	
+		<delete dir="${dist-mac}/iReports4Specify.app"/>
+		
+		<antcall target="clean-jar"/>
+		
+		<antcall target="dist-jar-mac"/>
+		<antcall target="dist-mac-common"/>
+		
+		<!-- Copy and Rename Info List -->
+		<copy file="${packaging}/ireports/Info.plist" todir="${appdir}/Contents" />
+		
+		<!-- Copy and Rename PkgInfo -->
+		<copy file="${packaging}/ireports/PkgInfo" todir="${appdir}/Contents" />
+		
+		<!-- Copy Icons -->
+		<copy file="${packaging}/ireports/ireports.icns" todir="${appdir}/Contents/Resources" />
+		<delete file="${appdir}/Contents/Resources/specify.icns"/>	
+		
+		<!-- 
+		<delete file="${appdir}/Contents/Resources/Java/iReport.jar"/>
+		
+		<rename src="${appdir}/Contents/Resources/Java/iReportMac.jar" dest="${appdir}/Contents/Resources/Java/iReport.jar"/>
+		-->	
+		<!-- <rename src="${appdir}/Contents/Resources/ireports.icns" dest="${appdir}/Contents/Resources/specifybldr.icns"/> -->
+		<!-- <rename src="${appdir}/Contents/Resources/specify.icns" dest="${appdir}/Contents/Resources/specifybldr.icns"/> -->
+		
+	</target>
+	
 		
 	<!-- *************************************************************
 	     Mac Distribution for the Builder
@@ -336,10 +371,11 @@
 	     Mac Builds All the Mac Applications
 	     ************************************************************* -->
 	<target name="dist-mac-all" depends="">
-		<antcall target="dist-mac"/>
+		<!-- <antcall target="dist-mac"/>
 		<antcall target="dist-mac-sl"/>
 		<antcall target="dist-mac-bld"/>
-		<antcall target="dist-mac-db-init"/>
+		<antcall target="dist-mac-db-init"/> -->
+		<antcall target="dist-mac-irep"/>
 	</target>
 	
 	<!-- *************************************************************

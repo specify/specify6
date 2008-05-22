@@ -1386,31 +1386,36 @@ public final class UIHelper
     /**
      * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
      * and if the login fails then it will display the dialog
-     * @param doAutoLogin whether to try to utomatically log the user in
-     * @param doAutoClose hwther it should automatically close the window when it is logged in successfully
+     * @param doAutoLogin whether to try to automatically log the user in
+     * @param doAutoClose whether it should automatically close the window when it is logged in successfully
      * @param useDialog use a Dialog or a Frame
      * @param listener a listener for when it is logged in or fails
-     */
-    public static DatabaseLoginPanel doLogin(final boolean doAutoLogin,
-                                             final boolean doAutoClose,
-                                             final boolean useDialog,
-                                             final DatabaseLoginListener listener)
-    {     
-        return doLogin(doAutoLogin, doAutoClose, useDialog, listener, null);
-    }
-    
-    /**
-     * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
-     * and if the login fails then it will display the dialog
-     * @param doAutoLogin whether to try to utomatically log the user in
-     * @param doAutoClose hwther it should automatically close the window when it is logged in successfully
-     * @param useDialog use a Dialog or a Frame
-     * @param listener a listener for when it is logged in or fails
+     * @param iconName name of icon to use
      */
     public static DatabaseLoginPanel doLogin(final boolean doAutoLogin,
                                              final boolean doAutoClose,
                                              final boolean useDialog,
                                              final DatabaseLoginListener listener,
+                                             final String iconName)
+    {     
+        return doLogin(doAutoLogin, doAutoClose, useDialog, listener, iconName, null);
+    }
+    
+    /**
+     * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
+     * and if the login fails then it will display the dialog
+     * @param doAutoLogin whether to try to automatically log the user in
+     * @param doAutoClose whether it should automatically close the window when it is logged in successfully
+     * @param useDialog use a Dialog or a Frame
+     * @param listener a listener for when it is logged in or fails
+     * @param iconName name of icon to use
+     * @param nonSpecifyAppName name
+     */
+    public static DatabaseLoginPanel doLogin(final boolean doAutoLogin,
+                                             final boolean doAutoClose,
+                                             final boolean useDialog,
+                                             final DatabaseLoginListener listener,
+                                             final String iconName,
                                              final String nonSpecifyAppName)
     {     
         boolean doAutoLoginNow = doAutoLogin && AppPreferences.getLocalPrefs().getBoolean("login.autologin", false);
@@ -1418,11 +1423,11 @@ public final class UIHelper
         if (useDialog)
         {
             JDialog.setDefaultLookAndFeelDecorated(false); 
-            if (nonSpecifyAppName != null)
+            if (nonSpecifyAppName == null)
             {
                 log.warn("Ignoring nonSpecifyAppName parameter.");
             }
-            DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UIRegistry.getTopWindow(), listener);
+            DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UIRegistry.getTopWindow(), listener, iconName);
             JDialog.setDefaultLookAndFeelDecorated(true); 
             dlg.setDoAutoLogin(doAutoLoginNow);
             dlg.setDoAutoClose(doAutoClose);
@@ -1468,11 +1473,11 @@ public final class UIHelper
         DatabaseLoginPanel panel;
         if (nonSpecifyAppName != null)
         {
-            panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false, nonSpecifyAppName);
+            panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false, iconName, nonSpecifyAppName);
         }
         else
         {
-            panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false);
+            panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false, iconName);
         }
         
         panel.setAutoClose(doAutoClose);
