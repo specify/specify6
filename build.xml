@@ -371,10 +371,10 @@
 	     Mac Builds All the Mac Applications
 	     ************************************************************* -->
 	<target name="dist-mac-all" depends="">
-		<!-- <antcall target="dist-mac"/>
+		<antcall target="dist-mac"/>
 		<antcall target="dist-mac-sl"/>
 		<antcall target="dist-mac-bld"/>
-		<antcall target="dist-mac-db-init"/> -->
+		<antcall target="dist-mac-db-init"/>
 		<antcall target="dist-mac-irep"/>
 	</target>
 	
