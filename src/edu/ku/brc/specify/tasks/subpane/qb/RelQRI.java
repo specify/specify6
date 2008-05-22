@@ -98,6 +98,10 @@ public class RelQRI extends FieldQRI
         return table.getTableInfo();    
     }
 
+    protected String deCapitalize(final String toDecap)
+    {
+        return toDecap.substring(0, 1).toLowerCase().concat(toDecap.substring(1));
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#getSQLFldSpec(edu.ku.brc.specify.tasks.subpane.qb.TableAbbreviator)
@@ -110,7 +114,7 @@ public class RelQRI extends FieldQRI
             return ta.getAbbreviation(table.getTableTree().getParent()) + "." + relationshipInfo.getOtherSide() + "Id";
         }
         //else ManyToOnes.   Is this OK for all OneToOnes too?
-        return ta.getAbbreviation(table.getTableTree()) + "." + table.getTableInfo().getName() + "Id";
+        return ta.getAbbreviation(table.getTableTree()) + "." + deCapitalize(table.getTableInfo().getClassObj().getSimpleName()) + "Id";
     }
 
     /* (non-Javadoc)
