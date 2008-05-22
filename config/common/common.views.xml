@@ -1643,7 +1643,7 @@
     	    <desc><![CDATA[Preparation for Collection Object form.]]></desc>
     	    <enableRules/>
 
-    	    <columnDef>120px,2px,p,2px,100px,2px,p,2px,60px,2px,p,p:g</columnDef>
+    	    <columnDef>120px,2px,p,2px,p,2px,p,2px,60px,2px,p,p:g</columnDef>
     	    <rowDef auto="true" cell="p" sep="2dlu"/>
 
     		<rows>
