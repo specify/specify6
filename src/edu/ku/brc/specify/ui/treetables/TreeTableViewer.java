@@ -71,6 +71,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -1589,6 +1590,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // so the it all get validated correctly.
         dialog.getMultiView().getCurrentView().getValidator().validateForm();
         
+        if (node instanceof Geography)
+        {
+            Geography g = (Geography)node;
+            System.out.println("Before: "+ g.getIsAccepted()+"  "+g.getAcceptedParent());
+        }
+        
 		dialog.pack();
 		// show the dialog (which allows all user edits to happen)
 		dialog.setVisible(true);
@@ -1597,13 +1604,21 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		String nodeNameAfter          = node.getName();
 		Integer parentIdAfter         = (node.getParent() != null) ? node.getParent().getTreeId() : null;
         final boolean acceptedAfter   = (node.getIsAccepted() != null) ? node.getIsAccepted() : true;
-		final boolean nameChanged           = !nodeNameBefore.equals(nodeNameAfter);
+		final boolean nameChanged     = !nodeNameBefore.equals(nodeNameAfter);
 		boolean parentChanged         = (parentIdBefore == null && parentIdAfter != null) ||
 		                                (parentIdBefore != null && parentIdAfter == null) ||
 		                                (parentIdBefore != null && parentIdAfter != null && parentIdBefore.longValue() != parentIdAfter.longValue());
 
+		if (node instanceof Geography)
+        {
+            Geography g = (Geography)node;
+            System.out.println("After: "+ g.getIsAccepted()+"  "+g.getAcceptedParent());
+        }
+		
 		log.debug("nameChange:    " + nameChanged);
-		log.debug("parentChanged: " + parentChanged);
+        log.debug("parentChanged: " + parentChanged);
+        log.debug("acceptedAfter: " + acceptedAfter);
+        log.debug("acceptedNodeIdBefore: " + acceptedNodeIdBefore);
 		
 		// the dialog has been dismissed by the user
 		if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
@@ -1630,6 +1645,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     try
                     {
                         mergedNode = session.merge(node);
+                        if (mergedNode instanceof Geography)
+                        {
+                            Geography g = (Geography)mergedNode;
+                            System.out.println(g.getIsAccepted()+"  "+g.getAcceptedParent());
+                        }
                     }
                     catch (StaleObjectException e1)
                     {
@@ -1731,13 +1751,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                                 editedNode.setAcceptedParentId(null);
                                 listModel.nodeValuesChanged(acceptedParentBefore);
                                 listModel.nodeValuesChanged(editedNode);
-                            } else
-                            {
-                                String msg = "** - JDS - ** acceptedParentBefore was null and shouldn't have been.";
-                                log.error(msg);
-                                UIRegistry.displayErrorDlg(msg);
-                                statusBar.setErrorMessage(msg);
-                                
                             }
                         }
                         
@@ -2096,9 +2109,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         
                     } else
                     {
-                        String msg = "** - JDS - ** synNode was null and shouldn't have been for ID["+synNodeID+"]";
-                        log.error(msg);
-                        UIRegistry.displayErrorDlg(msg);
+                        // I don't think this is actually an error - rods 05/21/08
+                        //String msg = "** - JDS - ** synNode was null and shouldn't have been for ID["+synNodeID+"]";
+                        //log.error(msg);
+                        //UIRegistry.displayErrorDlg(msg);
                     }
                 } else
                 {

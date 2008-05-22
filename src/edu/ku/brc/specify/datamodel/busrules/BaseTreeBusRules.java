@@ -418,6 +418,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                         if (acceptedCheckBox.isSelected())
                         {
                             acceptedParentWidget.setValue(null, null);
+                            acceptedParentWidget.setChanged(true); // This should be done automatically
                         }
                     }
                 });
