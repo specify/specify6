@@ -358,7 +358,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 if (canSearch.get())
                 {
-                    canSearch.set(false);
                     doSearch((TableQRI)tableList.getSelectedValue(), distinctChk.isSelected());
                 }
             }
@@ -738,6 +737,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             Pair<String, List<Pair<String, Object>>> hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null);    
             processSQL(queryFieldItems, hql.getFirst(), hql.getSecond(), rootTable.getTableInfo(), distinct);
+            canSearch.set(false);            
         }
         catch (Exception ex)
         {
