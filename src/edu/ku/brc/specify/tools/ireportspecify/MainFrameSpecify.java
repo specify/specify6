@@ -112,7 +112,7 @@ public class MainFrameSpecify extends MainFrame
                 /* (non-Javadoc)
                  * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
                  */
-                @Override
+                //@Override
                 public int compare(SpQuery o1, SpQuery o2)
                 {
                     return o1.toString().compareTo(o2.toString());
