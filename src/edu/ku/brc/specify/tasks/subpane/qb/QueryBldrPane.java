@@ -742,6 +742,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         catch (Exception ex)
         {
             UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
+            canSearch.set(true);
         }
     }
     

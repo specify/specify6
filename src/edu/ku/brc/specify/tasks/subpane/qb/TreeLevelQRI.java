@@ -9,11 +9,18 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
+import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author timbo
@@ -155,5 +162,71 @@ public class TreeLevelQRI extends FieldQRI
         return false;
     }
     
+    protected String capitalize(final String toCap)
+    {
+        return toCap.substring(0, 1).toUpperCase().concat(toCap.substring(1));
+    }
+    
+    public String getNodeNumberCriteria(final String criteria, final TableAbbreviator ta, 
+                                        final String operStr, final boolean negate)
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance()
+        .createSession();
+        try
+        {
+            TreeDefIface<?,?,?> treeDef;
+            try
+            {
+                treeDef = Collection.getCurrentCollection().getDiscipline().getTreeDef(capitalize(getTableInfo().getClassObj().getSimpleName()) + "TreeDef");
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
+            String className = getTableInfo().getClassObj().getSimpleName();
+            List<?> matches = session.getDataList("from " + className + " where name " + operStr + " " +  criteria + " and " + className + "TreeDefId = " + treeDef.getTreeDefId()
+                    + " and rankId =" + String.valueOf(rankId));
+            List<Pair<Integer, Integer>> nodeInfo = new LinkedList<Pair<Integer, Integer>>();
+            if (matches.size() == 0)
+            {
+                return "2+2=2"; //that'll do the trick. 
+            }
+            for (Object match : matches)
+            {
+                Treeable<?,?,?> node = (Treeable<?,?,?>)match;
+                nodeInfo.add(new Pair<Integer, Integer>(node.getNodeNumber(), node.getHighestChildNodeNumber()));
+            }
+            String tblAlias = ta.getAbbreviation(table.getTableTree());
+            StringBuilder result = new StringBuilder();
+            for (Pair<Integer, Integer> node : nodeInfo)
+            {
+                if (result.length() > 0)
+                {
+                    if (negate)
+                    {
+                        result.append(" and ");
+                    }
+                    else
+                    {
+                        result.append(" or ");
+                    }
+                }
+                result.append(tblAlias + ".nodeNumber");
+                if (negate)
+                {
+                    result.append(" not "); 
+                }
+                result.append(" between ");
+                result.append(node.getFirst());
+                result.append(" and ");
+                result.append(node.getSecond());
+            }
+            return "(" + result.toString() + ")";
+        }
+        finally
+        {
+            session.close();
+        }
+    }
     
 }

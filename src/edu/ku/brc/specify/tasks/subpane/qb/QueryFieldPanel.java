@@ -290,6 +290,12 @@ public class QueryFieldPanel extends JPanel
         {
             return new String[]{"none of the above"};
         }
+        if (fieldQRI instanceof TreeLevelQRI)
+        {
+            return new String[] {
+                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.EQUALS.getOrdinal()),
+                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.IN.getOrdinal())};
+        }
         //CatalogNumber needs special treatment - works better as a number.
         //And other fields? Not sure how to tell. Maybe the formatter?????
         if (field.getFieldInfo() != null && field.getFieldInfo().getName().equalsIgnoreCase("catalognumber") 
@@ -661,6 +667,11 @@ public class QueryFieldPanel extends JPanel
             }
             if (criteriaFormula.length() > 0)
             {
+                if (fieldQRI instanceof TreeLevelQRI)
+                {
+                    return ((TreeLevelQRI)fieldQRI).getNodeNumberCriteria(criteriaFormula, ta, operStr, isNotCheckbox.isSelected());
+                }
+                    
                 StringBuilder str = new StringBuilder();
 
                 str.append(fieldQRI.getSQLFldSpec(ta, true) + " ");

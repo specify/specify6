@@ -1202,6 +1202,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 if (esrto != null && !esrto.hasResults())
                 {
                     UIRegistry.displayLocalizedStatusBarText("QB_NO_RESULTS");
+                    results.complete();
                     return;
                 }
                 
