@@ -67,7 +67,7 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>90px,2px,p,2px,100px,2px,p,2px,p,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
+            <columnDef>100px,2px,p,2px,100px,2px,p,2px,p,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
     		    <row>
