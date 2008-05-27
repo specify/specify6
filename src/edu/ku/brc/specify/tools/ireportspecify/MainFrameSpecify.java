@@ -247,6 +247,7 @@ public class MainFrameSpecify extends MainFrame
                     session.beginTransaction();
                     session.save(spRep);
                     session.commit();
+                    rep.setSpReport(spRep);
                 }               
             } catch (Exception ex)
             {
@@ -477,7 +478,27 @@ public class MainFrameSpecify extends MainFrame
     private ReportSpecify makeReport(final AppResourceIFace rep)
     {
         java.io.InputStream xmlStream = getXML(rep);
-        ReportSpecify report = new ReportSpecify(rep);
+        ReportSpecify report = null;
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            SpReport spRep = session.getData(SpReport.class, "appResource", 
+                  rep, DataProviderSessionIFace.CompareType.Equals);
+            if (spRep != null)
+            {
+                report = new ReportSpecify(spRep);
+            }
+            else
+            {
+                report = new ReportSpecify(rep);
+            }
+        }
+        finally
+        {
+            session.close();
+        }
+        
+        
         // Remove default style...
         while (report.getStyles().size() > 0)
         {

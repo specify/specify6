@@ -98,7 +98,17 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         }
         if (rows.get().hasNext())
         {
-            rowVals = (Object[])rows.get().next();
+            Object nextRow = rows.get().next();
+            if (Object[].class.isAssignableFrom(nextRow.getClass()))
+            {
+                rowVals = (Object[])nextRow;
+            }
+            else
+            {
+                //if only one column...
+                rowVals = new Object[1];
+                rowVals[0] = nextRow;
+            }
             return true;
         }
         rowVals = null;

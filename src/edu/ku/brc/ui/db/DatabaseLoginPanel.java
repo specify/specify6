@@ -787,7 +787,7 @@ public class DatabaseLoginPanel extends JPanel
                             public void run()
                             {
                                 //Not exactly true yet, but make sure users know that this is NOT Specify starting up. 
-                                setMessage(String.format(getResourceString("Starting"), new Object[] { nonSpecifyAppName }), false);
+                                setMessage(String.format(getResourceString("Starting"), nonSpecifyAppName), false);
                             }
                             
                         });

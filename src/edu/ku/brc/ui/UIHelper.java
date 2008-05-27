@@ -1473,7 +1473,7 @@ public final class UIHelper
         DatabaseLoginPanel panel;
         if (nonSpecifyAppName != null)
         {
-            panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false, iconName, nonSpecifyAppName);
+            panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false, nonSpecifyAppName, iconName);
         }
         else
         {

@@ -52,7 +52,7 @@ public class IReportLauncher implements DatabaseLoginListener
      */
     public void loggedIn(Window window, String databaseName, String userName)
     {
-        System.out.println("Yup. You logged in.");
+        //System.out.println("Yup. You logged in.");
 
         //snatched from Specify.restartApp...
         AppPreferences.shutdownRemotePrefs();

@@ -203,7 +203,20 @@ public class QueryFieldPanel extends JPanel
             qField.setSortType((byte)sortCheckbox.getState());
             qField.setOperStart((byte)operatorCBX.getSelectedIndex());
             qField.setStartValue(criteria.getText());
-            qField.setColumnAlias(this.getLabel());
+            String lbl = this.getLabel();
+            if (fieldQRI instanceof RelQRI)
+            {
+                    if (lbl.endsWith(" " + UIRegistry.getResourceString("QB_AGGREGATED")))
+                    {
+                        lbl = lbl.substring(0, lbl.length() - UIRegistry.getResourceString("QB_AGGREGATED").length() - 1);
+                    
+                    }   
+                    if (lbl.endsWith(" " + UIRegistry.getResourceString("QB_FORMATTED")))
+                    {
+                        lbl = lbl.substring(0, lbl.length() - UIRegistry.getResourceString("QB_FORMATTED").length() - 1);
+                    }
+            }
+            qField.setColumnAlias(lbl);
             qField.setContextTableIdent(fieldQRI.getTableInfo().getTableId());
             qField.setIsRelFld(fieldQRI instanceof RelQRI);
             
