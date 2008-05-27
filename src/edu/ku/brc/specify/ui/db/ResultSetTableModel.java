@@ -855,7 +855,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             } else*/
             {
                 
-                int rowNum = 0;
+                //int rowNum = 0;
                 for (Object rowObj : list)
                 {
                     Vector<Object> row = new Vector<Object>(list.size());
@@ -886,7 +886,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                         row.add(rowObj);
                     }
                     cache.add(row);
-                    System.out.println(++rowNum);
+                    //System.out.println(++rowNum);
                 }                
             }
 
