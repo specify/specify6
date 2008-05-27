@@ -20,6 +20,7 @@ package edu.ku.brc.ui.db;
 import java.awt.Color;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.Future;
 
 import edu.ku.brc.util.Pair;
 
@@ -155,4 +156,11 @@ public interface QueryForIdResultsIFace
      * Take any necessary steps when search has completed and results have been processed. 
      */
     public abstract void complete();
+    
+    public abstract void setQueryTask(final Future<?> queryTask);
+    
+    public abstract Future<?> getQueryTask();
+    
+    public abstract void queryTaskDone(final Object results);
+    
 }

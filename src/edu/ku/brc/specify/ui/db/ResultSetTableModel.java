@@ -157,7 +157,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                     jpaQuery.execute();
                 } else
                 {
-                    jpaQuery.start();
+                    results.setQueryTask(jpaQuery.start());
                 }
             }
             
@@ -825,8 +825,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             statusBar.incrementValue(getClass().getSimpleName());
         }
         
+        results.queryTaskDone(customQuery);
         JPAQuery jpaQuery = (JPAQuery)customQuery;
         List<?> list      = jpaQuery.getDataObjects();
+        
         List<ERTICaptionInfo> captions = results.getVisibleCaptionInfo();
         
         //log.debug("Results size: "+list.size());
@@ -853,6 +855,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             } else*/
             {
                 
+                int rowNum = 0;
                 for (Object rowObj : list)
                 {
                     Vector<Object> row = new Vector<Object>(list.size());
@@ -883,6 +886,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                         row.add(rowObj);
                     }
                     cache.add(row);
+                    System.out.println(++rowNum);
                 }                
             }
 

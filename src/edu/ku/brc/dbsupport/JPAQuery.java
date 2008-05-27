@@ -19,6 +19,7 @@ package edu.ku.brc.dbsupport;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -125,9 +126,10 @@ public class JPAQuery implements CustomQueryIFace
      * Starts the thread to make the SQL call.
      *
      */
-    public void start()
+    //public void start()
+    public Future<CustomQueryIFace> start()
     {
-        QueryExecutor.executeQuery(this);
+        return QueryExecutor.executeQuery(this);
     }
     
     /* (non-Javadoc)

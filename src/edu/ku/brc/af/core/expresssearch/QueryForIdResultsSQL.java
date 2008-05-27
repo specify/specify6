@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -378,6 +379,34 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     public void complete()
     {
         // nothing to do
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getQueryTask()
+     */
+    //@Override
+    public Future<?> getQueryTask()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setQueryTask(java.util.concurrent.Future)
+     */
+    //@Override
+    public void setQueryTask(Future<?> queryTask)
+    {
+        //do nothing
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#queryTaskDone()
+     */
+    //@Override
+    public void queryTaskDone(final Object results)
+    {
+        // nuthin
+        
     }
     
     

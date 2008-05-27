@@ -20,6 +20,7 @@ package edu.ku.brc.af.core.expresssearch;
 import java.awt.Color;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -355,5 +356,34 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         // nothing to do
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getQueryTask()
+     */
+    //@Override
+    public Future<?> getQueryTask()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setQueryTask(java.util.concurrent.Future)
+     */
+    //@Override
+    public void setQueryTask(Future<?> queryTask)
+    {
+        //nothing to do here.
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#queryTaskDone()
+     */
+    //@Override
+    public void queryTaskDone(final Object results)
+    {
+        //nuthin
+        
+    }
+
+    
     
 }

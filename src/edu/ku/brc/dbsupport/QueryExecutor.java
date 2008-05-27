@@ -9,6 +9,7 @@ package edu.ku.brc.dbsupport;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * This class enables Queries to be executed in a thread pool.
@@ -54,7 +55,8 @@ public class QueryExecutor
      * Requests a Custom Query be executed using the Queue.
      * @param customQuery
      */
-    public static void executeQuery(final CustomQueryIFace customQuery)
+    //public static void executeQuery(final CustomQueryIFace customQuery)
+    public static Future<CustomQueryIFace> executeQuery(final CustomQueryIFace customQuery)
     {
         // create a background thread to do the web service work
         @SuppressWarnings("unused") //$NON-NLS-1$
@@ -67,7 +69,7 @@ public class QueryExecutor
                 return customQuery;
             }
         };
-        instance.jpaQueryExecServ.submit(customQueryWorker);
+        return instance.jpaQueryExecServ.submit(customQueryWorker);
     }
     
     /**

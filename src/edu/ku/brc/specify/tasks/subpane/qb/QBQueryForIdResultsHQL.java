@@ -16,11 +16,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.ServiceProviderIFace;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
+import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.ui.CommandAction;
@@ -41,10 +44,13 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     protected static final int QBQIdRHQLTblId = -123;
     
     protected QueryBldrPane queryBuilder = null;
+    protected final AtomicReference<Future<CustomQueryIFace>> queryTask = new AtomicReference<Future<CustomQueryIFace>>();
+    protected final AtomicReference<CustomQueryIFace> query = new AtomicReference<CustomQueryIFace>();
     protected List<Pair<String, Object>> params;
     protected String title;
     protected int    tableId;
     protected String iconName;
+
     protected SortedSet<SpReport> reports = new TreeSet<SpReport>(
             new Comparator<SpReport>()
             {
@@ -220,6 +226,45 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         }
         super.complete();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#getQueryTask()
+     */
+    @Override
+    public Future<?> getQueryTask()
+    {
+        return queryTask.get();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#setQueryTask(java.util.concurrent.Future)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void setQueryTask(Future<?> queryTask)
+    {
+        this.queryTask.set((Future<CustomQueryIFace>)queryTask);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#queryTaskDone()
+     */
+    @Override
+    public void queryTaskDone(final Object results)
+    {
+        try
+        {
+            query.set((CustomQueryIFace)results);
+            queryBuilder.queryTaskDone();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
     
-    
+    public CustomQueryIFace getQuery()
+    {
+        return query.get();
+    }
 }

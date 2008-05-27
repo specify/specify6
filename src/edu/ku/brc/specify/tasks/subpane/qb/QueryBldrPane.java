@@ -39,7 +39,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -176,7 +177,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected JButton                       orderDwnBtn = null;
     protected boolean                       doOrdering  = false;
     
-    protected final AtomicBoolean canSearch = new AtomicBoolean(true);
+    protected final AtomicReference<QBQueryForIdResultsHQL> runningResults = new AtomicReference<QBQueryForIdResultsHQL>();
+    protected final AtomicLong doneTime = new AtomicLong(-1);
+    protected final AtomicLong startTime = new AtomicLong(-1);
     
     /**
      * Constructor.
@@ -356,7 +359,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             public void actionPerformed(ActionEvent ae)
             {
-                if (canSearch.get())
+                if (canSearch())
                 {
                     doSearch((TableQRI)tableList.getSelectedValue(), distinctChk.isSelected());
                 }
@@ -737,12 +740,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             Pair<String, List<Pair<String, Object>>> hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null);    
             processSQL(queryFieldItems, hql.getFirst(), hql.getSecond(), rootTable.getTableInfo(), distinct);
-            canSearch.set(false);            
         }
         catch (Exception ex)
         {
             UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
-            canSearch.set(true);
+            runningResults.set(null);
         }
     }
     
@@ -1074,8 +1076,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     
     public void resultsComplete()
     {
-        canSearch.set(true);
+        runningResults.set(null);
     }
+    
+    public void queryTaskDone()
+    {
+        doneTime.set(System.nanoTime());
+        //System.out.println(runningResults.get().getQuery().getDataObjects().size() + " records retrieved.");
+    }
+    
     /**
      * @param queryFieldItemsArg
      * @param sql
@@ -1104,10 +1113,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         qri.setCaptions(captions);
         qri.setReports(this.query.getReports());
         qri.setExpanded(true);
-
+        runningResults.set(qri);
+        doneTime.set(-1);
+        
         CommandAction cmdAction = new CommandAction("Express_Search", "HQL", qri);
         cmdAction.setProperty("reuse_panel", true); 
         CommandDispatcher.dispatch(cmdAction);
+        
+        startTime.set(System.nanoTime());
     }
 
     /**
@@ -2302,6 +2315,43 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return false;
     }
 
+    protected boolean canSearch()
+    {
+        if (runningResults.get() == null)
+        {
+            return true;
+        }
+        if (runningResults.get().getQueryTask() == null)
+        {
+            //something has gone wrong?
+            runningResults.set(null);
+            return true;
+        }
+        if (runningResults.get().getQueryTask().isDone())
+        {
+            System.out.println("queryTask is done.");
+            if (runningResults.get().getQueryTask().isCancelled())
+            {
+                System.out.println("queryTask got canned.");
+                runningResults.set(null);
+                return true;
+            }
+            if (doneTime.get() == -1)
+            {
+                doneTime.set(System.nanoTime());
+            }
+            else
+            {
+                if ((System.nanoTime() - doneTime.get())/1000000000L > 20/*seconds*/)
+                {
+                    runningResults.set(null);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
      */

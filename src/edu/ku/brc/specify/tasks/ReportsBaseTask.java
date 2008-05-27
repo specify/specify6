@@ -727,7 +727,7 @@ public class ReportsBaseTask extends BaseTask
             if (cmdAction.getData() instanceof RecordSet)
             {
                 RecordSet rs = (RecordSet)cmdAction.getData();
-                if (rs.getDbTableId() == SpReport.getClassTableId())
+                if (rs.getDbTableId() == SpReport.getClassTableId() || cmdAction.getProperty("spreport") != null)
                 {
                     runReport(cmdAction);
                 }
