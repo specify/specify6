@@ -88,6 +88,7 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.MultiView;
 
@@ -928,6 +929,7 @@ public class QueryTask extends BaseTask
         }
         
         roc.addDragDataFlavor(new DataFlavorTableExt(QueryTask.class, QUERY, recordSet.getTableId()));
+        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         
         return nbi;
     }
@@ -1168,12 +1170,20 @@ public class QueryTask extends BaseTask
                         JOptionPane.INFORMATION_MESSAGE);
                 return false;
             }
-            session.beginTransaction();
-            transOpen = true;
-            session.delete(query);
-            session.commit();
-            transOpen = false;
-            return true;
+            int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+                    String.format(UIRegistry.getResourceString("REP_CONFIRM_DELETE"), query.getName()),
+                    UIRegistry.getResourceString("REP_CONFIRM_DELETE_TITLE"), 
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
+            
+            if (option == JOptionPane.YES_OPTION)
+            {
+                session.beginTransaction();
+                transOpen = true;
+                session.delete(query);
+                session.commit();
+                transOpen = false;
+                return true;
+            }
             
         } catch (Exception ex)
         {
