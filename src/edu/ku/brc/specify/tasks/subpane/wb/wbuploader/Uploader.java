@@ -187,6 +187,11 @@ public class Uploader implements ActionListener, KeyListener
     protected String                                identifier;
     
     /**
+     * The time of the upload. Used to create the identifier.
+     */
+    protected Calendar                              uploadTime = null;
+    
+    /**
      * The currently executing upload task.
      */
     protected UploaderTask                          currentTask = null;
@@ -312,15 +317,22 @@ public class Uploader implements ActionListener, KeyListener
     }
 
     /**
+     * @return the uploadTime
+     */
+    public Calendar getUploadTime()
+    {
+        return uploadTime;
+    }
+    /**
      * creates an identifier for an importer
      * 
      */
     protected void buildIdentifier()
     {
-        Calendar now = new GregorianCalendar();
-        identifier = uploadData.getWbRow(0).getWorkbench().getName() + "_" + now.get(Calendar.YEAR)
-                + "-" + (now.get(Calendar.MONTH) + 1) + "-" + now.get(Calendar.DAY_OF_MONTH) + "_"
-                + now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.SECOND);
+        uploadTime = new GregorianCalendar();
+        identifier = uploadData.getWbRow(0).getWorkbench().getName() + "_" + uploadTime.get(Calendar.YEAR)
+                + "-" + (uploadTime.get(Calendar.MONTH) + 1) + "-" + uploadTime.get(Calendar.DAY_OF_MONTH) + "_"
+                + uploadTime.get(Calendar.HOUR_OF_DAY) + ":" + uploadTime.get(Calendar.SECOND);
     }
 
     /**

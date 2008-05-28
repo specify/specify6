@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -2073,8 +2074,25 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected String getRecordSetName()
     {
-        return DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle()
-                + "_" + Uploader.currentUpload.getIdentifier();
+        int maxNameLength = DBTableIdMgr.getInstance().getInfoByTableName("recordset").getFieldByColumnName("name").getLength();
+        String tblName = DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle();
+        String uploadName = Uploader.currentUpload.getIdentifier();
+        String rsName = tblName + "_" + uploadName;
+        if (rsName.length() > maxNameLength)
+        {
+            //add as many pieces of the upload time as will fit...
+            Calendar now = Uploader.currentUpload.getUploadTime();
+            String[] chunks = {"_" + String.valueOf(now.get(Calendar.YEAR)), "-" + String.valueOf(now.get(Calendar.MONTH) + 1),
+                    "-" + String.valueOf(now.get(Calendar.DAY_OF_MONTH)), "_" + String.valueOf(now.get(Calendar.HOUR_OF_DAY)),
+                    ":" + String.valueOf(now.get(Calendar.SECOND))}; 
+            rsName = tblName;
+            int c = 0;
+            while (c < chunks.length && (rsName + chunks[c]).length() <= maxNameLength)
+            {
+                rsName += chunks[c++];
+            }
+        }
+        return rsName;
     }
 
     /**
