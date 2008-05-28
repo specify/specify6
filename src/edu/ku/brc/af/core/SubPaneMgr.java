@@ -275,7 +275,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         }
         
         final int index = this.indexOfComponent(oldPane.getUIComponent());
-        if (index < 0 && index >= this.getComponentCount())
+        if (index < 0 || index >= this.getComponentCount())
         {
             log.error("Couldn't find index for panel ["+oldPane.getPaneName()+"] index was["+index+"] number tab["+this.getComponentCount()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         }
@@ -284,11 +284,10 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         {
             this.insertTab(newPane.getPaneName(), newPane.getIcon(), newPane.getUIComponent(), null, index);
             
-            removePane(oldPane, false);
-            
-            // Add this pane to the tabs
             String title = buildUniqueName(newPane.getPaneName());
             newPane.setPaneName(title);
+
+            removePane(oldPane, false);
             
             //log.debug("Putting SubPane ["+newPane.getPaneName()+"] ");
             panes.put(newPane.getPaneName(), newPane);
@@ -389,7 +388,11 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             try
             {
                 
-                int inx = indexOfTab(pane.getTitle());
+                //int inx = indexOfTab(pane.getTitle());
+                //using pane.getTitle() leads to evil when removing tabs when tabs with duplicate titles exist. 
+                //(BaseSubPane.getTitle() returns name which is not always the same as the JTabbedPane tab title for the pane)
+                //so using indexOfComponent instead.
+                int inx = indexOfComponent(pane.getUIComponent());
                 
                 //System.err.println(getTabCount()+"  "+inx+" - "+ getComponentCount()+"  " + indexOfComponent(pane.getUIComponent()));
                 if (inx != -1 && inx < getTabCount())
