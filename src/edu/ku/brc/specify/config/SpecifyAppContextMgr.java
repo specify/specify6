@@ -1292,7 +1292,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 session.saveOrUpdate(spAppResource);
                 session.commit();
                 session.flush();
-                
                 return true;
                 
             } catch (Exception ex)

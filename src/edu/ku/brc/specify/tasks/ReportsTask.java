@@ -132,12 +132,34 @@ public class ReportsTask extends ReportsBaseTask
                     public void actionPerformed(ActionEvent e)
                     {
                         //this is probably overkill, but doesn't seem to hurt anything and is not slow.
+                        AppContextMgr.getInstance().setContext(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
+                                ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
+                                false);
+                        
+                        CommandDispatcher.dispatch(new CommandAction(ReportsBaseTask.REPORTS,
+                                ReportsBaseTask.REFRESH, null));
+                    }
+                }));
+        
+        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("ImportReports"), name,
+                getResourceString("IMPORT_REPORT_TT"), IconManager.STD_ICON_SIZE,
+                new ActionListener()
+                {
+                    /*
+                     * (non-Javadoc)
+                     * 
+                     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+                     */
+                    // @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        //this is probably overkill, but doesn't seem to hurt anything and is not slow.
                         AppContextMgr.getInstance().setContext(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
                                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
                                 false);
                         
                         CommandDispatcher.dispatch(new CommandAction(ReportsBaseTask.REPORTS,
-                                ReportsBaseTask.REFRESH, null));
+                                ReportsBaseTask.IMPORT, null));
                     }
                 }));
     }

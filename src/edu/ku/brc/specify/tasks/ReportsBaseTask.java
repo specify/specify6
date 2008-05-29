@@ -100,6 +100,7 @@ public class ReportsBaseTask extends BaseTask
     public static final String OPEN_EDITOR         = "RPT.OpenEditor";
     public static final String RUN_REPORT          = "RPT.RunReport";
     public static final String REFRESH             = "RPT.Refresh";
+    public static final String IMPORT              = "RPT.Import";
 
     // Data Members
     protected DataFlavor              defaultFlavor    = null;
@@ -752,6 +753,9 @@ public class ReportsBaseTask extends BaseTask
         else if (cmdAction.isAction(REFRESH))
         {
             refreshCommands();
+        } else if (cmdAction.isAction(IMPORT))
+        {
+            importReport(cmdAction);
         } else if (cmdAction.isAction(DELETE_CMD_ACT))
         {
             RecordSetIFace recordSet = null;
@@ -1068,6 +1072,10 @@ public class ReportsBaseTask extends BaseTask
         return null;
     }
     
+    protected void importReport(final CommandAction cmdAction)
+    {
+        System.out.println("eventually.");
+    }
     /**
      * @param cmdAction
      */
