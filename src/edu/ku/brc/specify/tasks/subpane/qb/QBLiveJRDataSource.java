@@ -41,7 +41,8 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
      */
     public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfo> columnInfo)
     {
-        super(columnInfo, false);
+        //XXX setting rowIds to true doesn't guarantee that rowIds will be available if Select Distinct was used
+        super(columnInfo, true);
         this.data = data;
     }
 
