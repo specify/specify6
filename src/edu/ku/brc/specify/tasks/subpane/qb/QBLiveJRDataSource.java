@@ -41,7 +41,7 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
      */
     public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfo> columnInfo)
     {
-        super(columnInfo);
+        super(columnInfo, false);
         this.data = data;
     }
 
@@ -69,5 +69,20 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
     public boolean next() throws JRException
     {
         return ++row < data.getRowCount();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#getRecordId()
+     */
+    @Override
+    public Object getRecordId()
+    {
+        if (!recordIdsIncluded)
+        {
+            return super.getRecordId();
+        }
+        return data.getRowId(row);
     }    
+    
+   
 }

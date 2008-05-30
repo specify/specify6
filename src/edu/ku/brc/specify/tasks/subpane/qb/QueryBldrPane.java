@@ -1049,25 +1049,22 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
             
             Pair<String, List<Pair<String, Object>>> sql = null;
+            
+            // XXX need to allow modification of SelectDistinct(etc) ???
+            boolean includeRecordIds = true;
+            
             try
             {
-                // XXX selectDistinct hard-coded to true?? Only necessary because when not true, the
-                // RecordKey is
-                // included in the query for queries with a TableContext and causes problems with
-                // the creation
-                // of the JR data source.
-                sql = QueryBldrPane.buildHQL(rootQRI, true, qfps, tblTree, rs);
+                sql = QueryBldrPane.buildHQL(rootQRI, !includeRecordIds, qfps, tblTree, rs);
             }
             catch (Exception ex)
             {
                 UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
                 return;
             }
-            
-            QBJRDataSource src = new QBJRDataSource(sql.getFirst(), sql.getSecond(), getColumnInfo(qfps, true));
+            QBJRDataSource src = new QBJRDataSource(sql.getFirst(), sql.getSecond(), getColumnInfo(qfps, true), includeRecordIds);
             final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
                     ReportsBaseTask.PRINT_REPORT, src);
-            //cmd.setProperty("title", report.getQuery().getName()); //probably don't want to do this.
             cmd.setProperty("title", title); 
             cmd.setProperty("file", report.getName());
             CommandDispatcher.dispatch(cmd);

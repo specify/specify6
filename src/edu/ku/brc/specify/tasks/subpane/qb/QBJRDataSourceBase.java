@@ -38,6 +38,7 @@ public class QBJRDataSourceBase implements JRDataSource
 {
     protected static DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");    
     protected final List<ERTICaptionInfo> columnInfo;
+    protected final boolean recordIdsIncluded;
     protected final ArrayList<Pair<String, Integer>> colNames = new ArrayList<Pair<String, Integer>>();
     protected final Comparator<Pair<String, Integer>> colPairComparator = 
         new Comparator<Pair<String, Integer>>()
@@ -77,9 +78,10 @@ public class QBJRDataSourceBase implements JRDataSource
     /**
      * @param columnInfo
      */
-    public QBJRDataSourceBase(final List<ERTICaptionInfo> columnInfo)
+    public QBJRDataSourceBase(final List<ERTICaptionInfo> columnInfo, final boolean recordIdsIncluded)
     {
         this.columnInfo = columnInfo;
+        this.recordIdsIncluded = recordIdsIncluded;
         int c = 0;
         for (ERTICaptionInfo col : this.columnInfo)
         {
@@ -133,5 +135,10 @@ public class QBJRDataSourceBase implements JRDataSource
         }
         
         return obj;
+    }
+    
+    public Object getRecordId()
+    {
+        return null;
     }
 }

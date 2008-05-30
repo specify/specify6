@@ -81,7 +81,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         if (fldIdx < 0)
             return null;
         
-        return processValue(fldIdx, columnInfo.get(fldIdx).processValue(rowVals[fldIdx]));
+        return processValue(fldIdx, columnInfo.get(fldIdx).processValue(rowVals[recordIdsIncluded ? fldIdx + 1 : fldIdx]));
     }
     
     /* (non-Javadoc)
@@ -138,9 +138,10 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
      * @param hql
      * @param columnInfo
      */
-    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfo> columnInfo)
+    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfo> columnInfo,
+                          final boolean recordIdsIncluded)
     {
-        super(columnInfo);
+        super(columnInfo, recordIdsIncluded);
         this.hql = hql;
         this.params = params;
         startDataAcquisition();
@@ -156,4 +157,18 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         q.start();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#getRecordId()
+     */
+    @Override
+    public Object getRecordId()
+    {
+        if (!recordIdsIncluded)
+        {
+            return super.getRecordId();
+        }
+        return rowVals[0];
+    }
+
+    
 }
