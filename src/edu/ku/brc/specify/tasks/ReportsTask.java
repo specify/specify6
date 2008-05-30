@@ -136,12 +136,11 @@ public class ReportsTask extends ReportsBaseTask
                                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
                                 false);
                         
-                        CommandDispatcher.dispatch(new CommandAction(ReportsBaseTask.REPORTS,
-                                ReportsBaseTask.REFRESH, null));
+                        refreshCommands();
                     }
                 }));
         
-        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("ImportReports"), name,
+        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("ImportReport"), name,
                 getResourceString("IMPORT_REPORT_TT"), IconManager.STD_ICON_SIZE,
                 new ActionListener()
                 {

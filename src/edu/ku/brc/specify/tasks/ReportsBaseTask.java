@@ -17,8 +17,10 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import it.businesslogic.ireport.gui.MainFrame;
 
+import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,7 @@ import javax.swing.SwingUtilities;
 
 import net.sf.jasperreports.engine.JRDataSource;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -48,6 +51,7 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -173,6 +177,55 @@ public class ReportsBaseTask extends BaseTask
         }
     }
 
+    /**
+     * @param mimeType
+     * @param reportType
+     * @param defaultIcon
+     * @param classTableId
+     * @return List of command defs for valid report AppResources.
+     * 
+     * Needed to 'override' static method in BaseTask to deal with imported reports.
+     */
+    protected List<TaskCommandDef> getAppResCommandsByMimeType(final String mimeType,
+                                                               final String reportType,
+                                                               final String defaultIcon,
+                                                               final Integer classTableId)
+
+    {
+        List<TaskCommandDef> result = new LinkedList<TaskCommandDef>();
+        for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimeType))
+        {
+            Properties params = ap.getMetaDataMap();
+
+            String tableid = params.getProperty("tableid"); //$NON-NLS-1$
+            String rptType = params.getProperty("reporttype"); //$NON-NLS-1$
+
+            if (StringUtils.isNotEmpty(tableid)
+                    && (classTableId == null || (Integer.parseInt(tableid) == classTableId
+                            .intValue())) && StringUtils.isEmpty(reportType)
+                    || (StringUtils.isNotEmpty(rptType) && reportType.equals(rptType)))
+            {
+                params.put("name", ap.getName()); //$NON-NLS-1$
+                params.put("title", ap.getDescription()); //$NON-NLS-1$
+                params.put("file", ap.getName()); //$NON-NLS-1$
+                params.put("mimetype", mimeType); //$NON-NLS-1$
+                if (params.get("isimport") != null)
+                {
+                    params.put("appresource", ap);
+                }
+
+                String iconName = params.getProperty("icon"); //$NON-NLS-1$
+                if (StringUtils.isEmpty(iconName))
+                {
+                    iconName = defaultIcon;
+                }
+                result.add(new TaskCommandDef(ap.getDescription(), iconName, params));
+            }
+        }
+        return result;
+    }
+    
+
     protected void addROCs()
     {
         for (Pair<String, String> navMime : navMimeDefs)
@@ -200,7 +253,7 @@ public class ReportsBaseTask extends BaseTask
             }
             
             // no particular table at the moment
-            List<TaskCommandDef> cmds = getAppResourceCommandsByMimeType(navMime
+            List<TaskCommandDef> cmds = getAppResCommandsByMimeType(navMime
                     .getSecond(), "Report", navMime.getFirst(), null);
 
             // Then add
@@ -225,22 +278,22 @@ public class ReportsBaseTask extends BaseTask
     protected RolloverCommand makeROCForCommand(final TaskCommandDef tcd, final NavBox navBox)
     {
         CommandAction cmdAction = new CommandAction(REPORTS, PRINT_REPORT, tcd.getParams().getProperty("tableid"));
-        cmdAction.addStringProperties(tcd.getParams());
+        cmdAction.addProperties(tcd.getParams());
         cmdAction.getProperties().put("icon", IconManager.getIcon(tcd.getIconName()));
         cmdAction.getProperties().put("task name", getName());
         
         //Rough
         //See if there is an SpReport record for the resource.
-        String resourceName = cmdAction.getProperties().getProperty("name").replace(".jrxml", "");
+        String spRepName = cmdAction.getProperties().getProperty("name").replace(".jrxml", "");
         RecordSet repRS = null;
         Integer tblContext = null;
-        if (resourceName != null)
+        if (spRepName != null)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance()
             .createSession();
             try
             {
-                SpReport rep = (SpReport)session.getData("from SpReport where name = '" + resourceName + "'");
+                SpReport rep = (SpReport)session.getData("from SpReport where name = '" + spRepName + "'");
                 if (rep != null)
                 {
                     rep.forceLoad();
@@ -260,9 +313,15 @@ public class ReportsBaseTask extends BaseTask
         }
         
         CommandAction delCmd = null;
-        if (repRS != null)
+        if (repRS != null || cmdAction.getProperties().get("isimport") != null)
         {
             delCmd = new CommandAction(REPORTS, DELETE_CMD_ACT, repRS);
+            if (cmdAction.getProperties().get("isimport") != null)
+            {
+                delCmd.getProperties().put("name", cmdAction.getProperties().getProperty("name"));
+                delCmd.getProperties().put("appresource", cmdAction.getProperties().get("appresource"));
+                cmdAction.getProperties().remove("appresource");
+            }
         }
         
         NavBoxItemIFace nbi = makeDnDNavBtn(navBox, 
@@ -292,14 +351,17 @@ public class ReportsBaseTask extends BaseTask
         if (cmdAction.getProperties().get("spreport") != null)
         {
             roc.addDragDataFlavor(spReportFlavor);
-            roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-            
             roc.addDropDataFlavor(runReportFlavor);
             roc.addDropDataFlavor(editReportFlavor);
             if (tblContext != null)
             {
                 roc.addDropDataFlavor(new DataFlavorTableExt(ReportsBaseTask.class, "RECORD_SET", tblContext));
             }
+        }
+        
+        if (delCmd != null)
+        {
+            roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         }
         roc.setToolTip(getResourceString(reportHintKey));
         roc.setEnabled(true);
@@ -755,7 +817,7 @@ public class ReportsBaseTask extends BaseTask
             refreshCommands();
         } else if (cmdAction.isAction(IMPORT))
         {
-            importReport(cmdAction);
+            importReport();
         } else if (cmdAction.isAction(DELETE_CMD_ACT))
         {
             RecordSetIFace recordSet = null;
@@ -771,17 +833,30 @@ public class ReportsBaseTask extends BaseTask
                     recordSet = (RecordSetIFace)roc.getData();
                 }
             }
-            if (recordSet != null)
+            if (recordSet != null || cmdAction.getProperties().get("name") != null)
             {
+                String theName;
+                String theTitle;
+                if (recordSet != null)
+                {
+                    theName = recordSet.getName();
+                    theTitle = theName;
+                }
+                else
+                {
+                    theName = cmdAction.getProperties().getProperty("name");
+                    //currently the description of the appResource is used as the 'title' for the command button.
+                    theTitle = ((AppResourceIFace)cmdAction.getProperties().get("appresource")).getDescription();
+                }
                 int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
-                        String.format(UIRegistry.getResourceString("REP_CONFIRM_DELETE"), recordSet.getName()),
+                        String.format(UIRegistry.getResourceString("REP_CONFIRM_DELETE"), theName),
                         UIRegistry.getResourceString("REP_CONFIRM_DELETE_TITLE"), 
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
                 
                 if (option == JOptionPane.YES_OPTION)
                 {
-                    deleteReportAndResource(recordSet);
-                    deleteReportFromUI(recordSet);
+                    deleteReportAndResource(recordSet, (AppResourceIFace)cmdAction.getProperty("appresource"));
+                    deleteReportFromUI(theTitle);
                 }
             }
         }
@@ -790,54 +865,61 @@ public class ReportsBaseTask extends BaseTask
     /**
      * @param recordSet
      */
-    protected void deleteReportAndResource(final RecordSetIFace recordSet)
+    protected void deleteReportAndResource(final RecordSetIFace recordSet, final AppResourceIFace appRes)
     {
-        RecordSetItemIFace item = recordSet.getOnlyItem();
-        if (item == null)
-        {
-            return;
-        }
-        Object id = item.getRecordId();
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         SpAppResource resource = null;
-        boolean transOpen = false;
-        try
+
+        if (recordSet == null)
         {
-            SpReport rep = (SpReport)session.getData("from SpReport where id = " + id);
-            if (rep != null)
-            {
-                resource = rep.getAppResource();
-                session.beginTransaction();
-                transOpen = true;
-                session.delete(rep);
-                session.commit();
-                transOpen = false;
-            }
+            resource = (SpAppResource) appRes;
         }
-        catch (Exception e)
+        else
         {
-            if (transOpen)
+            RecordSetItemIFace item = recordSet.getOnlyItem();
+            if (item == null) { return; }
+
+            Object id = item.getRecordId();
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            boolean transOpen = false;
+            try
             {
-                session.rollback();
+                SpReport rep = (SpReport) session.getData("from SpReport where id = " + id);
+                if (rep != null)
+                {
+                    resource = rep.getAppResource();
+                    session.beginTransaction();
+                    transOpen = true;
+                    session.delete(rep);
+                    session.commit();
+                    transOpen = false;
+                }
             }
-            throw new RuntimeException(e);
-        }
-        finally
-        {
-            session.close();
+            catch (Exception e)
+            {
+                if (transOpen)
+                {
+                    session.rollback();
+                }
+                throw new RuntimeException(e);
+            }
+            finally
+            {
+                session.close();
+            }
         }
         if (resource != null)
         {
-            ((SpecifyAppContextMgr)AppContextMgr.getInstance()).removeAppResourceSp(resource.getSpAppResourceDir(), resource);
+            ((SpecifyAppContextMgr) AppContextMgr.getInstance()).removeAppResourceSp(resource
+                    .getSpAppResourceDir(), resource);
         }
     }
     
     /**
      * @param recordSet
      */
-    protected void deleteReportFromUI(final RecordSetIFace recordSet)
+    protected void deleteReportFromUI(final String btnName)
     {
-        deleteDnDBtn(recordSet.getName());
+        deleteDnDBtn(btnName);
     }
     
     protected void refreshCommands()
@@ -1072,9 +1154,49 @@ public class ReportsBaseTask extends BaseTask
         return null;
     }
     
-    protected void importReport(final CommandAction cmdAction)
+    protected void importReport()
     {
-        System.out.println("eventually.");
+        FileDialog fileDialog = new FileDialog((Frame)UIRegistry.get(UIRegistry.FRAME), 
+                getResourceString("CHOOSE_WORKBENCH_IMPORT_FILE"), 
+                FileDialog.LOAD);
+        //Really shouldn't override workbench prefs with report stuff???
+        fileDialog.setDirectory(WorkbenchTask.getDefaultDirPath(WorkbenchTask.IMPORT_FILE_PATH));
+        fileDialog.setFilenameFilter(new java.io.FilenameFilter()
+        {
+            public boolean accept(File dir, String filename)
+            {
+                return FilenameUtils.getExtension(filename).equalsIgnoreCase("jrxml");
+            }
+
+        });
+        UIHelper.centerAndShow(fileDialog);
+        fileDialog.dispose();
+
+        String fileName = fileDialog.getFile();
+        String path     = fileDialog.getDirectory();
+        if (StringUtils.isNotEmpty(path))
+        {
+            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            localPrefs.put(WorkbenchTask.IMPORT_FILE_PATH, path);
+        }
+
+        File file;
+        if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(path))
+        {
+            file = new File(path + File.separator + fileName);
+        } else
+        {
+            return;
+        }
+
+        if (file.exists())
+        {
+            if (MainFrameSpecify.importJasperReport(file))
+            {
+                refreshCommands();
+            }
+            //else -- assume feedback during importJasperReport()
+        }
     }
     /**
      * @param cmdAction
@@ -1169,6 +1291,8 @@ public class ReportsBaseTask extends BaseTask
                 isInitialized = false;
             }
             this.initialize();
+            CommandDispatcher.register(REPORTS, this);
+            CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
         }
     }
     

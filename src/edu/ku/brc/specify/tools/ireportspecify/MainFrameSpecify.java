@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -197,6 +198,75 @@ public class MainFrameSpecify extends MainFrame
         System.out.println("saveAll() is not implemented.");
     }
 
+    /**
+     * @param jasperFile
+     * @return true if the report is successfully imported, otherwise return false.
+     */
+    public static boolean importJasperReport(final File jasperFile)
+    {
+        ByteArrayOutputStream xml = null;
+        try
+        {
+            xml = new ByteArrayOutputStream();
+            xml.write(FileUtils.readFileToByteArray(jasperFile));
+        }
+        catch (IOException e)
+        {
+            UIRegistry.getStatusBar().setErrorMessage(e.getLocalizedMessage(), e);
+            return false;
+        }
+        AppResourceIFace appRes = getAppRes(jasperFile.getName(), null);
+        String metaData = appRes.getMetaData();
+        if (StringUtils.isEmpty(metaData))
+        {
+            metaData = "isimport=1";
+        }
+        else
+        {
+            metaData += ";isimport=1";
+        }
+        appRes.setMetaData(metaData);
+        return saveXML(xml, appRes, null);
+    }
+    
+    /**
+     * @param xml - data to be assigned to appRes
+     * @param appRes - appRes to be updated and saved
+     * @param rep - ReportSpecify object associataed with appRes
+     * @return true if everything turns out OK. Otherwise return false.
+     */
+    protected static boolean saveXML(final ByteArrayOutputStream xml, final AppResourceIFace appRes, final ReportSpecify rep)
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            appRes.setDataAsString(xml.toString());
+            AppContextMgr.getInstance().saveResource(appRes);
+            
+            if (rep != null && rep.getSpReport() == null)
+            {
+                SpReport spRep = new SpReport();
+                spRep.initialize();
+                spRep.setName(appRes.getName());
+                spRep.setAppResource((SpAppResource)appRes);
+                spRep.setQuery(rep.getConnection().getQuery());
+                spRep.setSpecifyUser(SpecifyUser.getCurrentUser());
+                session.beginTransaction();
+                session.save(spRep);
+                session.commit();
+                rep.setSpReport(spRep);
+            }               
+        } catch (Exception ex)
+        {
+            throw new RuntimeException(ex);
+
+        } finally
+        {
+            session.close();
+        }
+        return true;
+    }
+    
     /*
      * (non-Javadoc) Saves a jasper report as a Specify resource. @param jrf - the report to be
      * saved
@@ -214,51 +284,7 @@ public class MainFrameSpecify extends MainFrame
             ReportWriter rw = new ReportWriter(rep);
             rw.writeToOutputStream(xmlOut);
             
-            //ugly way to 'import' a .jrxml file as a resource...
-//            try
-//            {
-//                File outEx = new File("/home/timo/outDump.jrxml");
-//                outEx.createNewFile();
-//                //FileUtils.writeByteArrayToFile(outEx, xmlOut.toByteArray());
-//            	File dyb = new File("/home/timo/BirthdayReport2.jrxml");
-//            	byte[] lines = FileUtils.readFileToByteArray(dyb);
-//            	FileUtils.writeByteArrayToFile(outEx, lines);
-//            	xmlOut.write(lines);
-//            } catch (Exception e)
-//            {
-//            	throw new RuntimeException(e);
-//            }
-            //... end ugly import
-            
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            try
-            {
-                appRes.setDataAsString(xmlOut.toString());
-                AppContextMgr.getInstance().saveResource(appRes);
-                
-                if (rep.getSpReport() == null)
-                {
-                    SpReport spRep = new SpReport();
-                    spRep.initialize();
-                    spRep.setName(appRes.getName());
-                    spRep.setAppResource((SpAppResource)appRes);
-                    spRep.setQuery(rep.getConnection().getQuery());
-                    spRep.setSpecifyUser(SpecifyUser.getCurrentUser());
-                    session.beginTransaction();
-                    session.save(spRep);
-                    session.commit();
-                    rep.setSpReport(spRep);
-                }               
-            } catch (Exception ex)
-            {
-                log.error(ex);
-
-            } finally
-            {
-                session.close();
-            }
-            //skip command dispatch now that iReport is being run as separate application.
-            //CommandDispatcher.dispatch(new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.REFRESH, null));
+            saveXML(xmlOut, appRes, rep);
         }
         else
         {
@@ -276,26 +302,46 @@ public class MainFrameSpecify extends MainFrame
     private AppResourceIFace getAppResForFrame(final JReportFrame jrf)
     {
     	//XXX - hard-coded for 'Collection' directory.
-    	AppResourceIFace result = (AppContextMgr.getInstance().getResourceFromDir("Collection", jrf.getReport().getName()));
+    	AppResourceIFace result = AppContextMgr.getInstance().getResourceFromDir("Collection", jrf.getReport().getName());
         if (result != null)
             return result;
-        return createAppResForFrame(jrf);
+        //else
+        result = createAppRes(jrf.getReport().getName(), -1);
+        jrf.getReport().setName(result.getName()); 
+        return result;
     }
 
     /**
-     * @param jrf
-     * @return
+     * @param appResName
+     * @param tableid
+     * @return AppResource with the provided name.
+     * 
+     * If a resource named appResName exists it will be returned, else a new resource is created.
      */
-    private AppResourceIFace createAppResForFrame(final JReportFrame jrf)
+    private static AppResourceIFace getAppRes(final String appResName, final Integer tableid)
+    {
+        //XXX - hard-coded for 'Collection' directory.
+        AppResourceIFace result = AppContextMgr.getInstance().getResourceFromDir("Collection", appResName);
+        if (result != null)
+            return result;
+        //else
+        return createAppRes(appResName, tableid);
+    }
+    
+    /**
+     * @param jrf
+     * @return a new AppResource
+     */
+    private static AppResourceIFace createAppRes(final String repResName, final Integer tableid)
     {
         //XXX - which Dir???
         //XXX - what level???
         AppResourceIFace result = AppContextMgr.getInstance().createAppResourceForDir("Collection");
-        result.setName(jrf.getReport().getName());
+        result.setName(repResName);
         result.setDescription(result.getName());
         result.setLevel((short)3); 
 
-        RepResourcePropsPanel propPanel = new RepResourcePropsPanel((ReportSpecify)jrf.getReport(), result);
+        RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, result, tableid == null);
         CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
                 UIRegistry.getResourceString("REP_PROPS_DLG_TITLE"),
                 true,
@@ -304,10 +350,9 @@ public class MainFrameSpecify extends MainFrame
         if (!cd.isCancelled())
         {
             result.setName(propPanel.getNameTxt().getText());
-            jrf.getReport().setName(result.getName());
             result.setDescription(propPanel.getTitleTxt().getText());
             result.setLevel(Short.valueOf(propPanel.getLevelTxt().getText()));
-            String metaDataStr = "tableid=-1;";
+            String metaDataStr = "tableid=" + propPanel.getTableId() + ";";
             if (propPanel.getTypeCombo().getSelectedIndex() == 0)
             {
                 metaDataStr += "reporttype=Report";

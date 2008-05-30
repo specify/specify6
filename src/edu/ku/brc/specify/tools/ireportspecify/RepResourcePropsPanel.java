@@ -19,6 +19,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -33,39 +35,47 @@ import edu.ku.brc.ui.UIRegistry;
 public class RepResourcePropsPanel extends JPanel
 {
     /**
-     * an iReport report
+     * name of report resource
      */
-    protected final ReportSpecify report;
+    protected final String reportName;
     /**
      * the resource to be associated with it (not necessarily it's current resource, i guess)
      */
     protected final AppResourceIFace resource;
+    
+    /**
+     * the id of the table the report is designed for. 
+     */
+    protected final boolean showTableIds;
     
     protected JTextField nameTxt;
     protected JTextField titleTxt;
     protected JTextField levelTxt;
     protected JComboBox typeCombo;
     protected JTextField resDirTxt;
+    protected JComboBox tblCombo;
     
     /**
      * @param report
      * @param resource
      */
-    public RepResourcePropsPanel(ReportSpecify report, AppResourceIFace resource)
+    public RepResourcePropsPanel(final String reportName, final AppResourceIFace resource, final boolean showTableIds)
     {
         super();
-        this.report = report;
+        this.reportName = reportName;
         this.resource = resource;
+        this.showTableIds = showTableIds;
         createUI();
     }
     
     protected void createUI()
     {
-        PanelBuilder builder = new PanelBuilder(new FormLayout("right:p, 2dlu, fill:p:grow", "p,p,p,p,p"), this);
+        String rowDefStr = showTableIds ? "p,p,p,p,p,p" : "p,p,p,p,p";
+        PanelBuilder builder = new PanelBuilder(new FormLayout("right:p, 2dlu, fill:p:grow", rowDefStr), this);
         CellConstraints cc = new CellConstraints();
         
         builder.add(new JLabel(UIRegistry.getResourceString("REP_NAME_LBL")), cc.xy(1,1));
-        nameTxt = new JTextField(report != null? report.getName() : "untitled");
+        nameTxt = new JTextField(reportName != null? reportName : "untitled");
         builder.add(nameTxt, cc.xy(3, 1));
         
         builder.add(new JLabel(UIRegistry.getResourceString("REP_TITLE_DESC_LBL")), cc.xy(1,2));
@@ -92,8 +102,35 @@ public class RepResourcePropsPanel extends JPanel
         resDirTxt = new JTextField("Collection");
         resDirTxt.setEnabled(false);
         builder.add(resDirTxt, cc.xy(3, 5));
+
+        if (showTableIds)
+        {
+            builder.add(new JLabel(UIRegistry.getResourceString("REP_TBL_LBL")), cc.xy(1,6));
+            tblCombo = new JComboBox();
+            fillTblCombo();
+            tblCombo.setSelectedIndex(0);
+            builder.add(tblCombo, cc.xy(3, 6));
+        }
     }
 
+    public int getTableId()
+    {
+        if (!showTableIds)
+        {
+            return -1;
+        }
+        return ((DBTableInfo)tblCombo.getSelectedItem()).getTableId();
+    }
+    
+    protected void fillTblCombo()
+    {
+        //XXX need to get 'main' tbls...
+        for (int id=1; id<10; id++)
+        {
+            tblCombo.addItem(DBTableIdMgr.getInstance().getInfoById(id));
+        }
+    }
+    
     /**
      * @return the nameTxt
      */
@@ -137,7 +174,7 @@ public class RepResourcePropsPanel extends JPanel
     public static void main(String args[])
     {
         CustomDialog tcd = new CustomDialog(null, "Testing", false, 
-                new RepResourcePropsPanel(null, null));
+                new RepResourcePropsPanel(null, null, true));
         UIHelper.centerAndShow(tcd);
     }
 }
