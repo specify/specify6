@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -215,18 +217,22 @@ public class MainFrameSpecify extends MainFrame
             UIRegistry.getStatusBar().setErrorMessage(e.getLocalizedMessage(), e);
             return false;
         }
-        AppResourceIFace appRes = getAppRes(jasperFile.getName(), null);
-        String metaData = appRes.getMetaData();
-        if (StringUtils.isEmpty(metaData))
+        AppResourceIFace appRes = getAppRes(jasperFile.getName(), null, true);
+        if (appRes != null)
         {
-            metaData = "isimport=1";
+            String metaData = appRes.getMetaData();
+            if (StringUtils.isEmpty(metaData))
+            {
+                metaData = "isimport=1";
+            }
+            else
+            {
+                metaData += ";isimport=1";
+            }
+            appRes.setMetaData(metaData);
+            return saveXML(xml, appRes, null);
         }
-        else
-        {
-            metaData += ";isimport=1";
-        }
-        appRes.setMetaData(metaData);
-        return saveXML(xml, appRes, null);
+        return false;
     }
     
     /**
@@ -318,12 +324,29 @@ public class MainFrameSpecify extends MainFrame
      * 
      * If a resource named appResName exists it will be returned, else a new resource is created.
      */
-    private static AppResourceIFace getAppRes(final String appResName, final Integer tableid)
+    private static AppResourceIFace getAppRes(final String appResName, final Integer tableid, final boolean confirmOverwrite)
     {
         //XXX - hard-coded for 'Collection' directory.
         AppResourceIFace result = AppContextMgr.getInstance().getResourceFromDir("Collection", appResName);
         if (result != null)
-            return result;
+        {
+            if (!confirmOverwrite)
+            {
+                return result;
+            }
+            //else
+            int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+                    String.format(UIRegistry.getResourceString("REP_CONFIRM_IMP_OVERWRITE"), result.getName()),
+                    UIRegistry.getResourceString("REP_CONFIRM_IMP_OVERWRITE_TITLE"), 
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
+            
+            if (option == JOptionPane.YES_OPTION)
+            {
+                return result;
+            }
+            //else
+            return null;
+        }
         //else
         return createAppRes(appResName, tableid);
     }
