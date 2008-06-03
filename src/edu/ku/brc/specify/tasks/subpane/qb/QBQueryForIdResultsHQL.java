@@ -19,6 +19,8 @@ import java.util.TreeSet;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.ServiceProviderIFace;
@@ -182,13 +184,31 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     /**
      * @param reports 
      * 
-     * adds (and sorts) reports to this.reports.
+     * filters, sorts and adds reports to this.reports.
      */
     public void setReports(Set<SpReport> reports)
     {
-        this.reports.addAll(reports);
+        List<SpReport> contextReports = new LinkedList<SpReport>();
+        for (SpReport rep : reports)
+        {
+            if (repContextIsActive(rep.getAppResource()))
+            {
+                contextReports.add(rep);
+            }
+        }
+        this.reports.addAll(contextReports);
     }
 
+    /**
+     * @param repResource
+     * @returns true if repResource is currently available from the AppContextMgr.
+     */
+    protected boolean repContextIsActive(final AppResourceIFace repResource)
+    {
+        AppResourceIFace match = AppContextMgr.getInstance().getResource(repResource.getName());
+        //XXX - Is it really safe to assume there there won't be more than one resource with the same name and mimeType?
+        return match != null && match.getMimeType().equalsIgnoreCase(repResource.getMimeType());
+    }
     /**
      * @return the reports
      */
