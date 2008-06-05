@@ -27,8 +27,8 @@ import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.ui.CommandAction;
@@ -162,15 +162,6 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         }
         
         List<ServiceInfo> result = new LinkedList<ServiceInfo>();
-        String toolTip;
-        if (reports.size() == 1)
-        {
-            toolTip = String.format(UIRegistry.getResourceString("QB_RESULTS_ONE_REPORT_TT"), reports.first().getReportName());
-        }
-        else
-        {
-            toolTip = UIRegistry.getResourceString("QB_RESULTS_REPORT_TT");
-        }
         
         //Since only query results pane is shown at a time, can remove services from previous runs without messing anything else up.
         ContextMgr.removeServicesByTaskAndTable(ContextMgr.getTaskByClass(QueryTask.class), QBQIdRHQLTblId);    
@@ -181,8 +172,20 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
                         new QBResultReportServiceCmdData(this, data)),
                 ContextMgr.getTaskByClass(QueryTask.class),
                 "Reports",
-                toolTip));
+                UIRegistry.getResourceString("QB_RESULTS_REPORT_TT")));
         return result;
+    }
+    
+    public synchronized void reportDeleted(final Integer resourceId)
+    {
+        for (QBResultReportServiceInfo repInfo : reports)
+        {
+            if (repInfo.getResourceId() != null && repInfo.getResourceId().equals(resourceId))
+            {
+                reports.remove(repInfo);
+                break;
+            }
+        }
     }
     
     public void buildReports()
@@ -195,7 +198,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
             {
                 if (repContextIsActive(rep.getAppResource()))
                 {
-                    reports.add(new QBResultReportServiceInfo(rep.getName(), rep.getName(), true, null));
+                    reports.add(new QBResultReportServiceInfo(rep.getName(), rep.getName(), true, null, rep.getAppResource().getId()));
                 }
             }
         }
@@ -213,7 +216,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
                     if (tableId == Integer.valueOf(tblIdStr))
                     {
                         reports.add(new QBResultReportServiceInfo(rep.getDescription() /*'title' seems to be currently stored in description */,
-                            rep.getName() /* and filename in name */, false, null));
+                            rep.getName() /* and filename in name */, false, null, ((SpAppResource)rep).getId()));
                     }
                     else
                     {
@@ -231,7 +234,8 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
                                                                          * currently stored in
                                                                          * description
                                                                          */,
-                                                rep.getName() /* and filename in name */, false, spRep.getId()));
+                                                rep.getName() /* and filename in name */, false, spRep.getId(),
+                                                ((SpAppResource)rep).getId()));
                             }
                         }
                         finally

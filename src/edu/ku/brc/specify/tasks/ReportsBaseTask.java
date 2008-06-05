@@ -105,6 +105,7 @@ public class ReportsBaseTask extends BaseTask
     public static final String RUN_REPORT          = "RPT.RunReport";
     public static final String REFRESH             = "RPT.Refresh";
     public static final String IMPORT              = "RPT.Import";
+    public static final String REPORT_DELETED      = "RPT.ReportDeleted";
 
     // Data Members
     protected DataFlavor              defaultFlavor    = null;
@@ -855,8 +856,10 @@ public class ReportsBaseTask extends BaseTask
                 
                 if (option == JOptionPane.YES_OPTION)
                 {
+                    Integer resourceId = ((SpAppResource)cmdAction.getProperty("appresource")).getId();
                     deleteReportAndResource(recordSet, (AppResourceIFace)cmdAction.getProperty("appresource"));
                     deleteReportFromUI(theTitle);
+                    CommandDispatcher.dispatch(new CommandAction(REPORTS, REPORT_DELETED, resourceId));
                 }
             }
         }

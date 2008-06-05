@@ -76,6 +76,7 @@ import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
@@ -178,6 +179,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected boolean                       doOrdering  = false;
     
     protected final AtomicReference<QBQueryForIdResultsHQL> runningResults = new AtomicReference<QBQueryForIdResultsHQL>();
+    protected final AtomicReference<QBQueryForIdResultsHQL> completedResults = new AtomicReference<QBQueryForIdResultsHQL>();
     protected final AtomicLong doneTime = new AtomicLong(-1);
     protected final AtomicLong startTime = new AtomicLong(-1);
     
@@ -745,6 +747,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
             runningResults.set(null);
+            completedResults.set(null);
         }
     }
     
@@ -1073,6 +1076,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     
     public void resultsComplete()
     {
+        completedResults.set(runningResults.get());
         runningResults.set(null);
     }
     
@@ -2180,6 +2184,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         super.shutdown();
 
+        CommandDispatcher.unregister(ReportsBaseTask.REPORTS, this);
+        
         if (saveBtn != null && saveBtn.isEnabled())
         {
             saveBtn.setEnabled(false);
@@ -2189,6 +2195,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             queryNavBtn.setEnabled(true);
         }
+        
+        /*NOTE: runningResults or completedResults may still be pointing to this so
+        garbage collection will be hampered, but since only one QueryResult is allowed
+        at any time it should not be a problem. (???)
+        */
     }
 
     /* (non-Javadoc)
@@ -2354,21 +2365,41 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     //@Override
     public void doCommand(CommandAction cmdAction)
     {
-        if (cmdAction.isType(ReportsBaseTask.REPORTS) && cmdAction.isAction(ReportsBaseTask.REFRESH))
+        if (cmdAction.isType(ReportsBaseTask.REPORTS)) 
         {
-            if (query != null)
+            refreshQuery(); //currently done for all commands
+            if (cmdAction.isAction(ReportsBaseTask.REFRESH))
             {
-                DataProviderSessionIFace session = DataProviderFactory.getInstance()
-                .createSession();
-                try
+                //nothing else to do
+            }
+            else if (cmdAction.isAction(ReportsBaseTask.REPORT_DELETED))
+            {
+                if (runningResults.get() != null)
                 {
-                    session.refresh(query);
-                    query.forceLoad(true);
+                    runningResults.get().reportDeleted((Integer)cmdAction.getData());
                 }
-                finally
+                if (completedResults.get() != null)
                 {
-                    session.close();
+                    completedResults.get().reportDeleted((Integer)cmdAction.getData());
                 }
+            }
+        }
+    }
+    
+    protected void refreshQuery()
+    {
+        if (query != null)
+        {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance()
+            .createSession();
+            try
+            {
+                session.refresh(query);
+                query.forceLoad(true);
+            }
+            finally
+            {
+                session.close();
             }
         }
     }
