@@ -942,7 +942,12 @@ public class ReportsBaseTask extends BaseTask
      */
     protected void deleteReportFromUI(final String btnName)
     {
-        deleteDnDBtn(btnName);
+        Pair<NavBoxIFace, NavBoxItemIFace> btn = findDnDBtn(btnName);
+        if (btn != null)
+        {
+            reportsList.remove(btn.getSecond());
+            deleteDnDBtn(btn.getFirst(), btn.getSecond());
+        }
     }
     
     protected void refreshCommands()

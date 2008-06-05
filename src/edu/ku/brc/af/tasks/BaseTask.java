@@ -33,6 +33,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 
+import net.sf.jasperreports.engine.util.Pair;
+
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -76,6 +78,7 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
+
 
 /**
  * Abstract class to provide a base level of functionality for implementing a task.
@@ -417,20 +420,29 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     protected boolean deleteDnDBtn(final String btnTitle)
     {
+        edu.ku.brc.util.Pair<NavBoxIFace, NavBoxItemIFace> btn = findDnDBtn(btnTitle);
+        if (btn != null)
+        {
+            deleteDnDBtn(btn.getFirst(), btn.getSecond());
+            return true;
+        }
+        return false;
+    }
+    
+    protected edu.ku.brc.util.Pair<NavBoxIFace, NavBoxItemIFace> findDnDBtn(final String btnTitle)
+    {
         for (NavBoxIFace navBox : navBoxes)
         {
             for (NavBoxItemIFace nbi : navBox.getItems())
             {
                 if (nbi.getTitle().equals(btnTitle))
                 {
-                    deleteDnDBtn(navBox, nbi);
-                    return true;
+                    return new edu.ku.brc.util.Pair<NavBoxIFace, NavBoxItemIFace>(navBox, nbi);
                 }
             }
         }
-        return false;
+        return null;
     }
-    
     /**
      * Helper method to add an item to the navbox.
      * @param navBox navBox
