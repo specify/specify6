@@ -856,10 +856,30 @@ public class ReportsBaseTask extends BaseTask
                 
                 if (option == JOptionPane.YES_OPTION)
                 {
-                    Integer resourceId = ((SpAppResource)cmdAction.getProperty("appresource")).getId();
+                    SpAppResource res = (SpAppResource)cmdAction.getProperty("appresource");
+                    Integer resOrRepId = null;
+                    if (res != null)
+                    {
+                        resOrRepId = res.getId();
+                    }
+                    else
+                    {
+                        RecordSetItemIFace item = recordSet.getOnlyItem();
+                        if (item != null)
+                        {
+                            resOrRepId = item.getRecordId();
+                        }
+                    }
                     deleteReportAndResource(recordSet, (AppResourceIFace)cmdAction.getProperty("appresource"));
                     deleteReportFromUI(theTitle);
-                    CommandDispatcher.dispatch(new CommandAction(REPORTS, REPORT_DELETED, resourceId));
+                    if (resOrRepId != null)
+                    {
+                        CommandDispatcher.dispatch(new CommandAction(REPORTS, REPORT_DELETED, resOrRepId));
+                    }
+                    else
+                    {
+                        //what can you do?
+                    }
                 }
             }
         }
