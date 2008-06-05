@@ -13,7 +13,6 @@ import java.awt.Color;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.Future;
@@ -26,8 +25,12 @@ import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.ServiceProviderIFace;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.tasks.QueryTask;
+import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
@@ -45,7 +48,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
 {
     protected static final int QBQIdRHQLTblId = -123;
     
-    protected QueryBldrPane queryBuilder = null;
+    protected final QueryBldrPane queryBuilder;
     protected final AtomicReference<Future<CustomQueryIFace>> queryTask = new AtomicReference<Future<CustomQueryIFace>>();
     protected final AtomicReference<CustomQueryIFace> query = new AtomicReference<CustomQueryIFace>();
     protected List<Pair<String, Object>> params;
@@ -53,17 +56,17 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     protected int    tableId;
     protected String iconName;
 
-    protected SortedSet<SpReport> reports = new TreeSet<SpReport>(
-            new Comparator<SpReport>()
-            {
-                public int compare(SpReport o1,
-                                   SpReport o2)
+    protected final SortedSet<QBResultReportServiceInfo> reports = new TreeSet<QBResultReportServiceInfo>(
+                new Comparator<QBResultReportServiceInfo>()
                 {
-                    return o1.getName().compareTo(o2.getName());
-                }
+                    public int compare(QBResultReportServiceInfo o1,
+                                       QBResultReportServiceInfo o2)
+                    {
+                        return o1.getReportName().compareTo(o2.getReportName());
+                    }
 
-            });
-
+                });
+    
     /**
      * @param bannerColor
      * @param title
@@ -85,6 +88,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         this.tableId  = tableId;
         this.iconName = iconName;
         this.queryBuilder = queryBuilder;
+        buildReports();
     }
     
     /**
@@ -161,7 +165,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         String toolTip;
         if (reports.size() == 1)
         {
-            toolTip = String.format(UIRegistry.getResourceString("QB_RESULTS_ONE_REPORT_TT"), reports.first().getName());
+            toolTip = String.format(UIRegistry.getResourceString("QB_RESULTS_ONE_REPORT_TT"), reports.first().getReportName());
         }
         else
         {
@@ -181,22 +185,64 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         return result;
     }
     
-    /**
-     * @param reports 
-     * 
-     * filters, sorts and adds reports to this.reports.
-     */
-    public void setReports(Set<SpReport> reports)
+    public void buildReports()
     {
-        List<SpReport> contextReports = new LinkedList<SpReport>();
-        for (SpReport rep : reports)
+        reports.clear();
+        //first add reports associated directly with the results
+        if (queryBuilder != null)
         {
-            if (repContextIsActive(rep.getAppResource()))
+            for (SpReport rep : queryBuilder.getReportsForQuery())
             {
-                contextReports.add(rep);
+                if (repContextIsActive(rep.getAppResource()))
+                {
+                    reports.add(new QBResultReportServiceInfo(rep.getName(), rep.getName(), true, null));
+                }
             }
         }
-        this.reports.addAll(contextReports);
+        
+        if (tableId != -1)
+        {
+            //second add reports associated with the same table as the current results
+            List<AppResourceIFace> reps = AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.LABELS_MIME);
+            reps.addAll(AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.REPORTS_MIME));
+            for (AppResourceIFace rep : reps)
+            {
+                String tblIdStr = rep.getMetaData("tableid");
+                if (tblIdStr != null)
+                {
+                    if (tableId == Integer.valueOf(tblIdStr))
+                    {
+                        reports.add(new QBResultReportServiceInfo(rep.getDescription() /*'title' seems to be currently stored in description */,
+                            rep.getName() /* and filename in name */, false, null));
+                    }
+                    else
+                    {
+                        //third add reports based on other queries...
+                        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                        try
+                        {
+                            SpReport spRep = (SpReport)session.getData("from SpReport where appResourceId = " + ((SpAppResource)rep).getId());
+                            if (spRep != null)
+                            {
+                                reports
+                                        .add(new QBResultReportServiceInfo(
+                                                rep.getDescription() /*
+                                                                         * 'title' seems to be
+                                                                         * currently stored in
+                                                                         * description
+                                                                         */,
+                                                rep.getName() /* and filename in name */, false, spRep.getId()));
+                            }
+                        }
+                        finally
+                        {
+                            session.close();
+                        }
+                    }
+                    
+                }
+            }
+        }
     }
 
     /**
@@ -212,7 +258,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     /**
      * @return the reports
      */
-    public SortedSet<SpReport> getReports()
+    public SortedSet<QBResultReportServiceInfo> getReports()
     {
         return reports;
     }

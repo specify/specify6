@@ -1108,7 +1108,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         qri.setSQL(sql);
         qri.setParams(params);
         qri.setCaptions(captions);
-        qri.setReports(this.query.getReports());
         qri.setExpanded(true);
         runningResults.set(qri);
         doneTime.set(-1);
@@ -2374,7 +2373,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
     
-    
+    public Set<SpReport> getReportsForQuery()
+    {
+        //assuming query.forceLoad() has been called
+        return query.getReports();
+    }
 }
 
 

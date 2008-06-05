@@ -677,12 +677,12 @@ public class ReportsBaseTask extends BaseTask
             
             // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
             // to To things. One way to get here with a null title is to click on the Labels btn from the search results
-            if (recordSet.getDbTableId() == 1 && cmdAction.getPropertyAsString("title") == null)
+            if (recordSet.getDbTableId() != null && recordSet.getDbTableId() == 1 && cmdAction.getPropertyAsString("title") == null)
             {
                 cmdAction.setProperty("file", "fish_label.jrxml");
                 cmdAction.setProperty("title", "Fish Labels");
                 
-            } else if (recordSet.getDbTableId() == 52 && cmdAction.getPropertyAsString("title") == null)
+            } else if (recordSet.getDbTableId() != null && recordSet.getDbTableId() == 52 && cmdAction.getPropertyAsString("title") == null)
             {
                 // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
                 // to To things. One way to get here with a null title is to click on the Labels btn from the search results
@@ -790,7 +790,7 @@ public class ReportsBaseTask extends BaseTask
             if (cmdAction.getData() instanceof RecordSet)
             {
                 RecordSet rs = (RecordSet)cmdAction.getData();
-                if (rs.getDbTableId() == SpReport.getClassTableId() || cmdAction.getProperty("spreport") != null)
+                if (rs.getDbTableId() != null && rs.getDbTableId() == SpReport.getClassTableId() || cmdAction.getProperty("spreport") != null)
                 {
                     runReport(cmdAction);
                 }

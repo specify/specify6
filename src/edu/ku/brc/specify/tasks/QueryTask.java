@@ -74,6 +74,7 @@ import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.specify.tasks.subpane.qb.QBLiveJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.qb.QBResultReportServiceCmdData;
+import edu.ku.brc.specify.tasks.subpane.qb.QBResultReportServiceInfo;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -1233,35 +1234,49 @@ public class QueryTask extends BaseTask
             if (cmdAction.getData() instanceof QBResultReportServiceCmdData)
             {
                QBResultReportServiceCmdData srvData = (QBResultReportServiceCmdData)cmdAction.getData();
-               JTable dataTbl = ((ESResultsTablePanel)srvData.getData()).getTable();
-               ResultSetTableModel rsm = (ResultSetTableModel)dataTbl.getModel();
-               QBLiveJRDataSource src = new QBLiveJRDataSource(rsm, srvData.getInfo().getVisibleCaptionInfo());
-               final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
-                       ReportsBaseTask.PRINT_REPORT, src);
-               cmd.setProperty("title", srvData.getInfo().getTitle());
-               String fileName = null;
-               List<SpReport> reps = new Vector<SpReport>(srvData.getInfo().getReports());
+               List<QBResultReportServiceInfo> reps = new Vector<QBResultReportServiceInfo>(srvData.getInfo().getReports());
+               QBResultReportServiceInfo selectedRep = null;
                if (reps.size() == 0)
                {
                    log.error("no reports for query. Should't have gotten here.");
                }
                else if (reps.size() == 1)
                {
-                   fileName = reps.get(0).getName();// + ".jrxml";
+                   selectedRep = reps.get(0);
                }
                else
                {
-                   ChooseFromListDlg<SpReport> dlg = new ChooseFromListDlg<SpReport>((Frame) UIRegistry
+                   ChooseFromListDlg<QBResultReportServiceInfo> dlg = new ChooseFromListDlg<QBResultReportServiceInfo>((Frame) UIRegistry
                            .getTopWindow(), UIRegistry.getResourceString("REP_CHOOSE_SP_REPORT"),
                            reps);
                    dlg.setVisible(true);
                    if (dlg.isCancelled()) { return; }
-                   fileName = dlg.getSelectedObject().getName();// + ".jrxml";
+                   selectedRep = dlg.getSelectedObject();
                    dlg.dispose();
                }
-               if (fileName == null) { return; }
+               if (selectedRep == null || selectedRep.getFileName() == null) { return; }
 
-               cmd.setProperty("file", fileName);
+               JTable dataTbl = ((ESResultsTablePanel)srvData.getData()).getTable();
+               ResultSetTableModel rsm = (ResultSetTableModel)dataTbl.getModel();
+               Object src;
+               if (selectedRep.isLiveData())
+               {
+                   src = new QBLiveJRDataSource(rsm, srvData.getInfo().getVisibleCaptionInfo());
+               }
+               else
+               {
+                   src = rsm.getRecordSet(null, true);
+               }
+               final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
+                       ReportsBaseTask.PRINT_REPORT, src);
+               cmd.setProperty("title", srvData.getInfo().getTitle());
+               cmd.setProperty("file", selectedRep.getFileName());
+               if (selectedRep.isRequiresNewConnection())
+               {
+                   RecordSet repRS  = new RecordSet(selectedRep.getReportName(), SpReport.getClassTableId());
+                   repRS.addItem(selectedRep.getSpReportId());
+                   cmd.setProperty("spreport", repRS);
+               }
                CommandDispatcher.dispatch(cmd);
             }
             else
