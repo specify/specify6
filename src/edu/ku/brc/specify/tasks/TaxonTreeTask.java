@@ -72,9 +72,9 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
      * @see edu.ku.brc.specify.tasks.BaseTreeTask#createTreeViewer(boolean)
      */
     @Override
-    protected TreeTableViewer<Taxon,TaxonTreeDef,TaxonTreeDefItem> createTreeViewer(final boolean isEditMode)
+    protected TreeTableViewer<Taxon,TaxonTreeDef,TaxonTreeDefItem> createTreeViewer(final String title, final boolean isEditMode)
     {
-        final TreeTableViewer<Taxon, TaxonTreeDef, TaxonTreeDefItem> ttv = super.createTreeViewer(isEditMode);
+        final TreeTableViewer<Taxon, TaxonTreeDef, TaxonTreeDefItem> ttv = super.createTreeViewer(title, isEditMode);
 
         if (ttv != null)
         {

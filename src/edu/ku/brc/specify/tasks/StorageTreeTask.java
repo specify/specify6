@@ -132,9 +132,9 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
      * @see edu.ku.brc.specify.tasks.BaseTreeTask#createTreeViewer(boolean)
      */
     @Override
-    protected TreeTableViewer<Storage, StorageTreeDef, StorageTreeDefItem> createTreeViewer(boolean isEditMode)
+    protected TreeTableViewer<Storage, StorageTreeDef, StorageTreeDefItem> createTreeViewer(final String title, boolean isEditMode)
     {
-        final TreeTableViewer<Storage, StorageTreeDef, StorageTreeDefItem> ttv = super.createTreeViewer(isEditMode);
+        final TreeTableViewer<Storage, StorageTreeDef, StorageTreeDefItem> ttv = super.createTreeViewer(title, isEditMode);
 
         if (ttv != null)
         {
