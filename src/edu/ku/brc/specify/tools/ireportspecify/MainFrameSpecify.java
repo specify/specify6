@@ -47,6 +47,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
@@ -244,6 +245,8 @@ public class MainFrameSpecify extends MainFrame
     protected static boolean saveXML(final ByteArrayOutputStream xml, final AppResourceIFace appRes, final ReportSpecify rep)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        boolean transOpen = false;
+        boolean newRep = ((SpAppResource)appRes).getId() == null;
         try
         {
             appRes.setDataAsString(xml.toString());
@@ -255,17 +258,33 @@ public class MainFrameSpecify extends MainFrame
                 spRep.initialize();
                 spRep.setName(appRes.getName());
                 spRep.setAppResource((SpAppResource)appRes);
-                spRep.setQuery(rep.getConnection().getQuery());
+                SpQuery q = rep.getConnection().getQuery();
+                //getting a fresh copy of the Query might be helpful
+                //in case one of its reports was deleted, but is probably
+                //no longer necessary with AppContextMgr.getInstance().setContext() call
+                //in the save method.
+                SpQuery freshQ = session.get(SpQuery.class, q.getId());
+                spRep.setQuery(freshQ);
                 spRep.setSpecifyUser(SpecifyUser.getCurrentUser());
                 session.beginTransaction();
+                transOpen = true;
                 session.save(spRep);
                 session.commit();
+                transOpen = false;
                 rep.setSpReport(spRep);
             }               
         } catch (Exception ex)
         {
+            if (transOpen)
+            {
+               session.rollback();
+               if (newRep)
+               {
+                   //XXX - more 'Collection' hard-coding
+                   AppContextMgr.getInstance().removeAppResource("Collection", appRes);
+               }
+            }
             throw new RuntimeException(ex);
-
         } finally
         {
             session.close();
@@ -282,6 +301,12 @@ public class MainFrameSpecify extends MainFrame
     @Override
     public void save(JReportFrame jrf)
     {
+        //Reloading the context to prevent weird Hibernate issues that occur when resources are deleted in a
+        //concurrently running instance of Specify. 
+        AppContextMgr.getInstance().setContext(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
+                ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
+                false);
+
         AppResourceIFace appRes = getAppResForFrame(jrf);
         if (appRes != null)
         {
