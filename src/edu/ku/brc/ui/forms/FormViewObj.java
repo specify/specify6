@@ -31,6 +31,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
@@ -163,7 +165,8 @@ public class FormViewObj implements Viewable,
                                     ValidationListener, 
                                     ResultSetControllerListener, 
                                     AppPrefsChangeListener,
-                                    BusinessRulesOkDeleteIFace
+                                    BusinessRulesOkDeleteIFace,
+                                    PropertyChangeListener
 {
     private static final Logger log = Logger.getLogger(FormViewObj.class);
     
@@ -3695,7 +3698,17 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setDataIntoUI()
      */
-    public synchronized void setDataIntoUI()
+    public void setDataIntoUI()
+    {
+        setDataIntoUI(true);
+    }
+
+    /**
+     * Fill the form with data, indicate whether the form should be reset because the data is new.
+     * @param doResetAfterFill tells the form to be reset after filling, as if it was new data.
+     * 
+     */
+    protected synchronized void setDataIntoUI(final boolean doResetAfterFill)
     {
         if (businessRules != null)
         {
@@ -4027,7 +4040,7 @@ public class FormViewObj implements Viewable,
         //log.debug(formViewDef.getName());
 
         // Adjust the formValidator now that all the data is in the controls
-        if (formValidator != null)
+        if (doResetAfterFill && formValidator != null)
         {
             formValidator.reset(MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT));
 
@@ -4041,7 +4054,7 @@ public class FormViewObj implements Viewable,
         }
 
 
-        if (mvParent != null && mvParent.isTopLevel() && saveControl != null && isEditting)
+        if (doResetAfterFill && mvParent != null && mvParent.isTopLevel() && saveControl != null && isEditting)
         {
             saveControl.setEnabled(false);
         }
@@ -4693,6 +4706,8 @@ public class FormViewObj implements Viewable,
             throw new RuntimeException("Two controls have the same name ["+formCell.getName()+"] "+formViewDef.getName());
         }
         
+        uip.addPropertyChangeListener(this);
+        
         FVOFieldInfo fieldInfo = new FVOFieldInfo(formCell, uip, controlsById.size());
         controlsById.put(formCell.getIdent(), fieldInfo);
         if (!isThis)
@@ -5054,6 +5069,21 @@ public class FormViewObj implements Viewable,
 
 
     //-------------------------------------------------
+    // PropertyChangeListener
+    //-------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+     */
+    public void propertyChange(PropertyChangeEvent pce)
+    {
+        if (pce != null && StringUtils.isNotEmpty(pce.getPropertyName()) && pce.getPropertyName().equals("data"))
+        {
+            setDataIntoUI(false);
+        }
+    }
+
+    //-------------------------------------------------
     // AppPrefsChangeListener
     //-------------------------------------------------
 
@@ -5359,4 +5389,5 @@ public class FormViewObj implements Viewable,
     {
         FormViewObj.useDebugForm = useDebugForm;
     }
+
 }

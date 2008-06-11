@@ -14,14 +14,18 @@
  */
 package edu.ku.brc.ui;
 
+import java.beans.PropertyChangeListener;
 import java.util.Properties;
 
 import javax.swing.JComponent;
 import javax.swing.event.ChangeListener;
 
 /*
+ * Implementers 'should' but are not required to send a PropertyChangeEvent with the propertyName set to 'data'
+ * when the data has been changed. This way the UI can be updated appropriately.
+ * 
  * @code_status Beta
- **
+ *
  * @author rods
  *
  */
@@ -51,10 +55,15 @@ public interface UIPluginable
      */
     public abstract JComponent getUIComponent();
     
-    
     /**
      * Tells the plugin to cleanup because the form is going away. 
      */
     public abstract void shutdown();
+    
+    /**
+     * Registers a property change listener to be notified of changes to the internal state.
+     * @param l the listener
+     */
+    public abstract void addPropertyChangeListener(PropertyChangeListener l);
 
 }
