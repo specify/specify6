@@ -39,6 +39,7 @@ import edu.ku.brc.dbsupport.AutoNumberIFace;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter.FormatterType;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter.PartialDateEnum;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField.FieldType;
@@ -120,7 +121,7 @@ public class UIFieldFormatterMgr
     /**
      * @return
      */
-    public static List<UIFieldFormatterIFace> getFormatters()
+    public List<UIFieldFormatterIFace> getFormatters()
     {
         Vector<UIFieldFormatterIFace> list = new Vector<UIFieldFormatterIFace>();
         for (UIFieldFormatterIFace fmt : instance.hash.values())
@@ -149,9 +150,9 @@ public class UIFieldFormatterMgr
      * @param name the name of the format
      * @return return a formatter if it is there, returns null if it isn't
      */
-    public static UIFieldFormatterIFace getFormatter(final String name)
+    public UIFieldFormatterIFace getFormatter(final String name)
     {
-        return getInstance().getFormatterInternal(name);
+        return getFormatterInternal(name);
 
     }
 
@@ -189,9 +190,9 @@ public class UIFieldFormatterMgr
      * @param clazz the class of the data that the formatter is used for.
      * @return return a formatter if it is there, returns null if it isn't
      */
-    public static UIFieldFormatterIFace getFormatter(final Class<?> clazz)
+    public UIFieldFormatterIFace getFormatter(final Class<?> clazz)
     {
-        return getInstance().getFormatterInternal(clazz);
+        return getFormatterInternal(clazz);
     }
     
     /**
@@ -199,9 +200,9 @@ public class UIFieldFormatterMgr
      * @param type the type of Partial Date formatter.
      * @return the formatter
      */
-    public static UIFieldFormatterIFace getDateFormmater(UIFieldFormatter.PartialDateEnum type)
+    public UIFieldFormatterIFace getDateFormmater(UIFieldFormatter.PartialDateEnum type)
     {
-        for (Enumeration<UIFieldFormatterIFace> e=getInstance().hash.elements();e.hasMoreElements();)
+        for (Enumeration<UIFieldFormatterIFace> e=hash.elements();e.hasMoreElements();)
         {
             UIFieldFormatterIFace f = e.nextElement();
             //System.out.println("["+Date.class+"]["+f.getDataClass()+"] "+f.getPartialDateType());
@@ -218,10 +219,10 @@ public class UIFieldFormatterMgr
      * @param isForPartial indicates to get Partial Date formatters
      * @return return a list of formatters that match the class
      */
-    public static List<UIFieldFormatterIFace> getDateFormatterList(final boolean isForPartial)
+    public List<UIFieldFormatterIFace> getDateFormatterList(final boolean isForPartial)
     {
         Vector<UIFieldFormatterIFace> list = new Vector<UIFieldFormatterIFace>();
-        for (Enumeration<UIFieldFormatterIFace> e=getInstance().hash.elements();e.hasMoreElements();)
+        for (Enumeration<UIFieldFormatterIFace> e=hash.elements();e.hasMoreElements();)
         {
             UIFieldFormatterIFace f = e.nextElement();
             if (f.isDate())
@@ -241,7 +242,7 @@ public class UIFieldFormatterMgr
      * @param clazz the class of the data that the formatter is used for.
      * @return return a list of formatters that match the class
      */
-    public static List<UIFieldFormatterIFace> getFormatterList(final Class<?> clazz)
+    public List<UIFieldFormatterIFace> getFormatterList(final Class<?> clazz)
     {
         return getFormatterList(clazz, null);
     }
@@ -251,12 +252,12 @@ public class UIFieldFormatterMgr
      * @param clazz the class of the data that the formatter is used for.
      * @return return a list of formatters that match the class
      */
-    public static List<UIFieldFormatterIFace> getFormatterList(final Class<?> clazz,
-                                                               final String fieldName)
+    public List<UIFieldFormatterIFace> getFormatterList(final Class<?> clazz,
+                                                        final String fieldName)
     {
         Vector<UIFieldFormatterIFace> list = new Vector<UIFieldFormatterIFace>();
         UIFieldFormatterIFace         defFormatter = null;
-        for (Enumeration<UIFieldFormatterIFace> e=getInstance().hash.elements();e.hasMoreElements();)
+        for (Enumeration<UIFieldFormatterIFace> e=hash.elements();e.hasMoreElements();)
         {
             UIFieldFormatterIFace f = e.nextElement();
             if (clazz == f.getDataClass() && 
@@ -727,6 +728,7 @@ public class UIFieldFormatterMgr
         {
             len = formatter.getPrecision() + formatter.getScale() + 1;
         } else
+
         { 
             if (cls == Long.class)
             {
@@ -761,6 +763,86 @@ public class UIFieldFormatterMgr
         formatter.getFields().add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric, len, sb.toString(), false));
     }
 
+    /**
+     * @param isAutoNumber
+     * @param fieldType
+     * @param length
+     * @return
+     */
+    public static String getFormatterPattern(final boolean isAutoNumber,
+                                             final UIFieldFormatterField.FieldType fieldType,
+                                             final int     length)
+    {
+        char defChar = 'A';
+        if (fieldType != null)
+        {
+            switch (fieldType)
+            {
+                case numeric:
+                    defChar = 'N';
+                    break;
+                    
+                case alphanumeric:
+                    defChar = 'A';
+                    break;
+                    
+                case alpha:
+                    defChar = 'a';
+                    break;
+                    
+                case separator:
+                    defChar = '#';
+                    break;
+                    
+                case year:
+                    defChar = 'Y';
+                    break;
+                    
+                case anychar:
+                    defChar = ' '; // we don't need to localize this
+                    break;
+                    
+                default:
+                    defChar = 'X';
+                break;
+            }
+        } else if (!isAutoNumber)
+        {
+            throw new RuntimeException("Can't have a null fieldType and not be autonumbered");
+        }
+        
+        char   pChar;
+        if (isAutoNumber)
+        {
+            pChar  = getAutoNumberPatternChar();
+            
+        } else if (fieldType != UIFieldFormatterField.FieldType.anychar)
+        {
+            String key         = "UIFieldFormatterMgr." + fieldType.toString();
+            String charPattern = UIRegistry.getResourceString(key);
+            pChar = charPattern.length() > 0 ? charPattern.charAt(0) : defChar;
+        } else
+        {
+            pChar = defChar;
+        }
+        
+        StringBuilder sb   = new StringBuilder();
+        for (int i=0;i<length;i++)
+        {
+            sb.append(pChar);
+        }
+        return sb.toString();
+    }
+    
+    /**
+     * @return the localized char used to represent autonumbered.
+     */
+    public static char getAutoNumberPatternChar()
+    {
+        String key         = "UIFieldFormatterMgr.autonumber";
+        String charPattern = UIRegistry.getResourceString(key);
+        return charPattern.length() > 0 ? charPattern.charAt(0) : '#';
+    }
     
     /*
     public static void test()

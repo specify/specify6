@@ -47,6 +47,7 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -332,6 +333,7 @@ public class ViewFactory
 
         boolean isPartialOK         = cellField.getPropertyAsBoolean("ispartial", false);
         boolean isFromUIFmtOverride = cellField.getPropertyAsBoolean("fromuifmt", false);
+        Integer suggestedNumCols    = cellField.getPropertyAsInteger("cols", null);
         
         // Because it is formatted we ALWAYS validate it when there is a validator
         if (validator != null)
@@ -339,7 +341,7 @@ public class ViewFactory
             // deliberately ignore "cellField.isChangeListenerOnly()"
             // pass in false instead
             // THis is the OLD way before the UIFieldFormatter was moved into the DBFieldInfo and also the CellField
-            UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(uiFormatterName);
+            UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getInstance().getFormatter(uiFormatterName);
             if (formatter == null)
             {
                 String msg = "Field["+cellField.getName()+ "] is missing formatter by name ["+uiFormatterName+"]";
@@ -347,15 +349,20 @@ public class ViewFactory
                 throw new RuntimeException(msg);
             }
             
-            if (formatter.isDate() || formatter.isNumeric())
+            if (formatter != null)
             {
-                ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(uiFormatterName, isViewOnly, isPartialOK);
+                ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(uiFormatterName, 
+                                                                                       isViewOnly, 
+                                                                                       isPartialOK, 
+                                                                                       suggestedNumCols);
                 textField.setRequired(isRequired);
                 
                 validator.hookupTextField(textField,
                                           cellField.getIdent(),
                                           isRequired,
-                                          UIValidator.Type.Changed,  cellField.getValidationRule(), false);
+                                          UIValidator.Type.Changed,  
+                                          cellField.getValidationRule(), 
+                                          false);
                 
                 if (isViewOnly)
                 {
@@ -391,7 +398,10 @@ public class ViewFactory
         
         if (isViewOnly)
         {
-            ValFormattedTextFieldSingle vtfs = new ValFormattedTextFieldSingle(uiFormatterName, isViewOnly, false);
+            ValFormattedTextFieldSingle vtfs = new ValFormattedTextFieldSingle(uiFormatterName, 
+                                                                               isViewOnly, 
+                                                                               false, 
+                                                                               suggestedNumCols);
             changeTextFieldUIForDisplay(vtfs, cellField.getPropertyAsBoolean("transparent", false));
             return vtfs;
         }
@@ -594,6 +604,27 @@ public class ViewFactory
         {
             textField.setBackground(viewFieldColor.getColor());
         }
+    }
+    
+    /**
+     * @param textField
+     * @param border
+     * @param fgColor
+     * @param bgColor
+     * @param isOpaque
+     */
+    public static void changeTextFieldUIForEdit(final JTextField textField, 
+                                                final Border     border, 
+                                                final Color      fgColor,
+                                                final Color      bgColor,
+                                                final boolean    isOpaque)
+    {
+        textField.setBorder(border);
+        textField.setForeground(fgColor);
+        textField.setEditable(true);
+        textField.setFocusable(true);
+        textField.setOpaque(isOpaque);
+        textField.setBackground(bgColor);
     }
     
     /**

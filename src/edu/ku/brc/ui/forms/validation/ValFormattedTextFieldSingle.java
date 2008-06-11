@@ -25,6 +25,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -36,7 +37,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -97,20 +97,19 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     protected String                      defaultValue   = null;
 
     protected UIFieldFormatterIFace       formatter;
-    protected List<UIFieldFormatterField> fields         = null;
+    protected List<UIFieldFormatterField> fields              = null;
     protected boolean                     isFromUIFmtOverride = false;
+    protected Integer                     suggestedNumCols    = null;
     
     protected Object                      origValue      = null;
     protected UndoManager                 undoManager    = null;
-
-    //---
-    protected String bgStr     = null;
-    protected Point  pnt       = null;
-    protected Color  textColor = new Color(0,0,0,64);
-    protected Insets inner;
     
-    protected JComponent[] comps;
-
+    //--- Background Drawing of faint text
+    protected String                      bgStr     = null;
+    protected Point                       pnt       = null;
+    protected Color                       textColor = new Color(0,0,0,64);
+    protected Insets                      inner;
+    
     /**
      * Constructor
      * @param dataObjFormatterName the formatters name
@@ -122,7 +121,9 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
     /**
      * Constructor
-     * @param dataObjFormatterName the formatters name
+     * @param formatter the formatter
+     * @param isViewOnly is it for view mode
+     * @param isPartialOK can only a part of the format be typed in (used for search forms)
      */
     public ValFormattedTextFieldSingle(final UIFieldFormatterIFace formatter, 
                                        final boolean isViewOnly, 
@@ -130,33 +131,43 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     {
       super();
       
-      init(formatter, isViewOnly, isPartialOK);
+      init(formatter, isViewOnly, isPartialOK, null);
 
     }
 
     /**
      * Constructor
      * @param formatterName the formatters name
+     * @param isViewOnly is it for view mode
+     * @param isPartialOK can only a part of the format be typed in (used for search forms)
+     * @param suggestedNumCols suggested number of columns that can be bigger than the format
      */
     public ValFormattedTextFieldSingle(final String formatterName, 
                                        final boolean isViewOnly, 
-                                       final boolean isPartialOK)
+                                       final boolean isPartialOK,
+                                       final Integer suggestedNumCols)
     {
         super();
 
-        init(UIFieldFormatterMgr.getFormatter(formatterName), isViewOnly, isPartialOK);
+        init(UIFieldFormatterMgr.getInstance().getFormatter(formatterName), isViewOnly, isPartialOK, suggestedNumCols);
 
     }
     
     /**
-     * @param formatterArg
-     * @param isViewOnly
+     * @param formatterArg the formatter (can't be null)
+     * @param isViewOnlyArg is it for view mode
+     * @param isPartialOK can only a part of the format be typed in (used for search forms)
+     * @param suggestedNumCols suggested number of columns that can be bigger than the format
      */
-    protected void init(final UIFieldFormatterIFace formatterArg, final boolean isViewOnlyArg, final boolean isPartialOK)
+    protected void init(final UIFieldFormatterIFace formatterArg, 
+                        final boolean isViewOnlyArg, 
+                        final boolean isPartialOK,
+                        final Integer suggNumCols)
     {
         setControlSize(this);
 
-        this.isViewOnly = isViewOnlyArg;
+        this.isViewOnly       = isViewOnlyArg;
+        this.suggestedNumCols = suggNumCols;
         
         initColors();
         
@@ -164,7 +175,21 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         
         setFormatterInternal(formatterArg);
         
-        addMouseListener(new MouseAdapter() {
+        //log.debug(formatter.getName());
+        int numCols;
+        if (suggestedNumCols != null)
+        {
+            numCols = Math.max(suggestedNumCols, formatter.getUILength());
+        } else
+        {
+            numCols = formatter.getUILength();
+        }
+        
+        setColumns(numCols);
+
+        
+        addMouseListener(new MouseAdapter() 
+        {
 
             /* (non-Javadoc)
              * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
@@ -203,7 +228,6 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             if (!formatterArg.isUserInputNeeded() && !isPartialOK)
             {
                 ViewFactory.changeTextFieldUIForDisplay(this, false);
-                //bgStr = "";
                 
             } else
             {
@@ -286,16 +310,21 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             int          w   = fm.stringWidth(text);
             pnt = new Point(inner.left+w, inner.top + fm.getAscent());
 
+            Rectangle r = g.getClipBounds();
+            Dimension s = getSize();
+            Insets    i2 = getBorder().getBorderInsets(this);
+            int x = i2.left-1;
+            int y = i2.top-1;
+            int ww = s.width - i2.right + 1;
+            int hh = s.height - i2.bottom + 1;
+            g.setClip(x, y, ww, hh);            
+            
             g.setColor(textColor);
             g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
+            
+            g.setClip(r.x, r.y, r.width, r.height); // reset clip
         }
 
-
-        if (getText().equals("05/19/3007"))
-        {
-            int x = 0;
-            x++;
-        }
         if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
             Graphics2D g2d = (Graphics2D)g;
@@ -312,20 +341,17 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     @Override
     public void setEnabled(boolean enabled)
     {
-        //if (!isViewOnly)
-        //{
-            boolean isNeeded = formatter.isUserInputNeeded();
-            if (enabled && isNeeded)
-            {
-                super.setEnabled(isNeeded);
-                
-            } else
-            {
-                super.setEnabled(enabled);
-            }
-    
-            setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
-        //}
+        boolean isNeeded = formatter.isUserInputNeeded();
+        if (enabled && isNeeded)
+        {
+            super.setEnabled(isNeeded);
+            
+        } else
+        {
+            super.setEnabled(enabled);
+        }
+
+        setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
     }
 
     /* (non-Javadoc)
@@ -381,7 +407,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     public void updateAutoNumbers()
     {
-        if (needsUpdating && formatter.getAutoNumber() != null && !isViewOnly)
+        if (isAutoFmtOn && needsUpdating && formatter.getAutoNumber() != null && !isViewOnly)
         {
             String nextNum = formatter.getNextNumber(getText());
             if (StringUtils.isNotEmpty(nextNum))
@@ -414,6 +440,21 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     public void setAutoNumberEnabled(boolean turnOn)
     {
+        if (isAutoFmtOn != turnOn && formatter.isIncrementer())
+        {
+            if (turnOn)
+            {
+                ViewFactory.changeTextFieldUIForDisplay(this, false);
+            } else
+            {
+                JTextField tf = new JTextField(); // Cheap and easy way to get original UI
+                ViewFactory.changeTextFieldUIForEdit(this, 
+                                                     tf.getBorder(),
+                                                     tf.getForeground(),
+                                                     tf.getBackground(),
+                                                     tf.isOpaque());
+            }
+        }
         isAutoFmtOn = turnOn;
     }
     
@@ -557,8 +598,37 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         return valState;
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.JTextField#getColumns()
+     */
+    @Override
+    public int getColumns()
+    {
+        int w =  super.getColumns();
+        return w;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.JTextField#getColumnWidth()
+     */
+    @Override
+    protected int getColumnWidth()
+    {
+        int w = super.getColumnWidth();
+        return w;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.JTextField#setColumns(int)
+     */
+    @Override
+    public void setColumns(int arg0)
+    {
+        super.setColumns(arg0);
+    }
+
     /**
-     * Checks the number aginst the min and max in the formatter (they are not required).
+     * Checks the number against the min and max in the formatter (they are not required).
      * @param val the value in question
      * @return true if within the min and max
      */
@@ -883,6 +953,10 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             {
                 return false;
 
+            } else if (field.getType() == UIFieldFormatterField.FieldType.anychar)
+            {
+                return true;
+
             } else if (field.getType() == UIFieldFormatterField.FieldType.numeric)
             {
                 // we really need to check to make sure this is a Double, Float or BigDecimal
@@ -931,7 +1005,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             UIFieldFormatterField field = docFields[offset];
             
             // We can't let them try to delete separator's or incrementers
-            if (!doSetText && len < limit && (field.isIncrementer() || field.isByYear() || docFields[offset].getType() == UIFieldFormatterField.FieldType.separator))
+            if (!doSetText && len < limit && ((field.isIncrementer() && isAutoFmtOn) || field.isByYear() || docFields[offset].getType() == UIFieldFormatterField.FieldType.separator))
             {
                 int pos = getCaretPosition();
                 setCaretPosition(pos - field.getSize());

@@ -203,8 +203,8 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         return year;
     }
     
-    /*
-     * 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#byYearApplies()
      */
     public boolean byYearApplies()
     {
@@ -220,8 +220,8 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     	return (hasYearField && hasAutoNumber);
     }
 
-    /*
-     * 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getByYear()
      */
     public boolean getByYear()
     {
@@ -234,8 +234,8 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     	return false;
     }
     
-    /*
-     * 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#setByYear(boolean)
      */
     public void setByYear(boolean byYear)
     {
@@ -376,6 +376,14 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         return len;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getUILength()
+     */
+    public int getUILength()
+    {
+        return getLength();
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getIncPosition()
      */

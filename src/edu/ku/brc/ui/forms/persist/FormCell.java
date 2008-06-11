@@ -311,6 +311,21 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
         }
         return defVal;
     }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getPropertyAsInteger(java.lang.String, Integer)
+     */
+    public Integer getPropertyAsInteger(final String nameStr, final Integer defVal)
+    {
+        if (properties != null)
+        {
+            String str = properties.getProperty(nameStr);
+            if (isNotEmpty(str))
+            {
+                return Integer.parseInt(str);
+            }
+        }
+        return defVal;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getPropertyAsBoolean(java.lang.String, boolean)

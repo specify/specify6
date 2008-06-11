@@ -398,7 +398,7 @@ public class UIFormatterDlg extends CustomDialog
 
         // get formatters for field
         List<UIFieldFormatterIFace> fmtrs = new Vector<UIFieldFormatterIFace>(
-        		UIFieldFormatterMgr.getFormatterList(fieldInfo.getTableInfo().getClassObj(), fieldInfo.getName()));
+                UIFieldFormatterMgr.getInstance().getFormatterList(fieldInfo.getTableInfo().getClassObj(), fieldInfo.getName()));
         Collections.sort(fmtrs, new Comparator<UIFieldFormatterIFace>() {
             public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
             {

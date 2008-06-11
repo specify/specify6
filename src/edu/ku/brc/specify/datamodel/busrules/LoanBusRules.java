@@ -98,7 +98,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
                             if (dateComp != null && dateComp instanceof ValFormattedTextFieldSingle)
                             {
                                 ValFormattedTextFieldSingle loanDateComp = (ValFormattedTextFieldSingle)dateComp;
-                                System.out.println("["+loanDateComp.getText()+"]");
+                                //System.out.println("["+loanDateComp.getText()+"]");
                                 if (StringUtils.isEmpty(loanDateComp.getText()))
                                 {
                                     DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
@@ -189,7 +189,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
             {
                 shipmentNum = loan.getLoanNumber();
                 
-            } else if (StringUtils.contains(shipmentNum, '#')) // XXX Need to check the formatter!
+            } else if (StringUtils.contains(shipmentNum, UIFieldFormatterMgr.getAutoNumberPatternChar())) // XXX Need to check the formatter!
             {
                 shipment.setShipmentNumber(loan.getLoanNumber());
             }

@@ -143,7 +143,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         
         if (StringUtils.isNotEmpty(fieldFormatterName))
         {
-            uiFieldFormatter = UIFieldFormatterMgr.getFormatter(fieldFormatterName);
+            uiFieldFormatter = UIFieldFormatterMgr.getInstance().getFormatter(fieldFormatterName);
         }
 
         if (StringUtils.contains(keyColumn, ","))

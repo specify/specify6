@@ -162,7 +162,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                     
                     if (isUIFmt)
                     {
-                        UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(format);
+                        UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getInstance().getFormatter(format);
                         if (formatter != null)
                         {
                             fieldInfo.setFormatter(formatter);

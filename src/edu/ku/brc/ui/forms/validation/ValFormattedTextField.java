@@ -124,6 +124,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     protected Color                       textColor = new Color(0,0,0,64);
     
     protected JComponent[]                comps = null;
+    protected char                        autoNumberChar = UIFieldFormatterMgr.getAutoNumberPatternChar();
 
     /**
      * Constructor
@@ -182,7 +183,7 @@ s     * @param isViewOnly
 
         this.isViewOnly = isViewOnly;
         
-        init(UIFieldFormatterMgr.getFormatter(formatterName), isAllEditable);
+        init(UIFieldFormatterMgr.getInstance().getFormatter(formatterName), isAllEditable);
     }
     
     /**
@@ -693,7 +694,7 @@ s     * @param isViewOnly
      */
     public void updateAutoNumbers()
     {
-        if (needsUpdating)
+        if (isAutoFmtOn && needsUpdating)
         {
             String nextNum = formatter.getNextNumber(getText());
             if (StringUtils.isNotEmpty(nextNum))
@@ -724,7 +725,7 @@ s     * @param isViewOnly
      */
     public void setAutoNumberEnabled(boolean turnOn)
     {
-        if (cardPanel != null && isAutoFmtOn != turnOn)
+        if (formatter.isIncrementer() && cardPanel != null && isAutoFmtOn != turnOn)
         {
             cardLayout.show(cardPanel, turnOn ? "view" : "edit");   
         }
@@ -1145,7 +1146,7 @@ s     * @param isViewOnly
             String contentStr = textField.getText();
             int    newLen     = contentStr.length() + str.length();
             
-            if (newLen == limit && str.charAt(0) == '#')
+            if (newLen == limit && str.charAt(0) == autoNumberChar)
             {
                 return true;
             }

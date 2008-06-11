@@ -138,6 +138,7 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.init.BldrPickList;
 import edu.ku.brc.specify.config.init.BldrPickListItem;
@@ -224,6 +225,8 @@ import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
@@ -240,7 +243,9 @@ public class BuildSampleDatabase
     private static final Logger  log      = Logger.getLogger(BuildSampleDatabase.class);
     
     protected static boolean     debugOn  = false;
-    protected static Hashtable<String, Boolean> fieldsToHideHash = new Hashtable<String, Boolean>();
+    protected static final int   TIME_THRESHOLD = 20;
+    protected static Hashtable<String, Boolean> fieldsToHideHash     = new Hashtable<String, Boolean>();
+    protected static String                     catalogNumberFmtName = null;
 
     protected Calendar           calendar = Calendar.getInstance();
     protected Session            session;
@@ -6140,7 +6145,7 @@ public class BuildSampleDatabase
                     UIHelper.centerAndShow(setupDlg);
                     try
                     {
-                        int seconds = 15;
+                        int seconds = TIME_THRESHOLD;
                         while (seconds > 0)
                         {
                             setupDlg.setTitle(Integer.toString(seconds));
@@ -6683,10 +6688,12 @@ public class BuildSampleDatabase
         protected JPasswordField     passwdTxtFld;
         protected JTextField         databaseNameTxt;
         protected JComboBox          drivers;
+        protected JComboBox          catNumFmts;
         protected JCheckBox          extraCollectionsChk;
         protected JComboBox          disciplines;
         protected ToggleButtonChooserPanel<CollectionChoice> collChoicePanel;
-        protected Vector<DatabaseDriverInfo> driverList;
+        protected Vector<DatabaseDriverInfo>  driverList;
+        protected Vector<UIFieldFormatterIFace> catNumFmtList;
         protected boolean            wasClosed = false;
         
         /**
@@ -6699,11 +6706,17 @@ public class BuildSampleDatabase
         {
             super();
             
+            Specify.setUpSystemProperties();
+            UIFieldFormatterMgr.setDoingLocal(true);
+            
             driverList = DatabaseDriverInfo.getDriversList();
             int inx = Collections.binarySearch(driverList, new DatabaseDriverInfo(dbDriverName, null, null));
             
-            drivers    = createComboBox(driverList);
+            drivers = createComboBox(driverList);
             drivers.setSelectedIndex(inx);
+            
+            catNumFmtList = (Vector<UIFieldFormatterIFace>)UIFieldFormatterMgr.getInstance().getFormatterList(CollectionObject.class, "catalogNumber");
+            catNumFmts = createComboBox(catNumFmtList);
             
             //Vector<DisciplineType> disciplinesList = DisciplineType.getDisciplineList();
             disciplines     = createComboBox(DisciplineType.getDisciplineList());
@@ -6717,7 +6730,7 @@ public class BuildSampleDatabase
             extraCollectionsChk = createCheckBox("Create Extra Collections");
             extraCollectionsChk.setSelected(true);
             
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p,4px,p,4px,p,4px,p,4px,p,4px,p:g,10px,p"));
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p,4px,p,4px,p,4px,p,4px,p,4px,p,4px,p:g,10px,p"));
             CellConstraints cc         = new CellConstraints();
             builder.add(createLabel("Username:", SwingConstants.RIGHT),      cc.xy(1,1));
             builder.add(usernameTxtFld,                                     cc.xy(3,1));
@@ -6729,8 +6742,10 @@ public class BuildSampleDatabase
             builder.add(disciplines,                                        cc.xy(3,7));
             builder.add(createLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,9));
             builder.add(drivers,                                            cc.xy(3,9));
-            //builder.add(createLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,11));
+            builder.add(createLabel("Cat. Num Fmt:", SwingConstants.RIGHT), cc.xy(1,11));
+            builder.add(catNumFmts,                                         cc.xy(3,11));
             
+            int y = 13;
             CollectionChoice[] choicesArray = {
                     new CollectionChoice(DisciplineType.STD_DISCIPLINES.fish, false, true),
                     new CollectionChoice(DisciplineType.STD_DISCIPLINES.fish, true, true),
@@ -6776,13 +6791,13 @@ public class BuildSampleDatabase
             collChoicePanel.setUseScrollPane(true);
             collChoicePanel.createUI();
             collChoicePanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            builder.add(collChoicePanel, cc.xywh(1,11,3,1));
+            builder.add(collChoicePanel, cc.xywh(1,13,3,1));
             
             collChoicePanel.setSelectedObjects(choices);
             
             final JButton okBtn     = createButton("OK");
             final JButton cancelBtn = createButton("Cancel");
-            builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1,13,3,1));
+            builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1,15,3,1));
             
             cancelBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
@@ -6903,8 +6918,14 @@ public class BuildSampleDatabase
                 {
                     try
                     {
+                        UIFieldFormatterIFace cnf = (UIFieldFormatterIFace)catNumFmts.getSelectedItem();
+                        if (cnf != null)
+                        {
+                            catalogNumberFmtName = cnf.getName();
+                        }
                         String username = usernameTxtFld.getText();
                         String password = new String(passwdTxtFld.getPassword());
+                        
                         startBuild(databaseName, 
                                    dbDriver.getName(), 
                                    (DisciplineType)disciplines.getSelectedItem(), 
@@ -7025,6 +7046,8 @@ public class BuildSampleDatabase
         newContainer.setWebLinkName(newContainer.getWebLinkName());
         newContainer.setIsHidden(newContainer.getIsHidden());
         
+        boolean isColObj = memoryContainer.getName().equals("collectionobject");
+        
         debugOn = false;//memoryContainer.getName().equals("collectionobject");
        
         for (SpLocaleItemStr nm : memoryContainer.getNames())
@@ -7064,6 +7087,12 @@ public class BuildSampleDatabase
             newItem.setContainer(newContainer);
             
             loadLocalization(item, newItem, hideGenericFields);
+            
+            if (isColObj && item.getName().equals("catalogNumber") && catalogNumberFmtName != null)
+            {
+                newItem.setFormat(catalogNumberFmtName);
+            }
+            
         }
     }
     

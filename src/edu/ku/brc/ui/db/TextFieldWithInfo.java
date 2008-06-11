@@ -336,7 +336,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
             {
                 Object[] val = UIHelper.getFieldValues(fieldNames, this.dataObj, getter);
                 
-                UIFieldFormatterIFace uiFieldFormatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatterName);
+                UIFieldFormatterIFace uiFieldFormatter = UIFieldFormatterMgr.getInstance().getFormatter(uiFieldFormatterName);
                 if (uiFieldFormatter != null)
                 {
                     newVal = uiFieldFormatter.formatFromUI(val[0]).toString();

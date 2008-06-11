@@ -2168,7 +2168,7 @@ public class TableViewObj implements Viewable,
                         return getPickListValue(adapter, dataVal);
                     } else if (uiFmt != null)
                     {
-                        UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getFormatter(uiFmt);
+                        UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getInstance().getFormatter(uiFmt);
                         if (fmt != null)
                         {
                             dataVal = fmt.formatToUI(dataVal);

@@ -82,7 +82,7 @@ public class CatNumScheme extends BaseSetupPanel
             }
         });
         
-        for (UIFieldFormatterIFace fmt : UIFieldFormatterMgr.getFormatterList(CollectionObject.class))
+        for (UIFieldFormatterIFace fmt : UIFieldFormatterMgr.getInstance().getFormatterList(CollectionObject.class))
         {
             System.out.println(fmt.getName()+"  "+fmt.getTitle());
             ((DefaultComboBoxModel)catNumSchemeCBX.getModel()).addElement(fmt);

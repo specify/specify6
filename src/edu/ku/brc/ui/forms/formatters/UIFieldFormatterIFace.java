@@ -121,6 +121,13 @@ public interface UIFieldFormatterIFace
     public abstract boolean isLengthOK(int lengthOfData);
     
     /**
+     * a hint at how many characters to the UI should use for the field, most of the time this will return the 
+     * same number as length.
+     * @return a hint at how many characters to the UI should use for the field.
+     */
+    public abstract int getUILength();
+
+    /**
      * @return the pair of values where the first number is the index into the Fields list and the second
      * is the index of where the field's format ends.
      */

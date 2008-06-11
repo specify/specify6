@@ -791,7 +791,7 @@ public class ViewLoader
                                     //-------------------------------------------------------
                                     if (isNotEmpty(uiFieldFormatterName))
                                     {
-                                        UIFieldFormatterIFace uiFormatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatterName);
+                                        UIFieldFormatterIFace uiFormatter = UIFieldFormatterMgr.getInstance().getFormatter(uiFieldFormatterName);
                                         if (uiFormatter == null)
                                         {
                                             log.error("Couldn't find formatter["+uiFieldFormatterName+"]");
@@ -813,7 +813,7 @@ public class ViewLoader
                                             {
                                                 log.debug("Missing Date Formatter for ["+cellName+"]");
                                                 uiFieldFormatterName = "Date";
-                                                UIFieldFormatterIFace uiFormatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatterName);
+                                                UIFieldFormatterIFace uiFormatter = UIFieldFormatterMgr.getInstance().getFormatter(uiFieldFormatterName);
                                                 if (uiFormatter == null)
                                                 {
                                                     uiFieldFormatterName = "";

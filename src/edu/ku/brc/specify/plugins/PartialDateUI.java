@@ -134,7 +134,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
         {
             public void run()
             {
-                UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getDateFormmater(type);
+                UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getInstance().getDateFormmater(type);
                 //System.out.println(type+" ["+formatter+"]");
                 if (formatter != null)
                 {
@@ -209,7 +209,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
         }
         dateType = UIFieldFormatter.PartialDateEnum.values()[inx+1];
         
-        textField.setFormatter(UIFieldFormatterMgr.getDateFormmater(dateType));
+        textField.setFormatter(UIFieldFormatterMgr.getInstance().getDateFormmater(dateType));
         textField.setValue(date, "");
         
     }

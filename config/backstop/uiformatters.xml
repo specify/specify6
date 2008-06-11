@@ -37,6 +37,10 @@
     <external>edu.ku.brc.specify.ui.CatalogNumberUIFieldFormatter</external>
   </format>
 
+  <format system="true" name="CatalogNumberString" class="edu.ku.brc.specify.datamodel.CollectionObject" fieldname="catalogNumber" default="false">
+    <external>edu.ku.brc.specify.ui.CatalogNumberStringUIFieldFormatter</external>
+  </format>
+
   <format system="true" name="Date" class="java.util.Date" type="date" partialdate="Full">
   </format>
 

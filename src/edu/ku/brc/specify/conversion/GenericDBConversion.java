@@ -3976,9 +3976,9 @@ public class GenericDBConversion
                                             final boolean usePrefix)
     {
         
-        UIFieldFormatterIFace formatter0 = UIFieldFormatterMgr.getFormatter("CatalogNumber");
+        UIFieldFormatterIFace formatter0 = UIFieldFormatterMgr.getInstance().getFormatter("CatalogNumber");
         System.out.println(formatter0);
-        UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter("CatalogNumberNumeric");
+        UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getInstance().getFormatter("CatalogNumberNumeric");
         System.out.println(formatter);
         
         idMapperMgr.dumpKeys();

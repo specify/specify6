@@ -754,7 +754,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         int selectedInx = 0; // default to 'None'
         
         UIFieldFormatterIFace       selectedFmt = null;
-        List<UIFieldFormatterIFace> fList       = UIFieldFormatterMgr.getFormatterList(tableInfo.getClassObj(), fieldInfo.getName());
+        List<UIFieldFormatterIFace> fList       = UIFieldFormatterMgr.getInstance().getFormatterList(tableInfo.getClassObj(), fieldInfo.getName());
         // list must be sorted in the same way it's sorted on UIFormatterDlg because selection index is considered equivalent between combo boxes
         Collections.sort(fList, new Comparator<UIFieldFormatterIFace>() {
             public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)

@@ -1998,7 +1998,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     {
         if (StringUtils.isNotEmpty(uiFieldFormatterName))
         {
-            return UIFieldFormatterMgr.getFormatter(uiFieldFormatterName);
+            return UIFieldFormatterMgr.getInstance().getFormatter(uiFieldFormatterName);
         }
         return null;
     }

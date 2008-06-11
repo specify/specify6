@@ -487,10 +487,10 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
                             {
                                 removeFromCollection(ref, otherSide, parentDataObject);
                             }
-                            // else
+                            //else // rods 06/11/08 - add this code back in for deleting attachments.
                             //{
-                              //DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
-                              //setter.setFieldValue(ref, otherSide, null);
+                            //  DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
+                            //  setter.setFieldValue(ref, otherSide, null);
                             //}
                         }
         

@@ -71,6 +71,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.install4j.api.launcher.ApplicationLauncher;
+import com.install4j.api.update.ApplicationDisplayMode;
+import com.install4j.api.update.UpdateChecker;
+import com.install4j.api.update.UpdateDescriptor;
+import com.install4j.api.update.UpdateDescriptorEntry;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -211,7 +216,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify"; //$NON-NLS-1$
     private String               appVersion          = "6.0"; //$NON-NLS-1$
 
-    private String               appBuildVersion     = "200805231000 (SVN: 4135)"; //$NON-NLS-1$
+    private String               appBuildVersion     = "200805220930 (SVN: 4126)"; //$NON-NLS-1$
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -833,18 +838,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
         Action saveAndNewAction = new AbstractAction(getResourceString("Specify.SAVE_AND_NEW")) { //$NON-NLS-1$
             public void actionPerformed(ActionEvent e)
             {
-                SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
-                if (sp instanceof FormPane)
+                FormViewObj fvo = getCurrentFVO();
+                if (fvo != null)
                 {
-                    MultiView mv = ((FormPane)sp).getMultiView();
-                    if (mv != null)
-                    {
-                        FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
-                        if (fvo != null)
-                        {
-                            fvo.setSaveAndNew(((JCheckBoxMenuItem)e.getSource()).isSelected());
-                        }
-                    }
+                    fvo.setSaveAndNew(((JCheckBoxMenuItem)e.getSource()).isSelected());
                 }
             }
         };
@@ -859,18 +856,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
         Action configCarryForwardAction = new AbstractAction(getResourceString("Specify.CONFIG_CARRY_FORWARD_MENU")) { //$NON-NLS-1$
             public void actionPerformed(ActionEvent e)
             {
-                SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
-                if (sp instanceof FormPane)
+                FormViewObj fvo = getCurrentFVO();
+                if (fvo != null)
                 {
-                    MultiView mv = ((FormPane)sp).getMultiView();
-                    if (mv != null)
-                    {
-                        FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
-                        if (fvo != null)
-                        {
-                            fvo.configureCarryForward();
-                        }
-                    }
+                    fvo.configureCarryForward();
                 }
             }
         };
@@ -886,19 +875,11 @@ public class Specify extends JPanel implements DatabaseLoginListener
         Action carryForwardAction = new AbstractAction(getResourceString("Specify.CARRY_FORWARD_CHECKED_MENU")) { //$NON-NLS-1$
             public void actionPerformed(ActionEvent e)
             {
-                SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
-                if (sp instanceof FormPane)
+                FormViewObj fvo = getCurrentFVO();
+                if (fvo != null)
                 {
-                    MultiView mv = ((FormPane)sp).getMultiView();
-                    if (mv != null)
-                    {
-                        FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
-                        if (fvo != null)
-                        {
-                            fvo.toggleCarryForward();
-                            ((JCheckBoxMenuItem)e.getSource()).setSelected(fvo.isDoCarryForward());
-                        }
-                    }
+                    fvo.toggleCarryForward();
+                    ((JCheckBoxMenuItem)e.getSource()).setSelected(fvo.isDoCarryForward());
                 }
             }
         };
@@ -909,6 +890,27 @@ public class Specify extends JPanel implements DatabaseLoginListener
         UIRegistry.registerAction("CarryForward", carryForwardAction); //$NON-NLS-1$
         mb.add(dataMenu);
         
+        //---------------------------------------
+        // AutoNumber Menu Item (On / Off)
+        Action autoNumberOnOffAction = new AbstractAction(getResourceString("FormViewObj.SET_AUTONUMBER_ONOFF")) { //$NON-NLS-1$
+            public void actionPerformed(ActionEvent e)
+            {
+                FormViewObj fvo = getCurrentFVO();
+                if (fvo != null)
+                {
+                    fvo.toggleAutoNumberOnOffState();
+                    ((JCheckBoxMenuItem)e.getSource()).setSelected(fvo.isAutoNumberOn());
+                }
+            }
+        };
+        autoNumberOnOffAction.setEnabled(false);
+        JCheckBoxMenuItem autoNumCBMI = new JCheckBoxMenuItem(autoNumberOnOffAction);
+        dataMenu.add(autoNumCBMI);
+        UIRegistry.register("AutoNumbering", autoNumCBMI); //$NON-NLS-1$
+        UIRegistry.registerAction("AutoNumbering", autoNumberOnOffAction); //$NON-NLS-1$
+        mb.add(dataMenu);
+        
+        //----------------------------------
         if (!isWorkbenchOnly)
         {
             menu = UIHelper.createLocalizedMenu(mb, "Specify.TOOLS_MENU", "Specify.TOOLS_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1313,6 +1315,23 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     });
         }
         return mb;
+    }
+    
+    /**
+     * @return the FormViewObj for the current SubPane or null
+     */
+    protected FormViewObj getCurrentFVO()
+    {
+        SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
+        if (sp instanceof FormPane)
+        {
+            MultiView mv = ((FormPane)sp).getMultiView();
+            if (mv != null)
+            {
+                return mv.getCurrentViewAsFormViewObj();
+            }
+        }
+        return null;
     }
     
     public Storage getStorageItem(final DataProviderSessionIFace session,
@@ -2207,6 +2226,113 @@ public class Specify extends JPanel implements DatabaseLoginListener
   //-- Application MAIN
   //-----------------------------------------------------------------------------
 
+  public static void startApp(final boolean doConfig)
+  {
+      // Set App Name, MUST be done very first thing!
+      UIRegistry.setAppName("Specify");  //$NON-NLS-1$
+      
+      // Then set this
+      IconManager.setApplicationClass(Specify.class);
+      IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
+      IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
+      IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
+      
+      if (!isRelease)
+      {
+          MemoryWarningSystem.setPercentageUsageThreshold(0.75);
+
+          MemoryWarningSystem mws = new MemoryWarningSystem();
+          mws.addListener(new MemoryWarningSystem.Listener()
+          {
+              protected void setMessage(final String msg, final boolean isError)
+              {
+                  JStatusBar statusBar = UIRegistry.getStatusBar();
+                  if (statusBar != null)
+                  {
+                      if (isError)
+                      {
+                          statusBar.setErrorMessage(msg);
+                      } else
+                      {
+                          statusBar.setText(msg);
+                      }
+                  } else
+                  {
+                      System.err.println(msg);
+                  }
+              }
+              
+              public void memoryUsage(long usedMemory, long maxMemory)
+              {
+                  double percentageUsed = ((double) usedMemory) / maxMemory;
+                  
+                  String msg = String.format("Percent Memory Used %6.2f of Max %d", new Object[] {(percentageUsed * 100.0), maxMemory}); //$NON-NLS-1$
+                  setMessage(msg, false);
+
+              }
+
+              public void memoryUsageLow(long usedMemory, long maxMemory)
+              {
+                  double percentageUsed = ((double) usedMemory) / maxMemory;
+                    
+                  String msg = String.format("Memory is Low! Percentage Used = %6.2f of Max %d", new Object[] {(percentageUsed * 100.0), maxMemory}); //$NON-NLS-1$
+                  setMessage(msg, true);
+                    
+                  if (MemoryWarningSystem.getThresholdPercentage() < 0.8)
+                  {
+                      MemoryWarningSystem.setPercentageUsageThreshold(0.8);
+                  }
+                }
+            });
+      }
+      
+      try
+      {
+          UIHelper.OSTYPE osType = UIHelper.getOSType();
+          if (osType == UIHelper.OSTYPE.Windows )
+          {
+              //UIManager.setLookAndFeel(new WindowsLookAndFeel());
+              UIManager.setLookAndFeel(new PlasticLookAndFeel());
+              PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+              
+          } else if (osType == UIHelper.OSTYPE.Linux )
+          {
+              //UIManager.setLookAndFeel(new GTKLookAndFeel());
+              UIManager.setLookAndFeel(new PlasticLookAndFeel());
+              //PlasticLookAndFeel.setPlasticTheme(new SkyKrupp());
+              //PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
+              //PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+              //PlasticLookAndFeel.setPlasticTheme(new DesertGreen());
+             
+          }
+      }
+      catch (Exception e)
+      {
+          log.error("Can't change L&F: ", e); //$NON-NLS-1$
+      }
+      
+      
+      ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16); //$NON-NLS-1$
+      HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
+      
+      // Startup Specify
+      Specify specify = new Specify();
+      
+      RolloverCommand.setHoverImg(IconManager.getIcon("DropIndicator")); //$NON-NLS-1$
+      
+      if (doConfig)
+      {
+          // For a WorkBench Only Release  
+          specify.startWithInitializer(true, true);  // true, true means doLoginOnly and assume Derby
+          
+      } else
+      {
+          // THis type of start up ALWAYS assumes the .Specify directory is in there "home" directory.
+          specify.preStartUp();
+          specify.startUp();    
+      }
+  }
+  
   /**
    *
    */
@@ -2268,108 +2394,39 @@ public class Specify extends JPanel implements DatabaseLoginListener
           @SuppressWarnings("synthetic-access") //$NON-NLS-1$
         public void run()
           {
-    	      // Set App Name, MUST be done very first thing!
-              UIRegistry.setAppName("Specify");  //$NON-NLS-1$
-              
-              // Then set this
-        	  IconManager.setApplicationClass(Specify.class);
-              IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
-              IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
-              IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
-              
-              if (!isRelease)
-              {
-                  MemoryWarningSystem.setPercentageUsageThreshold(0.75);
-    
-                  MemoryWarningSystem mws = new MemoryWarningSystem();
-                  mws.addListener(new MemoryWarningSystem.Listener()
-                  {
-                      protected void setMessage(final String msg, final boolean isError)
-                      {
-                          JStatusBar statusBar = UIRegistry.getStatusBar();
-                          if (statusBar != null)
-                          {
-                              if (isError)
-                              {
-                                  statusBar.setErrorMessage(msg);
-                              } else
-                              {
-                                  statusBar.setText(msg);
-                              }
-                          } else
-                          {
-                              System.err.println(msg);
-                          }
-                      }
-                      
-                      public void memoryUsage(long usedMemory, long maxMemory)
-                      {
-                          double percentageUsed = ((double) usedMemory) / maxMemory;
-                          
-                          String msg = String.format("Percent Memory Used %6.2f of Max %d", new Object[] {(percentageUsed * 100.0), maxMemory}); //$NON-NLS-1$
-                          setMessage(msg, false);
-    
-                      }
-    
-                      public void memoryUsageLow(long usedMemory, long maxMemory)
-                      {
-                          double percentageUsed = ((double) usedMemory) / maxMemory;
-                            
-                          String msg = String.format("Memory is Low! Percentage Used = %6.2f of Max %d", new Object[] {(percentageUsed * 100.0), maxMemory}); //$NON-NLS-1$
-                          setMessage(msg, true);
-                            
-                          if (MemoryWarningSystem.getThresholdPercentage() < 0.8)
-                          {
-                              MemoryWarningSystem.setPercentageUsageThreshold(0.8);
-                          }
-                        }
-                    });
-              }
-              
+              log.debug("Checking for update....");
               try
               {
-                  UIHelper.OSTYPE osType = UIHelper.getOSType();
-                  if (osType == UIHelper.OSTYPE.Windows )
+                  if (false)
                   {
-                      //UIManager.setLookAndFeel(new WindowsLookAndFeel());
-                      UIManager.setLookAndFeel(new PlasticLookAndFeel());
-                      PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
-                      
-                  } else if (osType == UIHelper.OSTYPE.Linux )
+                      ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
+                      {
+    
+                        /* (non-Javadoc)
+                         * @see com.install4j.api.launcher.ApplicationLauncher.Callback#exited(int)
+                         */
+                        public void exited(int exitValue)
+                        {
+                            System.err.println("exitValue: "+exitValue);
+                            startApp(doConfig);
+                        }
+    
+                        /* (non-Javadoc)
+                         * @see com.install4j.api.launcher.ApplicationLauncher.Callback#prepareShutdown()
+                         */
+                        public void prepareShutdown()
+                        {
+                        }
+                          
+                      };
+                      ApplicationLauncher.launchApplication("100", null, true, callback);
+                  } else
                   {
-                      //UIManager.setLookAndFeel(new GTKLookAndFeel());
-                      UIManager.setLookAndFeel(new PlasticLookAndFeel());
-                      //PlasticLookAndFeel.setPlasticTheme(new SkyKrupp());
-                      //PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
-                      //PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
-                      //PlasticLookAndFeel.setPlasticTheme(new DesertGreen());
-                     
+                      startApp(doConfig);
                   }
-              }
-              catch (Exception e)
+              } catch (Exception ex)
               {
-                  log.error("Can't change L&F: ", e); //$NON-NLS-1$
-              }
-              
-              
-              ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16); //$NON-NLS-1$
-              HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
-              
-              // Startup Specify
-              Specify specify = new Specify();
-              
-              RolloverCommand.setHoverImg(IconManager.getIcon("DropIndicator")); //$NON-NLS-1$
-              
-              if (doConfig)
-              {
-                  // For a WorkBench Only Release  
-                  specify.startWithInitializer(true, true);  // true, true means doLoginOnly and assume Derby
-                  
-              } else
-              {
-                  // THis type of start up ALWAYS assumes the .Specify directory is in there "home" directory.
-                  specify.preStartUp();
-                  specify.startUp();    
+                  ex.printStackTrace();
               }
           }
       });

@@ -727,6 +727,19 @@ public class FormViewObj implements Viewable,
         {
             ((JCheckBoxMenuItem)comp).setSelected(isCarryForwardConfgured() && isDoCarryForward());
         }
+        
+        // Now Adjust AutoNumbering for the form
+        action = UIRegistry.getAction("AutoNumbering");
+        if (action != null)
+        {
+            //action.setEnabled(isAutoNumberOn());
+        }
+        
+        comp = UIRegistry.get("AutoNumbering");
+        if (comp instanceof JCheckBoxMenuItem)
+        {
+            ((JCheckBoxMenuItem)comp).setSelected(isAutoNumberOn());
+        }
     }
     
     /**
@@ -906,13 +919,13 @@ public class FormViewObj implements Viewable,
             popup.add(chkMI);
 
             popup.addSeparator();
-            chkMI = new JCheckBoxMenuItem(UIRegistry.getResourceString("SET_AUTONUMBER_ONOFF"));
-            chkMI.addActionListener(new ActionListener() {
+            chkMI = new JCheckBoxMenuItem(UIRegistry.getAction("AutoNumbering"));
+            /*chkMI.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ex)
                 {
-                    changeAutoNumberOnOffState();
+                    toggleAutoNumberOnOffState();
                 }
-            });
+            });*/
             chkMI.setSelected(isAutoNumberOn);
             popup.add(chkMI);
 
@@ -920,9 +933,18 @@ public class FormViewObj implements Viewable,
         }
     }
     
-    protected void changeAutoNumberOnOffState()
+    /**
+     * Toggles Auto-Numbering mode (turns on or off).
+     */
+    public void toggleAutoNumberOnOffState()
     {
         isAutoNumberOn = !isAutoNumberOn;
+        
+        JCheckBoxMenuItem mi = (JCheckBoxMenuItem)UIRegistry.get("AutoNumbering");
+        if (mi != null)
+        {
+            mi.setSelected(isAutoNumberOn);
+        }
         
         for (FVOFieldInfo fieldInfo : controlsById.values())
         {
@@ -932,6 +954,14 @@ public class FormViewObj implements Viewable,
                 ((AutoNumberableIFace)comp).setAutoNumberEnabled(isAutoNumberOn);
             }
         }
+    }
+
+    /**
+     * @return the isAutoNumberOn
+     */
+    public boolean isAutoNumberOn()
+    {
+        return isAutoNumberOn;
     }
 
     /**
@@ -1475,12 +1505,15 @@ public class FormViewObj implements Viewable,
      */
     public void updateAutoNumbers()
     {
-        for (FVOFieldInfo fieldInfo : controlsById.values())
+        if (isAutoNumberOn)
         {
-            Component comp = fieldInfo.getComp();
-            if (comp instanceof AutoNumberableIFace)
+            for (FVOFieldInfo fieldInfo : controlsById.values())
             {
-                ((AutoNumberableIFace)comp).updateAutoNumbers();
+                Component comp = fieldInfo.getComp();
+                if (comp instanceof AutoNumberableIFace)
+                {
+                    ((AutoNumberableIFace)comp).updateAutoNumbers();
+                }
             }
         }
     }
@@ -1497,7 +1530,7 @@ public class FormViewObj implements Viewable,
             if (fieldInfo.getFormCell() instanceof FormCellFieldIFace)
             {
                 FormCellFieldIFace fcf = (FormCellFieldIFace)fieldInfo.getFormCell();
-                UIFieldFormatterIFace uiff = UIFieldFormatterMgr.getFormatter(fcf.getUIFieldFormatterName());
+                UIFieldFormatterIFace uiff = UIFieldFormatterMgr.getInstance().getFormatter(fcf.getUIFieldFormatterName());
                 if (uiff != null)
                 {
                     return uiff.getAutoNumber() != null;
@@ -1908,6 +1941,39 @@ public class FormViewObj implements Viewable,
     }
     
     /**
+     * This helper method deletes each item from the list after checking the busniess rules
+     * @param localSession a session to use to delete
+     * @param deletedItems the list of data objects
+     * @throws Exception
+     */
+    public static void deleteItemsInDelList(final DataProviderSessionIFace localSession,
+                                            final Vector<Object> deletedItems) throws Exception
+    {
+        for (Object obj : deletedItems)
+        {
+            BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
+            // notify the business rules object that a deletion is going to happen
+            if (delBusRules != null)
+            {
+                delBusRules.beforeDelete(obj, localSession);
+            }
+            localSession.delete(obj);
+        }
+        for (Object obj : deletedItems)
+        {
+            BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
+            // notify the business rules object that a deletion is going to be committed
+            if (delBusRules != null)
+            {
+                if (!delBusRules.beforeDeleteCommit(obj, localSession))
+                {
+                    throw new Exception("Business rules processing failed");
+                }
+            }
+        }
+    }
+    
+    /**
      * This method enables us to loop when there is a duplicate key
      * @param dataObj the data object to be saved
      * @return the merged object, or null if there was an error.
@@ -1952,37 +2018,25 @@ public class FormViewObj implements Viewable,
                 
                 if (numTries == 1 && deletedItems != null)
                 {
-                    for (Object obj : deletedItems)
-                    {
-                        BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
-                        // notify the business rules object that a deletion is going to happen
-                        if (delBusRules != null)
-                        {
-                            delBusRules.beforeDelete(obj, session);
-                        }
-                        session.delete(obj);
-                    }
-                    for (Object obj : deletedItems)
-                    {
-                        BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
-                        // notify the business rules object that a deletion is going to be committed
-                        if (delBusRules != null)
-                        {
-                            if (!delBusRules.beforeDeleteCommit(obj, session))
-                            {
-                                throw new Exception("Business rules processing failed");
-                            }
-                        }
-                    }
+                    deleteItemsInDelList(session, deletedItems);
                 }
-    
     
                 if (businessRules != null)
                 {
                     businessRules.beforeMerge(dataObjArg, session);
                 }
                 
+                /*if (dataObjArg instanceof CollectionObject)
+                {
+                    CollectionObject co = (CollectionObject)dataObjArg;
+                    System.out.println("Size: "+co.getAttachmentReferences().size());
+                }*/
                 dObj = session.merge(dataObjArg);
+                /*if (dObj instanceof CollectionObject)
+                {
+                    CollectionObject co = (CollectionObject)dObj;
+                    System.out.println("Size: "+co.getAttachmentReferences().size());
+                }*/
 
                 if (businessRules != null)
                 {

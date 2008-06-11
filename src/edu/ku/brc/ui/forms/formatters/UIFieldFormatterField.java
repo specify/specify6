@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  */
 public class UIFieldFormatterField
 {
-    public enum FieldType {numeric, alphanumeric, alpha, separator, year}
+    public enum FieldType {numeric, alphanumeric, alpha, separator, year, anychar}
     
     protected FieldType type;
     protected int       size;
@@ -66,14 +66,15 @@ public class UIFieldFormatterField
         this.incrementer = incrementer;
         this.byYear      = byYear;
         
+        if (size == 316)
+        {
+            int x = 0;
+            x++;
+        }
+        
         if (incrementer)
         {
-            StringBuilder sb = new StringBuilder();
-            for (int i=0;i<size;i++)
-            {
-                sb.append('#');
-            }
-            this.value = sb.toString();
+            this.value = UIFieldFormatterMgr.getFormatterPattern(incrementer, null, size);
         }
     }
     
@@ -244,29 +245,34 @@ public class UIFieldFormatterField
         sb.append("/>\n");
     }
 
-	public void setType(FieldType type) {
-		this.type = type;
-	}
+	public void setType(FieldType type)
+    {
+        this.type = type;
+    }
 
-	public void setSize(int size) {
-		this.size = size;
-	}
+    public void setSize(int size)
+    {
+        this.size = size;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public void setValue(String value)
+    {
+        this.value = value;
+    }
 
-	public void setIncrementer(boolean incrementer) {
-		this.incrementer = incrementer;
-	}
+    public void setIncrementer(boolean incrementer)
+    {
+        this.incrementer = incrementer;
+    }
 
-	public void setByYear(boolean byYear) {
-		this.byYear = byYear;
-	}
-	
-	public boolean isCurrentYear()
-	{
-		return ( (type == FieldType.year) && (value.equals("YEAR")) );
-	}
+    public void setByYear(boolean byYear)
+    {
+        this.byYear = byYear;
+    }
+
+    public boolean isCurrentYear()
+    {
+        return ((type == FieldType.year) && (value.equals("YEAR")));
+    }
     
 }

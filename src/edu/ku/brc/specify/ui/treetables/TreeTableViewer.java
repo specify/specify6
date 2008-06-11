@@ -25,6 +25,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -90,6 +91,7 @@ import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.EditViewCompSwitcherPanel;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
@@ -1590,12 +1592,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // so the it all get validated correctly.
         dialog.getMultiView().getCurrentView().getValidator().validateForm();
         
-        if (node instanceof Geography)
-        {
-            Geography g = (Geography)node;
-            System.out.println("Before: "+ g.getIsAccepted()+"  "+g.getAcceptedParent());
-        }
-        
 		dialog.pack();
 		// show the dialog (which allows all user edits to happen)
 		dialog.setVisible(true);
@@ -1609,12 +1605,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		                                (parentIdBefore != null && parentIdAfter == null) ||
 		                                (parentIdBefore != null && parentIdAfter != null && parentIdBefore.longValue() != parentIdAfter.longValue());
 
-		if (node instanceof Geography)
-        {
-            Geography g = (Geography)node;
-            System.out.println("After: "+ g.getIsAccepted()+"  "+g.getAcceptedParent());
-        }
-		
 		log.debug("nameChange:    " + nameChanged);
         log.debug("parentChanged: " + parentChanged);
         log.debug("acceptedAfter: " + acceptedAfter);
@@ -1623,7 +1613,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		// the dialog has been dismissed by the user
 		if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
 		{
-		    FormViewObj fvo = dialog.getMultiView().getCurrentViewAsFormViewObj();
+		    final FormViewObj fvo = dialog.getMultiView().getCurrentViewAsFormViewObj();
 		    if (fvo != null)
 		    {
 		        fvo.traverseToGetDataFromForms();
@@ -1640,72 +1630,99 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 @Override
                 public Object construct()
                 {
-                    // save the node and update the tree viewer appropriately
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                    try
+                    if (true)
                     {
-                        mergedNode = session.merge(node);
-                        if (mergedNode instanceof Geography)
+                        success          = fvo.saveObject();
+                        afterSaveSuccess = success;
+                        mergedNode       = (T)fvo.getDataObj();
+                        
+                    } else
+                    {
+                        // save the node and update the tree viewer appropriately
+                        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                        try
                         {
-                            Geography g = (Geography)mergedNode;
-                            System.out.println(g.getIsAccepted()+"  "+g.getAcceptedParent());
+                            mergedNode = session.merge(node);
                         }
-                    }
-                    catch (StaleObjectException e1)
-                    {
-                        // another user or process has changed the data "underneath" us
-                        UIRegistry.showLocalizedError("UPDATE_DATA_STALE");
-                        if (session != null)
+                        catch (StaleObjectException e1)
+                        {
+                            // another user or process has changed the data "underneath" us
+                            UIRegistry.showLocalizedError("UPDATE_DATA_STALE");
+                            if (session != null)
+                            {
+                                session.close();
+                            }
+                            session = DataProviderFactory.getInstance().createSession();
+                            mergedNode = (T)session.load(node.getClass(), node.getTreeId());
+                            success = false;
+                            return success;
+                        }
+                        success = true;
+                        afterSaveSuccess = false;
+                        
+                        if (businessRules != null)
+                        {
+                            businessRules.beforeSave(mergedNode,session);
+                        }
+                        
+                        try
+                        {
+                            session.beginTransaction();
+                            
+                            MultiView mvParent = fvo.getMVParent();
+                            Vector<Object> deletedItems = mvParent != null ? mvParent.getDeletedItems() : null;
+                            if (deletedItems != null)
+                            {
+                                // Ok, at this point we have all of the deleted data objects,
+                                // but Josh has already done a merge. So we need to used the record Id
+                                // and build a new list with the merged objects.
+                                
+                                Hashtable<Integer, Boolean> idHash = new Hashtable<Integer, Boolean>();
+                                for (Object obj : deletedItems)
+                                {
+                                    Integer idInt = ((FormDataObjIFace)obj).getId(); // should never be null, but just in case
+                                    if (idInt != null)
+                                    {
+                                        int id = idInt;
+                                        idHash.put(id, true);
+                                    }
+                                    
+                                }
+                                
+                                FormViewObj.deleteItemsInDelList(session, deletedItems);
+                            }
+                            
+                            session.saveOrUpdate(mergedNode);
+                            if (businessRules != null)
+                            {
+                                if (!businessRules.beforeSaveCommit(mergedNode, session))
+                                {
+                                    throw new Exception("Business rules processing failed");
+                                }
+                            }
+                            session.commit();
+                            //log.info("Successfully saved changes to " + mergedNode.getFullName());
+                        }
+                        catch (Exception e)
+                        {
+                            success = false;
+                            UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR");
+    
+                            log.error("Error while saving node changes.  Rolling back transaction.", e);
+                            session.rollback();
+                        }
+                        finally
                         {
                             session.close();
                         }
-                        session = DataProviderFactory.getInstance().createSession();
-                        mergedNode = (T)session.load(node.getClass(), node.getTreeId());
-                        success = false;
-                        return success;
-                    }
-                    success = true;
-                    afterSaveSuccess = false;
-                    
-                    if (businessRules != null)
-                    {
-                        businessRules.beforeSave(mergedNode,session);
-                    }
-                    
-                    try
-                    {
-                        session.beginTransaction();
-                        session.saveOrUpdate(mergedNode);
-                        if (businessRules != null)
+                        
+                        // at this point, the new node is in the DB (if success == true)
+    
+                        if (businessRules != null && success == true)
                         {
-                            if (!businessRules.beforeSaveCommit(mergedNode, session))
-                            {
-                                throw new Exception("Business rules processing failed");
-                            }
+                            afterSaveSuccess = businessRules.afterSaveCommit(mergedNode);
                         }
-                        session.commit();
-                        //log.info("Successfully saved changes to " + mergedNode.getFullName());
                     }
-                    catch (Exception e)
-                    {
-                        success = false;
-                        UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR");
-
-                        log.error("Error while saving node changes.  Rolling back transaction.", e);
-                        session.rollback();
-                    }
-                    finally
-                    {
-                        session.close();
-                    }
-                    
-                    // at this point, the new node is in the DB (if success == true)
-
-                    if (businessRules != null && success == true)
-                    {
-                        afterSaveSuccess = businessRules.afterSaveCommit(mergedNode);
-                    }
-                    
                     return success;
                 }
 

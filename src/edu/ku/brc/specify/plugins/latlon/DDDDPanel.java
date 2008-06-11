@@ -276,7 +276,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
                                                           final Number   minValue,
                                                           final Number   maxValue)
     {
-        NumberMinMaxFormatter fmt = new NumberMinMaxFormatter(dataCls, columns, minValue, maxValue);
+        NumberMinMaxFormatter       fmt       = new NumberMinMaxFormatter(dataCls, columns, minValue, maxValue);
         ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(fmt, false, false);
         
         if (isViewMode)

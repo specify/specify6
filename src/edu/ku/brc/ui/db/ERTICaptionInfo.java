@@ -251,7 +251,7 @@ public class ERTICaptionInfo
         
         if (StringUtils.isNotEmpty(formatter))
         {
-            uiFieldFormatter = UIFieldFormatterMgr.getFormatter(formatter);
+            uiFieldFormatter = UIFieldFormatterMgr.getInstance().getFormatter(formatter);
             if (uiFieldFormatter == null)
             {
                 log.error("The UIFieldFormatter could not be found named ["+formatter+"]");
