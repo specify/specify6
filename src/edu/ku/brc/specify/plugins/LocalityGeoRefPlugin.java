@@ -11,6 +11,8 @@ package edu.ku.brc.specify.plugins;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Properties;
@@ -41,6 +43,7 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -114,8 +117,6 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                 
                 List<GeoCoordDataIFace> items = new Vector<GeoCoordDataIFace>();
                 items.add(geoCoordData);
-    
-                
                 
                 CommandAction command = new CommandAction(ToolsTask.TOOLS, ToolsTask.EXPORT_LIST);
                 command.setData(items);
@@ -123,7 +124,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                 command.setProperty("listener", this);
                 
                 JStatusBar statusBar = UIRegistry.getStatusBar();
-                statusBar.setText(UIRegistry.getResourceString("WB_OPENING_GOOGLE_EARTH"));
+                statusBar.setText(UIRegistry.getResourceString("BGM_PROCESSING"));
                 CommandDispatcher.dispatch(command);
                 
             } else
@@ -251,6 +252,8 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
        {
            GeoCoordDataIFace gcData = items.get(0);
            
+           Pair<BigDecimal, BigDecimal> oldValues = new Pair<BigDecimal, BigDecimal>(locality.getLatitude1(), locality.getLongitude1());
+           
            locality.setLatitude1(new BigDecimal(Double.parseDouble(gcData.getLatitude())));
            locality.setLongitude1(new BigDecimal(Double.parseDouble(gcData.getLongitude())));
            
@@ -263,6 +266,14 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
            {
                parent.getCurrentValidator().setHasChanged(true);
                parent.getCurrentValidator().validateForm();
+           }
+           
+           Pair<BigDecimal, BigDecimal> newValues = new Pair<BigDecimal, BigDecimal>(locality.getLatitude1(), locality.getLongitude1());
+           
+           PropertyChangeEvent pce = new PropertyChangeEvent(this, "data", oldValues, newValues);
+           for (PropertyChangeListener l : getPropertyChangeListeners())
+           {
+               l.propertyChange(pce);
            }
        }
     }

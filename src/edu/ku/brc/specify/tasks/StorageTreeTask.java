@@ -132,16 +132,16 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
      * @see edu.ku.brc.specify.tasks.BaseTreeTask#createTreeViewer(boolean)
      */
     @Override
-    protected TreeTableViewer<Storage, StorageTreeDef, StorageTreeDefItem> createTreeViewer(final String title, boolean isEditMode)
+    protected TreeTableViewer<Storage, StorageTreeDef, StorageTreeDefItem> createTreeViewer(final String titleArg, boolean isEditMode)
     {
-        final TreeTableViewer<Storage, StorageTreeDef, StorageTreeDefItem> ttv = super.createTreeViewer(title, isEditMode);
+        final TreeTableViewer<Storage, StorageTreeDef, StorageTreeDefItem> ttv = super.createTreeViewer(titleArg, isEditMode);
 
         if (ttv != null)
         {
             final TreeNodePopupMenu popup = ttv.getPopupMenu();
             // install custom popup menu items
 
-            JMenuItem coMenuItem = new JMenuItem(getResourceString("TTV_TAXON_ASSOC_COS"));
+            JMenuItem coMenuItem = new JMenuItem(getResourceString("TTV_ASSOC_COS"));
             coMenuItem.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)

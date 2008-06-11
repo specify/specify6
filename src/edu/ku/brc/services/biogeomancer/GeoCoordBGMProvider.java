@@ -189,6 +189,8 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
             @Override
             public void finished()
             {
+                statusBar.setText(getResourceString("GeoCoordBGMProvider.BIOGEOMANCER_COMPLETED")); //$NON-NLS-1$
+                
                 if (!cancelled)
                 {
                     // hide the progress dialog

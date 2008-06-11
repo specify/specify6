@@ -240,6 +240,8 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
     {
         final JStatusBar statusBar = UIRegistry.getStatusBar();
         
+        statusBar.setText(getResourceString("GeoCoordGeoLocateProvider.GEOLOC_COMPLETED")); //$NON-NLS-1$
+        
         List<Pair<GeoCoordDataIFace, GeorefResultSet>> withResults = new Vector<Pair<GeoCoordDataIFace, GeorefResultSet>>();
 
         for (Pair<GeoCoordDataIFace, GeorefResultSet> result: glResults)

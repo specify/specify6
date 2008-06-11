@@ -72,9 +72,9 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
      * @see edu.ku.brc.specify.tasks.BaseTreeTask#createTreeViewer(boolean)
      */
     @Override
-    protected TreeTableViewer<Taxon,TaxonTreeDef,TaxonTreeDefItem> createTreeViewer(final String title, final boolean isEditMode)
+    protected TreeTableViewer<Taxon,TaxonTreeDef,TaxonTreeDefItem> createTreeViewer(final String titleArg, final boolean isEditMode)
     {
-        final TreeTableViewer<Taxon, TaxonTreeDef, TaxonTreeDefItem> ttv = super.createTreeViewer(title, isEditMode);
+        final TreeTableViewer<Taxon, TaxonTreeDef, TaxonTreeDefItem> ttv = super.createTreeViewer(titleArg, isEditMode);
 
         if (ttv != null)
         {
@@ -107,7 +107,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
             });
             popup.add(getITIS, true);
 
-            JMenuItem getDeters = new JMenuItem(getResourceString("TTV_TAXON_ASSOC_COS"));
+            JMenuItem getDeters = new JMenuItem(getResourceString("TTV_ASSOC_COS"));
             getDeters.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
