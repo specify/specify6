@@ -71,11 +71,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.install4j.api.launcher.ApplicationLauncher;
-import com.install4j.api.update.ApplicationDisplayMode;
-import com.install4j.api.update.UpdateChecker;
-import com.install4j.api.update.UpdateDescriptor;
-import com.install4j.api.update.UpdateDescriptorEntry;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -216,7 +211,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify"; //$NON-NLS-1$
     private String               appVersion          = "6.0"; //$NON-NLS-1$
 
-    private String               appBuildVersion     = "200805220930 (SVN: 4126)"; //$NON-NLS-1$
+    private String               appBuildVersion     = "200805221500 (SVN: 4134)"; //$NON-NLS-1$
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -2397,30 +2392,22 @@ public class Specify extends JPanel implements DatabaseLoginListener
               log.debug("Checking for update....");
               try
               {
-                  if (false)
+                  /*if (false)
                   {
                       ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
                       {
-    
-                        /* (non-Javadoc)
-                         * @see com.install4j.api.launcher.ApplicationLauncher.Callback#exited(int)
-                         */
                         public void exited(int exitValue)
                         {
                             System.err.println("exitValue: "+exitValue);
                             startApp(doConfig);
                         }
-    
-                        /* (non-Javadoc)
-                         * @see com.install4j.api.launcher.ApplicationLauncher.Callback#prepareShutdown()
-                         */
                         public void prepareShutdown()
                         {
                         }
                           
                       };
                       ApplicationLauncher.launchApplication("100", null, true, callback);
-                  } else
+                  } else */
                   {
                       startApp(doConfig);
                   }
