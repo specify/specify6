@@ -83,10 +83,10 @@ public interface BusinessRulesIFace
      * 
      * @param parentDataObj the parent data object for the rules to be processed on.
      * @param dataObj the data object for the rules to be processed on.
-     * @param isEdit true means it was being edited, false means it was a new object
+     * @param isExistingObject true means it was being edited, false means it was a new object
      * @return the result status after processing the business rules.
      */
-    public abstract STATUS processBusinessRules(Object parentDataObj, Object dataObj, boolean isEdit);
+    public abstract STATUS processBusinessRules(Object parentDataObj, Object dataObj, boolean isExistingObject);
     
     /**
      * Returns a list of warnings and errors after processing the business rules.

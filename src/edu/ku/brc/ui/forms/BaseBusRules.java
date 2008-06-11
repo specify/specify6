@@ -680,7 +680,7 @@ public class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusinessRules(java.lang.Object, java.lang.Object, boolean)
      */
-    public STATUS processBusinessRules(Object parentDataObj, Object dataObj, boolean isEdit)
+    public STATUS processBusinessRules(Object parentDataObj, Object dataObj, boolean isExistingObject)
     {
         return processBusinessRules(dataObj);
     }

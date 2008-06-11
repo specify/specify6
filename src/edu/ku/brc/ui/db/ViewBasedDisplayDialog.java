@@ -316,9 +316,10 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
             BusinessRulesIFace br = fvo.getBusinessRules();
             if (br != null && fvo.getDataObj() != null)
             {
+                boolean isNewObj = MultiView.isOptionOn(fvo.getMVParent().getOptions(), MultiView.IS_NEW_OBJECT);
                 if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, 
                                                                             fvo.getDataObj(), 
-                                                                            viewBasedPanel.isEditMode()))
+                                                                            isNewObj))
                 {
                     UIRegistry.showError(br.getMessagesAsString());
                     return;

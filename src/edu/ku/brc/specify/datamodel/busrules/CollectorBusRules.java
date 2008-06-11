@@ -77,9 +77,10 @@ public class CollectorBusRules extends BaseBusRules
      * @see edu.ku.brc.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object, java.lang.Object)
      */
     @Override
-    public STATUS processBusinessRules(final Object parentDataObj, final Object dataObj, final boolean isEdit)
+    public STATUS processBusinessRules(final Object parentDataObj, final Object dataObj, final boolean isExistingObject)
     {
-        if (isEdit &&
+        // isEdit is false when the data object is new, true when editing an existing object.
+        if (isExistingObject &&
             parentDataObj instanceof CollectingEvent &&
             dataObj instanceof Collector)
         {
@@ -96,7 +97,7 @@ public class CollectorBusRules extends BaseBusRules
             }
         }
         
-        return super.processBusinessRules(parentDataObj, dataObj, isEdit);
+        return super.processBusinessRules(parentDataObj, dataObj, isExistingObject);
     }
 
 }
