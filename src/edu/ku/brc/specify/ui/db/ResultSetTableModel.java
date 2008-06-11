@@ -409,11 +409,21 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             return rs;
         }
 
-        for (Integer id : ids)
+        if (rows == null)
         {
-            rs.addItem(id);
+            for (Integer id : ids)
+            {
+                rs.addItem(id);
+            }
         }
-
+        else
+        {
+            for (int inx : rows)
+            {
+                rs.addItem(ids.get(inx));
+            }
+        }
+        
         return rs;
     }
 
