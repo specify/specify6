@@ -76,4 +76,12 @@ public class UploadData
         this.mappings = mappings;
         this.wbRows = wbRows;
     }
+    
+    /**
+     * @param freshRows - possibly a new collection of rows.
+     */
+    public void refresh(Vector<WorkbenchRow> freshRows)
+    {
+        this.wbRows = freshRows;
+    }
 }
