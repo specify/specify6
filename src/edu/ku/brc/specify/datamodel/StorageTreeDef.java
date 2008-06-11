@@ -325,7 +325,9 @@ public class StorageTreeDef extends BaseTreeDef<Storage, StorageTreeDef, Storage
     @Transient
     public int getSynonymizedLevel()
     {
-        return -1;
+        // can't be "-1" which means do nothing, 
+        // and it has to at least be below the root
+        return 1; 
     }
     
     /* (non-Javadoc)
