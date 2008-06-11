@@ -273,7 +273,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
      * @return the address
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
+    @JoinColumn(name = "AddressID", unique = false, nullable = true, insertable = true, updatable = true)
     public Address getAddress()
     {
         return address;

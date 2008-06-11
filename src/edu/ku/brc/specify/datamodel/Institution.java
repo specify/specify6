@@ -368,7 +368,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
      * @return the address
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
+    @JoinColumn(name = "AddressID", unique = false, nullable = true, insertable = true, updatable = true)
     public Address getAddress()
     {
         return address;
