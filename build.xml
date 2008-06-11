@@ -10,6 +10,7 @@
 	
 	<property name="class.root" value="bin" />
 	
+	<property name="installer.dir" value="InstallerFiles" />
 	<property name="lib.dir" value="libs" />
 	<property name="hibernatelib.dir" value="hibernate_libs" />
 	<property name="externallib.dir" value="external_libs" />
@@ -152,6 +153,52 @@
 		<delete file="${jar.name}.jar" />
 	</target>
 	
+	<!-- *************************************************************
+	     Mac Common Components Build
+	     ************************************************************* -->
+	<target name="installer" depends="">
+		
+		<delete dir="${installer.dir}"/>
+		<mkdir dir="${installer.dir}" />
+		
+		<antcall target="clean-jar"/>
+		<antcall target="dist-jar-mac"/>
+		
+		<!-- Copy config dir -->
+		<copy todir="${installer.dir}/config">
+			<fileset dir="config">
+				<exclude name="**/*.svn" />
+			</fileset>
+		</copy>
+        <copy todir="${installer.dir}/hibernate_libs">
+			<fileset dir="hibernate_libs">
+				<exclude name="**/*.svn" />
+			</fileset>
+		</copy>
+        <copy todir="${installer.dir}/iReportLibs">
+			<fileset dir="iReportLibs">
+				<exclude name="**/*.svn" />
+			</fileset>
+		</copy>
+        <copy todir="${installer.dir}/libs">
+			<fileset dir="libs">
+				<exclude name="**/*.svn" />
+			</fileset>
+		</copy>
+        <copy todir="${installer.dir}/mac">
+			<fileset dir="system_dep_libs/mac">
+				<exclude name="**/*.svn" />
+			</fileset>
+		</copy>
+		
+		<copy file="${jar.name}.jar" todir="${installer.dir}" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/specify16.png" todir="${installer.dir}" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/specify32.png" todir="${installer.dir}" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/SpecifyBigSplash.png" todir="${installer.dir}" />
+		<copy file="packaging/specify.icns" todir="${installer.dir}" />
+		
+	</target>
+		
 	<!-- *************************************************************
 	     Mac Common Components Build
 	     ************************************************************* -->
