@@ -56,28 +56,30 @@ public class TreeDefBusRules extends BaseBusRules
         super.initialize(viewableArg);
         
         ValComboBox fnDirCBX = (ValComboBox)formViewObj.getControlByName("fnDirCBX");
-        DefaultComboBoxModel model = (DefaultComboBoxModel)fnDirCBX.getModel();
-        model.addElement(UIRegistry.getResourceString("TTV_FORWARD"));
-        model.addElement(UIRegistry.getResourceString("TTV_REVERSE"));
+        if (fnDirCBX != null)
+        {
+            DefaultComboBoxModel model = (DefaultComboBoxModel)fnDirCBX.getModel();
+            model.addElement(UIRegistry.getResourceString("TTV_FORWARD"));
+            model.addElement(UIRegistry.getResourceString("TTV_REVERSE"));
         
-        
-        fnDirCBX.getComboBox().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0)
-            {
-                formViewObj.getValidator().setHasChanged(true);
-                formViewObj.getValidator().validateForm();
-                
-                checkForNumOfChanges();
-                
-                /*
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run()
-                    {
-                        checkForNumOfChanges();
-                    }
-                });*/
-            }
-        });
+            fnDirCBX.getComboBox().addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent arg0)
+                {
+                    formViewObj.getValidator().setHasChanged(true);
+                    formViewObj.getValidator().validateForm();
+                    
+                    checkForNumOfChanges();
+                    
+                    /*
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run()
+                        {
+                            checkForNumOfChanges();
+                        }
+                    });*/
+                }
+            });
+        }
     }
     
     /**
@@ -86,10 +88,13 @@ public class TreeDefBusRules extends BaseBusRules
     protected void checkForNumOfChanges()
     {
         ValComboBox fnDirCBX = (ValComboBox)formViewObj.getControlByName("fnDirCBX");
-        int newDir = fnDirCBX.getComboBox().getSelectedIndex() == 0 ? TreeDefIface.FORWARD : TreeDefIface.REVERSE;
-        if (newDir == origDirection)
+        if (fnDirCBX != null)
         {
-            return;
+            int newDir = fnDirCBX.getComboBox().getSelectedIndex() == 0 ? TreeDefIface.FORWARD : TreeDefIface.REVERSE;
+            if (newDir == origDirection)
+            {
+                return;
+            }
         }
         
         SwingWorker workerThread = new SwingWorker()
@@ -107,11 +112,6 @@ public class TreeDefBusRules extends BaseBusRules
                     sqlStr = sqlStr + " WHERE " + QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, true);
                     session = DataProviderFactory.getInstance().createSession();
                     Integer count = (Integer)session.getData(sqlStr);
-                    
-                    if (count != null && count > 0)
-                    {
-                        
-                    }
                     
                     return count;
                     
@@ -156,10 +156,13 @@ public class TreeDefBusRules extends BaseBusRules
         if (dataObj != null)
         {
             ValComboBox fnDirCBX = (ValComboBox)formViewObj.getControlByName("fnDirCBX");
-            TreeDefIface<?, ?, ?> treeDef = (TreeDefIface<?, ?, ?>)dataObj;
-            origDirection = treeDef.getFullNameDirection();
-            fnDirCBX.getComboBox().setSelectedIndex(origDirection == TreeDefIface.FORWARD ? 0 : 1);
-            cachedTreeDef = treeDef;
+            if (fnDirCBX != null)
+            {
+                TreeDefIface<?, ?, ?> treeDef = (TreeDefIface<?, ?, ?>)dataObj;
+                origDirection = treeDef.getFullNameDirection();
+                fnDirCBX.getComboBox().setSelectedIndex(origDirection == TreeDefIface.FORWARD ? 0 : 1);
+                cachedTreeDef = treeDef;
+            }
         }
     }
 
@@ -170,14 +173,16 @@ public class TreeDefBusRules extends BaseBusRules
     public boolean afterSaveCommit(Object dataObj)
     {
         ValComboBox fnDirCBX = (ValComboBox)formViewObj.getControlByName("fnDirCBX");
-        int newDir = fnDirCBX.getComboBox().getSelectedIndex() == 0 ? TreeDefIface.FORWARD : TreeDefIface.REVERSE;
-        if (newDir != origDirection)
+        if (fnDirCBX != null)
         {
-            TreeDefIface<?, ?, ?> treeDef = (TreeDefIface<?, ?, ?>)dataObj;
-            treeDef.setFullNameDirection(newDir);
+            int newDir = fnDirCBX.getComboBox().getSelectedIndex() == 0 ? TreeDefIface.FORWARD : TreeDefIface.REVERSE;
+            if (newDir != origDirection)
+            {
+                TreeDefIface<?, ?, ?> treeDef = (TreeDefIface<?, ?, ?>)dataObj;
+                treeDef.setFullNameDirection(newDir);
+            }
         }
         return super.afterSaveCommit(dataObj);
     }
-    
     
 }
