@@ -105,6 +105,11 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
             }
             return -1;
         }
+        @Override
+        public String toString()
+        {
+            return names[ord];
+        }
     }
     
     protected Integer      spQueryFieldId;

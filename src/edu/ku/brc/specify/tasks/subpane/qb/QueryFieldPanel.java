@@ -21,6 +21,8 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
@@ -54,10 +56,12 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DateConverter;
+import edu.ku.brc.specify.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateIconButon;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
@@ -96,7 +100,7 @@ public class QueryFieldPanel extends JPanel
     protected ImageIcon        icon;
     protected JCheckBox        isNotCheckbox;
     protected JComboBox        operatorCBX;
-    protected JTextField       criteria;
+    protected JComponent       criteria;
     protected JComboBox        criteriaList; 
     protected MultiStateIconButon sortCheckbox;
     protected JCheckBox        isDisplayedCkbx;
@@ -104,19 +108,44 @@ public class QueryFieldPanel extends JPanel
     
     protected FieldQRI         fieldQRI;
     protected SpQueryField     queryField = null;
+    protected PickListDBAdapterIFace pickList = null;
     
     protected FormValidator    validator;
     
     protected QueryFieldPanel  thisItem;
     
     protected String[] labelStrs;
-    protected String[] comparators;
+    protected SpQueryField.OperatorType[] comparators;
 
     protected DateConverter                             dateConverter = null;
     
     protected boolean selected = false;
     
 
+    
+    protected void setupPickList()
+    {
+        if (fieldQRI != null && fieldQRI.getTableInfo() != null && fieldQRI.getFieldInfo() != null) 
+        {
+            //XXX unfortunately this doesn't work...
+            if (StringUtils.isNotEmpty(fieldQRI.getFieldInfo().getPickListName()))
+            {
+                pickList = ((edu.ku.brc.specify.ui.db.PickListDBAdapterFactory)PickListDBAdapterFactory.getInstance()).create(fieldQRI.getFieldInfo().getPickListName(), false);
+//                if (pickList != null)
+//                {
+//                    System.out.println("got a picklist adaptor");
+//                    
+//                }
+//                if (pickList.getList().size() == 0)
+//                {
+//                    System.out.println("but it was empty");
+//                    pickList = null;
+//                }
+            }
+        }
+        
+    }
+    
     /**
      * Constructor.
      * @param fieldName the field Name
@@ -155,6 +184,8 @@ public class QueryFieldPanel extends JPanel
             dateConverter = new DateConverter();
         }
         
+        setupPickList();
+        
         this.columnDefStr  = columnDefStr;
         
         thisItem = this;
@@ -188,6 +219,20 @@ public class QueryFieldPanel extends JPanel
         updateQueryField(queryField);
     }
     
+    protected String getCriteriaText(final boolean useValues)
+    {
+        if (criteria instanceof JTextField)
+        {
+            return ((JTextField)criteria).getText();
+        }
+        if (criteria instanceof PickListCriteriaCombo)
+        {
+            return ((PickListCriteriaCombo)criteria).getText(useValues);
+        }
+        
+        throw new RuntimeException("Unrecognized criteria component: " + criteria.getClass());
+    }
+    
     public void updateQueryField(final SpQueryField qField)
     {
         if (qField != null && !ownerQuery.isPromptMode())
@@ -202,7 +247,7 @@ public class QueryFieldPanel extends JPanel
             
             qField.setSortType((byte)sortCheckbox.getState());
             qField.setOperStart((byte)operatorCBX.getSelectedIndex());
-            qField.setStartValue(criteria.getText());
+            qField.setStartValue(getCriteriaText(false));
             String lbl = this.getLabel();
             if (fieldQRI instanceof RelQRI)
             {
@@ -252,6 +297,22 @@ public class QueryFieldPanel extends JPanel
         return queryField;
     }
 
+    protected void setCriteriaText(final String text)
+    {
+        if (criteria instanceof JTextField)
+        {
+            ((JTextField)criteria).setText(text);
+        }
+        else if (criteria instanceof PickListCriteriaCombo)
+        {
+            ((PickListCriteriaCombo)criteria).setSelections(text);
+        }
+        else
+        {
+            throw new RuntimeException("Unrecognized criteria component: " + criteria.getClass());
+        }
+        
+    }
     /**
      * @param queryField the queryField to set
      */
@@ -265,7 +326,7 @@ public class QueryFieldPanel extends JPanel
             {
                 isNotCheckbox.setSelected(queryField.getIsNot());
                 operatorCBX.setSelectedIndex(queryField.getOperStart());
-                criteria.setText(queryField.getStartValue());
+                setCriteriaText(queryField.getStartValue());
                 sortCheckbox.setState(queryField.getSortType());
                 if (!ownerQuery.isPromptMode())
                 {
@@ -297,17 +358,23 @@ public class QueryFieldPanel extends JPanel
      * @param field
      * @return list of comparators appropriate for field.
      */
-    protected String[] getComparatorList(final FieldQRI field)
+    protected SpQueryField.OperatorType[] getComparatorList(final FieldQRI field)
     {
         if (fieldQRI ==  null)
         {
-            return new String[]{"none of the above"};
+            return new SpQueryField.OperatorType[]{};
+        }
+        if (pickList != null)
+        {
+            return new SpQueryField.OperatorType[] {
+                    SpQueryField.OperatorType.EQUALS,
+                    SpQueryField.OperatorType.IN};
         }
         if (fieldQRI instanceof TreeLevelQRI)
         {
-            return new String[] {
-                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.EQUALS.getOrdinal()),
-                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.IN.getOrdinal())};
+            return new SpQueryField.OperatorType[] {
+                SpQueryField.OperatorType.EQUALS,
+                SpQueryField.OperatorType.IN};
         }
         //CatalogNumber needs special treatment - works better as a number.
         //And other fields? Not sure how to tell. Maybe the formatter?????
@@ -324,34 +391,34 @@ public class QueryFieldPanel extends JPanel
      * @param classObj
      * @return
      */
-    protected String[] getComparatorListForClass(final Class<?> classObj)
+    protected SpQueryField.OperatorType[] getComparatorListForClass(final Class<?> classObj)
     {
         if (classObj.equals(String.class))
         {
-            return new String[] {SpQueryField.OperatorType.getString(SpQueryField.OperatorType.LIKE.getOrdinal()),
-                    SpQueryField.OperatorType.getString(SpQueryField.OperatorType.EQUALS.getOrdinal()),
-                    SpQueryField.OperatorType.getString(SpQueryField.OperatorType.IN.getOrdinal())};
+            return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.LIKE,
+                    SpQueryField.OperatorType.EQUALS,
+                    SpQueryField.OperatorType.IN};
         }
         else if (classObj.equals(Boolean.class))
         {
-            return new String[] {SpQueryField.OperatorType.getString(SpQueryField.OperatorType.DONTCARE.getOrdinal()),
-                    SpQueryField.OperatorType.getString(SpQueryField.OperatorType.TRUE.getOrdinal()),
-                    SpQueryField.OperatorType.getString(SpQueryField.OperatorType.FALSE.getOrdinal())};
+            return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.DONTCARE,
+                    SpQueryField.OperatorType.TRUE,
+                    SpQueryField.OperatorType.FALSE};
         }
         else if (classObj.equals(java.sql.Timestamp.class))
         {
-            return new String[] {SpQueryField.OperatorType.getString(SpQueryField.OperatorType.GREATERTHAN.getOrdinal()),
-                    SpQueryField.OperatorType.getString(SpQueryField.OperatorType.LESSTHAN.getOrdinal()),
-                    SpQueryField.OperatorType.getString(SpQueryField.OperatorType.BETWEEN.getOrdinal())};
+            return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.GREATERTHAN,
+                    SpQueryField.OperatorType.LESSTHAN,
+                    SpQueryField.OperatorType.BETWEEN};
         }
         // else
-        return new String[] {SpQueryField.OperatorType.getString(SpQueryField.OperatorType.EQUALS.getOrdinal()),
-                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.GREATERTHAN.getOrdinal()),
-                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.LESSTHAN.getOrdinal()),
-                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.GREATERTHANEQUALS.getOrdinal()),
-                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.LESSTHANEQUALS.getOrdinal()),
-                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.BETWEEN.getOrdinal()),
-                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.IN.getOrdinal())};
+        return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.EQUALS,
+                SpQueryField.OperatorType.GREATERTHAN,
+                SpQueryField.OperatorType.LESSTHAN,
+                SpQueryField.OperatorType.GREATERTHANEQUALS,
+                SpQueryField.OperatorType.LESSTHANEQUALS,
+                SpQueryField.OperatorType.BETWEEN,
+                SpQueryField.OperatorType.IN};
     }
     
     /**
@@ -375,9 +442,9 @@ public class QueryFieldPanel extends JPanel
     {
         if (fieldQRI.getDataClass().equals(Boolean.class))
         {
-            return !operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.getString(SpQueryField.OperatorType.DONTCARE.getOrdinal()));
+            return !operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.DONTCARE);
         }
-        return StringUtils.isNotEmpty(criteria.getText().trim());
+        return StringUtils.isNotEmpty(getCriteriaText(true).trim());
     }
     
     /**
@@ -387,12 +454,10 @@ public class QueryFieldPanel extends JPanel
      */
     protected Object[] parseCriteria(final String criteriaEntry) throws ParseException
     {
-        String operStr = operatorCBX.getSelectedItem().toString();
         String[] raw;
         
-        if (SpQueryField.OperatorType.getOrdForName(operStr) == SpQueryField.OperatorType.BETWEEN
-                .getOrdinal() || SpQueryField.OperatorType.getOrdForName(operStr) == SpQueryField.OperatorType.IN
-                .getOrdinal())
+        if (operatorCBX.getSelectedItem() == SpQueryField.OperatorType.BETWEEN 
+                || operatorCBX.getSelectedItem() == SpQueryField.OperatorType.IN)
         {
             raw = criteriaEntry.split(",");
         }
@@ -403,14 +468,14 @@ public class QueryFieldPanel extends JPanel
         }
         
         
-        if (SpQueryField.OperatorType.getOrdForName(operStr) == SpQueryField.OperatorType.BETWEEN.getOrdinal())
+        if (operatorCBX.getSelectedItem() == SpQueryField.OperatorType.BETWEEN)
         {
             if (raw.length != 2)
             {
                 throw new ParseException(getLabel() + " - " + UIRegistry.getResourceString("QB_INVALID_CRITERIA"), -1);
             }
         }
-        else if (SpQueryField.OperatorType.getOrdForName(operStr) != SpQueryField.OperatorType.IN.getOrdinal())
+        else if (operatorCBX.getSelectedItem() != SpQueryField.OperatorType.IN)
         {
             if (raw.length != 1)
             {
@@ -564,7 +629,7 @@ public class QueryFieldPanel extends JPanel
     {
         if (hasCriteria())
         {
-            Object[] criteriaStrs = parseCriteria(criteria.getText().trim());
+            Object[] criteriaStrs = parseCriteria(getCriteriaText(true).trim());
             String criteriaFormula = "";
             String operStr = operatorCBX.getSelectedItem().toString();
             if (!(criteriaStrs[0] instanceof String))
@@ -622,8 +687,7 @@ public class QueryFieldPanel extends JPanel
                         }
                         if (p > 0)
                         {
-                            if (SpQueryField.OperatorType.getOrdForName(operStr) == SpQueryField.OperatorType.BETWEEN
-                                    .getOrdinal())
+                            if (operatorCBX.getSelectedItem() == SpQueryField.OperatorType.BETWEEN)
                             {
                                 criteriaFormula += " and ";
                             }
@@ -724,6 +788,12 @@ public class QueryFieldPanel extends JPanel
         return textField;
     }
     
+    protected PickListCriteriaCombo createPickList()
+    {
+        PickListCriteriaCombo result = new PickListCriteriaCombo(pickList);
+        return result;
+    }
+    
     protected JCheckBox createCheckBox(final String id)
     {
         ValCheckBox checkbox = new ValCheckBox("", false, false);
@@ -732,7 +802,7 @@ public class QueryFieldPanel extends JPanel
         return checkbox;
     }
     
-    protected JComboBox createComboBox(String[] items)
+    protected JComboBox createComboBox(SpQueryField.OperatorType[] items)
     {
         ValComboBox cbx = new ValComboBox(items, false);
         DataChangeNotifier dcn = validator.hookupComponent(cbx, "cbx",  UIValidator.Type.Changed, "", true);
@@ -806,8 +876,38 @@ public class QueryFieldPanel extends JPanel
         isNotCheckbox.addFocusListener(focusListener);
         operatorCBX = createComboBox(comparators);
         operatorCBX.addFocusListener(focusListener);
-        criteria = createTextField();
+        if (pickList == null)
+        {
+            criteria = createTextField();
+        }
+        else
+        {
+            criteria = createPickList();
+            ((PickListCriteriaCombo) criteria).setCurrentOp((SpQueryField.OperatorType) operatorCBX.getModel().getElementAt(0));
+            operatorCBX.addItemListener(new ItemListener()
+            {
+
+                /*
+                 * (non-Javadoc)
+                 * 
+                 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
+                 */
+                @Override
+                public void itemStateChanged(ItemEvent e)
+                {
+                    if (e.getStateChange() == ItemEvent.SELECTED)
+                    {
+                        // System.out.println("setting curront op");
+                        ((PickListCriteriaCombo) criteria)
+                                .setCurrentOp((SpQueryField.OperatorType) operatorCBX
+                                        .getSelectedItem());
+                    }
+                }
+
+            });
+        }
         criteria.addFocusListener(focusListener);
+        
         sortCheckbox = new MultiStateIconButon(new ImageIcon[] {
                 IconManager.getImage("GrayDot", IconManager.IconSize.Std16),
                 IconManager.getImage("UpArrow", IconManager.IconSize.Std16),
