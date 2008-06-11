@@ -723,30 +723,35 @@ public class UIFieldFormatterMgr
     {
         int len;
         Class<?> cls = formatter.getDataClass();
-        if (cls == Long.class)
-        {
-            len = Long.toString(Long.MAX_VALUE).length();
-        } else if (cls == Integer.class)
-        {
-            len = Integer.toString(Integer.MAX_VALUE).length();
-        } else if (cls == Short.class)
-        {
-            len = Short.toString(Short.MAX_VALUE).length();
-        } else if (cls == Byte.class)
-        {
-            len = Byte.toString(Byte.MAX_VALUE).length();
-        } else if (cls == Double.class)
-        {
-            len = String.format("%f", Double.MAX_VALUE).length();
-        } else if (cls == Float.class)
-        {
-            len = String.format("%f", Float.MAX_VALUE).length();
-        } else if (cls == BigDecimal.class)
+        if (cls == BigDecimal.class)
         {
             len = formatter.getPrecision() + formatter.getScale() + 1;
         } else
-        {
-            throw new RuntimeException("Missing case for numeric class ["+cls.getName()+"]");
+        { 
+            if (cls == Long.class)
+            {
+                len = Long.toString(Long.MAX_VALUE).length();
+            } else if (cls == Integer.class)
+            {
+                len = Integer.toString(Integer.MAX_VALUE).length();
+            } else if (cls == Short.class)
+            {
+                len = Short.toString(Short.MAX_VALUE).length();
+            } else if (cls == Byte.class)
+            {
+                len = Byte.toString(Byte.MAX_VALUE).length();
+            } else if (cls == Double.class)
+            {
+                len = String.format("%f", Double.MAX_VALUE).length();
+            } else if (cls == Float.class)
+            {
+                len = String.format("%f", Float.MAX_VALUE).length();
+                
+            } else 
+            {
+                throw new RuntimeException("Missing case for numeric class ["+cls.getName()+"]");
+            }
+            len = Math.min(len, 10);
         }
         StringBuilder sb = new StringBuilder(len);
         for (int i=0;i<len;i++)
