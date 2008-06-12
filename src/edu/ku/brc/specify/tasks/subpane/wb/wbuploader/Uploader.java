@@ -98,6 +98,7 @@ public class Uploader implements ActionListener, KeyListener
     protected final static String                   WB_CELL_LENGTH_EXCEPTION = "WB_CELL_LENGTH_EXCEPTION";
     protected final static String                   WB_TOO_MANY_ERRORS = "WB_TOO_MANY_ERRORS";
     protected final static String                   WB_UPLOAD_FORM_TITLE = "WB_UPLOAD_FORM_TITLE";
+    protected final static String                   WB_UPLOAD_ROW_SKIPPED = "WB_UPLOAD_ROW_SKIPPED";
     
     /**
      * Maximum number of messages (validation errors) to display. Prevents un-responsiveness when a workbench is REALLY messed up.
@@ -249,7 +250,7 @@ public class Uploader implements ActionListener, KeyListener
         @Override
         public String getMsg()
         {
-            return cause.getMessage();
+            return String.format(getResourceString(WB_UPLOAD_ROW_SKIPPED), String.valueOf(getRow())) + ": " + cause.getMessage();
         }
 
         /*
@@ -2814,7 +2815,7 @@ public class Uploader implements ActionListener, KeyListener
         }
     }
 
-    protected void abortRow(UploaderException cause, int row)
+    protected synchronized void abortRow(UploaderException cause, int row)
     {
         log.debug("NOT undoing writes which have already occurred while processing aborted row");
         SkippedRow sr = new SkippedRow(cause, row + 1);

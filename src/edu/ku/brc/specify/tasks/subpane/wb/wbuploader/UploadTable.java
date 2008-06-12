@@ -1786,6 +1786,10 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 tblSession.rollback();
             }
+            if (ex instanceof org.hibernate.exception.ConstraintViolationException)
+            {
+                throw new UploaderException(ex, UploaderException.ABORT_ROW);
+            }
             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
         }
         finally
