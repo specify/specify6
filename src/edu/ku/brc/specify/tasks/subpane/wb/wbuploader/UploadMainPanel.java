@@ -320,12 +320,48 @@ public class UploadMainPanel extends JPanel
         msgLbl  = createLabel(getResourceString("WB_UPLOAD_MSG_LIST"));
         add(msgLbl, cc.xy(4, 4));
         
-        msgList = new JList(new DefaultListModel());
+        msgList = new JList(new DefaultListModel())
+        {
+
+            /* (non-Javadoc)
+             * @see javax.swing.JList#getToolTipText(java.awt.event.MouseEvent)
+             */
+            @Override
+            public String getToolTipText(MouseEvent event)
+            {
+                //Get the mouse location
+                java.awt.Point point = event.getPoint();
+                
+                //Get the item in the list box at the mouse location
+                int index = this.locationToIndex(point);
+
+                //Get the value of the item in the list
+                return this.getModel().getElementAt(index).toString();            
+            }
+        };
+        
         msgListSB = new JScrollPane(msgList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         msgPane.add(msgListSB, cc.xywh(1, 1, 1, 2));
         
         validationErrorPanel = new JPanel(new BorderLayout());
-        validationErrorList = new JList(new DefaultListModel());
+        validationErrorList = new JList(new DefaultListModel())
+        {
+            /* (non-Javadoc)
+             * @see javax.swing.JList#getToolTipText(java.awt.event.MouseEvent)
+             */
+            @Override
+            public String getToolTipText(MouseEvent event)
+            {
+                //Get the mouse location
+                java.awt.Point point = event.getPoint();
+                
+                //Get the item in the list box at the mouse location
+                int index = this.locationToIndex(point);
+
+                //Get the value of the item in the list
+                return this.getModel().getElementAt(index).toString();            
+            }
+        };
         validationErrorPanel.add(new JScrollPane(validationErrorList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), 
                 BorderLayout.CENTER);
         printBtn = createButton(getResourceString("WB_UPLOAD_PRINT_MESSAGES_BTN")); 
