@@ -190,7 +190,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     {
         super.init();
         agentId                   = null;
-        agentType                 = null;
+        agentType                 = PERSON;
         firstName                 = null;
         lastName                  = null;
         middleInitial             = null;

@@ -169,7 +169,7 @@ public class DataChangeNotifier implements FocusListener,
         } else if (component instanceof GetSetValueIFace)
         {
             Object value = ((GetSetValueIFace)component).getValue();
-            return (value!=null) ? value.toString() : null;
+            return (value != null) ? value.toString() : null;
             
         } else if (component instanceof MultiStateIconButon)
         {
