@@ -570,23 +570,6 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         
         comboBox.setSelectedIndex(fndInx);
         
-        // In some cases the Combobox was not selecting the correct item without
-        // this approach of putting it on the GUI thread. Since this happens later
-        // we shouldn't send -1 (clearing it) because it maybe set to the right value
-        // in the meantime.
-        if (fndInx != -1)
-        {
-            final int foundInx = fndInx;
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run()
-                {
-                    UIValidator.setIgnoreAllValidation(this, true);
-                    comboBox.setSelectedIndex(foundInx);
-                    UIValidator.setIgnoreAllValidation(this, false);
-                }
-            });
-        }
-
         repaint();
     }
 

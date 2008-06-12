@@ -638,6 +638,8 @@ public class Attachment extends DataModelObjBase implements Serializable
              }
          }
          
-         return ((FormDataObjIFace)objAttachment).getIdentityTitle();
+         Integer id = ((FormDataObjIFace)objAttachment).getId();
+         
+         return id != null ? id.toString() : "N/A";
     }
 }

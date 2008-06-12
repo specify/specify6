@@ -20,7 +20,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.AbstractListModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -160,16 +160,18 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                 int inx = -1;
                 if (value != null)
                 {
-                    DefaultComboBoxModel model = (DefaultComboBoxModel)cbx.getModel();
+                    AbstractListModel model = (AbstractListModel)cbx.getModel();
                     for (int i=0;i<model.getSize();i++)
                     {
-                        if (model.getElementAt(i).equals(value))
+                        Object item = model.getElementAt(i);
+                        if (item.toString().equals(value))
                         {
                             inx = i;
                             break;
                         }
                     }
                 }
+                //System.err.println("AgentBusRules - id "+id+" setting to "+inx);
                 cbx.setSelectedIndex(inx);
                 
             } else if (field instanceof JTextField)
@@ -276,7 +278,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         Agent agent     = (Agent)dataObj;
         Byte  agentType = agent.getAgentType();
         
-        fixUpFormForAgentType(agent, false);
+        fixUpFormForAgentType(agent, true);
         
         if (typeComp instanceof ValComboBox)
         {
