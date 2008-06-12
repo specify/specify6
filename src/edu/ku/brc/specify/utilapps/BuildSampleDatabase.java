@@ -97,8 +97,11 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.Random;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Vector;
 
@@ -324,6 +327,32 @@ public class BuildSampleDatabase
             query.setIsFavorite(true);
             dataObjects.add(query);
         }
+    }
+    
+    protected void adjustLocaleFromPrefs()
+    {
+        String language = AppPreferences.getLocalPrefs().get("locale.lang", null); //$NON-NLS-1$
+        if (language != null)
+        {
+            String country  = AppPreferences.getLocalPrefs().get("locale.country", null); //$NON-NLS-1$
+            String variant  = AppPreferences.getLocalPrefs().get("locale.var",     null); //$NON-NLS-1$
+            
+            Locale prefLocale = new Locale(language, country, variant);
+            
+            Locale.setDefault(prefLocale);
+            UIRegistry.setResourceLocale(prefLocale);
+        }
+        
+        try
+        {
+            ResourceBundle.getBundle("resources", Locale.getDefault()); //$NON-NLS-1$
+            
+        } catch (MissingResourceException ex)
+        {
+            Locale.setDefault(Locale.ENGLISH);
+            UIRegistry.setResourceLocale(Locale.ENGLISH);
+        }
+        
     }
 
     /**
@@ -7135,6 +7164,16 @@ public class BuildSampleDatabase
      */
     public static void main(final String[] args)
     {
+        try
+        {
+            ResourceBundle.getBundle("resources", Locale.getDefault()); //$NON-NLS-1$
+            
+        } catch (MissingResourceException ex)
+        {
+            Locale.setDefault(Locale.ENGLISH);
+            UIRegistry.setResourceLocale(Locale.ENGLISH);
+        }
+        
         new HiddenTableMgr();
         try
         {
