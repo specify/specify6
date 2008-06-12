@@ -1302,11 +1302,11 @@ public class MultiView extends JPanel
                              final AltViewIFace.CreationMode mode,
                              final int vsInx)
     {
-        if (viewStateList != null && vsInx < viewStateList.size()-1)
+        if (viewStateList != null && vsInx < viewStateList.size())
         {
             ViewState viewState = viewStateList.get(vsInx);
             
-            if (vsInx > 0)
+            if (vsInx > -1)
             {
                 int inx = viewState.getInx();
                 if (inx > -1)
@@ -1330,7 +1330,7 @@ public class MultiView extends JPanel
     }
     
     /**
-     * Collects the current state of each view. This mostly captures the index f th RSC
+     * Collects the current state of each view. This mostly captures the index of the RSC
      * @param viewStateList the list of view states
      * @param mode the mode
      * @param level the level
@@ -1351,7 +1351,7 @@ public class MultiView extends JPanel
         if (formViewObj != null && formViewObj.getRsController() != null)
         {
             int curInx = formViewObj.getRsController().getCurrentIndex();
-            //log.debug("  curInx: "+curInx);
+            //log.debug(spaces.substring(0, level)+"  curInx: "+curInx);
             viewState.setInx(curInx);
         }
         
