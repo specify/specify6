@@ -69,17 +69,6 @@ public class IReportLauncher implements DatabaseLoginListener
         
         if (status == AppContextMgr.CONTEXT_STATUS.OK)
         {
-//            if (UIHelper.isMacOS_10_5_X())
-//            {
-//                setupUIControlSize(AppPreferences.getRemote());
-//            }
-//            
-//            String iconName = AppPreferences.getRemote().get("ui.formatting.disciplineicon", "CollectionObject"); //$NON-NLS-1$ //$NON-NLS-2$
-//            IconManager.aliasImages(iconName,             // Source
-//                                    "collectionobject");  // Dest //$NON-NLS-1$
-//            
-//            // XXX Get the current locale from prefs PREF
-//            
             if (Discipline.getCurrentDiscipline() == null)
             {
                 return;
@@ -87,43 +76,8 @@ public class IReportLauncher implements DatabaseLoginListener
             
             int disciplineeId = Discipline.getCurrentDiscipline().getDisciplineId();
             SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
-            //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
-//            
-//            //Collection.setCurrentCollection(null);
-//            //Discipline.setCurrentDiscipline(null);
-//            
-//            // "false" means that it should use any cached values it can find to automatically initialize itself
-//
-//            if (firstTime)
-//            {
-//                GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-//                
-//                initialize(gc);
-//    
-//                topFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-//                UIRegistry.register(UIRegistry.FRAME, topFrame);
-//            } else
-//            {
-//                SubPaneMgr.getInstance().closeAll();
-//            }
-//            
-//            preInitializePrefs();
-//            
-//            initStartUpPanels(databaseNameArg, userNameArg);
-//            
-//            if (changeCollectionMenuItem != null)
-//            {
-//                changeCollectionMenuItem.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
-//            }
-//            
         } else if (status == AppContextMgr.CONTEXT_STATUS.Error)
         {
-//
-//            if (dbLoginPanel != null)
-//            {
-//                dbLoginPanel.getWindow().setVisible(false);
-//            }
-//            
             if (Collection.getCurrentCollection() == null)
             {
                 
@@ -136,16 +90,8 @@ public class IReportLauncher implements DatabaseLoginListener
             }
         
         }
-//        
-//        CommandDispatcher.dispatch(new CommandAction("App", "Restart", null)); //$NON-NLS-1$ //$NON-NLS-2$
-//        
-//        if (dbLoginPanel != null)
-//        {
-//            dbLoginPanel.getWindow().setVisible(false);
-//            dbLoginPanel = null;
-//        }
-//        setDatabaseNameAndCollection();
-        //...end specify.restartApp
+        //...end specify.restartApp snatch
+        
         openIReportEditor();
     }
 
@@ -175,5 +121,4 @@ public class IReportLauncher implements DatabaseLoginListener
             }
         });
     }
-    
 }

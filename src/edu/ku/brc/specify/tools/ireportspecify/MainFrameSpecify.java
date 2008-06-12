@@ -26,8 +26,11 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -720,6 +723,32 @@ public class MainFrameSpecify extends MainFrame
         return super.getConnections();
     }
 
+    protected static void adjustLocaleFromPrefs()
+    {
+        String language = AppPreferences.getLocalPrefs().get("locale.lang", null); //$NON-NLS-1$
+        if (language != null)
+        {
+            String country  = AppPreferences.getLocalPrefs().get("locale.country", null); //$NON-NLS-1$
+            String variant  = AppPreferences.getLocalPrefs().get("locale.var",     null); //$NON-NLS-1$
+            
+            Locale prefLocale = new Locale(language, country, variant);
+            
+            Locale.setDefault(prefLocale);
+            UIRegistry.setResourceLocale(prefLocale);
+        }
+        
+        try
+        {
+            ResourceBundle.getBundle("resources", Locale.getDefault()); //$NON-NLS-1$
+            
+        } catch (MissingResourceException ex)
+        {
+            Locale.setDefault(Locale.ENGLISH);
+            UIRegistry.setResourceLocale(Locale.ENGLISH);
+        }
+        
+    }
+
     /**
      * @param args
      */
@@ -778,18 +807,14 @@ public class MainFrameSpecify extends MainFrame
 
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
+        adjustLocaleFromPrefs();
 
-            HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener()); //$NON-NLS-1$
-            HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener()); //$NON-NLS-1$
-            // SInce Update get called when deleting an object there is no need to register this class.
-            // The update deletes becuase first it removes the Lucene document and then goes to add it back in, but since the
-            // the record is deleted it doesn't get added.
-            HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener()); //$NON-NLS-1$
-            //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
+        HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener()); //$NON-NLS-1$
+        HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener()); //$NON-NLS-1$
+        HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener()); //$NON-NLS-1$
         
-        UIHelper.doLogin(true, false, false, new IReportLauncher(), null, "iReport"); // true means do auto login if it can, second bool means use dialog instead of frame
-        
-        localPrefs.load();
-
+       UIHelper.doLogin(true, false, false, new IReportLauncher(), null, "iReport"); // true means do auto login if it can, second bool means use dialog instead of frame
+       
+       localPrefs.load();
     }
 }
