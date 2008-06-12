@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.SwingUtilities;
@@ -26,6 +28,8 @@ import org.apache.log4j.Logger;
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationAdapter;
 import com.apple.eawt.ApplicationEvent;
+
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -556,6 +560,16 @@ public class LocalizerApp extends LocalizableBaseApp
         {
             public void run()
             {
+                try
+                {
+                    ResourceBundle.getBundle("resources", Locale.getDefault()); //$NON-NLS-1$
+                    
+                } catch (MissingResourceException ex)
+                {
+                    Locale.setDefault(Locale.ENGLISH);
+                    UIRegistry.setResourceLocale(Locale.ENGLISH);
+                }
+                
                 LocalizerApp fd = new LocalizerApp();
                 
                 fd.collectResources();
