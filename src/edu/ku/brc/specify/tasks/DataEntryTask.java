@@ -193,7 +193,7 @@ public class DataEntryTask extends BaseTask
      */
     protected static ImageIcon getIconForView(final ViewIFace view)
     {
-        ImageIcon imgIcon = iconForFormClass.get(view.getName());
+        ImageIcon imgIcon = null;
         if (imgIcon == null)
         {
             try
