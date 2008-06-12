@@ -21,6 +21,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -99,6 +100,7 @@ public class Uploader implements ActionListener, KeyListener
     protected final static String                   WB_TOO_MANY_ERRORS = "WB_TOO_MANY_ERRORS";
     protected final static String                   WB_UPLOAD_FORM_TITLE = "WB_UPLOAD_FORM_TITLE";
     protected final static String                   WB_UPLOAD_ROW_SKIPPED = "WB_UPLOAD_ROW_SKIPPED";
+    protected final static String                   WB_UPLOAD_VIEW_RESULTS_TITLE = "WB_UPLOAD_VIEW_RESULTS_TITLE";
     
     /**
      * Maximum number of messages (validation errors) to display. Prevents un-responsiveness when a workbench is REALLY messed up.
@@ -2607,24 +2609,37 @@ public class Uploader implements ActionListener, KeyListener
     {
         if (currentOp.equals(Uploader.SUCCESS))
         {
-            if (mainPanel.getUploadTbls().getSelectedValue() != null)
-            {
-                if (bogusStorages != null)
-                {
-                    if (bogusViewer == null)
-                    {
-                        bogusViewer = db.new BogusViewer(bogusStorages);
-                    }
-                    if (bogusViewer != null)
-                    {
-                        bogusViewer.viewBogusTbl(((UploadInfoRenderable) mainPanel.getUploadTbls()
-                                .getSelectedValue()).getTableName(), true);
-                    }
-                }
-            }
+            viewUploadsAll();
+//            if (mainPanel.getUploadTbls().getSelectedValue() != null)
+//            {
+//                if (bogusStorages != null)
+//                {
+//                    if (bogusViewer == null)
+//                    {
+//                        bogusViewer = db.new BogusViewer(bogusStorages);
+//                    }
+//                    if (bogusViewer != null)
+//                    {
+//                        bogusViewer.viewBogusTbl(((UploadInfoRenderable) mainPanel.getUploadTbls()
+//                                .getSelectedValue()).getTableName(), true);
+//                    }
+//                }
+//            }
         }
     }
 
+    protected void viewUploadsAll()
+    {
+        new UploadRetriever().viewUploads(uploadTables, wbSS.getTask(), getResourceString(WB_UPLOAD_VIEW_RESULTS_TITLE));
+    }
+    
+    protected void viewUpload(final UploadTable uploadTable)
+    {
+        List<UploadTable> lst = new LinkedList<UploadTable>();
+        lst.add(uploadTable);
+        new UploadRetriever().viewUploads(lst, wbSS.getTask(), getResourceString(WB_UPLOAD_VIEW_RESULTS_TITLE));
+    }
+    
     protected boolean dotDotDot(final String op)
     {
         return op.equals(Uploader.UPLOADING)
