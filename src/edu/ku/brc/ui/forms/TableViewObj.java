@@ -2077,6 +2077,7 @@ public class TableViewObj implements Viewable,
         {
             //log.debug(row+","+column+"  isLoaded:"+isLoaded);
             
+
             if (columnList != null && dataObjList != null && dataObjList.size() > 0)
             {
                 if (!isLoaded)
@@ -2166,7 +2167,7 @@ public class TableViewObj implements Viewable,
                             }
                         }
                         return getPickListValue(adapter, dataVal);
-                    } else if (uiFmt != null)
+                    } else if (StringUtils.isNotEmpty(uiFmt))
                     {
                         UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getInstance().getFormatter(uiFmt);
                         if (fmt != null)
