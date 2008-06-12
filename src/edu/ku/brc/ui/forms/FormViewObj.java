@@ -170,7 +170,7 @@ public class FormViewObj implements Viewable,
 {
     private static final Logger log = Logger.getLogger(FormViewObj.class);
     
-    protected enum SAVE_STATE {Initial, NewObjSaveerror, StaleRecovery, SaveOK}
+    protected enum SAVE_STATE {Initial, NewObjSaveerror, StaleRecovery, SaveOK, Error}
     
 
     // Static Data Members
@@ -1998,6 +1998,17 @@ public class FormViewObj implements Viewable,
             try
             {
                 numTries++;
+                
+                Integer dataObjId = ((FormDataObjIFace)dataObjArg).getId();
+                if (dataObjId != null)
+                {
+                    Integer count = session.getDataCount(dataObjArg.getClass(), "id", dataObjId, DataProviderSessionIFace.CompareType.Equals);
+                    if (count == null || count == 0)
+                    {
+                        UIRegistry.showLocalizedError("FormViewObj.DATA_OBJ_MISSING");
+                        return SAVE_STATE.Error;
+                    }
+                }
                 
                 mvParent.updateAutoNumbers();
                 
