@@ -349,7 +349,7 @@ public class ViewFactory
                 throw new RuntimeException(msg);
             }
             
-            if (formatter != null)
+            if (formatter.isDate() || formatter.isNumeric())
             {
                 ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(uiFormatterName, 
                                                                                        isViewOnly, 
@@ -588,9 +588,26 @@ public class ViewFactory
      */
     public static void changeTextFieldUIForDisplay(final JTextField textField, final boolean isTransparent)
     {
+        changeTextFieldUIForDisplay(textField, null, isTransparent);
+    }
+    
+    /**
+     * Makes adjusts to the border and the colors to make it "flat" for display mode.
+     * @param textField the text field to be flattened
+     * @param isTransparent make the background transparent instead of using the viewFieldColor
+     */
+    public static void changeTextFieldUIForDisplay(final JTextField textField, final Color borderColor, final boolean isTransparent)
+    {
         Insets insets = textField.getBorder().getBorderInsets(textField);
-        textField.setBorder(BorderFactory.createEmptyBorder(Math.min(insets.top, 3), Math.min(insets.left, 3), 
-                                                            Math.min(insets.bottom, 3), Math.min(insets.right, 3)));
+        if (borderColor != null)
+        {
+            textField.setBorder(BorderFactory.createMatteBorder(Math.min(insets.top, 3), Math.min(insets.left, 3), 
+                                                                Math.min(insets.bottom, 3), Math.min(insets.right, 3), borderColor));
+        } else
+        {
+            textField.setBorder(BorderFactory.createEmptyBorder(Math.min(insets.top, 3), Math.min(insets.left, 3), 
+                                                                Math.min(insets.bottom, 3), Math.min(insets.right, 3)));
+        }
         textField.setForeground(Color.BLACK);
         textField.setEditable(false);
         textField.setFocusable(false);

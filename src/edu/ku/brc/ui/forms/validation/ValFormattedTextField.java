@@ -240,11 +240,11 @@ s     * @param isViewOnly
                 {
                     if (comps[inx] instanceof JTextField)
                     {
-                        ViewFactory.changeTextFieldUIForDisplay(((JTextField)comps[inx]), false);
+                        ViewFactory.changeTextFieldUIForDisplay(((JTextField)comps[inx]), getBackground(), false);
                         
                     } else if (comps[inx] instanceof JPanel)
                     {
-                        ViewFactory.changeTextFieldUIForDisplay(viewTF, false);
+                        ViewFactory.changeTextFieldUIForDisplay(viewTF, getBackground(), false);
                     }
                 }
                 inx++;
@@ -350,7 +350,7 @@ s     * @param isViewOnly
                 i++;
             }
             sb.append(",1px");
-            
+            System.out.println(sb.toString());
             PanelBuilder    builder = new PanelBuilder(new FormLayout(sb.toString(), "1px,P,1px"), this);
             
             comps = new JComponent[fields.size()];

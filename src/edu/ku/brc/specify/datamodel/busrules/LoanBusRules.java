@@ -42,12 +42,15 @@ import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.validation.UIValidatable;
 import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
 import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
+import edu.ku.brc.ui.forms.validation.ValTextField;
 
 /**
  * Business rules for validating a Loan.
@@ -142,10 +145,22 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
                 comp = formViewObj.getControlByName("loanNumber");
                 if (comp instanceof JTextField && shipComp instanceof JTextField)
                 {
-                    ValFormattedTextField loanTxt = (ValFormattedTextField)comp;
-                    ValFormattedTextField shipTxt = (ValFormattedTextField)shipComp;
-                    shipTxt.setValue(loanTxt.getText(), loanTxt.getText());
-                    shipTxt.setChanged(true);
+                    JTextField loanTxt = (JTextField)comp;
+                    if (shipComp instanceof GetSetValueIFace)
+                    {
+                        GetSetValueIFace gsv = (GetSetValueIFace)shipComp;
+                        gsv.setValue(loanTxt.getText(), loanTxt.getText());
+                        
+                    } else if (shipComp instanceof JTextField)
+                    {
+                        ((JTextField)shipComp).setText(loanTxt.getText());
+                    }
+                    
+                    if (shipComp instanceof UIValidatable)
+                    {
+                        UIValidatable uiv = (UIValidatable)shipComp;
+                        uiv.setChanged(true);
+                    }
                 }
             }
         }
