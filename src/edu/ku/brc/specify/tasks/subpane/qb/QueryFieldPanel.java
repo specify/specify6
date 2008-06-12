@@ -892,7 +892,7 @@ public class QueryFieldPanel extends JPanel
                  * 
                  * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
                  */
-                @Override
+                //@Override
                 public void itemStateChanged(ItemEvent e)
                 {
                     if (e.getStateChange() == ItemEvent.SELECTED)

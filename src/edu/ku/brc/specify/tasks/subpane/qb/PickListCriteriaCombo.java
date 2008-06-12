@@ -76,7 +76,7 @@ public class PickListCriteriaCombo extends JComboBox
             /* (non-Javadoc)
              * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
              */
-            @Override
+            //@Override
             public void actionPerformed(ActionEvent e)
             {
                 if (e.getActionCommand().equals("comboBoxChanged"))
