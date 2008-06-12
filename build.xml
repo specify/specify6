@@ -357,6 +357,7 @@
 			<fileset dir="demo_files">
 				<exclude name="**/.svn" />
 				<exclude name="**/.csv" />
+				<exclude name="**/.jrxml" />
 				<include name="**/topbrc195x68.png" />
 			</fileset>
 		</copy>
@@ -369,6 +370,7 @@
 		<copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-mac}/examples" />
 		<copy file="demo_files/workbench/JohsonCountyTrip.csv" todir="${dist-mac}/examples" />
 	    <copy file="demo_files/workbench/SaipanTrip.xls" todir="${dist-mac}/examples" />
+	    <copy file="demo_files/Reports/ImportExample.jrxml" todir="${dist-mac}/examples" />
 		
 	</target>
 	
@@ -463,6 +465,7 @@
 			<fileset dir="demo_files">
 				<exclude name="**/.svn" />
 				<exclude name="**/.csv" />
+				<exclude name="**/.jrxml" />
 				<include name="**/topbrc195x68.png" />
 			</fileset>
 		</copy>
@@ -518,7 +521,7 @@
 		<copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-mac}/examples" />
 		<copy file="demo_files/workbench/JohsonCountyTrip.csv" todir="${dist-mac}/examples" />
 	    <copy file="demo_files/workbench/SaipanTrip.xls" todir="${dist-mac}/examples" />
-
+		<copy file="demo_files/Reports/ImportExample.jrxml" todir="${dist-mac}/examples" />
 	</target>
 
 		
@@ -796,6 +799,7 @@
 			<fileset dir="demo_files">
 				<exclude name="**/.svn" />
 				<exclude name="**/.csv" />
+				<exclude name="**/.jrxml" />
 				<include name="**/topbrc195x68.png" />
 				<include name="**/Stratigraphy.csv" />
 			</fileset>
@@ -872,6 +876,7 @@
 		<copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-win}/examples" />
 		<copy file="demo_files/workbench/JohsonCountyTrip.csv" todir="${dist-win}/examples" />
 	    <copy file="demo_files/workbench/SaipanTrip.xls" todir="${dist-win}/examples" />
+		<copy file="demo_files/Reports/ImportExample.jrxml" todir="${dist-win}/examples" />
 		
 		<!-- This is NOT for the release -->
 		<!-- Copy demo_files dir -->
@@ -879,6 +884,7 @@
 			<fileset dir="demo_files">
 				<exclude name="**/.svn" />
 				<exclude name="**/.csv" />
+				<exclude name="**/.jrxml" />
 				<include name="**/*.jpg" />
 			</fileset>
 		</copy>
@@ -948,6 +954,7 @@
 		<copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-linux}/examples" />
 		<copy file="demo_files/workbench/JohsonCountyTrip.csv" todir="${dist-linux}/examples" />
 	    <copy file="demo_files/workbench/SaipanTrip.xls" todir="${dist-linux}/examples" />
+		<copy file="demo_files/Reports/ImportExample.jrxml" todir="${dist-linux}/examples" />
 		
 	</target>
 	
