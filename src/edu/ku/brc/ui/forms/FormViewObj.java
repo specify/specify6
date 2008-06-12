@@ -2415,7 +2415,7 @@ public class FormViewObj implements Viewable,
                                               null,
                                               delBtnLabels,
                                               delBtnLabels[1]);
-        if (rv == JOptionPane.NO_OPTION)
+        if (rv != JOptionPane.YES_OPTION)
         {
             return;
         }
