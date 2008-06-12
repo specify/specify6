@@ -1,11 +1,12 @@
+/**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ * 
+ */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import java.io.File;
 import java.io.IOException;
-
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 
@@ -29,11 +30,17 @@ import edu.ku.brc.specify.datamodel.PermitAttachment;
 import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BaseBusRules;
-import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 
+/**
+ * @author jstewart (original author)
+ *
+ * @code_status Alpha
+ *
+ * Jun 12, 2008
+ *
+ */
 public class AttachmentReferenceBaseBusRules extends BaseBusRules
 {
     protected static Logger log = Logger.getLogger(AttachmentReferenceBaseBusRules.class);
@@ -58,12 +65,18 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
                TaxonAttachment.class );
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#okToEnableDelete(java.lang.Object)
+     */
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterDeleteCommit(java.lang.Object)
+     */
     @Override
     public void afterDeleteCommit(Object dataObj)
     {
@@ -122,6 +135,7 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
      */
     protected boolean askUserToApproveDelete(Attachment attachment)
     {
+        /*
         JOptionPane pane = new JOptionPane("Delete the associated files from the attachment storage system?  " + attachment.getOrigFilename()); // I18N
         pane.setOptionType(JOptionPane.YES_NO_OPTION);
         AttachmentManagerIface attachMgr = AttachmentUtils.getAttachmentManager();
@@ -138,6 +152,9 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
         Object choice = pane.getValue();
         
         return ((Integer)choice == JOptionPane.YES_OPTION);
+        */
+        // rods - decided for now to always delete it.
+        return true;
     }
 
 

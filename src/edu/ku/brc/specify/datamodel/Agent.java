@@ -909,8 +909,10 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     }
 
     
+    //@OneToMany(mappedBy = "agent")
+    //@Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK, CascadeType.DELETE} )
     @OneToMany(mappedBy = "agent")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK, CascadeType.DELETE} )
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @OrderBy("ordinal ASC")
     public Set<AgentAttachment> getAgentAttachments()
     {

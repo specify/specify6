@@ -26,6 +26,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -374,21 +375,24 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
        return this.events;
     }
 
-   public void setEvents(final Set<ConservEvent> events)
-   {
-       this.events = events;
-   }
+    public void setEvents(final Set<ConservEvent> events)
+    {
+        this.events = events;
+    }
 
-   @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "conservDescription")
-   public Set<ConservDescriptionAttachment> getConservDescriptionAttachments()
-   {
-       return conservDescriptionAttachments;
-   }
+    //@OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "conservDescription")
+    @OneToMany(mappedBy = "conservDescription")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
+    public Set<ConservDescriptionAttachment> getConservDescriptionAttachments()
+    {
+        return conservDescriptionAttachments;
+    }
 
-   public void setConservDescriptionAttachments(Set<ConservDescriptionAttachment> conservDescriptionAttachments)
-   {
-       this.conservDescriptionAttachments = conservDescriptionAttachments;
-   }
+    public void setConservDescriptionAttachments(Set<ConservDescriptionAttachment> conservDescriptionAttachments)
+    {
+        this.conservDescriptionAttachments = conservDescriptionAttachments;
+    }
 
     /**
      * Generic Getter for the ID Property.

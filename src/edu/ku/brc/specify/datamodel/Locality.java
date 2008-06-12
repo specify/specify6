@@ -41,6 +41,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -632,7 +633,10 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         this.localityCitations = localityCitations;
     }
 
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, mappedBy = "locality")
+    //@OneToMany(cascade = { javax.persistence.CascadeType.ALL }, mappedBy = "locality")
+    @OneToMany(mappedBy = "locality")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
     public Set<LocalityAttachment> getLocalityAttachments()
     {
         return localityAttachments;

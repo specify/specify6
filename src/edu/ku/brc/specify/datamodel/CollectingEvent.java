@@ -505,8 +505,11 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
         this.collectingEventAttribute = collectingEventAttribute;
     }
     
+    //@OneToMany(mappedBy = "collectingEvent")
+    //@Cascade( {CascadeType.ALL} )
     @OneToMany(mappedBy = "collectingEvent")
-    @Cascade( {CascadeType.ALL} )
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
     public Set<CollectingEventAttachment> getCollectingEventAttachments()
     {
         return collectingEventAttachments;

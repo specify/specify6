@@ -42,6 +42,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -412,7 +413,9 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         this.yesNo2 = yesNo2;
     }
     
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "accession")
+    @OneToMany(mappedBy = "accession")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
     public Set<AccessionAttachment> getAccessionAttachments()
     {
         return accessionAttachments;

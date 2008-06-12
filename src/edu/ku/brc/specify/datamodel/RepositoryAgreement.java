@@ -41,6 +41,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -356,7 +357,10 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
         this.repositoryAgreementAgents = repositoryAgreementAgents;
     }
 
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "repositoryAgreement")
+    //@OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "repositoryAgreement")
+    @OneToMany(mappedBy = "repositoryAgreement")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
     public Set<RepositoryAgreementAttachment> getRepositoryAgreementAttachments()
     {
         return repositoryAgreementAttachments;

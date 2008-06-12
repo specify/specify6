@@ -1272,16 +1272,17 @@ public class FormViewObj implements Viewable,
      * Adds new child object to its parent to a Set
      * @param newDataObj the new object to be added to a Set
      */
-    protected void removeFromParent(final Object oldDataObj)
+    protected static void removeFromParent(final Object parentDataObjArg, final String cellNameArg, final Object oldDataObj)
     {
         if (oldDataObj != null)
         {
-            if (parentDataObj != null)
+            if (parentDataObjArg != null)
             {
-                if (parentDataObj instanceof FormDataObjIFace &&
+                log.debug("Removing "+oldDataObj+" "+oldDataObj.getClass().getSimpleName()+" from "+parentDataObjArg);
+                if (parentDataObjArg instanceof FormDataObjIFace &&
                     oldDataObj instanceof FormDataObjIFace)
                 {
-                    ((FormDataObjIFace)parentDataObj).removeReference((FormDataObjIFace)oldDataObj, cellName);
+                    ((FormDataObjIFace)parentDataObjArg).removeReference((FormDataObjIFace)oldDataObj, cellNameArg);
                     
                 } else
                 {
@@ -2029,18 +2030,8 @@ public class FormViewObj implements Viewable,
                     businessRules.beforeMerge(dataObjArg, session);
                 }
                 
-                /*if (dataObjArg instanceof CollectionObject)
-                {
-                    CollectionObject co = (CollectionObject)dataObjArg;
-                    System.out.println("Size: "+co.getAttachmentReferences().size());
-                }*/
                 dObj = session.merge(dataObjArg);
-                /*if (dObj instanceof CollectionObject)
-                {
-                    CollectionObject co = (CollectionObject)dObj;
-                    System.out.println("Size: "+co.getAttachmentReferences().size());
-                }*/
-
+                
                 if (businessRules != null)
                 {
                     businessRules.beforeSave(dObj, session);
@@ -2492,13 +2483,13 @@ public class FormViewObj implements Viewable,
         {
             boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
             
-            removeFromParent(dataObj);
+            removeFromParent(parentDataObj, cellName, dataObj);
             
             // We don't delete these type of objects from the database
-            // becauses were added as references only
+            // because were added as references only
             if (!addSearch)
             {
-                mvParent.getTopLevel().addDeletedItem(dataObj);    
+                mvParent.getTopLevel().addDeletedItem(dataObj);
             }
 
             String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dataObj) : "";
@@ -2544,7 +2535,7 @@ public class FormViewObj implements Viewable,
                 return;
             }
             
-            removeFromParent(dataObj);
+            removeFromParent(parentDataObj, cellName, dataObj);
             
             String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dataObj) : "";
 
@@ -5211,7 +5202,7 @@ public class FormViewObj implements Viewable,
             return label;
         }
     }
-
+    
     //-------------------------------------------------
     // FieldInfo
     //-------------------------------------------------

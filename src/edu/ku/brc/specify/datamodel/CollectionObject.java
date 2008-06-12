@@ -43,6 +43,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -1097,7 +1098,9 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         this.conservDescriptions = conservDescriptions;
     }
 
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "collectionObject")
+    @OneToMany(mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
     public Set<CollectionObjectAttachment> getCollectionObjectAttachments()
     {
         return collectionObjectAttachments;

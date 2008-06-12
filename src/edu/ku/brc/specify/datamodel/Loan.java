@@ -44,6 +44,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -611,7 +612,10 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
         this.shipments = shipments;
     }
     
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "loan")
+    //@OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "loan")
+    @OneToMany(mappedBy = "loan")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
     public Set<LoanAttachment> getLoanAttachments()
     {
         return loanAttachments;

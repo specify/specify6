@@ -1,3 +1,9 @@
+/**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ * 
+ */
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.io.IOException;
@@ -16,15 +22,29 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.util.AttachmentUtils;
 
+/**
+ * @author jstewart (original author)
+ *
+ * @code_status Alpha
+ *
+ * Jun 12, 2008
+ *
+ */
 public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
 {
     protected Logger log = Logger.getLogger(AttachmentOwnerBaseBusRules.class);
     
+    /**
+     * @param classes
+     */
     public AttachmentOwnerBaseBusRules(Class<?>...classes)
     {
         super(classes);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeDeleteCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
     @Override
     public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
@@ -41,7 +61,7 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
             // now check to see if the attachments referenced by this owner have no other
             // references in the DB
             
-            Set<?> hashSet = new HashSet<Object>(owner.getAttachmentReferences());
+            Set<?>             hashSet        = new HashSet<Object>(owner.getAttachmentReferences());
             AttachmentBusRules attachBusRules = new AttachmentBusRules();
             for (Object attachRefObj : hashSet)
             {
@@ -52,13 +72,22 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
                 
                 if (totalCount != null && totalCount == 1)
                 {
-                    int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
-                            "Delete the attachment file from disk?", 
-                            "Confirm file deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
-                    
-                    if (option == JOptionPane.YES_OPTION)
+                    // rods - We have decided that will automatically go ahead and delete
+                    // the file on disk. We can make this a preference later if we wish.
+                    if (false)
                     {
-                        log.debug("delete the file from disk: " + attach.getAttachmentLocation());
+                        int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+                                UIRegistry.getResourceString("AttachmentOwnerBaseBusRules.DEL_FROM_DISK"),  //$NON-NLS-1$
+                                UIRegistry.getResourceString("AttachmentOwnerBaseBusRules.DEL_FROM_DISK_TITLE"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N //$NON-NLS-1$
+                        
+                        if (option == JOptionPane.YES_OPTION)
+                        {
+                            log.debug("delete the file from disk: " + attach.getAttachmentLocation()); //$NON-NLS-1$
+                            session.delete(attach);
+                            owner.getAttachmentReferences().remove(attach);
+                        }
+                    } else
+                    {
                         session.delete(attach);
                         owner.getAttachmentReferences().remove(attach);
                     }
@@ -69,6 +98,9 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
         return retVal;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
     @Override
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
@@ -89,6 +121,9 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
     @Override
     public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
@@ -117,7 +152,7 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
                     }
                     catch (IOException e)
                     {
-                        log.error("Unable to store attached file", e);
+                        log.error("Unable to store attached file", e); //$NON-NLS-1$
                     }
                 }
             }

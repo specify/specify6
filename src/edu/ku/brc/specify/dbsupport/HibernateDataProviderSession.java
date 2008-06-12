@@ -147,7 +147,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#deleteOnSaveOrUpdate(java.lang.Object)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#merge(java.lang.Object)
      */
     @SuppressWarnings("unchecked")
     public <T> T merge(final T dataObj) throws StaleObjectException

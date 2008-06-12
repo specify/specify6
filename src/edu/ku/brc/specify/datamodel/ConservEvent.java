@@ -27,6 +27,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -370,8 +371,11 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
         this.conservDescription = conservDescription;
     }
     
+    //@OneToMany(mappedBy = "conservEvent")
+    //@Cascade( {CascadeType.ALL} )
     @OneToMany(mappedBy = "conservEvent")
-    @Cascade( {CascadeType.ALL} )
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
     public Set<ConservEventAttachment> getConservEventAttachments()
     {
         return conservEventAttachments;

@@ -41,6 +41,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -511,7 +512,10 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         this.preparedByAgent = preparedByAgent;
     }
 
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "preparation")
+    //@OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "preparation")
+    @OneToMany(mappedBy = "preparation")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OrderBy("ordinal ASC")
     public Set<PreparationAttachment> getPreparationAttachments()
     {
         return preparationAttachments;

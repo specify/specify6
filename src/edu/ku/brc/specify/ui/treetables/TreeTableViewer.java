@@ -6,7 +6,8 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
-import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createTextArea;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -72,7 +73,6 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -1662,7 +1662,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         
                         if (businessRules != null)
                         {
-                            businessRules.beforeSave(mergedNode,session);
+                            businessRules.beforeSave(mergedNode, session);
                         }
                         
                         try
