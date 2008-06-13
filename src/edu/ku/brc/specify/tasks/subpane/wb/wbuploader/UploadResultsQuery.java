@@ -65,7 +65,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#execute()
      */
-    @Override
+   //@Override
     public boolean execute()
     {
         // TODO Auto-generated method stub
@@ -75,7 +75,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#execute(edu.ku.brc.dbsupport.CustomQueryListener)
      */
-    @Override
+    //@Override
     public void execute(CustomQueryListener cql)
     {
         cql.exectionDone(this);
@@ -84,7 +84,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#getDataObjects()
      */
-    @Override
+    //@Override
     public List<?> getDataObjects()
     {
         return dataObjects;
@@ -93,7 +93,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#getName()
      */
-    @Override
+    //@Override
     public String getName()
     {
         // TODO Auto-generated method stub
@@ -103,7 +103,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#getQueryDefinition()
      */
-    @Override
+    //@Override
     public List<QueryResultsContainerIFace> getQueryDefinition()
     {
         // TODO Auto-generated method stub
@@ -113,7 +113,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#getResults()
      */
-    @Override
+    //@Override
     public List<QueryResultsDataObj> getResults()
     {
         // TODO Auto-generated method stub
