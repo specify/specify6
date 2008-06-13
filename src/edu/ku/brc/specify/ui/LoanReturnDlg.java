@@ -302,8 +302,9 @@ public class LoanReturnDlg extends JDialog
     protected ValComboBoxFromQuery createAgentCombobox()
     {
         FormCellField fcf = new FormCellField(FormCellIFace.CellType.field,
-                                               "1", "agent", FormCellFieldIFace.FieldType.querycbx, FormCellFieldIFace.FieldType.querycbx, 
-                                               "", "", "", true,
+                                               "1", "agent", FormCellFieldIFace.FieldType.querycbx, 
+                                               FormCellFieldIFace.FieldType.querycbx, 
+                                               "", "Agent", "", true,
                                                1, 1, 1, 1, "Changed", null, false);
         fcf.addProperty("name", "Agent");
         fcf.addProperty("title", getResourceString("LOANRET_AGENT_DO_RET_TITLE"));
