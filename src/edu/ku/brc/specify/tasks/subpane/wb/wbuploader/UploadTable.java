@@ -92,7 +92,13 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * ids of records uploaded during the most recent upload.
      */
-    protected Set<Object>                               uploadedKeys;
+    protected Set<UploadedRecordInfo>                               uploadedRecs;
+    
+    /**
+     * The workbench index of the row currently being processed.
+     */
+    protected int wbCurrentRow;
+    
     protected static final Logger                       log                          = Logger
                                                                                              .getLogger(UploadTable.class);
     /**
@@ -174,7 +180,7 @@ public class UploadTable implements Comparable<UploadTable>
         this.table = table;
         this.relationship = relationship;
         uploadFields = new Vector<Vector<UploadField>>();
-        uploadedKeys = new HashSet<Object>();
+        uploadedRecs = new HashSet<UploadedRecordInfo>();
         currentRecords = new Vector<DataModelObjBase>();
         matchChildren = new Vector<UploadTable>();
         relatedClassDefaults = null;
@@ -245,7 +251,7 @@ public class UploadTable implements Comparable<UploadTable>
      */
     public void prepareToUpload() 
     {
-        uploadedKeys.clear();
+        uploadedRecs.clear();
         matchSetting.clear();
     }
 
@@ -750,9 +756,9 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @return the uploadedKeys
      */
-    public final Set<Object> getUploadedKeys()
+    public final Set<UploadedRecordInfo> getUploadedRecs()
     {
-        return uploadedKeys;
+        return uploadedRecs;
     }
 
     /**
@@ -1627,8 +1633,9 @@ public class UploadTable implements Comparable<UploadTable>
         writeRowOrNot(true, true);
     }
 
-    protected void writeRow() throws UploaderException
+    protected void writeRow(int row) throws UploaderException
     {
+        wbCurrentRow = row;
         if (!skipRow)
         {
             writeRowOrNot(false, false);
@@ -1667,7 +1674,7 @@ public class UploadTable implements Comparable<UploadTable>
                         if (!doNotWrite)
                         {
                             doWrite(rec);
-                            uploadedKeys.add(rec.getId());
+                            uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow));
                         }
                         setCurrentRecord(rec, recNum);
                         finishMatching(rec);
@@ -1888,7 +1895,7 @@ public class UploadTable implements Comparable<UploadTable>
      */
     public void undoUpload() throws UploaderException
     {
-        deleteObjects(uploadedKeys.iterator());
+        deleteObjects(uploadedRecs.iterator());
     }
 
     /**
@@ -1896,7 +1903,7 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Deletes all the objects whose keys are present in objs.
      */
-    protected void deleteObjects(Iterator<Object> objs) throws UploaderException
+    protected void deleteObjects(Iterator<UploadedRecordInfo> objs) throws UploaderException
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         String hql = "from " + getWriteTable().getName() + " where id =:theKey";
@@ -1905,7 +1912,7 @@ public class UploadTable implements Comparable<UploadTable>
         {
             while (objs.hasNext())
             {
-                Object key = objs.next();
+                Object key = objs.next().getKey();
                 if (key != null)
                 {
                     boolean committed = false;
@@ -1992,7 +1999,7 @@ public class UploadTable implements Comparable<UploadTable>
             String hql = "from " + tblClass.getSimpleName() + " obj where id=:theKey";
             QueryIFace qif = session.createQuery(hql);
             boolean wroteHeaders = false;
-            for (Object key : uploadedKeys)
+            for (Object key : uploadedRecs)
             {
                 if (key == null)
                 {
@@ -2107,7 +2114,7 @@ public class UploadTable implements Comparable<UploadTable>
                 .getByShortClassName(tblClass.getSimpleName()).getTableId(), RecordSet.WB_UPLOAD);
         result.initialize();
         result.setSpecifyUser(SpecifyUser.getCurrentUser());
-        for (Object key : uploadedKeys)
+        for (Object key : uploadedRecs)
         {
             result.addItem(((Integer) key).intValue());
         }

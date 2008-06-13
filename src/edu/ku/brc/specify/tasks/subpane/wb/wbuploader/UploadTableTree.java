@@ -379,10 +379,10 @@ public class UploadTableTree extends UploadTable
     public void undoUpload() throws UploaderException
     {
         super.undoUpload();
-        List<Object> keys = new LinkedList<Object>();
+        List<UploadedRecordInfo> keys = new LinkedList<UploadedRecordInfo>();
         for (Treeable defParent : defaultParents)
         {
-            keys.add(((DataModelObjBase)defParent).getId());
+            keys.add(new UploadedRecordInfo(((DataModelObjBase)defParent).getId(), -1));
         }
         deleteObjects(keys.iterator());
         if (parent == null && !this.incrementalNodeNumberUpdates)

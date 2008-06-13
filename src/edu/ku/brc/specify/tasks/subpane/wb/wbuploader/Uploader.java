@@ -2021,7 +2021,7 @@ public class Uploader implements ActionListener, KeyListener
         Integer result = 0;
         for (UploadTable ut : uploadTables)
         {
-            result += ut.getUploadedKeys().size();
+            result += ut.getUploadedRecs().size();
         }
         return result;
     }
@@ -3100,44 +3100,44 @@ public class Uploader implements ActionListener, KeyListener
             {
                 try
                 {
-                    initProgressBar(0, uploadTables.size(), true, 
-                            getResourceString("WB_UPLOAD_RETRIEVING") + " " + getResourceString("ERD_TABLE"), false);
-                    for (int progress = 0; progress < uploadTables.size();)
-                    {
-                        if (cancelled)
-                        {
-                            break;
-                        }
-                        UploadTable ut = uploadTables.get(progress);
-                        setCurrentOpProgress(progress + 1, false);
-                        try
-                        {
-                            Vector<Vector<String>> vals = ut.printUpload();
-                            if (vals.size() > 0)
-                            {
-                                String title = ut.getWriteTable().getName();
-                                if (!bogusStorages.containsKey(title))
-                                {
-                                    bogusStorages.put(title, vals);
-                                }
-                                else
-                                {
-                                    // delete header
-                                    vals.remove(0);
-                                    bogusStorages.get(title).addAll(vals);
-                                }
-                            }
-                        }
-                        catch (InvocationTargetException ex)
-                        {
-                            log.error(ex);
-                        }
-                        catch (IllegalAccessException ex)
-                        {
-                            log.error(ex);
-                        }
-                        progress++;
-                    }
+//                    initProgressBar(0, uploadTables.size(), true, 
+//                            getResourceString("WB_UPLOAD_RETRIEVING") + " " + getResourceString("ERD_TABLE"), false);
+//                    for (int progress = 0; progress < uploadTables.size();)
+//                    {
+//                        if (cancelled)
+//                        {
+//                            break;
+//                        }
+//                        UploadTable ut = uploadTables.get(progress);
+//                        setCurrentOpProgress(progress + 1, false);
+//                        try
+//                        {
+//                            Vector<Vector<String>> vals = ut.printUpload();
+//                            if (vals.size() > 0)
+//                            {
+//                                String title = ut.getWriteTable().getName();
+//                                if (!bogusStorages.containsKey(title))
+//                                {
+//                                    bogusStorages.put(title, vals);
+//                                }
+//                                else
+//                                {
+//                                    // delete header
+//                                    vals.remove(0);
+//                                    bogusStorages.get(title).addAll(vals);
+//                                }
+//                            }
+//                        }
+//                        catch (InvocationTargetException ex)
+//                        {
+//                            log.error(ex);
+//                        }
+//                        catch (IllegalAccessException ex)
+//                        {
+//                            log.error(ex);
+//                        }
+//                        progress++;
+//                    }
                     return true;
                 }
                 catch (Exception ex)
@@ -3200,7 +3200,7 @@ public class Uploader implements ActionListener, KeyListener
         }
         try
         {
-            writeRow(t);
+            writeRow(t, row);
         }
         catch (UploaderException ex)
         {
@@ -3230,9 +3230,9 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * writes data (if necessary) for t.
      */
-    protected void writeRow(final UploadTable t) throws UploaderException
+    protected void writeRow(final UploadTable t, int row) throws UploaderException
     {
-        t.writeRow();
+        t.writeRow(row);
     }
 
     /**

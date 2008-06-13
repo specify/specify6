@@ -24,7 +24,7 @@ public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<
         createdCnt = 0;
         for (UploadTable ut : myTables)
         {
-            createdCnt += ut.getUploadedKeys().size();
+            createdCnt += ut.getUploadedRecs().size();
         }
     }
     
