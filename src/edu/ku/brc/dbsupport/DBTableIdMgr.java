@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -462,15 +463,14 @@ public class DBTableIdMgr
 		if (recordSet != null)
 		{
 			StringBuffer strBuf = new StringBuffer(" in ("); //$NON-NLS-1$
-			Set<RecordSetItemIFace> set = recordSet.getItems();
-			if (set == null)
+			List<RecordSetItemIFace> items = recordSet.getOrderedItems();
+			if (items == null)
 			{
 				throw new RuntimeException("RecordSet items is null!"); //$NON-NLS-1$
 			}
 			int i = 0;
-			for (Iterator<RecordSetItemIFace> iter = set.iterator(); iter.hasNext();)
+			for (RecordSetItemIFace rsi : items)
 			{
-				RecordSetItemIFace rsi = iter.next();
 				if (i > 0)
 				{
 					strBuf.append(","); //$NON-NLS-1$

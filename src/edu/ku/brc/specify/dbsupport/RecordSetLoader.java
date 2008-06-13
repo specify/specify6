@@ -34,7 +34,7 @@ public class RecordSetLoader
 		DataProviderIFace dataProvider = DataProviderFactory.getInstance();
 		DataProviderSessionIFace session = dataProvider.createSession();
 		Vector<Object> records = new Vector<Object>();
-		for (RecordSetItemIFace rsItem: recordSet.getItems())
+		for (RecordSetItemIFace rsItem: recordSet.getOrderedItems())
 		{
 			Integer id = rsItem.getRecordId();
 			Object record = session.get(recordClass,id);

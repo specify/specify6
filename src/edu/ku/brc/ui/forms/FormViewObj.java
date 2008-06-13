@@ -3207,7 +3207,7 @@ public class FormViewObj implements Viewable,
         
         StringBuilder sql = new StringBuilder("SELECT " + tableInfo.getIdColumnName() + " FROM " + tableInfo.getName() + " WHERE " + tableInfo.getIdColumnName() + " IN (");
         int cnt = 0;
-        for (RecordSetItemIFace rsi : recordSet.getItems())
+        for (RecordSetItemIFace rsi : recordSet.getOrderedItems())
         {
             if (cnt > 0) sql.append(',');
             sql.append(rsi.getRecordId());
@@ -3295,7 +3295,7 @@ public class FormViewObj implements Viewable,
                 }
                 
                 recordSetItemList = new Vector<RecordSetItemIFace>(availableIdList.size());
-                for (RecordSetItemIFace rsi : rs.getItems())
+                for (RecordSetItemIFace rsi : rs.getOrderedItems())
                 {
                     if (availableIdList.get(rsi.getRecordId().intValue()) != null)
                     {

@@ -653,7 +653,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         RecordSetIFace rs = getRecordSet(returnAll);
         if (rs != null)
         {
-            for (RecordSetItemIFace rsi : rs.getItems())
+            for (RecordSetItemIFace rsi : rs.getOrderedItems())
             {
                 list.add(rsi.getRecordId());
             }

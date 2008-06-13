@@ -30,7 +30,9 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -80,12 +82,12 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      protected Integer                 ownerPermissionLevel;
      protected Integer                 groupPermissionLevel;
      protected Integer                 allPermissionLevel;
-     protected SpPrincipal               group;
+     protected SpPrincipal             group;
      
      protected Set<InfoRequest>        infoRequests;
      
      // Transient
-     protected Set<RecordSetItemIFace> items = null;
+     protected Vector<RecordSetItemIFace> items = null;
 
 
      // Non-Database Members
@@ -394,16 +396,28 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     {
         return recordSetItems.size();
     }
-
+    
+    /**
+     * Ensures the Vector is created and empty.
+     */
+    private void ensureItemsList(boolean doClear)
+    { 
+        if (this.items == null)
+        {
+            this.items = new Vector<RecordSetItemIFace>();
+            
+        } else if (doClear)
+        {
+            this.items.clear();
+        }   
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.RecordSetIFace#addAll(java.util.Collection)
      */
     public void addAll(Collection<RecordSetItemIFace> list)
     {
-        if (items == null)
-        {
-            items = new HashSet<RecordSetItemIFace>();
-        }
+        ensureItemsList(true);
         
         for (RecordSetItemIFace rsi : list)
         {
@@ -433,7 +447,25 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     {
         if (items == null)
         {
-            items = new HashSet<RecordSetItemIFace>();
+            items = new Vector<RecordSetItemIFace>();
+            for (RecordSetItem rsi : recordSetItems)
+            {
+                this.items.add(rsi);
+            }
+        }
+        return new HashSet<RecordSetItemIFace>(this.items);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.RecordSetIFace#getOrderedItems()
+     */
+    @Transient
+    public List<RecordSetItemIFace> getOrderedItems() 
+    {
+        if (items == null)
+        {
+            items = new Vector<RecordSetItemIFace>();
+            
             for (RecordSetItem rsi : recordSetItems)
             {
                 this.items.add(rsi);
@@ -454,17 +486,18 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
         
         recordSetItems.remove(rsi);
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#setItems(java.util.Set)
      */
-    public void setItems(Set<RecordSetItemIFace> items) 
+    public void setItems(final Set<RecordSetItemIFace> itemsSet) 
     {
-        this.items = items;
+        ensureItemsList(true);
         
         recordSetItems.clear();
-        for (RecordSetItemIFace rsi : items)
+        for (RecordSetItemIFace rsi : itemsSet)
         {
+            items.add(rsi);
             recordSetItems.add((RecordSetItem)rsi);
         }
     }
@@ -474,10 +507,8 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      */
     public RecordSetItemIFace addItem(final Integer recordId)
     {
-        if (items == null)
-        {
-            items = new HashSet<RecordSetItemIFace>();
-        }
+        ensureItemsList(false);
+
         RecordSetItem rsi = new RecordSetItem(recordId);
         this.items.add(rsi);
         this.recordSetItems.add(rsi);
@@ -490,10 +521,8 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      */
     public RecordSetItemIFace addItem(final String recordId)
     {
-        if (items == null)
-        {
-            items = new HashSet<RecordSetItemIFace>();
-        }
+        ensureItemsList(false);
+
         RecordSetItem rsi = new RecordSetItem(recordId);
         this.items.add(rsi);
         this.recordSetItems.add(rsi);
@@ -506,10 +535,8 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      */
     public RecordSetItemIFace addItem(final RecordSetItemIFace item)
     {
-        if (items == null)
-        {
-            items = new HashSet<RecordSetItemIFace>();
-        }
+        ensureItemsList(false);
+
         this.items.add(item);
         this.recordSetItems.add((RecordSetItem)item);
         ((RecordSetItem)item).setRecordSet(this);

@@ -2223,7 +2223,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 }
             } else
             {
-                workbench = session.get(Workbench.class, recordSet.getItems().iterator().next().getRecordId());
+                workbench = session.get(Workbench.class, recordSet.getOrderedItems().iterator().next().getRecordId());
                 workbench.getWorkbenchTemplate().forceLoad();
             }
             

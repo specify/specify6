@@ -86,7 +86,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         this.searchTerm        = ""; //$NON-NLS-1$
         this.recordSet         = recordSet;
 
-        for (RecordSetItemIFace item : recordSet.getItems())
+        for (RecordSetItemIFace item : recordSet.getOrderedItems())
         {
             recIds.add(item.getRecordId());
         }
@@ -237,17 +237,17 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
             
             session.beginTransaction();
 
-            Vector<RecordSetItemIFace> items = new Vector<RecordSetItemIFace>(recordSet.getItems());
+            Vector<RecordSetItemIFace> items = new Vector<RecordSetItemIFace>(recordSet.getOrderedItems());
             for (Integer id : ids)
             {
                 for (RecordSetItemIFace rsi : items)
                 {
                     if (rsi.getRecordId().intValue() == id.intValue())
                     {
-                        System.out.println(recordSet.getItems().contains(rsi));
+                        //System.out.println(recordSet.getItems().contains(rsi));
                         recordSet.removeItem(rsi);
                         session.delete(rsi);
-                        System.out.println(recordSet.getItems().contains(rsi));
+                        //System.out.println(recordSet.getItems().contains(rsi));
                     }
                 }
             }

@@ -546,7 +546,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
                 if (recordSet.getNumItems() == 1)
                 {
-                    RecordSetItemIFace item = recordSet.getItems().iterator().next();
+                    RecordSetItemIFace item = recordSet.getOrderedItems().iterator().next();
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                     String                   sqlStr  = DBTableIdMgr.getInstance().getQueryForTable(recordSet.getDbTableId(), item.getRecordId());
                     if (StringUtils.isNotEmpty(sqlStr))

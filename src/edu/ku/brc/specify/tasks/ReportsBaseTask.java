@@ -1129,7 +1129,7 @@ public class ReportsBaseTask extends BaseTask
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                result = session.get(SpReport.class, repRS.getItems().iterator().next().getRecordId());
+                result = session.get(SpReport.class, repRS.getOrderedItems().iterator().next().getRecordId());
                 result.forceLoad();
             }
             finally
