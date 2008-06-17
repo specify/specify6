@@ -367,7 +367,7 @@ public class GenericKMLGenerator
     public void generateKML(final OutputStream out) throws IOException
     {
         String kml = generateKML();
-        out.write(kml.getBytes());
+        out.write(kml.getBytes("UTF-8"));
     }
 
     /**
