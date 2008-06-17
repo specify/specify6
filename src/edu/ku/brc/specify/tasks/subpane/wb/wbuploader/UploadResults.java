@@ -33,6 +33,10 @@ public class UploadResults implements QueryForIdResultsIFace
     protected final List<ERTICaptionInfo> captions;
     protected final Color bannerColor = new Color(144, 30, 255); //rgb copied from QBQueryForIdResultsHQL
     
+    /**
+     * @param uploadTable
+     * @param uploadData
+     */
     public UploadResults(final UploadTable uploadTable, final UploadData uploadData)
     {
         this.uploadTable = uploadTable;
@@ -40,20 +44,30 @@ public class UploadResults implements QueryForIdResultsIFace
         this.captions = buildCaptions();
     }
     
+    /**
+     * @return List of columnInfo in order fields are present in wb dataset.
+     */
     protected List<ERTICaptionInfo> buildCaptions()
     {
         //use uploadTable fields to make caption infos
         List<ERTICaptionInfo> result = new ArrayList<ERTICaptionInfo>();
         for (Vector<UploadField> flds : uploadTable.getUploadFields())
         {
+            List<UploadField> orderedFields = new ArrayList<UploadField>();
             for (UploadField fld : flds)
             {
                 if (fld.getIndex() != -1 && !(fld.getSequence() > 0))
                 {
-                    String title = fld.getField().getFieldInfo().getTitle();
-                    String fldName = uploadTable.getTable().getTableInfo().getName() + "." + fld.getField().getFieldInfo().getName();
-                    result.add(new ERTICaptionInfo(fldName, title, true, null, 0));
+                    orderedFields.add(fld);
                 }
+            }
+            UploadRetriever.columnOrder(orderedFields);
+            for (UploadField fld : orderedFields)
+            {
+                String title = fld.getField().getFieldInfo().getTitle();
+                String fldName = uploadTable.getTable().getTableInfo().getName() + "."
+                        + fld.getField().getFieldInfo().getName();
+                result.add(new ERTICaptionInfo(fldName, title, true, null, 0));
             }
         }
         return result;        
@@ -160,6 +174,9 @@ public class UploadResults implements QueryForIdResultsIFace
         return recIds;
     }
 
+    /**
+     * Build recIds structure.
+     */
     protected void buildRecIds()
     {
         recIds = new Vector<Integer>(uploadTable.getUploadedRecs().size());

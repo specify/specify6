@@ -11,8 +11,6 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -84,7 +82,7 @@ public class UploadResultsQuery implements CustomQueryIFace
      * @param uploadTable
      * 
      * @return a structure providing the dataSet column index for each column displayed and for each
-     * sequence/occurrence (lastName1, lastName2)
+     * sequence/occurrence (eg. lastName1, lastName2 ...)
      * 
      */
     protected Vector<Vector<edu.ku.brc.util.Pair<Integer, Integer>>> setupFldIdxInfo(final UploadTable uploadTable)
@@ -109,37 +107,11 @@ public class UploadResultsQuery implements CustomQueryIFace
 
         //else...
 
-        //this puts them order for processing in next step 
-        Collections.sort(sortedFlds, new Comparator<UploadField>()
-        {
-
-            /* (non-Javadoc)
-             * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-             */
-            @Override
-            public int compare(UploadField o1, UploadField o2)
-            {
-                int result = o1.getSequence() < o2.getSequence() ? -1 : (o1.getSequence() == o2.getSequence() ? 0 : 1);
-                if (result != 0)
-                {
-                    return result;
-                }
-                
-                //else
-                result = o1.getIndex() < o2.getIndex() ? -1 : (o1.getIndex() == o2.getIndex() ? 0 : 1); 
-                if (result != 0)
-                {
-                    return result;
-                }
-                
-                //else
-                return o1.getField().compareTo(o2.getField());
-            }
-        });
+        //this puts them in order for processing in next step 
+        UploadRetriever.columnOrder(sortedFlds);
         
         //get the maximum 'sequence' for the field. ie: the maximum number of occurences of records per row (lastName1, lastName2...)
         int maxSequence = sortedFlds.get(sortedFlds.size()-1).getSequence() + 1;
-        //else
         
         Vector<Vector<edu.ku.brc.util.Pair<Integer, Integer>>> result = new Vector<Vector<edu.ku.brc.util.Pair<Integer, Integer>>>(maxSequence);
         for (int s = 0; s < maxSequence; s++)

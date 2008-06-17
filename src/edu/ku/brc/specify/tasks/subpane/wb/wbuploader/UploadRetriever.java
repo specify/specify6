@@ -10,6 +10,8 @@
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import java.awt.Frame;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -84,17 +86,51 @@ public class UploadRetriever //implements CommandListener, SQLExecutionListener,
         UIHelper.centerAndShow(cd);
     }
 
+
+    /**
+     * @param flds
+     * 
+     * Sorts flds by getSequence(), getIndex(), getField()
+    */
     
-//    /**
-//     * @param esrPane
-//     * @param ut
-//     * @return
-//     */
-//    protected JPAQuery startUploadViewJPA(final ExpressSearchResultsPaneIFace esrPane,
-//                                          final UploadTable ut)
-//    {
-//        JPAQuery jpaQuery = null;
-//        String sqlStr = getSQL(ut);
+    public static void columnOrder(List<UploadField> flds)
+    {
+        Collections.sort(flds, new Comparator<UploadField>()
+        {
+
+            /*
+             * (non-Javadoc)
+             * 
+             * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+             */
+            @Override
+            public int compare(UploadField o1, UploadField o2)
+            {
+                int result = o1.getSequence() < o2.getSequence() ? -1 : (o1.getSequence() == o2
+                        .getSequence() ? 0 : 1);
+                if (result != 0) { return result; }
+
+                // else
+                result = o1.getIndex() < o2.getIndex() ? -1 : (o1.getIndex() == o2.getIndex() ? 0
+                        : 1);
+                if (result != 0) { return result; }
+
+                // else
+                return o1.getField().compareTo(o2.getField());
+            }
+        });
+    }
+    
+// /**
+// * @param esrPane
+// * @param ut
+// * @return
+// */
+// protected JPAQuery startUploadViewJPA(final ExpressSearchResultsPaneIFace esrPane,
+// final UploadTable ut)
+// {
+// JPAQuery jpaQuery = null;
+// String sqlStr = getSQL(ut);
 //        log.debug(sqlStr);
 //        if (sqlStr != null)
 //        {

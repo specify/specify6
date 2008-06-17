@@ -2114,9 +2114,9 @@ public class UploadTable implements Comparable<UploadTable>
                 .getByShortClassName(tblClass.getSimpleName()).getTableId(), RecordSet.WB_UPLOAD);
         result.initialize();
         result.setSpecifyUser(SpecifyUser.getCurrentUser());
-        for (Object key : uploadedRecs)
+        for (UploadedRecordInfo rec : uploadedRecs)
         {
-            result.addItem(((Integer) key).intValue());
+            result.addItem(rec.getKey().intValue());
         }
         return result;
     }
