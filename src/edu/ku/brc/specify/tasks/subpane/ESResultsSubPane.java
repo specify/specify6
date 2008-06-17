@@ -174,10 +174,14 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
             // This will start itself up and if there are results from the query 
             // it will add itself to the pane (So it is OK that it isn't referenced)
             @SuppressWarnings("unused")
-            ESResultsTablePanel resultsTable = new ESResultsTablePanel(this, results, results.shouldInstallServices(), results.isExpanded());
+            ESResultsTablePanel resultsTable = createResultsTable(results);
         }
     }
     
+    protected ESResultsTablePanel createResultsTable(final QueryForIdResultsIFace results)
+    {
+        return new ESResultsTablePanel(this, results, results.shouldInstallServices(), results.isExpanded());
+    }
     /**
      * Removes all the panels.
      */

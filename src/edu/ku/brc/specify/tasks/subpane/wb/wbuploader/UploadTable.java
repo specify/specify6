@@ -1674,7 +1674,7 @@ public class UploadTable implements Comparable<UploadTable>
                         if (!doNotWrite)
                         {
                             doWrite(rec);
-                            uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow));
+                            uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow, recNum));
                         }
                         setCurrentRecord(rec, recNum);
                         finishMatching(rec);

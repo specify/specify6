@@ -102,4 +102,15 @@ public class WebStatsVisitorsCustomQuery implements CustomQueryIFace
         // TODO Auto-generated method stub
         return getClass().getSimpleName();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQueryIFace#isInError()
+     */
+    //@Override
+    public boolean isInError()
+    {
+        return false;
+    }
+    
+    
 }

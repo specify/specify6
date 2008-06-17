@@ -65,4 +65,9 @@ public interface CustomQueryIFace
     
     //public void clear();
     
+    /**
+     * @return true in case of error.
+     */
+    public boolean isInError();
+    
 }

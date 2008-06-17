@@ -10,6 +10,7 @@
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Future;
@@ -30,6 +31,7 @@ public class UploadResults implements QueryForIdResultsIFace
     protected final UploadData uploadData;
     protected Vector<Integer> recIds = null;
     protected final List<ERTICaptionInfo> captions;
+    protected final Color bannerColor = new Color(144, 30, 255); //rgb copied from QBQueryForIdResultsHQL
     
     public UploadResults(final UploadTable uploadTable, final UploadData uploadData)
     {
@@ -40,9 +42,21 @@ public class UploadResults implements QueryForIdResultsIFace
     
     protected List<ERTICaptionInfo> buildCaptions()
     {
-        //XXX
         //use uploadTable fields to make caption infos
-        return null;
+        List<ERTICaptionInfo> result = new ArrayList<ERTICaptionInfo>();
+        for (Vector<UploadField> flds : uploadTable.getUploadFields())
+        {
+            for (UploadField fld : flds)
+            {
+                if (fld.getIndex() != -1 && !(fld.getSequence() > 0))
+                {
+                    String title = fld.getField().getFieldInfo().getTitle();
+                    String fldName = uploadTable.getTable().getTableInfo().getName() + "." + fld.getField().getFieldInfo().getName();
+                    result.add(new ERTICaptionInfo(fldName, title, true, null, 0));
+                }
+            }
+        }
+        return result;        
     }
     
     /* (non-Javadoc)
@@ -81,8 +95,7 @@ public class UploadResults implements QueryForIdResultsIFace
     //@Override
     public Color getBannerColor()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return bannerColor;
     }
 
     /* (non-Javadoc)
@@ -101,8 +114,7 @@ public class UploadResults implements QueryForIdResultsIFace
     //@Override
     public Integer getDisplayOrder()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return 0;
     }
 
     /* (non-Javadoc)

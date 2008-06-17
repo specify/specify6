@@ -836,8 +836,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         }
         
         results.queryTaskDone(customQuery);
-        JPAQuery jpaQuery = (JPAQuery)customQuery;
-        List<?> list      = jpaQuery.getDataObjects();
+        List<?> list      = customQuery.getDataObjects();
         
         List<ERTICaptionInfo> captions = results.getVisibleCaptionInfo();
         
@@ -851,7 +850,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             ids.clear();
         }
         
-        if (!jpaQuery.isInError() && list != null && list.size() > 0)
+        if (!customQuery.isInError() && list != null && list.size() > 0)
         {
             /*if (numColumns == 1)
             {

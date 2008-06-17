@@ -1100,7 +1100,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         String iconName = distinct ? "BlankIcon" : rootTable.getClassObj().getSimpleName();
         int tblId = distinct ? -1 : rootTable.getTableId();
         QBQueryForIdResultsHQL qri = new QBQueryForIdResultsHQL(new Color(144, 30, 255),
-                "Search Results", // XXX I18N
+                getResourceString("QB_SEARCH_RESULTS"),
                 //rootTable.getTableInfo().getClassObj().getSimpleName(), // Icon Name
                 iconName,
                 //rootTable.getTableInfo().getTableId(), // table id

@@ -246,5 +246,15 @@ public class CustomStatQueries implements CustomQueryIFace
     {
         return type.toString();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQueryIFace#isInError()
+     */
+    //@Override
+    public boolean isInError()
+    {
+        return false;
+    }
+    
     
 }

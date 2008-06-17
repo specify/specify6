@@ -23,6 +23,12 @@ import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 public class UploadResultsTablePanel extends ESResultsTablePanel
 {
 
+    /**
+     * @param esrPane
+     * @param results
+     * @param installServices
+     * @param isExpandedAtStartUp
+     */
     public UploadResultsTablePanel(final ExpressSearchResultsPaneIFace esrPane,
                                final QueryForIdResultsIFace    results,
                                final boolean                   installServices,

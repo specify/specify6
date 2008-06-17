@@ -143,7 +143,6 @@ public class QueryFieldPanel extends JPanel
 //                }
             }
         }
-        
     }
     
     /**
