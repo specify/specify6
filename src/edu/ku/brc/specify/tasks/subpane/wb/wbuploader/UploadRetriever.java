@@ -78,7 +78,7 @@ public class UploadRetriever //implements CommandListener, SQLExecutionListener,
             esrPane.addSearchResults(new UploadResults(ut, Uploader.getCurrentUpload().uploadData));
         }
         CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), 
-                        "Lookee", 
+                        "Uploaded Data", //XXX i18n
                         true,
                         (ESResultsSubPane )esrPane);
         UIHelper.centerAndShow(cd);
