@@ -27,6 +27,7 @@ import edu.ku.brc.dbsupport.DBRelationshipInfo;
 public class TableQRI extends ExpandableQRI
 {
     protected DBRelationshipInfo relationship = null;
+    protected boolean relChecked = false;
 
     public TableQRI(final TableTree tableTree)
     {
@@ -89,6 +90,7 @@ public class TableQRI extends ExpandableQRI
                 relationship = rels.get(0); 
                 return;
             }
+            //XXX else ??? 
         }
         relationship = null;
     }
@@ -114,6 +116,11 @@ public class TableQRI extends ExpandableQRI
      */
     public DBRelationshipInfo getRelationship()
     {
+        if (relationship == null && !relChecked)
+        {
+            determineRel();
+            relChecked = true;
+        }
         return relationship;
     }
 
