@@ -111,7 +111,7 @@ public class UploadResultsQuery implements CustomQueryIFace
         UploadRetriever.columnOrder(sortedFlds);
         
         //get the maximum 'sequence' for the field. ie: the maximum number of occurences of records per row (lastName1, lastName2...)
-        int maxSequence = sortedFlds.get(sortedFlds.size()-1).getSequence() + 1;
+        int maxSequence = sortedFlds.get(sortedFlds.size()-1).getSequenceInt() + 1;
         
         Vector<Vector<edu.ku.brc.util.Pair<Integer, Integer>>> result = new Vector<Vector<edu.ku.brc.util.Pair<Integer, Integer>>>(maxSequence);
         for (int s = 0; s < maxSequence; s++)
@@ -122,12 +122,12 @@ public class UploadResultsQuery implements CustomQueryIFace
         int seq = -1;
         for (UploadField fld : sortedFlds)
         {
-            if (fld.getSequence() != seq)
+            if (fld.getSequenceInt() != seq)
             {
-                seq = fld.getSequence();
+                seq = fld.getSequenceInt();
                 tblCol = 0;
             }
-            (result.get(fld.getSequence())).add(new edu.ku.brc.util.Pair<Integer, Integer>(tblCol, fld.getIndex()));
+            (result.get(fld.getSequenceInt())).add(new edu.ku.brc.util.Pair<Integer, Integer>(tblCol, fld.getIndex()));
             if (tblCol > maxFldIdx)
             {
                 maxFldIdx = tblCol;

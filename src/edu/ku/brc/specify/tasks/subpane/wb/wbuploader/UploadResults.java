@@ -56,7 +56,7 @@ public class UploadResults implements QueryForIdResultsIFace
             List<UploadField> orderedFields = new ArrayList<UploadField>();
             for (UploadField fld : flds)
             {
-                if (fld.getIndex() != -1 && !(fld.getSequence() > 0))
+                if (fld.getIndex() != -1 && !(fld.getSequenceInt() > 0))
                 {
                     orderedFields.add(fld);
                 }

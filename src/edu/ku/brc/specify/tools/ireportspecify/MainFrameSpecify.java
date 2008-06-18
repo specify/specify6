@@ -248,6 +248,7 @@ public class MainFrameSpecify extends MainFrame
     protected static boolean saveXML(final ByteArrayOutputStream xml, final AppResourceIFace appRes, final ReportSpecify rep)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        boolean result = false;
         boolean transOpen = false;
         boolean newRep = ((SpAppResource)appRes).getId() == null;
         try
@@ -255,44 +256,64 @@ public class MainFrameSpecify extends MainFrame
             appRes.setDataAsString(xml.toString());
             AppContextMgr.getInstance().saveResource(appRes);
             
-            if (rep != null && rep.getSpReport() == null)
+            if (rep != null)
             {
-                SpReport spRep = new SpReport();
-                spRep.initialize();
-                spRep.setName(appRes.getName());
-                spRep.setAppResource((SpAppResource)appRes);
-                SpQuery q = rep.getConnection().getQuery();
-                //getting a fresh copy of the Query might be helpful
-                //in case one of its reports was deleted, but is probably
-                //no longer necessary with AppContextMgr.getInstance().setContext() call
-                //in the save method.
-                SpQuery freshQ = session.get(SpQuery.class, q.getId());
-                spRep.setQuery(freshQ);
-                spRep.setSpecifyUser(SpecifyUser.getCurrentUser());
-                session.beginTransaction();
-                transOpen = true;
-                session.save(spRep);
-                session.commit();
-                transOpen = false;
-                rep.setSpReport(spRep);
+                boolean createReport = true;
+                if (rep.getSpReport() != null)
+                {
+                    try
+                    {
+                        session.refresh(rep.getSpReport());
+                        createReport = false;
+                    }
+                    catch (org.hibernate.UnresolvableObjectException e)
+                    {
+                        log.debug("Report has been deleted in Specify? (" + e + ")");
+                    }
+                }
+                if (createReport)
+                {
+                    SpReport spRep = new SpReport();
+                    spRep.initialize();
+                    spRep.setName(appRes.getName());
+                    spRep.setAppResource((SpAppResource)appRes);
+                    SpQuery q = rep.getConnection().getQuery();
+                    //getting a fresh copy of the Query might be helpful
+                    //in case one of its reports was deleted, but is probably
+                    //no longer necessary with AppContextMgr.getInstance().setContext() call
+                    //in the save method.
+                    SpQuery freshQ = session.get(SpQuery.class, q.getId());
+                    if (freshQ != null)
+                    {
+                        spRep.setQuery(freshQ);
+                        spRep.setSpecifyUser(SpecifyUser.getCurrentUser());
+                        session.beginTransaction();
+                        transOpen = true;
+                        session.save(spRep);
+                        session.commit();
+                        transOpen = false;
+                        rep.setSpReport(spRep);
+                        result = true;
+                    }
+                }
             }               
         } catch (Exception ex)
         {
             if (transOpen)
             {
                session.rollback();
-               if (newRep)
-               {
-                   //XXX - more 'Collection' hard-coding
-                   AppContextMgr.getInstance().removeAppResource("Collection", appRes);
-               }
             }
             throw new RuntimeException(ex);
         } finally
         {
+            if (newRep && !result)
+            {
+                //XXX - more 'Collection' hard-coding
+                AppContextMgr.getInstance().removeAppResource("Collection", appRes);
+            }
             session.close();
         }
-        return true;
+        return result;
     }
     
     /*
@@ -318,7 +339,11 @@ public class MainFrameSpecify extends MainFrame
             ReportWriter rw = new ReportWriter(rep);
             rw.writeToOutputStream(xmlOut);
             
-            saveXML(xmlOut, appRes, rep);
+            boolean success = saveXML(xmlOut, appRes, rep);
+            if (!success)
+            {
+                JOptionPane.showMessageDialog(null, UIRegistry.getResourceString("REP_UNABLE_TO_SAVE_IREPORT"), UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);                        
+            }
         }
         else
         {

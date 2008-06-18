@@ -145,6 +145,15 @@ public class UploadField
         return sequence;
     }
 
+    public int getSequenceInt()
+    {
+        if (sequence == null)
+        {
+            return 0;
+        }
+        return sequence;
+    }
+    
     /**
      * @param sequence the sequence to set
      */
