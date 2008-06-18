@@ -152,19 +152,16 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
      */
     public List<ServiceInfo> getServices(final Object data)
     {
+        //Since only query results pane is shown at a time, can remove services from previous runs without messing anything else up.
+        ContextMgr.removeServicesByTaskAndTable(ContextMgr.getTaskByClass(QueryTask.class), QBQIdRHQLTblId);    
+
         if (reports.size() == 0)
         {
-            //XXX if a query that has reports has been previously run  (and this method returns a ServiceInfo)
-            //then even though this returns null, the results pane will have a Report Runner service button
-            //because apparently services are being cached at some point??
-            //If don't get rid of old services then definitely need to stop toolTip setup below.
             return null;
         }
         
         List<ServiceInfo> result = new LinkedList<ServiceInfo>();
         
-        //Since only query results pane is shown at a time, can remove services from previous runs without messing anything else up.
-        ContextMgr.removeServicesByTaskAndTable(ContextMgr.getTaskByClass(QueryTask.class), QBQIdRHQLTblId);    
         
         result.add(new ServiceInfo("QB_RESULT_REPORT_SERVICE", 
                 QBQIdRHQLTblId, 
@@ -225,7 +222,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
                         try
                         {
                             SpReport spRep = (SpReport)session.getData("from SpReport where appResourceId = " + ((SpAppResource)rep).getId());
-                            if (spRep != null)
+                            if (spRep != null && spRep.getQuery() != null && spRep.getQuery().getContextTableId().intValue() == tableId)
                             {
                                 reports
                                         .add(new QBResultReportServiceInfo(
