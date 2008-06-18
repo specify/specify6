@@ -113,7 +113,7 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
             {
                 sb.append("<tr><td align=\"right\">");
                 sb.append(useCaptions ? wbtmi.getCaption() : wbtmi.getTitle());
-                sb.append(":</td><td align=\"left\">");
+                sb.append(":</td><td align=\"left\" valign=\"middle\">");
                 sb.append(wbdi.getCellData());
                 sb.append("</td></tr>\n");
             }
