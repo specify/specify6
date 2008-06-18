@@ -136,6 +136,7 @@ public class RelQRI extends FieldQRI
         return relationshipInfo;
     }
     
+    //XXX - handling of the extra relationship text seems pretty scattered around. Should be re-worked. 
     /**
      * @param lbl
      * @return lbl with extra info about formatting or aggregation removed
@@ -153,6 +154,16 @@ public class RelQRI extends FieldQRI
             return lbl.substring(0, lbl.length() - UIRegistry.getResourceString("QB_FORMATTED").length() - 1);
         }
         //else
+        if (lbl.endsWith("_" + UIRegistry.getResourceString("QB_AGGREGATED")))
+        {
+           return lbl.substring(0, lbl.length() - UIRegistry.getResourceString("QB_AGGREGATED").length() - 1);
+        
+        }   
+        //else
+        if (lbl.endsWith("_" + UIRegistry.getResourceString("QB_FORMATTED")))
+        {
+            return lbl.substring(0, lbl.length() - UIRegistry.getResourceString("QB_FORMATTED").length() - 1);
+        }
         return lbl;
     }
 }

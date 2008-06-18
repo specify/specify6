@@ -875,7 +875,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         //not totally sure this is necessary.
         //other transformations may eventually be necessary.
-        return fldName.replaceAll(" ", "_");
+        return fldName.trim().replaceAll(" ", "_");
     }
     
     /**
