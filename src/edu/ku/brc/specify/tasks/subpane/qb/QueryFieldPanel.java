@@ -250,15 +250,7 @@ public class QueryFieldPanel extends JPanel
             String lbl = this.getLabel();
             if (fieldQRI instanceof RelQRI)
             {
-                    if (lbl.endsWith(" " + UIRegistry.getResourceString("QB_AGGREGATED")))
-                    {
-                        lbl = lbl.substring(0, lbl.length() - UIRegistry.getResourceString("QB_AGGREGATED").length() - 1);
-                    
-                    }   
-                    if (lbl.endsWith(" " + UIRegistry.getResourceString("QB_FORMATTED")))
-                    {
-                        lbl = lbl.substring(0, lbl.length() - UIRegistry.getResourceString("QB_FORMATTED").length() - 1);
-                    }
+                lbl = RelQRI.stripDescriptiveStuff(lbl);    
             }
             qField.setColumnAlias(lbl);
             qField.setContextTableIdent(fieldQRI.getTableInfo().getTableId());

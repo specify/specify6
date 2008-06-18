@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -135,5 +136,23 @@ public class RelQRI extends FieldQRI
         return relationshipInfo;
     }
     
-    
+    /**
+     * @param lbl
+     * @return lbl with extra info about formatting or aggregation removed
+     */
+    public static String stripDescriptiveStuff(final String lbl)
+    {
+        if (lbl.endsWith(" " + UIRegistry.getResourceString("QB_AGGREGATED")))
+        {
+           return lbl.substring(0, lbl.length() - UIRegistry.getResourceString("QB_AGGREGATED").length() - 1);
+        
+        }   
+        //else
+        if (lbl.endsWith(" " + UIRegistry.getResourceString("QB_FORMATTED")))
+        {
+            return lbl.substring(0, lbl.length() - UIRegistry.getResourceString("QB_FORMATTED").length() - 1);
+        }
+        //else
+        return lbl;
+    }
 }

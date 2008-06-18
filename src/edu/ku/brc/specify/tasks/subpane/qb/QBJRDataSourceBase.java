@@ -85,7 +85,12 @@ public class QBJRDataSourceBase implements JRDataSource
         int c = 0;
         for (ERTICaptionInfo col : this.columnInfo)
         {
-            colNames.add(new Pair<String, Integer>(QueryBldrPane.fixFldNameForJR(col.getColLabel()), new Integer(c++)));
+            String lbl = col.getColLabel();
+            if (col instanceof ERTICaptionInfoRel) //lame, but avoid having to modify ERTICaptionInfo this way.
+            {
+                lbl = RelQRI.stripDescriptiveStuff(lbl);
+            }
+            colNames.add(new Pair<String, Integer>(QueryBldrPane.fixFldNameForJR(lbl), new Integer(c++)));
         }
         Collections.sort(colNames, colPairComparator);
     }
