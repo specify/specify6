@@ -9,7 +9,7 @@
         <table name="AccessionAttachment" field="accessionAttachments">
             <alias name="Attachment"/>
         </table>
-        <table name="AccessionAuthorization">
+        <table name="AccessionAuthorization" field="accessionAuthorizations">
             <alias name="Permit"/>
         </table>
         <alias name="CollectionObject" field="collectionObjects"/>
