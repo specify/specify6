@@ -1174,7 +1174,7 @@ public class ReportsBaseTask extends BaseTask
         dlg.setModal(true);
         UIHelper.centerAndShow(dlg);
         NavBoxItemIFace selection = dlg.getSelectedObject();
-        if (selection != null)
+        if (!dlg.isCancelled() && selection != null)
         {
             RecordSet repRS = (RecordSet)((CommandAction)selection.getData()).getProperty("spreport");
             return loadReport(repRS);
