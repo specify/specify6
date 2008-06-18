@@ -659,7 +659,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 sb.append(" as ");
                 sb.append(tableInfo.getAbbrev());
                 
-                String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true, null); // false means SQL
+                String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true, null, false); //arg 2: false means SQL
                 if (joinSnipet != null)
                 {
                     sb.append(' ');

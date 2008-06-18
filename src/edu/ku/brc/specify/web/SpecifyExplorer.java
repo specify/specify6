@@ -2341,7 +2341,7 @@ public class SpecifyExplorer extends HttpServlet
             }
         }
         
-        String joinStr       = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, false, null);
+        String joinStr       = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, false, null, false);
         String specialFields = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false);
         String sql = "SELECT "+tableName + "." + tableInfo.getIdColumnName()+", "+fieldName+
             " FROM "+tableInfo.getName() +  " " +

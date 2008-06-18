@@ -84,7 +84,7 @@ public class PickListTableAdapter extends PickListDBAdapter
         strBuf.append(" ");
         strBuf.append(tableInfo.getAbbrev());
         
-        String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true, null); // false means SQL
+        String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true, null, false); // first false means SQL
         if (joinSnipet != null)
         {
             strBuf.append(' ');

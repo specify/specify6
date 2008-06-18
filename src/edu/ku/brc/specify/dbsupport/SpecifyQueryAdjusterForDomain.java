@@ -202,7 +202,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
      * @see edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain#getJoinClause(edu.ku.brc.dbsupport.DBTableInfo, boolean)
      */
     @Override
-    public String getJoinClause(DBTableInfo tableInfo, boolean isHQL, final String aliasArg)
+    public String getJoinClause(DBTableInfo tableInfo, boolean isHQL, final String aliasArg, boolean useLeftJoin)
     {
         String alias;
         if (aliasArg == null)
@@ -213,31 +213,44 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
         {
             alias = aliasArg;
         }
+        String join;
+        if (useLeftJoin)
+        {
+            join = "left join ";
+        }
+        else if (isHQL)
+        {
+            join = "join ";
+        }
+        else
+        {
+            join = "inner join ";
+        }
         if (tableInfo.getTableId() == Agent.getClassTableId())
         {
             if (isHQL)
             {
-                return "JOIN " + alias + ".disciplines as dsp" + (aliasArg == null ? "" : alias);
+                return join + alias + ".disciplines as dsp" + (aliasArg == null ? "" : alias);
             }
             if (aliasArg != null)
             {
                 throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
             }
-            return "INNER JOIN agent_discipline ON agent.AgentID = agent_discipline.AgentID";
+            return join + "agent_discipline ON agent.AgentID = agent_discipline.AgentID";
             
         } else if (tableInfo.getRelationshipByName("discipline") != null)
         {
             if (isHQL)
             {
-                return "JOIN "+ alias +".discipline as dsp" + (aliasArg == null ? "" : alias);
+                return join + alias +".discipline as dsp" + (aliasArg == null ? "" : alias);
             }
             if (aliasArg != null)
             {
                 throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
             }
-            return "INNER JOIN discipline as dsp ON "+tableInfo.getName()+".DisciplineID = dsp.DisciplineID";
+            return join + "discipline as dsp ON "+tableInfo.getName()+".DisciplineID = dsp.DisciplineID";
         }
-        return super.getJoinClause(tableInfo, isHQL, alias);
+        return super.getJoinClause(tableInfo, isHQL, alias, useLeftJoin);
 
 
 //        if (tableInfo.getTableId() == Agent.getClassTableId())

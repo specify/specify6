@@ -121,9 +121,10 @@ public class QueryAdjusterForDomain
      * @param tableInfo
      * @param isHQL
      * @param alias
+     * @param useLeftJoin
      * @return
      */
-    public String getJoinClause(final DBTableInfo tableInfo, final boolean isHQL, final String alias)
+    public String getJoinClause(final DBTableInfo tableInfo, final boolean isHQL, final String alias, final boolean useLeftJoin)
     {
         return null;
     }

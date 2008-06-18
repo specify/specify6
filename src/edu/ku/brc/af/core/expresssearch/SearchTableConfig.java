@@ -280,7 +280,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         sqlStr.append(" as ");
         sqlStr.append(tableInfo.getAbbrev());
 
-        String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, isHQL, tableInfo.getAbbrev()); // false means SQL
+        String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, isHQL, tableInfo.getAbbrev(), false); 
         if (joinSnipet != null)
         {
             sqlStr.append(' ');
