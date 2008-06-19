@@ -30,6 +30,9 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
  */
 public class UploadResultsQuery implements CustomQueryIFace
 {
+    protected final CustomQueryListener customQueryListener; 
+    protected final UploadTable uploadTable;
+    protected final UploadData uploadData;
     protected final List<Object[]> dataObjects; 
     protected int maxFldIdx;
     
@@ -57,9 +60,16 @@ public class UploadResultsQuery implements CustomQueryIFace
      * 
      * Populates dataObjects with data directly from the dataSet.
      */
-    public UploadResultsQuery(final UploadTable uploadTable, final UploadData uploadData)
+    public UploadResultsQuery(final CustomQueryListener cql, final UploadTable uploadTable, final UploadData uploadData)
     {
+        this.customQueryListener = cql;
+        this.uploadTable = uploadTable;
+        this.uploadData = uploadData;
         dataObjects = new ArrayList<Object[]>(uploadTable.getUploadedRecs().size());
+    }
+    
+    protected void fillRows()
+    {
         Vector<Vector<edu.ku.brc.util.Pair<Integer, Integer>>> indexes = setupFldIdxInfo(uploadTable);
         if (indexes != null)
         {
@@ -76,8 +86,8 @@ public class UploadResultsQuery implements CustomQueryIFace
                 dataObjects.add(rowData);
             }
         }
+        
     }
-    
     /**
      * @param uploadTable
      * 
@@ -143,8 +153,9 @@ public class UploadResultsQuery implements CustomQueryIFace
    //@Override
     public boolean execute()
     {
-        // TODO Auto-generated method stub
-        return false;
+        // JPQQuery uses this trick...
+        execute(customQueryListener);
+        return true;
     }
 
     /* (non-Javadoc)
@@ -153,6 +164,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     //@Override
     public void execute(CustomQueryListener cql)
     {
+        fillRows();
         if (dataObjects.size() > 0)
         {
             cql.exectionDone(this);
