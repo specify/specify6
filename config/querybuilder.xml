@@ -86,6 +86,19 @@
         <alias name="Preparation" field="preparations"/>
     </table>
     
+    <table name="Loan">
+    	<table name="LoanPreparation" field="loanPreparations">
+    		<alias name="Preparation"/>
+    	</table>
+         <table name="LoanAgent" field="loanAgents">
+            <alias name="Agent"/>
+        </table>
+         <table name="LoanAttachment" field="loanAttachments">
+            <alias name="Attachment"/>
+        </table>
+        <table name="Shipment" field="shipments" />
+    </table>
+    
     <table name="Locality">
     	<table name="Geography">
     	</table>
@@ -112,6 +125,7 @@
             <table name="Attachment"/>
         </table>
         <table name="PreparationAttribute"/>
+        <alias name="CollectionObject"/>
     </table>
     
     <table name="ReferenceWork">
