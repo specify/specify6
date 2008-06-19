@@ -3615,26 +3615,27 @@ public class FormViewObj implements Viewable,
         if (parentDataObj instanceof FormDataObjIFace)
         {
             ((FormDataObjIFace)parentDataObj).removeReference((FormDataObjIFace)dataObj, cellName);
-            
-            if (list != null)
-            {
-                list.remove(dataObj);
-                int len = list.size();
-                rsController.setLength(len);
-                rsController.setIndex(len-1);
-            }
-            
-            // I am punting here and just removing the last one
-            if (recordSetItemList != null)
-            {
-                recordSetItemList.remove(recordSetItemList.size()-1);
-            }
-            
-        } else if (parentDataObj != null)
-        {
-            throw new RuntimeException("Not Implemented!");
-            //FormHelper.removeFromoParent(parentDataObj, dataObj);
         }
+        
+        if (list != null)
+        {
+            list.remove(dataObj);
+            int len = list.size();
+            rsController.setLength(len);
+            rsController.setIndex(len-1, false);
+        }
+        
+        // I am punting here and just removing the last one
+        if (recordSetItemList != null)
+        {
+            recordSetItemList.remove(recordSetItemList.size()-1);
+        }
+            
+        //} else if (parentDataObj != null)
+        //{
+        //    throw new RuntimeException("Not Implemented!");
+        //    //FormHelper.removeFromoParent(parentDataObj, dataObj);
+        //}
     }
 
     /* (non-Javadoc)

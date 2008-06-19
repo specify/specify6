@@ -311,9 +311,15 @@ public class ResultSetController implements ValidationListener
             public void actionPerformed(ActionEvent ae)
             {
                 notifyListenersAboutToChangeIndex(currentInx, currentInx-1);
-                currentInx--;
-                updateUI();
-                notifyListeners();
+                // Note: notifyListenersAboutToChangeIndex sometimes can call a method
+                // that ends up setting the currentInx and therefore we should make
+                // sure that by decrementing it will still have a good value
+                if (currentInx > 0)
+                {
+                    currentInx--;
+                    updateUI();
+                    notifyListeners();
+                }
             }
         });
         nextBtn.addActionListener(new ActionListener()
