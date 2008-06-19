@@ -123,7 +123,7 @@ public class PercentageGrowthCustomQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#isInError()
      */
-    @Override
+    //@Override
     public boolean isInError()
     {
         return false;

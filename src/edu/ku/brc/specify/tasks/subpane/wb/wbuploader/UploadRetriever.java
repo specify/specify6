@@ -103,7 +103,7 @@ public class UploadRetriever //implements CommandListener, SQLExecutionListener,
              * 
              * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
              */
-            @Override
+            //@Override
             public int compare(UploadField o1, UploadField o2)
             {
                 int result = o1.getSequenceInt() < o2.getSequenceInt() ? -1 : (o1.getSequenceInt() == o2
