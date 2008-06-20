@@ -331,7 +331,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         
         String searchTerm = (searchTextArg != null ? searchTerm = searchTextArg.getText() : searchTextStr).toLowerCase();
         
-        if (!ESTermParser.parse(searchTerm, true))
+        if (!ESTermParser.parse(searchTerm))
         {
             setUserInputToNotFound("BAD_SEARCH_TERMS", false);
             return false;

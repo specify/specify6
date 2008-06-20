@@ -59,8 +59,7 @@ public class ESTermParser
      * @param terms
      * @return
      */
-    public static boolean parse(final String      searchTermArg,
-                                final boolean     isHQL)
+    public static boolean parse(final String      searchTermArg)
     {
         instance.fields.clear();
         
@@ -104,12 +103,14 @@ public class ESTermParser
                 {
                     stf.setOption(SearchTermField.STARTS_WILDCARD);
                     termStr = termStr.substring(1);
+                    stf.setTerm(termStr);
                 }
                 
                 if (termStr.endsWith("*"))
                 {
                     stf.setOption(SearchTermField.ENDS_WILDCARD);
                     termStr = termStr.substring(0, termStr.length()-1);
+                    stf.setTerm(termStr);
                 }
                 
                 // First check to see if it is all numeric.

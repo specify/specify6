@@ -23,7 +23,7 @@ public class SearchTermField
     public static final int IS_NUMERIC             =   8; // Is a numeric number
     public static final int HAS_DEC_POINT          =  16; // has a decimal point in the number
     public static final int STARTS_WILDCARD        =  32; // starts with wild card
-    public static final int ENDS_WILDCARD          =  63; // ends with wild card
+    public static final int ENDS_WILDCARD          =  64; // ends with wild card
 
     protected String term;
     protected int    options = NO_OPTIONS;
@@ -42,6 +42,14 @@ public class SearchTermField
     public boolean isSingleChar()
     {
         return term.length() == 1;
+    }
+
+    /**
+     * @param term the term to set
+     */
+    public void setTerm(String term)
+    {
+        this.term = term;
     }
 
     /**
