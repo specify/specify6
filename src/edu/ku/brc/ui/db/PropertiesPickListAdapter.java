@@ -61,7 +61,7 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
 
         this.prefName = prefName;
 
-        this.prefSelectedName = prefName + "_selected";
+        this.prefSelectedName = prefName + "_selected"; //$NON-NLS-1$
 
         searchablePLI = PickListDBAdapterFactory.getInstance().createPickListItem(); // used for binary searches
         
@@ -96,12 +96,12 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
      */
     protected void readData()
     {
-        String valuesStr = AppPreferences.getLocalPrefs().get(prefName, "");
+        String valuesStr = AppPreferences.getLocalPrefs().get(prefName, ""); //$NON-NLS-1$
         //log.debug("["+prefName+"]["+valuesStr+"]");
 
         if (StringUtils.isNotEmpty(valuesStr))
         {
-            String[] strs = StringUtils.split(valuesStr, ",");
+            String[] strs = StringUtils.split(valuesStr, ","); //$NON-NLS-1$
             if (strs.length > 0)
             {
                 for (int i=0;i<strs.length;i++)
@@ -122,9 +122,9 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
      * @param name the name of the picklist to get
      * @return the picklist
      */
-    protected PickList getPickList(@SuppressWarnings("unused") final String nameArg)
+    protected PickList getPickList(@SuppressWarnings("unused") final String nameArg) //$NON-NLS-1$
     {
-        throw new RuntimeException("Don't call this!");
+        throw new RuntimeException("Don't call this!"); //$NON-NLS-1$
         
     }
     
@@ -160,7 +160,7 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
         // this should never happen!
         if (pickList.getReadOnly())
         {
-            throw new RuntimeException("Trying to add an item to a readonly picklist ["+pickList.getName()+"]");
+            throw new RuntimeException("Trying to add an item to a readonly picklist ["+pickList.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
         int     sizeLimit = 50; // arbitrary size could be a pref (XXX PREF)
@@ -215,8 +215,8 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
      */
     public void setSelectedIndex()
     {
-        String selectStr = AppPreferences.getLocalPrefs().get(prefSelectedName, "");
-        log.debug("["+prefSelectedName+"]["+selectStr+"]");
+        String selectStr = AppPreferences.getLocalPrefs().get(prefSelectedName, ""); //$NON-NLS-1$
+        log.debug("["+prefSelectedName+"]["+selectStr+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         int selectedIndex = -1;
         int i = 0;
@@ -240,7 +240,7 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
         StringBuilder strBuf = new StringBuilder();
         for (PickListItemIFace item : pickListArg.getItems())
         {
-            if (strBuf.length() > 0) strBuf.append(",");
+            if (strBuf.length() > 0) strBuf.append(","); //$NON-NLS-1$
             strBuf.append(item.getValue());
         }
         return strBuf.toString();
@@ -252,11 +252,11 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
      */
     public void save()
     {
-        log.debug("Saving PickList");
+        log.debug("Saving PickList"); //$NON-NLS-1$
         if (savePickList)
         {
             AppPreferences.getLocalPrefs().put(prefName, convertModelToStr(pickList));
-            log.debug("["+prefName+"]["+convertModelToStr(pickList)+"]");
+            log.debug("["+prefName+"]["+convertModelToStr(pickList)+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
 
         Object selectedItem = comboBox.getModel().getSelectedItem();
@@ -268,7 +268,7 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
         if (selectedItem != null)
         {
             AppPreferences.getLocalPrefs().put(prefSelectedName, selectedItem.toString());
-            log.debug("["+prefSelectedName+"]["+selectedItem.toString()+"]");
+            log.debug("["+prefSelectedName+"]["+selectedItem.toString()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
     }
     

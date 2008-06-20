@@ -36,7 +36,7 @@ import edu.ku.brc.ui.forms.MultiView;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDisplayIFace
 {
     protected ViewBasedDisplayPanel         viewBasedPanel = null;

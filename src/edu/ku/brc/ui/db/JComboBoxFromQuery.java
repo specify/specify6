@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Auto Complete ComboxBox filled from a query, the setValue and getValue should use Hibernate Objects from that table
@@ -64,7 +65,7 @@ public class JComboBoxFromQuery extends JComboBox
     protected DefaultComboBoxModel model;
     protected Vector<Integer>      idList           = new Vector<Integer>();
     protected Vector<String>       list             = new Vector<String>();
-    protected String               entryStr         = "";
+    protected String               entryStr         = ""; //$NON-NLS-1$
     protected int                  searchStopLength = Integer.MAX_VALUE;
     protected int                  oldLength        = 0;
 
@@ -135,7 +136,7 @@ public class JComboBoxFromQuery extends JComboBox
     @Override
     public void requestFocus()
     {
-        log.debug("requestFocus");
+        log.debug("requestFocus"); //$NON-NLS-1$
         if (tf != null)
         {
             tf.requestFocus();
@@ -163,7 +164,7 @@ public class JComboBoxFromQuery extends JComboBox
         this.setModel(model);
         this.setEditor(new BasicComboBoxEditor());
         this.setEditable(true);
-        setSelectedItem("");
+        setSelectedItem(""); //$NON-NLS-1$
     }
     
     /**
@@ -221,7 +222,7 @@ public class JComboBoxFromQuery extends JComboBox
     @Override
     public void setSelectedIndex(final int index)
     {
-        log.debug("setSelectedIndex "+index);
+        log.debug("setSelectedIndex "+index); //$NON-NLS-1$
         if (!doingSelection)
         {
             SwingUtilities.invokeLater(new Runnable(){
@@ -279,7 +280,7 @@ public class JComboBoxFromQuery extends JComboBox
      */
     protected void lookForMatch()
     {
-        log.debug("look ");
+        log.debug("look "); //$NON-NLS-1$
         String s   = tf.getText();
         int    len = s.length();
         if (len == 0)
@@ -291,7 +292,7 @@ public class JComboBoxFromQuery extends JComboBox
 
         //System.out.println(s);
         caretPos = tf.getCaretPosition();
-        String text = "";
+        String text = ""; //$NON-NLS-1$
         try
         {
             text = tf.getText(0, caretPos);
@@ -350,10 +351,10 @@ public class JComboBoxFromQuery extends JComboBox
         if (sql == null)
         {
             // XXX MYSQL
-            return "select distinct " + displayColumns + "," + idColumn  + " from " + tableName + " where lower(" + keyColumn +
-                             ") like '"+ entryStr.toLowerCase() +"%' order by " + keyColumn + " asc";
+            return "select distinct " + displayColumns + "," + idColumn  + " from " + tableName + " where lower(" + keyColumn + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                             ") like '"+ entryStr.toLowerCase() +"%' order by " + keyColumn + " asc"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
-        return sql.replace("%s", entryStr.toLowerCase());
+        return sql.replace("%s", entryStr.toLowerCase()); //$NON-NLS-1$
     }
 
     /**
@@ -361,7 +362,7 @@ public class JComboBoxFromQuery extends JComboBox
      */
     protected void fillBox(final String newEntryStr)
     {
-        log.debug("fillbox");
+        log.debug("fillbox"); //$NON-NLS-1$
         try
         {
             searchStopLength = Integer.MAX_VALUE;
@@ -420,7 +421,7 @@ public class JComboBoxFromQuery extends JComboBox
                                 for (int i=0;i<numColumns;i++)
                                 {
                                     Object val = rs.getObject(i+1);
-                                    values[i] = val != null ? val : "";
+                                    values[i] = val != null ? val : ""; //$NON-NLS-1$
                                 }
                                 Formatter formatter = new Formatter();
                                 formatter.format(format, values);
@@ -428,7 +429,7 @@ public class JComboBoxFromQuery extends JComboBox
     
                             } catch (java.util.IllegalFormatConversionException ex)
                             {
-                                list.addElement(values[0] != null ? values[0].toString() : "(No Value)");
+                                list.addElement(values[0] != null ? values[0].toString() : UIRegistry.getResourceString("JComboBoxFromQuery.NO_VALUE")); //$NON-NLS-1$
                             }
                         }
     
@@ -475,7 +476,7 @@ public class JComboBoxFromQuery extends JComboBox
     {
         if (true)
         {
-            log.debug("cbxKeyReleased");
+            log.debug("cbxKeyReleased"); //$NON-NLS-1$
             if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY)
             {
                 skipSearch = true;
@@ -573,19 +574,19 @@ public class JComboBoxFromQuery extends JComboBox
      * Processes Focus Gained
      * @param e key event
      */
-    protected void tfFocusGained(@SuppressWarnings("unused") FocusEvent e)
+    protected void tfFocusGained(@SuppressWarnings("unused") FocusEvent e) //$NON-NLS-1$
     {
         searchStopLength = Integer.MAX_VALUE;
-        log.debug("tfFocusGained");
+        log.debug("tfFocusGained"); //$NON-NLS-1$
     }
     
     /**
      * Processes Focus Lost
      * @param e key event
      */
-    protected void tfFocusLost(@SuppressWarnings("unused") FocusEvent e)
+    protected void tfFocusLost(@SuppressWarnings("unused") FocusEvent e) //$NON-NLS-1$
     {
-        log.debug("tfFocusLost");
+        log.debug("tfFocusLost"); //$NON-NLS-1$
         tf.setSelectionStart(0);
         tf.setSelectionEnd(0);
         tf.moveCaretPosition(0);
@@ -596,7 +597,7 @@ public class JComboBoxFromQuery extends JComboBox
         }
         if (getSelectedIndex() == -1)
         {
-            tf.setText("");
+            tf.setText(""); //$NON-NLS-1$
         }
     }
     

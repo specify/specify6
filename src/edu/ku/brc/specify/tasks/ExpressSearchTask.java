@@ -326,7 +326,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         String searchTerm = (searchTextArg != null ? searchTerm = searchTextArg.getText() : searchTextStr).toLowerCase();
 
         //boolean hasResults = true;
-        if (searchTerm != null && searchTerm.length() > 0)
+        if (StringUtils.isNotEmpty(searchTerm))
         {
             SearchTableConfig context = SearchConfigService.getInstance().getSearchContext();
             if (context == null)

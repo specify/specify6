@@ -115,7 +115,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected List<ListSelectionListener> listSelectionListeners = new ArrayList<ListSelectionListener>();
     protected PopupMenuListener    popupMenuListener   = null;
     protected Integer              selectedId          = null;
-    protected String               currentText         = "";
+    protected String               currentText         = ""; //$NON-NLS-1$
     protected boolean              hasNewText          = false;
     protected boolean              wasCleared          = false;
     
@@ -146,14 +146,14 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             uiFieldFormatter = UIFieldFormatterMgr.getInstance().getFormatter(fieldFormatterName);
         }
 
-        if (StringUtils.contains(keyColumn, ","))
+        if (StringUtils.contains(keyColumn, ",")) //$NON-NLS-1$
         {
-            keyColumns = StringUtils.split(keyColumn, ",");
+            keyColumns = StringUtils.split(keyColumn, ","); //$NON-NLS-1$
         } else
         {
             keyColumns = new String[] {keyColumn};
         }
-        popupDlgThreshold = AppPreferences.getRemote().getInt("TFQ.POPUPDLD.THRESHOLD", 15);
+        popupDlgThreshold = AppPreferences.getRemote().getInt("TFQ.POPUPDLD.THRESHOLD", 15); //$NON-NLS-1$
         
         createUI();
     }
@@ -170,11 +170,11 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         textField = new JTextField(10);
         setControlSize(textField);
 
-        ImageIcon img = IconManager.getIcon("DropDownArrow", IconManager.IconSize.NonStd);
+        ImageIcon img = IconManager.getIcon("DropDownArrow", IconManager.IconSize.NonStd); //$NON-NLS-1$
         dbBtn     = UIHelper.isMacOS() ? new MacGradiantBtn(img) : new JButton(img);
         dbBtn.setFocusable(false);
         
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:d:g,p", "f:p:g"), this);
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:d:g,p", "f:p:g"), this); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc = new CellConstraints();
         
         pb.add(textField, cc.xy(1,1));
@@ -210,7 +210,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             {
                 if (selectedId == null && !ignoreFocusLost)
                 {
-                    textField.setText("");
+                    textField.setText(""); //$NON-NLS-1$
                     
                     ///////////////////////////////////////////////////////////////////////////////////
                     // We only want to generate a change event if it once had a value and then it is
@@ -387,7 +387,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                             l.valueChanged(null);
                         }
                     }*/
-                    log.debug("setting hasNewText to true");
+                    log.debug("setting hasNewText to true"); //$NON-NLS-1$
                     hasNewText  = true;
                 }
             } else
@@ -483,7 +483,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     
                     if (selectedId == null)
                     {
-                        textField.setText("");
+                        textField.setText(""); //$NON-NLS-1$
                     }
                 }
 
@@ -494,7 +494,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     
                     if (selectedId == null)
                     {
-                        textField.setText("");
+                        textField.setText(""); //$NON-NLS-1$
                     }
                 }
 
@@ -506,7 +506,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             
             if (addAddItem)
             {
-                JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("TFWQ_ADD_LABEL"));
+                JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("TFWQ_ADD_LABEL")); //$NON-NLS-1$
                 setControlSize(mi);
 
                 popupMenu.add(mi);
@@ -561,7 +561,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         if (!StringUtils.contains(fld, '.'))
         {
             selectSB.append(tableInfo.getAbbrev());    
-            selectSB.append(".");
+            selectSB.append("."); //$NON-NLS-1$
         }
         selectSB.append(fld.trim()); 
     }
@@ -577,24 +577,24 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         StringBuilder whereSB = new StringBuilder();
         if (keyColumns.length > 1)
         {
-            whereSB.append("(");
+            whereSB.append("("); //$NON-NLS-1$
         }
 
         int cnt = 0;
         for (String keyCol : keyColumns)
         {
-            if (cnt > 0) whereSB.append(" OR ");
-            whereSB.append(" LOWER(");
+            if (cnt > 0) whereSB.append(" OR "); //$NON-NLS-1$
+            whereSB.append(" LOWER("); //$NON-NLS-1$
             whereSB.append(keyCol);
-            whereSB.append(") LIKE '");
+            whereSB.append(") LIKE '"); //$NON-NLS-1$
             whereSB.append(newEntryStr.toLowerCase());
-            whereSB.append("%' ");
+            whereSB.append("%' "); //$NON-NLS-1$
             cnt++;
         }
         
         if (keyColumns.length > 1)
         {
-            whereSB.append(")");
+            whereSB.append(")"); //$NON-NLS-1$
         }
 
         if (StringUtils.isNotEmpty(sqlTemplate))
@@ -602,9 +602,9 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             StringBuilder selectSB = new StringBuilder();
             if (isForCount)
             {
-                selectSB.append("count("); 
+                selectSB.append("count(");  //$NON-NLS-1$
                 addTblAbbrev(tableInfo.getAbbrev(), tableInfo.getIdFieldName(), selectSB);
-                selectSB.append(")");
+                selectSB.append(")"); //$NON-NLS-1$
                 
             } else
             {
@@ -613,7 +613,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     int fCnt = 0;
                     for (String fld : StringUtils.split(displayColumns, ','))
                     {
-                        if (fCnt > 0) selectSB.append(", ");
+                        if (fCnt > 0) selectSB.append(", "); //$NON-NLS-1$
                         addTblAbbrev(tableInfo.getAbbrev(), fld, selectSB);
                         fCnt++;
                     }
@@ -621,13 +621,13 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 {
                     addTblAbbrev(tableInfo.getAbbrev(), displayColumns, selectSB);
                 }
-                selectSB.append(", ");
+                selectSB.append(", "); //$NON-NLS-1$
                 addTblAbbrev(tableInfo.getAbbrev(), tableInfo.getIdFieldName(), selectSB);
             }
             //System.err.println( selectSB.toString());
             
-            sql = StringUtils.replace(sqlTemplate, "%s1", selectSB.toString());
-            sql = StringUtils.replace(sql, "%s2", whereSB.toString());
+            sql = StringUtils.replace(sqlTemplate, "%s1", selectSB.toString()); //$NON-NLS-1$
+            sql = StringUtils.replace(sql, "%s2", whereSB.toString()); //$NON-NLS-1$
             sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
             
             //System.err.println(sql);
@@ -640,23 +640,23 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             StringBuilder sb = new StringBuilder();
             if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(newEntryStr))
             {
-                sb.append("SELECT ");
+                sb.append("SELECT "); //$NON-NLS-1$
                 if (isForCount)
                 {
-                    sb.append("count(");                
+                    sb.append("count(");                 //$NON-NLS-1$
                     sb.append(tableInfo.getIdFieldName());
-                    sb.append(")");
+                    sb.append(")"); //$NON-NLS-1$
                     
                 } else
                 {
                     sb.append(displayColumns);
-                    sb.append(",");
+                    sb.append(","); //$NON-NLS-1$
                     sb.append(tableInfo.getIdFieldName());                
                 }
     
-                sb.append(" FROM ");
+                sb.append(" FROM "); //$NON-NLS-1$
                 sb.append(tableInfo.getClassName());
-                sb.append(" as ");
+                sb.append(" as "); //$NON-NLS-1$
                 sb.append(tableInfo.getAbbrev());
                 
                 String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true, null, false); //arg 2: false means SQL
@@ -667,25 +667,25 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     sb.append(' ');
                 }
                 
-                sb.append(" WHERE ");
+                sb.append(" WHERE "); //$NON-NLS-1$
                 
                 //System.err.println(sb.toString());
                 
                 String specialCols = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
                 if (StringUtils.isNotEmpty(specialCols))
                 {
-                    if (whereSB.length() > 0) whereSB.append(" AND ");
+                    if (whereSB.length() > 0) whereSB.append(" AND "); //$NON-NLS-1$
                     whereSB.append(specialCols);
                     //System.err.println(whereSB.toString());
                 }
                 
-                whereSB.append(" ORDER BY ");
+                whereSB.append(" ORDER BY "); //$NON-NLS-1$
                 cnt = 0;
                 for (String keyCol : keyColumns)
                 {
-                    if (cnt > 0) whereSB.append(", ");
+                    if (cnt > 0) whereSB.append(", "); //$NON-NLS-1$
                     whereSB.append(keyCol);
-                    whereSB.append(" ASC");
+                    whereSB.append(" ASC"); //$NON-NLS-1$
                     cnt++;
                 }
 
@@ -748,7 +748,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                             for (int i=0;i<numColumns;i++)
                             {
                                 Object val = array[i];
-                                values[i] = val != null ? val : "";
+                                values[i] = val != null ? val : ""; //$NON-NLS-1$
                             }
                             Formatter formatter = new Formatter();
                             formatter.format(format, values);
@@ -758,7 +758,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                         {
                             ex.printStackTrace();
                             
-                            list.addElement(values[0] != null ? values[0].toString() : "(No Value)");
+                            list.addElement(values[0] != null ? values[0].toString() : "(No Value)"); //$NON-NLS-1$
                         }
     
                     }
@@ -778,7 +778,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 
             } else
             {
-                textField.setText("");
+                textField.setText(""); //$NON-NLS-1$
             }
             
             duplicatehash.clear();
@@ -794,7 +794,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         DefaultListModel model = new DefaultListModel();
         if (addAddItem)
         {
-            model.addElement(UIRegistry.getResourceString("TFWQ_ADD_LABEL"));
+            model.addElement(UIRegistry.getResourceString("TFWQ_ADD_LABEL")); //$NON-NLS-1$
         }
         for (String val : list)
         {
@@ -803,7 +803,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         
         final JList listBox = new JList(model);
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(createLabel(UIRegistry.getResourceString("TFWQ_CHOOSE_LABEL"), SwingConstants.CENTER), BorderLayout.NORTH);
+        panel.add(createLabel(UIRegistry.getResourceString("TFWQ_CHOOSE_LABEL"), SwingConstants.CENTER), BorderLayout.NORTH); //$NON-NLS-1$
         JScrollPane sp = new JScrollPane(listBox, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         panel.add(sp, BorderLayout.CENTER);
         panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -819,7 +819,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                                final Component contentPanel,
                                JList pListBoxArg) throws HeadlessException
             {
-                super(frame, UIRegistry.getResourceString("TFWQ_CHOOSE_TITLE"), isModal, contentPanel);
+                super(frame, UIRegistry.getResourceString("TFWQ_CHOOSE_TITLE"), isModal, contentPanel); //$NON-NLS-1$
                 
                 this.pListBox = pListBoxArg;
                 
@@ -887,7 +887,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             }
         } else
         {
-            textField.setText("");
+            textField.setText(""); //$NON-NLS-1$
         }
     }
     
@@ -996,7 +996,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     
     public void clearSearch()
     {
-        textField.setText("");
+        textField.setText(""); //$NON-NLS-1$
     }
     
     public JTextField getTextField()

@@ -40,7 +40,7 @@ import edu.ku.brc.ui.forms.MultiView;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDisplayIFace, ActionListener
 {
     protected ViewBasedDisplayPanel         viewBasedPanel = null;

@@ -67,7 +67,7 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPrefsChangeListener
 {
     protected static final Logger log                 = Logger.getLogger(TextFieldWithInfo.class);
@@ -174,7 +174,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(this),
                                                                displayInfoDialogName,
                                                                frameTitle,
-                                                               getResourceString("Close"),
+                                                               getResourceString("Close"), //$NON-NLS-1$
                                                                false,  // false means View mode
                                                                MultiView.NO_OPTIONS | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE,
                                                                ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME);
@@ -246,7 +246,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     {
         setControlSize(textField);
         
-        fieldNames = split(StringUtils.deleteWhitespace(keyName), ",");
+        fieldNames = split(StringUtils.deleteWhitespace(keyName), ","); //$NON-NLS-1$
 
         try
         {
@@ -258,15 +258,15 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
            throw new RuntimeException(ex);
         }
 
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g,1px,p", "c:p"), this);
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g,1px,p", "c:p"), this); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc         = new CellConstraints();
 
         builder.add(textField, cc.xy(1,1));
 
         if (StringUtils.isNotEmpty(displayInfoDialogName))
         {
-            infoBtn = new JButton(IconManager.getIcon("InfoIcon"));
-            infoBtn.setToolTipText(String.format(getResourceString("ShowRecordInfoTT"), new Object[] {objTitle}));
+            infoBtn = new JButton(IconManager.getIcon("InfoIcon")); //$NON-NLS-1$
+            infoBtn.setToolTipText(String.format(getResourceString("ShowRecordInfoTT"), new Object[] {objTitle})); //$NON-NLS-1$
             infoBtn.setFocusable(false);
             infoBtn.setMargin(new Insets(1,1,1,1));
             infoBtn.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -286,10 +286,10 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         bgColor = textField.getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
-            valtextcolor       = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
-            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+            valtextcolor       = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
-        AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -361,7 +361,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
 
         } else
         {
-            textField.setText("");
+            textField.setText(""); //$NON-NLS-1$
             isInError = isRequired;
         }
         if (frame != null)
@@ -389,7 +389,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
      */
     public void preferenceChange(AppPrefsChangeEvent evt)
     {
-        if (evt.getKey().equals("requiredfieldcolor"))
+        if (evt.getKey().equals("requiredfieldcolor")) //$NON-NLS-1$
         {
             textField.setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
         }

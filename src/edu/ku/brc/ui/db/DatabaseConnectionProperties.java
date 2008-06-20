@@ -17,7 +17,6 @@
  */
 package edu.ku.brc.ui.db;
 
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author megkumin
@@ -27,14 +26,11 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class DatabaseConnectionProperties
 {
-    //protected String driverClassName = "";
-    protected String driverType = "";
-    //protected String dialectClassName = "";
-    //protected String databaseName = "";
-    protected String host = "";
-    //protected String connectionString = "";
-    protected String userName = "";
-    protected String password = "";
+    protected String driverType = ""; //$NON-NLS-1$
+    protected String host       = ""; //$NON-NLS-1$
+    protected String userName   = ""; //$NON-NLS-1$
+    protected String password   = ""; //$NON-NLS-1$
+    
     /**
      * @param driverClassName
      * @param dialectClassName

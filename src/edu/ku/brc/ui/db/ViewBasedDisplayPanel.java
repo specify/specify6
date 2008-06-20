@@ -47,7 +47,7 @@ import edu.ku.brc.ui.forms.validation.FormValidator;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ViewBasedDisplayPanel extends JPanel implements ActionListener
 {
     private static final Logger log  = Logger.getLogger(ViewBasedDisplayPanel.class);
@@ -169,7 +169,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
 
         } else
         {
-            log.error("Couldn't load form with ViewSetName ["+viewSetName+"] View Name ["+viewName+"]");
+            log.error("Couldn't load form with ViewSetName ["+viewSetName+"] View Name ["+viewName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             return;
         }
 

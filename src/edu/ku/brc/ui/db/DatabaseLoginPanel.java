@@ -154,7 +154,7 @@ public class DatabaseLoginPanel extends JPanel
                               final boolean isDlg,
                               final String iconName)
     {
-        log.debug("constructor with jaas");
+        log.debug("constructor with jaas"); //$NON-NLS-1$
         this.dbListener = dbListener;
         this.jaasContext = new JaasContext(); 
         createUI(isDlg, iconName);
@@ -173,7 +173,7 @@ public class DatabaseLoginPanel extends JPanel
                               final String nonSpecifyAppName,
                               final String iconName)
     {
-        log.debug("constructor with jaas");
+        log.debug("constructor with jaas"); //$NON-NLS-1$
         this.dbListener = dbListener;
         this.jaasContext = new JaasContext(); 
         this.isSpecifyApp = false;
@@ -233,7 +233,7 @@ public class DatabaseLoginPanel extends JPanel
                           final int y)
     {
         int yy = y;
-        pb.add(createLabel(label != null ? getResourceString(label) + ":" : " ",
+        pb.add(createLabel(label != null ? getResourceString(label) + ":" : " ", //$NON-NLS-1$ //$NON-NLS-2$
                 SwingConstants.RIGHT), cc.xy(1, yy));
         pb.add(comp, cc.xy(3, yy));
         yy += 2;
@@ -250,8 +250,8 @@ public class DatabaseLoginPanel extends JPanel
 
         // First create the controls and hook up listeners
 
-        PropertiesPickListAdapter dbPickList = new PropertiesPickListAdapter("login.databases");
-        PropertiesPickListAdapter svPickList = new PropertiesPickListAdapter("login.servers");
+        PropertiesPickListAdapter dbPickList = new PropertiesPickListAdapter("login.databases"); //$NON-NLS-1$
+        PropertiesPickListAdapter svPickList = new PropertiesPickListAdapter("login.servers"); //$NON-NLS-1$
 
         username = createTextField(20);
         password = createPasswordField(20);
@@ -265,20 +265,20 @@ public class DatabaseLoginPanel extends JPanel
         setControlSize(databases);
         setControlSize(servers);
 
-        autoLoginCBX        = createCheckBox(getResourceString("autologin"));
-        rememberUsernameCBX = createCheckBox(getResourceString("rememberuser"));
-        rememberPasswordCBX = createCheckBox(getResourceString("rememberpassword"));
+        autoLoginCBX        = createCheckBox(getResourceString("autologin")); //$NON-NLS-1$
+        rememberUsernameCBX = createCheckBox(getResourceString("rememberuser")); //$NON-NLS-1$
+        rememberPasswordCBX = createCheckBox(getResourceString("rememberpassword")); //$NON-NLS-1$
 
         statusBar = new JStatusBar();
-        statusBar.setErrorIcon(IconManager.getIcon("Error",IconManager.IconSize.Std16));
+        statusBar.setErrorIcon(IconManager.getIcon("Error",IconManager.IconSize.Std16)); //$NON-NLS-1$
 
-        cancelBtn = createButton(getResourceString("Cancel"));
-        loginBtn  = createButton(getResourceString("Login"));
-        helpBtn   = createButton(getResourceString("Help"));
+        cancelBtn = createButton(getResourceString("Cancel")); //$NON-NLS-1$
+        loginBtn  = createButton(getResourceString("Login")); //$NON-NLS-1$
+        helpBtn   = createButton(getResourceString("Help")); //$NON-NLS-1$
         
-        forwardImgIcon = IconManager.getIcon("Forward");
-        downImgIcon    = IconManager.getIcon("Down");
-        moreBtn        = new JCheckBox(getResourceString("LOGIN_DLG_MORE"), forwardImgIcon); // XXX I18N
+        forwardImgIcon = IconManager.getIcon("Forward"); //$NON-NLS-1$
+        downImgIcon    = IconManager.getIcon("Down"); //$NON-NLS-1$
+        moreBtn        = new JCheckBox(getResourceString("LOGIN_DLG_MORE"), forwardImgIcon); // XXX I18N //$NON-NLS-1$
         setControlSize(moreBtn);
 
         // Extra
@@ -286,14 +286,14 @@ public class DatabaseLoginPanel extends JPanel
         dbDriverCBX = createComboBox(dbDrivers);
         if (dbDrivers.size() > 0)
         {
-            String selectedStr = AppPreferences.getLocalPrefs().get("login.dbdriver_selected", "MySQL");
+            String selectedStr = AppPreferences.getLocalPrefs().get("login.dbdriver_selected", "MySQL"); //$NON-NLS-1$ //$NON-NLS-2$
             int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null));
             dbDriverCBX.setSelectedIndex(inx > -1 ? inx : -1);
 
         } else
         {
-            JOptionPane.showConfirmDialog(null, getResourceString("NO_DBDRIVERS"),
-                    getResourceString("NO_DBDRIVERS_TITLE"), JOptionPane.CLOSED_OPTION);
+            JOptionPane.showConfirmDialog(null, getResourceString("NO_DBDRIVERS"), //$NON-NLS-1$
+                    getResourceString("NO_DBDRIVERS_TITLE"), JOptionPane.CLOSED_OPTION); //$NON-NLS-1$
             System.exit(1);
         }
 
@@ -319,22 +319,22 @@ public class DatabaseLoginPanel extends JPanel
             addKeyListenerFor(loginBtn, true);
         }
 
-        autoLoginCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.autologin", false));
-        rememberUsernameCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.rememberuser", false));
-        rememberPasswordCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.rememberpassword", false));
+        autoLoginCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.autologin", false)); //$NON-NLS-1$
+        rememberUsernameCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.rememberuser", false)); //$NON-NLS-1$
+        rememberPasswordCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.rememberpassword", false)); //$NON-NLS-1$
 
         if (autoLoginCBX.isSelected())
         {
-            username.setText(AppPreferences.getLocalPrefs().get("login.username", ""));
+            username.setText(AppPreferences.getLocalPrefs().get("login.username", "")); //$NON-NLS-1$ //$NON-NLS-2$
             password.setText(Encryption.decrypt(AppPreferences.getLocalPrefs().get(
-                    "login.password", "")));
+                    "login.password", ""))); //$NON-NLS-1$ //$NON-NLS-2$
             username.requestFocus();
 
         } else
         {
             if (rememberUsernameCBX.isSelected())
             {
-                username.setText(AppPreferences.getLocalPrefs().get("login.username", ""));
+                username.setText(AppPreferences.getLocalPrefs().get("login.username", "")); //$NON-NLS-1$ //$NON-NLS-2$
                 SwingUtilities.invokeLater(new Runnable()
                 {
                     public void run()
@@ -348,7 +348,7 @@ public class DatabaseLoginPanel extends JPanel
             if (rememberPasswordCBX.isSelected())
             {
                 password.setText(Encryption.decrypt(AppPreferences.getLocalPrefs().get(
-                        "login.password", "")));
+                        "login.password", ""))); //$NON-NLS-1$ //$NON-NLS-2$
                 SwingUtilities.invokeLater(new Runnable()
                 {
                     public void run()
@@ -375,13 +375,13 @@ public class DatabaseLoginPanel extends JPanel
         {
             public void actionPerformed(ActionEvent e)
             {
-                log.debug("panel action performed");
+                log.debug("panel action performed"); //$NON-NLS-1$
                 doLogin();
             }
         });
 
         //HelpManager.registerComponent(helpBtn, "login");
-        HelpMgr.registerComponent(helpBtn, "login");
+        HelpMgr.registerComponent(helpBtn, "login"); //$NON-NLS-1$
 
         autoLoginCBX.addChangeListener(new ChangeListener()
         {
@@ -445,33 +445,33 @@ public class DatabaseLoginPanel extends JPanel
 
         // Layout the form
 
-        PanelBuilder formBuilder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p):g", UIHelper.createDuplicateJGoodiesDef("p", "2dlu", 11)));
+        PanelBuilder formBuilder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p):g", UIHelper.createDuplicateJGoodiesDef("p", "2dlu", 11))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         CellConstraints cc = new CellConstraints();
-        formBuilder.addSeparator(getResourceString("LOGINLABEL"), cc.xywh(1, 1, 3, 1));
+        formBuilder.addSeparator(getResourceString("LOGINLABEL"), cc.xywh(1, 1, 3, 1)); //$NON-NLS-1$
 
         int y = 3;
-        y = addLine("username", username, formBuilder, cc, y);
-        y = addLine("password", password, formBuilder, cc, y);
-        y = addLine("databases", databases, formBuilder, cc, y);
-        y = addLine("servers", servers, formBuilder, cc, y);
+        y = addLine("username", username, formBuilder, cc, y); //$NON-NLS-1$
+        y = addLine("password", password, formBuilder, cc, y); //$NON-NLS-1$
+        y = addLine("databases", databases, formBuilder, cc, y); //$NON-NLS-1$
+        y = addLine("servers", servers, formBuilder, cc, y); //$NON-NLS-1$
         y = addLine(null, rememberUsernameCBX, formBuilder, cc, y);
         y = addLine(null, rememberPasswordCBX, formBuilder, cc, y);
         y = addLine(null, autoLoginCBX, formBuilder, cc, y);
 
-        PanelBuilder extraPanelBlder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p):g", "p,2dlu,p,2dlu,p"));
+        PanelBuilder extraPanelBlder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p):g", "p,2dlu,p,2dlu,p")); //$NON-NLS-1$ //$NON-NLS-2$
         extraPanel = extraPanelBlder.getPanel();
         extraPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 4, 2));
 
         formBuilder.add(moreBtn, cc.xy(1, y));
         y += 2;
 
-        extraPanelBlder.addSeparator(getResourceString("extratitle"), cc.xywh(1, 1, 3, 1));
-        addLine("driver", dbDriverCBX, extraPanelBlder, cc, 3);
+        extraPanelBlder.addSeparator(getResourceString("extratitle"), cc.xywh(1, 1, 3, 1)); //$NON-NLS-1$
+        addLine("driver", dbDriverCBX, extraPanelBlder, cc, 3); //$NON-NLS-1$
         extraPanel.setVisible(false);
 
         formBuilder.add(extraPanelBlder.getPanel(), cc.xywh(1, y, 3, 1));
 
-        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "p,2dlu,p,2dlu,p"), this);
+        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "p,2dlu,p,2dlu,p"), this); //$NON-NLS-1$ //$NON-NLS-2$
         JLabel icon; 
         if (StringUtils.isNotEmpty(iconName))
         {
@@ -589,7 +589,7 @@ public class DatabaseLoginPanel extends JPanel
         if (dbDriverCBX.getSelectedIndex() == -1)
         {
             shouldEnable = false;
-            setMessage(getResourceString("MISSING_DRIVER"), true);
+            setMessage(getResourceString("MISSING_DRIVER"), true); //$NON-NLS-1$
             if (!extraPanel.isVisible())
             {
                 moreBtn.doClick();
@@ -604,7 +604,7 @@ public class DatabaseLoginPanel extends JPanel
 
         if (shouldEnable)
         {
-            setMessage("", false);
+            setMessage("", false); //$NON-NLS-1$
         }
     }
 
@@ -635,36 +635,36 @@ public class DatabaseLoginPanel extends JPanel
         databases.getDBAdapter().save();
         servers.getDBAdapter().save();
 
-        AppPreferences.getLocalPrefs().putBoolean("login.rememberuser", rememberUsernameCBX.isSelected());
-        AppPreferences.getLocalPrefs().putBoolean("login.rememberpassword", rememberPasswordCBX.isSelected());
-        AppPreferences.getLocalPrefs().putBoolean("login.autologin", autoLoginCBX.isSelected());
+        AppPreferences.getLocalPrefs().putBoolean("login.rememberuser", rememberUsernameCBX.isSelected()); //$NON-NLS-1$
+        AppPreferences.getLocalPrefs().putBoolean("login.rememberpassword", rememberPasswordCBX.isSelected()); //$NON-NLS-1$
+        AppPreferences.getLocalPrefs().putBoolean("login.autologin", autoLoginCBX.isSelected()); //$NON-NLS-1$
 
         if (autoLoginCBX.isSelected())
         {
-            AppPreferences.getLocalPrefs().put("login.username", username.getText());
-            AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(new String(password.getPassword())));
+            AppPreferences.getLocalPrefs().put("login.username", username.getText()); //$NON-NLS-1$
+            AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(new String(password.getPassword()))); //$NON-NLS-1$
 
         } else
         {
             if (rememberUsernameCBX.isSelected())
             {
-                AppPreferences.getLocalPrefs().put("login.username", username.getText());
+                AppPreferences.getLocalPrefs().put("login.username", username.getText()); //$NON-NLS-1$
 
-            } else if (AppPreferences.getLocalPrefs().exists("login.username"))
+            } else if (AppPreferences.getLocalPrefs().exists("login.username")) //$NON-NLS-1$
             {
-                AppPreferences.getLocalPrefs().remove("login.username");
+                AppPreferences.getLocalPrefs().remove("login.username"); //$NON-NLS-1$
             }
 
             if (rememberPasswordCBX.isSelected())
             {
-                AppPreferences.getLocalPrefs().put("login.password",  Encryption.encrypt(new String(password.getPassword())));
+                AppPreferences.getLocalPrefs().put("login.password",  Encryption.encrypt(new String(password.getPassword()))); //$NON-NLS-1$
 
-            } else if (AppPreferences.getLocalPrefs().exists("login.password"))
+            } else if (AppPreferences.getLocalPrefs().exists("login.password")) //$NON-NLS-1$
             {
-                AppPreferences.getLocalPrefs().remove("login.password");
+                AppPreferences.getLocalPrefs().remove("login.password"); //$NON-NLS-1$
             }
         }
-        AppPreferences.getLocalPrefs().put("login.dbdriver_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName());
+        AppPreferences.getLocalPrefs().put("login.dbdriver_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName()); //$NON-NLS-1$
 
     }
 
@@ -686,7 +686,7 @@ public class DatabaseLoginPanel extends JPanel
         }
         else
         {
-            log.debug("lister is NULL");
+            log.debug("lister is NULL"); //$NON-NLS-1$
         }
     }
 
@@ -725,21 +725,21 @@ public class DatabaseLoginPanel extends JPanel
      */
     public void doLogin()
     {
-        log.debug("doLogin()");
+        log.debug("doLogin()"); //$NON-NLS-1$
         isLoggingIn = true;
-        log.debug("preparing to save");
+        log.debug("preparing to save"); //$NON-NLS-1$
         save();
 
         statusBar.setIndeterminate(getClass().getName(), true);
         enableUI(false);
 
         
-        setMessage(String.format(getResourceString("LoggingIn"), new Object[] { getDatabaseName() }), false);
+        setMessage(String.format(getResourceString("LoggingIn"), new Object[] { getDatabaseName() }), false); //$NON-NLS-1$
 
-        String basePrefName = getDatabaseName() + "." + getUserName() + ".";
+        String basePrefName = getDatabaseName() + "." + getUserName() + "."; //$NON-NLS-1$ //$NON-NLS-2$
 
-        loginCount = AppPreferences.getLocalPrefs().getLong(basePrefName + "logincount", -1L);
-        loginAccumTime = AppPreferences.getLocalPrefs().getLong(basePrefName + "loginaccumtime",
+        loginCount = AppPreferences.getLocalPrefs().getLong(basePrefName + "logincount", -1L); //$NON-NLS-1$
+        loginAccumTime = AppPreferences.getLocalPrefs().getLong(basePrefName + "loginaccumtime", //$NON-NLS-1$
                 -1L);
 
         if (loginCount != -1 && loginAccumTime != -1)
@@ -759,7 +759,7 @@ public class DatabaseLoginPanel extends JPanel
             long    eTime;
             boolean timeOK     = false;
 
-            @SuppressWarnings("synthetic-access")
+            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
             @Override
             public Object construct()
             {
@@ -787,7 +787,7 @@ public class DatabaseLoginPanel extends JPanel
                             public void run()
                             {
                                 //Not exactly true yet, but make sure users know that this is NOT Specify starting up. 
-                                setMessage(String.format(getResourceString("Starting"), nonSpecifyAppName), false);
+                                setMessage(String.format(getResourceString("Starting"), nonSpecifyAppName), false); //$NON-NLS-1$
                             }
                             
                         });
@@ -828,7 +828,7 @@ public class DatabaseLoginPanel extends JPanel
                 // but this is where I am putting it for now
                 if (isLoggedIn)
                 {
-                    setMessage(getResourceString("LoadingSchema"), false);
+                    setMessage(getResourceString("LoadingSchema"), false); //$NON-NLS-1$
                     statusBar.repaint();
 
                     // Note: this doesn't happen on the GUI thread
@@ -865,10 +865,10 @@ public class DatabaseLoginPanel extends JPanel
 
                     if (loginCount < 1000)
                     {
-                        String basePrefNameStr = getDatabaseName() + "." + getUserName() + ".";
-                        AppPreferences.getLocalPrefs().putLong(basePrefNameStr + "logincount",
+                        String basePrefNameStr = getDatabaseName() + "." + getUserName() + "."; //$NON-NLS-1$ //$NON-NLS-2$
+                        AppPreferences.getLocalPrefs().putLong(basePrefNameStr + "logincount", //$NON-NLS-1$
                                 ++loginCount);
-                        AppPreferences.getLocalPrefs().putLong(basePrefNameStr + "loginaccumtime",
+                        AppPreferences.getLocalPrefs().putLong(basePrefNameStr + "loginaccumtime", //$NON-NLS-1$
                                 loginAccumTime);
                     }
                 }
@@ -977,7 +977,7 @@ public class DatabaseLoginPanel extends JPanel
      */
     public boolean doingAutoLogin()
     {
-        return AppPreferences.getLocalPrefs().getBoolean("autologin", false);
+        return AppPreferences.getLocalPrefs().getBoolean("autologin", false); //$NON-NLS-1$
     }
 
     /**

@@ -19,7 +19,7 @@ import java.security.PrivilegedAction;
  */
 public class PickListDBAdapterFactory
 {
-    protected static final String propName = "edu.ku.brc.ui.db.PickListDBAdapterFactory";
+    protected static final String propName = "edu.ku.brc.ui.db.PickListDBAdapterFactory"; //$NON-NLS-1$
     
     private static PickListDBAdapterFactory instance = null;
    
@@ -27,18 +27,18 @@ public class PickListDBAdapterFactory
      * @param name
      * @return
      */
-    public PickListDBAdapterIFace create(@SuppressWarnings("unused") final String name, 
-                                         @SuppressWarnings("unused") final boolean createWhenNotFound)
+    public PickListDBAdapterIFace create(@SuppressWarnings("unused") final String name,  //$NON-NLS-1$
+                                         @SuppressWarnings("unused") final boolean createWhenNotFound) //$NON-NLS-1$
     {
-        throw new RuntimeException("You must override this factory with your own.");
+        throw new RuntimeException("You must override this factory with your own."); //$NON-NLS-1$
     }
     
     /**
      * @return
      */
-    public PickListIFace getPickList(@SuppressWarnings("unused") final String name)
+    public PickListIFace getPickList(@SuppressWarnings("unused") final String name) //$NON-NLS-1$
     {
-        throw new RuntimeException("You must override this factory with your own.");
+        throw new RuntimeException("You must override this factory with your own."); //$NON-NLS-1$
     }
     
     /**
@@ -46,7 +46,7 @@ public class PickListDBAdapterFactory
      */
     public PickListIFace createPickList()
     {
-        throw new RuntimeException("You must override this factory with your own.");
+        throw new RuntimeException("You must override this factory with your own."); //$NON-NLS-1$
     }
     
     /**
@@ -54,7 +54,7 @@ public class PickListDBAdapterFactory
      */
     public PickListItemIFace createPickListItem()
     {
-        throw new RuntimeException("You must override this factory with your own.");
+        throw new RuntimeException("You must override this factory with your own."); //$NON-NLS-1$
     }
     
     /**
@@ -83,12 +83,12 @@ public class PickListDBAdapterFactory
                  
             } catch (Exception e) 
             {
-                InternalError error = new InternalError("Can't instantiate PickListAdapterFactory factory " + factoryName);
+                InternalError error = new InternalError("Can't instantiate PickListAdapterFactory factory " + factoryName); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
             }
         }
         
-        throw new InternalError("Can't instantiate PickListAdapterFactory factory becase " + propName + " has not been set.");
+        throw new InternalError("Can't instantiate PickListAdapterFactory factory becase " + propName + " has not been set."); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

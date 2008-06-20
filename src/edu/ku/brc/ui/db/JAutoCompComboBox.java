@@ -14,8 +14,6 @@
  */
 package edu.ku.brc.ui.db;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
@@ -37,7 +35,7 @@ import edu.ku.brc.specify.datamodel.PickListItem;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class JAutoCompComboBox extends JEditComboBox
 {
     public static int SEARCH_KEY = KeyEvent.VK_F3; 
@@ -141,7 +139,7 @@ public class JAutoCompComboBox extends JEditComboBox
         
         //System.out.println(s);
         caretPos = textField.getCaretPosition();
-        String text = "";
+        String text = ""; //$NON-NLS-1$
         try
         {
             text = textField.getText(0, caretPos);
@@ -207,7 +205,7 @@ public class JAutoCompComboBox extends JEditComboBox
             @Override
             public void keyReleased(KeyEvent ev)
             {
-                System.out.println(hasDBAdapter() +"  "+dbAdapter.getType()+"  [" + ((JTextField)cbx.getEditor().getEditorComponent()).getText()+"]");
+                System.out.println(hasDBAdapter() +"  "+dbAdapter.getType()+"  [" + ((JTextField)cbx.getEditor().getEditorComponent()).getText()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 if (!cbx.isPopupVisible() && hasDBAdapter() && dbAdapter.getType() != PickListDBAdapterIFace.Type.Table)
                 {
                     if (ev.getKeyCode() == SEARCH_KEY)
@@ -252,7 +250,7 @@ public class JAutoCompComboBox extends JEditComboBox
                     {
                         if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
                         {
-                            System.out.println("*&******");
+                            System.out.println("*&******"); //$NON-NLS-1$
                             addNewItemFromTextField();
                             
                         } else if (ev.getKeyCode() == KeyEvent.VK_END)

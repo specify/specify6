@@ -98,27 +98,27 @@ public class ERTICaptionInfo
     {
         super();
         
-        int tblId = getAttr(element, "tableid", -1);
+        int tblId = getAttr(element, "tableid", -1); //$NON-NLS-1$
         if (tblId == -1)
         {
-            throw new RuntimeException("search_config.xml caption has bad id["+getAttr(element, "tableid", "N/A")+"]");
+            throw new RuntimeException("search_config.xml caption has bad id["+getAttr(element, "tableid", "N/A")+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         }
         
-        this.colName = element.attributeValue("col");
+        this.colName = element.attributeValue("col"); //$NON-NLS-1$
         
-        String key = getAttr(element, "key", null);
+        String key = getAttr(element, "key", null); //$NON-NLS-1$
         if (StringUtils.isNotEmpty(key))
         {
             try
             {
                 colLabel    = resBundle.getString(key);
-                description = resBundle.getString(key+"_desc");
+                description = resBundle.getString(key+"_desc"); //$NON-NLS-1$
                 
             } catch (java.util.MissingResourceException ex)
             {
-                log.error("Missing resource ["+key+"] or ["+key+"_desc]");
+                log.error("Missing resource ["+key+"] or ["+key+"_desc]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 colLabel    = key;
-                description = key+"_desc";
+                description = key+"_desc"; //$NON-NLS-1$
             }
             
         } else
@@ -129,42 +129,42 @@ public class ERTICaptionInfo
                 fieldInfo = ti.getFieldByColumnName(this.colName);
                 if (fieldInfo == null)
                 {
-                    if (this.colName.endsWith("ID"))
+                    if (this.colName.endsWith("ID")) //$NON-NLS-1$
                     {
                         colLabel    = this.colName;
-                        description = "";
+                        description = ""; //$NON-NLS-1$
                     } else
                     {
-                        throw new RuntimeException("Couldn't convert column Name["+this.colName+"] to a field name to find the field in table["+tblId+"]");
+                        throw new RuntimeException("Couldn't convert column Name["+this.colName+"] to a field name to find the field in table["+tblId+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     }
                 }
             } else
             {
-                throw new RuntimeException("Table Id is bad id["+getAttr(element, "tableid", "N/A")+"]");
+                throw new RuntimeException("Table Id is bad id["+getAttr(element, "tableid", "N/A")+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             }
         }
         
-        this.isVisible = getAttr(element, "visible", true);
+        this.isVisible = getAttr(element, "visible", true); //$NON-NLS-1$
         
-        String dataObjFormatterName = getAttr(element, "dataobjformatter", null);
-        String formatter            = getAttr(element, "formatter", dataObjFormatterName);
+        String dataObjFormatterName = getAttr(element, "dataobjformatter", null); //$NON-NLS-1$
+        String formatter            = getAttr(element, "formatter", dataObjFormatterName); //$NON-NLS-1$
         
         String aggTableClassName = null;
         
-        Element subElement = (Element)element.selectSingleNode("subobject");
+        Element subElement = (Element)element.selectSingleNode("subobject"); //$NON-NLS-1$
 
-        Element aggElement = (Element)element.selectSingleNode("agg");
+        Element aggElement = (Element)element.selectSingleNode("agg"); //$NON-NLS-1$
         if (aggElement != null)
         {
-            String aggClassName = getAttr(aggElement, "class", null);
+            String aggClassName = getAttr(aggElement, "class", null); //$NON-NLS-1$
             if (StringUtils.isNotEmpty(aggClassName))
             {
                 aggTableClassName = aggClassName;
                 try
                 {
                     aggClass       = Class.forName(aggClassName);
-                    aggregatorName = getAttr(aggElement, "aggregator", null);
-                    orderCol       = getAttr(aggElement, "ordercol", null);
+                    aggregatorName = getAttr(aggElement, "aggregator", null); //$NON-NLS-1$
+                    orderCol       = getAttr(aggElement, "ordercol", null); //$NON-NLS-1$
                     
                 } catch (ClassNotFoundException ex)
                 {
@@ -175,13 +175,13 @@ public class ERTICaptionInfo
         
         if (subElement != null)
         {
-            String subClassName = getAttr(subElement, "class", null);
+            String subClassName = getAttr(subElement, "class", null); //$NON-NLS-1$
             if (StringUtils.isNotEmpty(subClassName))
             {
                 try
                 {
                     subClass          = Class.forName(subClassName);
-                    subClassFieldName = getAttr(subElement, "fieldname", null);
+                    subClassFieldName = getAttr(subElement, "fieldname", null); //$NON-NLS-1$
                     aggTableClassName = subClassName;
                     
                 } catch (ClassNotFoundException ex)
@@ -212,7 +212,7 @@ public class ERTICaptionInfo
                 }
             } else
             {
-                log.error("Couldn't find formatter["+dataObjFormatterName+"]");
+                log.error("Couldn't find formatter["+dataObjFormatterName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
             formatter = null;
         }
@@ -221,10 +221,10 @@ public class ERTICaptionInfo
         if (StringUtils.isNotEmpty(compositeClassName))
         {
             colInfoList = new Vector<ColInfo>();
-            for (Object colObj : element.selectNodes("col"))
+            for (Object colObj : element.selectNodes("col")) //$NON-NLS-1$
             {
                 Element colInfoObj = (Element)colObj;
-                ColInfo columnInfo = new ColInfo(getAttr(colInfoObj, "name", null), getAttr(colInfoObj, "field", null));
+                ColInfo columnInfo = new ColInfo(getAttr(colInfoObj, "name", null), getAttr(colInfoObj, "field", null)); //$NON-NLS-1$ //$NON-NLS-2$
                 colInfoList.add(columnInfo);
             }
 
@@ -239,13 +239,13 @@ public class ERTICaptionInfo
                         columnInfo.setFieldClass(fi.getDataClass());
                     } else
                     {
-                        log.error("Field Name is Aggregate Sub Class doesn't exist Class is not a Data Table["+compositeClassName+"] Field["+columnInfo.getFieldName()+"]");
+                        log.error("Field Name is Aggregate Sub Class doesn't exist Class is not a Data Table["+compositeClassName+"] Field["+columnInfo.getFieldName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     }
                 }
                 
             } else
             {
-                log.error("Aggregate Sub Class is not a Data Table["+compositeClassName+"]");
+                log.error("Aggregate Sub Class is not a Data Table["+compositeClassName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
         
@@ -254,7 +254,7 @@ public class ERTICaptionInfo
             uiFieldFormatter = UIFieldFormatterMgr.getInstance().getFormatter(formatter);
             if (uiFieldFormatter == null)
             {
-                log.error("The UIFieldFormatter could not be found named ["+formatter+"]");
+                log.error("The UIFieldFormatter could not be found named ["+formatter+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
     }

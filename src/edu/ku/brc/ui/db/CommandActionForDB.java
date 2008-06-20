@@ -64,7 +64,7 @@ public class CommandActionForDB extends CommandAction
             {
                 session = DataProviderFactory.getInstance().createSession();
                 
-                return session.getData("FROM "+tableInfo.getClassName() + " WHERE id = "+id);
+                return session.getData("FROM "+tableInfo.getClassName() + " WHERE id = "+id); //$NON-NLS-1$ //$NON-NLS-2$
                 
             } catch (Exception ex)
             {
@@ -79,7 +79,7 @@ public class CommandActionForDB extends CommandAction
             }
         } else
         {
-            log.error("Couldn't find Table ["+id+"]");
+            log.error("Couldn't find Table ["+id+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return null;
     }

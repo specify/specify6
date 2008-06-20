@@ -35,6 +35,7 @@ import javax.swing.plaf.basic.BasicComboBoxEditor;
 
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 /**
  * An editable JComboBox that enables the user to edit the values in the list which actually creates a new value
  * in the picklist.
@@ -44,7 +45,7 @@ import edu.ku.brc.ui.UIHelper;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class JEditComboBox extends JComboBox
 {
     protected int                caretPos        = 0;
@@ -226,9 +227,9 @@ public class JEditComboBox extends JComboBox
         {
             ignoreFocus = true;
             
-            // XXX I18N
-            if (!askBeforeSave || JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, 
-                                                            "Add new value `"+strArg+"` to the list?", "Add New Item", JOptionPane.YES_NO_OPTION))
+            String msg   = UIRegistry.getLocalizedMessage("JEditComboBox.ADD_NEW_VALUE", strArg); //$NON-NLS-1$
+            String title = UIRegistry.getResourceString("JEditComboBox.ADD_NEW_ITEM_TITLE"); //$NON-NLS-1$
+            if (!askBeforeSave || JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, msg, title, JOptionPane.YES_NO_OPTION)) 
             {
                 PickListItemIFace pli = null;
                 if (dbAdapter != null)
@@ -280,7 +281,7 @@ public class JEditComboBox extends JComboBox
                     textField.moveCaretPosition(0);                                     
                 } else 
                 {
-                    textField.setText("");
+                    textField.setText(""); //$NON-NLS-1$
                 }
             }
         }        

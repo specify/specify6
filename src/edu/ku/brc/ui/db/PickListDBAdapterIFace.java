@@ -49,7 +49,7 @@ public interface PickListDBAdapterIFace
                 case 1 : return Table;
                 case 2 : return TableField;
             }
-            throw new RuntimeException("Unknown type["+t+"]");
+            throw new RuntimeException("Unknown type["+t+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
     

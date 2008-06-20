@@ -32,6 +32,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * An auto-complete text field which is supported through PickList/PickListItem.
@@ -43,7 +44,7 @@ import edu.ku.brc.ui.UIHelper;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class JAutoCompTextField extends JTextField
 {
     protected int                caretPos        = 0;
@@ -407,7 +408,8 @@ public class JAutoCompTextField extends JTextField
         if (hasChanged && isNotEmpty(strArg))
         {
             ignoreFocus = true;
-	        if (!askBeforeSave || JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, "Remember value `"+strArg+"`?", "Remember Value", 
+            String msg = UIRegistry.getLocalizedMessage("JAutoCompTextField.REMEM_VAL", strArg); //$NON-NLS-1$
+	        if (!askBeforeSave || JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, msg, UIRegistry.getResourceString("JAutoCompTextField.REMEM_VAL_TITLE"),  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	                                     JOptionPane.YES_NO_OPTION))
 	        {
 	            if (dbAdapter != null)

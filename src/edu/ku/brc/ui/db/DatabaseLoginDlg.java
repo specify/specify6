@@ -59,7 +59,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
         
         this.listener = listener;
 
-        setTitle(getResourceString("LOGINTITLE"));
+        setTitle(getResourceString("LOGINTITLE")); //$NON-NLS-1$
 
         dbPanel = new DatabaseLoginPanel(this, true, iconName);
         setContentPane(dbPanel);
@@ -178,7 +178,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
      */
     public void loggedIn(final Window window, final String databaseName, final String userName)
     {
-        log.debug("loggedIn");
+        log.debug("loggedIn"); //$NON-NLS-1$
         setVisible(false);
         dispose();
         if (listener != null)

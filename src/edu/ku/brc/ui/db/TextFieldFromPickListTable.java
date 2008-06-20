@@ -121,7 +121,7 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
                 
                 if (data == null)
                 {
-                    data = StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";
+                    data = StringUtils.isNotEmpty(defaultValue) ? defaultValue : ""; //$NON-NLS-1$
                 }
                 
                 setText(data);
@@ -157,7 +157,7 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
      */
     public void preferenceChange(AppPrefsChangeEvent evt)
     {
-        if (evt.getKey().equals("valtextcolor"))
+        if (evt.getKey().equals("valtextcolor")) //$NON-NLS-1$
         {
             //textField.setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
         }

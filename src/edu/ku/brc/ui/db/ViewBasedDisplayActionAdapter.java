@@ -39,7 +39,7 @@ public class ViewBasedDisplayActionAdapter
      * @param vbd
      * @return
      */
-    public boolean okPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
+    public boolean okPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd) //$NON-NLS-1$
     {
         return true;
     }
@@ -48,7 +48,7 @@ public class ViewBasedDisplayActionAdapter
      * @param vbd
      * @return
      */
-    public boolean cancelPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
+    public boolean cancelPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd) //$NON-NLS-1$
     {
         return true;
     }
@@ -57,7 +57,7 @@ public class ViewBasedDisplayActionAdapter
      * @param vbd
      * @return
      */
-    public boolean applyPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
+    public boolean applyPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd) //$NON-NLS-1$
     {
         return true;
     }
@@ -66,7 +66,7 @@ public class ViewBasedDisplayActionAdapter
      * @param vbd
      * @return
      */
-    public boolean helpPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
+    public boolean helpPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd) //$NON-NLS-1$
     {
         return true;
     }
