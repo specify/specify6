@@ -21,6 +21,8 @@ import javax.persistence.MappedSuperclass;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
+
 
 /**
  * @author rods
@@ -46,9 +48,9 @@ public abstract class DisciplineMember extends DataModelObjBase
     {
         super.init();
         
-        if (Discipline.getCurrentDiscipline() != null)
+        if (AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
         {
-            discipline = Discipline.getCurrentDiscipline();
+            discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
             
         } else
         {

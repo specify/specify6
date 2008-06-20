@@ -67,6 +67,7 @@ import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
@@ -1013,7 +1014,7 @@ public class FieldItemPanel extends LocalizerBasePanel
     /**
      * 
      */
-    protected void getAllDataFromUI()
+    public void getAllDataFromUI()
     {
         getItemDataFromUI();
     }
@@ -1210,15 +1211,18 @@ public class FieldItemPanel extends LocalizerBasePanel
             fieldNameText.setText(getNameDescStrForCurrLocale(fld));
             fieldHideChk.setSelected(fld.getIsHidden());
             
-            String dsciplineName = disciplineType != null ? disciplineType.getName() : null;
-            if (Discipline.getCurrentDiscipline() != null)
+            String disciplineName = disciplineType != null ? disciplineType.getName() : null;
+            if (AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
             {
-                dsciplineName = Discipline.getCurrentDiscipline().getName();
+                disciplineName = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
             }
             
-            if (pickLists == null)
+            pickLists = localizableIO.getPickLists(null);
+            //for (PickList pl : pickLists) System.out.println("0: "+pl.getName());
+            if (disciplineName != null)
             {
-                pickLists = localizableIO.getPickLists(dsciplineName);
+                pickLists.addAll(localizableIO.getPickLists(disciplineName));
+                //for (PickList pl : localizableIO.getPickLists(disciplineName)) System.out.println("1: "+pl.getName());
             }
             
             if (pickLists != null)
@@ -1236,7 +1240,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                     plCbxModel.removeAllElements();
                     plCbxModel.addElement(pickListNone);
                     
-                    int inx = 0;
+                    int inx = 1;
                     for (PickList pl : pickLists)
                     {
                         if (pl.getType() == PickListIFace.PL_WITH_ITEMS ||
@@ -1244,12 +1248,12 @@ public class FieldItemPanel extends LocalizerBasePanel
                         {
                             plCbxModel.addElement(pl);
                             String plName = fld.getPickListName();
-                            if (StringUtils.isNotEmpty(plName) && plName.equals(pl.getName()))
+                            if (selectedIndex == 0 && StringUtils.isNotEmpty(plName) && plName.equals(pl.getName()))
                             {
                                 selectedIndex = inx;
                             }
+                            inx++;
                         }
-                        inx++;
                     }
                 } else if (relType != null && relType == DBRelationshipInfo.RelationshipType.ManyToOne)
                 {
@@ -1261,7 +1265,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                         {
                             plCbxModel.addElement(pl);
                             String plName = fld.getPickListName();
-                            System.out.println(plName+"  "+pl.getName());
+                            //System.out.println(plName+"  "+pl.getName());
                             if (StringUtils.isNotEmpty(plName) && plName.equals(pl.getName()))
                             {
                                 selectedIndex = inx;
@@ -1270,7 +1274,6 @@ public class FieldItemPanel extends LocalizerBasePanel
                         }
                         
                     }
-                    switcherInx = 3;
                 }
                 pickListCBX.setEnabled(isString || relType != null);
                 pickListCBX.setSelectedIndex(pickListCBX.getModel().getSize() > 0 ? selectedIndex : -1);
@@ -1347,6 +1350,11 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         fillFormatBox();
         fillWebLinkBox();
+        
+        if (pickListCBX.getSelectedIndex() > 0)
+        {
+            switcherInx = 3;
+        }
         
         if (formatCombo.getSelectedIndex() > 0)
         {

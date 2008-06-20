@@ -94,7 +94,7 @@ public class AppResourceTest extends TestCase
         }
 
         // Set up the Collection "context" manually
-        Collection.setCurrentCollection(catSeries);
+        AppContextMgr.getInstance().setClassObject(Collection.class, catSeries);
 
 
         contextMgr.setContext("fish", userName, false);
@@ -124,7 +124,7 @@ public class AppResourceTest extends TestCase
         list = criteria.list();
         user = (SpecifyUser)list.get(0); // assumes user is already there
 
-        SpecifyUser.setCurrentUser(user);
+        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
 
         // Now get the List of Collection owned by this user
         queryStr = "select cs From Discipline as ct Inner Join ct.specifyUser as user Inner Join ct.collection as cs where user.specifyUserId = "+user.getSpecifyUserId();
@@ -140,7 +140,7 @@ public class AppResourceTest extends TestCase
         }
 
         // Set up the Collection "context" manually
-        Collection.setCurrentCollection(catSeries);
+        AppContextMgr.getInstance().setClassObject(Collection.class, catSeries);
 
 
         contextMgr.setContext("fish", userName, false);

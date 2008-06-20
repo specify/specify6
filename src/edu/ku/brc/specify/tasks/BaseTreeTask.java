@@ -20,6 +20,7 @@ import javax.swing.JMenuItem;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -289,7 +290,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     protected void adjustMenus()
     {
         String clsName    = treeDefClass.getSimpleName();
-        String discipline = Discipline.getCurrentDiscipline().getName();
+        String discipline = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
         
         String prefName = "Trees.Menu." + discipline + "." + clsName;
         

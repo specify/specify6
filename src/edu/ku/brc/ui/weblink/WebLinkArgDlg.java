@@ -10,12 +10,11 @@
 package edu.ku.brc.ui.weblink;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.HeadlessException;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -66,7 +65,7 @@ public class WebLinkArgDlg extends CustomDialog
     protected Hashtable<String, String> fields     = new Hashtable<String, String>();
     
     // Type Format 
-    protected String format = "";
+    protected String format = ""; //$NON-NLS-1$
     protected int    curInx = 0;
     
     /**
@@ -74,7 +73,7 @@ public class WebLinkArgDlg extends CustomDialog
      */
     public WebLinkArgDlg(final WebLinkDef webLinkDef) throws HeadlessException
     {
-        super((Frame)UIRegistry.getTopWindow(), "Web Link Editor", true, OKCANCELHELP, null); // I18N
+        super((Frame)UIRegistry.getTopWindow(), getResourceString("WebLinkArgDlg.WEB_LNK_EDTR"), true, OKCANCELHELP, null); // I18N //$NON-NLS-1$
         
         this.webLinkDef = webLinkDef;
         
@@ -119,19 +118,19 @@ public class WebLinkArgDlg extends CustomDialog
         table = new JTable(model);
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder rightPB = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,2px,p, 4px,p,2px,p, 4px,p,2px,p,4px,p,2px,p"));
+        PanelBuilder rightPB = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,2px,p, 4px,p,2px,p, 4px,p,2px,p,4px,p,2px,p")); //$NON-NLS-1$ //$NON-NLS-2$
         
-        rightPB.add(createLabel("Name:", SwingConstants.RIGHT), cc.xy(1, 1));
+        rightPB.add(createLabel(getResourceString("WebLinkArgDlg.NAME")+":", SwingConstants.RIGHT), cc.xy(1, 1)); //$NON-NLS-1$ //$NON-NLS-2$
         rightPB.add(nameTF, cc.xy(3, 1));
         
-        rightPB.add(createLabel("Base URL:", SwingConstants.RIGHT), cc.xy(1, 3));
+        rightPB.add(createLabel(getResourceString("WebLinkArgDlg.URL")+":", SwingConstants.RIGHT), cc.xy(1, 3)); //$NON-NLS-1$ //$NON-NLS-2$
         rightPB.add(baseUrlTF, cc.xy(3, 3));
         
-        rightPB.add(createLabel("Desc:", SwingConstants.RIGHT), cc.xy(1, 5));
+        rightPB.add(createLabel(getResourceString("WebLinkArgDlg.DESC")+":", SwingConstants.RIGHT), cc.xy(1, 5)); //$NON-NLS-1$ //$NON-NLS-2$
         JScrollPane sp = new JScrollPane(descTA, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         rightPB.add(sp, cc.xy(3, 5));
         
-        rightPB.add(createLabel("Fields", SwingConstants.CENTER), cc.xy(1, 7));
+        rightPB.add(createLabel(getResourceString("WebLinkArgDlg.FIELDS")+":", SwingConstants.CENTER), cc.xy(1, 7)); //$NON-NLS-1$ //$NON-NLS-2$
         sp = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         rightPB.add(sp, cc.xy(3, 7));
         
@@ -185,7 +184,7 @@ public class WebLinkArgDlg extends CustomDialog
         if (baseStrLen == 0)
         {
             curInx = 0;
-            format = "";
+            format = ""; //$NON-NLS-1$
             
         } else if (baseStrLen == fmtLen-1)
         {
@@ -193,7 +192,7 @@ public class WebLinkArgDlg extends CustomDialog
             if (!format.equals(s))
             {
                 curInx = 0;
-                format = "";
+                format = ""; //$NON-NLS-1$
             }
         }
         
@@ -333,7 +332,7 @@ public class WebLinkArgDlg extends CustomDialog
          */
         public void addItem(final String name, final String title, final boolean isPrompt)
         {
-            args.add(new WebLinkDefArg(name, title, isPrompt)); // I18N
+            args.add(new WebLinkDefArg(name, title, isPrompt));
             fireTableDataChanged();
 
         }
@@ -368,7 +367,10 @@ public class WebLinkArgDlg extends CustomDialog
         {
             if (colHeaders == null)
             {
-                colHeaders = new String[] {"Name", "Ttile", "Prompt"}; //I18N
+                colHeaders = new String[] {
+                        getResourceString("WebLinkArgDlg.COLNAME"),  //$NON-NLS-1$
+                        getResourceString("WebLinkArgDlg.COLTITLE"),  //$NON-NLS-1$
+                        getResourceString("WebLinkArgDlg.COLPROMPT")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
             return colHeaders.length;
         }
@@ -404,7 +406,7 @@ public class WebLinkArgDlg extends CustomDialog
                 case 1 : return arg.getTitle();
                 case 2 : return arg.isPrompt();
             }
-            return "";
+            return ""; //$NON-NLS-1$
         }
 
         /* (non-Javadoc)

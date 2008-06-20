@@ -20,6 +20,7 @@ import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -175,7 +176,7 @@ public class CustomStatQueries implements CustomQueryIFace
         Criteria criteria = session.createCriteria(CollectionObject.class);
         criteria.add(Expression.ge("timestampCreated", startDate.getTime()));
         criteria.add(Expression.le("timestampCreated", endDate.getTime()));
-        criteria.add(Expression.eq("collectionMemberId", Collection.getCurrentCollection().getCollectionId()));
+        criteria.add(Expression.eq("collectionMemberId", AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId()));
 
         criteria.setProjection(Projections.rowCount());
         resultsList = criteria.list();
@@ -209,7 +210,7 @@ public class CustomStatQueries implements CustomQueryIFace
         criteria.add(Restrictions.ge("currentDueDate", endDate));
         
         Criteria dsp = criteria.createCriteria("discipline");
-        dsp.add(Restrictions.eq("disciplineId", Discipline.getCurrentDiscipline().getDisciplineId()));
+        dsp.add(Restrictions.eq("disciplineId", AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId()));
 
         criteria.setProjection(Projections.rowCount());
         resultsList = criteria.list();

@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -143,7 +144,7 @@ public class PrepTypeBusRules extends BaseBusRules
         
         PrepType prepType = (PrepType)newDataObj;
         
-        Collection.getCurrentCollection().addReference(prepType, "prepTypes");
+        AppContextMgr.getInstance().getClassObject(Collection.class).addReference(prepType, "prepTypes");
         
     }
 

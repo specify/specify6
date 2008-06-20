@@ -18,6 +18,7 @@ import com.thoughtworks.xstream.XStream;
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.XMLHelper;
@@ -228,11 +229,11 @@ public class DataBuilder
         agent.setTitle(title);
         agent.setEmail(email);
         
-        Discipline discipline = Discipline.getCurrentDiscipline();
+        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
         if (discipline != null)
         {   
-            agent.getDisciplines().add(Discipline.getCurrentDiscipline());
-            Discipline.getCurrentDiscipline().getAgents().add(agent);
+            agent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(agent);
         }
 
         persist(agent);
@@ -876,7 +877,7 @@ public class DataBuilder
         pickList.setSizeLimit(sizeLimit);
         pickList.setIsSystem(isSystem);
         
-        Collection collection = Collection.getCurrentCollection();
+        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
         if (collection != null)
         {
             pickList.setCollection(collection);

@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.UIRegistry;
@@ -234,7 +235,7 @@ public class SpecifySecurityMgr
      */
     public static boolean checkPermission(final BasicSpPermission myPerm)
     {
-        Subject currentSubject = SpecifyUser.getCurrentSubject();
+        Subject currentSubject = AppContextMgr.getInstance().getClassObject(Subject.class);
         
         if ((currentSubject != null) && (myPerm != null))
         {

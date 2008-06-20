@@ -30,6 +30,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -100,7 +101,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
 	{
         // get an icon URL that is specific to the current context
         
-        String discipline = Discipline.getCurrentDiscipline().getName();
+        String discipline = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
         for ( Pair<String, ImageIcon> pair : IconManager.getListByType("disciplines", IconManager.IconSize.Std32))
         {
             if (pair.first.equals(discipline))

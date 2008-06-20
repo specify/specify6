@@ -15,6 +15,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -53,7 +54,7 @@ public class SearchQueryBuilder<T> implements ViewBasedSearchQueryBuilderIFace
         String queryStr = "";
         if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(searchText))
         {
-            int disciplineID = Discipline.getCurrentDiscipline().getId();
+            int disciplineID = AppContextMgr.getInstance().getClassObject(Discipline.class).getId();
 
             // get node table and primary key column names
             DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());
@@ -77,7 +78,7 @@ public class SearchQueryBuilder<T> implements ViewBasedSearchQueryBuilderIFace
      */
     public String buildSQL(final Map<String, Object> dataMap, final List<String> fieldNames)
     {
-        int disciplineId = Discipline.getCurrentDiscipline().getId();
+        int disciplineId = AppContextMgr.getInstance().getClassObject(Discipline.class).getId();
 
         // get node table and primary key column names
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());

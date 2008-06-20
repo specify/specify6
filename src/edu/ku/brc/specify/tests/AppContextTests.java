@@ -70,7 +70,7 @@ public class AppContextTests extends TestCase
             throw new RuntimeException("Problems with Collection["+catSeriesName+"] for user["+userName+"]");
         }
         
-        Collection.setCurrentCollection(collectionList);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collectionList);
         
         assertTrue(SpecifyAppContextMgr.getInstance().setContext(databaseName, userName, false) == AppContextMgr.CONTEXT_STATUS.OK);
         

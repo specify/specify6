@@ -490,21 +490,4 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     {
         return getIdentityTitle();
     }
-
-    /**
-     * @return the currentDivision
-     */
-    public static Division getCurrentDivision()
-    {
-        return currentDivision;
-    }
-
-    /**
-     * @param currentDivision the currentDivision to set
-     */
-    public static void setCurrentDivision(Division currentDivision)
-    {
-        Division.currentDivision = currentDivision;
-    }
-
  }

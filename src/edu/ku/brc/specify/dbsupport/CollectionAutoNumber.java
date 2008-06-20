@@ -18,6 +18,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.AutoNumberGeneric;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -68,7 +69,7 @@ public class CollectionAutoNumber extends AutoNumberGeneric
     {
         boolean doDebug = false;
         
-        CatalogNumberingScheme cns = Collection.getCurrentCollection().getCatalogNumberingScheme();
+        CatalogNumberingScheme cns = AppContextMgr.getInstance().getClassObject(Collection.class).getCatalogNumberingScheme();
         
         if (doDebug) System.out.println("CatNumScheme: "+cns.getSchemeName());
         Vector<Integer> ids = new Vector<Integer>();

@@ -469,7 +469,7 @@ public class SiteGen
     public void process()
     {
         Collection collection = (Collection)session.createCriteria(Collection.class).list().get(0);
-        Collection.setCurrentCollection(collection);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
         Class<?>[] classes = {CollectionObject.class, CollectingEvent.class, Determination.class, Preparation.class, 
                               Agent.class, Locality.class, Taxon.class, Storage.class,Geography.class, Collector.class,

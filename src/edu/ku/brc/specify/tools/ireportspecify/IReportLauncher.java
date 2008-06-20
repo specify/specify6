@@ -69,16 +69,16 @@ public class IReportLauncher implements DatabaseLoginListener
         
         if (status == AppContextMgr.CONTEXT_STATUS.OK)
         {
-            if (Discipline.getCurrentDiscipline() == null)
+            if (AppContextMgr.getInstance().getClassObject(Discipline.class) == null)
             {
                 return;
             }
             
-            int disciplineeId = Discipline.getCurrentDiscipline().getDisciplineId();
+            int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
             SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
         } else if (status == AppContextMgr.CONTEXT_STATUS.Error)
         {
-            if (Collection.getCurrentCollection() == null)
+            if (AppContextMgr.getInstance().getClassObject(Collection.class) == null)
             {
                 
                 // TODO This is really bad because there is a Database Login with no Specify login

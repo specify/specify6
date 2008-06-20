@@ -22,6 +22,8 @@ import javax.persistence.MappedSuperclass;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
+
 /**
  * @author rods
  *
@@ -46,9 +48,9 @@ public abstract class CollectionMember extends DataModelObjBase
     {
         super.init();
         
-        if (Collection.getCurrentCollection() != null)
+        if (AppContextMgr.getInstance().getClassObject(Collection.class) != null)
         {
-            collectionMemberId = Collection.getCurrentCollection().getCollectionId();
+            collectionMemberId = AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId();
         } else
         {
             log.error("No default Collection has been set!");

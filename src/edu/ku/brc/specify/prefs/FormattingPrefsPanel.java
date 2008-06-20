@@ -28,11 +28,13 @@ import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
 import edu.ku.brc.helpers.ImageFilter;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -49,11 +51,13 @@ import edu.ku.brc.util.Pair;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPanelIFace, PrefsSavable
 {
-    protected static final String iconPrefName      = "ui.formatting.user_icon_path";
-    protected static final String iconImagePrefName = "ui.formatting.user_icon_image";
+    protected static final String iconPrefName            = "ui.formatting.user_icon_path"; //$NON-NLS-1$
+    protected static final String iconImagePrefName       = "ui.formatting.user_icon_image"; //$NON-NLS-1$
+    protected static final String iconImageDiscipPrefName = "ui.formatting.disciplineicon"; //$NON-NLS-1$
+    
     
     protected JComboBox    fontNames = null;
     protected JComboBox    fontSizes = null;
@@ -77,27 +81,27 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
      */
     protected void createUI()
     {
-        createForm("Preferences", "Formatting");
+        createForm("Preferences", "Formatting"); //$NON-NLS-1$ //$NON-NLS-2$
         
         UIValidator.setIgnoreAllValidation(this, true);
         
-        JLabel      fontNamesLabel = (JLabel)form.getLabelFor("fontNames");
-        ValComboBox fontNamesVCB   = (ValComboBox)form.getCompById("fontNames");
+        JLabel      fontNamesLabel = (JLabel)form.getLabelFor("fontNames"); //$NON-NLS-1$
+        ValComboBox fontNamesVCB   = (ValComboBox)form.getCompById("fontNames"); //$NON-NLS-1$
         
-        JLabel      fontSizesLabel = (JLabel)form.getLabelFor("fontSizes");
-        ValComboBox fontSizesVCB   = (ValComboBox)form.getCompById("fontSizes");
+        JLabel      fontSizesLabel = (JLabel)form.getLabelFor("fontSizes"); //$NON-NLS-1$
+        ValComboBox fontSizesVCB   = (ValComboBox)form.getCompById("fontSizes"); //$NON-NLS-1$
         
-        JLabel      controlSizesLabel = (JLabel)form.getLabelFor("controlSizes");
-        ValComboBox controlSizesVCB   = (ValComboBox)form.getCompById("controlSizes");
+        JLabel      controlSizesLabel = (JLabel)form.getLabelFor("controlSizes"); //$NON-NLS-1$
+        ValComboBox controlSizesVCB   = (ValComboBox)form.getCompById("controlSizes"); //$NON-NLS-1$
         
-        fontNames = fontNamesVCB.getComboBox();
-        fontSizes = fontSizesVCB.getComboBox();
+        fontNames    = fontNamesVCB.getComboBox();
+        fontSizes    = fontSizesVCB.getComboBox();
         controlSizes = controlSizesVCB.getComboBox();
         
-        testField = (JTextField)form.getCompById("fontTest");
+        testField = (JTextField)form.getCompById("fontTest"); //$NON-NLS-1$
         if (testField != null)
         {
-            testField.setText("This is a Test");
+            testField.setText(UIRegistry.getResourceString("FormattingPrefsPanel.THIS_TEST")); //$NON-NLS-1$
         }
         
         if (UIHelper.isMacOS_10_5_X())
@@ -146,7 +150,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                 if (namesUsed.get(font.getFamily()) == null)
                 {
                     fontNames.addItem(font.getFamily());
-                    namesUsed.put(font.getFamily(), "X");
+                    namesUsed.put(font.getFamily(), "X"); //$NON-NLS-1$
                 }
             }
             for (int i=6;i<22;i++)
@@ -180,9 +184,9 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         // Do DisciplineType Icons
         //-----------------------------------
 
-        String iconName = AppPreferences.getRemote().get("ui.formatting.disciplineicon", "CollectionObject");
+        String iconName = AppPreferences.getRemote().get(getDisciplineImageName(), "CollectionObject"); //$NON-NLS-1$ //$NON-NLS-2$
         
-        List<Pair<String, ImageIcon>> list = IconManager.getListByType("disciplines", IconManager.IconSize.Std16);
+        List<Pair<String, ImageIcon>> list = IconManager.getListByType("disciplines", IconManager.IconSize.Std16); //$NON-NLS-1$
         Collections.sort(list, new Comparator<Pair<String, ImageIcon>>() {
             public int compare(Pair<String, ImageIcon> o1, Pair<String, ImageIcon> o2)
             {
@@ -192,13 +196,13 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
             }
         });
         
-        disciplineCBX = (ValComboBox)form.getCompById("disciplineIconCBX");
+        disciplineCBX = (ValComboBox)form.getCompById("disciplineIconCBX"); //$NON-NLS-1$
         
-        final JLabel dispLabel = (JLabel)form.getCompById("disciplineIcon");
+        final JLabel dispLabel = (JLabel)form.getCompById("disciplineIcon"); //$NON-NLS-1$
         JComboBox    comboBox  = disciplineCBX.getComboBox();
         comboBox.setRenderer(new DefaultListCellRenderer()
         {
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings("unchecked") //$NON-NLS-1$
             public Component getListCellRendererComponent(JList listArg, Object value,
                     int index, boolean isSelected, boolean cellHasFocus)
             {
@@ -214,8 +218,8 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         });
         
         int inx = 0;
-        Pair<String, ImageIcon> colObj = new Pair<String, ImageIcon>("colobj_backstop", 
-                                                                     IconManager.getIcon("colobj_backstop", IconManager.IconSize.Std16));
+        Pair<String, ImageIcon> colObj = new Pair<String, ImageIcon>("colobj_backstop",  //$NON-NLS-1$
+                                                                     IconManager.getIcon("colobj_backstop", IconManager.IconSize.Std16)); //$NON-NLS-1$
         comboBox.addItem(colObj);
         
         int cnt = 1;
@@ -230,7 +234,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         }
         
         comboBox.addActionListener(new ActionListener() {
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings("unchecked") //$NON-NLS-1$
             public void actionPerformed(ActionEvent e)
             {
                 JComboBox cbx = (JComboBox)e.getSource();
@@ -249,15 +253,15 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         // Do App Icon
         //-----------------------------------
         
-        final JButton getIconBtn    = (JButton)form.getCompById("GetIconImage");
-        final JButton clearIconBtn  = (JButton)form.getCompById("ClearIconImage");
-        final JLabel  appLabel      = (JLabel)form.getCompById("appIcon");
+        final JButton getIconBtn    = (JButton)form.getCompById("GetIconImage"); //$NON-NLS-1$
+        final JButton clearIconBtn  = (JButton)form.getCompById("ClearIconImage"); //$NON-NLS-1$
+        final JLabel  appLabel      = (JLabel)form.getCompById("appIcon"); //$NON-NLS-1$
         
-        String imgEncoded = AppPreferences.getRemote().get(iconImagePrefName, "");
+        String    imgEncoded = AppPreferences.getRemote().get(iconImagePrefName, ""); //$NON-NLS-1$
         ImageIcon appImgIcon = null;
         if (StringUtils.isNotEmpty(imgEncoded))
         {
-            appImgIcon = GraphicsUtils.uudecodeImage("", imgEncoded);
+            appImgIcon = GraphicsUtils.uudecodeImage("", imgEncoded); //$NON-NLS-1$
             if (appImgIcon != null && appImgIcon.getIconWidth() != 32 || appImgIcon.getIconHeight() != 32)
             {
                 appImgIcon = null;
@@ -270,7 +274,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         
         if (appImgIcon == null)
         {
-            appImgIcon = IconManager.getIcon("AppIcon");
+            appImgIcon = IconManager.getIcon("AppIcon"); //$NON-NLS-1$
             clearIconBtn.setEnabled(false);
         } else
         {
@@ -281,62 +285,16 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         getIconBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
-                                   getResourceString("PREF_CHOOSE_APPICON_TITLE"), FileDialog.LOAD);
-                fileDialog.setFilenameFilter(new ImageFilter());
-                UIHelper.centerAndShow(fileDialog);
-                fileDialog.dispose();
-
-                String path = fileDialog.getDirectory();
-                if (StringUtils.isNotEmpty(path))
-                {
-                    String fullPath = path + File.separator + fileDialog.getFile();
-                    File imageFile = new File(fullPath);
-                    if (imageFile.exists())
-                    {
-                        ImageIcon newIcon = null;
-                        ImageIcon icon = new ImageIcon(fullPath);
-                        if (icon.getIconWidth() != -1 && icon.getIconHeight() != -1)
-                        {
-                            if (icon.getIconWidth() >32 || icon.getIconHeight() > 32)
-                            {
-                                Image img = GraphicsUtils.getScaledImage(icon, 32, 32, false);
-                                if (img != null)
-                                {
-                                    newIcon = new ImageIcon(img);
-                                }
-                            } else
-                            {
-                                newIcon = icon;
-                            }
-                        }
-                        
-                        if (newIcon != null)
-                        {
-                            appLabel.setIcon(newIcon);
-                            clearIconBtn.setEnabled(true);
-                            String imgBufStr = GraphicsUtils.uuencodeImage(newAppIconName, newIcon);
-                            AppPreferences.getRemote().put("ui.formatting.user_icon_image", imgBufStr);
-                            
-                        } else
-                        {
-                            appLabel.setIcon(IconManager.getIcon("AppIcon"));
-                            clearIconBtn.setEnabled(false);
-                            AppPreferences.getRemote().remove("ui.formatting.user_icon_image");
-                        }
-                        //((FormViewObj)form).getMVParent().set
-                        form.getValidator().dataChanged(null, null, null);
-                    }
-                }
+                chooseToolbarIcon(appLabel, clearIconBtn);
             }
         });
         
         clearIconBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                appLabel.setIcon(IconManager.getIcon("AppIcon"));
+                appLabel.setIcon(IconManager.getIcon("AppIcon")); //$NON-NLS-1$
                 clearIconBtn.setEnabled(false);
-                AppPreferences.getRemote().remove("ui.formatting.user_icon_image");
+                AppPreferences.getRemote().remove(iconImagePrefName);
                 form.getValidator().dataChanged(null, null, null);
             }
         });
@@ -347,6 +305,72 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
 
         form.getValidator().validateForm();
     }
+    
+    /**
+     * Method for enabling a user to choose a toolbar icon.
+     * @param appLabel the label used to display the icon.
+     * @param clearIconBtn the button used to clear the icon
+     */
+    protected void chooseToolbarIcon(final JLabel appLabel, final JButton clearIconBtn)
+    {
+        FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
+                                               getResourceString("PREF_CHOOSE_APPICON_TITLE"), 
+                                               FileDialog.LOAD); //$NON-NLS-1$
+        fileDialog.setFilenameFilter(new ImageFilter());
+        UIHelper.centerAndShow(fileDialog);
+        fileDialog.dispose();
+
+        String path = fileDialog.getDirectory();
+        if (StringUtils.isNotEmpty(path))
+        {
+            String fullPath  = path + File.separator + fileDialog.getFile();
+            File   imageFile = new File(fullPath);
+            if (imageFile.exists())
+            {
+                ImageIcon newIcon = null;
+                ImageIcon icon    = new ImageIcon(fullPath);
+                if (icon.getIconWidth() != -1 && icon.getIconHeight() != -1)
+                {
+                    if (icon.getIconWidth() > 32 || icon.getIconHeight() > 32)
+                    {
+                        Image img = GraphicsUtils.getScaledImage(icon, 32, 32, false);
+                        if (img != null)
+                        {
+                            newIcon = new ImageIcon(img);
+                        }
+                    } else
+                    {
+                        newIcon = icon;
+                    }
+                }
+
+                if (newIcon != null)
+                {
+                    appLabel.setIcon(newIcon);
+                    clearIconBtn.setEnabled(true);
+                    String imgBufStr = GraphicsUtils.uuencodeImage(newAppIconName, newIcon);
+                    AppPreferences.getRemote().put(iconImagePrefName, imgBufStr);
+
+                } else
+                {
+                    appLabel.setIcon(IconManager.getIcon("AppIcon")); //$NON-NLS-1$
+                    clearIconBtn.setEnabled(false);
+                    AppPreferences.getRemote().remove(iconImagePrefName);
+                }
+                //((FormViewObj)form).getMVParent().set
+                form.getValidator().dataChanged(null, null, null);
+            }
+        }
+
+    }
+    
+    /**
+     * @return the name of the icon to use for the current collection.
+     */
+    public static String getDisciplineImageName()
+    {
+        return iconImageDiscipPrefName + "." + AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName(); //$NON-NLS-1$
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.GenericPrefsPanel#getHelpContext()
@@ -354,7 +378,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     @Override
     public String getHelpContext()
     {
-        return "PrefsFormatting";
+        return "PrefsFormatting"; //$NON-NLS-1$
     }
     
     //--------------------------------------------------------------------
@@ -364,7 +388,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.GenericPrefsPanel#getChangedFields(java.util.Properties)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     @Override
     public void getChangedFields(final Properties changeHash)
     {
@@ -375,24 +399,24 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
             Pair<String, ImageIcon> item = (Pair<String, ImageIcon>)disciplineCBX.getComboBox().getSelectedItem();
             if (item != null)
             {
-                changeHash.put("ui.formatting.disciplineicon", item.first);
+                changeHash.put(getDisciplineImageName(), item.first); //$NON-NLS-1$
             }
         }
         
         if (UIHelper.isMacOS_10_5_X())
         {
-            changeHash.remove("fontSizes");
+            changeHash.remove("fontSizes"); //$NON-NLS-1$
             changeHash.remove("fontNames");
         } else
         {
-            changeHash.remove("controlSizes");
+            changeHash.remove("controlSizes"); //$NON-NLS-1$
         }
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.prefs.PrefsSavable#savePrefs()
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     public void savePrefs()
     {
         if (form.getValidator() == null || form.getValidator().hasChanged())
@@ -402,10 +426,10 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
             Pair<String, ImageIcon> item = (Pair<String, ImageIcon>)disciplineCBX.getComboBox().getSelectedItem();
             if (item != null)
             {
-                AppPreferences.getRemote().put("ui.formatting.disciplineicon", item.first);
+                AppPreferences.getRemote().put(getDisciplineImageName(), item.first); //$NON-NLS-1$
                 
                 IconManager.aliasImages(item.first,           // Source
-                                        "collectionobject");  // Dest
+                                        "collectionobject");  // Dest //$NON-NLS-1$
             }
             
             if (!UIHelper.isMacOS_10_5_X())
@@ -413,7 +437,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                 UIRegistry.setBaseFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6));
             } else
             {
-                String key = "ui.formatting.controlSizes";
+                String key = "ui.formatting.controlSizes"; //$NON-NLS-1$
                 UIHelper.setControlSize(controlSizesHash.get(controlSizes.getSelectedItem()));
                 AppPreferences.getRemote().put(key, controlSizesHash.get(controlSizes.getSelectedItem()).toString());
                 AppPreferences.getLocalPrefs().put(key, controlSizesHash.get(controlSizes.getSelectedItem()).toString());

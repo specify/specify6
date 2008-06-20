@@ -26,18 +26,20 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRRtfExporter;
 import net.sf.jasperreports.j2ee.servlets.ImageServlet;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
-import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 
 /**
  * @author rod
@@ -49,15 +51,12 @@ import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
  */
 public class QueryReportHandler
 {
-    protected Session  session;
-    
     /**
      * 
      */
-    public QueryReportHandler(final Session  session)
+    public QueryReportHandler()
     {
         super();
-        this.session = session;
     }
 
    /**
@@ -66,31 +65,96 @@ public class QueryReportHandler
     * @throws IOException
     */
     @SuppressWarnings("unchecked")
-    public void listQueries(final HttpServletRequest request, 
-                            final HttpServletResponse response) throws IOException
+    public void listQueriesOld(final HttpServletRequest request, 
+                               final HttpServletResponse response) throws IOException
    {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        
+
         SpecifyExplorer.writeTitle(out, "Available Queries");
         out.println("<table border=\"0\">\n");
         out.println("<tr><td>\n");
         out.println("<tr><td class=\"title\" colspan=\"2\" align=\"center\">Available Queries</td></tr>\n");
-        //out.println("<tr><td valign=\"top\">\n");
+        // out.println("<tr><td valign=\"top\">\n");
 
-        String sql = "FROM SpQuery as sq Inner Join sq.specifyUser as user where user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId() + " ORDER BY sq.name";
-        List<?> rows = (List<?>)session.createQuery(sql).list();
-        for (Object row : rows)
+        String sql = "FROM SpQuery as sq Inner Join sq.specifyUser as user where user.specifyUserId = "
+                + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId() + " ORDER BY sq.name";
+        
+        Session session = null;
+        try
         {
-            Object[] cols  = (Object[])row;
-            SpQuery  query = (SpQuery)cols[0];
-            sql = "<a href=\"" + SpecifyExplorer.servletURL + "?cmd=exequery&id=" + query.getId() + "\">";
-            out.println("<tr><td nowrap=\"nowrap\" colspan=\"2\" align=\"center\">"+ sql + query.getName()+"</a></td></tr>\n");
+            session = HibernateUtil.getNewSession();
+            List<?> rows = (List<?>) session.createQuery(sql).list();
+            for (Object row : rows)
+            {
+                Object[] cols = (Object[]) row;
+                SpQuery query = (SpQuery) cols[0];
+                sql = "<a href=\"" + SpecifyExplorer.servletURL + "?cmd=exequery&id=" + query.getId() + "\">";
+                out.println("<tr><td nowrap=\"nowrap\" colspan=\"2\" align=\"center\">" + sql + query.getName() + "</a></td></tr>\n");
+            }
+            out.println("</table>");
+            SpecifyExplorer.writeToEnd(out);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
-        out.println("</table>");
-        SpecifyExplorer.writeToEnd(out);
-   }
-                            
+    }
+
+    /**
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+     @SuppressWarnings("unchecked")
+     public void listQueries(final HttpServletRequest request, 
+                             final HttpServletResponse response) throws IOException
+    {
+         response.setContentType("text/html");
+         PrintWriter out = response.getWriter();
+
+         SpecifyExplorer.writeTitle(out, "Available Queries");
+         out.println("<table border=\"0\">\n");
+         out.println("<tr><td>\n");
+         out.println("<tr><td class=\"title\" colspan=\"2\" align=\"center\">Available Queries</td></tr>\n");
+         // out.println("<tr><td valign=\"top\">\n");
+
+         String sql = "FROM SpQuery as sq Inner Join sq.specifyUser as user where user.specifyUserId = "
+                 + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId() + " ORDER BY sq.name";
+         Session session = null;
+         try
+         {
+             session = HibernateUtil.getNewSession();
+    
+             List<?> rows = (List<?>) session.createQuery(sql).list();
+             for (Object row : rows)
+             {
+                 Object[] cols = (Object[]) row;
+                 SpQuery query = (SpQuery) cols[0];
+                 sql = "<a href=\"" + SpecifyExplorer.servletURL + "?cmd=exequery&id=" + query.getId() + "\">";
+                 out.println("<tr><td nowrap=\"nowrap\" colspan=\"2\" align=\"center\">" + sql + query.getName() + "</a></td></tr>\n");
+             }
+             out.println("</table>");
+             SpecifyExplorer.writeToEnd(out);
+             
+         } catch (Exception ex)
+         {
+             ex.printStackTrace();
+         } finally
+         {
+             if (session != null)
+             {
+                 session.close();
+             }
+         }
+     }
+     
     /**
      * @param request
      * @param response
@@ -108,18 +172,33 @@ public class QueryReportHandler
         out.println("<tr><td class=\"title\" colspan=\"2\" align=\"center\">Available Report</td></tr>\n");
         //out.println("<tr><td valign=\"top\">\n");
 
-        String sql = "FROM SpReport as sq Inner Join sq.specifyUser as user where user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId() + " ORDER BY sq.name";
-        List<?> rows = (List<?>)session.createQuery(sql).list();
-        for (Object row : rows)
+        String sql = "FROM SpReport as sq Inner Join sq.specifyUser as user where user.specifyUserId = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId() + " ORDER BY sq.name";
+        Session session = null;
+        try
         {
-            Object[] cols  = (Object[])row;
-            SpReport  report = (SpReport)cols[0];
-            sql = "<a href=\"" + SpecifyExplorer.servletURL + "?cmd=reports&id=" + report.getId() + "\">";
-            out.println("<tr><td nowrap=\"nowrap\" colspan=\"2\" align=\"center\">"+ sql + report.getName()+"</a></td></tr>\n");
+            session = HibernateUtil.getNewSession();
+            List<?> rows = (List<?>)session.createQuery(sql).list();
+            for (Object row : rows)
+            {
+                Object[] cols  = (Object[])row;
+                SpReport  report = (SpReport)cols[0];
+                sql = "<a href=\"" + SpecifyExplorer.servletURL + "?cmd=reports&id=" + report.getId() + "\">";
+                out.println("<tr><td nowrap=\"nowrap\" colspan=\"2\" align=\"center\">"+ sql + report.getName()+"</a></td></tr>\n");
+            }
+            out.println("</table>");
+            SpecifyExplorer.writeToEnd(out);
+        
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
-        out.println("</table>");
-        SpecifyExplorer.writeToEnd(out);
-  
+
     }
     
     /**
@@ -307,10 +386,11 @@ public class QueryReportHandler
             
         }, false);
         
+        DataProviderSessionIFace session = null;
         try
         {
-            //RecordSet rs = (RecordSet)SpecifyExplorer.session.createQuery("from RecordSet where name = \"Beanii RS\"").list().get(0);
-            RecordSet rs = (RecordSet)SpecifyExplorer.session.createQuery("from RecordSet where id = 1").list().get(0);
+            session = DataProviderFactory.getInstance().createSession();
+            RecordSet rs = (RecordSet)session.createQuery("from RecordSet where id = 1").list().get(0);
             if (rs != null)
             {
                 Properties params = new Properties();
@@ -339,6 +419,10 @@ public class QueryReportHandler
         } catch (Exception ex)
         {
             ex.printStackTrace();
+            
+        } finally
+        {
+            session.close();
         }
     }
     
@@ -362,7 +446,5 @@ public class QueryReportHandler
         {
             QueryBldrPane.runReport(toRun, "XXX", rs);
         }*/
-
-        
     }
 }

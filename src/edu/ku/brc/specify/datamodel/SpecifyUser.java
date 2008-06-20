@@ -57,10 +57,6 @@ import org.hibernate.annotations.Cascade;
 @Table(name = "specifyuser")
 public class SpecifyUser extends DataModelObjBase implements java.io.Serializable
 {
-
-    protected static SpecifyUser      currentUser = null;
-    protected static Subject          currentSubject = null;
-
     // Fields
     protected Integer                   specifyUserId;
     protected String                    name;
@@ -91,27 +87,6 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     public SpecifyUser(Integer specifyUserId)
     {
         this.specifyUserId = specifyUserId;
-    }
-
-    /**
-     * Return the current Specify User.
-     * 
-     * @return the current Specify User
-     */
-    public static SpecifyUser getCurrentUser()
-    {
-        return currentUser;
-    }
-
-    /**
-     * Sets the Current Specify User.
-     * 
-     * @param currentUser
-     *            the current specify user
-     */
-    public static void setCurrentUser(final SpecifyUser currentUser)
-    {
-        SpecifyUser.currentUser = currentUser;
     }
 
     // Initializer
@@ -532,21 +507,5 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     {
         if (name != null) return name;
         return super.getIdentityTitle();       
-    }
-
-    /**
-     * @return the currentSubject
-     */
-    public static Subject getCurrentSubject()
-    {
-        return currentSubject;
-    }
-
-    /**
-     * @param currentSubject the currentSubject to set
-     */
-    public static void setCurrentSubject(Subject currentSubject)
-    {
-        SpecifyUser.currentSubject = currentSubject;
     }
 }

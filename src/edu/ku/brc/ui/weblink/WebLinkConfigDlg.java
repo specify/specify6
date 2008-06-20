@@ -61,12 +61,12 @@ public class WebLinkConfigDlg extends CustomDialog
     public WebLinkConfigDlg(final DBTableInfo tableInfo,
                             final DBFieldInfo fieldInfo) throws HeadlessException
     {
-        super((Frame)UIRegistry.getTopWindow(), "Web Link Editor", true, OKHELP, null); // I18N
+        super((Frame)UIRegistry.getTopWindow(), UIRegistry.getResourceString("WebLinkConfigDlg.WEB_LNK_EDT"), true, OKHELP, null); // I18N //$NON-NLS-1$
         
         this.tableInfo = tableInfo;
         this.fieldInfo = fieldInfo;
         
-        okLabel = UIRegistry.getResourceString("Close");
+        okLabel = UIRegistry.getResourceString("CLOSE"); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -101,10 +101,10 @@ public class WebLinkConfigDlg extends CustomDialog
             }
         };
         
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g,2px,p"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g,2px,p")); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc = new CellConstraints();
         
-        pb.add(UIHelper.createLabel("Web Links", SwingConstants.CENTER), cc.xy(1, 1)); // I18N
+        pb.add(UIHelper.createLabel(UIRegistry.getResourceString("WebLinkConfigDlg.WEB_LINKS"), SwingConstants.CENTER), cc.xy(1, 1)); // I18N //$NON-NLS-1$
         
         list = new JList(new DefaultListModel());
         JScrollPane sp = new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);

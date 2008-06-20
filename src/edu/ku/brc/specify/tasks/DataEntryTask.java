@@ -62,6 +62,7 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
@@ -916,7 +917,7 @@ public class DataEntryTask extends BaseTask
     {
         if (appPrefs == AppPreferences.getRemote())
         {
-            String    iconName  = appPrefs.get("ui.formatting.disciplineicon", "CollectionObject");
+            String    iconName  = appPrefs.get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject");
             ImageIcon iconImage = IconManager.getIcon(iconName, IconManager.IconSize.Std16);
             if (iconImage != null)
             {
@@ -955,7 +956,7 @@ public class DataEntryTask extends BaseTask
                 CollectionObject colObj = (CollectionObject)dataObj;
                 if (colObj.getCollection() == null)
                 {
-                    Collection catSeries = Collection.getCurrentCollection();
+                    Collection catSeries = AppContextMgr.getInstance().getClassObject(Collection.class);
                     colObj.setCollection(catSeries); 
                 }
                 

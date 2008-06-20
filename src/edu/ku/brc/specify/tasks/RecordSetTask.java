@@ -42,6 +42,7 @@ import javax.swing.JPopupMenu;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.DroppableNavBox;
 import edu.ku.brc.af.core.MenuItemDesc;
@@ -296,7 +297,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         NavBoxItemIFace nbi = addToNavBox(recordSet);
         
         recordSet.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        recordSet.setOwner(SpecifyUser.getCurrentUser());
+        recordSet.setOwner(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
         persistRecordSet(recordSet);
         
 
@@ -325,12 +326,14 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
+            Object mergedRS = session.merge(recordSet);
+            
             session.beginTransaction();
-            session.saveOrUpdate(recordSet);
+            session.saveOrUpdate(mergedRS);
             session.commit();
             session.flush();
             
-            FormHelper.updateLastEdittedInfo(recordSet);
+            FormHelper.updateLastEdittedInfo(mergedRS);
 
             
         } catch (Exception ex)
@@ -477,7 +480,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      */
     protected void renameRecordSet(final RolloverCommand roc, final RecordSetIFace rs, final String oldName, final String newName)
     {
-        String sqlStr = "select count(rs.name) From RecordSet as rs Inner Join rs.specifyUser as user where rs.name = '"+newName+"' AND user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId();
+        String sqlStr = "select count(rs.name) From RecordSet as rs Inner Join rs.specifyUser as user where rs.name = '"+newName+"' AND user.specifyUserId = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId();
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         int                      count   = -1;

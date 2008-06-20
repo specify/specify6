@@ -39,6 +39,8 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
+
 /**
  * 
  * @code_status Beta
@@ -90,7 +92,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         type                  = null;
         name                  = null;
         remarks               = null;
-        discipline            = Discipline.getCurrentDiscipline();
+        discipline            = AppContextMgr.getInstance().getClassObject(Discipline.class);
         determinations        = new HashSet<Determination>();
     }
 

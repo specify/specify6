@@ -39,6 +39,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
@@ -415,9 +416,9 @@ public class MissingDataResolver implements ActionListener
         }
         if (CollectionMember.class.isAssignableFrom(dfe.getUploadTbl().getTblClass()))
         {
-            if (Collection.getCurrentCollection() != null)
+            if (AppContextMgr.getInstance().getClassObject(Collection.class) != null)
             {
-                dfe.setDefaultValue(Collection.getCurrentCollection().getCollectionId());
+                dfe.setDefaultValue(AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId());
                 return true;
             } 
             log.error("No default Collection has been set!");

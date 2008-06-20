@@ -31,6 +31,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
+
 /**
  * @author rod
  *
@@ -89,7 +91,7 @@ public class FieldNotebook extends DisciplineMember
         pageSets        = new HashSet<FieldNotebookPageSet>();
         attachments     = new TreeSet<FieldNotebookAttachment>();
         
-        collection      = Collection.getCurrentCollection();
+        collection      = AppContextMgr.getInstance().getClassObject(Collection.class);
     }
 
     /**

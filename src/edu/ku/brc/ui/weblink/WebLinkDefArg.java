@@ -109,6 +109,6 @@ public class WebLinkDefArg implements Cloneable
      */
     public static void configXStream(final XStream xstream)
     {
-        xstream.alias("weblinkdefarg", WebLinkDefArg.class); 
+        xstream.alias("weblinkdefarg", WebLinkDefArg.class);  //$NON-NLS-1$
     }
 }

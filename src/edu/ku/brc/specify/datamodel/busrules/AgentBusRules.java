@@ -25,6 +25,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
@@ -212,7 +213,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         lastLabel.setText(lbl + ":");
         
         // Agent Variants
-        boolean useAgentVariant = AppPreferences.getRemote().getBoolean("Agent.Use.Variants."+Discipline.getCurrentDiscipline().getName(),
+        boolean useAgentVariant = AppPreferences.getRemote().getBoolean("Agent.Use.Variants."+AppContextMgr.getInstance().getClassObject(Discipline.class).getName(),
                 Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany));
         Component agentVarSep = formViewObj.getCompById("100");
         if (agentVarSep != null)
@@ -340,14 +341,14 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         super.beforeSave(dataObj, session);
         
         
-        if (Discipline.getCurrentDiscipline() != null)
+        if (AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
         {
             Agent agent = (Agent)dataObj;
             
-            if (!contains(agent, Discipline.getCurrentDiscipline()))
+            if (!contains(agent, AppContextMgr.getInstance().getClassObject(Discipline.class)))
             {
-                agent.getDisciplines().add(Discipline.getCurrentDiscipline());
-                Discipline.getCurrentDiscipline().getAgents().add(agent);
+                agent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+                AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(agent);
             }
         }
     }
@@ -398,10 +399,10 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             }
         }
         
-        /*if (!contains(agent, Discipline.getCurrentDiscipline()))
+        /*if (!contains(agent, AppContextMgr.getInstance().getClassObject(Discipline.class)))
         {
-            agent.getDisciplines().add(Discipline.getCurrentDiscipline());
-            Discipline.getCurrentDiscipline().getAgents().add(agent);
+            agent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(agent);
         }*/
     }
     /* (non-Javadoc)
@@ -434,10 +435,10 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             throws Exception
     {
         Agent agent = (Agent)dataObj;
-        if (Discipline.getCurrentDiscipline() != null)
+        if (AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
         {
-            agent.getDisciplines().remove(Discipline.getCurrentDiscipline());
-            Discipline.getCurrentDiscipline().getAgents().remove(agent);
+            agent.getDisciplines().remove(AppContextMgr.getInstance().getClassObject(Discipline.class));
+            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().remove(agent);
         }
         
         return super.beforeDeleteCommit(dataObj, session);

@@ -185,6 +185,7 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     @Override
     public String toString()
     {
+        
     	if (isSingle)
     	{
     		return single.toString();

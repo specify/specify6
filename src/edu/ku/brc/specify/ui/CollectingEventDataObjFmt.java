@@ -238,6 +238,15 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
     }
 
     /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return name;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#toXML(java.lang.StringBuilder)
      */
     public void toXML(StringBuilder sb)

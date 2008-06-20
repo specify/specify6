@@ -234,7 +234,7 @@ public class WorkbenchTask extends BaseTask
             try
             {
                 workbenchNavBox = new NavBox(getResourceString("WB_DATASETS"),false,true);
-                List<?> list    = session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId()+" order by name");
+                List<?> list    = session.getDataList("From Workbench where SpecifyUserID = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId()+" order by name");
                 dataSetCount    = list.size();
                 for (Object obj : list)
                 {
@@ -756,7 +756,7 @@ public class WorkbenchTask extends BaseTask
             workbenchTemplate = new WorkbenchTemplate();
             workbenchTemplate.initialize();
             
-            workbenchTemplate.setSpecifyUser(SpecifyUser.getCurrentUser());
+            workbenchTemplate.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
             
             Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
             Collection<WorkbenchTemplateMappingItem> newItems     = mapper.updateAndGetNewItems();
@@ -827,7 +827,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            List<?> list = session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
+            List<?> list = session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId());
             for (Object obj : list)
             {
                 WorkbenchTemplate template = (WorkbenchTemplate)obj;
@@ -1494,7 +1494,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     {
         Workbench workbench = new Workbench();
         workbench.initialize();
-        workbench.setSpecifyUser(SpecifyUser.getCurrentUser());
+        workbench.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
         
         if (StringUtils.isNotEmpty(wbName))
         {
@@ -2156,7 +2156,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             
             if (recordSet == null)
             {
-                List<Workbench> list = (List<Workbench>)session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
+                List<Workbench> list = (List<Workbench>)session.getDataList("From Workbench where SpecifyUserID = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId());
                 if (list.size() == 0)
                 {
                     // XXX Probably should have a dialog here.
@@ -2426,7 +2426,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         if (count == null)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            count   = session.getDataCount(Workbench.class, "specifyUser", SpecifyUser.getCurrentUser(), DataProviderSessionIFace.CompareType.Equals);
+            count   = session.getDataCount(Workbench.class, "specifyUser", AppContextMgr.getInstance().getClassObject(SpecifyUser.class), DataProviderSessionIFace.CompareType.Equals);
             session.close();            
         }
         

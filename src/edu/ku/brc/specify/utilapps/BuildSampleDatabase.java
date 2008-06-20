@@ -134,6 +134,7 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -322,7 +323,7 @@ public class BuildSampleDatabase
             Byte asc         = SpQueryField.SortType.ASC.getOrdinal();
             //Byte desc        = SpQueryField.SortType.DESC.getOrdinal();
             
-            SpQuery query = createQuery("CO "+Collection.getCurrentCollection().getCollectionName(), "CollectionObject", 1, SpecifyUser.getCurrentUser(), userAgent);
+            SpQuery query = createQuery("CO "+AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName(), "CollectionObject", 1, AppContextMgr.getInstance().getClassObject(SpecifyUser.class), userAgent);
             createQueryField(query, (short)0, "catalogNumber", "Catalog Number", false, greq, lteq, "102", "103", asc, true, "1", 1);
             query.setIsFavorite(true);
             dataObjects.add(query);
@@ -426,7 +427,7 @@ public class BuildSampleDatabase
                                                  gtpTreeDef, 
                                                  locTreeDef, 
                                                  lithoStratTreeDef);
-        Discipline.setCurrentDiscipline(discipline);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
         SpPrincipal disciplineGroup = DataBuilder.createDisciplineGroup(discipline);
         groups.add(disciplineGroup);
@@ -457,7 +458,7 @@ public class BuildSampleDatabase
         Collection collection = createCollection(config.getCollectionPrefix(), config.getCollectionName(), cns, discipline);
         persist(collection);
         
-        Collection.setCurrentCollection(collection);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
         frame.setDesc("Commiting...");
         frame.setProcess(++createStep);
@@ -469,7 +470,7 @@ public class BuildSampleDatabase
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
-        SpecifyUser.setCurrentUser(user);
+        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
         user.addReference(userAgent, "agents");
         
         persist(user);
@@ -603,7 +604,7 @@ public class BuildSampleDatabase
     public static BldrPickList createPickLists(final Session localSession,
                                                final Discipline discipline)
     {
-        return createPickLists(localSession, discipline, false, Collection.getCurrentCollection());
+        return createPickLists(localSession, discipline, false, AppContextMgr.getInstance().getClassObject(Collection.class));
     }
     
     /**
@@ -759,7 +760,7 @@ public class BuildSampleDatabase
         Discipline discipline = createDiscipline(division, disciplineType.getName(), disciplineType.getTitle(), 
                                                              dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, 
                                                              locTreeDef, lithoStratTreeDef);
-        Discipline.setCurrentDiscipline(discipline);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
         List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
         
@@ -832,7 +833,7 @@ public class BuildSampleDatabase
         Collection collection = createCollection("KUBOT", "Botany", cns, discipline);
         persist(collection);
         
-        Collection.setCurrentCollection(collection);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
         commitTx();
         
@@ -844,7 +845,7 @@ public class BuildSampleDatabase
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
-        SpecifyUser.setCurrentUser(user);
+        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
         user.addReference(userAgent, "agents");        
         persist(user);
 
@@ -979,8 +980,8 @@ public class BuildSampleDatabase
         ku.setLastName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        ku.getDisciplines().add(Discipline.getCurrentDiscipline());
-        Discipline.getCurrentDiscipline().getAgents().add(ku);
+        ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
         
         agents.add(ku);
         agents.get(0).setOrganization(ku);
@@ -996,8 +997,8 @@ public class BuildSampleDatabase
         otherAgent.setLastName("The Other Guys");
         otherAgent.setEmail("other@other.com");
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        otherAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
-        Discipline.getCurrentDiscipline().getAgents().add(otherAgent);
+        otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
         agents.add(otherAgent);
         
         commitTx();
@@ -1019,8 +1020,8 @@ public class BuildSampleDatabase
             groupAgent.setLastName("The Group");
             groupAgent.setEmail("group@group.com");
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            groupAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
-            Discipline.getCurrentDiscipline().getAgents().add(groupAgent);
+            groupAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(groupAgent);
             
             agents.add(groupAgent);
             
@@ -1538,7 +1539,7 @@ public class BuildSampleDatabase
         Discipline discipline = createDiscipline(division, disciplineType.getName(), disciplineType.getTitle(), 
                                                              dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, 
                                                              locTreeDef, lithoStratTreeDef);
-        Discipline.setCurrentDiscipline(discipline);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
         persist(division);
         persist(discipline);
@@ -1587,7 +1588,7 @@ public class BuildSampleDatabase
         Collection collection = createCollection("KUBOT", "Botany", cns, discipline);
         persist(collection);
         
-        Collection.setCurrentCollection(collection);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
         commitTx();
         
@@ -1599,7 +1600,7 @@ public class BuildSampleDatabase
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
-        SpecifyUser.setCurrentUser(user);
+        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
         user.addReference(userAgent, "agents");
         
         persist(user);
@@ -1727,8 +1728,8 @@ public class BuildSampleDatabase
         ku.setLastName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        ku.getDisciplines().add(Discipline.getCurrentDiscipline());
-        Discipline.getCurrentDiscipline().getAgents().add(ku);
+        ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
         
         agents.add(ku);
         agents.get(0).setOrganization(ku);
@@ -1744,8 +1745,8 @@ public class BuildSampleDatabase
         otherAgent.setLastName("The Other Guys");
         otherAgent.setEmail("other@other.com");
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        otherAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
-        Discipline.getCurrentDiscipline().getAgents().add(otherAgent);
+        otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
         agents.add(otherAgent);
         
         commitTx();
@@ -1767,8 +1768,8 @@ public class BuildSampleDatabase
             groupAgent.setLastName("The Group");
             groupAgent.setEmail("group@group.com");
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            groupAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
-            Discipline.getCurrentDiscipline().getAgents().add(groupAgent);
+            groupAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(groupAgent);
             
             agents.add(groupAgent);
             
@@ -1953,7 +1954,7 @@ public class BuildSampleDatabase
         Discipline discipline = createDiscipline(division, disciplineType.getName(), disciplineType.getTitle(), 
                                                              dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, 
                                                              locTreeDef, lithoStratTreeDef);
-        Discipline.setCurrentDiscipline(discipline);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
         //List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
         SpPrincipal disciplineGroup = DataBuilder.createDisciplineGroup(discipline);
@@ -2035,7 +2036,7 @@ public class BuildSampleDatabase
         Collection collection = createCollection("KUIVP", disciplineType.getTitle(), cns, discipline);
         persist(collection);
         
-        Collection.setCurrentCollection(collection);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
         commitTx();
         
@@ -2047,7 +2048,7 @@ public class BuildSampleDatabase
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
-        SpecifyUser.setCurrentUser(user);
+        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
         user.addReference(userAgent, "agents");
         
         persist(user);
@@ -2200,8 +2201,8 @@ public class BuildSampleDatabase
         ku.setLastName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        ku.getDisciplines().add(Discipline.getCurrentDiscipline());
-        Discipline.getCurrentDiscipline().getAgents().add(ku);
+        ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
         
         agents.add(ku);
         agents.get(0).setOrganization(ku);
@@ -2217,8 +2218,8 @@ public class BuildSampleDatabase
         otherAgent.setLastName("The Other Guys");
         otherAgent.setEmail("other@other.com");
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        otherAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
-        Discipline.getCurrentDiscipline().getAgents().add(otherAgent);
+        otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
         agents.add(otherAgent);
         
         commitTx();
@@ -2240,8 +2241,8 @@ public class BuildSampleDatabase
             groupAgent.setLastName("The Group");
             groupAgent.setEmail("group@group.com");
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            groupAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
-            Discipline.getCurrentDiscipline().getAgents().add(groupAgent);
+            groupAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(groupAgent);
             
             agents.add(groupAgent);
             
@@ -2996,7 +2997,7 @@ public class BuildSampleDatabase
         Discipline discipline = createDiscipline(division, disciplineType.getName(), disciplineType.getTitle(), 
                                                              dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, 
                                                              locTreeDef, lithoStratTreeDef);
-        Discipline.setCurrentDiscipline(discipline);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         SpPrincipal disciplineGroup = DataBuilder.createDisciplineGroup(discipline); 
         persist(division);
         persist(discipline);
@@ -3047,7 +3048,7 @@ public class BuildSampleDatabase
         Collection collection = createCollection("KU", disciplineType.getTitle(), cns, discipline, disciplineType.isEmbeddedCollecingEvent());
         persist(collection);
         
-        Collection.setCurrentCollection(collection);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
         commitTx();
         
@@ -3062,7 +3063,7 @@ public class BuildSampleDatabase
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
-        SpecifyUser.setCurrentUser(user);
+        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
         user.addReference(userAgent, "agents");
         
         persist(user);
@@ -3203,8 +3204,8 @@ public class BuildSampleDatabase
         ku.setLastName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        ku.getDisciplines().add(Discipline.getCurrentDiscipline());
-        Discipline.getCurrentDiscipline().getAgents().add(ku);
+        ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
         
         agents.add(ku);
         agents.get(0).setOrganization(ku);
@@ -3220,8 +3221,8 @@ public class BuildSampleDatabase
         otherAgent.setLastName("The Other Guys");
         otherAgent.setEmail("other@other.com");
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        otherAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
-        Discipline.getCurrentDiscipline().getAgents().add(otherAgent);
+        otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+        AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
         agents.add(otherAgent);
         
         commitTx();
@@ -3243,8 +3244,8 @@ public class BuildSampleDatabase
             groupAgent.setLastName("The Group");
             groupAgent.setEmail("group@group.com");
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            groupAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
-            Discipline.getCurrentDiscipline().getAgents().add(groupAgent);
+            groupAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(groupAgent);
             
             agents.add(groupAgent);
             
@@ -3977,7 +3978,7 @@ public class BuildSampleDatabase
                                                  gtpTreeDef, 
                                                  locTreeDef, 
                                                  lithoStratTreeDef);
-        Discipline.setCurrentDiscipline(discipline);        
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);        
         persist(discipline);
         commitTx();
         
@@ -4149,7 +4150,7 @@ public class BuildSampleDatabase
         xstream.omitField(DataModelObjBase.class,  "timestampModified");
         xstream.omitField(DataModelObjBase.class,  "lastEditedBy");
         
-        String discipline = Discipline.getCurrentDiscipline().getName();
+        String discipline = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
         File   file       = XMLHelper.getConfigDir(discipline + File.separator + "preptypes.xml");
         if (file.exists())
         {
@@ -4167,7 +4168,7 @@ public class BuildSampleDatabase
             {
                 pt.setCreatedByAgent(Agent.getUserAgent());
                 pt.setTimestampCreated(now);
-                pt.setCollection(Collection.getCurrentCollection());
+                pt.setCollection(AppContextMgr.getInstance().getClassObject(Collection.class));
                 pt.setPreparations(new HashSet<Preparation>());
                 pt.setAttributeDefs(new HashSet<AttributeDef>());
             }
@@ -4220,7 +4221,7 @@ public class BuildSampleDatabase
         Collection collection = createCollection(colPrefix, colName, cns, discipline, false);
         persist(collection);
         
-        Collection.setCurrentCollection(collection);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
         ////////////////////////////////
         // picklists
@@ -4240,7 +4241,7 @@ public class BuildSampleDatabase
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
-        SpecifyUser.setCurrentUser(user);
+        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
         
         user.addReference(userAgent, "agents");
         
@@ -4362,8 +4363,8 @@ public class BuildSampleDatabase
             ku.setLastName("University of Kansas");
             ku.setEmail("webadmin@ku.edu");
             ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            ku.getDisciplines().add(Discipline.getCurrentDiscipline());
-            Discipline.getCurrentDiscipline().getAgents().add(ku);
+            ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
             
             agents.add(ku);
             agents.get(0).setOrganization(ku);
@@ -4379,8 +4380,8 @@ public class BuildSampleDatabase
             otherAgent.setLastName("The Other Guys");
             otherAgent.setEmail("other@other.com");
             otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            otherAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
-            Discipline.getCurrentDiscipline().getAgents().add(otherAgent);
+            otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
             agents.add(otherAgent);
 
             List<GroupPerson> gpList = new ArrayList<GroupPerson>();
@@ -4400,8 +4401,8 @@ public class BuildSampleDatabase
                 groupAgent.setLastName("The Group");
                 groupAgent.setEmail("group@group.com");
                 groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-                groupAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
-                Discipline.getCurrentDiscipline().getAgents().add(groupAgent);
+                groupAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
+                AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(groupAgent);
                 
                 agents.add(groupAgent);
                 
@@ -6661,7 +6662,7 @@ public class BuildSampleDatabase
     public static void assignPermssions()
     {
 /*        setSession(HibernateUtil.getCurrentSession());
-        SpecifyUser u = SpecifyUser.getCurrentUser();
+        SpecifyUser u = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
         List<?> users       = HibernateUtil.getCurrentSession().createQuery("SELECT u FROM SpecifyUser u WHERE t.name = 'Ammocrypta'").list();
         SpSecurtyPermissionMgr.setupTestTreePermissions(u);*/
     }

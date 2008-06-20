@@ -42,6 +42,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpQuery;
@@ -95,7 +96,7 @@ public class QueryConfigureDlg extends CustomDialog
         
         HelpMgr.registerComponent(helpBtn, "QBSavedQueriesConfig"); 
         
-        String sqlStr = "FROM SpQuery as sq Inner Join sq.specifyUser as user where user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId() + " ORDER BY ordinal";
+        String sqlStr = "FROM SpQuery as sq Inner Join sq.specifyUser as user where user.specifyUserId = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId() + " ORDER BY ordinal";
 
         DataProviderSessionIFace session = null;
         try

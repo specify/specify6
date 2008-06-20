@@ -38,6 +38,7 @@ import javax.persistence.Version;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
@@ -79,7 +80,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
         Timestamp now     = new Timestamp(System.currentTimeMillis());
         timestampCreated  = now;
         timestampModified = null;
-        createdByAgent    = SpecifyUser.getCurrentUser() != null ? Agent.getUserAgent() : null;
+        createdByAgent    = AppContextMgr.getInstance().getClassObject(SpecifyUser.class) != null ? Agent.getUserAgent() : null;
         modifiedByAgent   = null;
     }
     

@@ -66,6 +66,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.expresssearch.TableFieldPair;
 import edu.ku.brc.dbsupport.DBFieldInfo;
@@ -182,7 +183,7 @@ public class TemplateEditor extends CustomDialog
         
         databaseSchema = WorkbenchTask.getDatabaseSchema();
         
-        int disciplineeId = Discipline.getCurrentDiscipline().getDisciplineId();
+        int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
         SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA, 
                                                        disciplineeId, 
                                                        databaseSchema, 
@@ -1335,7 +1336,7 @@ public class TemplateEditor extends CustomDialog
         WorkbenchTemplate wbTemplate = new WorkbenchTemplate();
         wbTemplate.initialize();
         
-        wbTemplate.setSpecifyUser(SpecifyUser.getCurrentUser());
+        wbTemplate.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
         
         Set<WorkbenchTemplateMappingItem> items = wbTemplate.getWorkbenchTemplateMappingItems();
         

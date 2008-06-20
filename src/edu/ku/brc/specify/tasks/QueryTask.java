@@ -266,7 +266,7 @@ public class QueryTask extends BaseTask
     {
         SpQuery query = new SpQuery();
         query.initialize();
-        query.setSpecifyUser(SpecifyUser.getCurrentUser());
+        query.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
         query.setName(String.format(getResourceString("QB_NEW_QUERY_NAME"), tableInfo.getTitle()));
         query.setNamed(false);
         query.setContextTableId((short)tableInfo.getTableId());
@@ -575,7 +575,7 @@ public class QueryTask extends BaseTask
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            Integer count = (Integer)session.getData("SELECT count(spQueryId) From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = false AND user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
+            Integer count = (Integer)session.getData("SELECT count(spQueryId) From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = false AND user.specifyUserId = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId());
             if (count != null && count > 0)
             {
                 NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("QY_OTHER_QUERIES"),
@@ -756,7 +756,7 @@ public class QueryTask extends BaseTask
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            rows    = session.getDataList("FROM SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = false AND user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId() + " ORDER BY sq.name");
+            rows    = session.getDataList("FROM SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = false AND user.specifyUserId = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId() + " ORDER BY sq.name");
         }
         finally
         {
@@ -940,7 +940,7 @@ public class QueryTask extends BaseTask
      */
     protected void loadQueries()
     {
-        String sqlStr = "From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = true AND user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId() + " ORDER BY ordinal";
+        String sqlStr = "From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = true AND user.specifyUserId = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId() + " ORDER BY ordinal";
 
         DataProviderSessionIFace session = null;
         try
@@ -1117,7 +1117,7 @@ public class QueryTask extends BaseTask
     public RolloverCommand saveNewQuery(final SpQuery query, final boolean enabled)
     {        
         query.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        query.setSpecifyUser(SpecifyUser.getCurrentUser());
+        query.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
         if (query.getIsFavorite() == null)
         {
             query.setIsFavorite(true);

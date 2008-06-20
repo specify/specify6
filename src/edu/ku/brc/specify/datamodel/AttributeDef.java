@@ -43,6 +43,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import edu.ku.brc.af.core.AppContextMgr;
+
 /**
  * @author rods
  *
@@ -90,7 +92,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
         tableType             = null;
         fieldName             = null;
         dataType              = null;
-        discipline            = Discipline.getCurrentDiscipline();
+        discipline            = AppContextMgr.getInstance().getClassObject(Discipline.class);
         prepType              = null;
         collectingEventAttrs  = new HashSet<CollectingEventAttr>();
         preparationAttrs      = new HashSet<PreparationAttr>();

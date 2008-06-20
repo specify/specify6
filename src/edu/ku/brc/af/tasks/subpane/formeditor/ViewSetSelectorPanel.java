@@ -150,7 +150,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         this.previewPanel = previewPanel;
         
         Vector<String> levelsVec = new Vector<String>();
-        SpecifyUser    user      = SpecifyUser.getCurrentUser();
+        SpecifyUser    user      = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
         Hashtable<Discipline, Boolean> usedColTypes = new Hashtable<Discipline, Boolean>();
         
         levelsVec.add(user.getUserType());

@@ -46,6 +46,8 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import edu.ku.brc.af.core.AppContextMgr;
+
 /**
  * Each Preparation has a PrepType and Preparations can have additional "attributes" based on a PrepType.
  * 
@@ -94,7 +96,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
         prepTypeId     = null;
         name           = null;
         isLoanable     = true;
-        collection     = Collection.getCurrentCollection();
+        collection     = AppContextMgr.getInstance().getClassObject(Collection.class);
         preparations   = new HashSet<Preparation>();
         attributeDefs  = new HashSet<AttributeDef>();
     }

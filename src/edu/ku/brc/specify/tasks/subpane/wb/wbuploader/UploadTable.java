@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -2113,7 +2114,7 @@ public class UploadTable implements Comparable<UploadTable>
         RecordSet result = new RecordSet(getRecordSetName(), DBTableIdMgr.getInstance()
                 .getByShortClassName(tblClass.getSimpleName()).getTableId(), RecordSet.WB_UPLOAD);
         result.initialize();
-        result.setSpecifyUser(SpecifyUser.getCurrentUser());
+        result.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
         for (UploadedRecordInfo rec : uploadedRecs)
         {
             result.addItem(rec.getKey().intValue());

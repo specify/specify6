@@ -46,6 +46,7 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.ui.db.PickListIFace;
 import edu.ku.brc.ui.db.PickListItemIFace;
 
@@ -122,7 +123,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
         sizeLimit  = 50;
         isSystem   = false;
         
-        collection = Collection.getCurrentCollection();
+        collection = AppContextMgr.getInstance().getClassObject(Collection.class);
         
         pickListItems = new HashSet<PickListItem>();
     }

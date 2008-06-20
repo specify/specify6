@@ -34,6 +34,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
+
 /**
 
  */
@@ -96,32 +98,6 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         this.collectionId = collectionId;
     }
 
-    public static Collection getCurrentCollection()
-    {
-        return currentCollection;
-    }
-
-    public static void setCurrentCollection(final Collection currentCollection)
-    {
-        Collection.currentCollection = currentCollection;
-    }
-
-    /**
-     * @return the currentCollectionIds
-     */
-    public static List<Integer> getCurrentCollectionIds()
-    {
-        return currentCollectionIds;
-    }
-
-    /**
-     * @param currentCollectionIds the currentCollectionIds to set
-     */
-    public static void setCurrentCollectionIds(List<Integer> currentCollectionIds)
-    {
-        Collection.currentCollectionIds = currentCollectionIds;
-    }
-
     // Initializer
     @Override
     public void initialize()
@@ -133,7 +109,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         isEmbeddedCollectingEvent = true;
         description            = null;
         remarks                = null;
-        discipline             = Discipline.getCurrentDiscipline();
+        discipline             = AppContextMgr.getInstance().getClassObject(Discipline.class);
         kingdomCoverage        = null;
         primaryFocus           = null;
         collectionType         = null;

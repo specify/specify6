@@ -49,6 +49,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 
 /**
@@ -152,7 +153,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         long2text = null;
         visibility = null;
         
-        discipline          = Discipline.getCurrentDiscipline();
+        discipline          = AppContextMgr.getInstance().getClassObject(Discipline.class);
         geography           = null;
         localityCitations   = new HashSet<LocalityCitation>();
         collectingEvents    = new HashSet<CollectingEvent>();

@@ -15,6 +15,7 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.AutoNumberGeneric;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -59,7 +60,7 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
                                       final Pair<Integer, Integer> yearPos, 
                                       final Pair<Integer, Integer> pos) throws Exception
     {
-        Collection currCollection = Collection.getCurrentCollection();
+        Collection currCollection = AppContextMgr.getInstance().getClassObject(Collection.class);
         
         Integer yearVal = null;
         if (yearPos != null && StringUtils.isNotEmpty(value) && value.length() >= yearPos.second)

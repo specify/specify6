@@ -51,6 +51,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.config.DisciplineType;
 
 /**
@@ -65,11 +66,7 @@ import edu.ku.brc.specify.config.DisciplineType;
     })
 public class Discipline extends DataModelObjBase implements java.io.Serializable, Comparable<Discipline>
 {
-
-    protected static Discipline currentDiscipline = null;
-    
     // Fields
-
     protected Integer                   disciplineId;
     protected String                    name;
     protected String                    title;
@@ -105,31 +102,16 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
     }
 
     /**
-     * @return
-     */
-    public static Discipline getCurrentDiscipline()
-    {
-        return currentDiscipline;
-    }
-
-    /**
-     * @param currentDiscipline
-     */
-    public static void setCurrentDiscipline(Discipline discipline)
-    {
-        Discipline.currentDiscipline = discipline;
-    }
-    
-    /**
      * Returns true if the the disciplineType matches the current one
      * @param disciplineArg the one in question
      * @return true if the the disciplineType matches the current one
      */
     public static boolean isCurrentDiscipline(final DisciplineType.STD_DISCIPLINES disciplineArg)
     {
-        if (Discipline.currentDiscipline != null)
+        Discipline current = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        if (current != null)
         {
-            String disciplineName = Discipline.currentDiscipline.getName();
+            String disciplineName = current.getName();
             return StringUtils.isNotEmpty(disciplineName) && disciplineName.equals(disciplineArg.toString());
         }
         return false;

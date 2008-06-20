@@ -51,8 +51,6 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "geographytreedef")
 public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, GeographyTreeDefItem> implements java.io.Serializable
 {
-    private static GeographyTreeDef currentGeographyTreeDef = null;
-   
 	protected Integer				    geographyTreeDefId;
 	protected String				    name;
 	protected String				    remarks;
@@ -374,21 +372,5 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
     public String toString()
     {
         return getIdentityTitle();
-    }
-
-    /**
-     * @return the currentGeographyTreeDef
-     */
-    public static GeographyTreeDef getCurrentGeographyTreeDef()
-    {
-        return currentGeographyTreeDef;
-    }
-
-    /**
-     * @param currentGeographyTreeDef the currentGeographyTreeDef to set
-     */
-    public static void setCurrentGeographyTreeDef(GeographyTreeDef currentGeographyTreeDef)
-    {
-        GeographyTreeDef.currentGeographyTreeDef = currentGeographyTreeDef;
     }
 }

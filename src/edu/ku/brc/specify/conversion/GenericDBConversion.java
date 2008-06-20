@@ -54,6 +54,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Restrictions;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -1918,7 +1919,7 @@ public class GenericDBConversion
         
         curDivisionID = division.getDivisionId();
         
-        Division.setCurrentDivision(division);
+        AppContextMgr.getInstance().setClassObject(Division.class, division);
 
         DataBuilder.setSession(cacheSession);
         // return true;
@@ -2206,7 +2207,7 @@ public class GenericDBConversion
                         Discipline.setCurrentDiscipline(disp);
                         
                         Collection collection = hbSession.getData(Collection.class, "collectionId", curCollectionID, DataProviderSessionIFace.CompareType.Equals);
-                        Collection.setCurrentCollection(collection);
+                        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
                         
                     } catch (Exception ex)
                     {
@@ -3260,7 +3261,7 @@ public class GenericDBConversion
             
             Collection collection = null;
             
-            if (Collection.getCurrentCollection() == null)
+            if (AppContextMgr.getInstance().getClassObject(Collection.class) == null)
             {
                 Session tmpSession = null;
                 try
@@ -3286,11 +3287,11 @@ public class GenericDBConversion
                         tmpSession.close();
                     }
                 }
-                Collection.setCurrentCollection(collection);
+                AppContextMgr.getInstance().setClassObject(Collection.class, collection);
                 
             } else
             {
-                collection = Collection.getCurrentCollection();
+                collection = AppContextMgr.getInstance().getClassObject(Collection.class);
             }
             
             log.debug("------------------------ Old Names");
@@ -3371,7 +3372,7 @@ public class GenericDBConversion
                     subStmt.close();
                 }
                 
-                Map<String, PrepType> prepTypeMap = collToPrepTypeHash.get(Collection.getCurrentCollection().getCollectionId());
+                Map<String, PrepType> prepTypeMap = collToPrepTypeHash.get(AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId());
 
                 String lastEditedBy = rs.getString(lastEditedByInx);
 

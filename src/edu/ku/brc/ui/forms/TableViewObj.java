@@ -695,8 +695,25 @@ public class TableViewObj implements Viewable,
             multiView.addCurrentValidator();
             
             dialog.setParentData(parentDataObj);
-            dialog.setData(dObj);
-            dialog.showDisplay(true);
+            
+            DataProviderSessionIFace localSession = null;
+            try
+            {
+                localSession = DataProviderFactory.getInstance().createSession();
+                localSession.attach(dObj);
+                dialog.setData(dObj);
+                dialog.showDisplay(true);
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            } finally
+            {
+                if (localSession != null)
+                {
+                    localSession.close();
+                }
+            }
             
             // OK, now unhook everything (MVs and the validators)
             multiView.removeCurrentValidator();

@@ -922,31 +922,37 @@ public class DataObjFieldFormatMgr
         
         if (StringUtils.isEmpty(factoryName))
         {
-            return instance = new DataObjFieldFormatMgr();
-        }
-        
-        // else
-        String factoryNameStr = AccessController.doPrivileged(new java.security.PrivilegedAction<String>() {
-                public String run() {
-                    return System.getProperty(factoryName);
-                    }
-                });
+            instance = new DataObjFieldFormatMgr();
             
-        if (StringUtils.isNotEmpty(factoryNameStr)) 
+        } else
         {
-            try 
+            
+            // else
+            String factoryNameStr = AccessController.doPrivileged(new java.security.PrivilegedAction<String>() {
+                    public String run() {
+                        return System.getProperty(factoryName);
+                        }
+                    });
+                
+            if (StringUtils.isNotEmpty(factoryNameStr)) 
             {
-                return instance = (DataObjFieldFormatMgr)Class.forName(factoryNameStr).newInstance();
-                 
-            } catch (Exception e) 
-            {
-                InternalError error = new InternalError("Can't instantiate DataObjFieldFormatMgr factory " + factoryNameStr);
-                error.initCause(e);
-                throw error;
+                try 
+                {
+                    instance = (DataObjFieldFormatMgr)Class.forName(factoryNameStr).newInstance();
+                     
+                } catch (Exception e) 
+                {
+                    InternalError error = new InternalError("Can't instantiate DataObjFieldFormatMgr factory " + factoryNameStr);
+                    error.initCause(e);
+                    throw error;
+                }
             }
-        } 
-        
-        instance = new DataObjFieldFormatMgr();
+            
+            if (instance == null)
+            {
+                instance = new DataObjFieldFormatMgr();
+            }
+        }
         
         // now that all formats have been loaded, set table/field/formatter info\
         // must be executed after the instance is set
@@ -956,8 +962,5 @@ public class DataObjFieldFormatMgr
         }
 
         return instance;
-        
-        // should not happen
-        //throw new RuntimeException("Can't instantiate DataObjFieldFormatMgr factory [" + factoryNameStr+"]");
     }
 }

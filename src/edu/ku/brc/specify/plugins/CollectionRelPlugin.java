@@ -19,6 +19,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -63,7 +64,7 @@ public class CollectionRelPlugin extends UIPluginBase
         colRelType.getRelationships().size();
         tmpSession.close();
         
-        isLeftSide = Collection.getCurrentCollection().getCollectionId().equals(leftSideCol.getCollectionId());
+        isLeftSide = AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId().equals(leftSideCol.getCollectionId());
 
         
         CellConstraints cc = new CellConstraints();

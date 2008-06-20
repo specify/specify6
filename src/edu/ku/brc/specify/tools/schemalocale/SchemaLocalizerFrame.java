@@ -46,10 +46,13 @@ import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyWebLinkMgr;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.specify.ui.SpecifyDataObjFieldFormatMgr;
+import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.weblink.WebLinkMgr;
 
@@ -430,10 +433,10 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 UIRegistry.setAppName("Specify"); 
                 
                 // Then set this
-              IconManager.setApplicationClass(Specify.class);
-              IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml"));
-              IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml"));
-              IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml"));
+                IconManager.setApplicationClass(Specify.class);
+                IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml"));
+                IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml"));
+                IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml"));
                 
                 try
                 {
@@ -462,11 +465,14 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 UIFieldFormatterMgr.setDoingLocal(true);
                 SpecifyWebLinkMgr.setDoingLocal(true);
                 
-                System.setProperty(SchemaI18NService.factoryName, "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema
-                System.setProperty(UIFieldFormatterMgr.factoryName, "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumbering
-                System.setProperty(WebLinkMgr.factoryName, "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                  // Needed for WebLnkButton
-                
-                UIFieldFormatterMgr.setDoingLocal(true); // reads from local disk
+                System.setProperty(SchemaI18NService.factoryName,      "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema
+                System.setProperty(UIFieldFormatterMgr.factoryName,    "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumbering
+                System.setProperty(WebLinkMgr.factoryName,             "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                  // Needed for WebLnkButton
+                System.setProperty(DataObjFieldFormatMgr.factoryName,  "edu.ku.brc.specify.ui.SpecifyDataObjFieldFormatMgr");                // Needed for WebLnkButton //$NON-NLS-1$
+
+                SpecifyDataObjFieldFormatMgr.setDoingLocal(true);
+                SpecifyUIFieldFormatterMgr.setDoingLocal(true);
+                //UIFieldFormatterMgr.setDoingLocal(true); // reads from local disk
                
                 Object[] options = { "Full Specify Schema", "WorkBench Schema" };
                 int retVal = JOptionPane.showOptionDialog(null, "Which Schema would you like to localize?", "Choose a Schema", JOptionPane.YES_NO_CANCEL_OPTION,

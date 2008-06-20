@@ -21,6 +21,7 @@ import java.security.Policy;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.security.auth.Subject;
 import javax.security.auth.login.Configuration;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -31,6 +32,7 @@ import edu.ku.brc.af.auth.specify.module.DbLoginCallbackHandler;
 import edu.ku.brc.af.auth.specify.module.SpDBConfiguration;
 import edu.ku.brc.af.auth.specify.policy.CompositePolicy;
 import edu.ku.brc.af.auth.specify.policy.DatabasePolicy;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 
 /**
@@ -89,7 +91,7 @@ public class JaasContext
             LoginContext lc = new LoginContext("SpLogin", spcbh); //$NON-NLS-1$
             lc.login();
             loginSuccess = true;
-            SpecifyUser.setCurrentSubject(lc.getSubject());
+            AppContextMgr.getInstance().setClassObject(Subject.class, lc.getSubject());
             
         } catch (LoginException lex)
         {

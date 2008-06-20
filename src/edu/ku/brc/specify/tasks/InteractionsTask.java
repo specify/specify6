@@ -364,7 +364,7 @@ public class InteractionsTask extends BaseTask
             
             if (stdList.size() == 0)
             {
-                String ds = Discipline.getCurrentDiscipline().getName();
+                String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
                 AppPreferences.getRemote().putBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, false);
                 JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
                 indexOfTBB = toolBar.getComponentIndex(toolBarBtn);
@@ -381,7 +381,7 @@ public class InteractionsTask extends BaseTask
     protected void setUpCachedPrefs()
     {
         AppPreferences remotePrefs = AppPreferences.getRemote();
-        String ds = Discipline.getCurrentDiscipline().getName();
+        String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
         isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
     }
     
@@ -615,7 +615,7 @@ public class InteractionsTask extends BaseTask
         AppPreferences remotePrefs = AppPreferences.getRemote();
         if (remotePrefs == AppPreferences.getRemote())
         {
-            String ds = Discipline.getCurrentDiscipline().getName();
+            String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
             isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
         }
 
@@ -1126,7 +1126,7 @@ public class InteractionsTask extends BaseTask
     public void createAndSendEMail()
     {
         FormViewObj formViewObj = getCurrentFormViewObj();
-        if (formViewObj != null) // Should never happen
+        if (formViewObj != null && formViewObj.getDataObj() instanceof InfoRequest) 
         {
             InfoRequest infoRequest = (InfoRequest)formViewObj.getDataObj();
             Agent       toAgent     = infoRequest.getAgent();
@@ -1432,7 +1432,7 @@ public class InteractionsTask extends BaseTask
         AppPreferences remotePrefs = (AppPreferences)cmdAction.getData();
         if (remotePrefs == AppPreferences.getRemote())
         {
-            String ds = Discipline.getCurrentDiscipline().getName();
+            String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
             isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
             
             JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);

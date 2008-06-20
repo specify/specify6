@@ -43,6 +43,11 @@ public class CatByPrev10YearsCustomQuery implements CustomQueryIFace
     {
     }
 
+    /**
+     * @param year
+     * @param inc
+     * @return
+     */
     protected String createTitle(final int year, final int inc)
     {
         return year + " - " + (year - inc);

@@ -583,7 +583,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     @Override
     public SubPaneIFace getStarterPane()
     {
-       // View view = appContextMgr.getView("SystemSetup", Discipline.getCurrentDiscipline());
+       // View view = appContextMgr.getView("SystemSetup", AppContextMgr.getInstance().getClassObject(Discipline.class));
         //createFormPanel(view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT);
 
         //recentFormPane = new FormPane(null, name, this, "");

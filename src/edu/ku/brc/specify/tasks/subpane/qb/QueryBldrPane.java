@@ -71,6 +71,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.SubPaneMgr;
@@ -97,6 +98,7 @@ import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
+import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
@@ -144,10 +146,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
     protected JButton                                        addBtn;
 
-    protected ImageIcon                                      blankIcon        = IconManager
-                                                                                      .getIcon(
-                                                                                              "BlankIcon",
-                                                                                              IconManager.IconSize.Std24);
+    protected ImageIcon                                      blankIcon        = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24);
 
     protected String                                         columnDefStr     = null;
 
@@ -158,12 +157,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected Vector<JScrollPane>                            spList           = new Vector<JScrollPane>();
     protected JPanel                                         contextPanel;
 //    protected JButton                                        saveBtn;
-    protected DropDownButton                                        saveBtn;
+    protected DropDownButton                                 saveBtn;
     protected JButton                                        searchBtn;
+    protected JCheckBox                                      distinctChk;
     
     protected Hashtable<String, Boolean>                     fieldsToSkipHash = new Hashtable<String, Boolean>();
-    protected QryListRenderer                                qryRenderer      = new QryListRenderer(
-                                                                                      IconManager.STD_ICON_SIZE);
+    protected QryListRenderer                                qryRenderer      = new QryListRenderer(IconManager.STD_ICON_SIZE);
+    
     protected int                                            listCellHeight;
 
     protected TableTree                                      tableTree;
@@ -173,9 +173,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected RolloverCommand                                queryNavBtn      = null;
 
     // Reordering
-    protected JButton                       orderUpBtn  = null;
-    protected JButton                       orderDwnBtn = null;
-    protected boolean                       doOrdering  = false;
+    protected JButton                                        orderUpBtn  = null;
+    protected JButton                                        orderDwnBtn = null;
+    protected boolean                                        doOrdering  = false;
+    
+    protected ExpressSearchResultsPaneIFace                  esrp        = null;
+    protected boolean                                        isHeadless  = false; 
     
     protected final AtomicReference<QBQueryForIdResultsHQL> runningResults = new AtomicReference<QBQueryForIdResultsHQL>();
     protected final AtomicReference<QBQueryForIdResultsHQL> completedResults = new AtomicReference<QBQueryForIdResultsHQL>();
@@ -190,9 +193,24 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     public QueryBldrPane(final String name, final Taskable task, final SpQuery query)
     {
+        this(name, task, query, false);
+    }
+    
+    /**
+     * Constructor.
+     * 
+     * @param name name of subpanel
+     * @param task the owning task
+     */
+    public QueryBldrPane(final String name, 
+                         final Taskable task, 
+                         final SpQuery query,
+                         final boolean isHeadless)
+    {
         super(name, task);
 
-        this.query = query;
+        this.query      = query;
+        this.isHeadless = isHeadless;
 
         String[] skipItems = { "TimestampCreated", "LastEditedBy", "TimestampModified" };
         for (String nameStr : skipItems)
@@ -353,17 +371,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         final JPanel mover = buildMoverPanel(false);
         add(mover, BorderLayout.EAST);
         
-        searchBtn = createButton(UIRegistry.getResourceString("QB_SEARCH"));
-        final JCheckBox distinctChk = createCheckBox(UIRegistry.getResourceString("QB_DISTINCT"));
+        searchBtn   = createButton(UIRegistry.getResourceString("QB_SEARCH"));
+        distinctChk = createCheckBox(UIRegistry.getResourceString("QB_DISTINCT"));
         distinctChk.setSelected(false);
         searchBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
-                if (canSearch())
-                {
-                    doSearch((TableQRI)tableList.getSelectedValue(), distinctChk.isSelected());
-                }
+                doSearch();
             }
         });
         
@@ -375,11 +390,33 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(outer.getPanel(), BorderLayout.EAST);
         JButton helpBtn = new JButton(UIRegistry.getResourceString("Help"));
-        HelpMgr.registerComponent(helpBtn, ContextMgr.getCurrentContext().getName());
+        if (ContextMgr.getCurrentContext() != null)
+        {
+            HelpMgr.registerComponent(helpBtn, ContextMgr.getCurrentContext().getName());
+        }
         bottom.add(helpBtn, BorderLayout.WEST);
         add(bottom, BorderLayout.SOUTH);
 
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    }
+    
+    /**
+     * @param esrp the esrp to set
+     */
+    public void setEsrp(ExpressSearchResultsPaneIFace esrp)
+    {
+        this.esrp = esrp;
+    }
+
+    /**
+     * Executes the search that has been loaded into the pane.
+     */
+    public void doSearch()
+    {
+        if (canSearch())
+        {
+            doSearch((TableQRI)tableList.getSelectedValue(), distinctChk.isSelected());
+        }
     }
 
     /**
@@ -405,8 +442,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected void setQueryIntoUI()
     {
-        if (!SwingUtilities.isEventDispatchThread()) { throw new RuntimeException(
-                "Method called from invalid thread."); }
+        if (!isHeadless && !SwingUtilities.isEventDispatchThread()) 
+        { 
+            throw new RuntimeException("Method called from invalid thread."); 
+        }
         queryFieldsPanel.removeAll();
         queryFieldItems.clear();
         queryFieldsPanel.validate();
@@ -464,25 +503,39 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
         }
         
-        SwingUtilities.invokeLater(new Runnable()
+        if (!isHeadless)
         {
-            public void run()
+            SwingUtilities.invokeLater(new Runnable()
             {
-                //Sorry, but a new context can't be selected if any fields are selected from the current context.
-                tableList.setEnabled(queryFieldItems.size() == 0);
-                if (queryFieldItems.size() > 0)
+                public void run()
                 {
-                    selectQFP(queryFieldItems.get(0));
+                    adjustPanelUI();
                 }
-                for (JList list : listBoxList)
-                {
-                    list.repaint();
-                }
-                saveBtn.setEnabled(false);
-                updateSearchBtn();
-                QueryBldrPane.this.validate();
-            }
-        });
+            });
+        } else
+        {
+            adjustPanelUI();
+        }
+    }
+    
+    /**
+     * 
+     */
+    protected void adjustPanelUI()
+    {
+        //Sorry, but a new context can't be selected if any fields are selected from the current context.
+        tableList.setEnabled(queryFieldItems.size() == 0);
+        if (queryFieldItems.size() > 0)
+        {
+            selectQFP(queryFieldItems.get(0));
+        }
+        for (JList list : listBoxList)
+        {
+            list.repaint();
+        }
+        saveBtn.setEnabled(false);
+        updateSearchBtn();
+        QueryBldrPane.this.validate();
     }
 
     /**
@@ -1089,10 +1142,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * @param queryFieldItemsArg
      * @param sql
+     * @param params
+     * @param rootTable
+     * @param distinct
      */
-    protected void processSQL(final Vector<QueryFieldPanel> queryFieldItemsArg, final String sql, 
-                              final List<Pair<String, Object>> params, final DBTableInfo rootTable, 
-                              final boolean distinct)
+    protected void processSQL(final Vector<QueryFieldPanel>    queryFieldItemsArg, 
+                              final String                     sql, 
+                              final List<Pair<String, Object>> params, 
+                              final DBTableInfo                rootTable, 
+                              final boolean                    distinct)
     {
         List<ERTICaptionInfo> captions = getColumnInfo(queryFieldItemsArg, false);
         List<Integer> list = new Vector<Integer>();
@@ -1116,9 +1174,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         runningResults.set(qri);
         doneTime.set(-1);
         
-        CommandAction cmdAction = new CommandAction("Express_Search", "HQL", qri);
-        cmdAction.setProperty("reuse_panel", true); 
-        CommandDispatcher.dispatch(cmdAction);
+        if (esrp == null)
+        {
+            CommandAction cmdAction = new CommandAction("Express_Search", "HQL", qri);
+            cmdAction.setProperty("reuse_panel", true); 
+            CommandDispatcher.dispatch(cmdAction);
+        } else
+        {
+            esrp.addSearchResults(qri);
+        }
         
         startTime.set(System.nanoTime());
     }
@@ -1144,7 +1208,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         SpQuery result = new SpQuery();
         result.initialize();
-        result.setSpecifyUser(SpecifyUser.getCurrentUser());
+        result.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
         result.setName(query.getName());
         result.setContextTableId(query.getContextTableId());
         result.setContextName(query.getContextName());
@@ -1996,7 +2060,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 try
                 {
-                    TreeDefIface<?, ?, ?> treeDef = Collection.getCurrentCollection()
+                    TreeDefIface<?, ?, ?> treeDef = AppContextMgr.getInstance().getClassObject(Collection.class)
                             .getDiscipline().getTreeDef(
                                     UploadTable.capitalize(tableInfo.getClassObj().getSimpleName())
                                             + "TreeDef");

@@ -67,7 +67,7 @@ public class WebLinkUsedBy
      */
     public static void configXStream(final XStream xstream)
     {
-        xstream.alias("usedby", WebLinkUsedBy.class);
+        xstream.alias("usedby", WebLinkUsedBy.class); //$NON-NLS-1$
 
     }  
 }

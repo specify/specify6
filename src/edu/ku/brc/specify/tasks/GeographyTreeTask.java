@@ -17,6 +17,7 @@ import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
@@ -69,7 +70,7 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
     @Override
     protected GeographyTreeDef getCurrentTreeDef()
     {
-        return Discipline.getCurrentDiscipline().getGeographyTreeDef();
+        return AppContextMgr.getInstance().getClassObject(Discipline.class).getGeographyTreeDef();
     }
     
     /**

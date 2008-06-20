@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Hashtable;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
@@ -67,7 +68,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
     {
         super.addChildrenToNewDataObjects(newDataObj);
         
-        Collection collection = Collection.getCurrentCollection();
+        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
         if (collection != null)
         {
             Division division = collection.getDiscipline().getDivision();

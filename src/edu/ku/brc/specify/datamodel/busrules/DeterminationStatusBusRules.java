@@ -26,6 +26,7 @@ import java.sql.Statement;
 import java.util.Iterator;
 import java.util.List;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -122,9 +123,9 @@ public class DeterminationStatusBusRules extends BaseBusRules
         
         DeterminationStatus ds = (DeterminationStatus)newDataObj;
         
-        Discipline.getCurrentDiscipline().addReference(ds, "determinationStatuss");
+        AppContextMgr.getInstance().getClassObject(Discipline.class).addReference(ds, "determinationStatuss");
         
-        String sqlStr = "select type From DeterminationStatus WHERE disciplineId = " + Discipline.getCurrentDiscipline().getDisciplineId();
+        String sqlStr = "select type From DeterminationStatus WHERE disciplineId = " + AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
         
         DataProviderSessionIFace session = null;
         try

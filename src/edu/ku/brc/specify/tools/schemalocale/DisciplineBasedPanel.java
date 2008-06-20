@@ -100,8 +100,8 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
                 
                 if (fieldPanel != null)
                 {
-                    fieldPanel.setContainer(currentBaselineContainer, jlistContainer);
                     fieldPanel.setDisciplineType(disciplineType);
+                    fieldPanel.setContainer(currentBaselineContainer, jlistContainer);
                 }
                 
                 updateBtnUI();
@@ -118,6 +118,11 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
      */
     public void getDataFromUI()
     {
+        if (fieldPanel != null)
+        {
+            fieldPanel.getAllDataFromUI();
+        }
+        
         if (currentBaselineContainer != null)
         {
             Set<SpLocaleContainerItem> cItems = currentBaselineContainer.getDisciplineItems(disciplineType.getName());
@@ -180,8 +185,9 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
         
         fillWithDisciplineItems();
         
+        fieldPanel.setDisciplineType(disciplineType);
         fieldPanel.setContainer(container, jListContainerItem);
-        
+
         updateBtnUI();
         
     }
@@ -269,7 +275,8 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
         items.add(item);
         Collections.sort(items);
         listItems.insertElementAt(new LocalizableJListItem(item.getName(), item.getId(), null), items.indexOf(item));
-        
+
+        fieldPanel.setDisciplineType(disciplineType);
         fieldPanel.setContainer(currentBaselineContainer, jlistContainer);
     }
     

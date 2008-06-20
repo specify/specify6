@@ -47,6 +47,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBoxIFace;
@@ -54,6 +55,7 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.expresssearch.ERTIJoinColInfo;
+import edu.ku.brc.af.core.expresssearch.ESTermParser;
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigDlg;
@@ -63,6 +65,7 @@ import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
 import edu.ku.brc.af.core.expresssearch.SearchConfig;
 import edu.ku.brc.af.core.expresssearch.SearchConfigService;
 import edu.ku.brc.af.core.expresssearch.SearchTableConfig;
+import edu.ku.brc.af.core.expresssearch.SearchTermField;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
@@ -205,7 +208,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      */
     protected String getLastSearchKey()
     {
-        String disciplineName = Discipline.getCurrentDiscipline() != null ? ("_" + Discipline.getCurrentDiscipline().getName()) : "";
+        Discipline discp          = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        String     disciplineName = discp != null ? ("_" + discp.getName()) : "";
         return LAST_SEARCH + disciplineName;
     }
 
@@ -229,9 +233,13 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 } else if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(searchTerm.toLowerCase()))
                 {
                     ESResultsSubPane expressSearchPane = new ESResultsSubPane(searchTerm, this, true);
-                    doQuery(searchText, null, badSearchColor, expressSearchPane);
-                    
-                    AppPreferences.getLocalPrefs().put(getLastSearchKey(), searchTerm);
+                    if (!doQuery(searchText, null, expressSearchPane))
+                    {
+                        setUserInputToNotFound("BAD_SEARCH_TERMS", true);
+                    } else
+                    {
+                        AppPreferences.getLocalPrefs().put(getLastSearchKey(), searchTerm);
+                    }
                     
                 } else
                 {
@@ -261,12 +269,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         {
             if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(searchTerm.toLowerCase()))
             {
-                doQuery(null, searchTerm, badSearchColor, esrp);
-                return true;
+                return doQuery(null, searchTerm, esrp);
             }
-            return false; // bad query
         } 
-        return true;
+        return false;
     }
     
     /**
@@ -277,10 +283,12 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      */
     protected synchronized JPAQuery startSearchJPA(final ExpressSearchResultsPaneIFace esrPane,
                                                    final SearchTableConfig searchTableConfig,
-                                                   final String            searchTerm)
+                                                   final String            searchTerm,
+                                                   final List<SearchTermField> terms)
     {
         JPAQuery jpaQuery = null;
-        String sqlStr = searchTableConfig.getSQL(searchTerm, true, true);
+        
+        String sqlStr = searchTableConfig.getSQL(terms, true, true);
         if (sqlStr != null)
         {
             jpaQuery = new JPAQuery(sqlStr, this);
@@ -311,19 +319,23 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      *
      * @param searchTextArg the Text Control that contains the search string (can be null)
      * @param searchTextStr the Text Control that contains the search string (can be null)
-     * @param badSearchColorArg the color to set the control if no results (can be null if searchText is null)
      * @param tables ExpressResultsTableInfo hash
      * @param esrPane the pane that the results will be set into
      * @return true if results were found, false if not results
      */
-    public synchronized void doQuery(final JTextField searchTextArg,
-                                     final String     searchTextStr,
-                                     final Color      badSearchColorArg,
-                                     final ExpressSearchResultsPaneIFace esrPane)
+    public synchronized boolean doQuery(final JTextField searchTextArg,
+                                        final String     searchTextStr,
+                                        final ExpressSearchResultsPaneIFace esrPane)
     {
         searchWarningsResults = null;
         
         String searchTerm = (searchTextArg != null ? searchTerm = searchTextArg.getText() : searchTextStr).toLowerCase();
+        
+        if (!ESTermParser.parse(searchTerm, true))
+        {
+            setUserInputToNotFound("BAD_SEARCH_TERMS", false);
+            return false;
+        }
 
         //boolean hasResults = true;
         if (StringUtils.isNotEmpty(searchTerm))
@@ -351,13 +363,16 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     
                     for (SearchTableConfig table : config.getTables())
                     {
-                        startSearchJPA(esrPane, table, searchTerm);
+                        startSearchJPA(esrPane, table, searchTerm, ESTermParser.getFields());
                     }
                     
                     // Check to see if any queries got started.
                     if (queryList.size() == 0)
                     {
                         completionUIHelper(null);
+                    } else
+                    {
+                        return true;
                     }
                     
                 } else
@@ -367,13 +382,15 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 
             } else
             {
-                startSearchJPA(esrPane, context, searchTerm);
+                startSearchJPA(esrPane, context, searchTerm, ESTermParser.getFields());
+                return true;
             }
         } else
         {
             //System.err.println("SearchTableConfig service has not been loaded or is empty.");
             log.error("SearchTableConfig service has been loaded or is empty.");
         }
+        return false;
     }
     
     /**
@@ -790,7 +807,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             {
                 String searchTerm = cmdAction.getData().toString();
                 ESResultsSubPane expressSearchPane = new ESResultsSubPane(searchTerm, this, true);
-                doQuery(null, searchTerm, badSearchColor, expressSearchPane);
+                doQuery(null, searchTerm, expressSearchPane);
                 
             } else if (cmdAction.isAction("Search"))
             {
@@ -991,7 +1008,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             
                 if (!sqlHasResults)
                 {
-                    setUserInputToNotFound(null, false);
+                    setUserInputToNotFound("NoExpressSearchResults", false);
                     
                 } else
                 {

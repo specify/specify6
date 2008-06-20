@@ -97,7 +97,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
         }
         catch (Exception e1)
         {
-            log.error("Failed to build URL", e1);
+            log.error("Failed to build URL", e1); //$NON-NLS-1$
             return;
         }
         
@@ -116,7 +116,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
         }
         catch (URISyntaxException e)
         {
-            log.error("Bad URL syntax: " + urlString, e);
+            log.error("Bad URL syntax: " + urlString, e); //$NON-NLS-1$
             return;
         }
 
@@ -127,7 +127,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
         }
         catch (Exception e)
         {
-            log.error("Failed to open URL: " + uri.toString(), e);
+            log.error("Failed to open URL: " + uri.toString(), e); //$NON-NLS-1$
             return;
         }
     }
@@ -149,8 +149,8 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
                 
                 promptCnt += backupHash.size();
                 
-                String          rowDef = createDuplicateJGoodiesDef("p", "4px", promptCnt);
-                PanelBuilder    pb     = new PanelBuilder(new FormLayout("p,2px,f:p:g", rowDef));
+                String          rowDef = createDuplicateJGoodiesDef("p", "4px", promptCnt); //$NON-NLS-1$ //$NON-NLS-2$
+                PanelBuilder    pb     = new PanelBuilder(new FormLayout("p,2px,f:p:g", rowDef)); //$NON-NLS-1$
                 CellConstraints cc     = new CellConstraints();
                 
                 DocumentListener dl = new DocumentListener()
@@ -241,7 +241,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
                 if (!arg.isPrompt())
                 {
                     String name  = arg.getName();
-                    String value = "";
+                    String value = ""; //$NON-NLS-1$
                     if (provider != null)
                     {
                         value = provider.getWebLinkData(name);
@@ -284,10 +284,10 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
             for (String key : valueHash.keySet())
             {
                 String val = valueHash.get(key);
-                url = StringUtils.replace(url, "["+key+"]", (val != null ? val : ""));
+                url = StringUtils.replace(url, "["+key+"]", (val != null ? val : "")); //$NON-NLS-1$ //$NON-NLS-2$
             }
             
-            url = StringUtils.replace(url, "AMP", "&amp;");
+            url = StringUtils.replace(url, "AMP", "&amp;"); //$NON-NLS-2$
             
             return url;
         }
@@ -347,7 +347,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
     {
         urlStr = properties.getProperty("url");
         
-        String iconName = properties.getProperty("icon");
+        String iconName = properties.getProperty("icon"); //$NON-NLS-1$
         ImageIcon icon = null;
         if (StringUtils.isNotEmpty(iconName))
         {
@@ -356,12 +356,12 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
         
         if (icon == null)
         {
-            icon = IconManager.getIcon("WebLink", IconManager.STD_ICON_SIZE);
+            icon = IconManager.getIcon("WebLink", IconManager.STD_ICON_SIZE); //$NON-NLS-1$
         }
         launchBtn = createButton(icon);
         launchBtn.addActionListener(this);
         
-        String wlName = properties.getProperty("weblink");
+        String wlName = properties.getProperty("weblink"); //$NON-NLS-1$
         if (StringUtils.isNotEmpty(wlName))
         {
             webLinkDef = WebLinkMgr.getInstance().get(wlName);
@@ -370,7 +370,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
                 this.setToolTipText(webLinkDef.getDesc());
             } else
             {
-                launchBtn.setToolTipText("");
+                launchBtn.setToolTipText(""); //$NON-NLS-1$
             }
         }
         

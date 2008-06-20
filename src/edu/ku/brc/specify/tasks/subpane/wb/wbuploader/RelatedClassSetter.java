@@ -15,6 +15,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -264,19 +265,19 @@ public class RelatedClassSetter
     {
         if (relatedClass.equals(Discipline.class))
         {
-            setDefaultId(Discipline.getCurrentDiscipline().getDisciplineId());
+            setDefaultId(AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId());
             return true;
         }
         
         if (relatedClass.equals(Collection.class))
         {
-            setDefaultId(Collection.getCurrentCollection().getCollectionId());
+            setDefaultId(AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId());
             return true;
         }
 
         if (relatedClass.equals(Division.class))
         {
-            setDefaultId(Discipline.getCurrentDiscipline().getDivision().getId());
+            setDefaultId(AppContextMgr.getInstance().getClassObject(Discipline.class).getDivision().getId());
             return true;
         }
 

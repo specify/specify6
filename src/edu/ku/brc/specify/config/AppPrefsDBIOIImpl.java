@@ -122,7 +122,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                     SpecifyAppContextMgr specifyAppContext = (SpecifyAppContextMgr)AppContextMgr.getInstance();
                     
                     SpAppResourceData appData = null;
-                    spAppResourceDir = specifyAppContext.getAppResDir(session, SpecifyUser.getCurrentUser(), null, null, "Prefs", false, true);
+                    spAppResourceDir = specifyAppContext.getAppResDir(session, AppContextMgr.getInstance().getClassObject(SpecifyUser.class), null, null, "Prefs", false, true);
                     if (spAppResourceDir.getSpAppResourceDirId() == null)
                     {
                         spAppResource = new SpAppResource();
@@ -130,7 +130,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                         
                         spAppResource.setName(PREF_NAME);
                         spAppResource.setLevel((short)3); // TODO WHAT LEVEL IS USER???????
-                        SpecifyUser user = SpecifyUser.getCurrentUser();
+                        SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
                         spAppResource.setSpecifyUser(user);
 
                         appData = new SpAppResourceData();

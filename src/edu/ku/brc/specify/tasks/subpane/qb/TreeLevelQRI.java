@@ -12,6 +12,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -45,8 +46,7 @@ public class TreeLevelQRI extends FieldQRI
         this.rankId = rankId;
         String treeDefName = parent.getTableTree().getTableInfo().getShortClassName()
                 + "TreeDef";
-        TreeDefIface<?, ?, ?> treeDef = Collection.getCurrentCollection().getDiscipline()
-                .getTreeDef(treeDefName);
+        TreeDefIface<?, ?, ?> treeDef = AppContextMgr.getInstance().getClassObject(Collection.class).getDiscipline().getTreeDef(treeDefName);
         TreeDefItemIface<?, ?, ?> treeDefItem = treeDef.getDefItemByRank(rankId);
         if (treeDefItem != null)
         {
@@ -177,7 +177,7 @@ public class TreeLevelQRI extends FieldQRI
             TreeDefIface<?,?,?> treeDef;
             try
             {
-                treeDef = Collection.getCurrentCollection().getDiscipline().getTreeDef(capitalize(getTableInfo().getClassObj().getSimpleName()) + "TreeDef");
+                treeDef = AppContextMgr.getInstance().getClassObject(Collection.class).getDiscipline().getTreeDef(capitalize(getTableInfo().getClassObj().getSimpleName()) + "TreeDef");
             }
             catch (Exception e)
             {

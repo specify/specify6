@@ -21,16 +21,12 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
-
-import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.ui.DateParser;
-import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
@@ -236,9 +232,9 @@ public class SearchTableConfig implements DisplayOrderingIFace,
      * @param idsOnly
      * @return
      */
-    public String getSQL(final String searchTerm, final boolean idsOnly, final boolean isHQL)
+    public String getSQL(final List<SearchTermField> terms, final boolean idsOnly, final boolean isHQL)
     {
-        return getSQL(searchTerm, idsOnly, null, isHQL);
+        return getSQL(terms, idsOnly, null, isHQL);
     }
     
     /**
@@ -248,12 +244,11 @@ public class SearchTableConfig implements DisplayOrderingIFace,
      * @param ids
      * @return
      */
-    public String getSQL(final String searchTermArg, final boolean idsOnly, final Vector<Integer> ids, final boolean isHQL)
+    public String getSQL(final List<SearchTermField> terms, 
+                         final boolean idsOnly, 
+                         final Vector<Integer> ids, 
+                         final boolean isHQL)
     {
-        DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
-        int         currentYear   = Calendar.getInstance().get(Calendar.YEAR); 
-        String      searchTerm    = searchTermArg;
-        
         StringBuilder sqlStr = new StringBuilder("SELECT ");
         
         DBTableInfo ti = getTableInfo(); // this sets the data member tableInfo
@@ -291,7 +286,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         sqlStr.append(" WHERE ");
         
         boolean addParen = false;
-        if (ids != null || searchTerm.length() == 0)
+        if (ids != null || terms.size() == 0)
         {
             sqlStr.append(tableInfo.getAbbrev()); 
             sqlStr.append('.'); 
@@ -325,197 +320,139 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         
         int cnt = 0;
         
-        if (searchTerm.length() > 0)
+        if (terms.size() > 0)
         {
-            String[] terms;
-            if (searchTerm.startsWith("\"") || searchTerm.startsWith("\"") || searchTerm.startsWith("\""))
+            for (SearchTermField term : terms)
             {
-                searchTerm = StringUtils.stripStart(searchTerm, "\"'`");
-                searchTerm = StringUtils.stripEnd(searchTerm, "\"'`");
-                terms = new String[] {searchTerm};
-                
-            } else
-            {
-                terms = StringUtils.split(searchTerm, ' ');
-            }
-            
-            for (String term : terms)
-            {
-                //log.debug(term);
-                String  termStr         = term;
-                boolean isDate          = false;
-                boolean isNumeric       = false;
-                boolean isYearOnly      = false;
-                boolean hasDecimalPoint = false;
-                boolean startWildCard   = false;
-                boolean endWildCard     = false;
-                
-                if (termStr.startsWith("*"))
+                if (!term.isSingleChar())
                 {
-                    startWildCard = true;
-                    termStr = termStr.substring(1);
-                }
-                
-                if (termStr.endsWith("*"))
-                {
-                    endWildCard = true;
-                    termStr = termStr.substring(0, termStr.length()-1);
-                }
-                
-                // First check to see if it is all numeric.
-                if (StringUtils.isNumeric(termStr))
-                {
-                    isNumeric       = true;
-                    hasDecimalPoint = StringUtils.contains(termStr, '.');
-                    if (!hasDecimalPoint && termStr.length() == 4)
-                    {
-                        int year = Integer.parseInt(termStr);
-                        isYearOnly = year > 1000 && year <= currentYear;
-                    } else
-                    {
-                        isYearOnly = false;
-                    }
-                } else
-                {
-                    // Check to see if it is date
-                    DateParser dd         = new DateParser(scrDateFormat.getSimpleDateFormat().toPattern());
-                    Date       searchDate = dd.parseDate(searchTermArg);
-                    if (searchDate != null)
-                    {
-                        try
-                        {
-                            termStr = dbDateFormat.format(searchDate);
-                            isDate  = true;
-                            
-                        } catch (Exception ex)
-                        {
-                            // should never get here
-                        }
-                    }
-                }
+                    String termStr = term.getTerm();
+                    String abbrev  = tableInfo.getAbbrev(); 
     
-                String abbrev = tableInfo.getAbbrev(); 
-
-                for (SearchFieldConfig searchField : searchFields)
-                {
-                    String numericTermStr   = null;
-                    String      clause      = null;
-                    DBFieldInfo fi          = searchField.getFieldInfo();
-                    boolean     isFieldDate = fi.getDataClass() == Date.class || searchField.getFieldInfo().getDataClass() == Calendar.class;
-                    String      fieldName   = isHQL ? fi.getName() : fi.getColumn();
-                    
-                    boolean isFormatted  = false;
-                    UIFieldFormatterIFace formatter = fi.getFormatter();
-                    
-                    if (formatter != null)
+                    for (SearchFieldConfig searchField : searchFields)
                     {
-                        if (formatter.isNumeric())
+                        String numericTermStr   = null;
+                        String      clause      = null;
+                        DBFieldInfo fi          = searchField.getFieldInfo();
+                        boolean     isFieldDate = fi.getDataClass() == Date.class || searchField.getFieldInfo().getDataClass() == Calendar.class;
+                        String      fieldName   = isHQL ? fi.getName() : fi.getColumn();
+                        
+                        boolean isFormatted  = false;
+                        UIFieldFormatterIFace formatter = fi.getFormatter();
+                        
+                        if (formatter != null)
                         {
-                            isFormatted = isNumeric && !hasDecimalPoint;
-                            if (isFormatted)
+                            if (formatter.isNumeric())
                             {
-                                numericTermStr = (String)formatter.formatFromUI(termStr);
-                            }
-                            
-                        } else
-                        {
-                            if (formatter.isLengthOK(termStr.length()))
-                            {
-                                isFormatted = true;
-                                if (!formatter.isValid(termStr))
+                                isFormatted = term.isOn(SearchTermField.IS_NUMERIC) && !term.isOn(SearchTermField.HAS_DEC_POINT);
+                                if (isFormatted)
                                 {
-                                    continue;
+                                    numericTermStr = (String)formatter.formatFromUI(termStr);
                                 }
-                            }
-                        }
-                    }
-                    
-                    if (ids == null)
-                    {
-                        if (isFieldDate)
-                        {
-                            if (isDate || isYearOnly)
+                                
+                            } else
                             {
-                                if (isDate)
+                                if (formatter.isLengthOK(termStr.length()))
                                 {
-                                    if (isFieldDate)
-                                    {
-                                        clause = abbrev + '.' + fieldName + " = " + "'" + termStr + "'";
-                                    } else
+                                    isFormatted = true;
+                                    if (!formatter.isValid(termStr))
                                     {
                                         continue;
                                     }
+                                }
+                            }
+                        }
+                        
+                        if (ids == null)
+                        {
+                            if (isFieldDate)
+                            {
+                                boolean isDate = term.isOn(SearchTermField.IS_DATE);
+                                if (isDate || term.isOn(SearchTermField.IS_YEAR_OF_DATE))
+                                {
+                                    if (isDate)
+                                    {
+                                        if (isFieldDate)
+                                        {
+                                            clause = abbrev + '.' + fieldName + " = " + "'" + termStr + "'";
+                                        } else
+                                        {
+                                            continue;
+                                        }
+                                        
+                                    } else
+                                    {
+                                        clause = "YEAR("+abbrev + '.' + fi.getName()+") = " + termStr;
+                                    }
+                                } else
+                                {
+                                    continue;
+                                }
+                                
+                            } else 
+                            {
+                                if (fi.getDataClass() == Float.class || fi.getDataClass() == Double.class || fi.getDataClass() == BigDecimal.class)
+                                {
+                                    if (!term.isOn(SearchTermField.IS_NUMERIC))
+                                    {
+                                        continue;
+                                    }
+                                    clause = fieldName + " = " + termStr;
+                                    
+                                } else if (fi.getDataClass() == Byte.class || fi.getDataClass() == Short.class || 
+                                           fi.getDataClass() == Integer.class|| fi.getDataClass() == Long.class)
+                                {
+                                    if (!term.isOn(SearchTermField.IS_NUMERIC) || term.isOn(SearchTermField.HAS_DEC_POINT))
+                                    {
+                                        continue;
+                                    }
+                                    clause = abbrev + '.' + fieldName + " = " + termStr;
+                                    
+                                } else if (isFormatted)
+                                {
+                                    clause = abbrev + '.' + fieldName + " = " + "'" + (numericTermStr != null ? numericTermStr : termStr) + "'";
                                     
                                 } else
                                 {
-                                    clause = "YEAR("+abbrev + '.' + fi.getName()+") = " + termStr;
+                                    boolean startWildCard = term.isOn(SearchTermField.STARTS_WILDCARD);
+                                    boolean endWildCard   = term.isOn(SearchTermField.ENDS_WILDCARD);
+                                    if (startWildCard || endWildCard)
+                                    {
+                                        clause = "LOWER(" + abbrev + '.' + fieldName + ") LIKE " + (startWildCard ? "'%" : "'") + termStr + (endWildCard ? "%'" : "'");
+                                    } else
+                                    {
+                                        clause = "LOWER(" + abbrev + '.' + fieldName + ") = " + "'" + termStr + "'";
+                                    }
                                 }
-                            } else
-                            {
-                                continue;
                             }
-                            
-                        } else 
+            
+                            if (clause != null)
+                            {
+                                if (cnt > 0) sqlStr.append(" OR ");
+                                sqlStr.append(clause);
+                            }
+                        }
+                        
+                        cnt++;
+                        
+                        if (!idsOnly)
                         {
-                            if (fi.getDataClass() == Float.class || fi.getDataClass() == Double.class || fi.getDataClass() == BigDecimal.class)
+                            if (searchField.getIsSortable())
                             {
-                                if (!isNumeric)
+                                if (orderByCnt == 0)
                                 {
-                                    continue;
-                                }
-                                clause = fieldName + " = " + termStr;
-                                
-                            } else if (fi.getDataClass() == Byte.class || fi.getDataClass() == Short.class || 
-                                       fi.getDataClass() == Integer.class|| fi.getDataClass() == Long.class)
-                            {
-                                if (!isNumeric || hasDecimalPoint)
-                                {
-                                    continue;
-                                }
-                                clause = abbrev + '.' + fieldName + " = " + termStr;
-                                
-                            } else if (isFormatted)
-                            {
-                                clause = abbrev + '.' + fieldName + " = " + "'" + (numericTermStr != null ? numericTermStr : termStr) + "'";
-                                
-                            } else
-                            {
-                                if (startWildCard || endWildCard)
-                                {
-                                    clause = "LOWER(" + abbrev + '.' + fieldName + ") LIKE " + (startWildCard ? "'%" : "'") + termStr + (endWildCard ? "%'" : "'");
+                                    orderBy.append(" ORDER BY ");
                                 } else
                                 {
-                                    clause = "LOWER(" + abbrev + '.' + fieldName + ") = " + "'" + termStr + "'";
+                                    orderBy.append(", ");
                                 }
+                                orderBy.append(abbrev);
+                                orderBy.append('.');
+                                orderBy.append(searchField.getFieldName());
+                                orderBy.append(searchField.getIsAscending() ? " ASC" : " DESC");
+                                
+                                orderByCnt++;
                             }
-                        }
-        
-                        if (clause != null)
-                        {
-                            if (cnt > 0) sqlStr.append(" OR ");
-                            sqlStr.append(clause);
-                        }
-                    }
-                    
-                    cnt++;
-                    
-                    if (!idsOnly)
-                    {
-                        if (searchField.getIsSortable())
-                        {
-                            if (orderByCnt == 0)
-                            {
-                                orderBy.append(" ORDER BY ");
-                            } else
-                            {
-                                orderBy.append(", ");
-                            }
-                            orderBy.append(abbrev);
-                            orderBy.append('.');
-                            orderBy.append(searchField.getFieldName());
-                            orderBy.append(searchField.getIsAscending() ? " ASC" : " DESC");
-                            
-                            orderByCnt++;
                         }
                     }
                 }
@@ -527,7 +464,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
             }
         }
         
-        if (cnt == 0 && searchTerm.length() > 0)
+        if (cnt == 0 && terms.size() > 0)
         {
             return null;
         }

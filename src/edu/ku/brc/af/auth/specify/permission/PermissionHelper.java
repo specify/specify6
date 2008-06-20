@@ -24,6 +24,7 @@ import javax.security.auth.Subject;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -47,7 +48,7 @@ public class PermissionHelper
 
     public static void invokeSubjectPermCall(final Permission myPerm)
     {
-        Subject subject = SpecifyUser.getCurrentSubject();
+        Subject subject = AppContextMgr.getInstance().getClassObject(Subject.class);
 
         boolean allowed = true;
         try

@@ -29,8 +29,6 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "storagetreedef")
 public class StorageTreeDef extends BaseTreeDef<Storage, StorageTreeDef, StorageTreeDefItem> implements java.io.Serializable
 {
-    private static StorageTreeDef currentStorageTreeDef = null;
-    
 	protected Integer				    storageTreeDefId;
 	protected String				    name;
 	protected String				    remarks;
@@ -356,21 +354,4 @@ public class StorageTreeDef extends BaseTreeDef<Storage, StorageTreeDef, Storage
     {
         return getIdentityTitle();
     }
-
-    /**
-     * @return the currentStorageTreeDef
-     */
-    public static StorageTreeDef getCurrentStorageTreeDef()
-    {
-        return currentStorageTreeDef;
-    }
-
-    /**
-     * @param currentStorageTreeDef the currentStorageTreeDef to set
-     */
-    public static void setCurrentStorageTreeDef(StorageTreeDef currentStorageTreeDef)
-    {
-        StorageTreeDef.currentStorageTreeDef = currentStorageTreeDef;
-    }
-    
 }

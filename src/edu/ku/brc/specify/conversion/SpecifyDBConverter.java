@@ -326,8 +326,8 @@ public class SpecifyDBConverter
                               final DatabaseConnectionProperties sourceDbProps,
                               final DatabaseConnectionProperties destDbProps) throws Exception
     {
-        boolean doAll            = false; 
-        boolean startfromScratch = false; 
+        boolean doAll            = true; 
+        boolean startfromScratch = true; 
         
         System.out.println("************************************************************");
         System.out.println("From "+databaseNameSource+" to "+databaseNameDest);
@@ -513,7 +513,7 @@ public class SpecifyDBConverter
                 //---------------------------------------------------------------------------------------
                 conversion.doInitialize();
                 
-                if (true)
+                if (false)
                 {
                     frame.incOverall();
                     
@@ -541,7 +541,7 @@ public class SpecifyDBConverter
                             List<?> list = localSession.createQuery("FROM Discipline WHERE disciplineId = "+conversion.getCurDisciplineID()).list();
                             dscp = (Discipline)list.get(0);
                         }
-                        Discipline.setCurrentDiscipline(dscp);
+                        AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
                         
                         if (dscp.getCollections().size() == 1)
                         {
@@ -561,7 +561,7 @@ public class SpecifyDBConverter
                                 collection = (Collection)list.get(0);
                             }
                         }
-                        Collection.setCurrentCollection(collection);
+                        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
                         
                         conversion.convertUSYSTables(localSession, collection);
                         
@@ -665,7 +665,7 @@ public class SpecifyDBConverter
                         specifyUser = DataBuilder.createSpecifyUser(username, email, password, userType);
                         specifyUser.addReference(userAgent, "agents");
                         
-                        userAgent.setDivision(Division.getCurrentDivision());
+                        userAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
                         DataBuilder.getSession().saveOrUpdate(userAgent);
                         DataBuilder.getSession().getTransaction().commit();
                         
@@ -684,10 +684,10 @@ public class SpecifyDBConverter
                         
                     } else
                     {
-                        SpecifyUser.setCurrentUser(specifyUser);
+                        AppContextMgr.getInstance().setClassObject(SpecifyUser.class, specifyUser);
                         // XXX Works for a Single Convert
                         Collection collection = (Collection)DataBuilder.getSession().createCriteria(Collection.class).list().get(0);
-                        Collection.setCurrentCollection(collection);
+                        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
                     }
 
                 } else
@@ -969,7 +969,7 @@ public class SpecifyDBConverter
                             List<?> list = localSession.createQuery("FROM Discipline WHERE disciplineId = "+conversion.getCurDisciplineID()).list();
                             dscp = (Discipline)list.get(0);
                         }
-                        Discipline.setCurrentDiscipline(dscp);
+                        AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
                         
                         if (dscp.getCollections().size() == 1)
                         {
@@ -989,7 +989,7 @@ public class SpecifyDBConverter
                                 collection = (Collection)list.get(0);
                             }
                         }
-                        Collection.setCurrentCollection(collection);
+                        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
                         
                         conversion.convertUSYSTables(localSession, collection);
                         

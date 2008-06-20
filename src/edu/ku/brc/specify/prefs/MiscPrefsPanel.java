@@ -16,6 +16,7 @@ package edu.ku.brc.specify.prefs;
 
 import java.awt.Component;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
@@ -57,7 +58,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         Component comp = form.getCompById(id);
         if (comp instanceof ValCheckBox)
         {
-            String ds = Discipline.getCurrentDiscipline().getName();
+            String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
             AppPreferences remotePrefs = AppPreferences.getRemote();
             boolean value = remotePrefs.getBoolean(prefName+"."+ds, defVal);
             ((ValCheckBox)comp).setSelected(value);
@@ -73,7 +74,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         Component comp = form.getCompById(id);
         if (comp instanceof ValCheckBox)
         {
-            String ds = Discipline.getCurrentDiscipline().getName();
+            String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
             AppPreferences remotePrefs = AppPreferences.getRemote();
             remotePrefs.putBoolean(prefName+"."+ds, ((ValCheckBox)comp).isSelected());
         } 

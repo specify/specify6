@@ -105,7 +105,6 @@ import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.conversion.SpecifyDBConverter;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -282,7 +281,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         remotePrefs.getBoolean("google.earth.useorigheaders", true, true); //$NON-NLS-1$
         remotePrefs.getInt("SubPaneMgr.MaxPanes", 12, true); //$NON-NLS-1$
         
-        String ds = Discipline.getCurrentDiscipline().getName();
+        String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
         remotePrefs.getBoolean("Interactions.Using.Interactions."+ds, true, true); //$NON-NLS-1$
         remotePrefs.getBoolean("Interactions.Doing.Gifts."+ds, true, true); //$NON-NLS-1$
         remotePrefs.getBoolean("Interactions.Doing.Exchanges."+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany), true); //$NON-NLS-1$
@@ -1390,7 +1389,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             return;
         }
         
-        SpecifyDBConverter.addStorageTreeFomrXML();
+        //SpecifyDBConverter.addStorageTreeFomrXML();
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         Storage storage = getStorageItem(session, "Dyche Hall/Basement/Storage Room #1/Shelf A1", null);
@@ -1420,11 +1419,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
             }
             session.commit();
             
-            
-            /*
-            CollectionObject co = session.getData(CollectionObject.class, "catalogNumber", "000029831", DataProviderSessionIFace.CompareType.Equals);
-            
-            */
         } catch (Exception ex)
         {
             session.rollback();
@@ -1863,22 +1857,18 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 setupUIControlSize(AppPreferences.getRemote());
             }
             
-            String iconName = AppPreferences.getRemote().get("ui.formatting.disciplineicon", "CollectionObject"); //$NON-NLS-1$ //$NON-NLS-2$
-            IconManager.aliasImages(iconName,             // Source
-                                    "collectionobject");  // Dest //$NON-NLS-1$
-            
             // XXX Get the current locale from prefs PREF
             
-            if (Discipline.getCurrentDiscipline() == null)
+            if (AppContextMgr.getInstance().getClassObject(Discipline.class) == null)
             {
                 return;
             }
             
-            //int disciplineeId = Discipline.getCurrentDiscipline().getDisciplineId();
+            //int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
             //SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
             //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
             
-            //Collection.setCurrentCollection(null);
+            //AppContextMgr.getInstance().setClassObject(Collection.class, null);
             //Discipline.setCurrentDiscipline(null);
             
             // "false" means that it should use any cached values it can find to automatically initialize itself
@@ -1913,7 +1903,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 dbLoginPanel.getWindow().setVisible(false);
             }
             
-            if (Collection.getCurrentCollection() == null)
+            if (AppContextMgr.getInstance().getClassObject(Collection.class) == null)
             {
                 
                 // TODO This is really bad because there is a Database Login with no Specify login
@@ -2107,7 +2097,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void setDatabaseNameAndCollection()
     {
-        String dbName = databaseName + (Collection.getCurrentCollection() != null ? " : "+Collection.getCurrentCollection().getCollectionName() :""); //$NON-NLS-1$ //$NON-NLS-2$
+        String dbName = databaseName + (AppContextMgr.getInstance().getClassObject(Collection.class) != null ? " : "+AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName() :""); //$NON-NLS-1$ //$NON-NLS-2$
         statusField.setSectionText(1, dbName);
   
     }
@@ -2392,7 +2382,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
               log.debug("Checking for update....");
               try
               {
-                  /*if (false)
+                  /*if (true)
                   {
                       ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
                       {

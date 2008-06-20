@@ -46,7 +46,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     // Used for checking to see if we have any dangling creates without closes
     protected static int     createsCounts = 0;
     protected static int     closesCounts  = 0;
-    protected static boolean SHOW_COUNTS = false; // XXX RELEASE
+    protected static boolean SHOW_COUNTS = true; // XXX RELEASE
     
     protected Session     session         = null;
     protected Exception   recentException = null;

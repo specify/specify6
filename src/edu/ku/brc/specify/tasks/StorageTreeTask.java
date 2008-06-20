@@ -17,6 +17,7 @@ import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -71,7 +72,7 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
     @Override
     protected StorageTreeDef getCurrentTreeDef()
     {
-        return Discipline.getCurrentDiscipline().getStorageTreeDef();
+        return AppContextMgr.getInstance().getClassObject(Discipline.class).getStorageTreeDef();
     }
     
     /**

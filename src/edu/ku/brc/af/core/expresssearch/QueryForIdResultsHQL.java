@@ -156,7 +156,8 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         {
             return overrideSQL;
         }
-        return searchTableConfig.getSQL(searchTermArg, false, ids == null && recIds != null ? recIds : ids, true);
+        ESTermParser.parse(searchTermArg, true);
+        return searchTableConfig.getSQL(ESTermParser.getFields(), false, ids == null && recIds != null ? recIds : ids, true);
     }
 
     /* (non-Javadoc)

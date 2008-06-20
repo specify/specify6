@@ -308,7 +308,7 @@ public class TestAutoNumbering extends TestCase
         
         Agent      agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
         Collection collection = (Collection)session.createCriteria(Collection.class).list().get(0);
-        Collection.setCurrentCollection(collection);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
         CollectionObject colObj = createCollectionObject("000000100", "RSC100", agent, collection,  3, null, Calendar.getInstance(), "BuildSampleDatabase");
         HibernateUtil.beginTransaction();
@@ -343,18 +343,18 @@ public class TestAutoNumbering extends TestCase
         Collection collection = (Collection)session.createCriteria(Collection.class).list().get(0);
         
         Discipline discipline = (Discipline)session.createCriteria(Discipline.class).list().get(0);
-        Discipline.setCurrentDiscipline(discipline);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
         Collection collection2 = createCollection("Fish", "Fish Tissue", collection.getCatalogNumberingScheme(), discipline);
         HibernateUtil.beginTransaction();
         persist(collection2);
         HibernateUtil.commitTransaction();
 
-        Collection.setCurrentCollection(collection);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
         CollectionObject colObj1 = createCollectionObject("000000100", "RSC100", agent, collection,  3, null, Calendar.getInstance(), "BuildSampleDatabase");
         
-        Collection.setCurrentCollection(collection2);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection2);
         CollectionObject colObj2 = createCollectionObject("000000200", "RSC200", agent, collection2,  3, null, Calendar.getInstance(), "BuildSampleDatabase");
         
         HibernateUtil.beginTransaction();
@@ -394,7 +394,7 @@ public class TestAutoNumbering extends TestCase
         log.info("testNumericDBNum");
         
         Discipline discipline = (Discipline)session.createCriteria(Discipline.class).list().get(0);
-        Discipline.setCurrentDiscipline(discipline);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAN", "", false);
         HibernateUtil.beginTransaction();
@@ -407,7 +407,7 @@ public class TestAutoNumbering extends TestCase
         persist(collection);
         HibernateUtil.commitTransaction();
 
-        Collection.setCurrentCollection(collection);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
         String currentYearCatNum = Calendar.getInstance().get(Calendar.YEAR) + "-000001";
         
@@ -419,7 +419,7 @@ public class TestAutoNumbering extends TestCase
         
         log.info("["+currentYearCatNum+"]["+valText.getValue()+"]");
         
-        Collection.setCurrentCollection(null);
+        AppContextMgr.getInstance().setClassObject(Collection.class, null);
         
         collection.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric.getCollections().remove(collection);
@@ -444,7 +444,7 @@ public class TestAutoNumbering extends TestCase
         
         Agent          agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
         Discipline     discipline = (Discipline)session.createCriteria(Discipline.class).list().get(0);
-        Discipline.setCurrentDiscipline(discipline);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAN", "", false);
         HibernateUtil.beginTransaction();
@@ -455,7 +455,7 @@ public class TestAutoNumbering extends TestCase
         HibernateUtil.beginTransaction();
         persist(collection);
         HibernateUtil.commitTransaction();
-        Collection.setCurrentCollection(collection);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
         
         int    currentYear       = Calendar.getInstance().get(Calendar.YEAR);
         String currentYearCatNum = currentYear + "-000001";
@@ -474,7 +474,7 @@ public class TestAutoNumbering extends TestCase
         
         log.info("["+currentYearNext+"]["+valText.getValue()+"]");
         
-        Collection.setCurrentCollection(null);
+        AppContextMgr.getInstance().setClassObject(Collection.class, null);
         
         collection.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric.getCollections().remove(collection);
@@ -501,7 +501,7 @@ public class TestAutoNumbering extends TestCase
         
         Agent          agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
         Discipline     discipline    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
-        Discipline.setCurrentDiscipline(discipline);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAN", "", false);
         HibernateUtil.beginTransaction();
@@ -531,11 +531,11 @@ public class TestAutoNumbering extends TestCase
         String currentYearCatNum3 = currentYear + "-000300";
         String currentYearNext    = currentYear + "-000003";
 
-        Collection.setCurrentCollection(collection1);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection1);
         CollectionObject colObj  = createCollectionObject(currentYearCatNum,  "RSC100", agent, collection1, 3, null, Calendar.getInstance(), "me");
-        Collection.setCurrentCollection(collection2);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection2);
         CollectionObject colObj2 = createCollectionObject(currentYearCatNum2, "RSC200", agent, collection2, 3, null, Calendar.getInstance(), "me");
-        Collection.setCurrentCollection(collection3);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection3);
         CollectionObject colObj3 = createCollectionObject(currentYearCatNum3, "RSC300", agent, collection3, 3, null, Calendar.getInstance(), "me");
         
         HibernateUtil.beginTransaction();
@@ -544,7 +544,7 @@ public class TestAutoNumbering extends TestCase
         persist(colObj3);
         HibernateUtil.commitTransaction();
         
-        Collection.setCurrentCollection(collection1);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection1);
         
         UIFieldFormatterIFace fmt = fmtMgr.getFmt("CatalogNumber");
         assertNotNull(fmt);
@@ -567,7 +567,7 @@ public class TestAutoNumbering extends TestCase
         session.delete(colObj3);
         HibernateUtil.commitTransaction();
         
-        Collection.setCurrentCollection(null);
+        AppContextMgr.getInstance().setClassObject(Collection.class, null);
         
         collection2.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric.getCollections().remove(collection2);
@@ -602,7 +602,7 @@ public class TestAutoNumbering extends TestCase
         
         Agent          agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
         Discipline     discipline    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
-        Discipline.setCurrentDiscipline(discipline);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAlphaNumByYear", "", false);
         HibernateUtil.beginTransaction();
@@ -632,11 +632,11 @@ public class TestAutoNumbering extends TestCase
         String currentYearCatNum3 = currentYear + "-000300";
         String currentYearNext    = currentYear + "-000003";
 
-        Collection.setCurrentCollection(collection1);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection1);
         CollectionObject colObj  = createCollectionObject(currentYearCatNum,  "RSC100", agent, collection1, 3, null, Calendar.getInstance(), "me");
-        Collection.setCurrentCollection(collection2);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection2);
         CollectionObject colObj2 = createCollectionObject(currentYearCatNum2, "RSC200", agent, collection2, 3, null, Calendar.getInstance(), "me");
-        Collection.setCurrentCollection(collection3);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection3);
         CollectionObject colObj3 = createCollectionObject(currentYearCatNum3, "RSC300", agent, collection3, 3, null, Calendar.getInstance(), "me");
         
         HibernateUtil.beginTransaction();
@@ -645,7 +645,7 @@ public class TestAutoNumbering extends TestCase
         persist(colObj3);
         HibernateUtil.commitTransaction();
         
-        Collection.setCurrentCollection(collection1);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection1);
         
         UIFieldFormatterIFace fmt = fmtMgr.getFmt("CatalogNumberAlphaNumByYear");
         assertNotNull(fmt);
@@ -666,7 +666,7 @@ public class TestAutoNumbering extends TestCase
         session.delete(colObj3);
         HibernateUtil.commitTransaction();
         
-        Collection.setCurrentCollection(null);
+        AppContextMgr.getInstance().setClassObject(Collection.class, null);
         
         collection2.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric.getCollections().remove(collection2);
@@ -701,7 +701,7 @@ public class TestAutoNumbering extends TestCase
         
         Agent          agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
         Discipline     discipline    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
-        Discipline.setCurrentDiscipline(discipline);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAlphaNumByYear", "", false);
         HibernateUtil.beginTransaction();
@@ -731,11 +731,11 @@ public class TestAutoNumbering extends TestCase
         String currentYearCatNum3 = currentYear + "-000300";
         String currentYearNext    = currentYear + "-000001";
 
-        Collection.setCurrentCollection(collection1);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection1);
         CollectionObject colObj  = createCollectionObject(currentYearCatNum,  "RSC100", agent, collection1, 3, null, Calendar.getInstance(), "me");
-        Collection.setCurrentCollection(collection2);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection2);
         CollectionObject colObj2 = createCollectionObject(currentYearCatNum2, "RSC200", agent, collection2, 3, null, Calendar.getInstance(), "me");
-        Collection.setCurrentCollection(collection3);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection3);
         CollectionObject colObj3 = createCollectionObject(currentYearCatNum3, "RSC300", agent, collection3, 3, null, Calendar.getInstance(), "me");
         
         HibernateUtil.beginTransaction();
@@ -744,7 +744,7 @@ public class TestAutoNumbering extends TestCase
         persist(colObj3);
         HibernateUtil.commitTransaction();
         
-        Collection.setCurrentCollection(collection1);
+        AppContextMgr.getInstance().setClassObject(Collection.class, collection1);
         
         UIFieldFormatterIFace fmt = fmtMgr.getFmt("CatalogNumberAlphaNumByYear");
         assertNotNull(fmt);
@@ -765,7 +765,7 @@ public class TestAutoNumbering extends TestCase
         session.delete(colObj3);
         HibernateUtil.commitTransaction();
         
-        Collection.setCurrentCollection(null);
+        AppContextMgr.getInstance().setClassObject(Collection.class, null);
         
         collection2.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric.getCollections().remove(collection2);

@@ -16,6 +16,7 @@ import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -77,26 +78,31 @@ public class TreePrefs extends GenericPrefsPanel
         try
         {
             DefModelFiller<Taxon, TaxonTreeDef, TaxonTreeDefItem> txFiller = new DefModelFiller<Taxon, TaxonTreeDef, TaxonTreeDefItem>();
-            txFiller.fill("1", session, TaxonTreeDef.getCurrentTaxonTreeDef(), Taxon.class);
+            txFiller.fill("1", session, AppContextMgr.getInstance().getClassObject(TaxonTreeDef.class), Taxon.class);
             fillers.put(Taxon.class, txFiller);
             
             DefModelFiller<Geography, GeographyTreeDef, GeographyTreeDefItem> geoFiller = new DefModelFiller<Geography, GeographyTreeDef, GeographyTreeDefItem>();
-            geoFiller.fill("2", session, GeographyTreeDef.getCurrentGeographyTreeDef(), Geography.class);
+            geoFiller.fill("2", session, AppContextMgr.getInstance().getClassObject(GeographyTreeDef.class), Geography.class);
             fillers.put(Geography.class, geoFiller);
             
+            LithoStratTreeDef lstd = AppContextMgr.getInstance().getClassObject(LithoStratTreeDef.class);
+            if (lstd != null)
+            {
                 DefModelFiller<LithoStrat, LithoStratTreeDef, LithoStratTreeDefItem> lithoFiller = new DefModelFiller<LithoStrat, LithoStratTreeDef, LithoStratTreeDefItem>();
-                lithoFiller.fill("3", session, LithoStratTreeDef.getCurrentLithoStratTreeDef(), LithoStrat.class);
+                lithoFiller.fill("3", session, lstd, LithoStrat.class);
                 fillers.put(LithoStrat.class, lithoFiller);
-            
-            if (GeologicTimePeriodTreeDef.getCurrentGeologicTimePeriodTreeDef() != null)
+            }
+        
+            GeologicTimePeriodTreeDef gtptd = AppContextMgr.getInstance().getClassObject(GeologicTimePeriodTreeDef.class);
+            if (gtptd != null)
             {
                 DefModelFiller<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem> gtpFiller = new DefModelFiller<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem>();
-                gtpFiller.fill("4", session, GeologicTimePeriodTreeDef.getCurrentGeologicTimePeriodTreeDef(), GeologicTimePeriod.class);
+                gtpFiller.fill("4", session, gtptd, GeologicTimePeriod.class);
                 fillers.put(GeologicTimePeriod.class, gtpFiller);
             }
             
             DefModelFiller<Storage, StorageTreeDef, StorageTreeDefItem> storageFiller = new DefModelFiller<Storage, StorageTreeDef, StorageTreeDefItem>();
-            storageFiller.fill("5", session, StorageTreeDef.getCurrentStorageTreeDef(), Storage.class);
+            storageFiller.fill("5", session, AppContextMgr.getInstance().getClassObject(StorageTreeDef.class), Storage.class);
             fillers.put(Storage.class, storageFiller);
             
         } catch (Exception ex)

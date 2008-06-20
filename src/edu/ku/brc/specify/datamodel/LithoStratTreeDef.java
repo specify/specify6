@@ -51,8 +51,6 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "lithostrattreedef")
 public class LithoStratTreeDef extends BaseTreeDef<LithoStrat, LithoStratTreeDef, LithoStratTreeDefItem> implements java.io.Serializable
 {
-    private static LithoStratTreeDef currentLithoStratTreeDef = null;
-    
 	protected Integer                    lithoStratTreeDefId;
     protected String                     name;
     protected String                     remarks;
@@ -406,21 +404,4 @@ public class LithoStratTreeDef extends BaseTreeDef<LithoStrat, LithoStratTreeDef
     {
         return getIdentityTitle();
     }
-
-    /**
-     * @return the currentLithoStratTreeDef
-     */
-    public static LithoStratTreeDef getCurrentLithoStratTreeDef()
-    {
-        return currentLithoStratTreeDef;
-    }
-
-    /**
-     * @param currentLithoStratTreeDef the currentLithoStratTreeDef to set
-     */
-    public static void setCurrentLithoStratTreeDef(LithoStratTreeDef currentLithoStratTreeDef)
-    {
-        LithoStratTreeDef.currentLithoStratTreeDef = currentLithoStratTreeDef;
-    }
-    
 }

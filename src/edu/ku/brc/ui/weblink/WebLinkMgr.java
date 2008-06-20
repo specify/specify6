@@ -30,7 +30,7 @@ import edu.ku.brc.dbsupport.DBTableInfo;
  */
 public class WebLinkMgr
 {
-    public static final String factoryName = "edu.ku.brc.ui.weblink.WebLinkMgr";
+    public static final String factoryName = "edu.ku.brc.ui.weblink.WebLinkMgr"; //$NON-NLS-1$
     
     //private static final Logger log = Logger.getLogger(WebLinkMgr.class);
     
@@ -73,7 +73,7 @@ public class WebLinkMgr
                  
             } catch (Exception e) 
             {
-                InternalError error = new InternalError("Can't instantiate WebLink factory " + factoryNameStr);
+                InternalError error = new InternalError("Can't instantiate WebLink factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
             }
@@ -120,7 +120,7 @@ public class WebLinkMgr
     /**
      * @param xml
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     protected void loadFromXML(final String xml)
     {
         if (StringUtils.isNotEmpty(xml))
@@ -162,12 +162,12 @@ public class WebLinkMgr
      */
     public void read()
     {
-        throw new RuntimeException("Read is not implemented");
+        throw new RuntimeException("Read is not implemented"); //$NON-NLS-1$
     }
 
     public void write()
     {
-        throw new RuntimeException("Write is not implemented");
+        throw new RuntimeException("Write is not implemented"); //$NON-NLS-1$
     }
 
     /**

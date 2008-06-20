@@ -7,6 +7,7 @@
 
 package edu.ku.brc.specify.web;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -87,6 +88,7 @@ import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -94,6 +96,8 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
+import edu.ku.brc.specify.tasks.QueryTask;
+import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.IconManager;
@@ -128,7 +132,6 @@ public class SpecifyExplorer extends HttpServlet
     
     protected String packageName = "edu.ku.brc.specify.datamodel.";
     
-    protected static Session   session = null;
     protected static MyFmtMgr  fmtMgr  = null;
     protected SimpleDateFormat dateFormatter;
     protected static String    template        = "";
@@ -142,12 +145,13 @@ public class SpecifyExplorer extends HttpServlet
     
     //protected Vector<String> classList = new Vector<String>();
     
-    protected DataGetterForObj getter = new DataGetterForObj();
+    protected DataGetterForObj   getter = new DataGetterForObj();
     
-    protected ExpressSearchTask expressSearch         = null;
-    protected ExplorerESPanel   expressSearchExplorer = null;
+    protected QueryTask          queryTask             = null;
+    protected ExpressSearchTask  expressSearch         = null;
+    protected ExplorerESPanel    expressSearchExplorer = null;
     
-    protected QueryReportHandler      queryHandler;
+    protected QueryReportHandler queryHandler;
     
     
     /**
@@ -410,7 +414,7 @@ public class SpecifyExplorer extends HttpServlet
                 }
             }
             
-            Collection.setCurrentCollection(collection);
+            AppContextMgr.getInstance().setClassObject(Collection.class, collection);
             
             if (collection != null)
             {
@@ -419,15 +423,17 @@ public class SpecifyExplorer extends HttpServlet
                 if (discipline != null)
                 {
                     
-                    Discipline.setCurrentDiscipline(discipline);
-                    Division.setCurrentDivision(discipline.getDivision());
+                    AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
+                    AppContextMgr.getInstance().setClassObject(Division.class, discipline.getDivision());
                     
                 	Agent.setUserAgent(user, discipline.getAgents());
-                    TaxonTreeDef.setCurrentTaxonTreeDef(discipline.getTaxonTreeDef());
-                    GeologicTimePeriodTreeDef.setCurrentGeologicTimePeriodTreeDef(discipline.getGeologicTimePeriodTreeDef());
-                    StorageTreeDef.setCurrentStorageTreeDef(discipline.getStorageTreeDef());
-                    LithoStratTreeDef.setCurrentLithoStratTreeDef(discipline.getLithoStratTreeDef());
-                    GeographyTreeDef.setCurrentGeographyTreeDef(discipline.getGeographyTreeDef());
+                	
+                	AppContextMgr am = AppContextMgr.getInstance();
+                    am.setClassObject(TaxonTreeDef.class, discipline.getTaxonTreeDef());
+                    am.setClassObject(GeologicTimePeriodTreeDef.class, discipline.getGeologicTimePeriodTreeDef());
+                    am.setClassObject(StorageTreeDef.class, discipline.getStorageTreeDef());
+                    am.setClassObject(LithoStratTreeDef.class, discipline.getLithoStratTreeDef());
+                    am.setClassObject(GeographyTreeDef.class, discipline.getGeographyTreeDef());
                     
                     int disciplineeId = discipline.getDisciplineId();
                     SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
@@ -488,9 +494,7 @@ public class SpecifyExplorer extends HttpServlet
             return false;
         }         
         
-        session = HibernateUtil.getCurrentSession();
-        
-        queryHandler = new QueryReportHandler(session);
+        queryHandler = new QueryReportHandler();
 
         log.info("Creating database "+dbName+"....");
         
@@ -520,38 +524,32 @@ public class SpecifyExplorer extends HttpServlet
             AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(DATABASE_NAME, "rods", false);
             if (status == AppContextMgr.CONTEXT_STATUS.OK)
             {
-                if (Discipline.getCurrentDiscipline() != null)
+                if (AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
                 {
-                    int disciplineeId = Discipline.getCurrentDiscipline().getDisciplineId();
+                    int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
                     SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
                 }
             }
             
         } else
         {
-            DataProviderSessionIFace hibSession = null;
-            try
-            {
-                hibSession = DataProviderFactory.getInstance().createSession();
-                
-            } catch (org.hibernate.exception.SQLGrammarException ex)
-            {
-                log.error(ex);
-                return false;
-            }
             
-            SpecifyUser user = null;
-            String userName = "rods";
-            boolean debug = true;
+            SpecifyUser user     = null;
+            String      userName = "rods";
+            boolean     debug    = true;
+            
+            DataProviderSessionIFace session = null;
             try
             {
-                List<?> list = hibSession.getDataList(SpecifyUser.class, "name", userName);
+                session = DataProviderFactory.getInstance().createSession();
+                
+                List<?> list = session.getDataList(SpecifyUser.class, "name", userName);
                 if (list.size() == 1)
                 {
                     user = (SpecifyUser)list.get(0);
                     user.getAgents(); // makes sure the Agent is not lazy loaded
-                    hibSession.evict( user.getAgents() );
-                    SpecifyUser.setCurrentUser(user);
+                    //session.evict( user.getAgents() );
+                    AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
         
                 } else
                 {
@@ -568,7 +566,7 @@ public class SpecifyExplorer extends HttpServlet
                 // additional XML Resources.
                 
                 // Ask the User to choose which Collection they will be working with
-                Collection collection = setupCurrentCollection(hibSession, user, "Fish");
+                Collection collection = setupCurrentCollection(session, user, "Fish");
                 if (collection == null)
                 {
                     // Return false but don't mess with anything that has been set up so far
@@ -584,17 +582,18 @@ public class SpecifyExplorer extends HttpServlet
                 if (debug) log.debug("Def Type["+userType+"]");
                 
         
-                Discipline discipline = hibSession.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ;
+                Discipline discipline = session.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ;
                 discipline.getDeterminationStatuss().size(); // make sure they are loaded
-                Discipline.setCurrentDiscipline(discipline);
-                Division.setCurrentDivision(discipline.getDivision());
+                AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
+                AppContextMgr.getInstance().setClassObject(Division.class, discipline.getDivision());
                 
             } catch (Exception ex)
             {
                 log.error(ex);
+                
             } finally
             {
-                hibSession.close();
+                session.close();
             }
         }
         // AppContextMgr.getInstance().
@@ -634,7 +633,7 @@ public class SpecifyExplorer extends HttpServlet
     public void setUpClasses()
     {
         //Collection collection = (Collection)session.createCriteria(Collection.class).list().get(0);
-        //Collection.setCurrentCollection(collection);
+        //AppContextMgr.getInstance().setClassObject(Collection.class, collection);
     }
     
     /**
@@ -2030,8 +2029,11 @@ public class SpecifyExplorer extends HttpServlet
                                  final String      fullClassName,
                                  final HttpServletRequest request)
     {
+        DataProviderSessionIFace session = null;
         try
         {
+            session = DataProviderFactory.getInstance().createSession();
+            
             Class<?>         clsObj    = Class.forName(fullClassName);
             ClassDisplayInfo cdi       = classHash.get(clsObj.getSimpleName());
             String           className = cdi.getClassName();
@@ -2214,15 +2216,8 @@ public class SpecifyExplorer extends HttpServlet
             }
             
             //out.println("SQL ["+sql + "]");
-            List<?> list = null;
-            try
-            {
-                list = SpecifyExplorer.session.createQuery(sql.toString()).list();
+            List<?> list = session.createQuery(sql.toString()).list();
                 
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
             
             if (list == null || list.size() == 0)
             {
@@ -2250,6 +2245,12 @@ public class SpecifyExplorer extends HttpServlet
         } catch (Exception ex)
         {
             ex.printStackTrace();
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
     }
     
@@ -2451,14 +2452,27 @@ public class SpecifyExplorer extends HttpServlet
                     
                     if (cdi.isUseIdentityTitle())
                     {
-                        FormDataObjIFace fdi = (FormDataObjIFace)SpecifyExplorer.session.createQuery("from "+className+" where id = "+id).list().get(0);
-                        if (fdi != null)
+                        DataProviderSessionIFace session = null;
+                        try
                         {
-                            String title = fdi.getIdentityTitle();
-                            if (StringUtils.isNotEmpty(title))
+                            session = DataProviderFactory.getInstance().createSession();
+                            FormDataObjIFace fdi = (FormDataObjIFace)session.createQuery("from "+className+" where id = "+id).list().get(0);
+                            if (fdi != null)
                             {
-                                name = title;
+                                String title = fdi.getIdentityTitle();
+                                if (StringUtils.isNotEmpty(title))
+                                {
+                                    name = title;
+                                }
                             }
+                        } catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                            //log.error(ex);
+                            
+                        } finally
+                        {
+                            session.close();    
                         }
                         
                     } else if (cdi.getIndexClass() != null)
@@ -2764,205 +2778,223 @@ public class SpecifyExplorer extends HttpServlet
                              final String pointsStr,
                              final boolean sortByCE)
     {
-        
-        String mapTemplate = "";
+        DataProviderSessionIFace session = null;
         try
         {
-            File templateFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "site/map_template.html");
-            mapTemplate = FileUtils.readFileToString(templateFile);
-            
-        } catch (IOException ex)
-        {
-            ex.printStackTrace();
-            out.println(ex.toString());
-        }
-        
-        if (StringUtils.isEmpty(template))
-        {
-            out.println("The template file is empty!");
-        }
-        
-        int inx = mapTemplate.indexOf(contentTag);
-        String subContent = mapTemplate.substring(0, inx);
-        out.println(StringUtils.replace(subContent, "<!-- Title -->", "Mapping Collection Objects"));
-        
-        
-        String[] points = StringUtils.splitPreserveAllTokens(pointsStr, ';');
-        /*System.out.println("["+pointsStr+"]");
-        for (int i=0;i<points.length;i++)
-        {
-            System.out.println("i["+i+"]Loc["+points[i]+"] CO["+points[i+1]+"]");
-            i++;
-        }*/
-        
-        double maxLat = Double.MIN_VALUE;
-        double minLat = Double.MAX_VALUE;
-        
-        double maxLon = Double.MIN_VALUE;
-        double minLon = Double.MAX_VALUE;
-        
-        //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        
-        Hashtable<Locality, CollectingEvent> locToCE = new Hashtable<Locality, CollectingEvent>();
-        
-        boolean drawLines = false;
+            session = DataProviderFactory.getInstance().createSession();
 
-        Hashtable<CollectingEvent, CEForPoly> hash = new Hashtable<CollectingEvent, CEForPoly>();
-        StringBuilder locStr = new StringBuilder();
-        
-        int locCnt = 0;
-        for (int i=0;i<points.length;i++)
-        {
-            //System.out.println("i["+i+"]Loc["+points[i]+"]");
-            if (StringUtils.isEmpty(points[i]))
+            String mapTemplate = "";
+            try
             {
-                break;
+                File templateFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "site/map_template.html");
+                mapTemplate = FileUtils.readFileToString(templateFile);
+                
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();
+                out.println(ex.toString());
             }
             
-            //String title = "";
-            Locality locality = (Locality)SpecifyExplorer.session.createQuery("from Locality WHERE id = "+points[i]).list().get(0);
-            if (locality != null)
+            if (StringUtils.isEmpty(template))
             {
-                StringBuilder sb = new StringBuilder();
-                String[] colObjsIds = StringUtils.splitPreserveAllTokens(points[i+1], ',');
-                for (String id : colObjsIds)
+                out.println("The template file is empty!");
+            }
+            
+            int inx = mapTemplate.indexOf(contentTag);
+            String subContent = mapTemplate.substring(0, inx);
+            out.println(StringUtils.replace(subContent, "<!-- Title -->", "Mapping Collection Objects"));
+            
+            
+            String[] points = StringUtils.splitPreserveAllTokens(pointsStr, ';');
+            /*System.out.println("["+pointsStr+"]");
+            for (int i=0;i<points.length;i++)
+            {
+                System.out.println("i["+i+"]Loc["+points[i]+"] CO["+points[i+1]+"]");
+                i++;
+            }*/
+            
+            double maxLat = Double.MIN_VALUE;
+            double minLat = Double.MAX_VALUE;
+            
+            double maxLon = Double.MIN_VALUE;
+            double minLon = Double.MAX_VALUE;
+            
+    
+            
+            //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            
+            Hashtable<Locality, CollectingEvent> locToCE = new Hashtable<Locality, CollectingEvent>();
+            
+            boolean drawLines = false;
+    
+            Hashtable<CollectingEvent, CEForPoly> hash = new Hashtable<CollectingEvent, CEForPoly>();
+            StringBuilder locStr = new StringBuilder();
+            
+            int locCnt = 0;
+            for (int i=0;i<points.length;i++)
+            {
+                //System.out.println("i["+i+"]Loc["+points[i]+"]");
+                if (StringUtils.isEmpty(points[i]))
                 {
-                    //System.out.println("co["+id+"]");
-                    if (StringUtils.isNotEmpty(id))
+                    break;
+                }
+    
+                //String title = "";
+                Locality locality = (Locality)session.createQuery("from Locality WHERE id = "+points[i]).list().get(0);
+                if (locality != null)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    String[] colObjsIds = StringUtils.splitPreserveAllTokens(points[i+1], ',');
+                    for (String id : colObjsIds)
                     {
-                        CollectionObject co = (CollectionObject)SpecifyExplorer.session.createQuery("from CollectionObject WHERE id = "+id).list().get(0);
-                        if (co != null)
+                        //System.out.println("co["+id+"]");
+                        if (StringUtils.isNotEmpty(id))
                         {
-                            CollectingEvent ce = co.getCollectingEvent();
-                            if (ce != null)
+                            CollectionObject co = (CollectionObject)session.createQuery("from CollectionObject WHERE id = "+id).list().get(0);
+                            if (co != null)
                             {
-                                CollectingEvent colEv = locToCE.get(locality);
-                                if (colEv == null)
+                                CollectingEvent ce = co.getCollectingEvent();
+                                if (ce != null)
                                 {
-                                    locToCE.put(locality, ce);
-                                    
-                                } else if (!ce.getCollectingEventId().equals(colEv.getCollectingEventId()))
-                                {
-                                    drawLines = false;
-                                }
-                                //sb.append("<h3>"+sdf.format(ce.getStartDate().getTime())+"</h3>");
-                                Locality loc = ce.getLocality();
-                                if (loc != null && loc.getLatitude1() != null && loc.getLongitude1() != null)
-                                {
-                                    CEForPoly cep = hash.get(ce);
-                                    if (cep == null)
+                                    CollectingEvent colEv = locToCE.get(locality);
+                                    if (colEv == null)
                                     {
-                                        cep = new CEForPoly(ce.getStartDate(), loc.getLatitude1().doubleValue(), loc.getLongitude1().doubleValue(), "");
-                                        hash.put(ce, cep);
-                                    }
-                                    cep.getColObjs().add(co);
-                                }
-                            }
-                            for (Determination det : co.getDeterminations())
-                            {
-                                if (det.isCurrent())
-                                {
-                                    Taxon txn = det.getTaxon();
-                                    if (txn != null)
+                                        locToCE.put(locality, ce);
+                                        
+                                    } else if (!ce.getCollectingEventId().equals(colEv.getCollectingEventId()))
                                     {
-                                        sb.append("<a href='SpecifyExplorer?cls=CollectionObject&id="+co.getCollectionObjectId()+"'>"+txn.getFullName()+"</a>");
-                                        sb.append("<br/>");
+                                        drawLines = false;
                                     }
-                                    break;
+                                    //sb.append("<h3>"+sdf.format(ce.getStartDate().getTime())+"</h3>");
+                                    Locality loc = ce.getLocality();
+                                    if (loc != null && loc.getLatitude1() != null && loc.getLongitude1() != null)
+                                    {
+                                        CEForPoly cep = hash.get(ce);
+                                        if (cep == null)
+                                        {
+                                            cep = new CEForPoly(ce.getStartDate(), loc.getLatitude1().doubleValue(), loc.getLongitude1().doubleValue(), "");
+                                            hash.put(ce, cep);
+                                        }
+                                        cep.getColObjs().add(co);
+                                    }
+                                }
+                                for (Determination det : co.getDeterminations())
+                                {
+                                    if (det.isCurrent())
+                                    {
+                                        Taxon txn = det.getTaxon();
+                                        if (txn != null)
+                                        {
+                                            sb.append("<a href='SpecifyExplorer?cls=CollectionObject&id="+co.getCollectionObjectId()+"'>"+txn.getFullName()+"</a>");
+                                            sb.append("<br/>");
+                                        }
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                
-                if (locality.getLatitude1() != null && locality.getLongitude1() != null)
-                {
-                    if (locCnt == 0)
-                    {
-                        maxLat = locality.getLatitude1().doubleValue();
-                        minLat = maxLat;
-                        
-                        maxLon = locality.getLongitude1().doubleValue();
-                        minLon = maxLon;
-                        
-                    } else
-                    {
-                        maxLat = Math.max(maxLat, locality.getLatitude1().doubleValue());
-                        minLat = Math.min(minLat, locality.getLatitude1().doubleValue());
-                        
-                        maxLon = Math.max(maxLon, locality.getLongitude1().doubleValue());
-                        minLon = Math.min(minLon, locality.getLongitude1().doubleValue());   
-                    }
                     
-                    locStr.append("var point = new GLatLng("+locality.getLatitude1()+","+locality.getLongitude1()+");\n");
-                    locStr.append("var marker = createMarker(point,\""+ locality.getLocalityName()+"\",\""+sb.toString()+"\");\n");
-                    locStr.append("map.addOverlay(marker);\n");
-                    locCnt++;
+                    if (locality.getLatitude1() != null && locality.getLongitude1() != null)
+                    {
+                        if (locCnt == 0)
+                        {
+                            maxLat = locality.getLatitude1().doubleValue();
+                            minLat = maxLat;
+                            
+                            maxLon = locality.getLongitude1().doubleValue();
+                            minLon = maxLon;
+                            
+                        } else
+                        {
+                            maxLat = Math.max(maxLat, locality.getLatitude1().doubleValue());
+                            minLat = Math.min(minLat, locality.getLatitude1().doubleValue());
+                            
+                            maxLon = Math.max(maxLon, locality.getLongitude1().doubleValue());
+                            minLon = Math.min(minLon, locality.getLongitude1().doubleValue());   
+                        }
+                        
+                        locStr.append("var point = new GLatLng("+locality.getLatitude1()+","+locality.getLongitude1()+");\n");
+                        locStr.append("var marker = createMarker(point,\""+ locality.getLocalityName()+"\",\""+sb.toString()+"\");\n");
+                        locStr.append("map.addOverlay(marker);\n");
+                        locCnt++;
+                    }
+    
                 }
-
+                i++;
             }
-            i++;
-        }
-        
-        System.out.println("maxLat: "+maxLat);
-        System.out.println("minLat: "+minLat);
-        System.out.println("maxLon: "+maxLon);
-        System.out.println("minLon: "+minLon);
-        
-        double halfLat = (maxLat - minLat) / 2;
-        double halfLon = (maxLon - minLon) / 2;
-        System.out.println("halfLat: "+halfLat);
-        System.out.println("halfLon: "+halfLon);
-        
-        int zoom = 2;
-        if (halfLat == 0.0 && halfLon == 0.0)
-        {
-            zoom = 12;
             
-        } else if (halfLat < 0.5 && halfLon < 0.5)
-        {
-            zoom = 10;
+            System.out.println("maxLat: "+maxLat);
+            System.out.println("minLat: "+minLat);
+            System.out.println("maxLon: "+maxLon);
+            System.out.println("minLon: "+minLon);
             
-        } else if (halfLat < 2.0 && halfLon < 2.0)
-        {
-            zoom = 8;
+            double halfLat = (maxLat - minLat) / 2;
+            double halfLon = (maxLon - minLon) / 2;
+            System.out.println("halfLat: "+halfLat);
+            System.out.println("halfLon: "+halfLon);
             
-        } else if (halfLat < 7.0 && halfLon < 7.0)
-        {
-            zoom = 6;
-        }
-        
-        out.println("        map.setCenter(new GLatLng( "+(minLat+halfLat)+","+(minLon+halfLon)+"), "+ zoom+");\n");
-
-        out.println(locStr.toString());
-        
-        if (drawLines)
-        {
-            if (hash.size() > 0)
+            int zoom = 2;
+            if (halfLat == 0.0 && halfLon == 0.0)
             {
-                out.println("var polyline = new GPolyline([");
+                zoom = 12;
+                
+            } else if (halfLat < 0.5 && halfLon < 0.5)
+            {
+                zoom = 10;
+                
+            } else if (halfLat < 2.0 && halfLon < 2.0)
+            {
+                zoom = 8;
+                
+            } else if (halfLat < 7.0 && halfLon < 7.0)
+            {
+                zoom = 6;
+            }
+            
+            out.println("        map.setCenter(new GLatLng( "+(minLat+halfLat)+","+(minLon+halfLon)+"), "+ zoom+");\n");
+    
+            out.println(locStr.toString());
+            
+            if (drawLines)
+            {
+                if (hash.size() > 0)
+                {
+                    out.println("var polyline = new GPolyline([");
+                    for (CEForPoly cep : hash.values())
+                    {
+                        out.println("new GLatLng("+cep.getLat()+", "+cep.getLon()+"),\n");
+                    }
+                }
+                out.println("], \"#FF0000\", 5);\n");
+                out.println("map.addOverlay(polyline);\n");
+                
+            }
+    
+            if (false)
+            {
+                out.println("var polygon = new GPolygon([");
                 for (CEForPoly cep : hash.values())
                 {
                     out.println("new GLatLng("+cep.getLat()+", "+cep.getLon()+"),\n");
                 }
+                out.println("], \"#ff0000\", 5, 0.7, \"#0000ff\", 0.4);\n");
+                out.println("map.addOverlay(polygon);\n");
             }
-            out.println("], \"#FF0000\", 5);\n");
-            out.println("map.addOverlay(polyline);\n");
-            
-        }
-
-        if (false)
+    
+            out.println(mapTemplate.substring(inx+contentTag.length()+1, mapTemplate.length()));
+        
+        } catch (Exception ex)
         {
-            out.println("var polygon = new GPolygon([");
-            for (CEForPoly cep : hash.values())
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
             {
-                out.println("new GLatLng("+cep.getLat()+", "+cep.getLon()+"),\n");
+                session.close();
             }
-            out.println("], \"#ff0000\", 5, 0.7, \"#0000ff\", 0.4);\n");
-            out.println("map.addOverlay(polygon);\n");
         }
-
-        out.println(mapTemplate.substring(inx+contentTag.length()+1, mapTemplate.length()));
     }
     
     /**
@@ -3191,6 +3223,7 @@ public class SpecifyExplorer extends HttpServlet
         
         //chart.getCategoryPlot().setRenderer(new CustomColorBarChartRenderer());
 
+        chart.setBackgroundPaint(new Color(228, 243, 255));
         
         response.setContentType("image/png"); 
         try
@@ -3252,10 +3285,11 @@ public class SpecifyExplorer extends HttpServlet
         
         DBTableInfo ti = DBTableIdMgr.getInstance().getByShortClassName(className);
         
-        DataProviderSessionIFace localSession = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = null;
         try
         {
-            List<FormDataObjIFace> list = (List<FormDataObjIFace>)localSession.getDataList("FROM "+ti.getClassName()+" WHERE name = '"+text+"'");
+            session = DataProviderFactory.getInstance().createSession();
+            List<FormDataObjIFace> list = (List<FormDataObjIFace>)session.getDataList("FROM "+ti.getClassName()+" WHERE name = '"+text+"'");
             if (list.size() > 0)
             {
                 JSONObject treeJSON = new JSONObject();
@@ -3272,7 +3306,7 @@ public class SpecifyExplorer extends HttpServlet
             
         } finally
         {
-            localSession.close();    
+            session.close();    
         }
         return "[]";
     }
@@ -3290,10 +3324,11 @@ public class SpecifyExplorer extends HttpServlet
 
         JSONObject rootNode = null;
         
-        DataProviderSessionIFace localSession = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = null;
         try
         {
-            Treeable<?, ?, ?> treeable = (Treeable<?, ?, ?>)localSession.get(clsObj, id);
+            session = DataProviderFactory.getInstance().createSession();
+            Treeable<?, ?, ?> treeable = (Treeable<?, ?, ?>)session.get(clsObj, id);
             if (treeable != null)
             {
                 rootNode = createNode(treeable);
@@ -3309,7 +3344,7 @@ public class SpecifyExplorer extends HttpServlet
             
         } finally
         {
-            localSession.close();    
+            session.close();    
         }
         
         if (rootNode != null)
@@ -3569,6 +3604,7 @@ public class SpecifyExplorer extends HttpServlet
         
         String treeSearch = request.getParameter("treeSearchStr");
         String treeType   = request.getParameter("tree");
+        String exeQuery   = request.getParameter("exequery");
         String detail     = request.getParameter("detail");
         
         System.out.println("detail cls["+detail+"]");
@@ -3582,16 +3618,30 @@ public class SpecifyExplorer extends HttpServlet
             idStr = "4222";
             response.setContentType("text/html");
             PrintWriter out     = response.getWriter();
-            Object      dataObj = SpecifyExplorer.session.createQuery("FROM "+className+" WHERE id = "+idStr).list().get(0);
-            System.out.println(dataObj);
-            if (dataObj != null)
+            
+            DataProviderSessionIFace session = null;
+            try
             {
-                processDataObj(out, (FormDataObjIFace)dataObj,  true);
-                SpecifyExplorer.session.evict(dataObj);
+                session = DataProviderFactory.getInstance().createSession();
+                Object      dataObj = session.createQuery("FROM "+className+" WHERE id = "+idStr).list().get(0);
+                System.out.println(dataObj);
+                if (dataObj != null)
+                {
+                    processDataObj(out, (FormDataObjIFace)dataObj,  true);
+                    session.evict(dataObj);
+                    
+                } else
+                {
+                    out.println("ID "+idStr + "couldn't be found.");
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                //log.error(ex);
                 
-            } else
+            } finally
             {
-                out.println("ID "+idStr + "couldn't be found.");
+                session.close();    
             }
             return; 
         }
@@ -3618,9 +3668,15 @@ public class SpecifyExplorer extends HttpServlet
             expressSearchExplorer.reset();
         }
         
+        if (StringUtils.isNotEmpty(exeQuery))
+        {
+            doQuery(request, response, exeQuery);
+            return; 
+        }
+
+        
         if (expressSearch.doQuery(searchStr, expressSearchExplorer))
         {
-            System.out.println("HERE "+searchStr);
             if (StringUtils.isNotEmpty(searchStr))
             {
                 JSONArray tableArray = expressSearchExplorer.getTables();
@@ -3636,6 +3692,63 @@ public class SpecifyExplorer extends HttpServlet
         }
         
         super.doPost(request, response);
+    }
+    
+    /**
+     * @param request
+     * @param response
+     * @param queryName
+     * @throws IOException
+     */
+    protected void doQuery(final HttpServletRequest request, 
+                           final HttpServletResponse response,
+                           final String queryName) throws IOException
+    {
+        Session session = null;
+        try
+        {
+            session = HibernateUtil.getNewSession();
+            SpQuery spQuery = (SpQuery)session.createQuery("FROM SpQuery WHERE name = '"+queryName+"'").list().get(0);
+            if (spQuery != null)
+            {
+                if (queryTask == null)
+                {
+                    queryTask = new QueryTask();
+                }
+                
+                expressSearchExplorer.reset();
+                
+                QueryBldrPane qbPane = new QueryBldrPane("Query", queryTask, spQuery, true);
+                qbPane.setEsrp(expressSearchExplorer);
+                
+                qbPane.doSearch();
+                JSONArray tableArray = expressSearchExplorer.getTables();
+                
+                response.setContentType("text/html");
+                PrintWriter out = response.getWriter();
+                out.print(tableArray.toString());
+                out.flush(); 
+                
+                qbPane.setEsrp(null);
+                
+            } else
+            {
+                System.out.println("Couldn't find the query with name = "+queryName);
+                
+                PrintWriter out = response.getWriter();
+                out.print("Couldn't find the query with name = "+queryName);
+                out.flush();
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
     }
                           
     /**
@@ -3660,16 +3773,16 @@ public class SpecifyExplorer extends HttpServlet
         
         out.println(StringUtils.replace(subContent, "<!-- Title -->", "Queries"));
 
-        DataProviderSessionIFace hibSession = null;
+        DataProviderSessionIFace session = null;
         try
         {
-            hibSession = DataProviderFactory.getInstance().createSession();
+            session = DataProviderFactory.getInstance().createSession();
             
             Properties props = new Properties();
             int cnt = 0;
             StringBuilder sb = new StringBuilder();
             sb.append("<BR><table width=\"100%\" cellspacing=\"0\" class=\"brdr\">\n");
-            List<?> list = hibSession.getDataList("SELECT sq.id, sq.name FROM SpQuery sq INNER JOIN sq.specifyUser spu WHERE spu.id = "+SpecifyUser.getCurrentUser().getId());
+            List<?> list = session.getDataList("SELECT sq.id, sq.name FROM SpQuery sq INNER JOIN sq.specifyUser spu WHERE spu.id = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getId());
             for (Object rowObj : list)
             {
                 Object[] cols   = (Object[])rowObj;
@@ -3689,17 +3802,20 @@ public class SpecifyExplorer extends HttpServlet
             
         } finally
         {
-            if (hibSession != null)
+            if (session != null)
             {
-                hibSession.close();
+                session.close();
             }
         }
-        
         
         out.println(template.substring(inx+contentTag.length()+1, template.length()));
 
     }
     
+    /**
+     * @param request
+     * @param response
+     */
     protected void doReport(final HttpServletRequest request, 
                             final HttpServletResponse response)
     {
@@ -3792,10 +3908,12 @@ public class SpecifyExplorer extends HttpServlet
             
         }, false);
         
+        DataProviderSessionIFace session = null;
         try
         {
-            //RecordSet rs = (RecordSet)SpecifyExplorer.session.createQuery("from RecordSet where name = \"Beanii RS\"").list().get(0);
-            RecordSet rs = (RecordSet)SpecifyExplorer.session.createQuery("from RecordSet where id = 1").list().get(0);
+            session = DataProviderFactory.getInstance().createSession();
+            //RecordSet rs = (RecordSet)session.createQuery("from RecordSet where name = \"Beanii RS\"").list().get(0);
+            RecordSet rs = (RecordSet)session.createQuery("from RecordSet where id = 1").list().get(0);
             if (rs != null)
             {
                 Properties params = new Properties();
@@ -3825,6 +3943,10 @@ public class SpecifyExplorer extends HttpServlet
         } catch (Exception ex)
         {
             ex.printStackTrace();
+            
+        } finally
+        {
+            session.close();
         }
     }
 
@@ -3948,13 +4070,26 @@ public class SpecifyExplorer extends HttpServlet
                 
             } else
             {
-                Object dataObj = SpecifyExplorer.session.createQuery("from "+className+" where id = "+idStr).list().get(0);
-                if (dataObj != null)
+                DataProviderSessionIFace session = null;
+                try
                 {
-                    processDataObj(out, (FormDataObjIFace)dataObj, true);
-                } else
+                    session = DataProviderFactory.getInstance().createSession();
+                    Object dataObj = session.createQuery("from "+className+" where id = "+idStr).list().get(0);
+                    if (dataObj != null)
+                    {
+                        processDataObj(out, (FormDataObjIFace)dataObj, true);
+                    } else
+                    {
+                        out.println("ID "+idStr + "couldn't be found.");
+                    }
+                } catch (Exception ex)
                 {
-                    out.println("ID "+idStr + "couldn't be found.");
+                    ex.printStackTrace();
+                    //log.error(ex);
+                    
+                } finally
+                {
+                    session.close();    
                 }
             }
         } else

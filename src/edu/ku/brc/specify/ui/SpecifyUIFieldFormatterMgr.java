@@ -180,7 +180,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
                 }
             } else 
             {
-                CatalogNumberingScheme cns = Collection.getCurrentCollection() != null ? Collection.getCurrentCollection().getCatalogNumberingScheme() : null;
+                CatalogNumberingScheme cns = AppContextMgr.getInstance().getClassObject(Collection.class) != null ? AppContextMgr.getInstance().getClassObject(Collection.class).getCatalogNumberingScheme() : null;
                 if (cns != null)
                 {
                     if (name.equals("CatalogNumberNumeric") || (name.equals("CatalogNumber") && cns.getIsNumericOnly())) //$NON-NLS-1$ //$NON-NLS-2$
@@ -192,7 +192,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
                     }
                 } else
                 {
-                    log.error("The CatalogNumberingScheme is null for the current Collection ["+(Collection.getCurrentCollection() != null ? Collection.getCurrentCollection().getCollectionName() : "null") +"] and should be!"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    log.error("The CatalogNumberingScheme is null for the current Collection ["+(AppContextMgr.getInstance().getClassObject(Collection.class) != null ? AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName() : "null") +"] and should be!"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 }
             }
         } else

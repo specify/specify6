@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
@@ -448,7 +449,7 @@ public class ToolsTask extends BaseTask
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        String ds = Discipline.getCurrentDiscipline().getName();
+        String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
         if (AppPreferences.getRemote().getBoolean("ExportTask.OnTaskbar"+"."+ds, false))
         {
             list.add(new ToolBarItemDesc(toolBarBtn));

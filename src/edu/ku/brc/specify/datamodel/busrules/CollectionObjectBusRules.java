@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
@@ -135,7 +136,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         super.addChildrenToNewDataObjects(newDataObj);
         
         CollectionObject colObj = (CollectionObject)newDataObj;
-        if (Collection.getCurrentCollection().getIsEmbeddedCollectingEvent())
+        if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
         {
             // Carry Forward may have already added 
             // some values so we need to check to make sure
@@ -240,7 +241,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         if (fieldName.equals("collectingEvent"))
         {
             // So we need to clone it make a full copy when it is embedded.
-            return Collection.getCurrentCollection().getIsEmbeddedCollectingEvent();
+            return AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent();
         }
         return false;
     }

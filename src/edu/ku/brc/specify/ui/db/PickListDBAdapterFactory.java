@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -76,7 +77,7 @@ public class PickListDBAdapterFactory extends edu.ku.brc.ui.db.PickListDBAdapter
             session = DataProviderFactory.getInstance().createSession();
 
             // unchecked warning: Criteria results are always the requested class
-            String sql = "FROM PickList WHERE name = '" + name + "' AND collectionId = "+ Collection.getCurrentCollection().getCollectionId();
+            String sql = "FROM PickList WHERE name = '" + name + "' AND collectionId = "+ AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId();
             List<PickList> itemsList = (List<PickList>)session.getDataList(sql);
             if (itemsList != null && itemsList.size() > 0)
             {

@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -205,7 +206,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 save();
                 
                 //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
-                int disciplineeId = Discipline.getCurrentDiscipline().getDisciplineId();
+                int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
                 SchemaI18NService.getInstance().loadWithLocale(schemaType, disciplineeId, tableMgr, Locale.getDefault());
                 
                 return null;
@@ -284,7 +285,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             
             connection = DBConnection.getInstance().createConnection();
             stmt       = connection.createStatement();
-            rs         = stmt.executeQuery("select SpLocaleContainerID, Name from splocalecontainer WHERE DisciplineID = "+Discipline.getCurrentDiscipline().getDisciplineId()+" order by name");
+            rs         = stmt.executeQuery("select SpLocaleContainerID, Name from splocalecontainer WHERE DisciplineID = "+AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId()+" order by name");
             
             while (rs.next())
             {
@@ -410,7 +411,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 try
                 {
                     session = DataProviderFactory.getInstance().createSession();
-                    List<?> list = session.getDataList("SELECT count(disciplineId) FROM SpLocaleContainer WHERE disciplineId = "+Discipline.getCurrentDiscipline().getDisciplineId());
+                    List<?> list = session.getDataList("SELECT count(disciplineId) FROM SpLocaleContainer WHERE disciplineId = "+AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId());
                     //double total = -1.0;
                     if (list.get(0) != null && list.get(0) instanceof Integer)
                     {
@@ -424,7 +425,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                     }
                     
                     int cnt = 0;
-                    list = session.getDataList("FROM SpLocaleContainer WHERE disciplineId = "+Discipline.getCurrentDiscipline().getDisciplineId());
+                    list = session.getDataList("FROM SpLocaleContainer WHERE disciplineId = "+AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId());
                     for (Object containerObj : list)
                     {
                         UIRegistry.getStatusBar().setValue(SCHEMALOCDLG, cnt++);
@@ -789,7 +790,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 session = DataProviderFactory.getInstance().createSession();
     
                 // unchecked warning: Criteria results are always the requested class
-                String sql = "FROM PickList WHERE collectionId = "+ Collection.getCurrentCollection().getCollectionId();
+                String sql = "FROM PickList WHERE collectionId = "+ AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId();
                 pickLists = (List<PickList>)session.getDataList(sql);
                 
             } catch (Exception ex)

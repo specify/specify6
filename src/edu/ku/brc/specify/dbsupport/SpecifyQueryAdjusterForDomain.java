@@ -12,6 +12,7 @@ package edu.ku.brc.specify.dbsupport;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -280,7 +281,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     public String adjustSQL(final String sql)
     {
         // SpecifyUser should NEVER be null nor the Id !
-        SpecifyUser user = SpecifyUser.getCurrentUser();
+        SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
         if (user != null)
         {
             Integer id = user.getId();
@@ -304,7 +305,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 //System.out.println(adjSQL);
                 if (StringUtils.contains(adjSQL, COLMEMID))
                 {
-                    Collection collection = Collection.getCurrentCollection();
+                    Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
                     if (collection != null)
                     {
                         adjSQL = StringUtils.replace(adjSQL, COLMEMID, Integer.toString(collection.getCollectionId()));
@@ -313,7 +314,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
                 if (StringUtils.contains(adjSQL, COLLID))
                 {
-                    Collection collection = Collection.getCurrentCollection();
+                    Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
                     if (collection != null)
                     {
                         adjSQL = StringUtils.replace(adjSQL, COLLID, Integer.toString(collection.getCollectionId()));
@@ -322,7 +323,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
                 if (StringUtils.contains(adjSQL, DSPLNID))
                 {
-                    Discipline discipline = Discipline.getCurrentDiscipline();
+                    Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
                     if (discipline != null)
                     {
                         adjSQL = StringUtils.replace(adjSQL, DSPLNID, Integer.toString(discipline.getDisciplineId()));
@@ -331,7 +332,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
                 if (StringUtils.contains(adjSQL, TAXTREEDEFID))
                 {
-                    TaxonTreeDef taxonTreeDef = TaxonTreeDef.getCurrentTaxonTreeDef();
+                    TaxonTreeDef taxonTreeDef = AppContextMgr.getInstance().getClassObject(TaxonTreeDef.class);
                     if (taxonTreeDef != null)
                     {
                         adjSQL = StringUtils.replace(adjSQL, TAXTREEDEFID, Integer.toString(taxonTreeDef.getTaxonTreeDefId()));
@@ -340,7 +341,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
                 if (StringUtils.contains(adjSQL, GTPTREEDEFID))
                 {
-                    GeologicTimePeriodTreeDef gtpTreeDef = GeologicTimePeriodTreeDef.getCurrentGeologicTimePeriodTreeDef();
+                    GeologicTimePeriodTreeDef gtpTreeDef = AppContextMgr.getInstance().getClassObject(GeologicTimePeriodTreeDef.class);
                     if (gtpTreeDef != null)
                     {
                         adjSQL = StringUtils.replace(adjSQL, GTPTREEDEFID, Integer.toString(gtpTreeDef.getGeologicTimePeriodTreeDefId()));
@@ -349,7 +350,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
                 if (StringUtils.contains(adjSQL, STORTREEDEFID))
                 {
-                    StorageTreeDef locTreeDef = StorageTreeDef.getCurrentStorageTreeDef();
+                    StorageTreeDef locTreeDef = AppContextMgr.getInstance().getClassObject(StorageTreeDef.class);
                     if (locTreeDef != null)
                     {
                         adjSQL = StringUtils.replace(adjSQL, STORTREEDEFID, Integer.toString(locTreeDef.getStorageTreeDefId()));
@@ -358,7 +359,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
                 if (StringUtils.contains(adjSQL, LITHOTREEDEFID))
                 {
-                    LithoStratTreeDef lithoTreeDef = LithoStratTreeDef.getCurrentLithoStratTreeDef();
+                    LithoStratTreeDef lithoTreeDef = AppContextMgr.getInstance().getClassObject(LithoStratTreeDef.class);
                     if (lithoTreeDef != null)
                     {
                         adjSQL = StringUtils.replace(adjSQL, LITHOTREEDEFID, Integer.toString(lithoTreeDef.getLithoStratTreeDefId()));
@@ -367,7 +368,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
                 if (StringUtils.contains(adjSQL, GEOTREEDEFID))
                 {
-                    GeographyTreeDef lithoTreeDef = GeographyTreeDef.getCurrentGeographyTreeDef();
+                    GeographyTreeDef lithoTreeDef = AppContextMgr.getInstance().getClassObject(GeographyTreeDef.class);
                     if (lithoTreeDef != null)
                     {
                         adjSQL = StringUtils.replace(adjSQL, GEOTREEDEFID, Integer.toString(lithoTreeDef.getGeographyTreeDefId()));

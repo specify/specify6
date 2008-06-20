@@ -181,6 +181,6 @@ public class WebLinkDef
      */
     public static void configXStream(final XStream xstream)
     {
-        xstream.alias("weblinkdef", WebLinkDef.class);
+        xstream.alias("weblinkdef", WebLinkDef.class); //$NON-NLS-1$
     }
 }

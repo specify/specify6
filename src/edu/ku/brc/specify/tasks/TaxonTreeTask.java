@@ -16,6 +16,7 @@ import javax.persistence.Transient;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
@@ -65,7 +66,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
     @Override
     protected TaxonTreeDef getCurrentTreeDef()
     {
-        return Discipline.getCurrentDiscipline().getTaxonTreeDef();
+        return AppContextMgr.getInstance().getClassObject(Discipline.class).getTaxonTreeDef();
     }
 
     /* (non-Javadoc)

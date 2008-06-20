@@ -51,7 +51,8 @@ public abstract class AppContextMgr
     
     protected static AppContextMgr instance = null;
     
-    protected CONTEXT_STATUS currentStatus = CONTEXT_STATUS.Initial;
+    protected CONTEXT_STATUS              currentStatus = CONTEXT_STATUS.Initial;
+    protected Hashtable<Class<?>, Object> classObjHash  = new Hashtable<Class<?>, Object>();
     
     /**
      * Returns a View by name, meaning a ViewSet name and a View name inside the ViewSet.
@@ -221,6 +222,35 @@ public abstract class AppContextMgr
         return toAppRes;
     }
     
+    /**
+     * Sets (registers) a single object so others can get it globally.
+     * @param clazz the class of object being set
+     * @param object the object.
+     */
+    public void setClassObject(final Class<?> clazz, final Object object)
+    {
+        if (object == null)
+        {
+            if (classObjHash.get(clazz) != null)
+            {
+                classObjHash.remove(clazz);
+            }
+        } else
+        {
+            classObjHash.put(clazz, object);
+        }
+    }
+    
+    /**
+     * Gets the registered single obhject for a class.
+     * @param clazz the class
+     * @return the object
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getClassObject(final Class<T> clazz)
+    {
+        return (T)classObjHash.get(clazz);
+    }
     /**
      * Returns the instance of the AppContextMgr.
      * @return the instance of the AppContextMgr.

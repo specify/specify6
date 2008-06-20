@@ -46,6 +46,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 
@@ -102,7 +103,7 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         super.init();
         
         spAppResourceDirId      = null;
-        collection              = Collection.getCurrentCollection();
+        collection              = AppContextMgr.getInstance().getClassObject(Collection.class);
         discipline              = null;
         specifyUser             = null;
         

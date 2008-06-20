@@ -39,6 +39,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace;
 import edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace;
 import edu.ku.brc.specify.tools.schemalocale.LocalizableStrIFace;
@@ -100,7 +101,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
         names = new HashSet<SpLocaleItemStr>();
         descs = new HashSet<SpLocaleItemStr>();
         
-        discipline          = Discipline.getCurrentDiscipline();
+        discipline          = AppContextMgr.getInstance().getClassObject(Discipline.class);
         containerItems      = null;
     }
     

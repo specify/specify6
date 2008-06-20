@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import org.hibernate.NonUniqueResultException;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
@@ -123,7 +124,7 @@ public class UploadTableTree extends UploadTable
         {
             try
             {
-                treeDef = Collection.getCurrentCollection().getDiscipline().getTreeDef(capitalize(tblClass.getSimpleName()) + "TreeDef");
+                treeDef = AppContextMgr.getInstance().getClassObject(Collection.class).getDiscipline().getTreeDef(capitalize(tblClass.getSimpleName()) + "TreeDef");
             }
             catch (Exception ex)
             {

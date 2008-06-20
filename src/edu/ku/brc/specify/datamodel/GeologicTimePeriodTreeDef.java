@@ -51,8 +51,6 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "geologictimeperiodtreedef")
 public class GeologicTimePeriodTreeDef extends BaseTreeDef<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem> implements java.io.Serializable
 {
-    private static GeologicTimePeriodTreeDef currentGeologicTimePeriodTreeDef = null;
-    
 	protected Integer                               geologicTimePeriodTreeDefId;
     protected String                             name;
     protected String                             remarks;
@@ -393,21 +391,4 @@ public class GeologicTimePeriodTreeDef extends BaseTreeDef<GeologicTimePeriod, G
     {
         return getIdentityTitle();
     }
-
-    /**
-     * @return the currentGeologicTimePeriodTreeDef
-     */
-    public static GeologicTimePeriodTreeDef getCurrentGeologicTimePeriodTreeDef()
-    {
-        return currentGeologicTimePeriodTreeDef;
-    }
-
-    /**
-     * @param currentGeologicTimePeriodTreeDef the currentGeologicTimePeriodTreeDef to set
-     */
-    public static void setCurrentGeologicTimePeriodTreeDef(GeologicTimePeriodTreeDef currentGeologicTimePeriodTreeDef)
-    {
-        GeologicTimePeriodTreeDef.currentGeologicTimePeriodTreeDef = currentGeologicTimePeriodTreeDef;
-    }
-    
 }
