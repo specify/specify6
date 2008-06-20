@@ -196,6 +196,7 @@
 		<copy file="${source.root}/edu/ku/brc/specify/images/specify32.png" todir="${installer.dir}" />
 		<copy file="${source.root}/edu/ku/brc/specify/images/SpecifyBigSplash.png" todir="${installer.dir}" />
 		<copy file="packaging/specify.icns" todir="${installer.dir}" />
+		<copy file="${installer.dir}/mac/non-mac-application-adapter.jar" todir="${installer.dir}" />
 		
 	</target>
 		
