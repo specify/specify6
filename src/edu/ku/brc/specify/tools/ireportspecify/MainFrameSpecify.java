@@ -253,6 +253,7 @@ public class MainFrameSpecify extends MainFrame
         boolean newRep = ((SpAppResource)appRes).getId() == null;
         try
         {
+            session.attach(appRes);
             appRes.setDataAsString(xml.toString());
             AppContextMgr.getInstance().saveResource(appRes);
             
@@ -265,36 +266,43 @@ public class MainFrameSpecify extends MainFrame
                     {
                         session.refresh(rep.getSpReport());
                         createReport = false;
+                        result = true;
                     }
                     catch (org.hibernate.UnresolvableObjectException e)
                     {
                         log.debug("Report has been deleted in Specify? (" + e + ")");
                     }
                 }
+                SpReport spRep;
                 if (createReport)
                 {
-                    SpReport spRep = new SpReport();
+                    spRep = new SpReport();
                     spRep.initialize();
-                    spRep.setName(appRes.getName());
-                    spRep.setAppResource((SpAppResource)appRes);
-                    SpQuery q = rep.getConnection().getQuery();
-                    //getting a fresh copy of the Query might be helpful
-                    //in case one of its reports was deleted, but is probably
-                    //no longer necessary with AppContextMgr.getInstance().setContext() call
-                    //in the save method.
-                    SpQuery freshQ = session.get(SpQuery.class, q.getId());
-                    if (freshQ != null)
-                    {
-                        spRep.setQuery(freshQ);
-                        spRep.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-                        session.beginTransaction();
-                        transOpen = true;
-                        session.save(spRep);
-                        session.commit();
-                        transOpen = false;
-                        rep.setSpReport(spRep);
-                        result = true;
-                    }
+                }
+                else
+                {
+                    spRep = rep.getSpReport();
+                }
+                spRep.setName(appRes.getName());
+                spRep.setAppResource((SpAppResource) appRes);
+                SpQuery q = rep.getConnection().getQuery();
+                // getting a fresh copy of the Query might be helpful
+                // in case one of its reports was deleted, but is probably
+                // no longer necessary with AppContextMgr.getInstance().setContext() call
+                // in the save method.
+                SpQuery freshQ = session.get(SpQuery.class, q.getId());
+                if (freshQ != null)
+                {
+                    spRep.setQuery(freshQ);
+                    spRep.setSpecifyUser(AppContextMgr.getInstance().getClassObject(
+                            SpecifyUser.class));
+                    session.beginTransaction();
+                    transOpen = true;
+                    session.save(spRep);
+                    session.commit();
+                    transOpen = false;
+                    rep.setSpReport(spRep);
+                    result = true;
                 }
             }               
         } catch (Exception ex)
@@ -306,6 +314,7 @@ public class MainFrameSpecify extends MainFrame
             throw new RuntimeException(ex);
         } finally
         {
+            session.evict(appRes);
             if (newRep && !result)
             {
                 //XXX - more 'Collection' hard-coding
@@ -567,6 +576,7 @@ public class MainFrameSpecify extends MainFrame
             try
             {
                 ReportSpecify report = makeReport(rep);
+                report.setConnection(getConnectionByQuery(report.getSpReport().getQuery()));
                 report.setUsingMultiLineExpressions(false); // this.isUsingMultiLineExpressions());
                 reportFrame = openNewReportWindow(report);
                 report.addReportDocumentStatusChangedListener(this);
@@ -591,6 +601,19 @@ public class MainFrameSpecify extends MainFrame
         return reportFrame;
     }
 
+    protected QBJRDataSourceConnection getConnectionByQuery(final SpQuery query)
+    {
+        for (int c = 0; c < getConnections().size(); c++)
+        {
+            QBJRDataSourceConnection conn = (QBJRDataSourceConnection )getConnections().get(c);
+            if (conn.getName().equals(query.getName()))
+            {
+                return conn;
+            }
+        }
+        return null;
+    }
+    
     /**
      * @param rep -
      *            specify report resource
