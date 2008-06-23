@@ -63,6 +63,27 @@
             </altviews>
         </view>
         
+        <view name="LocalityNameAlias"
+            class="edu.ku.brc.specify.datamodel.LocalityNameAlias"
+            resourcelabels="false">
+            <desc><![CDATA[Locality Name Alias subform for the Locality form.]]></desc>
+            <altviews>
+                <altview name="LocalityNameAlias View" viewdef="LocalityNameAlias" label="View" mode="view"/>
+                <altview name="LocalityNameAlias Edit" viewdef="LocalityNameAlias" label="Edit" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
+        <view name="Locality"
+            class="edu.ku.brc.specify.datamodel.Locality"
+            busrules="edu.ku.brc.specify.datamodel.busrules.LocalityBusRules"
+            resourcelabels="false">
+            <desc><![CDATA[Locality form.]]></desc>
+            <altviews>
+                <altview name="Locality View" viewdef="Locality" label="View" mode="view"/>
+                <altview name="Locality Edit" viewdef="Locality" label="Edit" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
         <view name="OtherIdentifier"
             class="edu.ku.brc.specify.datamodel.OtherIdentifier"
             resourcelabels="false">
@@ -358,6 +379,103 @@
                 </row>
             </rows>
         </viewdef>
+        
+        <viewdef
+            type="form"
+            name="LocalityNameAlias"
+            class="edu.ku.brc.specify.datamodel.LocalityNameAlias"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Locality]]></desc>
+            <columnDef>89px,2px,100px,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="name" uitype="text" isrequired="true" colspan="6"/>  
+                </row>    
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="source" uitype="text" isrequired="true" colspan="6"/>  
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="Locality"
+            class="edu.ku.brc.specify.datamodel.Locality"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Locality]]></desc>
+            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Locality Information" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="localityName" uitype="text" isrequired="true" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="namedPlace" uitype="text" colspan="5"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="relationToNamedPlace" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="geography" uitype="querycbx" initialize="name=Geography" isrequired="true" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="this" uitype="plugin" initialize="name=LatLonUI" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Locality Alias" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="LocalityNameAlias" id="9" name="localityNameAliass" colspan="12"/> 
+                </row>
+                <row>
+                    <cell type="separator" label="Elevation" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="minElevation" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="maxElevation" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="elevationMethod" uitype="text" cols="1"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Tools" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="p,f:p:g,p,f:p:g,p,f:p:g" rowdef="p" colspan="12">
+                        <rows>
+                            <row>
+                                <cell type="label" label=" "/>
+                                <cell type="field" id="23" name="this" uitype="plugin" initialize="name=LocalityGeoRef;title=Geo Ref" colspan="1"/>
+                                <cell type="field" id="24" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth" colspan="1"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell type="separator" label="Attachments" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12" initialize="btn=true;icon=LocalityAttachment"/>
+                </row>
+            </rows>
+        </viewdef>
+        
 
         <viewdef 
             name="OtherIdentifier"
