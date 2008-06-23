@@ -414,7 +414,9 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                                     
                                 } else
                                 {
-                                    boolean startWildCard = term.isOn(SearchTermField.STARTS_WILDCARD);
+                                    clause = ESTermParser.createWhereClause(term, abbrev, fieldName);
+                                    
+                                    /*boolean startWildCard = term.isOn(SearchTermField.STARTS_WILDCARD);
                                     boolean endWildCard   = term.isOn(SearchTermField.ENDS_WILDCARD);
                                     if (startWildCard || endWildCard)
                                     {
@@ -422,7 +424,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                                     } else
                                     {
                                         clause = "LOWER(" + abbrev + '.' + fieldName + ") = " + "'" + termStr + "'";
-                                    }
+                                    }*/
                                 }
                             }
             

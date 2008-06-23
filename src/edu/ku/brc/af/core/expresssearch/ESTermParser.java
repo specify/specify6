@@ -56,10 +56,11 @@ public class ESTermParser
     }
 
     /**
-     * @param terms
-     * @return
+     * @param searchTermArg
+     * @param parseAsSingleTerm
+     * @return true if all the tokens are valid
      */
-    public static boolean parse(final String      searchTermArg)
+    public static boolean parse(final String searchTermArg, final boolean parseAsSingleTerm)
     {
         instance.fields.clear();
         
@@ -78,10 +79,14 @@ public class ESTermParser
         if (searchTerm.length() > 0)
         {
             String[] terms;
-            if (searchTerm.startsWith("\"") || searchTerm.startsWith("\"") || searchTerm.startsWith("\""))
+            if (searchTerm.startsWith("\"") || searchTerm.startsWith("'") || searchTerm.startsWith("`"))
             {
                 searchTerm = StringUtils.stripStart(searchTerm, "\"'`");
                 searchTerm = StringUtils.stripEnd(searchTerm, "\"'`");
+                terms = new String[] {searchTerm};
+                
+            } else if (parseAsSingleTerm)
+            {
                 terms = new String[] {searchTerm};
                 
             } else
@@ -151,6 +156,28 @@ public class ESTermParser
         }
         
         return instance.fields.size() > 0 && cnt > 0;
+    }
+    
+    /**
+     * @param term
+     * @param abbrevArg
+     * @param fieldName
+     * @param termStr
+     * @return
+     */
+    public static String createWhereClause(final SearchTermField term,
+                                           final String abbrevArg, 
+                                           final String fieldName)
+    {
+        String abbrev = StringUtils.isNotEmpty(abbrevArg) ? (abbrevArg + '.') : "";
+        
+        boolean startWildCard = term.isOn(SearchTermField.STARTS_WILDCARD);
+        boolean endWildCard   = term.isOn(SearchTermField.ENDS_WILDCARD);
+        if (startWildCard || endWildCard)
+        {
+            return "LOWER(" + abbrev + fieldName + ") LIKE " + (startWildCard ? "'%" : "'") + term.getTerm() + (endWildCard ? "%'" : "'");
+        }
+        return "LOWER(" + abbrev + fieldName + ") = " + "'" + term.getTerm() + "'";
     }
     
 }
