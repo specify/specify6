@@ -436,12 +436,12 @@
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="this" uitype="plugin" initialize="name=LatLonUI" colspan="10"/>
                 </row>
-                <row>
+           <!--     <row>
                     <cell type="separator" label="Locality Alias" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="LocalityNameAlias" id="9" name="localityNameAliass" colspan="12"/> 
-                </row>
+                </row> -->
                 <row>
                     <cell type="separator" label="Elevation" colspan="12"/>
                 </row>
