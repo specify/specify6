@@ -120,15 +120,15 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
         }
         values.put(LOC_DATE, str);
         
+        str = ce.getStationFieldNumber();
+        values.put(FIELD_NUM,  StringUtils.isNotEmpty(str) ? str : "");
+        
         Locality locality = ce.getLocality();
         
         if (locality != null)
         {
             str = locality.getLocalityName();
-            values.put(LOC_STR,  StringUtils.isNotEmpty(str) ? str : "");
-            
-            str = ce.getStationFieldNumber();
-            values.put(FIELD_NUM,  StringUtils.isNotEmpty(str) ? str : "");
+            values.put(LOC_STR, StringUtils.isNotEmpty(str) ? str : "");
             
             if (locality != null)
             {
@@ -164,6 +164,11 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
                 if (formattedValue.length() > 0) formattedValue.append(", ");
                 formattedValue.append(val);
             }
+        }
+        
+        if (formattedValue.length() == 0)
+        {
+            formattedValue.append("The Collecting Event is empty.");
         }
         return formattedValue.toString();
     }
