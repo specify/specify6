@@ -20,12 +20,4 @@ public class ConservEventBusRules extends AttachmentOwnerBaseBusRules
         super(ConservEvent.class);
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BaseBusRules#okToEnableDelete(java.lang.Object)
-     */
-    @Override
-    public boolean okToEnableDelete(Object dataObj)
-    {
-        return true;
-    }
 }

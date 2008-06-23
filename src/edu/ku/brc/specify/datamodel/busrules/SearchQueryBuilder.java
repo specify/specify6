@@ -16,7 +16,9 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.expresssearch.ESTermParser;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.core.expresssearch.SearchTermField;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
@@ -126,33 +128,37 @@ public class SearchQueryBuilder<T> implements ViewBasedSearchQueryBuilderIFace
             dspCnt++;
         }
         
+        
         StringBuilder orderBy  = new StringBuilder();
         StringBuilder criteria = new StringBuilder();
         int criCnt = 0;
         for (String colName : dataMap.keySet())
         {
             String data = (String)dataMap.get(colName);
-            if (StringUtils.isNotEmpty(data))
+            if (ESTermParser.parse(data.toLowerCase(), true))
             {
-                String columnName = colName;
-                if (!colName.startsWith(tableName+"."))
+                if (StringUtils.isNotEmpty(data))
                 {
-                    columnName = tableName + "." + colName;
+                    List<SearchTermField> fields     = ESTermParser.getFields();
+                    SearchTermField       firstTerm  = fields.get(0);
+                    String                columnName = colName;
+                    
+                    if (!colName.startsWith(tableName+"."))
+                    {
+                        columnName = tableName + "." + colName;
+                    }
+    
+                    if (criCnt > 0) criteria.append(" OR ");
+                    
+                    String clause = ESTermParser.createWhereClause(firstTerm, null, columnName);
+                    criteria.append(clause);
+                    
+                    if (criCnt > 0) orderBy.append(',');
+                    
+                    orderBy.append(columnName);
+                    
+                    criCnt++;
                 }
-
-                if (criCnt > 0) criteria.append(" OR ");
-                criteria.append("lower(");
-                criteria.append(columnName);
-                criteria.append(") LIKE ");
-                criteria.append("\'%");
-                criteria.append(data.toLowerCase());
-                criteria.append("%\'");
-                
-                if (criCnt > 0) orderBy.append(',');
-                
-                orderBy.append(columnName);
-                
-                criCnt++;
             }
         }
         

@@ -9,9 +9,4 @@ public class DNASequenceBusRules extends AttachmentOwnerBaseBusRules
         super(DNASequence.class);
     }
 
-    @Override
-    public boolean okToEnableDelete(Object dataObj)
-    {
-        return true;
-    }
 }

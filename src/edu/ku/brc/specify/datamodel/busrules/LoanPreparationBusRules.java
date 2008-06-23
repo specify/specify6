@@ -27,13 +27,4 @@ public class LoanPreparationBusRules extends BaseBusRules
         super(LoanPreparation.class);
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
-     */
-    @Override
-    public boolean okToEnableDelete(Object dataObj)
-    {
-        return false;
-    }
-
 }

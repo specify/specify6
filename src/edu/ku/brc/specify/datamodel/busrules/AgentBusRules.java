@@ -131,15 +131,6 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         lastNameText   = null;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
-     */
-    @Override
-    public boolean okToEnableDelete(Object dataObj)
-    {
-        return true;
-    }
-    
     /**
      * Enables/Disables both the control and the Label
      * @param id the id of the control

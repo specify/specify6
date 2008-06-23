@@ -40,15 +40,6 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToEnableDelete(java.lang.Object)
-     */
-    @Override
-    public boolean okToEnableDelete(final Object dataObj)
-    {
-        return true;
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#addChildrenToNewDataObjects(java.lang.Object)
      */
     @Override

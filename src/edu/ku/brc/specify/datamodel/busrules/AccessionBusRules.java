@@ -187,7 +187,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
                     }
                 } else
                 {
-                    return false;
+                    return true;
                 }
             }
         } else

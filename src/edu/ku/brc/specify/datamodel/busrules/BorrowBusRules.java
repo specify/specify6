@@ -31,15 +31,6 @@ public class BorrowBusRules extends BaseBusRules
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BaseBusRules#okToEnableDelete(java.lang.Object)
-     */
-    @Override
-    public boolean okToEnableDelete(Object dataObj)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusiessRules(java.lang.Object)
      */
     public STATUS processBusinessRules(final Object dataObj)

@@ -9,9 +9,4 @@ public class FieldNotebookPageSetBusRules extends AttachmentOwnerBaseBusRules
         super(FieldNotebookPageSet.class);
     }
 
-    @Override
-    public boolean okToEnableDelete(Object dataObj)
-    {
-        return true;
-    }
 }

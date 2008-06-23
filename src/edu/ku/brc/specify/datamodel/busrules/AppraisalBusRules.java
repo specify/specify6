@@ -34,15 +34,6 @@ public class AppraisalBusRules extends BaseBusRules
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BaseBusRules#okToEnableDelete(java.lang.Object)
-     */
-    @Override
-    public boolean okToEnableDelete(Object dataObj)
-    {
-        return false;
-    }
-    
-    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
      */
     @Override

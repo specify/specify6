@@ -89,15 +89,4 @@ public class LoanShipmentBusRules extends BaseBusRules
             }
         }
     }
-    
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToEnableDelete(java.lang.Object)
-     */
-    @Override
-    public boolean okToEnableDelete(Object dataObj)
-    {
-        return true;
-    }
-
 }

@@ -187,7 +187,7 @@ public class RepositoryAgreementBusRules extends AttachmentOwnerBaseBusRules
                     }
                 } else
                 {
-                    return false;
+                    return true;
                 }
             }
         } else

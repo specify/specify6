@@ -36,15 +36,6 @@ public class CollectorBusRules extends BaseBusRules
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BaseBusRules#okToEnableDelete(java.lang.Object)
-     */
-    @Override
-    public boolean okToEnableDelete(Object dataObj)
-    {
-        return false;
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object)
      */
     @Override

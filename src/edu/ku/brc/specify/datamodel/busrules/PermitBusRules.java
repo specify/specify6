@@ -69,7 +69,7 @@ public class PermitBusRules extends AttachmentOwnerBaseBusRules
         if (dataObj instanceof Permit)
         {
             Permit permit = (Permit)dataObj;
-            if (permit.getPermitId() != null && permit.getAccessionAuthorizations().size() == 0)
+            if (permit.getPermitId() == null || permit.getAccessionAuthorizations().size() == 0)
             {
                 return true;
             }

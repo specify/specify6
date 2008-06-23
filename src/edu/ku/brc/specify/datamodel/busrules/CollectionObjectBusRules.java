@@ -57,20 +57,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         super(CollectionObject.class);
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
-     */
-    @Override
-    public boolean okToEnableDelete(final Object dataObj)
-    {
-        if (!(dataObj instanceof CollectionObject))
-        {
-            return false;
-        }
-        
-        return true;
-    }
-    
     /**
      * @param disciplineType
      * @return

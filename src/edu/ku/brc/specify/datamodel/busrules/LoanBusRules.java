@@ -256,14 +256,6 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#okToDelete(java.lang.Object)
-     */
-    public boolean okToEnableDelete(Object dataObj)
-    {
-        return true;
-    }
-    
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#deleteMsg(java.lang.Object)
      */
     public String getDeleteMsg(final Object dataObj)

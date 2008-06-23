@@ -427,15 +427,6 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BaseBusRules#okToEnableDelete(java.lang.Object)
-     */
-    @Override
-    public boolean okToEnableDelete(Object dataObj)
-    {
-        return false;
-    }
-
     /**
      * Updates the fullname field of any nodes effected by changes to <code>node</code> that are about
      * to be saved to the DB.
