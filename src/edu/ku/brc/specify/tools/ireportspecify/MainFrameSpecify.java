@@ -253,7 +253,10 @@ public class MainFrameSpecify extends MainFrame
         boolean newRep = ((SpAppResource)appRes).getId() == null;
         try
         {
-            session.attach(appRes);
+            if (!newRep)
+            {
+                session.attach(appRes);
+            }
             appRes.setDataAsString(xml.toString());
             AppContextMgr.getInstance().saveResource(appRes);
             
@@ -314,7 +317,10 @@ public class MainFrameSpecify extends MainFrame
             throw new RuntimeException(ex);
         } finally
         {
-            session.evict(appRes);
+            if (!newRep)
+            {
+                session.evict(appRes);
+            }
             if (newRep && !result)
             {
                 //XXX - more 'Collection' hard-coding
