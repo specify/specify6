@@ -314,7 +314,7 @@ public class TreeFactory
             sb.append("SELECT count(*) ");
             sb.append("FROM geography AS G INNER JOIN locality ON G.GeographyID = locality.GeographyID ");
             sb.append("INNER JOIN collectingevent AS CE ON locality.LocalityID = CE.LocalityID ");
-            sb.append("INNER JOIN collectionobject ON CE.CollectingEventID = collectionobject.CollectingEventID ");
+            sb.append("INNER JOIN collectionobject AS CO ON CE.CollectingEventID = CO.CollectingEventID ");
         }
         return sb;
     }
@@ -334,7 +334,7 @@ public class TreeFactory
             
         } else if (clazz.equals(Geography.class))
         {
-            sb.append(" WHERE CE.DisciplineID = DSPLNID AND G.GeographyID = %d");
+            sb.append(" WHERE CO.CollectionMemberID = COLMEMID AND G.GeographyID = %d");
             
         } else if (clazz.equals(Storage.class))
         {
