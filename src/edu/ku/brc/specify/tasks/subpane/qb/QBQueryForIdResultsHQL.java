@@ -336,4 +336,31 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     {
         return query.get();
     }
+    
+    protected boolean isRetrieving()
+    {
+        return queryTask.get() != null && query.get() == null;
+    }
+    
+    protected boolean isDisplaying()
+    {
+        return !isRetrieving() && query.get() != null;
+    }
+    
+    public void Cancel()
+    {
+        if (isRetrieving())
+        {
+            queryTask.get().cancel(true);
+            //and what else needs to be done???....
+        }
+        else if (isDisplaying())
+        {
+            /*
+             * Maybe can mess with table filling step to allowing cancel
+             */
+            //query.get().cancel(); 
+        }
+        //else do nuthin.
+    }
 }

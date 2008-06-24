@@ -86,6 +86,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.dbsupport.DBRelationshipInfo.RelationshipType;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -416,6 +417,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         if (canSearch())
         {
             doSearch((TableQRI)tableList.getSelectedValue(), distinctChk.isSelected());
+        }
+        else 
+        {
+            System.out.println("Somebody tried to cancel the query builder.");
         }
     }
 
@@ -1131,17 +1136,38 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         completedResults.set(runningResults.get());
         runningResults.set(null);
-        UIRegistry.getStatusBar().setText("");
+        new SwingWorker()
+        {
+            @Override
+            public Object construct()
+            {
+                QueryBldrPane.this.searchBtn.setText(UIRegistry.getResourceString("QB_SEARCH")); 
+                UIRegistry.getStatusBar().setText("");
+                UIRegistry.getStatusBar().getProgressBar().setVisible(false);
+                return null;
+            }
+        }.start();
     }
     
     public void queryTaskDone()
     {
         doneTime.set(System.nanoTime());
-        int results = 0;
         if (runningResults.get() != null && runningResults.get().getQuery() != null)
         {
-            results = runningResults.get().getQuery().getDataObjects().size();
-            UIRegistry.getStatusBar().setText(results + " records retrieved in " + (doneTime.get() - startTime.get())/1000000000D + " seconds. Loading result display..."); //XXX i18n
+            final int results = runningResults.get().getQuery().getDataObjects().size();
+            new SwingWorker() 
+            {
+                @Override
+                public Object construct()
+                {
+                    String msg = String.format(UIRegistry.getResourceString("QB_DISPLAYING_RETRIEVED_RESULTS"), String.valueOf(results), 
+                            String.valueOf((doneTime.get() - startTime.get())/1000000000D));
+                    UIRegistry.getStatusBar().setText(msg); 
+                    UIRegistry.getStatusBar().getProgressBar().setVisible(true);
+                    UIRegistry.getStatusBar().getProgressBar().setIndeterminate(true);
+                    return null;
+                }
+            }.start();
         }
         
     }
@@ -1180,6 +1206,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         qri.setExpanded(true);
         runningResults.set(qri);
         doneTime.set(-1);
+        new SwingWorker(){
+            @Override
+            public Object construct()
+            {
+                QueryBldrPane.this.searchBtn.setText(UIRegistry.getResourceString("QB_CANCEL")); 
+                UIRegistry.getStatusBar().setText("Searching..."); //XXX i18n
+                UIRegistry.getStatusBar().getProgressBar().setIndeterminate(true);
+                UIRegistry.getStatusBar().getProgressBar().setVisible(true);
+                return null;
+            }
+        }.start();
         
         if (esrp == null)
         {
