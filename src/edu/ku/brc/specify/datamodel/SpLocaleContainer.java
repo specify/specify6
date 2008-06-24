@@ -74,6 +74,8 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     protected Set<SpLocaleItemStr>       descs;
     
     protected Discipline                 discipline;
+
+    protected String  					 aggregator;
     
     // Transient
     protected Vector<LocalizableItemIFace> containerItems = null;
@@ -212,6 +214,23 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     public void setDiscipline(Discipline discipline)
     {
         this.discipline = discipline;
+    }
+
+    /**
+     * @return the aggregator name
+     */
+    @Column(name = "Aggregator", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getAggregator()
+    {
+        return aggregator;
+    }
+
+    /**
+     * @param aggregator the aggregator to set
+     */
+    public void setAggregator(String aggregator)
+    {
+        this.aggregator = aggregator;
     }
 
     /* (non-Javadoc)

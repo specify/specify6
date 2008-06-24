@@ -186,6 +186,13 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#setValue(java.lang.String)
+     */
+    public void setValue(String value)
+    {
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#getFields()
      */
     public DataObjDataField[] getFields()

@@ -206,6 +206,14 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#setValue()
+     */
+    public void setValue(String value)
+    {
+        return;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#init(java.lang.String, java.util.Properties)
      */
     public void init(String nameArg, Properties properties)

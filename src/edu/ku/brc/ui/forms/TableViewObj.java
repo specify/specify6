@@ -2138,13 +2138,13 @@ public class TableViewObj implements Viewable,
                 String dataObjFormatName = colInfo.getDataObjFormatName();
                 if (StringUtils.isNotEmpty(dataObjFormatName))
                 {
-                    return DataObjFieldFormatMgr.format(dataVal, dataObjFormatName);
+                    return DataObjFieldFormatMgr.getInstance().format(dataVal, dataObjFormatName);
                     
                 } else if (dataVal instanceof FormDataObjIFace)
                 {
 
                     FormDataObjIFace formObj = (FormDataObjIFace)dataVal;
-                    Object val = DataObjFieldFormatMgr.format(dataVal, formObj.getDataClass());
+                    Object val = DataObjFieldFormatMgr.getInstance().format(dataVal, formObj.getDataClass());
                     if (val != null)
                     {
                         return val;
@@ -2156,7 +2156,7 @@ public class TableViewObj implements Viewable,
                     Set<?> objSet = (Set<?>)dataVal;
                     if (objSet.size() > 0)
                     {
-                        return DataObjFieldFormatMgr.aggregate(objSet, objSet.iterator().next().getClass());
+                        return DataObjFieldFormatMgr.getInstance().aggregate(objSet, objSet.iterator().next().getClass());
                     }
                     return "";
                     

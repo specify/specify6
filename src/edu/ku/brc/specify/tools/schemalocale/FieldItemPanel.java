@@ -6,14 +6,14 @@
  */
 package edu.ku.brc.specify.tools.schemalocale;
 
+import static edu.ku.brc.ui.UIHelper.adjustButtonArray;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createList;
-import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIHelper.createTextArea;
-import static edu.ku.brc.ui.UIHelper.adjustButtonArray;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.CardLayout;
@@ -79,10 +79,10 @@ import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.formatters.UIFormatterDlg;
 import edu.ku.brc.ui.weblink.WebLinkConfigDlg;
 import edu.ku.brc.ui.weblink.WebLinkDef;
@@ -324,7 +324,8 @@ public class FieldItemPanel extends LocalizerBasePanel
                 	UIFormatterDlg dlg = new UIFormatterDlg(
                 			(Frame)UIRegistry.getTopWindow(), 
                 			fieldInfo, 
-                			formatCombo.getSelectedIndex()); // MUST BE MODAL!
+                			formatCombo.getSelectedIndex(),
+                			schemaPanel.getUiFieldFormatterMgrCache()); // MUST BE MODAL!
                 	dlg.setVisible(true);
             		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
             		{
@@ -387,7 +388,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                     hasFieldInfoChanged = true;
                     
                     boolean hasWL = webLinkCombo.getSelectedIndex() > 0;
-                    formatCombo.setEnabled(hasWL);
+                    webLinkCombo.setEnabled(hasWL);
                     if (hasWL)
                     {
                         formatCombo.setSelectedIndex(formatCombo.getModel().getSize() > 0 ? 0 : -1);
@@ -525,48 +526,15 @@ public class FieldItemPanel extends LocalizerBasePanel
      */
     protected void setSelectedFieldFormatter(final UIFieldFormatterIFace formatter)
     {
+    	LocalizableItemIFace fld = getSelectedFieldItem();
+    	String oldFormat = fld.getFormat();
+    	String newFormat = (formatter != null)? formatter.getName() : "";
+    	fld.setFormat( newFormat );
+    	
     	// first reset combo box in case any formatters have been deleted
     	fillWithFieldFormatter();
     	
-    	if (formatter == null)
-    	{
-    		// no formatter was selected (that's the first entry on the combo list)
-    		if (formatCombo.getSelectedIndex() != 0)
-    		{
-        		formatCombo.setSelectedIndex(0);
-    			setHasChanged(true);
-    		}
-    		return;
-    	}
-    	
-    	// find if selected formatter is already on the list
-    	DefaultComboBoxModel model = (DefaultComboBoxModel) formatCombo.getModel();
-    	int n = model.getSize();
-		boolean found = false;
-    	for (int index = 0; index < n; ++index)
-    	{
-    		Object elem = model.getElementAt(index);
-    		if (formatter == elem)
-    		{
-    	    	// found formatter selected on dialog on the combo box list: so select it
-    			if (formatCombo.getSelectedIndex() != index)
-    			{
-    				setHasChanged(true);
-        	    	formatCombo.setSelectedIndex(index);
-    			}
-    	    	found = true;
-    	    	break;
-    		}
-    	} 	
-    	
-    	if (!found)
-    	{
-    		// didn't find formatter on the list; it must be a new one
-    		// so we add it to the list of formatters and point to it (it's the last one on the list)
-    		model.addElement(formatter);
-    		formatCombo.setSelectedIndex(model.getSize() - 1);
-    		setHasChanged(true);
-    	}
+		setHasChanged(newFormat.equals(oldFormat));
     	
     }
     
@@ -732,8 +700,8 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         cbxModel.addElement(noneStr); // Add None
         
-        //if ( UIHelper.isClassNumeric(fieldInfo.getDataClass()) )
-        if (fieldInfo.getType().equals("java.lang.String"))
+        if (fieldInfo.getType().equals("java.lang.String") ||
+        	UIHelper.isClassNumeric(fieldInfo.getDataClass()))
         {
             formatCombo.setEnabled(true);
             formatMoreBtn.setEnabled(true);
@@ -755,7 +723,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         int selectedInx = 0; // default to 'None'
         
         UIFieldFormatterIFace       selectedFmt = null;
-        List<UIFieldFormatterIFace> fList       = UIFieldFormatterMgr.getInstance().getFormatterList(tableInfo.getClassObj(), fieldInfo.getName());
+        List<UIFieldFormatterIFace> fList       = schemaPanel.getUiFieldFormatterMgrCache().getFormatterList(tableInfo.getClassObj(), fieldInfo.getName());
         // list must be sorted in the same way it's sorted on UIFormatterDlg because selection index is considered equivalent between combo boxes
         Collections.sort(fList, new Comparator<UIFieldFormatterIFace>() {
             public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
@@ -1212,7 +1180,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             fieldHideChk.setSelected(fld.getIsHidden());
             
             String disciplineName = disciplineType != null ? disciplineType.getName() : null;
-            if (AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
+            if (AppContextMgr.getInstance() != null && AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
             {
                 disciplineName = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
             }

@@ -11,6 +11,8 @@ package edu.ku.brc.specify.tools.schemalocale;
 
 import java.util.Collection;
 
+import javax.persistence.Column;
+
 /**
  * @author rod
  *
@@ -41,4 +43,14 @@ public interface LocalizableContainerIFace extends LocalizableItemIFace, Compara
      * @return
      */
     public abstract LocalizableItemIFace getItemByName(String name);
+    
+    /**
+     * @return the aggregator name
+     */
+    public String getAggregator();
+    
+    /**
+     * @param aggregator the aggregator to set
+     */
+    public void setAggregator(String aggregator);
 }

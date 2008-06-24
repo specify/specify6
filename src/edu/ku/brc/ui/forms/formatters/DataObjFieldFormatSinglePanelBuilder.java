@@ -17,82 +17,74 @@ package edu.ku.brc.ui.forms.formatters;
 
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIHelper.createList;
-import static edu.ku.brc.ui.UIHelper.createTextArea;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JList;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
-import edu.ku.brc.dbsupport.DBRelationshipInfo;
-import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIRegistry;
 
 public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPanelBuilder {
 	
-	protected DataObjDataFieldFormatIFace selectedFormat;
-	
 	// ui controls
-	protected JTextArea formatText;
-	protected JList availableFieldsLst;
+	protected JTextPane formatEditor;
 	protected JButton addFieldBtn;
 	
 	protected DocumentListener formatTextDL;
-	protected CaretListener formatTextCL;
 	protected ActionListener addFieldAL;
 	protected MouseAdapter addFieldMA;
 	
-	// hash mapping fields or formatters that go inside the available field list
-	protected Hashtable<String, Object> fieldHash;
+    protected Set<String> uniqueNameSet = new HashSet<String>();
 
-	DataObjFieldFormatSinglePanelBuilder(DBTableInfo tableInfo,
-		      							 JList formatList,	
-		      							 ListSelectionListener formatListSL,
-					                     JButton               okButton,
-		      							 DataObjDataFieldFormatIFace selectedFormat)
+	protected SimpleAttributeSet normalAttr;
+	protected SimpleAttributeSet fieldDefAttr;
+	
+	DataObjFieldFormatSinglePanelBuilder(DBTableInfo 				      		tableInfo,
+										 AvailableFieldsComponent 		  		availableFieldsComp,
+		      							 DataObjSwitchFormatterContainerIface 	formatContainer,	
+					                     JButton               		 	  		okButton,
+					                     UIFieldFormatterMgr					uiFieldFormatterMgrCache)
 	{
-		super(tableInfo, formatList, formatListSL, okButton);
-		this.selectedFormat = selectedFormat;
-	    fillWithObjFormatter(selectedFormat);
+		super(tableInfo, availableFieldsComp, formatContainer, okButton, uiFieldFormatterMgrCache);
+	    fillWithObjFormatter(formatContainer.getSelectedFormatter());
 	}
 	
-	public DataObjDataFieldFormatIFace getSelectedFormat() 
-	{
-		return selectedFormat;
-	}
-
-	public void setSelectedFormat(DataObjDataFieldFormatIFace selectedFormat) 
-	{
-		this.selectedFormat = selectedFormat;
-	}
-
 	/*
 	 * 
 	 */
@@ -100,22 +92,18 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	    CellConstraints cc = new CellConstraints();
 	    PanelBuilder pb = new PanelBuilder(new FormLayout("f:d:g",  
 	    		"10px,"       + // empty space on top of panel 
-	    		"p,p,"        + // Label & text box for format
+	    		"p,f:p:g,"      + // Label & format text editor
 	    		"10px,p,"     + // separator & label
-	    		"f:150px:g,"  + // list box for available fields 
+	    		"f:250px:g,"  + // list box for available fields 
 	    		"10px,21px,15px"  // empty space where the delete button goes for the multiple value panel
 	    		
 	    		)/*, new FormDebugPanel()*/);
 	    
-	    fieldHash = new Hashtable<String, Object>();
-
 	    JLabel currentFieldsLbl = createLabel(getResourceString("DOF_DISPLAY_FORMAT")+":");
-	    formatText = createTextArea(4, 50);
-	    formatText.setLineWrap(true);
+	    formatEditor = new JTextPane();
 	    // to make sure the component shrinks with the dialog
-	    formatText.setMinimumSize(new Dimension(50, 5));
-	    formatText.setPreferredSize(new Dimension(100, 10));
-	    //formatText.setMaximumSize(new Dimension(5, 1));
+	    formatEditor.setMinimumSize(new Dimension(200, 50));
+	    formatEditor.setPreferredSize(new Dimension(350, 100));
 
         PanelBuilder addFieldPB = new PanelBuilder(new FormLayout("l:m:g,r:m", "p"));  
 	    JLabel availableFieldsLbl = createLabel(getResourceString("DOF_AVAILABLE_FIELDS")+":");
@@ -124,16 +112,13 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	    addFieldPB.add(availableFieldsLbl, cc.xy(1,1));
 	    addFieldPB.add(addFieldBtn, cc.xy(2,1));
 
-	    DefaultListModel availableFieldListModel = new DefaultListModel();
-	    availableFieldsLst = createList(availableFieldListModel);
-	    
 	    // lay out components on main panel        
 	    int y = 2; // leave first row blank 
-	    pb.add(currentFieldsLbl,   cc.xy(1, y)); y += 1;
-	    pb.add(formatText,         cc.xy(1, y)); y += 2;
+	    pb.add(currentFieldsLbl, cc.xy(1, y)); y += 1;
+	    pb.add(new JScrollPane(formatEditor), cc.xy(1, y)); y += 2;
 	
 	    pb.add(addFieldPB.getPanel(), cc.xy(1, y)); y += 1;
-	    pb.add(new JScrollPane(availableFieldsLst), cc.xy(1, y)); y += 2;
+	    pb.add(new JScrollPane(availableFieldsComp.getTree()), cc.xy(1, y)); y += 2;
 	    
 	    this.mainPanelBuilder = pb;
 
@@ -141,7 +126,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	    // must be called after list of available fields has been created
 	    addFieldListeners();
 	}
-
+	
 	public void addFieldListeners()
 	{
 		// action listener for add field button
@@ -151,7 +136,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-					addField(availableFieldsLst.getSelectedValue());
+					addField();
 				}
 			};
 		}
@@ -166,15 +151,13 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 				{
 					if(e.getClickCount() == 2)
 					{
-						int index = availableFieldsLst.locationToIndex(e.getPoint());
-						availableFieldsLst.ensureIndexIsVisible(index);
-						addField(availableFieldsLst.getSelectedValue());
+						addField();
 					}
 				}
 			};
 		}
 		
-		availableFieldsLst.addMouseListener(addFieldMA);
+		availableFieldsComp.addMouseListener(addFieldMA);
 
 	}
 
@@ -189,107 +172,42 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
                 public void insertUpdate (DocumentEvent e) { changed(e); }
                 public void changedUpdate(DocumentEvent e) { changed(e); }
 
-                private void changed(DocumentEvent e)      { formatChanged(); }
+                private void changed(DocumentEvent e)
+                { 
+                	formatChanged(); 
+                }
             };
 		}
-		formatText.getDocument().addDocumentListener(formatTextDL);
-
-		if (formatTextCL == null)
-		{
-			formatTextCL = new CaretListener()
-			{
-				public void caretUpdate(CaretEvent e)
-				{
-					// try to detect whether insert position on format text area is inside a valid field marker
-					// if so, select the whole field to prevent user from changing the field name
-					FieldDefinitionLocation loc = new FieldDefinitionLocation();
-					if (loc.findFieldDefinitionLocation(e))
-					{
-						// caret is inside a field definition, so change selection to encompass field def
-						// be careful to remove caret listener to avoid infinite recursion
-						formatText.removeCaretListener(formatTextCL);
-						formatText.setSelectionStart(loc.getBegin());
-						formatText.setSelectionEnd(loc.getEnd());
-						formatText.addCaretListener(formatTextCL);
-					}
-				}
-			};
-		}
-		formatText.addCaretListener(formatTextCL);
+		formatEditor.getDocument().addDocumentListener(formatTextDL);
 	}
 	
-	/*
-	 * Check whether newly typed format already exists on format list or not
-	 * Change formatList selection accordingly
+	/**
+	 * Updates the formatter being composed whenever the text in the format text field changes.
 	 */
-	protected void formatChanged()
+	public void formatChanged()
 	{
-		if (formatList == null)
-			return;
-		
-		// if new value cannot be found among those listed, then it's a new one
-		DefaultListModel listModel = (DefaultListModel) formatList.getModel();
-		Enumeration<?> elements = listModel.elements();
-		int i = 0;
-		int index = -1;
-		while (elements.hasMoreElements())
-		{
-			Object obj = elements.nextElement();
-			if (obj instanceof DataObjSwitchFormatter)
-			{
-				DataObjSwitchFormatter fmt = (DataObjSwitchFormatter) obj;
-				if (formatText.getText().equals(fmt.toString()))
-				{
-					index = i;
-					break;
-				}
-			}
-			++i;
-		}
-		
-	
-		if (index == -1) {
-			// it's a new format: change index to last value (i.e. "New")
-			index = formatList.getModel().getSize() - 1;
-		}
-		
-		removeEditorListeners();
-		formatList.removeListSelectionListener(formatListSL);
-		formatList.setSelectedIndex(index);
-		formatList.addListSelectionListener(formatListSL);
-		addEditorListeners();
-	}
-
-	/*
-	 * Removes all editors listeners (so that format list selection can be updated without side-effects
-	 */
-	public void removeEditorListeners()
-	{
-		formatText.removeCaretListener(formatTextCL);
-		formatText.getDocument().removeDocumentListener(formatTextDL);
+		// for now, just create formatter from scratch, but later we can just detect changes and act accordingly
+		setFormatterFromTextPane(formatContainer.getSelectedFormatter());
 	}
 	
-	/*
-	 * Adds all editors listeners (after calling removeEditorListeners)
-	 */
-	public void addEditorListeners()
-	{
-		formatText.addCaretListener(formatTextCL);
-		formatText.getDocument().addDocumentListener(formatTextDL);
-	}
-
 	/*
 	 * Adds a field to the format being composed
 	 */
-	public void addField(Object selectedValue)
+	public void addField()
 	{
-		if (selectedValue == null || selectedValue instanceof String)
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) availableFieldsComp.getTree().getLastSelectedPathComponent();
+		if (node == null || !node.isLeaf() || !(node.getUserObject() instanceof DataObjDataFieldWrapper) )
 			// not really a field that can be added, just empty or a string
 			return;
-		
-		formatText.insert(selectedValue.toString(), formatText.getCaretPosition());
+
+		Object obj = node.getUserObject();
+		if (obj instanceof DataObjDataFieldWrapper)
+		{
+			DataObjDataFieldWrapper wrapper = (DataObjDataFieldWrapper) obj;
+			insertFieldIntoTextEditor(wrapper);
+		}
 	}
-	
+
 	public void fillWithObjFormatter(DataObjSwitchFormatter switchFormatter)
 	{
 		if (switchFormatter != null)
@@ -304,324 +222,226 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	
 	protected void fillWithObjFormatter(DataObjDataFieldFormatIFace singleFormatter)
 	{
-		removeEditorListeners();
-		if (singleFormatter != null)
-		{
-			formatText.setText(singleFormatter.toString());
-			setSelectedFormat(singleFormatter);
-		}
-		else
-		{
-			formatText.setText("");
-			setSelectedFormat(null);
-		}
-		addEditorListeners();
+		formatEditor.setText("");
+		if (singleFormatter == null)
+			return;
 		
-		// set 2nd list box with all available fields
-		DefaultListModel listModel = (DefaultListModel) availableFieldsLst.getModel();
-		listModel.removeAllElements();
-		fieldHash.clear();
+		Document doc = formatEditor.getDocument();
+		DataObjDataField[] fields = singleFormatter.getFields();
+		if (fields == null)
+			return;
 		
-		// fields from this table
-		listModel.addElement("---- " + tableInfo.getTitle() + " ------");
-		for (DBFieldInfo field : tableInfo.getFields()) 
+		for (DataObjDataField field : fields)
 		{
-			DBFieldInfoWrapper fieldWrapper = new DBFieldInfoWrapper(null, tableInfo, field);
-			listModel.addElement(fieldWrapper);
-			fieldHash.put(fieldWrapper.toString(), fieldWrapper);
-		}
-		
-		// get fields from relationship tables and their formatters (if any)
-		for (DBRelationshipInfo rel : tableInfo.getRelationships())
-		{
-			// separator for this relationship
-			listModel.addElement("---- " + rel.getTitle() + " ------");
-
-			// get formatters
-			List<DataObjSwitchFormatter> formatters;
-			formatters = DataObjFieldFormatMgr.getFormatterList(rel.getDataClass());
-			for (DataObjSwitchFormatter formatter : formatters)
+			try
 			{
-				FormatWrapper formatWrapper = new FormatWrapper(formatter);
-				listModel.addElement(formatWrapper);
-				fieldHash.put(formatWrapper.toString(), formatWrapper);
+				doc.insertString(doc.getLength(), field.getSep(), null);
+				insertFieldIntoTextEditor(new DataObjDataFieldWrapper(field));
 			}
-			
-			// get relationship table fields
-			DBTableInfo relTable = DBTableIdMgr.getInstance().getByClassName(rel.getClassName());
-			for (DBFieldInfo relField : relTable.getFields()) 
-			{
-				DBFieldInfoWrapper fieldWrapper = new DBFieldInfoWrapper(rel, relTable, relField);
-				listModel.addElement(fieldWrapper);
-				fieldHash.put(fieldWrapper.toString(), fieldWrapper);
-			}
+			catch (BadLocationException ble) {}
 		}
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see edu.ku.brc.ui.forms.formatters.DataObjFieldFormatPanelBuilder#getSwitchFormatter()
+	protected void insertFieldIntoTextEditor(DataObjDataFieldWrapper wrapper)
+	{
+        formatEditor.insertComponent(new FieldDefinitionButton(wrapper));
+	}
+
+	/**
+	 * Wrapper for formatters.
+	 * Created to modify toString() method and display item nicely on JList. 
+	 * 
+	 * @author Ricardo
 	 */
-	public DataObjSwitchFormatter getSwitchFormatter()
+	protected class FieldDefinitionButton extends JButton
 	{
-		// check whether format selected is an existing one
-		if (formatList != null && formatList.getSelectedIndex() < formatList.getModel().getSize() - 1)
+		protected final DataObjDataFieldWrapper dataObjFieldWrapper;
+		
+		public FieldDefinitionButton(DataObjDataFieldWrapper dataObjFieldWrapper)
 		{
-			// selected entry is not the last one, so it's an existing one
-			// just return it
-			newFormat = false;
-			Object value = formatList.getSelectedValue(); 
-			if (value instanceof DataObjSwitchFormatter)
-				return (DataObjSwitchFormatter) value;
-			
-			// should never get here... if we do, then I'm not sure what we have here :(
-			return null;
+			this.dataObjFieldWrapper = dataObjFieldWrapper;
+			setText(dataObjFieldWrapper.toString());
+
+	        setCursor(Cursor.getDefaultCursor());
+	        setMargin(new Insets(0,0,0,0));
+	        setFont(new Font("Arial", Font.PLAIN, 11));
+	        setAlignmentY(0.75f);
+	        //button.setActionCommand(buttonString);
+	       
+	        // create popup menu
+	        final JPopupMenu menu = createPopupMenu();
+	        
+	        ActionListener showMenuAL = new ActionListener()
+	        {
+	        	public void actionPerformed(ActionEvent e)
+	        	{
+	        		JButton thisBtn = FieldDefinitionButton.this;
+        			menu.show(thisBtn, thisBtn.getWidth() / 2, thisBtn.getHeight());
+	        	}
+	        };
+	        addActionListener(showMenuAL);
 		}
 		
-		// last entry is selected, so return the new formatter that has been composed
-		newFormat = true;
-		return createFormatterFromFormatText();
-	}
-	
-	protected DataObjSwitchFormatter createFormatterFromFormatText()
-	{
-		String text = formatText.getText();
+		public DataObjDataField getValue()
+		{
+			return dataObjFieldWrapper.getFormatterField();
+		}
 		
-    	Pattern splitPattern = Pattern.compile("([^\\[]*\\[[^\\]]+\\])");
-    	Matcher matcher = splitPattern.matcher(text);
+	    public JPopupMenu createPopupMenu()
+	    {
+	        final JPopupMenu menu = new JPopupMenu();
 
+	        ActionListener placeCursorHereAL = new ActionListener()
+	        {
+	        	public void actionPerformed(ActionEvent e)
+	        	{
+        			// find position of the field definition button in question
+        			int pos = findFieldButtonPosition();
+        			formatEditor.setCaretPosition(pos);
+	        	}
+	        };
+	        
+	        JMenuItem item = new JMenuItem(getResourceString("DOF_PLACE_CURSOR_HERE"));
+	        item.addActionListener(placeCursorHereAL);
+	        menu.add(item);
+
+	        ActionListener deleteMenuAL = new ActionListener()
+	        {
+	        	public void actionPerformed(ActionEvent e)
+	        	{
+	        		try 
+	        		{
+	        			// find position of the field definition button in question
+	        			int pos = findFieldButtonPosition();
+	        			formatEditor.getDocument().remove(pos, 1);
+	        		}
+	        		catch (BadLocationException ble) {}
+	        	}
+	        };
+	        
+	        item = new JMenuItem(getResourceString("DOF_DELETE_FIELD"));
+	        item.addActionListener(deleteMenuAL);
+	        menu.add(item);
+	        
+	        createFormatterMenuItem(menu);
+	        
+	        MouseAdapter menuMA = new MouseAdapter()
+	        {
+	        	public void mousePressed(MouseEvent e)
+	        	{
+	        		if (e.isPopupTrigger())
+	        			menu.show(e.getComponent(), e.getX(), e.getY());
+	        	}
+	        	
+	        	public void mouseReleased(MouseEvent e)
+	        	{
+	        		if (e.isPopupTrigger())
+	        			menu.show(e.getComponent(), e.getX(), e.getY());
+	        	}
+	        };
+	        
+	        addMouseListener(menuMA);
+	        
+	        return menu;
+	    }
+	    
+	    public int findFieldButtonPosition()
+	    {
+			DefaultStyledDocument doc = (DefaultStyledDocument) formatEditor.getStyledDocument();
+			int i, n = doc.getLength();
+			Object obj = null;
+			for (i = 0; i < n; ++i)
+			{
+				Element element = doc.getCharacterElement(i);
+				AttributeSet attrs = element.getAttributes();
+				obj = attrs.getAttribute(StyleConstants.ComponentAttribute);
+				if (obj == this)
+				{
+					// found button at this position
+					return i;
+				}
+			}
+			
+			// this should never happen because the button clicked must be inside text pane
+			throw new RuntimeException("Button representing field in text pane was not found.");
+	    }
+	    
+	    public void createFormatterMenuItem(JPopupMenu menu)
+	    {
+	    	if (!dataObjFieldWrapper.isPureField())
+	    	{
+	    		// can't define a formatter if it's not a real field, 
+	    		// so let's not create the menu item for it
+	    		return;
+	    	}
+	    	
+	        ActionListener openFormatterAL = new ActionListener()
+	        {
+	        	public void actionPerformed(ActionEvent e)
+	        	{
+	        		// open UI field formatter dialog to format this field 
+	        		DBFieldInfo fi = dataObjFieldWrapper.getFormatterField().getFieldInfo();
+	        		UIFormatterDlg dlg = new UIFormatterDlg((Frame) UIRegistry.getTopWindow(), fi, 0, uiFieldFormatterMgrCache);
+	        		dlg.setVisible(true);
+	        		
+	        		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+	        		{
+	        			setFormatter(dlg.getSelectedFormat());
+	        		}
+	        	}
+	        };
+	        
+	        JMenuItem item = new JMenuItem(getResourceString("DOF_CHANGE_FORMAT"));
+	        item.addActionListener(openFormatterAL);
+	        menu.add(item);
+	    }
+
+	    protected void setFormatter(UIFieldFormatterIFace fmt)
+		{
+			dataObjFieldWrapper.getFormatterField().setUiFieldFormatter(fmt);
+		}
+	}
+
+	protected void setFormatterFromTextPane(DataObjSwitchFormatter formatter)
+	{
+		// visit every character in the document text looking for fields
+		// store characters not associated with components (jbutton) to make up the separator text
+
+		DefaultStyledDocument doc = (DefaultStyledDocument) formatEditor.getStyledDocument();
+		String text = formatEditor.getText(); 
+		int n = doc.getLength();
+		int lastFieldPos = 0;
 		Vector<DataObjDataField> fields = new Vector<DataObjDataField>();
-    	while (matcher.find()) 
-    	{
-    		//int mStart   = matcher.start();
-    		//int mEnd     = matcher.end();
-    		//String group = matcher.group();
-    		
-    		int openBracketPos = text.indexOf('[', matcher.start());
-    		String sepStr   = text.substring(matcher.start(), openBracketPos);
-    		String fieldStr = text.substring(openBracketPos, matcher.end());
-    		
-    		Object value = fieldHash.get(fieldStr);
-    		if (value != null)
-    		{
-    			String fieldName = "";
-    			String formatStr = "";
-    			//String formatterName = "";    // if another formatter has been used, use it's name here
-    			String uifieldformatter = ""; // not implemented yet
+		for (int i = 0; i < n; ++i)
+		{
+			Element element = doc.getCharacterElement(i);
+			AttributeSet attrs = element.getAttributes();
+			Object obj = attrs.getAttribute(StyleConstants.ComponentAttribute);
+			if (obj instanceof FieldDefinitionButton)
+			{
+				// found button at the current position
+				// create corresponding field
+				String sepStr = (lastFieldPos < i - 1)? text.substring(lastFieldPos, i - 1) : "";
 
-    			if (value instanceof DBFieldInfoWrapper)
-    			{
-    				DBFieldInfoWrapper fieldWrapper = (DBFieldInfoWrapper) value;
-        			fieldName     = fieldWrapper.getFieldInfo().getName();
-    				//formatterName = "";
-    			}
-    			else if (value instanceof DataObjSwitchFormatter)
-    			{
-    				DataObjSwitchFormatter fmt = (DataObjSwitchFormatter) value;
-        			fieldName     = fmt.getFieldName();
-    				//formatterName = fmt.getName();
-    			}
-    				
-    			Class<?> classObj = null;
-    			fields.add(new DataObjDataField(fieldName, classObj, formatStr, sepStr, "", uifieldformatter));
+    			FieldDefinitionButton fieldDefBtn = (FieldDefinitionButton) obj;
+    			DataObjDataField fmtField = fieldDefBtn.getValue();
+    			fmtField.setSep(sepStr);
+    			fields.add(fmtField);
     			
-    			// separator has been used up, so clean it for next matches 
-    			sepStr = "";
-    		}
-    		else
-    		{
-    			// what's enclosed in brackets is not a field definition, so copy it verbatim as separator
-    			sepStr = sepStr + fieldStr;
-    		}
-    		
-    		// move begin pointer to end of current match
-    		//begin = matcher.end();
-       	}
+				lastFieldPos = i;
+			}
+		}
 
     	// XXX: what do we do with the remaining of the text? right now we ignore it
+    	// That's because we can't create an empty formatter field just to use the separator... 
+
     	DataObjDataField[] fieldsArray = new DataObjDataField[fields.size()];
     	for (int i = 0; i < fields.size(); ++i)
     	{
     		fieldsArray[i] = (DataObjDataField) fields.elementAt(i); 
     	}
     	
-    	DataObjDataFieldFormat newFormatter = new DataObjDataFieldFormat("", tableInfo.getClassObj(), false, "", "", fieldsArray);
-    	DataObjSwitchFormatter newSwitchFmt = new DataObjSwitchFormatter("", true, false, tableInfo.getClassObj(), "");
-    	newFormatter.setTableAndFieldInfo();
-    	newSwitchFmt.add(newFormatter);
-		return newSwitchFmt;
-	}
-	
-	/*
-	 * Wrapper for formatters.
-	 * Created to modify toString() method and display item nicely on JList. 
-	 */
-	public class FormatWrapper
-	{
-		protected DataObjSwitchFormatter formatter;
-		
-		FormatWrapper(DataObjSwitchFormatter formatter)
-		{
-			this.formatter = formatter; 
-		}
-		
-		public DataObjSwitchFormatter getFormatter()
-		{
-			return formatter;
-		}
-		
-		public String toString()
-		{
-			return formatter.toString();
-		}
-	}
-	
-	/*
-	 * Wrapper for db fields. 
-	 * Ceated to modify toString() method and display item nicely on JList 
-	 */
-	public class DBFieldInfoWrapper
-	{
-		protected DBRelationshipInfo relationshipInfo;
-		protected DBTableInfo        tblIndo;
-		protected DBFieldInfo		 fieldInfo;
-		
-		DBFieldInfoWrapper(DBRelationshipInfo relationshipInfo,
-				           DBTableInfo        tableInfo,
-				           DBFieldInfo		  fieldInfo)
-		{
-			this.relationshipInfo = relationshipInfo;
-			this.tblIndo        = tableInfo;
-			this.fieldInfo        = fieldInfo;
-		}
-
-		public DBRelationshipInfo getRelationshipInfo() 
-		{
-			return relationshipInfo;
-		}
-
-		public DBTableInfo getTableInfo() 
-		{
-			return tblIndo;
-		}
-
-		public DBFieldInfo getFieldInfo() 
-		{
-			return fieldInfo;
-		}
-		
-		public String toString()
-		{
-			String result = (relationshipInfo != null)? relationshipInfo.getTitle() : tblIndo.getTitle();    
-			return "[" + result + "." + fieldInfo.getTitle() + "]";
-		}
-	}
-	
-	/*
-	 * Wrapper class for return value of method that indicates whether text field 
-	 * caret is inside a field definition or not  
-	 */
-	public class FieldDefinitionLocation
-	{
-		protected String fieldName;
-		protected int begin = -1;
-		protected int end   = -1;
-		
-		public FieldDefinitionLocation()
-		{
-		}
-		
-		public String getFieldName() {
-			return fieldName;
-		}
-
-		public int getBegin() {
-			return begin;
-		}
-
-		public int getEnd() {
-			return end;
-		}
-		
-		public boolean findFieldDefinitionLocation(CaretEvent e)
-		{
-			if (!(e.getSource() instanceof JTextComponent))
-				return false;
-
-			JTextComponent comp = (JTextComponent) e.getSource();
-			
-			if (e.getDot() == e.getMark())
-			{
-				// dot and mark are the same, i.e., selection is empty
-				return findFieldDefinitionLocationInternal(comp, e.getDot());
-			}
-			
-			// else
-			int beginPos = (e.getDot() < e.getMark())? e.getDot() : e.getMark(); 
-			int endPos   = (e.getDot() > e.getMark())? e.getDot() : e.getMark();
-			
-			FieldDefinitionLocation locBegin = new FieldDefinitionLocation();
-			FieldDefinitionLocation locEnd   = new FieldDefinitionLocation();
-
-			boolean resBegin = locBegin.findFieldDefinitionLocationInternal(comp, beginPos);
-			boolean resEnd   = locEnd.findFieldDefinitionLocationInternal(comp, endPos);
-
-			if (resBegin || resEnd)
-			{
-				this.begin = resBegin ? locBegin.getBegin() : beginPos;
-				this.end   = resEnd   ? locEnd.getEnd()     : endPos;
-				return true;
-			}
-
-			return false;
-		}
-		
-		protected boolean findFieldDefinitionLocationInternal(JTextComponent source, int caretPos)
-		{
-			// try to detect whether insert position on format text area is inside a valid field marker
-			// if so, select the whole field to prevent user from changing the field name
-			String text = source.getText();
-
-			int openBracketAfterPos   = text.indexOf    ('[', caretPos); // first [ after caret
-			int openBracketBeforePos  = text.lastIndexOf('[', caretPos - 1); // first [ before caret
-			int closeBracketAfterPos  = text.indexOf    (']', caretPos); // first ] after caret
-			int closeBracketBeforePos = text.lastIndexOf(']', caretPos - 1); // first ] before caret
-
-			/*
-			//debugging code
-			char[] sample = (text + " ").toCharArray();
-			if (openBracketAfterPos   >= 0) sample[openBracketAfterPos]   = '[';
-			if (openBracketBeforePos  >= 0) sample[openBracketBeforePos]  = '[';
-			if (closeBracketAfterPos  >= 0) sample[closeBracketAfterPos]  = ']';
-			if (closeBracketBeforePos >= 0) sample[closeBracketBeforePos] = ']';
-			if (caretPos >= 0)              sample[caretPos]              = '|';
-			System.out.println(new String(sample) + " Caret Pos: " + caretPos);
-*/			
-
-			// adjust position of brackets after caret if that's not found to point to after the end of the string
-			openBracketAfterPos   = (openBracketAfterPos   >= 0)? openBracketAfterPos   : text.length();
-			
-			// check if caret is inside or outside a field definition: 
-			// Inside:  [...][  |  ][...]
-			// Outside: [...]   |   [...]
-			if (openBracketBeforePos == -1 || closeBracketAfterPos == -1 ||
-				closeBracketAfterPos > openBracketAfterPos ||
-				openBracketBeforePos < closeBracketBeforePos)
-			{
-				// caret is outside a field definition, so bail out
-				return false;
-			} 
-			
-			String fieldDefStr = (String) text.subSequence(openBracketBeforePos, closeBracketAfterPos + 1);
-			if (fieldHash.containsKey(fieldDefStr))
-			{
-				fieldName = fieldDefStr;
-				begin = openBracketBeforePos;
-				end   = closeBracketAfterPos + 1;
-				return true;
-			}
-			
-			return false;
-		}
+    	DataObjDataFieldFormat singleFormatter = new DataObjDataFieldFormat("", tableInfo.getClassObj(), false, "", "", fieldsArray);
+    	formatter.setSingle(singleFormatter);
 	}
 }

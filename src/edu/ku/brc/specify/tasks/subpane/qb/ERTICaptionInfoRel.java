@@ -121,9 +121,9 @@ public class ERTICaptionInfoRel extends ERTICaptionInfo
     {
         if (relationship.getType() == DBRelationshipInfo.RelationshipType.OneToMany)
         {
-            return DataObjFieldFormatMgr.aggregate(getList(key), relationship.getDataClass());
+            return DataObjFieldFormatMgr.getInstance().aggregate(getList(key), relationship.getDataClass());
         }
-        return DataObjFieldFormatMgr.format(getObject(key), relationship.getDataClass());
+        return DataObjFieldFormatMgr.getInstance().format(getObject(key), relationship.getDataClass());
     }
     
     /**

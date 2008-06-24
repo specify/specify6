@@ -1316,7 +1316,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         {
             return super.toString();
         }
-        return DataObjFieldFormatMgr.format(this, getClass());
+        return DataObjFieldFormatMgr.getInstance().format(this, getClass());
     }
 
     @Transient

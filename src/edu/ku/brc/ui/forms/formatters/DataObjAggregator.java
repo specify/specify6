@@ -31,7 +31,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class DataObjAggregator
 {
-    protected String          name;
+    protected String          name;	  // unique identifier to the aggregator 
+    protected String		  title;  // name assigned to aggregator by the user (so that renaming won't affect references)
     protected Class<?>        dataClass;
     protected boolean         isDefault;
     protected String          separator;
@@ -46,6 +47,7 @@ public class DataObjAggregator
     }
     
 	public DataObjAggregator(final String   name, 
+							 final String   title,
                              final Class<?> dataClass,
                              final boolean  isDefault, 
                              final String   separator, 
@@ -55,7 +57,9 @@ public class DataObjAggregator
                              final String   orderFieldName)
     {
         super();
+        
         this.name           = name;
+        this.title          = title;
         this.isDefault      = isDefault;
         this.dataClass      = dataClass;
         this.separator      = separator;
@@ -63,11 +67,26 @@ public class DataObjAggregator
         this.ending         = ending;
         
         this.orderFieldName = orderFieldName;
-        
+
         setFormatName(formatName); // sets boolean also
+
+        if (StringUtils.isEmpty(this.title))
+        {
+        	this.title = this.name;
+        }
     }
 
-    public boolean isDefault()
+	public String getTitle() 
+	{
+		return title;
+	}
+
+	public void setTitle(String title) 
+	{
+		this.title = title;
+	}
+
+	public boolean isDefault()
     {
         return isDefault;
     }
@@ -138,6 +157,17 @@ public class DataObjAggregator
         this.separator = separator;
     }
 
+	public void setCount(String count) {
+		try
+		{
+			this.count = Integer.valueOf(count);
+		}
+		catch(Exception e)
+		{
+			this.count = 0;
+		}
+	}
+	
     public void setCount(Integer count)
     {
         this.count = count;
@@ -151,7 +181,7 @@ public class DataObjAggregator
     public void setFormatName(String formatName)
     {
         this.formatName  = formatName;
-        this.useIdentity = formatName.equals("identity");
+        this.useIdentity = "identity".equals(formatName);
     }
 
     public void setOrderFieldName(String orderFieldName)
@@ -161,19 +191,7 @@ public class DataObjAggregator
 
 	public String toString()
 	{
-		//String countStr = "";
-		String orderStr = "";
-		//if (count != null)
-		//{
-		//	countStr = ""; // XXX: what does count mean?
-		//}
-		if (StringUtils.isNotEmpty(orderFieldName))
-		{
-			orderStr = " (sorted by " + orderFieldName + ")";
-		}
-		// following string should really be the formatter field name rather than the class simple name
-		String simpleName = dataClass.getSimpleName();
-		return simpleName + separator + simpleName + ending + orderStr;
+		return (StringUtils.isNotEmpty(title))? title : StringUtils.isNotEmpty(name)? name : "";
 	}
 
 	/*
@@ -184,6 +202,7 @@ public class DataObjAggregator
 		String padding = "\n               ";
 		sb.append         ("    <aggregator");
 		xmlAttr(sb, "name", 		  name);                       sb.append(padding);
+		xmlAttr(sb, "title", 		  title);                      sb.append(padding);
 		xmlAttr(sb, "class", 		  dataClass.getName());        sb.append(padding);
 		xmlAttr(sb, "default", 	      String.valueOf(isDefault));  sb.append(padding);
 		xmlAttr(sb, "separator", 	  separator);                  sb.append(padding);

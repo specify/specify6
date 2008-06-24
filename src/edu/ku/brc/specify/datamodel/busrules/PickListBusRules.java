@@ -149,7 +149,7 @@ public class PickListBusRules extends BaseBusRules
                 }
                 
                 Vector<DataObjSwitchFormatter> list = new Vector<DataObjSwitchFormatter>();
-                for (DataObjSwitchFormatter fmt : DataObjFieldFormatMgr.getFormatters())
+                for (DataObjSwitchFormatter fmt : DataObjFieldFormatMgr.getInstance().getFormatters())
                 {
                     if (fmt.getDataClass() == tableInfo.getClassObj())
                     {

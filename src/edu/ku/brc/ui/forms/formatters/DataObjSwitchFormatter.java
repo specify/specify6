@@ -17,9 +17,6 @@ package edu.ku.brc.ui.forms.formatters;
 import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Hashtable;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -48,7 +45,8 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
 {
     protected static final Logger log = Logger.getLogger(DataObjSwitchFormatter.class);
     
-    protected String                 name;
+    protected String          		 name;	  // unique identifier to the formatter 
+    protected String		  		 title;   // name assigned to formatter by the user (so that renaming won't affect references)
     protected boolean                isSingle;
     protected boolean                isDefault;
     protected Class<?>               dataClass;
@@ -56,8 +54,10 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     protected DBFieldInfo			 fieldInfo;
     protected DataObjDataFieldFormatIFace single     = null;
     
-    protected Hashtable<String, DataObjDataFieldFormatIFace> formatsHashtable= null;
-    
+    protected Vector<DataObjDataFieldFormatIFace> formatsVector = new Vector<DataObjDataFieldFormatIFace>();
+    //protected Hashtable<String, DataObjDataFieldFormatIFace> formatsHashtable= null;
+    // removed hash so that we can change values (which are the hash keys) as needed
+
     /**
      * A formatter that can have one or more formatters that depend on an external value, typically from the database.
      * @param name the name of the formatter
@@ -67,19 +67,53 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
      * @param fieldName the name of the field to be formatted
      */
     public DataObjSwitchFormatter(final String  name, 
+    							  final String   title,
                                   final boolean isSingle, 
                                   final boolean isDefault, 
                                   final Class<?>  dataClass, 
                                   final String  fieldName)
     {
         this.name      = name;
+        this.title     = title;
         this.isSingle  = isSingle;
         this.isDefault = isDefault;
         this.dataClass = dataClass;
         this.fieldName = fieldName;
     }
     
-    /**
+	public String getTitle()
+	{
+		return title;
+	}
+
+	public void setTitle(String title)
+	{
+		this.title = title;
+	}
+
+	public void setDataClass(Class<?> dataClass)
+	{
+		this.dataClass = dataClass;
+	}
+
+	public void setSingle(boolean isSingle)
+	{
+		this.isSingle = isSingle;
+	}
+	
+	public void setSingle(DataObjDataFieldFormatIFace single)
+	{
+		this.single = single;
+	}
+	
+	public void clearFields()
+	{
+		single = null;
+		formatsVector.clear();
+		//formatsHashtable.clear();
+	}
+
+	/**
      * Adds a field format. 
      * @param dff the field format to be added
      */
@@ -91,20 +125,32 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
             
         } else
         {
-            if (formatsHashtable == null)
-            {
-                formatsHashtable = new Hashtable<String, DataObjDataFieldFormatIFace>();
-            }
-            
-            if (StringUtils.isNotEmpty(dff.getValue()))
-            {
-                formatsHashtable.put(dff.getValue(), dff);
-                
-            } else
-            {
-                log.error("Data formatter's 'value' attribute is empty for ["+dff.getName()+"]");
-            }
+        	formatsVector.add(dff);
         }
+    }
+    
+	/**
+     * Replace the field format at the given index.
+     * @param index index of the field format being replaced 
+     * @param dff the field format to be replaced
+     * Note: must not be single switch and index must already exist
+     */
+    public void set(int index, final DataObjDataFieldFormatIFace dff)
+    {
+       	formatsVector.set(index, dff);
+    }
+    
+    /**
+     * Removes a field format.
+     * @param dff
+     */
+    public void remove(final DataObjDataFieldFormatIFace dff)
+    {
+    	if (!isSingle && formatsVector != null) 
+    	{
+    		formatsVector.remove(dff);
+    		//formatsHashtable.remove(dff.getValue());
+    	}
     }
     
     /**
@@ -120,7 +166,19 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
             return single;
             
         }
-        return formatsHashtable.get(value);
+        
+        // look for value on vector
+        // can't do better than that if we let clients change value of keys at run-time
+        // unless we ensure that the field container remains sorted even after keys are changed
+        // for now, we can live with that as formatsVector is bound to contain only a handful of objects anyway
+        for (DataObjDataFieldFormatIFace field : formatsVector)
+        {
+        	if (field.getValue().equals(value))
+        		return field;
+        }
+        
+        return null;
+        //return formatsHashtable.get(value);
     }
     
     /**
@@ -136,7 +194,8 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     		return vector;
     	}
     	
-    	return formatsHashtable.values();
+    	return formatsVector;
+    	//return formatsHashtable.values();
     }
 
     /**
@@ -185,22 +244,8 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     @Override
     public String toString()
     {
-        
-    	if (isSingle)
-    	{
-    		return single.toString();
-    	}
-    	
-    	String title = "";
-    	if (fieldInfo != null)
-    	{
-    		title = fieldInfo.getTitle();
-    	}
-    	else
-    	{
-    		title = getFieldName();
-    	}
-    	return "[" + dataClass.getSimpleName() + " by " + title + "]";
+		return (StringUtils.isNotEmpty(title))? title : 
+			StringUtils.isNotEmpty(name)? name : "";
     }
     
     //-----------------------------------------------------------------------
@@ -297,12 +342,12 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     		return;
     	} 
     	// else 
-    	if (formatsHashtable.size() == 0)
+    	if (formatsVector.size() == 0)
     	{
     		return;
     	}
     	
-    	for (DataObjDataFieldFormatIFace format : formatsHashtable.values())
+    	for (DataObjDataFieldFormatIFace format : formatsVector)
     	{
     		format.setTableAndFieldInfo();
     	}
@@ -315,6 +360,7 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     {
         sb.append("  <format");
         xmlAttr(sb, "name", name);
+        xmlAttr(sb, "title", title);
         
         if (dataClass != null)
         {
@@ -338,17 +384,7 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
         }
         else 
         {
-        	// sort fields value and get their XML representation 
-    		Vector<DataObjDataFieldFormatIFace> formatVector;
-    		formatVector = new Vector<DataObjDataFieldFormatIFace>(formatsHashtable.values());
-    		Collections.sort(formatVector, new Comparator<DataObjDataFieldFormatIFace>()
-    		{
-    			public int compare(DataObjDataFieldFormatIFace o1, DataObjDataFieldFormatIFace o2)
-    			{
-    				return o1.getValue().compareTo(o2.getValue());
-    			}
-    		});
-    		for (DataObjDataFieldFormatIFace field : formatVector)
+    		for (DataObjDataFieldFormatIFace field : formatsVector)
             {
             	field.toXML(sb);
             }
@@ -369,5 +405,4 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     {
         return name.compareTo(o.name);
     }
-
 }

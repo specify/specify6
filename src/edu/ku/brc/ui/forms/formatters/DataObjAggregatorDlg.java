@@ -9,6 +9,7 @@ import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -17,9 +18,14 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
@@ -46,6 +52,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.ui.AddRemoveEditPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
@@ -54,21 +61,28 @@ public class DataObjAggregatorDlg extends CustomDialog {
 	protected Frame 					aggDlgFrame; 
 	protected DBTableInfo 				tableInfo;
 	protected DataObjAggregator 		selectedAggregator;
+	protected int 						initialFormatSelectionIndex;
 	protected boolean 					newAggregator;
-    protected Vector<DataObjAggregator> deletedFormats = new Vector<DataObjAggregator>(); 
+    protected Vector<DataObjAggregator> deletedAggregators = new Vector<DataObjAggregator>();
+    protected Set<String>				uniqueTitles = new HashSet<String>();
+    protected DataObjFieldFormatMgr 	dataObjFieldFormatMgrCache;
+    protected UIFieldFormatterMgr		uiFieldFormatterMgrCache;
 	
 	// UI controls
-	protected JList aggragatorList;
+	protected JList aggregatorList;
 	protected JComboBox displayCbo;
 	protected JComboBox fieldOrderCbo;
+	protected JTextField titleText;
 	protected JTextField sepText;
-	protected JTextField endingText;
 	protected JTextField countText; 
+	protected JTextField endingText;
 	protected JCheckBox defaultCheck;
+	protected AddRemoveEditPanel controlPanel;
+
 	
 	// listeners
+	protected DocumentListener[] textChangedDL = new DocumentListener[5];
 	protected ListSelectionListener aggregatorListSL = null;
-	protected DocumentListener formatChangedDL = null;
 	protected ItemListener checkBoxListener = null;
 	protected ActionListener cboAL = null;
 
@@ -78,12 +92,17 @@ public class DataObjAggregatorDlg extends CustomDialog {
      */
     public DataObjAggregatorDlg(Frame                 frame, 
     					  		DBTableInfo           tableInfo, 
-    					  		int                   initialFormatSelectionIndex) 
+    					  		int                   initialFormatSelectionIndex,
+    					  		DataObjFieldFormatMgr dataObjFieldFormatMgrCache,
+    					  		UIFieldFormatterMgr   uiFieldFormatterMgrCache) 
     	throws HeadlessException
     {
         super(frame, getResourceString("DOA_DLG_TITLE"), true, OKCANCELHELP, null); //I18N 
         this.tableInfo = tableInfo;
         this.aggDlgFrame = frame;  // save it for when another dialog is created
+        this.initialFormatSelectionIndex = initialFormatSelectionIndex;
+        this.dataObjFieldFormatMgrCache = dataObjFieldFormatMgrCache;
+        this.uiFieldFormatterMgrCache = uiFieldFormatterMgrCache;
     }
 
     /* (non-Javadoc)
@@ -109,53 +128,43 @@ public class DataObjAggregatorDlg extends CustomDialog {
         		)/*, new FormDebugPanel()*/);
         
         // table info
-        JLabel tableTitleLbl = createLabel(getResourceString("FFE_TABLE") + ": " + 
-        		tableInfo.getTitle(), SwingConstants.LEFT); 
-
+        PanelBuilder tblInfoPB = new PanelBuilder(new FormLayout("p,p", "p")/*, new FormDebugPanel()*/);
+        JLabel tableTitleLbl      = createLabel(getResourceString("FFE_TABLE") + ": ");
+        JLabel tableTitleValueLbl = createLabel(getResourceString(tableInfo.getTitle()));
+        tableTitleValueLbl.setBackground(Color.WHITE);
+        tableTitleValueLbl.setOpaque(true);
+        
+        tblInfoPB.add(tableTitleLbl,      cc.xy(1, 1));
+        tblInfoPB.add(tableTitleValueLbl, cc.xy(2, 1));
+        
         JLabel helpLbl = createLabel(getResourceString("DOA_HELP"), SwingConstants.LEFT);
 
-        // list of existing formats
-        DefaultListModel listModel = new DefaultListModel();
-
         // add available data object formatters
-        List<DataObjAggregator> aggs;
-        aggs = DataObjFieldFormatMgr.getAggregatorList(tableInfo.getClassObj());
-        Collections.sort(aggs, new ComparatorByStringRepresentation<DataObjAggregator>()); 
-        for (DataObjAggregator agg : aggs)
-        {
-        	listModel.addElement(agg);
-        }
-        // add "New" string as last entry
-        listModel.addElement(getResourceString("DOA_NEW"));
+        List<DataObjAggregator> aggs = populateAggregatorList();
         
-        aggragatorList = createList(listModel);
-        aggragatorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        addAggregatorListSelectionListener();
-        addAggregatorListMouseListener();
-        
-        ActionListener deleteListener = new ActionListener()
+        ActionListener addAL = new ActionListener()
         {
         	public void actionPerformed(ActionEvent e) 
         	{ 	
-        		int index = aggragatorList.getSelectedIndex();
-        		DefaultListModel model = (DefaultListModel) aggragatorList.getModel();
-        		model.removeElement(selectedAggregator);
-        		index = (index >= model.getSize())? index - 1: index;
-        		aggragatorList.setSelectedIndex(index);
-        		deletedFormats.add(selectedAggregator);
+        		addNewAggregator();
+        	}
+        };
+        
+        ActionListener delAL = new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent e) 
+        	{
+        		deleteSelectedAggregator();
         	}
         };
         
         // delete button
-        PanelBuilder deletePB = new PanelBuilder(new FormLayout("l:p", "p"));  
-        JButton deleteBtn = createButton(getResourceString("FFE_DELETE")); 
-        deleteBtn.setEnabled(false);
-        deleteBtn.addActionListener(deleteListener);
-        deletePB.add(deleteBtn);
+        controlPanel = new AddRemoveEditPanel(addAL, delAL, null);
+        controlPanel.getAddBtn().setEnabled(true);
         
-        // panel for aggregator editing panel
-        PanelBuilder rightPB = new PanelBuilder(new FormLayout("l:p,2px,f:p:g", 
-        		"20px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 6))/*, new FormDebugPanel()*/);
+        // panel for aggregator editing controls
+        PanelBuilder rightPB = new PanelBuilder(new FormLayout("10px,r:p,2px,f:p:g", 
+        		"20px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 7))/*, new FormDebugPanel()*/);
 
         // display combo box with available data obj formatters
         PanelBuilder displayPB = new PanelBuilder(new FormLayout("f:p:g,min", "p")/*, new FormDebugPanel()*/);
@@ -174,7 +183,8 @@ public class DataObjAggregatorDlg extends CustomDialog {
         		// subtract 1 from selected index to account for empty entry at the beginning
         		// if selected index is zero, then select "new" entry in the dialog, which is the last one
         		int correctIndex = (displayCbo.getSelectedIndex() == 0)? displayCbo.getModel().getSize() - 1 : displayCbo.getSelectedIndex() - 1; 
-        		DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(aggDlgFrame, tableInfo, correctIndex);
+        		DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(aggDlgFrame, tableInfo, correctIndex, 
+        				dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache);
         		dlg.setVisible(true);
         		
         		// set combo selection to formatter selected in dialog
@@ -189,6 +199,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
         displayDlgBtn.addActionListener(displayDlgBtnAL);
         
         // text fields
+        titleText  = createTextField(10);
         sepText    = createTextField(10);
         endingText = createTextField(10);
         countText  = createTextField(10); 
@@ -198,55 +209,68 @@ public class DataObjAggregatorDlg extends CustomDialog {
         addEditorListeners();
         
         int yr = 2; // leave blank on top
-        rightPB.add(createLabel(getResourceString("DOA_DISPLAY")+":"), cc.xy(1, yr)); 
-        rightPB.add(displayPB.getPanel(), cc.xy(3, yr)); 
+        rightPB.add(createLabel(getResourceString("DOA_TITLE")+":"), cc.xy(2, yr)); 
+        rightPB.add(titleText, cc.xy(4, yr)); 
         yr += 2;
+
+        rightPB.add(createLabel(getResourceString("DOA_DISPLAY")+":"), cc.xy(2, yr)); 
+        rightPB.add(displayPB.getPanel(), cc.xy(4, yr)); 
+        yr += 2;
+
+        rightPB.add(createLabel(getResourceString("DOA_SEP")+":"), cc.xy(2, yr)); 
+        rightPB.add(sepText, cc.xy(4, yr)); 
+        yr += 2;
+
+        rightPB.add(createLabel(getResourceString("DOA_COUNT")+":"), cc.xy(2, yr)); 
+        rightPB.add(countText, cc.xy(4, yr)); 
+        yr += 2;
+
+        rightPB.add(createLabel(getResourceString("DOA_ENDING")+":"), cc.xy(2, yr));
+        rightPB.add(endingText, cc.xy(4, yr)); 
+        yr += 2;
+
+        rightPB.add(createLabel(getResourceString("DOA_SORT_BY")+":"), cc.xy(2, yr)); 
+        rightPB.add(fieldOrderCbo, cc.xy(4, yr)); 
+        yr += 2;
+
+        rightPB.add(defaultCheck, cc.xy(4, yr)); yr += 2;
         
-        rightPB.add(createLabel(getResourceString("DOA_SEP")+":"), cc.xy(1, yr)); 
-        rightPB.add(sepText, cc.xy(3, yr)); 
-        yr += 2;
-
-        rightPB.add(createLabel(getResourceString("DOA_ENDING")+":"), cc.xy(1, yr));
-        rightPB.add(endingText, cc.xy(3, yr)); 
-        yr += 2;
-
-        rightPB.add(createLabel(getResourceString("DOA_SORT_BY")+":"), cc.xy(1, yr)); 
-        rightPB.add(fieldOrderCbo, cc.xy(3, yr)); 
-        yr += 2;
-
-        rightPB.add(createLabel(getResourceString("DOA_COUNT")+":"), cc.xy(1, yr)); 
-        rightPB.add(countText, cc.xy(3, yr)); 
-        yr += 2;
-        
-        rightPB.add(defaultCheck, cc.xy(3, yr)); yr += 2;
+        /*
+        // add separator line between left and right columns
+        Color vsFGColor = new Color(224, 224, 224);
+        Color vsBGColor = new Color(124, 124, 124);
+        VerticalSeparator vs = new VerticalSeparator(vsFGColor, vsBGColor);
+        rightPB.add(vs, cc.xywh(1, 1, 1, 12));
+        */
         
         // lay out components on main panel        
         int y = 2; // leave first row blank 
-        pb.add(tableTitleLbl,  cc.xyw(2, y, 3)); y += 2;
-        pb.add(helpLbl,        cc.xyw(2, y, 3)); y += 2;
+        pb.add(tblInfoPB.getPanel(), cc.xyw(2, y, 3)); y += 2;
+        pb.add(helpLbl,              cc.xyw(2, y, 3)); y += 2;
         
         pb.add(createLabel(getResourceString("DOA_DISPLAY_FORMATS")+":", SwingConstants.LEFT), cc.xy(2, y)); y += 1; 
         int y2 = y; // align 3rd column with this row 
-        pb.add(new JScrollPane(aggragatorList), cc.xy(2,y)); y += 2;
+        pb.add(new JScrollPane(aggregatorList), cc.xy(2,y)); y += 2;
 
-        pb.add(deletePB.getPanel(), cc.xy(2,y)); y += 2;
+        pb.add(controlPanel, cc.xy(2,y)); y += 2;
         
         // 2nd column (4th if you count the spaces between them)
-        pb.add(rightPB.getPanel(), cc.xywh(4, y2, 1, 4));
+        pb.add(rightPB.getPanel(), cc.xywh(3, y2, 2, 4));
 
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
         // after all is created, set initial selection on format list 
         //formatList.setSelectedIndex(initialFormatSelectionIndex);
-        if (aggs.size() > 0)
+        if (initialFormatSelectionIndex >= 0 && 
+        	initialFormatSelectionIndex < aggs.size())
         {
-            selectedAggregator = aggs.get(0);
-            fillWithObjAggregator(selectedAggregator);
+            fillWithObjAggregator(aggs.get(initialFormatSelectionIndex));
+            aggregatorList.setSelectedIndex(initialFormatSelectionIndex);
         }
         else 
         {
-        	fillWithObjAggregator(null);
+        	addNewAggregator();
         }
 
     	updateUIEnabled();
@@ -254,6 +278,26 @@ public class DataObjAggregatorDlg extends CustomDialog {
         pack();
     }
 
+    protected List<DataObjAggregator> populateAggregatorList() 
+    {
+        DefaultListModel listModel = new DefaultListModel();
+    	List<DataObjAggregator> aggs;
+    	aggs = dataObjFieldFormatMgrCache.getAggregatorList(tableInfo.getClassObj());
+    	Collections.sort(aggs, new ComparatorByStringRepresentation<DataObjAggregator>()); 
+    	for (DataObjAggregator agg : aggs)
+    	{
+    		listModel.addElement(agg);
+    		uniqueTitles.add(agg.getTitle());
+    	}
+
+    	aggregatorList = createList(listModel);
+    	aggregatorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    	addAggregatorListSelectionListener();
+    	addAggregatorListMouseListener();
+    	
+    	return aggs;
+    }
+    
     private void addEditorListeners()
     {
     	addComboBoxActionListeners();
@@ -266,13 +310,56 @@ public class DataObjAggregatorDlg extends CustomDialog {
         displayCbo   .removeActionListener(cboAL);
         fieldOrderCbo.removeActionListener(cboAL);
     	
-        sepText.getDocument()   .removeDocumentListener(formatChangedDL);
-    	endingText.getDocument().removeDocumentListener(formatChangedDL);
-    	countText.getDocument() .removeDocumentListener(formatChangedDL);
+        titleText .getDocument().removeDocumentListener(textChangedDL[4]);
+        titleText .getDocument().removeDocumentListener(textChangedDL[0]);
+        sepText   .getDocument().removeDocumentListener(textChangedDL[1]);
+    	countText .getDocument().removeDocumentListener(textChangedDL[2]);
+    	endingText.getDocument().removeDocumentListener(textChangedDL[3]);
     	
     	defaultCheck.removeItemListener(checkBoxListener);
     }
 
+    private void addTextFieldChangeListeners()
+    {
+    	if (textChangedDL[4] == null)
+    	{
+    		try
+    		{
+	            textChangedDL[0] = new DataObjAggregatorDlgDocumentListener(titleText,   
+	            		DataObjAggregator.class.getMethod("setTitle",   String.class));
+	            textChangedDL[1] = new DataObjAggregatorDlgDocumentListener(sepText,    
+	            		DataObjAggregator.class.getMethod("setSeparator",    String.class));
+	            textChangedDL[2] = new DataObjAggregatorDlgDocumentListener(countText,  
+	            		DataObjAggregator.class.getMethod("setCount",  String.class));
+	            textChangedDL[3] = new DataObjAggregatorDlgDocumentListener(endingText, 
+	            		DataObjAggregator.class.getMethod("setEnding", String.class));
+	            
+	            textChangedDL[4] = new DocumentListener()
+	            {
+	                public void removeUpdate(DocumentEvent e)  { changed(e); }
+	                public void insertUpdate(DocumentEvent e)  { changed(e); }
+	                public void changedUpdate(DocumentEvent e) { changed(e); }
+	                
+	                protected void changed(DocumentEvent e)
+	                {
+	                	// FIXME: tried to invalidate the list at every change to the aggregator so that it would show changes to title right away, but didn't work
+	                	//aggregatorList.invalidate();
+	                }
+	            };
+    		}
+    		catch (NoSuchMethodException nsce)
+    		{
+        		throw new RuntimeException("No Such Method Exception: " + nsce.getMessage());
+    		}
+    	}
+    	
+        titleText .getDocument().addDocumentListener(textChangedDL[4]);
+    	titleText .getDocument().addDocumentListener(textChangedDL[0]);
+    	sepText   .getDocument().addDocumentListener(textChangedDL[1]);
+    	countText .getDocument().addDocumentListener(textChangedDL[2]);
+    	endingText.getDocument().addDocumentListener(textChangedDL[3]);
+    }
+    
     private void addComboBoxActionListeners()
     {
     	if (cboAL == null)
@@ -281,7 +368,26 @@ public class DataObjAggregatorDlg extends CustomDialog {
     		{
     			public void actionPerformed(ActionEvent e)
     			{
-    				aggregatorChanged();
+    				if (e.getSource() == displayCbo)
+    				{
+        				Object item = displayCbo.getSelectedItem();
+        				if (item instanceof DataObjSwitchFormatter)
+        				{
+	        				// display format changed
+        					DataObjSwitchFormatter fmt = (DataObjSwitchFormatter) item;
+	    					selectedAggregator.setFormatName(fmt.getName());
+        				}
+    				}
+    				else if (e.getSource() == fieldOrderCbo)
+    				{
+        				Object item = fieldOrderCbo.getSelectedItem();
+        				if (item instanceof DBFieldInfo)
+        				{
+        					// order by field changed
+        					DBFieldInfo fi = (DBFieldInfo) item;
+        					selectedAggregator.setOrderFieldName(fi.getName());
+        				}
+    				}
     			}
     		};
     	}
@@ -298,33 +404,12 @@ public class DataObjAggregatorDlg extends CustomDialog {
 	    	{
 	    		public void itemStateChanged(ItemEvent e)
 	    		{
-	    			aggregatorChanged();
+	    			// only source should be the default checkbox
+	    			selectedAggregator.setDefault(defaultCheck.isSelected());
 	    		}
 	    	};
     	}
     	defaultCheck.addItemListener(checkBoxListener);
-    }
-    
-    private void addTextFieldChangeListeners()
-    {
-    	if (formatChangedDL == null)
-    	{
-            formatChangedDL = new DocumentListener() 
-            {
-                public void removeUpdate(DocumentEvent e)  { changed(e); }
-                public void insertUpdate(DocumentEvent e)  { changed(e); }
-                public void changedUpdate(DocumentEvent e) { changed(e); }
-                
-                private void changed(DocumentEvent e)
-                {
-                	aggregatorChanged();
-                }            	
-            };
-
-    	}
-    	sepText.getDocument().addDocumentListener(formatChangedDL);
-    	endingText.getDocument().addDocumentListener(formatChangedDL);
-    	countText.getDocument().addDocumentListener(formatChangedDL);
     }
     
     /*
@@ -340,7 +425,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
     	cboModel.removeAllElements();
     	
     	// add formatters to display combo box
-    	List<DataObjSwitchFormatter> fmts = DataObjFieldFormatMgr.getFormatterList(tableInfo.getClassObj());
+    	List<DataObjSwitchFormatter> fmts = dataObjFieldFormatMgrCache.getFormatterList(tableInfo.getClassObj());
 
     	// add an empty entry at the beginning so the user can clear the selection if he wants to
     	cboModel.addElement("");
@@ -401,22 +486,14 @@ public class DataObjAggregatorDlg extends CustomDialog {
     /*
      * Populates the dialog controls with data from a given formatter
      */
-    protected void fillWithObjAggregator(final DataObjAggregator aggArg)
+    protected void fillWithObjAggregator(final DataObjAggregator agg)
     {
-        DataObjAggregator agg = aggArg;
-        
-    	newAggregator = false;
-    	if (agg == null)
-    	{
-    		agg = new DataObjAggregator();
-    		agg.setDataClass(tableInfo.getClassObj());
-    		newAggregator = true;
-    	}
     	selectedAggregator = agg;
-    	
-    	defaultCheck.setSelected(agg.isDefault());
+
+    	titleText.setText(agg.getTitle());
     	sepText.setText(agg.getSeparator());
     	endingText.setText(agg.getEnding());
+    	defaultCheck.setSelected(agg.isDefault());
     	if (agg.getCount() != null)
     	{
     		countText.setText(agg.getCount().toString());
@@ -431,6 +508,44 @@ public class DataObjAggregatorDlg extends CustomDialog {
     	updateUIEnabled();
     }
     
+    protected void deleteSelectedAggregator()
+    {
+    	if (selectedAggregator == null)
+    		return;
+    		
+		deletedAggregators.add(selectedAggregator);
+
+		int index = aggregatorList.getSelectedIndex();
+		DefaultListModel model = (DefaultListModel) aggregatorList.getModel();
+		model.removeElement(selectedAggregator);
+		
+		if (model.getSize() == 0)
+		{
+			// aggregator list is now empty
+			setSelectedFormat(null);
+			updateUIEnabled();
+			return;
+		}
+		
+		//else
+		index = (index >= model.getSize())? index - 1: index;
+		aggregatorList.setSelectedIndex(index);
+    }
+    
+    protected void addNewAggregator()
+    {
+		newAggregator = true;
+		DefaultListModel listModel = (DefaultListModel) aggregatorList.getModel();
+    	DataObjAggregator agg = new DataObjAggregator();
+		agg.setDataClass(tableInfo.getClassObj());
+    	String newTitle = DataObjFieldFormatMgr.getUniqueName(tableInfo.getTitle(), " ", uniqueTitles);
+    	agg.setTitle(newTitle);
+    	// aggregator's name will be set when inserted into hash of aggregators by agg manager
+    	listModel.addElement(agg);
+    	uniqueTitles.add(newTitle);
+    	aggregatorList.setSelectedIndex(listModel.getSize() - 1);
+    }
+    
     /**
      * 
      */
@@ -442,14 +557,14 @@ public class DataObjAggregatorDlg extends CustomDialog {
     		{
     			if(e.getClickCount() == 2)
     			{
-    				int index = aggragatorList.locationToIndex(e.getPoint());
-    				aggragatorList.ensureIndexIsVisible(index);
+    				int index = aggregatorList.locationToIndex(e.getPoint());
+    				aggregatorList.ensureIndexIsVisible(index);
     				okButtonPressed();
     			}
     		}
     	};
     	
-    	aggragatorList.addMouseListener(mAdp);
+    	aggregatorList.addMouseListener(mAdp);
     }
     
 	/**
@@ -469,6 +584,8 @@ public class DataObjAggregatorDlg extends CustomDialog {
 	        	    JList theList = (JList) e.getSource();
 	        	    if (theList.isSelectionEmpty())
 	        	    {
+	        	    	setSelectedFormat(null);
+	        	    	updateUIEnabled();
 	        	    	return;
 	        	    }
 	
@@ -490,7 +607,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
 	        };
 		}
 		
-        aggragatorList.addListSelectionListener(aggregatorListSL);
+        aggregatorList.addListSelectionListener(aggregatorListSL);
 	}
 
 	/**
@@ -503,70 +620,6 @@ public class DataObjAggregatorDlg extends CustomDialog {
 		fillWithObjAggregator(agg);
 		addEditorListeners();
 	}
-	
-	protected void aggregatorChanged()
-	{
-		DataObjAggregator tempAgg = new DataObjAggregator();
-		
-		String formatName = "";
-		Object formatObj = displayCbo.getSelectedItem();
-		if (formatObj instanceof DataObjSwitchFormatter)
-		{
-			formatName = ((DataObjSwitchFormatter) formatObj).getName();
-		}
-		
-		String orderFieldName = "";
-		Object orderFieldObj = fieldOrderCbo.getSelectedItem();
-		if (orderFieldObj instanceof DBFieldInfo)
-		{
-			orderFieldName = ((DBFieldInfo) orderFieldObj).getName();
-		}
-
-		tempAgg.setFormatName(formatName);
-		tempAgg.setDataClass(tableInfo.getClassObj());
-		tempAgg.setOrderFieldName(orderFieldName);
-		tempAgg.setSeparator(sepText.getText());
-		tempAgg.setEnding(endingText.getText());
-		tempAgg.setDefault(defaultCheck.isSelected());
-
-		if (StringUtils.isNotEmpty(countText.getText()))
-		{
-			tempAgg.setCount(Integer.valueOf(countText.getText()));
-		}
-
-		// if new value cannot be found among those listed, then it's a new one
-		DefaultListModel listModel = (DefaultListModel) aggragatorList.getModel();
-		Enumeration<?> elements = listModel.elements();
-		int i = 0;
-		int index = -1;
-		while (elements.hasMoreElements())
-		{
-			Object obj = elements.nextElement();
-			if (obj instanceof DataObjAggregator)
-			{
-				DataObjAggregator agg = (DataObjAggregator) obj;
-				if (tempAgg.toString().equals(agg.toString()))
-				{
-					index = i;
-					selectedAggregator = agg;
-					break;
-				}
-			}
-			++i;
-		}
-
-		if (index == -1) {
-			// it's a new format: change index to last value (i.e. "New")
-			index = aggragatorList.getModel().getSize() - 1;
-			selectedAggregator = tempAgg;
-		} 
-
-		// detach selection listeners from formatList, change value to New (last on the list)
-		// and attach listeners again
-    	aggragatorList.removeListSelectionListener(aggregatorListSL);
-    	aggragatorList.setSelectedIndex(index);
-    	aggragatorList.addListSelectionListener(aggregatorListSL);
-	}
 
     public DataObjAggregator getSelectedAggregator()
     {
@@ -575,7 +628,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
 
     public int getSelectedAggregatorIndex()
     {
-    	return aggragatorList.getSelectedIndex();
+    	return aggregatorList.getSelectedIndex();
     }
 
     public boolean isNewAggregator()
@@ -588,7 +641,18 @@ public class DataObjAggregatorDlg extends CustomDialog {
      */
     protected void updateUIEnabled()
     {
-    	// TODO: determine when the delete button is to be enabled 
+    	int count;
+		try
+		{
+			count = Integer.valueOf(countText.getText());
+		}
+		catch(Exception e)
+		{
+			count = 0;
+		}
+    	endingText.setEnabled( count > 0 );
+    	
+    	controlPanel.getDelBtn().setEnabled(selectedAggregator != null);
     }
     
     /* (non-Javadoc)
@@ -597,34 +661,62 @@ public class DataObjAggregatorDlg extends CustomDialog {
     @Override
     protected void okButtonPressed()
     {
-    	DataObjFieldFormatMgr instance = DataObjFieldFormatMgr.getInstance();
-
-    	// XXX delete button not implemented yet
-    	// not sure what can be deleted
-    	// maybe we should add a "system" flag to the formats just like UIFieldFormatters
-
-    	/*
-    	// remove non-system formatters marked for deletion
-    	Iterator<UIFieldFormatterIFace> it = deletedFormats.iterator();
+    	// delete aggregators marked for deletion
+    	Iterator<DataObjAggregator> it = deletedAggregators.iterator();
     	while (it.hasNext()) 
     	{
-    		instance.removeFormatter(it.next());
+    		dataObjFieldFormatMgrCache.removeAggregator(it.next());
     	}
-    	*/
-    	
-    	// save formatter if new
-    	// save formatter anyway if it is a multiple switch formatter as its contents may have changed
-    	// without affecting the format list selection
-    	// that's because a multiple switch formatter is only considered new if its switch field is changed
-    	// and not if just the internal formatters have changed
-		if (aggragatorList.getSelectedIndex() == aggragatorList.getModel().getSize() - 1)
+
+    	// add new aggregators back to manager
+    	// new aggregators have empty names (as they will be named after inserted)
+    	DefaultListModel listModel = (DefaultListModel) aggregatorList.getModel();
+    	Enumeration<?> elements = listModel.elements();
+    	while (elements.hasMoreElements())
     	{
-    		// add formatter to list of existing ones and save it
-			selectedAggregator = getSelectedAggregator();
-    		instance.addAggregator(selectedAggregator);
-    		instance.save();
+    		Object obj = elements.nextElement();
+    		if (obj instanceof DataObjAggregator)
+    		{
+           		// add formatter to list of existing ones and save it
+    			DataObjAggregator agg = (DataObjAggregator) obj;
+    			dataObjFieldFormatMgrCache.addAggregator(agg);
+    		}
     	}
 
         super.okButtonPressed();
+    }
+    
+    protected class DataObjAggregatorDlgDocumentListener implements DocumentListener
+    {
+    	protected JTextField source;
+    	protected Method     setter;
+    	
+    	public DataObjAggregatorDlgDocumentListener(JTextField source, Method setter)
+    	{
+    		this.source = source;
+    		this.setter = setter;
+    	}
+    	
+        public void removeUpdate(DocumentEvent e)  { changed(e); }
+        public void insertUpdate(DocumentEvent e)  { changed(e); }
+        public void changedUpdate(DocumentEvent e) { changed(e); }
+        
+        protected void changed(DocumentEvent e)
+        {
+        	try
+        	{
+        		// equivalent to calling selectedAggregator.setter(source.getText())
+        		setter.invoke(selectedAggregator, source.getText());
+        		updateUIEnabled();
+        	}
+        	catch (IllegalAccessException iae)
+        	{
+        		throw new RuntimeException("Illegal Access Exception: " + iae.getMessage());
+        	}
+        	catch (InvocationTargetException ite)
+        	{
+        		throw new RuntimeException("Invocation Target Exception: " + ite.getMessage());
+        	}
+        }            	
     }
 }

@@ -81,6 +81,12 @@ public class UIFormatterDlg extends CustomDialog
 	protected boolean formatIsNew = false;
     protected Vector<UIFieldFormatterIFace> deletedFormats = new Vector<UIFieldFormatterIFace>(); 
     
+    // used to hold changes to formatters before committing them to DB
+    protected DataObjFieldFormatMgr 	dataObjFieldFormatMgrCache;
+    protected UIFieldFormatterMgr		uiFieldFormatterMgrCache;
+    
+    protected UIFieldFormatterFactory   formatFactory;
+
     protected JLabel	 sampleLabel;
     protected JList      formatList;
     protected JTextField formatTF;
@@ -101,12 +107,15 @@ public class UIFormatterDlg extends CustomDialog
      */
     public UIFormatterDlg(Frame                 frame, 
     					  DBFieldInfo           fieldInfo, 
-    					  int                   initialFormatSelectionIndex) 
-    	throws HeadlessException
+    					  int                   initialFormatSelectionIndex,
+    					  UIFieldFormatterMgr	uiFieldFormatterMgrCache) throws HeadlessException
     {
         super(frame, getResourceString("FFE_DLG_TITLE"), true, OKCANCELHELP, null); //I18N 
         this.fieldInfo = fieldInfo;
         this.initialFormatSelectionIndex = initialFormatSelectionIndex;
+        this.uiFieldFormatterMgrCache = uiFieldFormatterMgrCache;
+        
+        formatFactory = UIFieldFormatterMgr.getFormatFactory(fieldInfo);
     }
 
     /*
@@ -149,8 +158,7 @@ public class UIFormatterDlg extends CustomDialog
     	// else: create a new format from the pattern
     	try 
     	{
-    		// FIXME: not calling setSelectedFormat() intentionally not to change the value of the 
-    		selectedFormat = UIFieldFormatterMgr.factory(pattern, fieldInfo);
+    		selectedFormat = formatFactory.createFormat(pattern);
     		formatIsNew = true;
         	updateSample();
     	}
@@ -398,7 +406,7 @@ public class UIFormatterDlg extends CustomDialog
 
         // get formatters for field
         List<UIFieldFormatterIFace> fmtrs = new Vector<UIFieldFormatterIFace>(
-                UIFieldFormatterMgr.getInstance().getFormatterList(fieldInfo.getTableInfo().getClassObj(), fieldInfo.getName()));
+        		uiFieldFormatterMgrCache.getFormatterList(fieldInfo.getTableInfo().getClassObj(), fieldInfo.getName()));
         Collections.sort(fmtrs, new Comparator<UIFieldFormatterIFace>() {
             public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
             {
@@ -407,19 +415,40 @@ public class UIFormatterDlg extends CustomDialog
         });
 
         // table and field titles
+        PanelBuilder tblInfoPB = new PanelBuilder(new FormLayout("r:p,l:p", "p,p,p,p")/*, new FormDebugPanel()*/);
+
         String typeStr = fieldInfo.getType();
         typeStr = typeStr.indexOf('.') > -1 ? StringUtils.substringAfterLast(fieldInfo.getType(), ".") : typeStr;
 
-        JLabel tableTitleLbl = createLabel(getResourceString("FFE_TABLE") + ": " + 
-        		fieldInfo.getTableInfo().getTitle(), SwingConstants.LEFT); 
-        JLabel fieldTitleLbl = createLabel(getResourceString("FFE_FIELD") + ": " + 
-        		fieldInfo.getTitle(),  SwingConstants.LEFT); 
-        JLabel fieldTypeLbl = createLabel(getResourceString("FFE_TYPE") + ": " + 
-        		typeStr, SwingConstants.LEFT);
-        JLabel fieldLengthLbl = createLabel(getResourceString("FFE_LENGTH") + ": " + 
-        		Integer.toString(fieldInfo.getLength()), SwingConstants.LEFT);
+        JLabel tableTitleLbl      = createLabel(getResourceString("FFE_TABLE") + ": ");
+        JLabel tableTitleValueLbl = createLabel(fieldInfo.getTableInfo().getTitle());
+        tableTitleValueLbl.setBackground(Color.WHITE);
+        tableTitleValueLbl.setOpaque(true);
+
+        JLabel fieldTitleLbl      = createLabel(getResourceString("FFE_FIELD") + ": ");
+        JLabel fieldTitleValueLbl = createLabel(fieldInfo.getTitle());
+        fieldTitleValueLbl.setBackground(Color.WHITE);
+        fieldTitleValueLbl.setOpaque(true);
+
+        JLabel fieldTypeLbl = createLabel(getResourceString("FFE_TYPE") + ": ");
+        JLabel fieldTypeValueLbl = createLabel(typeStr);
+        fieldTypeValueLbl.setBackground(Color.WHITE);
+        fieldTypeValueLbl.setOpaque(true);
         
+        JLabel fieldLengthLbl = createLabel(getResourceString("FFE_LENGTH") + ": ");
+        JLabel fieldLengthValueLbl = createLabel(Integer.toString(fieldInfo.getLength()));
+        fieldLengthValueLbl.setBackground(Color.WHITE);
+        fieldLengthValueLbl.setOpaque(true);
         
+        tblInfoPB.add(tableTitleLbl,       cc.xy(1, 1));
+        tblInfoPB.add(tableTitleValueLbl,  cc.xy(2, 1));
+        tblInfoPB.add(fieldTitleLbl,       cc.xy(1, 2));
+        tblInfoPB.add(fieldTitleValueLbl,  cc.xy(2, 2));
+        tblInfoPB.add(fieldTypeLbl,        cc.xy(1, 3));
+        tblInfoPB.add(fieldTypeValueLbl,   cc.xy(2, 3));
+        tblInfoPB.add(fieldLengthLbl,      cc.xy(1, 4));
+        tblInfoPB.add(fieldLengthValueLbl, cc.xy(2, 4));
+
         // sample panel
         sampleLabel = createLabel("", SwingConstants.LEFT); 
         JPanel samplePanel = new JPanel();
@@ -474,13 +503,10 @@ public class UIFormatterDlg extends CustomDialog
         keyPanel.setBorder(BorderFactory.createTitledBorder(getResourceString("FFE_HELP")));
         // left help body text in a single string resource until we build infrastructure to 
         // localize long texts (in files maybe)
-        keyPanel.add(createLabel(getResourceString("FFE_HELP_HTML")));
+        keyPanel.add(createLabel(formatFactory.getHelpHtml()));
 
         int y = 2; // leave first row blank 
-        pb.add(tableTitleLbl,  cc.xyw(2, y, 3)); y += 1;
-        pb.add(fieldTitleLbl,  cc.xyw(2, y, 3)); y += 1;
-        pb.add(fieldTypeLbl,   cc.xyw(2, y, 3)); y += 1;
-        pb.add(fieldLengthLbl, cc.xyw(2, y, 3)); y += 2;
+        pb.add(tblInfoPB.getPanel(), cc.xyw(2, y, 3)); y += 5;
         
         int y2 = y; // align formatting legend key with row marked by y2 (see below)
         pb.add(samplePanel, cc.xy(2, y)); y += 2;  
@@ -537,13 +563,11 @@ public class UIFormatterDlg extends CustomDialog
     @Override
     protected void okButtonPressed()
     {
-    	UIFieldFormatterMgr instance = UIFieldFormatterMgr.getInstance();
-    	
     	// remove non-system formatters marked for deletion
     	Iterator<UIFieldFormatterIFace> it = deletedFormats.iterator();
     	while (it.hasNext()) 
     	{
-    		instance.removeFormatter(it.next());
+    		uiFieldFormatterMgrCache.removeFormatter(it.next());
     	}
     	
     	// save formatter if new
@@ -554,8 +578,7 @@ public class UIFormatterDlg extends CustomDialog
     		selectedFormat.setByYear(byYearCB.isSelected());
     		
     		// add formatter to list of existing ones and save it
-    		instance.addFormatter(selectedFormat);
-    		instance.save();
+    		uiFieldFormatterMgrCache.addFormatter(selectedFormat);
     	}
         
         super.okButtonPressed();
@@ -589,15 +612,4 @@ public class UIFormatterDlg extends CustomDialog
 		this.selectedFormat = selectedFormat;
 		setByYearSelected(selectedFormat);
 	}
-
-	/**
-     * @param args
-     * @throws Exception
-     */
-    public static void main(String args[]) throws Exception
-    {
-        UIFormatterDlg dlg = new UIFormatterDlg(null, null, 0);
-        dlg.pack();
-        dlg.setVisible(true);
-    }
 }

@@ -4,7 +4,7 @@
 
     Last used ID is 133 or 523
     
-    86, 104, 105 is available
+    78, 86, 89, 104, 105 is available
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -317,8 +317,6 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.TaxonBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.TreatmentEvent" abbrev="te" id="122"/>
-        <table name="edu.ku.brc.specify.datamodel.UserGroup" abbrev="spug" id="78"/>
-        <table name="edu.ku.brc.specify.datamodel.UserPermission" abbrev="spup" id="89"/>
         <table name="edu.ku.brc.specify.datamodel.Workbench" abbrev="wb" id="79"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchDataItem" abbrev="wbdi" id="80"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchRow" abbrev="wbr" id="90"/>

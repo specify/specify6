@@ -16,9 +16,7 @@
 package edu.ku.brc.ui.forms.formatters;
 
 import javax.swing.JButton;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.event.ListSelectionListener;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 
@@ -26,32 +24,34 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 
 public abstract class DataObjFieldFormatPanelBuilder {
 
-	protected PanelBuilder 			mainPanelBuilder;
-	protected DBTableInfo  			tableInfo;
-	protected JList 	   			formatList;
-	protected ListSelectionListener formatListSL;
-	protected JButton				okButton;
-	protected boolean 				newFormat;
+	protected AvailableFieldsComponent 				availableFieldsComp;
+	protected DataObjSwitchFormatterContainerIface 	formatContainer;
+	protected PanelBuilder 							mainPanelBuilder;
+	protected DBTableInfo  							tableInfo;
+	protected JButton								okButton;
+	protected boolean 								newFormat;
+
+	protected UIFieldFormatterMgr 					uiFieldFormatterMgrCache;
 
 	public abstract void fillWithObjFormatter(DataObjSwitchFormatter fmt);
-	public abstract DataObjSwitchFormatter getSwitchFormatter();
 	
-	public abstract void addEditorListeners();
-	public abstract void removeEditorListeners();
-	
-	public DataObjFieldFormatPanelBuilder(DBTableInfo tableInfo, 
-									      JList formatList,
-									      ListSelectionListener formatListSL,
-									      JButton okButton) 
+	public DataObjFieldFormatPanelBuilder(DBTableInfo 							tableInfo,
+										  AvailableFieldsComponent 				availableFieldsComp,
+										  DataObjSwitchFormatterContainerIface 	formatContainer,
+										  JButton 								okButton,
+										  UIFieldFormatterMgr 					uiFieldFormatterMgrCache) 
 	{
 		super();
 
-		this.tableInfo = tableInfo;
-		this.formatList = formatList;
-		this.formatListSL = formatListSL;
-		this.okButton = okButton;
+		if (formatContainer == null)
+			throw new RuntimeException("Cannot instantiate data obj format panel builder with null format container.");
 		
-		this.newFormat = false;
+		this.uiFieldFormatterMgrCache 	= uiFieldFormatterMgrCache;
+		this.tableInfo           		= tableInfo;
+		this.availableFieldsComp 		= availableFieldsComp;
+		this.formatContainer     		= formatContainer;
+		this.okButton            		= okButton;
+		this.newFormat           		= false;
 		
         init();
         buildUI();
@@ -67,6 +67,7 @@ public abstract class DataObjFieldFormatPanelBuilder {
 
 	public void enableUIControls() 
 	{
+		okButton.setEnabled(true);
 	}
 
 	public boolean isNewFormat()

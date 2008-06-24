@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  */
 public class UIFieldFormatterField
 {
-    public enum FieldType {numeric, alphanumeric, alpha, separator, year, anychar}
+    public enum FieldType {numeric, alphanumeric, alpha, separator, year, anychar, constant}
     
     protected FieldType type;
     protected int       size;
@@ -107,7 +107,7 @@ public class UIFieldFormatterField
     	//Pattern pattern = Pattern.compile("^(A+|a+|N+|\\#+|YEAR|Y{4}|Y{2}|M{2,3})$");
     	// restricting set of valid formats to those that can be applied to String for now
     	// will open up possibilities when supporting dates and numeric fields
-    	Pattern pattern = Pattern.compile("^(A+|a+|N+|\\#+|YEAR)$");
+    	Pattern pattern = Pattern.compile("^(A+|a+|N+|\\#+|YEAR|\"[^\"]*\")$");
     	Matcher matcher = pattern.matcher(formattingString);
     	
     	if (matcher.find()) 
@@ -135,6 +135,10 @@ public class UIFieldFormatterField
     			break;
     		case 'Y': 
     			field.setType(FieldType.year); 
+    			break;
+    			
+    		case '"':
+    			field.setType(FieldType.constant);
     			break;
     			
     		// TODO: treat byyear case
@@ -180,10 +184,18 @@ public class UIFieldFormatterField
 			sample = new String("Abcdefghijklmnopqrstuvwxyz");
 
 		if (type == FieldType.numeric)
+		{
 			sample = new String("123456789012345678901234567890");
+			int dot = value.indexOf(".");
+			if (dot > 0)
+				sample = sample.substring(0, dot) + "." + sample.substring(dot, sample.length());
+		}
 
 		if (type == FieldType.year)
 			sample = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
+		
+		if (type == FieldType.constant)
+			return value.substring(1, value.length() - 1);
 		
 		if (sample.length() == 0)
 			return "";
@@ -232,7 +244,8 @@ public class UIFieldFormatterField
         
         if (type != FieldType.numeric)
         {
-            xmlAttr(sb, "value", value);
+        	// XML encode any double quotes
+            xmlAttr(sb, "value", value.replaceAll("\"", "&quot;"));
         }
         if (incrementer)
         {

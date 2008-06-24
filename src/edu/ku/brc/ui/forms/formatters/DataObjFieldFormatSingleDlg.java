@@ -32,21 +32,29 @@ import edu.ku.brc.ui.CustomDialog;
  */
 public class DataObjFieldFormatSingleDlg extends CustomDialog 
 {
-	protected DBTableInfo tableInfo;
-	protected DataObjDataFieldFormatIFace formatter;
-	protected DataObjFieldFormatSinglePanelBuilder fmtSingleEditingPB;
+	protected DBTableInfo 							tableInfo;
+	protected AvailableFieldsComponent 				availableFieldsComp;
+	protected DataObjSwitchFormatter 				formatter;
+	protected DataObjFieldFormatSinglePanelBuilder 	fmtSingleEditingPB;
+	
+	protected UIFieldFormatterMgr 					uiFieldFormatterMgrCache;
 
 	/**
      * @throws HeadlessException
      */
-    public DataObjFieldFormatSingleDlg(Frame frame, 
-    								   DBTableInfo tableInfo, 
-    								   DataObjDataFieldFormatIFace formatter)
+    public DataObjFieldFormatSingleDlg(Frame 						frame, 
+    								   DBTableInfo 					tableInfo,
+    								   AvailableFieldsComponent 	availableFieldsComp,
+    								   DataObjDataFieldFormatIFace 	singleFormatter,
+    								   UIFieldFormatterMgr 			uiFieldFormatterMgrCache)
     	throws HeadlessException
     {
-        super(frame, getResourceString("DOF_DLG_TITLE"), true, OKCANCELHELP, null); //I18N 
+        super(frame, getResourceString("DOF_DLG_TITLE"), true, OKCANCELHELP, null); //I18N
         this.tableInfo = tableInfo;
-        this.formatter = formatter;
+        this.availableFieldsComp = availableFieldsComp;
+        this.formatter = new DataObjSwitchFormatter("", "", true, false, tableInfo.getClassObj(), "");
+        this.uiFieldFormatterMgrCache = uiFieldFormatterMgrCache;
+        formatter.setSingle(singleFormatter);
     }
 
     /* (non-Javadoc)
@@ -61,7 +69,9 @@ public class DataObjFieldFormatSingleDlg extends CustomDialog
         PanelBuilder    pb = new PanelBuilder(new FormLayout("p", "p")/*, new FormDebugPanel()*/);
         
         // format editing panel (single format only)
-        fmtSingleEditingPB = new DataObjFieldFormatSinglePanelBuilder(tableInfo, null, null, getOkBtn(), formatter);
+		DataObjSwitchFormatterContainerIface fmtContainer = new DataObjSwitchFormatterSingleContainer(formatter);
+        fmtSingleEditingPB = new DataObjFieldFormatSinglePanelBuilder(tableInfo, availableFieldsComp, 
+        		fmtContainer, getOkBtn(), uiFieldFormatterMgrCache);
         pb.add(fmtSingleEditingPB.getPanel());
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
@@ -69,8 +79,8 @@ public class DataObjFieldFormatSingleDlg extends CustomDialog
         pack();
     }
     
-	public DataObjSwitchFormatter getSwitchFormatter()
-	{
-		return fmtSingleEditingPB.getSwitchFormatter();
-	}
+    public DataObjDataFieldFormatIFace getSingleFormatter()
+    {
+    	return formatter.getSingle();
+    }
 }

@@ -26,24 +26,25 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -52,24 +53,35 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.ui.AddRemoveEditPanel;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
 
 public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPanelBuilder 
 	{
 
+	protected static final String FIELD_VALUE_COL;
+	protected static final String DISPLAY_FORMAT_COL;
+	protected static final String ELLIPSIS_BUTTON_COL = "";
+
 	protected final String ellipsisButtonLabel = "...";
 
 	protected JTable formatSwitchTbl;
-	protected JButton addRowBtn;
-	protected JButton delRowBtn;
-	protected JButton resetRowBtn;
-
-	DataObjFieldFormatMultiplePanelBuilder(DBTableInfo           tableInfo,
-					                       JList                 formatList, 
-					                       ListSelectionListener formatListSL,
-					                       JButton               okButton) 
+    protected AddRemoveEditPanel controlPanel;
+    
+    static 
+    {
+    	FIELD_VALUE_COL     = getResourceString("DOF_FIELD_VALUE");
+    	DISPLAY_FORMAT_COL  = getResourceString("DOF_DISPLAY_FORMAT");
+    }
+    
+    DataObjFieldFormatMultiplePanelBuilder(DBTableInfo 				      			tableInfo,
+			 							   AvailableFieldsComponent 		  		availableFieldsComp,
+			 							   DataObjSwitchFormatterContainerIface 	formatContainer,	
+			 							   JButton               		 	  		okButton,
+			 							   UIFieldFormatterMgr 						uiFieldFormatterMgrCache)
 	{
-		super(tableInfo, formatList, formatListSL, okButton);
+    	super(tableInfo, availableFieldsComp, formatContainer, okButton, uiFieldFormatterMgrCache);
 	}
 
 	protected void buildUI() 
@@ -80,17 +92,11 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 
 		formatSwitchTbl = new JTable(new DefaultTableModel());
 		formatSwitchTbl.getSelectionModel().addListSelectionListener(new RowListener());
+		addTableModelListener((DefaultTableModel) formatSwitchTbl.getModel());
 		fillWithObjFormatter(null);
 
-		// tool bar (which hosts the add and delete buttons)
-		PanelBuilder deletePB = new PanelBuilder(new FormLayout("p,p,p", "p"));
-		addRowBtn = createButton(getResourceString("DOF_ADD"));
-		delRowBtn = createButton(getResourceString("DOF_DELETE"));
-		resetRowBtn = createButton(getResourceString("DOF_RESET"));
-		deletePB.add(addRowBtn, cc.xy(1, 1));
-		deletePB.add(delRowBtn, cc.xy(2, 1));
-		deletePB.add(resetRowBtn, cc.xy(3, 1));
-		hookToolbarActionListeners();
+		// tool bar to host the add and delete buttons
+		createToolbar();
 
 		// lay out components on main panel
 		JScrollPane sp = new JScrollPane(formatSwitchTbl);
@@ -99,15 +105,13 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 		sp.setPreferredSize(new Dimension(50, 5));
 
 		pb.add(sp, cc.xy(1, 2));
-		pb.add(deletePB.getPanel(), cc.xy(1, 4));
+		pb.add(controlPanel, cc.xy(1, 4));
 		this.mainPanelBuilder = pb;
 	}
 
 	public void enableUIControls() 
 	{
-		DefaultTableModel model = (DefaultTableModel) formatSwitchTbl.getModel();
-		delRowBtn.setEnabled(formatSwitchTbl.getSelectedRowCount() > 0);
-		resetRowBtn.setEnabled(model.getRowCount() > 0);
+		controlPanel.getDelBtn().setEnabled(formatSwitchTbl.getSelectedRowCount() > 0);
 		
 		if (okButton != null)
 		{
@@ -125,6 +129,30 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 		return mainPanelBuilder;
 	}
 
+	protected void addTableModelListener(DefaultTableModel model)
+	{
+		TableModelListener tml = new TableModelListener()
+		{
+			public void tableChanged(TableModelEvent e)
+			{
+				int row = e.getFirstRow();
+		        int column = e.getColumn();
+		        DefaultTableModel model = (DefaultTableModel) e.getSource();
+		        String columnName = model.getColumnName(column);
+		        
+		        if (columnName.equals(FIELD_VALUE_COL))
+		        {
+			        int formatColumn = formatSwitchTbl.getColumnModel().getColumnIndex(DISPLAY_FORMAT_COL);
+			        DataObjDataFieldFormat format = (DataObjDataFieldFormat) model.getValueAt(row, formatColumn);
+			        String value = (String) model.getValueAt(row, column);
+		        	format.setValue(value);
+		        	enableUIControls();
+		        }
+			}
+		};
+		model.addTableModelListener(tml);		
+	}
+	
 	protected boolean isValidFormatter()
 	{
 		// check if there's an empty row in the switch formatter table
@@ -140,59 +168,14 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 		{
 			for (int j = 0; j <= 1; ++j)
 			{
-				if (StringUtils.isEmpty(model.getValueAt(i, j).toString()))
+				Object obj = model.getValueAt(i, j);
+				if (obj == null || StringUtils.isEmpty(obj.toString()))
 					return false;
 			}
 		}
 		return true;
 	}
 	
-	public DataObjSwitchFormatter getSwitchFormatter() 
-	{
-		String formatterName = "";
-		String formatterField = "";
-		
-		// check whether format selected is an existing one
-		if (formatList != null && formatList.getSelectedIndex() < formatList.getModel().getSize() - 1)
-		{
-			// selected entry is not the last one, so it's an existing one
-			// however, the internal formatters may have changed
-			// so, only keep formatter name and create a new one to replace the existing one
-			newFormat = false;
-			Object value = formatList.getSelectedValue(); 
-			if (value instanceof DataObjSwitchFormatter)
-			{
-				DataObjSwitchFormatter tmpFormatter = (DataObjSwitchFormatter) value;
-				formatterName  = tmpFormatter.getName();
-				formatterField = tmpFormatter.getFieldName();
-			}
-		}
-		
-		// note: if formatter is a new one, formatterField will be set on the parent dialog class (DataObjFieldFormatDlg)
-		newFormat = true;
-		
-		// return the new formatter that has been composed
-		DataObjSwitchFormatter switchFormatter = new DataObjSwitchFormatter(
-				formatterName, false, false, 
-				tableInfo.getClassObj(), formatterField);
-		
-		// gather formatters for each table row
-		DefaultTableModel model = (DefaultTableModel) formatSwitchTbl.getModel();
-		for (int i = 0; i < model.getRowCount(); ++i)
-		{
-			Object obj   = model.getValueAt(i, 1);
-			String value = (String) model.getValueAt(i, 0);
-			if (obj instanceof DataObjDataFieldFormat)
-			{
-				DataObjDataFieldFormat subFormat = (DataObjDataFieldFormat) obj;
-				subFormat.setValue(value);
-				switchFormatter.add(subFormat);
-			}
-		}
-		
-		return switchFormatter;
-	}
-
 	private DefaultTableModel getCleanTableModel() 
 	{
 		DefaultTableModel model = new DefaultTableModel() 
@@ -202,45 +185,36 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 				return (column != 1);
 			}
 		};
-		model.addColumn(getResourceString("DOF_FIELD_VALUE"));
-		model.addColumn(getResourceString("DOF_DISPLAY_FORMAT"));
-		model.addColumn("");
+		model.addColumn(FIELD_VALUE_COL);
+		model.addColumn(DISPLAY_FORMAT_COL);
+		model.addColumn(ELLIPSIS_BUTTON_COL);
 
+		addTableModelListener(model);
 		return model;
 	}
 
-	/*
-	 * Removes all editors listeners (so that format list selection can be updated without side-effects
-	 */
-	public void removeEditorListeners()
+	private void createToolbar() 
 	{
-	}
-	
-	/*
-	 * Adds all editors listeners (after calling removeEditorListeners)
-	 */
-	public void addEditorListeners()
-	{
-	}
-
-	private void hookToolbarActionListeners() 
-	{
-		ActionListener addBtnAL = new ActionListener() 
+		ActionListener addAL = new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent e) 
 			{
 				DefaultTableModel model = (DefaultTableModel) formatSwitchTbl.getModel();
-				model.addRow(new Object[] {"", new DataObjDataFieldFormat(), ellipsisButtonLabel});
+				DataObjSwitchFormatter fmt = formatContainer.getSelectedFormatter();
+				DataObjDataFieldFormat fld = new DataObjDataFieldFormat();
+				fmt.add(fld);
+				model.addRow(new Object[] {fld.getValue(), fld, ellipsisButtonLabel});
 	            enableUIControls();
 			}
 		};
-		addRowBtn.addActionListener(addBtnAL);
 
-		ActionListener delBtnAL = new ActionListener() 
+		ActionListener delAL = new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent e) 
 			{
+				int formatColumn = formatSwitchTbl.getColumn(DISPLAY_FORMAT_COL).getModelIndex();
 				DefaultTableModel model = (DefaultTableModel) formatSwitchTbl.getModel();
+				DataObjSwitchFormatter fmt = formatContainer.getSelectedFormatter();
 				int[] rows = formatSwitchTbl.getSelectedRows();
 				// sort rows in reverse order otherwise removing the first rows
 				// will mess up with the row numbers
@@ -250,30 +224,20 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 				}
 				Arrays.sort(intRows, Collections.reverseOrder());
 				for (int currentRow : intRows) {
+					fmt.remove((DataObjDataFieldFormatIFace) model.getValueAt(currentRow, formatColumn));
 					model.removeRow(currentRow);
 				}
 				formatSwitchTbl.clearSelection();
 	            enableUIControls();
 			}
 		};
-		delRowBtn.addActionListener(delBtnAL);
 
-		ActionListener resetBtnAL = new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent e) 
-			{
-				formatSwitchTbl.setModel(getCleanTableModel());
-				setFormatSwitchTblColumnProperties();
-	            enableUIControls();
-			}
-		};
-		resetRowBtn.addActionListener(resetBtnAL);
+        controlPanel = new AddRemoveEditPanel(addAL, delAL, null);
+        controlPanel.getAddBtn().setEnabled(true);
 	}
 
 	public void fillWithObjFormatter(DataObjSwitchFormatter switchFormatter) 
 	{
-		removeEditorListeners();
-
 		// display each formatter as a table row
 		// DefaultTableModel tableModel = (DefaultTableModel)
 		// formatSwitch.getModel();
@@ -281,32 +245,22 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 
 		if (switchFormatter != null) 
 		{
-			Vector<DataObjDataFieldFormatIFace> formatters;
-			formatters = new Vector<DataObjDataFieldFormatIFace>(switchFormatter.getFormatters());
-			Collections.sort(formatters,new Comparator<DataObjDataFieldFormatIFace>() 
-					{
-						public int compare(DataObjDataFieldFormatIFace o1, DataObjDataFieldFormatIFace o2) 
-						{
-							return o1.getValue().compareTo(o2.getValue());
-						}
-					});
+			Vector<DataObjDataFieldFormatIFace> formatters = new Vector<DataObjDataFieldFormatIFace>(switchFormatter.getFormatters());
 			for (DataObjDataFieldFormatIFace formatter : formatters) 
 			{
-				model.addRow(new Object[] { formatter.getValue(), formatter,
-						ellipsisButtonLabel });
+				model.addRow(new Object[] { formatter.getValue(), formatter, ellipsisButtonLabel });
 			}
 		}
 
 		formatSwitchTbl.setModel(model);
 		setFormatSwitchTblColumnProperties();
-		
-		addEditorListeners();
 	}
 	
 	private void setFormatSwitchTblColumnProperties()
 	{
 		// set details of 1st column (field values)
-		TableColumn column = formatSwitchTbl.getColumnModel().getColumn(0);
+		TableColumnModel model = formatSwitchTbl.getColumnModel();
+		TableColumn column = model.getColumn(model.getColumnIndex(FIELD_VALUE_COL));
 		column.setMinWidth(20);
 		column.setMaxWidth(300);
 		column.setPreferredWidth(70);
@@ -315,7 +269,7 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 		column.setCellRenderer(renderer);
 
 		// set details of 3rd column (ellipsis buttons)
-		column = formatSwitchTbl.getColumnModel().getColumn(2);
+		column = model.getColumn(model.getColumnIndex(ELLIPSIS_BUTTON_COL));
 		column.setCellRenderer(new EditDataObjFormatButtonRenderer());
 		column.setCellEditor(new EditDataObjFormatButtonEditor(createCheckBox()));
 		column.setMinWidth(20);
@@ -412,19 +366,31 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 		{
 			if (isPushed) {
 				// get formatter object that corresponds to the pressed button
-				Object value = table.getValueAt(row, 1);
-				if (value instanceof DataObjDataFieldFormatIFace) {
-					DataObjDataFieldFormatIFace formatter = (DataObjDataFieldFormatIFace) value;
+				int formatCol = table.getColumn(DISPLAY_FORMAT_COL).getModelIndex();
+				Object fieldObj = table.getValueAt(row, formatCol);
+				if (fieldObj instanceof DataObjDataFieldFormatIFace) {
+					DataObjDataFieldFormatIFace formatter = (DataObjDataFieldFormatIFace) fieldObj;
 
 					// open dialog to edit format
 					DataObjFieldFormatSingleDlg dlg;
-					dlg = new DataObjFieldFormatSingleDlg((Frame) UIRegistry.getTopWindow(), tableInfo, formatter);
+					dlg = new DataObjFieldFormatSingleDlg((Frame) UIRegistry.getTopWindow(), tableInfo, 
+							availableFieldsComp, formatter, uiFieldFormatterMgrCache);
 					dlg.setVisible(true);
 
 					// save format back to table row data object
-					DataObjDataFieldFormatIFace fmt = dlg.getSwitchFormatter().getSingle();
-					table.setValueAt(fmt, row, 1);
-					enableUIControls();
+	        		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+	        		{
+	    				DataObjSwitchFormatter fmt = formatContainer.getSelectedFormatter();
+	    				DataObjDataFieldFormatIFace field = dlg.getSingleFormatter();
+	    				fmt.set(row, field);
+	    				table.setValueAt(field, row, formatCol);
+	    				// get field value from table and assign it to newly created formatter
+	    				int valueCol = table.getColumn(FIELD_VALUE_COL).getModelIndex();
+	    				String value = (String) table.getValueAt(row, valueCol);
+	    				field.setValue(value);
+	    				// update ok button based on results
+	        			enableUIControls();
+	        		}
 				}
 			}
 			isPushed = false;

@@ -428,7 +428,7 @@ public class Scriptlet extends JRDefaultScriptlet
             Set<Collector> collectors = ce.getCollectors();
             if (collectors.size() > 0)
             {
-                collectorsStr = DataObjFieldFormatMgr.aggregate(collectors, Collector.class);
+                collectorsStr = DataObjFieldFormatMgr.getInstance().aggregate(collectors, Collector.class);
             } else
             {
                 collectorsStr = "No Collectors"; // XXX I18N

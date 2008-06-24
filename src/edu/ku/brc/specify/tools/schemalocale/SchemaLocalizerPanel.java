@@ -74,6 +74,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjAggregatorDlg;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatDlg;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 /**
@@ -99,6 +100,10 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     
     protected DisciplineBasedPanel      disciplineBasedPanel = null;
 
+    // used to hold changes to formatters before these are committed to DB
+    protected DataObjFieldFormatMgr 	dataObjFieldFormatMgrCache;
+    protected UIFieldFormatterMgr		uiFieldFormatterMgrCache;
+    
     // LocalizableContainerIFace Fields
     protected FieldItemPanel            fieldPanel;
     
@@ -134,9 +139,13 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     /**
      * 
      */
-    public SchemaLocalizerPanel(final PropertyChangeListener l)
+    public SchemaLocalizerPanel(final PropertyChangeListener l, 
+    							      DataObjFieldFormatMgr  dataObjFieldFormatMgrCache,
+    							      UIFieldFormatterMgr    uiFieldFormatterMgrCache)
     {
         listener = l;
+        this.dataObjFieldFormatMgrCache = dataObjFieldFormatMgrCache;
+        this.uiFieldFormatterMgrCache   = uiFieldFormatterMgrCache;
         init();
     }
 
@@ -215,12 +224,12 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         topInner.add(tpbbp, cc.xywh(1, y, 3, 1)); y += 2;
 
         // formatter panel
-        PanelBuilder fmtPanel = new PanelBuilder(new FormLayout("f:p:g,r:m", "p"));
+        PanelBuilder fmtPanel = new PanelBuilder(new FormLayout("200px,r:m", "p"));
         fmtPanel.add(dataObjFmtCbo, cc.xy(1, 1));
         fmtPanel.add(dataObjFmtBtn, cc.xy(2, 1));
 
         // aggregator panel
-        PanelBuilder aggPanel = new PanelBuilder(new FormLayout("f:p:g,r:m", "p"));
+        PanelBuilder aggPanel = new PanelBuilder(new FormLayout("200px,r:m", "p"));
         aggPanel.add(aggregatorCbo, cc.xy(1, 1));
         aggPanel.add(aggregatorBtn, cc.xy(2, 1));
 
@@ -271,7 +280,18 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
                 hasTableInfoChanged = true;
             }
         });
+
+        ActionListener comboAL = new ActionListener() 
+        {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		setHasChanged(true);
+        		hasTableInfoChanged = true;
+        	}
+        };
         
+        dataObjFmtCbo.addActionListener(comboAL);
+        aggregatorCbo.addActionListener(comboAL);
         
         DocumentListener dl = new DocumentListener() {
             protected void changed()
@@ -317,7 +337,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         List<DataObjSwitchFormatter> fList;
     	if (tableInfo != null)
     	{
-            fList = DataObjFieldFormatMgr.getFormatterList(tableInfo.getClassObj());
+            fList = dataObjFieldFormatMgrCache.getFormatterList(tableInfo.getClassObj());
             // list must be sorted in the same way it's sorted on UIFormatterDlg because selection index is considered equivalent between combo boxes
             Collections.sort(fList, new ComparatorByStringRepresentation<DataObjSwitchFormatter>()); 
     	}
@@ -325,15 +345,28 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     	{
     		fList = new Vector<DataObjSwitchFormatter>(0);
     	}
-        
+
     	DefaultComboBoxModel model = (DefaultComboBoxModel) dataObjFmtCbo.getModel();
     	model.removeAllElements();
+
+    	if (currContainer == null)
+    		return;
+    	
+    	String fmtName = currContainer.getAggregator();
+
+    	int selectedInx = -1;
         for (DataObjSwitchFormatter format : fList)
         {
         	model.addElement(format);
+
+        	if (fmtName != null && fmtName.equals(format.getName()))
+        	{
+        		selectedInx = model.getSize() - 1;
+        	}
         }
         
-        // TODO: select format from list that is currently assigned to table
+        // select format from list that is currently assigned to table
+        dataObjFmtCbo.setSelectedIndex(selectedInx);
     }
     
     /**
@@ -344,7 +377,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     	List<DataObjAggregator> fList;
     	if (tableInfo != null)
     	{
-            fList = DataObjFieldFormatMgr.getAggregatorList(tableInfo.getClassObj());
+            fList = dataObjFieldFormatMgrCache.getAggregatorList(tableInfo.getClassObj());
             // list must be sorted in the same way it's sorted on UIFormatterDlg because selection index is considered equivalent between combo boxes
             Collections.sort(fList, new ComparatorByStringRepresentation<DataObjAggregator>()); 
     	}
@@ -353,14 +386,26 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     		fList = new Vector<DataObjAggregator>(0);
     	}
         
-    	DefaultComboBoxModel model = (DefaultComboBoxModel) aggregatorCbo.getModel();
+        DefaultComboBoxModel model = (DefaultComboBoxModel) aggregatorCbo.getModel();
     	model.removeAllElements();
+
+    	if (currContainer == null) return;
+    	
+        String aggName = currContainer.getAggregator();
+
+        int selectedInx = -1;
         for (DataObjAggregator aggregator : fList)
         {
         	model.addElement(aggregator);
+        	
+        	if (aggName != null && aggName.equals(aggregator.getName()))
+        	{
+        		selectedInx = model.getSize() - 1;
+        	}
         }
         
-        // TODO: select format from list that is currently assigned to table
+        // select format from list that is currently assigned to table
+        aggregatorCbo.setSelectedIndex(selectedInx);
     }
 
     /**
@@ -373,15 +418,19 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         	public void actionPerformed(ActionEvent e)
         	{
     			Frame frame = (Frame)UIRegistry.getTopWindow(); 
-        		DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(frame, tableInfo, dataObjFmtCbo.getSelectedIndex());
+        		DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(frame, 
+        				tableInfo, dataObjFmtCbo.getSelectedIndex(), 
+        				dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache);
         		dlg.setVisible(true);
         		
         		// set combo selection to formatter selected in dialog
         		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
         		{
-        			//DataObjSwitchFormatter format = dlg.getSelectedFormatter();
+        			DataObjSwitchFormatter format = dlg.getSelectedFormatter();
         			
-        			// TODO: assign selected obj formatter as the default for current table 
+        			// assign selected obj formatter as the default for current table
+        			currContainer.setFormat(format.getName());
+        			currContainer.setIsUIFormatter(false);
         			
 	        		// fill combo again, adding new formatter if it was new and selecting the appropriate one
         			fillFormatterCombo();
@@ -401,15 +450,18 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         	public void actionPerformed(ActionEvent e)
         	{
     			Frame frame = (Frame)UIRegistry.getTopWindow(); 
-    			DataObjAggregatorDlg dlg = new DataObjAggregatorDlg(frame, tableInfo, aggregatorCbo.getSelectedIndex());
+    			DataObjAggregatorDlg dlg = new DataObjAggregatorDlg(frame, tableInfo, 
+    					aggregatorCbo.getSelectedIndex(), 
+    					dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache);
         		dlg.setVisible(true);
         		
         		// set combo selection to formatter selected in dialog
         		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
         		{
-        			//DataObjAggregator agg = dlg.getSelectedAggregator();
+        			DataObjAggregator agg = dlg.getSelectedAggregator();
         			
-        			// TODO: assign selected aggregator as the default for current table 
+        			// TODO: assign selected aggregator as the default for current table
+        			currContainer.setAggregator(agg.getName());
         			
 	        		// fill combo again, adding new formatter if it was new and selecting the appropriate one 
         			fillAggregatorCombo();
@@ -871,4 +923,11 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
             }
         }
     }
+
+
+
+	public UIFieldFormatterMgr getUiFieldFormatterMgrCache()
+	{
+		return uiFieldFormatterMgrCache;
+	}
 }

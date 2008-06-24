@@ -70,6 +70,10 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
             
     protected SchemaLocalizerPanel schemaLocPanel;
     
+    // used to hold changes to formatters before committing them to DB
+    protected DataObjFieldFormatMgr dataObjFieldFormatMgrCache = new DataObjFieldFormatMgr(DataObjFieldFormatMgr.getInstance());
+    protected UIFieldFormatterMgr   uiFieldFormatterMgrCache   = new UIFieldFormatterMgr(UIFieldFormatterMgr.getInstance());
+    
     protected JStatusBar           statusBar     = new JStatusBar(new int[] {5,5});
     
     protected LocalizableIOIFace   localizableIO;
@@ -126,7 +130,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         LocalizerBasePanel.setLocalizableStrFactory(localizableStrFactory);
         SchemaLocalizerXMLHelper.setLocalizableStrFactory(localizableStrFactory);
         
-        schemaLocPanel = new SchemaLocalizerPanel(null);
+        schemaLocPanel = new SchemaLocalizerPanel(null, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache);
         schemaLocPanel.setLocalizableIO(localizableIO);
         schemaLocPanel.setStatusBar(statusBar);
         schemaLocPanel.setIncludeHiddenUI(true);
@@ -272,6 +276,10 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         statusBar.paintImmediately(statusBar.getBounds());
         
         schemaLocPanel.getAllDataFromUI();
+        
+        // apply changes to formatters and save them to db
+        DataObjFieldFormatMgr.getInstance().applyChanges(dataObjFieldFormatMgrCache);
+        UIFieldFormatterMgr.getInstance().applyChanges(uiFieldFormatterMgrCache);
         
         if (localizableIO.save())
         {

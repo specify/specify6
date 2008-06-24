@@ -42,17 +42,18 @@ public class DataObjDataField {
 	protected Class<?> type;
 	protected String format;
 	protected String sep;
-	protected String uiFieldFormatter;
+	protected String uiFieldFormatterName;
 	protected String dataObjFormatterName;
 	protected DBTableInfo tableInfo;
 	protected DBFieldInfo fieldInfo;
 	protected DBRelationshipInfo relInfo;
 	protected DataObjSwitchFormatter objFormatter;
+	protected UIFieldFormatterIFace uiFieldFormatter;
 	
 
 	public DataObjDataField(final String name, final Class<?> type,
 			final String format, final String sep,
-			final String dataObjFormatterName, final String uiFieldFormatter) {
+			final String dataObjFormatterName, final String uiFieldFormatterName) {
 		super();
 
 		this.name = name;
@@ -60,11 +61,39 @@ public class DataObjDataField {
 		this.format = format;
 		this.sep = sep;
 		this.dataObjFormatterName = dataObjFormatterName;
-		this.uiFieldFormatter = uiFieldFormatter;
+		this.uiFieldFormatterName = uiFieldFormatterName;
 
 		// table info is set during parent (DataObjDataFieldFormat) construction
 	}
 
+	public void setDbInfo(DBTableInfo tableInfo, DBFieldInfo fieldInfo, DBRelationshipInfo relInfo)
+	{
+		this.tableInfo = tableInfo;
+		this.fieldInfo = fieldInfo;
+		this.relInfo   = relInfo;
+	}
+
+	public UIFieldFormatterIFace getUiFieldFormatter()
+	{
+		return uiFieldFormatter;
+	}
+
+	public void setUiFieldFormatter(UIFieldFormatterIFace uiFieldFormatter)
+	{
+		this.uiFieldFormatter = uiFieldFormatter;
+	}
+	
+	public void setSep(String sep)
+	{
+		this.sep = sep;
+	}
+
+	public boolean isPureField()
+	{
+		return (StringUtils.isEmpty(getUiFieldFormatterName()) && 
+				StringUtils.isEmpty(getDataObjFormatterName()));
+	}
+	
 	public void toXML(StringBuilder sb)
 	{
         sb.append("        <field");
@@ -77,7 +106,7 @@ public class DataObjDataField {
         
         xmlAttr(sb, "format",    format);
         xmlAttr(sb, "sep",       sep);
-        xmlAttr(sb, "uifieldformatter", uiFieldFormatter);
+        xmlAttr(sb, "uifieldformatter", uiFieldFormatterName);
         sb.append(">");
         sb.append(name);
         sb.append("</field>\n");
@@ -126,8 +155,12 @@ public class DataObjDataField {
 	/**
 	 * @return the uiFieldFormatter
 	 */
-	public String getUiFieldFormatter() {
-		return uiFieldFormatter;
+	public String getUiFieldFormatterName() {
+		return uiFieldFormatterName;
+	}
+
+	public void setUiFieldFormatterName(String uiFieldFormatterName) {
+		this.uiFieldFormatterName = uiFieldFormatterName;
 	}
 
 	public DBTableInfo getTableInfo() {
@@ -161,6 +194,12 @@ public class DataObjDataField {
 	{
 		setTableInfo(tableInfo);
 
+		if (StringUtils.isNotEmpty(dataObjFormatterName))
+		{
+			// XXX is it ok to get this info from static instance instead of cached version?
+			objFormatter = DataObjFieldFormatMgr.getInstance().getFormatter(dataObjFormatterName);
+		}
+
 		String[] parts = name.split("\\.");
 		if (parts.length == 2)
 		{
@@ -168,17 +207,20 @@ public class DataObjDataField {
 			// split name into relation.fieldName
 			setRelInfo(tableInfo.getRelationshipByName(parts[0]));
 			DBTableInfo otherTable = DBTableIdMgr.getInstance().getByClassName(relInfo.getClassName());
-			fieldInfo = otherTable.getFieldByName(parts[1]);
-		}
-		else 
-		{
-			fieldInfo = tableInfo.getFieldByName(name);
+			setFieldInfo(otherTable.getFieldByName(parts[1]));
+			return;
 		}
 
-		if (StringUtils.isNotEmpty(dataObjFormatterName))
+		// else 
+		setRelInfo(tableInfo.getRelationshipByName(name));
+		if (relInfo != null)
 		{
-			objFormatter = DataObjFieldFormatMgr.getFormatter(dataObjFormatterName);
+			// relationship was not mentioned (lacked the dot) but it is one anyway
+			// get field info from relationship table
+			return;
 		}
+		
+		// else
+		setFieldInfo(tableInfo.getFieldByName(name));
 	}
-
 }

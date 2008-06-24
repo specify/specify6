@@ -198,7 +198,7 @@ public class ERTICaptionInfo
             
         } else if (StringUtils.isNotEmpty(dataObjFormatterName))
         {
-            dataObjFormatter = DataObjFieldFormatMgr.getFormatter(dataObjFormatterName);
+            dataObjFormatter = DataObjFieldFormatMgr.getInstance().getFormatter(dataObjFormatterName);
             if (dataObjFormatter != null)
             {
                 compositeClassName = dataObjFormatter.getDataClass().getName();

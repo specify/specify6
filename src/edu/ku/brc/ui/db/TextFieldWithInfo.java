@@ -353,7 +353,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
                 }
             } else
             {
-                newVal = DataObjFieldFormatMgr.format(value, dataObjFormatterName);
+                newVal = DataObjFieldFormatMgr.getInstance().format(value, dataObjFormatterName);
             }
 
             textField.setText(newVal.toString());

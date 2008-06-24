@@ -48,7 +48,7 @@ public class PreparationIconTextMapper implements ObjectTextMapper, ObjectIconMa
         Preparation prep = (Preparation)o;
         if (prep != null)
         {
-            return DataObjFieldFormatMgr.format(prep, "Preparation");
+            return DataObjFieldFormatMgr.getInstance().format(prep, "Preparation");
         }
         return null;
     }

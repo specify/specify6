@@ -103,7 +103,7 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
         Agent agent = getAgent(o);
         if (agent != null)
         {
-            return DataObjFieldFormatMgr.format(agent, "Agent");
+            return DataObjFieldFormatMgr.getInstance().format(agent, "Agent");
         }
         return null;
     }

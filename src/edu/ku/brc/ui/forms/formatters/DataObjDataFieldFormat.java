@@ -50,6 +50,7 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
 
     public DataObjDataFieldFormat()
     {
+    	value = "";
     }
 
     public DataObjDataFieldFormat(final String   name, 
@@ -65,6 +66,9 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
         this.format     = format;
         this.value      = value;
         this.fields     = fields;
+        
+        if (this.value == null)
+        	this.value = "";
     }
 
     public String toString()

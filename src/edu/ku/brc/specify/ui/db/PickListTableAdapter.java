@@ -144,7 +144,7 @@ public class PickListTableAdapter extends PickListDBAdapter
                                     {
                                         dataObj = ((Object[])dataObj)[0];
                                     }
-                                    String title = DataObjFieldFormatMgr.format(dataObj, pickList.getFormatter());
+                                    String title = DataObjFieldFormatMgr.getInstance().format(dataObj, pickList.getFormatter());
                                     items.add(pickList.addItem(title, dataObj));
                                 }
                             }

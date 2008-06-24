@@ -685,7 +685,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                             {
                                 int aggInx = captions.indexOf(aggCaption);
                                 row.remove(aggInx);
-                                row.insertElementAt(DataObjFieldFormatMgr.aggregate(aggList, aggCaption.getAggClass()), aggInx);
+                                row.insertElementAt(DataObjFieldFormatMgr.getInstance().aggregate(aggList, aggCaption.getAggClass()), aggInx);
 
                                 if (aggListRecycler != null)
                                 {
@@ -730,7 +730,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                     {
                                         setField(aggSetter, compObj, colInfo.getFieldName(), colInfo.getFieldClass(), resultSet, colInfo.getPosition());
                                     }
-                                    row.add(DataObjFieldFormatMgr.format(compObj, compObj.getClass()));
+                                    row.add(DataObjFieldFormatMgr.getInstance().format(compObj, compObj.getClass()));
                                     
                                 } else
                                 {
@@ -750,7 +750,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                 aggList.add(aggObj);
 
                                 @SuppressWarnings("unused")
-                                DataObjAggregator aggregator = DataObjFieldFormatMgr.getAggregator(aggCaption.getAggregatorName());
+                                DataObjAggregator aggregator = DataObjFieldFormatMgr.getInstance().getAggregator(aggCaption.getAggregatorName());
                                 //log.debug(" aggCaption.getOrderColIndex() "+ aggCaption.getOrderColIndex());
                                 
                                 //aggSetter.setFieldValue(aggObj, aggregator.getOrderFieldName(), resultSet.getObject(aggCaption.getOrderColIndex() + 1));
@@ -791,7 +791,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 {
                     int aggInx = captions.indexOf(aggCaption);
                     row.remove(aggInx);
-                    String colStr = DataObjFieldFormatMgr.aggregate(aggList, aggCaption.getAggClass());
+                    String colStr = DataObjFieldFormatMgr.getInstance().aggregate(aggList, aggCaption.getAggClass());
                     row.insertElementAt(colStr, aggInx);
                     aggList.clear();
                     aggListRecycler.clear();

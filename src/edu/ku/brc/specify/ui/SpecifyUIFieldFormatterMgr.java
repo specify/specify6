@@ -167,6 +167,12 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
     {
         if (StringUtils.isNotEmpty(name))
         {
+        	if (AppContextMgr.getInstance().getClassObject(Collection.class) == null)
+        	{
+        		// collection is not set when running other applications (SchemaLocalizerFrame for example)
+        		return null;
+        	}
+        	
             // check for date to short circut the other checks
             if (name.equals("Date")) //$NON-NLS-1$
             {

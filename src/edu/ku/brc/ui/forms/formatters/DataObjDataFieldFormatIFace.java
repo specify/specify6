@@ -85,6 +85,13 @@ public interface DataObjDataFieldFormatIFace
     public abstract String getValue();
     
     /**
+     * When the formatter is part of a 'switchable' formatter this sets the value that the switch uses to determine
+     * which formatter to use.
+     * @param value The value used by the switch
+     */
+    public abstract void setValue(String value);
+    
+    /**
      * The list of data field that are used to create the format.
      * @return the list of sub-fields.
      */

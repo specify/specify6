@@ -80,7 +80,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
         Timestamp now     = new Timestamp(System.currentTimeMillis());
         timestampCreated  = now;
         timestampModified = null;
-        createdByAgent    = AppContextMgr.getInstance().getClassObject(SpecifyUser.class) != null ? Agent.getUserAgent() : null;
+        createdByAgent    = AppContextMgr.getInstance() == null? null : (AppContextMgr.getInstance().getClassObject(SpecifyUser.class) != null ? Agent.getUserAgent() : null);
         modifiedByAgent   = null;
     }
     
@@ -98,7 +98,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     {
         try
         {
-            String str = DataObjFieldFormatMgr.format(this, getDataClass());
+            String str = DataObjFieldFormatMgr.getInstance().format(this, getDataClass());
             if (StringUtils.isEmpty(str))
             {
                 return DBTableIdMgr.getInstance().getByClassName(getClass().getName()).getTitle();

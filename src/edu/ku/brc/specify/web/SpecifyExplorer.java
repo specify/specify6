@@ -390,7 +390,7 @@ public class SpecifyExplorer extends HttpServlet
         
         UIFieldFormatterMgr.setDoingLocal(true);
         DataObjFieldFormatMgr.setDoingLocal(true);
-        DataObjFieldFormatMgr.setLocalFileName(XMLHelper.getConfigDirPath(DataObjFieldFormatMgr.getLocalFileName()));
+        DataObjFieldFormatMgr.getInstance().setLocalFileName(XMLHelper.getConfigDirPath(DataObjFieldFormatMgr.getInstance().getLocalFileName()));
 
         //System.out.println("############### "+(new File(".")).getAbsolutePath());
         //System.out.println("############### "+DataObjFieldFormatMgr.getLocalFileName());
@@ -688,7 +688,7 @@ public class SpecifyExplorer extends HttpServlet
         DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(fdi.getDataClass().getName());
         if (StringUtils.isNotEmpty(ti.getDataObjFormatter()))
         {
-            String title = DataObjFieldFormatMgr.format(fdi, ti.getDataObjFormatter());
+            String title = DataObjFieldFormatMgr.getInstance().format(fdi, ti.getDataObjFormatter());
             formatFDI(fdi, title);
         }
         

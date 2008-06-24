@@ -58,6 +58,8 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
  * @author rods
@@ -75,6 +77,10 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     protected Byte                                         schemaType;
     protected DBTableIdMgr                                 tableMgr;
     
+    // used to hold changes to formatters before committing them to DB
+    protected DataObjFieldFormatMgr dataObjFieldFormatMgrCache = new DataObjFieldFormatMgr(DataObjFieldFormatMgr.getInstance()); 
+    protected UIFieldFormatterMgr   uiFieldFormatterMgrCache   = new UIFieldFormatterMgr(UIFieldFormatterMgr.getInstance());
+
     protected SchemaLocalizerPanel                         schemaLocPanel;
     protected LocalizableIOIFace                           localizableIOIFace;
     protected LocalizableStrFactory                        localizableStrFactory;
@@ -139,7 +145,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         localizableIOIFace = this;
         localizableIOIFace.load();
         
-        schemaLocPanel = new SchemaLocalizerPanel(this);
+        schemaLocPanel = new SchemaLocalizerPanel(this, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache);
         schemaLocPanel.setLocalizableIO(localizableIOIFace);
         schemaLocPanel.setUseDisciplines(false);
         
@@ -479,6 +485,11 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     public boolean save()
     {
         schemaLocPanel.getAllDataFromUI();
+        
+        // apply changes to formatters and save them to db
+        DataObjFieldFormatMgr.getInstance().applyChanges(dataObjFieldFormatMgrCache);
+        UIFieldFormatterMgr.getInstance().applyChanges(uiFieldFormatterMgrCache);
+
         try
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();

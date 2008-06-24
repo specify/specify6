@@ -815,7 +815,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 try
                 {
                     session = DataProviderFactory.getInstance().createSession();
-                    newVal = DataObjFieldFormatMgr.format(this.dataObj, dataObjFormatterName);
+                    newVal = DataObjFieldFormatMgr.getInstance().format(this.dataObj, dataObjFormatterName);
                     
                 } catch (Exception ex)
                 {

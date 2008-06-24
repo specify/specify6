@@ -3923,7 +3923,7 @@ public class FormViewObj implements Viewable,
                             values = UIHelper.getFieldValues(cellField.getFieldNames(), dataObj, dg);
                         //}
                         
-                        setDataIntoUIComp(comp, DataObjFieldFormatMgr.format(values[0], dataObjFormatName), defaultValue);
+                        setDataIntoUIComp(comp, DataObjFieldFormatMgr.getInstance().format(values[0], dataObjFormatName), defaultValue);
 
                     } else
                     {
