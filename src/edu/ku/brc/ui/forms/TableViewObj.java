@@ -699,8 +699,11 @@ public class TableViewObj implements Viewable,
             DataProviderSessionIFace localSession = null;
             try
             {
-                localSession = DataProviderFactory.getInstance().createSession();
-                localSession.attach(dObj);
+                if (dObj.getId() != null)
+                {
+                    localSession = DataProviderFactory.getInstance().createSession();
+                    localSession.attach(dObj);
+                }
                 dialog.setData(dObj);
                 dialog.showDisplay(true);
                 
