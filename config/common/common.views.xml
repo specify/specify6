@@ -366,6 +366,16 @@
             </altviews>
         </view>
         
+        <view name="TreatmentEvent"
+            class="edu.ku.brc.specify.datamodel.TreatmentEvent"
+            resourcelabels="false">
+            <desc><![CDATA[Project form.]]></desc>
+            <altviews>
+                <altview name="TreatmentEvent View" viewdef="TreatmentEvent" label="View" mode="view" default="true"/>
+                <altview name="TreatmentEvent Edit" viewdef="TreatmentEvent" label="Edit" mode="edit"/>
+            </altviews>
+        </view>
+        
         
     </views>
 
@@ -451,6 +461,9 @@
                 </row>
                 <row> 
                     <cell type="subview" viewname="CollectionObjectSub" id="25" desc="Collection Object" name="collectionObjects" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="TreatmentEvent" id="13" name="treatmentEvents" colspan="12" initialize="btn=true"/>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="12"/>
@@ -1799,7 +1812,53 @@
             </rows>
         </viewdef>
         
-        
+        <viewdef 
+            type="form" 
+            name="TreatmentEvent" 
+            class="edu.ku.brc.specify.datamodel.TreatmentEvent" 
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Form For Treatment Event]]></desc>
+            <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" sep="2px" cell="p"/>
+            <rows>
+                <row>
+                    <cell type="separator" label="Treatment Event" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="treatmentNumber" uitype="text"/>
+                    
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="type" uitype="combobox" picklist="TreatmentType"/>
+                    
+                </row>
+                <row> 
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject"/>
+                    
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="dateTreatmentEnded" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="dateTreatmentStarted" uitype="formattedtext" uifieldformatter="Date"/> 
+                </row>           
+                <!--    <row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="location" uitype="text"/>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="fieldNumber" uitype="text"/>                
+                    </row> -->
+                <row>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="remarks" uitype="textarea" colspan="10"/>
+                </row>          
+            </rows>           
+        </viewdef> 
 
 
     </viewdefs>
