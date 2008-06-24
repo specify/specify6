@@ -1256,8 +1256,14 @@
                 <row>
                     <cell type="subview" viewname="TaxonSubform" id="acceptedChildren" name="acceptedChildren" colspan="5"/>
                 </row>
-		    <row>
-			  <cell type="separator" label="Attachments" colspan="5"/>
+                <row>
+                    <cell type="separator" label="Common Names" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="CommonNameTx" id="commonNames" name="commonNames" colspan="5"/>
+                </row>
+		        <row>
+			        <cell type="separator" label="Attachments" colspan="5"/>
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="taxonAttachments" colspan="5" initialize="btn=true"/>
