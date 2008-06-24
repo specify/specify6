@@ -321,6 +321,8 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     {
         try
         {
+            CustomQueryIFace qres = (CustomQueryIFace )results;
+            System.out.println("Results returned: " + qres.getDataObjects().size());
             query.set((CustomQueryIFace)results);
             queryBuilder.queryTaskDone();
         }

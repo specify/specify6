@@ -1131,12 +1131,19 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         completedResults.set(runningResults.get());
         runningResults.set(null);
+        UIRegistry.getStatusBar().setText("");
     }
     
     public void queryTaskDone()
     {
         doneTime.set(System.nanoTime());
-        //System.out.println(runningResults.get().getQuery().getDataObjects().size() + " records retrieved.");
+        int results = 0;
+        if (runningResults.get() != null && runningResults.get().getQuery() != null)
+        {
+            results = runningResults.get().getQuery().getDataObjects().size();
+            UIRegistry.getStatusBar().setText(results + " records retrieved in " + (doneTime.get() - startTime.get())/1000000000D + " seconds. Loading result display..."); //XXX i18n
+        }
+        
     }
     
     /**
