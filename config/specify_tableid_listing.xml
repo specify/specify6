@@ -71,6 +71,7 @@
         <table name="edu.ku.brc.specify.datamodel.CollectingEventAttr" abbrev="ceatr" id="25" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.CollectingEventAttribute" abbrev="cea" id="92" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.CollectingTrip" abbrev="clt" id="87" workbench="true" searchable="true"/>
+            <display view="CollectingTrip" searchdlg="CollectingTripSearch" newobjdlg="CollectingTripDisplay"/>
         <table name="edu.ku.brc.specify.datamodel.CollectionObject" abbrev="co" id="1" workbench="true" searchable="true">
             <display view="CollectionObject" dataobjformatter="CollectionObject" searchdlg="CollectionObjectSearch" newobjdlg="CollectionObject"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules</businessrule>          
@@ -123,7 +124,7 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules</businessrule>                    
         </table>
         <table name="edu.ku.brc.specify.datamodel.Division" abbrev="dv" id="96" searchable="true">
-            <display view="Division"/>
+            <display view="Division" searchdlg="DivisionSearch" newobjdlg="DivisionDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.DNASequence" abbrev="dna" id="121" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.DNASequenceBusRules</businessrule>
