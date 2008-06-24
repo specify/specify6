@@ -527,6 +527,7 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.CollectingTrip" table="collectingtrip" tableid="87" searchable="true" abbrv="clt">
+      <display view="CollectingTrip" searchdlg="CollectingTripSearch" newobjdlg="CollectingTripDisplay"/>
       <field column="CollectingTripName" name="collectingTripName" type="java.lang.String" length="64" indexName="COLTRPNameIDX" updatable="true" required="false" unique="false" indexed="true"/>
       <field column="EndDate" name="endDate" type="java.util.Calendar" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="EndDateVerbatim" name="endDateVerbatim" type="java.lang.String" length="50" updatable="true" required="false" unique="false" indexed="false"/>
@@ -1093,7 +1094,7 @@
       <relationship type="one-to-one" classname="edu.ku.brc.specify.datamodel.TaxonTreeDef" relationshipname="taxonTreeDef" columnname="TaxonTreeDefID" othersidename="discipline" updatable="false" required="false"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.Division" table="division" tableid="96" searchable="true" abbrv="dv">
-      <display view="Division"/>
+      <display view="Division" searchdlg="DivisionSearch" newobjdlg="DivisionDisplay"/> 
       <field column="Abbrev" name="abbrev" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="Description" name="description" type="text" length="8192" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="DisciplineType" name="discipline" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false"/>
