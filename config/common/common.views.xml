@@ -106,8 +106,17 @@
               <desc><![CDATA[The Collection Object Subform for Accessions.]]></desc>
               <altviews>
                   <altview name="Collection Object Sub View" viewdef="CollectionObjectSub" label="View" mode="view" default="true"/>
-              </altviews>
-            
+              </altviews>      
+         </view>
+        
+        <view name="CommonNameTx"
+            class="edu.ku.brc.specify.datamodel.CommonNameTx"
+            resourcelabels="false">
+            <desc><![CDATA[The Common Name form.]]></desc>
+            <altviews>
+                <altview name="CommonNameTx View" viewdef="CommonNameTx" label="View" mode="view" default="true"/>
+                <altview name="CommonNameTx Edit" viewdef="CommonNameTx" label="Edit" mode="edit"/>
+            </altviews> 
         </view>
         
         <view name="ConservDescription"
@@ -734,6 +743,34 @@
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                 </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef 
+            type="form"
+            name="CommonNameTx"
+            class="edu.ku.brc.specify.datamodel.CommonNameTx"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Common Name form]]></desc>
+            <enableRules/>
+            
+            <columnDef>200px,2px,p,10px,p,2px,p,2px,p,2px,200px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="name" uitype="text" colspan="10"/>
+                </row> 
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="language" uitype="combobox" picklist="Languages" colspan="10"/>
+                </row> 
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="country" uitype="text" colspan="10"/>
+                </row> 
             </rows>
         </viewdef>
         

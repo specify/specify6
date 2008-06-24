@@ -114,4 +114,12 @@
       <picklistitem title="Dr." value="Dr."/>
     </items>
   </picklist>
+  <picklist name="Languages" issystem="true" type="0" readonly="true" sizelimit="10">
+    <items>
+      <picklistitem title="English" value="English"/>
+      <picklistitem title="Spanish" value="Spanish"/>
+      <picklistitem title="German" value="German"/>
+      <picklistitem title="Portuguese" value="Portuguese"/>
+    </items>
+  </picklist>
 </list>
