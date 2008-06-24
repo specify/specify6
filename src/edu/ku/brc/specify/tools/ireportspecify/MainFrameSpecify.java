@@ -357,13 +357,13 @@ public class MainFrameSpecify extends MainFrame
             boolean success = saveXML(xmlOut, appRes, rep);
             if (!success)
             {
-                JOptionPane.showMessageDialog(null, UIRegistry.getResourceString("REP_UNABLE_TO_SAVE_IREPORT"), UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);                        
+                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_UNABLE_TO_SAVE_IREPORT"), UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);                        
             }
         }
-        else
-        {
-            super.save(jrf);
-        }
+//        else
+//        {
+//            super.save(jrf);
+//        }
     }
 
     /**
@@ -378,10 +378,22 @@ public class MainFrameSpecify extends MainFrame
     	//XXX - hard-coded for 'Collection' directory.
     	AppResourceIFace result = AppContextMgr.getInstance().getResourceFromDir("Collection", jrf.getReport().getName());
         if (result != null)
-            return result;
-        //else
+        {
+            if (((ReportSpecify) jrf.getReport()).getSpReport() != null) { return result; }
+            int response = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), String.format(UIRegistry
+                    .getResourceString("REP_CONFIRM_IMP_OVERWRITE"), jrf.getReport().getName()),
+                    UIRegistry.getResourceString("REP_CONFIRM_IMP_OVERWRITE_TITLE"), JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null);
+            if (response == JOptionPane.CANCEL_OPTION || response == -1 /*closed with x-box*/) { return null; }
+            if (response == JOptionPane.YES_OPTION) { return result; }
+            result = null;
+        }
+        // else
         result = createAppRes(jrf.getReport().getName(), -1);
-        jrf.getReport().setName(result.getName()); 
+        if (result != null)
+        {
+            jrf.getReport().setName(result.getName());
+        }
         return result;
     }
 
@@ -403,10 +415,10 @@ public class MainFrameSpecify extends MainFrame
                 return result;
             }
             //else
-            int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+            int option = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
                     String.format(UIRegistry.getResourceString("REP_CONFIRM_IMP_OVERWRITE"), result.getName()),
                     UIRegistry.getResourceString("REP_CONFIRM_IMP_OVERWRITE_TITLE"), 
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); 
             
             if (option == JOptionPane.YES_OPTION)
             {
@@ -433,15 +445,33 @@ public class MainFrameSpecify extends MainFrame
         result.setLevel((short)3); 
 
         RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, result, tableid == null);
+        boolean goodProps = false;
         CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
                 UIRegistry.getResourceString("REP_PROPS_DLG_TITLE"),
                 true,
                 propPanel);
-        UIHelper.centerAndShow(cd);
-        if (!cd.isCancelled())
+        while (!goodProps)
+        {
+            UIHelper.centerAndShow(cd);
+            if (cd.isCancelled())
+            {
+                return null;
+            }
+            //XXX - more 'Collection' dir hard-coding
+            if (AppContextMgr.getInstance().getResourceFromDir("Collection", propPanel.getNameTxt().getText()) != null)
+            {
+                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_NAME_ALREADY_EXISTS"), propPanel.getNameTxt().getText()));
+            }
+            else
+            {
+                goodProps = true;
+            }
+        }    
+        if (goodProps /*just in case*/)
         {
             result.setName(propPanel.getNameTxt().getText());
-            result.setDescription(propPanel.getTitleTxt().getText());
+            //result.setDescription(propPanel.getTitleTxt().getText());
+            result.setDescription(propPanel.getNameTxt().getText());
             result.setLevel(Short.valueOf(propPanel.getLevelTxt().getText()));
             String metaDataStr = "tableid=" + propPanel.getTableId() + ";";
             if (propPanel.getTypeCombo().getSelectedIndex() == 0)

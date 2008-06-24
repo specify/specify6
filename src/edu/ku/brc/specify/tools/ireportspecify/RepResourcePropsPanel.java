@@ -78,9 +78,12 @@ public class RepResourcePropsPanel extends JPanel
         nameTxt = new JTextField(reportName != null? reportName : "untitled");
         builder.add(nameTxt, cc.xy(3, 1));
         
-        builder.add(new JLabel(UIRegistry.getResourceString("REP_TITLE_DESC_LBL")), cc.xy(1,2));
+        JLabel titleLbl = new JLabel(UIRegistry.getResourceString("REP_TITLE_DESC_LBL"));
+        builder.add(titleLbl, cc.xy(1,2));
         titleTxt = new JTextField(resource != null ? resource.getDescription() : "none");
         builder.add(titleTxt, cc.xy(3, 2));
+        titleLbl.setVisible(false);
+        titleTxt.setVisible(false);
         
         builder.add(new JLabel(UIRegistry.getResourceString("REP_LEVEL_LBL")), cc.xy(1,3));
         levelTxt = new JTextField("3");
