@@ -689,11 +689,36 @@
         <table id="121" tableid="69" name="ReferenceWorkSearch" priority="1" color="30, 144, 255">
             <detailView icon="ReferenceWork">
                 <sql>
-                    <![CDATA[SELECT ReferenceWorkID, Title FROM appraisal WHERE DisciplineID = DSPLNID AND (%s)]]>
+                    <![CDATA[SELECT ReferenceWorkID, Title FROM referencework WHERE DisciplineID = DSPLNID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="69" col="ReferenceWorkID" visible="false"/>
                     <caption tableid="69" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="122" tableid="87" name="CollectingTripSearch" priority="1" color="30, 144, 255">
+            <detailView icon="CollectingTrip">
+                <sql>
+                    <![CDATA[SELECT CollectingTripID, CollectingTripName FROM collectingtrip WHERE DisciplineID = DSPLNID AND (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="87" col="CollectingTripID" visible="false"/>
+                    <caption tableid="87" col="CollectingTripName"/>
+                    <caption tableid="87" col="StartDate" formatter="Date"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="123" tableid="96" name="DivisionSearch" priority="1" color="30, 144, 255">
+            <detailView icon="Division">
+                <sql>
+                    <![CDATA[SELECT DivisionWorkID, Name FROM division WHERE DisciplineID = DSPLNID AND (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="96" col="DivisionID" visible="false"/>
+                    <caption tableid="96" col="Name"/>
                 </captions>
             </detailView>
         </table>

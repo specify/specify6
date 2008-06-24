@@ -7,7 +7,9 @@
     <dialog type="search" viewset="Search" view="BioStratSearch"           name="BioStratSearch"           class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" idfield="geologicTimePeriodId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="CollectionObjectSearch"   name="CollectionObjectSearch"   class="edu.ku.brc.specify.datamodel.CollectionObject" idfield="collectionObjectId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="CollectingEventSearch"    name="CollectingEventSearch"    class="edu.ku.brc.specify.datamodel.CollectingEvent" idfield="collectingEventId" helpcontext="CBXQSearch"/>
+    <dialog type="search" viewset="Search" view="CollectingTripSearch"     name="CollectingTripSearch"     class="edu.ku.brc.specify.datamodel.CollectingTrip" idfield="collectingTripId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="DisciplineSearch"         name="DisciplineSearch"         class="edu.ku.brc.specify.datamodel.Discipline"     idfield="disciplineId" helpcontext="CBXQSearch"/>
+    <dialog type="search" viewset="Search" view="DivisionSearch"           name="DivisionSearch"           class="edu.ku.brc.specify.datamodel.Division"       idfield="divisionId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="DeterminationSearch"      name="DeterminationSearch"      class="edu.ku.brc.specify.datamodel.Determination"  idfield="determinationId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="GeographySearch"          name="GeographySearch"          class="edu.ku.brc.specify.datamodel.Geography"      idfield="geographyId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="GeologicTimePeriodSearch" name="GeologicTimePeriodSearch" class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" idfield="geologicTimePeriodId" helpcontext="CBXQSearch"/>
@@ -31,6 +33,8 @@
     <dialog type="display" view="Collector"          name="CollectorDisplay"         class="edu.ku.brc.specify.datamodel.Collector"/>
     <dialog type="display" view="CollectionObject"   name="CollectionObject"         class="edu.ku.brc.specify.datamodel.CollectionObject"/>
     <dialog type="display" view="CollectingEvent"    name="CollectingEvent"          class="edu.ku.brc.specify.datamodel.CollectingEvent"/>
+    <dialog type="display" view="CollectingTrip"     name="CollectingTripDisplay"    class="edu.ku.brc.specify.datamodel.CollectingTrip"/>
+    <dialog type="display" view="Division"           name="DivisionDisplay"          class="edu.ku.brc.specify.datamodel.Division"/>
     <dialog type="display" view="GeologicTimePeriod" name="GeologicTimePeriodDisplay" class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
     <dialog type="display" view="Determination"      name="DeterminationDisplay"     class="edu.ku.brc.specify.datamodel.Determination"/>
     <dialog type="display" view="Geography"          name="GeographyDisplay"         class="edu.ku.brc.specify.datamodel.Geography"/>

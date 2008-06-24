@@ -85,9 +85,31 @@
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
             usedefbusrule="false"
             resourcelabels="false">
-            <desc><![CDATA[The CollectionObject Search Form]]></desc>
+            <desc><![CDATA[The CollectingEvent Search Form]]></desc>
             <altviews>
                 <altview name="CollectingEventSearch" viewdef="CollectingEventSearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view 
+            name="CollectingTripSearch"
+            class="edu.ku.brc.specify.datamodel.CollectingTrip"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The Collecting Trip Search Form]]></desc>
+            <altviews>
+                <altview name="CollectingTripSearch" viewdef="CollectingTripSearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view 
+            name="DivisionSearch"
+            class="edu.ku.brc.specify.datamodel.Division"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The Division Search Form]]></desc>
+            <altviews>
+                <altview name="DivisionSearch" viewdef="DivisionSearch" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -393,6 +415,57 @@ Good: <cell type="field" name="FieldNum" ...>
                <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="StationFieldNumber" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef type="form"
+            name="CollectingTripSearch"
+            class="edu.ku.brc.specify.datamodel.CollectingTrip"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Collecting Trip Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Collecting Trip" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="CollectingTripName" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="StartDate" uitype="text" formatter="Date"/>
+                </row>
+                
+            </rows>
+        </viewdef> 
+        
+        <viewdef type="form"
+            name="DivisionSearch"
+            class="edu.ku.brc.specify.datamodel.Division"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Division Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Division" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="Name" uitype="text"/>
                 </row>
             </rows>
         </viewdef> 
