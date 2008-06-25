@@ -7,7 +7,7 @@
             class="java.util.prefs.Preferences">
             <desc><![CDATA[EMail Preference Form.]]></desc>
             <altviews>
-                <altview name="EMail" viewdef="EMail" label="EMail" mode="edit" validated="true"/>
+                <altview name="EMail" viewdef="EMail" label="V_EMAIL" mode="edit" validated="true"/>
             </altviews>
         </view>
 
@@ -16,7 +16,7 @@
             class="java.util.prefs.Preferences">
             <desc><![CDATA[Formatting Preference Form.]]></desc>
             <altviews>
-                <altview name="Formatting" viewdef="Formatting" label="Formatting" mode="edit" validated="true"/>
+                <altview name="Formatting" viewdef="Formatting" label="V_FORMATTING" mode="edit" validated="true"/>
             </altviews>
         </view>
 
@@ -25,7 +25,7 @@
             class="java.util.prefs.Preferences">
             <desc><![CDATA[Misc Preference Form.]]></desc>
             <altviews>
-                <altview name="Misc" viewdef="Misc" label="Misc." mode="edit" validated="true"/>
+                <altview name="Misc" viewdef="Misc" label="V_MISC" mode="edit" validated="true"/>
             </altviews>
         </view>
 
@@ -34,7 +34,7 @@
             class="java.util.prefs.Preferences">
             <desc><![CDATA[System Preference Form.]]></desc>
             <altviews>
-                <altview name="System" viewdef="System" label="System" mode="edit" validated="true"/>
+                <altview name="System" viewdef="System" label="V_SYSTEM" mode="edit" validated="true"/>
             </altviews>
         </view>
 
@@ -43,7 +43,7 @@
             class="java.util.prefs.Preferences">
             <desc><![CDATA[GoogleEarth Preference Form.]]></desc>
             <altviews>
-                <altview name="GoogleEarth" viewdef="GoogleEarth" label="Google Earth" mode="edit" validated="true"/>
+                <altview name="GoogleEarth" viewdef="GoogleEarth" label="V_GOOGLE_EARTH" mode="edit" validated="true"/>
             </altviews>
         </view>
 
@@ -52,7 +52,7 @@
             class="java.util.prefs.Preferences">
             <desc><![CDATA[Tree Options Preference Form.]]></desc>
             <altviews>
-                <altview name="TreeOptions" viewdef="TreeOptions" label="Tree Options" mode="edit" validated="true"/>
+                <altview name="TreeOptions" viewdef="TreeOptions" label="V_TREE_OPTIONS" mode="edit" validated="true"/>
             </altviews>
         </view>
 
@@ -92,41 +92,41 @@
                     <cell type="separator" label="EMAIL_ACCT_SETTINGS" colspan="7"/>
                 </row>
                 <row>
-                    <cell type="label" name="accounttypeLabel" labelfor="accounttype" label="Account Type"/>
+                    <cell type="label" name="accounttypeLabel" labelfor="accounttype" label="ACCT_TYPE"/>
                     <cell type="field" uitype="combobox" id="accounttype" name="settings.email.accounttype" isrequired="true" initialize="data=Not in use, POP3, IMAP"/>
                 </row>
                 <row>
-                    <cell type="label" name="accountnameLabel" labelfor="accountname" label="Account Name"/>
+                    <cell type="label" name="accountnameLabel" labelfor="accountname" label="ACCT_NAME"/>
                     <cell type="field" uitype="text" cols="20" id="accountname" name="settings.email.accountname" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" name="servernameLabel" labelfor="servername" label="Server Name"/>
+                    <cell type="label" name="servernameLabel" labelfor="servername" label="SERVER_NAME"/>
                     <cell type="field" uitype="text" cols="20" id="servername" name="settings.email.servername" isrequired="true"/>
 
                     <cell type="label" name="smtpLabel" labelfor="smtp" label="SMTP"/>
                     <cell type="field" uitype="text" cols="20" id="smtp" name="settings.email.smtp" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" name="localmailboxLabel" labelfor="localmailbox" label="Local Mailbox"/>
+                    <cell type="label" name="localmailboxLabel" labelfor="localmailbox" label="LOCAL_MAILBOX"/>
                     <cell type="field" id="localmailbox" name="settings.email.localmailbox" cols="20" colspan="5" uitype="browse" isrequired="true" validation="obj.isNotEmpty()"/>
                 </row>
                 <row>
-                    <cell type="separator" label="User Information" colspan="7"/>
+                    <cell type="separator" label="USER_INFO" colspan="7"/>
                 </row>
                 <row>
-                    <cell type="label" name="usernameLabel" labelfor="username" label="Username"/>
+                    <cell type="label" name="usernameLabel" labelfor="username" label="USERNAME"/>
                     <cell type="field" id="username" name="settings.email.username" uitype="text" cols="20" isrequired="true"/>
 
-                    <cell type="label" name="passwordLabel" labelfor="password" label="Password"/>
+                    <cell type="label" name="passwordLabel" labelfor="password" label="PASSWORD"/>
                     <cell type="field" id="password" name="settings.email.password" cols="20" uitype="password" ispassword="true" isencrypted="true"/>
                 </row>
                 <row>
-                    <cell type="label" name="emailLabel" labelfor="email" label="EMail" />
+                    <cell type="label" name="emailLabel" labelfor="email" label="EMAIL" />
                     <cell type="field" id="email" name="settings.email.email" uitype="text" cols="20" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="" label="" />
-                    <cell type="command" id="testconnection" name="settings.email.testconnection" label="Send Test EMail" commandtype="EmailPref" action="test"/>
+                    <cell type="command" id="testconnection" name="settings.email.testconnection" label="SEND_TEST_EMAIL" commandtype="EmailPref" action="test"/>
                 </row>
             </rows>
         </viewdef>
@@ -137,7 +137,7 @@
             class="java.util.prefs.Preferences"
             gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
             settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="false">
+            useresourcelabels="true">
             
             <desc><![CDATA[Formatting Preference Form.]]></desc>
             
@@ -146,59 +146,59 @@
             
             <rows>
                 <row>
-                    <cell type="separator" label="Formatting" colspan="13"/>
+                    <cell type="separator" label="FORMATTING" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="label" name="scrdateformatLabel" labelfor="scrdateformat" label="Screen Date Format"/>
+                    <cell type="label" name="scrdateformatLabel" labelfor="scrdateformat" label="SCRN_DATE_FORMAT"/>
                     <cell type="field" uitype="text" cols="10" id="scrdateformat" name="ui.formatting.scrdateformat" isrequired="true" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="valtextcolor" label="Error Color"/>
+                    <cell type="label" labelfor="valtextcolor" label="ERROR_CLR"/>
                     <cell type="field" uitype="colorchooser" id="valtextcolor" name="ui.formatting.valtextcolor"/>
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="requiredfieldcolor" label="Required Field Color"/>
+                    <cell type="label" labelfor="requiredfieldcolor" label="REQ_FIELD_CLR"/>
                     <cell type="field" uitype="colorchooser" id="requiredfieldcolor" name="ui.formatting.requiredfieldcolor"/>
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="viewfieldcolor" label="View Field Color"/>
+                    <cell type="label" labelfor="viewfieldcolor" label="VIEW_FIELD_CLR"/>
                     <cell type="field" uitype="colorchooser" id="viewfieldcolor" name="ui.formatting.viewfieldcolor"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="fontNames" label="Form Font"/>
+                    <cell type="label" labelfor="fontNames" label="FORM_FONT"/>
                     <cell type="field" uitype="combobox" id="fontNames" name="ui.formatting.fontNames" readonly="true" changesonly="true" colspan="5"/>
-                    <cell type="label" id="fontSizesLabel" labelfor="fontSizes" label="Size"/>
+                    <cell type="label" id="fontSizesLabel" labelfor="fontSizes" label="FONT_SIZE"/>
                     <cell type="field" uitype="combobox" id="fontSizes" name="ui.formatting.fontSize" readonly="true" changesonly="true"/>
                     <cell type="field" uitype="dsptextfield" id="fontTest" name="fontTest" readonly="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="controlSizes" label="Control Size"/>
+                    <cell type="label" labelfor="controlSizes" label="CONTROL_SIZE"/>
                     <cell type="field" uitype="combobox" id="controlSizes" name="ui.formatting.controlSizes" readonly="true" changesonly="true" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Collection Object Icon" colspan="13"/>
+                    <cell type="separator" label="CO_ICON" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="disciplineIcon" label="Discipline Icon"/>
+                    <cell type="label" labelfor="disciplineIcon" label="DISC_ICON"/>
                     <cell type="field" uitype="label" id="disciplineIcon" label="" ignore="true"/>
                     
-                    <cell type="label" labelfor="disciplineIconCBX" label="Choose"/>
+                    <cell type="label" labelfor="disciplineIconCBX" label="CHOOSE"/>
                     <cell type="field" uitype="combobox" id="disciplineIconCBX" readonly="true" changesonly="true" />
                 </row>
                 <row>
-                    <cell type="separator" label="Application Icon" colspan="13"/>
+                    <cell type="separator" label="APP_ICON_SEP" colspan="13"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="appIcon" label="Application Icon"/>
+                    <cell type="label" labelfor="appIcon" label="APP_ICON"/>
                     <cell type="field" uitype="label" id="appIcon" label="" ignore="true"/>
                     <cell type="panel" id="16" name="btnpanel" coldef="25px,2px,p,5px,p,f:p:g" rowdef="p" colspan="9">
                         <rows>
                             <row>
                                 <cell type="field" uitype="label" id="0" label=" " ignore="true"/>
-                                <cell type="command" id="GetIconImage" name="GetIconImage"   label="Set Icon" ignore="true"/>
-                                <cell type="command" id="ClearIconImage" name="ClearIconImage" label="Clear Icon" ignore="true"/>
+                                <cell type="command" id="GetIconImage" name="GetIconImage"   label="SET_ICON" ignore="true"/>
+                                <cell type="command" id="ClearIconImage" name="ClearIconImage" label="CLEAR_ICON" ignore="true"/>
                             </row>
                         </rows>
                     </cell>
@@ -212,7 +212,7 @@
             class="java.util.prefs.Preferences"
             gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
             settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="false">
+            useresourcelabels="true">
 
             <desc><![CDATA[Formatting Misc Form.]]></desc>
 
@@ -220,13 +220,13 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
-                    <cell type="separator" label="Interactions" colspan="4"/>
+                    <cell type="separator" label="INTERACTIONS" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="field" id="1" name="Interactions.Using.Interactions" uitype="checkbox" label="Using Interactions" ignore="true"/>
+                    <cell type="field" id="1" name="Interactions.Using.Interactions" uitype="checkbox" label="USING_INTERACTIONS" ignore="true"/>
                 </row>
                 <row>
-                    <cell type="field" id="2" name="Exporttask.OnTaskbar" uitype="checkbox" label="Add Tools to Taskbar" colspan="4"/>
+                    <cell type="field" id="2" name="Exporttask.OnTaskbar" uitype="checkbox" label="ADD_TOOLS" colspan="4"/>
                 </row>
             </rows>
             
@@ -238,7 +238,7 @@
             class="java.util.prefs.Preferences"
             gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
             settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="false">
+            useresourcelabels="true">
             
             <desc><![CDATA[System Preference Form.]]></desc>
             
@@ -247,7 +247,7 @@
             
             <rows>
                 <row>
-                    <cell type="separator" label="Locale" colspan="5"/>
+                    <cell type="separator" label="LOCALE" colspan="5"/>
                 </row>
                 <row>
                     <cell type="panel" id="16" name="treepanel" coldef="max(p;150px):g,2px,p,f:p:g" rowdef="p" colspan="5">
@@ -260,16 +260,16 @@
                     </cell>
                 </row>
                 <row>
-                    <cell type="separator" label="Geo-Referencing" colspan="5"/>
+                    <cell type="separator" label="GEO_REF" colspan="5"/>
                 </row>
                 <row>
                     <cell type="field" id="4" name="georef_tool" uitype="combobox" initialize="data=BioGeomancer,GEOLocate" default="BioGeomancer"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Cache" colspan="5"/>
+                    <cell type="separator" label="CACHE" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="command" id="clearcache" name="clearcache" label="Clear Cache" commandtype="ClearCache" action="ClearCache"/>
+                    <cell type="command" id="clearcache" name="clearcache" label="CACHE_CLR" commandtype="ClearCache" action="ClearCache"/>
                     <!-- <cell type="label" labelfor="clearcache" label="Clears Long Term, Short Term and Reports Cache" /> -->
                 </row>
                 <!--<row>
@@ -285,16 +285,16 @@
                 </row>
                 -->
                 <row>
-                    <cell type="separator" label="Version Checking" colspan="5"/>
+                    <cell type="separator" label="VERS_CHECK" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="field" id="2" name="version_check.auto" uitype="checkbox" label="Check for updates at startup" colspan="3"/>
+                    <cell type="field" id="2" name="version_check.auto" uitype="checkbox" label="CHECK_UPDATES_STARTUP" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Anonymous Usage Statistics" colspan="5"/>
+                    <cell type="separator" label="USAGE_STATS" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="field" id="3" name="usage_tracking.send_stats" uitype="checkbox" label="Send usage statistics" colspan="3"/>
+                    <cell type="field" id="3" name="usage_tracking.send_stats" uitype="checkbox" label="SEND_USAGE" colspan="3"/>
                 </row>
             </rows>
         </viewdef>
@@ -305,7 +305,7 @@
             class="java.util.prefs.Preferences"
             gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
             settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="false">
+            useresourcelabels="true">
 
             <desc><![CDATA[GoogleEarth Preference Form.]]></desc>
 
@@ -314,41 +314,41 @@
 
             <rows>
                 <row>
-                    <cell type="separator" label="Google Earth" colspan="5"/>
+                    <cell type="separator" label="GOOGLE_EARTH" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" label="Icon Image Path"/>
+                    <cell type="label" labelfor="1" label="ICON_PATH"/>
                     <cell type="field" id="1" name="google.earth.icon" cols="30" uitype="browse" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Placemark Balloon Configuration" colspan="5"/>
+                    <cell type="separator" label="PLACEMARK_BALLOON_CONFIG" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="8" label=""/>
-                    <cell type="field" id="8" name="google.earth.useorigheaders" uitype="checkbox" label="Use Original Excel Headers" colspan="2"/> 
+                    <cell type="field" id="8" name="google.earth.useorigheaders" uitype="checkbox" label="USE_ORIG_EXCEL_HEADERS" colspan="2"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Balloon BG Color"/>
+                    <cell type="label" labelfor="2" label="BALL_BG_CLR"/>
                     <cell type="field" uitype="colorchooser" id="2" name="google.earth.bgcolor"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Balloon Text Color"/>
+                    <cell type="label" labelfor="3" label="BALL_TXT_CLR"/>
                     <cell type="field" uitype="colorchooser" id="3" name="google.earth.fgcolor"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Primary URL"/>
+                    <cell type="label" labelfor="4" label="PRI_URL"/>
                     <cell type="field" id="4" name="google.earth.primaryurl" uitype="text" colspan="3"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="5" label="Primary URL Title"/>
+                    <cell type="label" labelfor="5" label="PRI_URL_TITLE"/>
                     <cell type="field" id="5" name="google.earth.primaryurltitle" uitype="text" colspan="2"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="Secondary URL"/>
+                    <cell type="label" labelfor="6" label="SEC_URL"/>
                     <cell type="field" id="6" name="google.earth.secondaryurl" uitype="text" colspan="3"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="7" label="Secondary URL Title"/>
+                    <cell type="label" labelfor="7" label="SEC_URL_TITLE"/>
                     <cell type="field" id="7" name="google.earth.secondaryurltitle" uitype="text" colspan="2"/> 
                 </row>
             </rows>
@@ -360,7 +360,7 @@
             class="java.util.prefs.Preferences"
             gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
             settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-            useresourcelabels="false">
+            useresourcelabels="true">
 
             <desc><![CDATA[Tree Options Preference Form.]]></desc>
 
@@ -369,28 +369,28 @@
 
             <rows>
                 <row>
-                    <cell type="separator" label="All Trees" colspan="3"/>
+                    <cell type="separator" label="ALL_TREES" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="field" id="20" name="TreeEditor.RestoreTreeExpansionState" uitype="checkbox" label="Restore Expansion State" colspan="1"/>
+                    <cell type="field" id="20" name="TreeEditor.RestoreTreeExpansionState" uitype="checkbox" label="RESTORE_EXPANSION_STATE" colspan="1"/>
                 </row>
                 
                 <row>
 	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
 	                    <rows>
 			                <row>
-			                    <cell type="separator" label="Taxon Tree" colspan="5"/>
+			                    <cell type="separator" label="TAXON_TREE" colspan="5"/>
 			                </row>
 			                <row>
-			                    <cell type="label" labelfor="1" label="Show Counts Below"/>
+			                    <cell type="label" labelfor="1" label="TT_SHOW_COUNTS_BELOW"/>
 			                    <cell type="field" id="1" name="TreeEditor.Rank.Threshold.Taxon" uitype="combobox" colspan="3" ignore="true"/>
 			                </row>
 			                <row>
-			                    <cell type="label" labelfor="TreeColColor1.Taxon" label="Column Color #1"/>
+			                    <cell type="label" labelfor="TreeColColor1.Taxon" label="TT_COL_CLR_1"/>
 			                    <cell type="field" uitype="colorchooser" id="TreeColColor1.Taxon" name="Treeeditor.TreeColColor1.Taxon"/>
 			                </row>
 			                <row>
-			                    <cell type="label" labelfor="TreeColColor2.Taxon" label="Column Color #2"/>
+			                    <cell type="label" labelfor="TreeColColor2.Taxon" label="TT_COL_CLR_2"/>
 			                    <cell type="field" uitype="colorchooser" id="TreeColColor2.Taxon" name="Treeeditor.TreeColColor2.Taxon"/>
 			                </row>
 			            </rows>
@@ -398,18 +398,18 @@
 	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
 	                    <rows>
 			                <row>
-			                    <cell type="separator" label="Geography Tree" colspan="5"/>
+			                    <cell type="separator" label="GEO_TREE" colspan="5"/>
 			                </row>
 			                <row>
-			                    <cell type="label" labelfor="2" label="Show Counts Below"/>
+			                    <cell type="label" labelfor="2" label="GT_SHOW_COUNTS_BELOW"/>
 			                    <cell type="field" id="2" name="TreeEditor.Rank.Threshold.Geography" uitype="combobox" colspan="3" ignore="true"/>
 			                </row>
 			               <row>
-			                    <cell type="label" labelfor="TreeColColor1.Geography" label="Column Color #1"/>
+			                    <cell type="label" labelfor="TreeColColor1.Geography" label="GT_COL_CLR_1"/>
 			                    <cell type="field" uitype="colorchooser" id="TreeColColor1.Geography" name="Treeeditor.TreeColColor1.Geography"/>
 			                </row>
 			                <row>
-			                    <cell type="label" labelfor="TreeColColor2.Geography" label="Column Color #2"/>
+			                    <cell type="label" labelfor="TreeColColor2.Geography" label="GT_COL_CLR_2"/>
 			                    <cell type="field" uitype="colorchooser" id="TreeColColor2.Geography" name="Treeeditor.TreeColColor2.Geography"/>
 			                </row>
 			            </rows>
@@ -420,18 +420,18 @@
 	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
 	                    <rows>
 			                <row>
-			                    <cell type="separator" label="Litho Tree" colspan="5"/>
+			                    <cell type="separator" label="LITHO_TREE" colspan="5"/>
 			                </row>
 			                <row>
-			                    <cell type="label" labelfor="3" label="Show Counts Below"/>
+			                    <cell type="label" labelfor="3" label="LT_SHOW_COUNTS_BELOW"/>
 			                    <cell type="field" id="3" name="TreeEditor.Rank.Threshold.LithoStrat" uitype="combobox" colspan="3" ignore="true"/>
 			                </row>
 			               <row>
-			                    <cell type="label" labelfor="TreeColColor1.LithoStrat" label="Column Color #1"/>
+			                    <cell type="label" labelfor="TreeColColor1.LithoStrat" label="LT_COL_CLR_1"/>
 			                    <cell type="field" uitype="colorchooser" id="TreeColColor1.LithoStrat" name="Treeeditor.TreeColColor1.LithoStrat"/>
 			                </row>
 			                <row>
-			                    <cell type="label" labelfor="TreeColColor2.LithoStrat" label="Column Color #2"/>
+			                    <cell type="label" labelfor="TreeColColor2.LithoStrat" label="LT_COL_CLR_2"/>
 			                    <cell type="field" uitype="colorchooser" id="TreeColColor2.LithoStrat" name="Treeeditor.TreeColColor2.LithoStrat"/>
 			                </row>
 			            </rows>
@@ -439,18 +439,18 @@
 	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
 	                    <rows>
 			              <row>
-			                    <cell type="separator" label="Geologic Time Period Tree" colspan="5"/>
+			                    <cell type="separator" label="GEO_PERIOD_TREE" colspan="5"/>
 			                </row>
 			                <row>
-			                    <cell type="label" labelfor="4" label="Show Counts Below"/>
+			                    <cell type="label" labelfor="4" label="GP_SHOW_COUNTS_BELOW"/>
 			                    <cell type="field" id="4" name="TreeEditor.Rank.Threshold.GeologicTimePeriod" uitype="combobox" colspan="3" ignore="true"/>
 			                </row>
 			               <row>
-			                    <cell type="label" labelfor="TreeColColor1.GeologicTimePeriod" label="Column Color #1"/>
+			                    <cell type="label" labelfor="TreeColColor1.GeologicTimePeriod" label="GP_COL_CLR_1"/>
 			                    <cell type="field" uitype="colorchooser" id="TreeColColor1.GeologicTimePeriod" name="Treeeditor.TreeColColor1.GeologicTimePeriod"/>
 			                </row>
 			                <row>
-			                    <cell type="label" labelfor="TreeColColor2.GeologicTimePeriod" label="Column Color #2"/>
+			                    <cell type="label" labelfor="TreeColColor2.GeologicTimePeriod" label="GP_COL_CLR_2"/>
 			                    <cell type="field" uitype="colorchooser" id="TreeColColor2.GeologicTimePeriod" name="Treeeditor.TreeColColor2.GeologicTimePeriod"/>
 			                </row>
 			            </rows>
@@ -460,18 +460,18 @@
                     <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
                         <rows>
                             <row>
-                                <cell type="separator" label="Storage Location Tree" colspan="5"/>
+                                <cell type="separator" label="STORAGE_TREE" colspan="5"/>
                             </row>
                             <row>
-                                <cell type="label" labelfor="5" label="Show Counts Below"/>
+                                <cell type="label" labelfor="5" label="ST_SHOW_COUNTS_BELOW"/>
                                 <cell type="field" id="5" name="TreeEditor.Rank.Threshold.Storage" uitype="combobox" colspan="3" ignore="true"/>
                             </row>
                             <row>
-                                <cell type="label" labelfor="TreeColColor1.Storage" label="Column Color #1"/>
+                                <cell type="label" labelfor="TreeColColor1.Storage" label="ST_COL_CLR_1"/>
                                 <cell type="field" uitype="colorchooser" id="TreeColColor1.Storage" name="Treeeditor.TreeColColor1.Storage"/>
                             </row>
                             <row>
-                                <cell type="label" labelfor="TreeColColor2.Storage" label="Column Color #2"/>
+                                <cell type="label" labelfor="TreeColColor2.Storage" label="ST_COL_CLR_2"/>
                                 <cell type="field" uitype="colorchooser" id="TreeColColor2.Storage" name="Treeeditor.TreeColColor2.Storage"/>
                             </row>
                         </rows>
