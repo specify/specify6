@@ -457,8 +457,12 @@ public class MainFrameSpecify extends MainFrame
             {
                 return null;
             }
+            if (StringUtils.isEmpty(propPanel.getNameTxt().getText()))
+            {
+                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_NAME_MUST_NOT_BE_BLANK"), propPanel.getNameTxt().getText()));
+            }
             //XXX - more 'Collection' dir hard-coding
-            if (AppContextMgr.getInstance().getResourceFromDir("Collection", propPanel.getNameTxt().getText()) != null)
+            else if (AppContextMgr.getInstance().getResourceFromDir("Collection", propPanel.getNameTxt().getText()) != null)
             {
                 JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_NAME_ALREADY_EXISTS"), propPanel.getNameTxt().getText()));
             }
