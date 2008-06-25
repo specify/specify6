@@ -28,6 +28,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,6 +45,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
@@ -88,6 +91,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected String                        lastName;
     protected String                        middleInitial;
     protected String                        title;               // Mr., Mrs., Dr.
+    protected Calendar                      dateOfBirth;
+    protected Calendar                      dateOfDeath;
     protected String                        interests;
     protected String                        abbreviation;
     protected String                        initials;
@@ -195,6 +200,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         lastName                  = null;
         middleInitial             = null;
         title                     = null;
+        dateOfBirth               = null;
+        dateOfDeath               = null;
         interests                 = null;
         abbreviation              = null;
         initials                  = null;
@@ -378,6 +385,42 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    /**
+     * @return the dateOfBirth
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DateOfBirth")
+    public Calendar getDateOfBirth()
+    {
+        return dateOfBirth;
+    }
+
+    /**
+     * @param dateOfBirth the dateOfBirth to set
+     */
+    public void setDateOfBirth(Calendar dateOfBirth)
+    {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    /**
+     * @return the dateOfDeath
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DateOfDeath")
+    public Calendar getDateOfDeath()
+    {
+        return dateOfDeath;
+    }
+
+    /**
+     * @param dateOfDeath the dateOfDeath to set
+     */
+    public void setDateOfDeath(Calendar dateOfDeath)
+    {
+        this.dateOfDeath = dateOfDeath;
     }
 
     /**
