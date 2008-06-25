@@ -61,6 +61,7 @@
     <icon name="shipment"             file="shipment.png" sizes="all"/>
     <icon name="storage"              file="storage.png" sizes="all"/>
     <icon name="taxon"                file="taxon.png" sizes="all"/>
+    <icon name="treatmentevent"       file="treatment_event.png" sizes="all"/>
     
     <!--  Attachment Icons -->
     <icon name="AccessionAttachment"             file="accession_attachment.png" sizes="NonStd"/>
@@ -217,6 +218,7 @@
     <icon name="Shipment"               alias="shipment"/>
     <icon name="Storage"                alias="storage"/>
     <icon name="Taxon"                  alias="taxon"/>
+    <icon name="TreatmentEvent"         alias="treatmentevent"/>
     
     <icon name="taxontreedef"              alias="taxon"/>
     <icon name="geographytreedef"          alias="geography"/>
