@@ -156,6 +156,10 @@
                     <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
                 </row>
                 <row>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="collectingTrip" uitype="querycbx" initialize="name=CollectingTrip" colspan="10"/>
+                </row>
+                <row>
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50"/>
                 </row>
