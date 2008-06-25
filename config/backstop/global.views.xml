@@ -1257,7 +1257,7 @@
                     <cell type="subview" viewname="TaxonSubform" id="acceptedChildren" name="acceptedChildren" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Common Names" colspan="5"/>
+                    <cell type="separator" label="COMMONNAMES" colspan="5"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="CommonNameTx" id="commonNames" name="commonNames" colspan="5"/>
