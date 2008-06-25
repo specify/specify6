@@ -178,6 +178,16 @@
             </altviews>
         </view>
         
+        <view name="Division"
+            class="edu.ku.brc.specify.datamodel.Division"
+            resourcelabels="false">
+            <desc><![CDATA[Subform within the Collection Object form.]]></desc>
+            <altviews>
+                <altview name="Division View" viewdef="Division" label="View" mode="view"/>
+                <altview name="Division Edit" viewdef="Division" label="Edit" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
         <view name="FieldNotebook"
             class="edu.ku.brc.specify.datamodel.FieldNotebook"
             busrules="edu.ku.brc.specify.datamodel.busrules.FieldNotebookBusRules"
@@ -210,6 +220,18 @@
                 <altview name="FieldNotebookPageSet View" viewdef="FieldNotebookPageSet" label="View" mode="view" default="true"/>
             </altviews>
         </view>
+        
+        <view name="Institution"
+            class="edu.ku.brc.specify.datamodel.Institution" 
+            isinternal="false"
+            resourcelables="false">
+            <desc><![CDATA[Institution Form.]]></desc>
+            <altviews>
+                <altview name="Institution Edit" viewdef="Institution" label="Edit" mode="edit"/>
+                <altview name="Institution View" viewdef="Institution" label="View" mode="view" default="true"/>
+            </altviews>
+        </view>
+        
 
         <view name="Loan"
             class="edu.ku.brc.specify.datamodel.Loan"
@@ -995,6 +1017,35 @@
             </rows>
         </viewdef>
         
+        <viewdef
+            name="Division"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.Division"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Division Form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>100px,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            <rows>
+                <row>
+                    <cell type="separator" label="Division" icon="Division" recordobj="true" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="name" uitype="text"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="abbrev" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="description" uitype="textarea" colspan="10"/>
+                </row>
+            </rows>
+        </viewdef>
+        
       <viewdef 
             type="form" 
             name="FieldNotebook" 
@@ -1134,6 +1185,41 @@
             </rows>
         </viewdef>
 
+        <viewdef 
+            type="form" 
+            name="Institution" 
+            class="edu.ku.brc.specify.datamodel.Institution" 
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Form For FieldNotebookPage]]></desc>
+            <columnDef>100px,2px,200px,2px,50px,2px,200px,2px,90px,2px,40px,p:g</columnDef>
+            <rowDef auto="true" sep="2px" cell="p"/>
+            <rows>
+                <row>
+                    <cell type="separator" label="Institution" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="name" uitype="text"/>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="title" uitype="text"/>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="abbrev" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="termsOfUse" uitype="textarea" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="subview" id="3" name="divisions" viewname="Division" colspan="12"/>
+                </row>
+            </rows>
+        </viewdef>
 
         <viewdef
             type="form"
@@ -1840,6 +1926,9 @@
                     
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
+                    
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="division" uitype="querycbx" initialize="name=Division"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6"/>
