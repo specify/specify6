@@ -1251,7 +1251,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 {
                     int     rowCount = ((JPAQuery) cmdAction.getData()).getDataObjects().size();
                     boolean isError  = ((JPAQuery) cmdAction.getData()).isInError();
-                    boolean showPane = !isError && rowCount > 0;
+                    boolean isCancelled = ((JPAQuery) cmdAction.getData()).isCancelled();
+                    boolean showPane = !isError && !isCancelled && rowCount > 0;
                     //print status bar msg if error or rowCount == 0, 
                     //else show the queryResults pane if rowCount > 0
                     int index = SubPaneMgr.getInstance().indexOfComponent(queryResultsPane.getUIComponent());

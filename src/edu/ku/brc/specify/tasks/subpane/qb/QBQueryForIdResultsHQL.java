@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -51,6 +52,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     protected final QueryBldrPane queryBuilder;
     protected final AtomicReference<Future<CustomQueryIFace>> queryTask = new AtomicReference<Future<CustomQueryIFace>>();
     protected final AtomicReference<CustomQueryIFace> query = new AtomicReference<CustomQueryIFace>();
+    protected final AtomicBoolean cancelled = new AtomicBoolean(false);
     protected List<Pair<String, Object>> params;
     protected String title;
     protected int    tableId;
@@ -324,6 +326,12 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
             CustomQueryIFace qres = (CustomQueryIFace )results;
             System.out.println("Results returned: " + qres.getDataObjects().size());
             query.set((CustomQueryIFace)results);
+            if (/*queryTask.get().isCancelled()*/cancelled.get())
+            {
+                System.out.println("query task got cancelled");
+                query.get().cancel();
+            }
+            queryTask.set(null);
             queryBuilder.queryTaskDone();
         }
         catch (Exception e)
@@ -347,10 +355,11 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         return !isRetrieving() && query.get() != null;
     }
     
-    public void Cancel()
+    public void cancel()
     {
         if (isRetrieving())
         {
+            cancelled.set(true);
             queryTask.get().cancel(true);
             //and what else needs to be done???....
         }
@@ -359,8 +368,18 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
             /*
              * Maybe can mess with table filling step to allowing cancel
              */
-            //query.get().cancel(); 
+            cancelled.set(true);
+            query.get().cancel(); 
         }
         //else do nuthin.
     }
+
+    /**
+     * @return the cancelled
+     */
+    public boolean getCancelled()
+    {
+        return cancelled.get();
+    }
+
 }

@@ -257,5 +257,22 @@ public class CustomStatQueries implements CustomQueryIFace
         return false;
     }
     
-    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQueryIFace#isCancelled()
+     */
+    //@Override
+    public boolean isCancelled()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQueryIFace#cancel()
+     */
+    //@Override
+    public void cancel()
+    {
+        // ignore
+    }
+
 }

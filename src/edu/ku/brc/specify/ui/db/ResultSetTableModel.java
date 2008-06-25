@@ -850,7 +850,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             ids.clear();
         }
         
-        if (!customQuery.isInError() && list != null && list.size() > 0)
+        if (!customQuery.isInError() && !customQuery.isCancelled() && list != null && list.size() > 0)
         {
             /*if (numColumns == 1)
             {
@@ -867,6 +867,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 //int rowNum = 0;
                 for (Object rowObj : list)
                 {
+                    if (customQuery.isCancelled())
+                    {
+                        break;
+                    }
                     Vector<Object> row = new Vector<Object>(list.size());
                     if (rowObj.getClass().isArray())
                     {

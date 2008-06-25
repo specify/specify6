@@ -20,6 +20,7 @@ package edu.ku.brc.dbsupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -57,6 +58,7 @@ public class JPAQuery implements CustomQueryIFace
     protected Object                    data        = null;
     protected Query                     query       = null;
     
+    protected final AtomicBoolean             cancelled = new AtomicBoolean(false);
     /**
      * Constructor.
      * @param sqlStr the query string
@@ -302,5 +304,22 @@ public class JPAQuery implements CustomQueryIFace
         this.params = params;
     }
     
-    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQueryIFace#isCancelled()
+     */
+    //@Override
+    public boolean isCancelled()
+    {
+        return cancelled.get();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQueryIFace#cancel()
+     */
+    //@Override
+    public void cancel()
+    {
+        cancelled.set(true);
+    }
+
 }

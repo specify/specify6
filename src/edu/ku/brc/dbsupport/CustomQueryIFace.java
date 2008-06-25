@@ -70,4 +70,15 @@ public interface CustomQueryIFace
      */
     public boolean isInError();
     
+    
+    /**
+     * @return true if cancelled.
+     */
+    public boolean isCancelled();
+    
+    /**
+     * cancel the query
+     */
+    public void cancel();
+    
 }
