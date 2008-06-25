@@ -626,7 +626,7 @@ public class ViewLoader
     protected static String getLabel(final Element cellElement)
     {
         String lbl = getAttr(cellElement, LABEL, null);
-        if (lbl == null)
+        if (lbl == null || lbl.equals("##"))
         {
             return "##";
         }
@@ -887,8 +887,8 @@ public class ViewLoader
                             FormCellField field = new FormCellField(FormCellIFace.CellType.field, cellId, 
                                                                     cellName, uitype, dspUIType, format, formatName, uiFieldFormatterName, isRequired,
                                                                     cols, rows, colspan, rowspan, validationType, validationRule, isEncrypted);
-                            
-                            field.setLabel(getAttr(cellElement,        "label",    ""));
+                            String labelStr = uitype == FormCellFieldIFace.FieldType.checkbox ? getLabel(cellElement) : getAttr(cellElement,        "label",    "");
+                            field.setLabel(labelStr);
                             field.setReadOnly(getAttr(cellElement,     "readonly", isReadOnly));
                             field.setDefaultValue(getAttr(cellElement, "default",  ""));
                             field.setPickListName(pickListName);
