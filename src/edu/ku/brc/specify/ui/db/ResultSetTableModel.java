@@ -872,7 +872,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                         break;
                     }
                     Vector<Object> row = new Vector<Object>(list.size());
-                    if (rowObj.getClass().isArray())
+                    if (rowObj != null && rowObj.getClass().isArray())
                     {
                         int col = 0;
                         Iterator<ERTICaptionInfo> cols = captions.iterator();                        
