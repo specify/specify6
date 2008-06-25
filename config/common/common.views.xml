@@ -187,6 +187,18 @@
                 <altview name="Division Edit" viewdef="Division" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
+
+	  <view name="DNASequence"
+              objtitle="DNA Sequence"
+              class="edu.ku.brc.specify.datamodel.DNASequence"
+              busrules="edu.ku.brc.specify.datamodel.busrules.DNASequenceBusRules"
+              isinternal="false">
+            <desc><![CDATA[DNA Sequencing form.]]></desc>
+            <altviews>
+                <altview name="DNASequence View" viewdef="DNASequence" label="View" mode="view"/>
+                <altview name="DNASequence Edit" viewdef="DNASequence" label="Edit" mode="edit" default="true"/>
+            </altviews>
+        </view>
         
         <view name="FieldNotebook"
             class="edu.ku.brc.specify.datamodel.FieldNotebook"
@@ -1046,6 +1058,44 @@
             </rows>
         </viewdef>
         
+	  <viewdef 
+      	name="DNASequence"
+      	type="form"
+      	class="edu.ku.brc.specify.datamodel.DNASequence" 
+      	gettable="edu.ku.brc.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+      	
+      	<desc><![CDATA[DNA Sequence Form]]></desc>
+        <enableRules/>
+        
+            <columnDef>90px,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+            	<row>
+            		<cell type="separator" label="DNA Sequence" colspan="12"/>
+            	</row>            	
+            	<row>
+            		<cell type="label" labelfor="2"/>
+            		<cell type="field" id="2" name="geneName" uitype="text" isrequired="true"/>
+            		<cell type="label" labelfor="3"/>
+            		<cell type="field" id="3" name="seqDate" uitype="formattedtext" uifieldformatter="Date" default="Today" isrequired="true"/>
+            		<cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="sequencer" uitype="querycbx" initialize="name=Agent"/>
+            	</row>
+            	<row>
+                     <cell type="label" labelfor="4"/>
+                     <cell type="field" id="4" name="geneSequence" uitype="textarea" colspan="10"/>
+            	</row>
+                <row>
+                    <cell type="separator" label="Attachments" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=DNASequenceAttachment;addsearch=true"/>
+                </row>
+            </rows>
+      </viewdef>
+
       <viewdef 
             type="form" 
             name="FieldNotebook" 
