@@ -13,6 +13,12 @@
 	    <view sidebar="false" name="Loan"               view="Loan"               iconname="Loan"               tooltip=""/>    
 	    <view sidebar="true"  name="Locality"           view="Locality"           iconname="Locality"           tooltip=""/> 
 	    <view sidebar="true"  name="Storage"            view="Storage"            iconname="Storage"           tooltip=""/>
+		<view sidebar="false" name="ConservEvent"       view="ConservEvent"       iconname="ConservEvent"       tooltip=""/>
+		<view sidebar="false" name="FieldNotebookPage"  view="FieldNotebookPage"  iconname="FieldNotebookPage"  tooltip=""/>
+		<view sidebar="false" name="FieldNotebookPageSet" view="FieldNotebookPageSet" iconname="FieldNotebookPageSet" tooltip=""/>
+		<view sidebar="false" name="LocalityNameAlias"  view="LocalityNameAlias"  iconname="LocalityNameAlias"  tooltip=""/>
+		<view sidebar="false" name="CommonNameTx"       view="CommonNameTx"       iconname="CommonNameTx"       tooltip=""/>
+		<view sidebar="false" name="Division"           view="Division"           iconname="Division"           tooltip=""/>
 	</std>
 	
 	<misc>
