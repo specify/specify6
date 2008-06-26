@@ -71,6 +71,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.install4j.api.launcher.ApplicationLauncher;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -2392,7 +2393,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
               log.debug("Checking for update....");
               try
               {
-                  /*if (true)
+                  if (true)
                   {
                       ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
                       {
@@ -2407,7 +2408,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                           
                       };
                       ApplicationLauncher.launchApplication("100", null, true, callback);
-                  } else */
+                  } else
                   {
                       startApp(doConfig);
                   }
