@@ -104,6 +104,7 @@ import javax.swing.table.TableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -121,6 +122,7 @@ import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.MenuItemPropertyChangeListener;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.CustomDBConverter;
 import edu.ku.brc.specify.conversion.CustomDBConverterDlg;
 import edu.ku.brc.specify.conversion.CustomDBConverterListener;
@@ -2539,6 +2541,28 @@ public final class UIHelper
             });
         }
     }
+    
+    /**
+     * @return the version string from install4j
+     */
+    public static String getInstall4JInstallString()
+    {
+        Element root = XMLHelper.readDOMFromConfigDir(".." + File.separator + ".install4j" + File.separator + "i4jparams.conf");
+        for (Object obj : root.selectNodes("/config/variables/variable")) //$NON-NLS-1$
+        {
+            Element varObj = (Element)obj;
+            String name = XMLHelper.getAttr(varObj, "name", null); //$NON-NLS-1$
+            if (name.equals("sys.version"))
+            {
+                return XMLHelper.getAttr(varObj, "value", null); //$NON-NLS-1$
+            }
+        }
+        return null;
+    }
+    
+    //----------------------------------------------------------------------------
+    //-- UI Creators
+    //----------------------------------------------------------------------------
     
     public static JButton createButton()
     {

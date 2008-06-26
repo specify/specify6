@@ -210,7 +210,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify"; //$NON-NLS-1$
     private String               appVersion          = "6.0"; //$NON-NLS-1$
 
-    private String               appBuildVersion     = "200806230700 (SVN: 4242)"; //$NON-NLS-1$
+    private String               appBuildVersion     = "200806271150 (SVN: 4289)"; //$NON-NLS-1$
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -383,7 +383,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         UsageTracker.incrUsageCount("RunCount"); //$NON-NLS-1$
         
-        UIHelper.attachUnhandledException();
+        //UIHelper.attachUnhandledException();
 
         FileCache.setDefaultPath(UIRegistry.getAppDataDir() + File.separator + "cache"); //$NON-NLS-1$
 
@@ -1719,8 +1719,18 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void showApp()
     {
+        String title        = "";
+        String install4JStr = UIHelper.getInstall4JInstallString();
+        if (StringUtils.isNotEmpty(install4JStr))
+        {
+            appVersion = install4JStr;
+            title = appName + " " + appVersion; //$NON-NLS-1$
+        } else
+        {
+            title = appName + " " + appVersion + "  - " + appBuildVersion; //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        
         JFrame f = getFrame();
-        String title = appName + " " + appVersion + "  - " + appBuildVersion; //$NON-NLS-1$ //$NON-NLS-2$
         f.setTitle(title);
         f.getContentPane().add(this, BorderLayout.CENTER);
         f.pack();
