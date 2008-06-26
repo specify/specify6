@@ -63,6 +63,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.CustomDialog;
 
 /**
@@ -86,6 +88,7 @@ public class UIFormatterDlg extends CustomDialog
     protected UIFieldFormatterMgr		uiFieldFormatterMgrCache;
     
     protected UIFieldFormatterFactory   formatFactory;
+    protected UIFieldFormatterSampler 	fieldFormatterSampler; 
 
     protected JLabel	 sampleLabel;
     protected JList      formatList;
@@ -115,11 +118,17 @@ public class UIFormatterDlg extends CustomDialog
         this.initialFormatSelectionIndex = initialFormatSelectionIndex;
         this.uiFieldFormatterMgrCache = uiFieldFormatterMgrCache;
         
+        fieldFormatterSampler = new UIFieldFormatterSampler(fieldInfo);
+
         formatFactory = UIFieldFormatterMgr.getFormatFactory(fieldInfo);
     }
 
-    /*
+    /**
+     * Returns the formatter that corresponds to the pattern provided, if one already exists, 
+     * otherwise returns null.
      * 
+     * @param pattern Formatter pattern to look for 
+     * @return
      */
     private UIFieldFormatterIFace getFormatByPattern(String pattern)
     {
@@ -158,11 +167,17 @@ public class UIFormatterDlg extends CustomDialog
     	// else: create a new format from the pattern
     	try 
     	{
-    		selectedFormat = formatFactory.createFormat(pattern);
+    		selectedFormat = formatFactory.createFormat(pattern, fieldFormatterSampler);
     		formatIsNew = true;
         	updateSample();
     	}
-    	catch (UIFieldFormatterParsingException e1) 
+    	catch (UIFieldFormatterInvalidatesExistingValueException e1)
+    	{
+    		setSelectedFormat(null);
+    		formatIsNew = false;
+    		setError(getResourceString("FFE_INVALID_FORMAT") + " (*)"); 
+    	}
+    	catch (UIFieldFormatterParsingException e2) 
     	{
     		setSelectedFormat(null);
     		formatIsNew = false;

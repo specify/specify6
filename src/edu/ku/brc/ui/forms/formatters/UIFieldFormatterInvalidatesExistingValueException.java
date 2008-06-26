@@ -15,26 +15,39 @@
 
 package edu.ku.brc.ui.forms.formatters;
 
-import javax.swing.JList;
+/**
+ * Checked exception meaning that a formatter invalidates existing data.
+ * 
+ * @author ricardo
+ *
+ * @code_status Alpha
+ *
+ * Created Date: Jun 26, 2008
+ *
+ */
 
-public class DataObjSwitchFormatterListContainer implements DataObjSwitchFormatterContainerIface
+public class UIFieldFormatterInvalidatesExistingValueException extends Exception
 {
-	protected JList formatList;
+	private String faultyFormat;
+	private Object invalidatedValue;
 	
-	public DataObjSwitchFormatterListContainer(JList formatList)
+	/*
+	 * Constructor
+	 */
+	public UIFieldFormatterInvalidatesExistingValueException(String message, String faultyFormat, Object invalidatedValue) 
 	{
-		this.formatList = formatList;
+		super(message);
+		this.faultyFormat = faultyFormat;
+		this.invalidatedValue = invalidatedValue;
 	}
-	
-	public DataObjSwitchFormatter getSelectedFormatter()
+
+	public String getFaultyFormat() {
+		return faultyFormat;
+	}
+
+	public Object getInvalidatedValue()
 	{
-		if (formatList.getSelectedIndex() == -1)
-			return null;
-		
-		Object value = formatList.getSelectedValue(); 
-		if (!(value instanceof DataObjSwitchFormatter))
-			return null;
-		
-		return (DataObjSwitchFormatter) value;
+		return invalidatedValue;
 	}
+
 }

@@ -21,9 +21,32 @@ public abstract class UIFieldFormatterFactory
 {
 	protected DBFieldInfo fieldInfo;
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param fieldInfo
+	 */
 	public UIFieldFormatterFactory(DBFieldInfo fieldInfo)
 	{
 		this.fieldInfo = fieldInfo;
+	}
+	
+	/**
+	 * Creates a UIFieldFormatter that corresponds to the format string and checks whether it violates 
+	 * any existing data on database. It calls abstract method createFormat(String)
+	 * 
+	 * @param formattingString String defining the format
+	 * @param sampler Field value sampler used to check whether formatter invalidates existing data
+	 * @return New formatter corresponding to the provided format string
+	 * @throws UIFieldFormatterParsingException
+	 */
+	public UIFieldFormatter createFormat(final String formattingString, 
+										 final UIFieldFormatterSampler sampler) 
+		throws UIFieldFormatterParsingException, UIFieldFormatterInvalidatesExistingValueException
+	{
+		UIFieldFormatter formatter = createFormat(formattingString);
+		sampler.isValid(formatter); // exception must be thrown if not valid
+		return formatter;
 	}
 	
 	/**
@@ -34,7 +57,7 @@ public abstract class UIFieldFormatterFactory
 	 * @return New formatter corresponding to the provided format string
 	 * @throws UIFieldFormatterParsingException
 	 */
-	public abstract UIFieldFormatter createFormat(final String formattingString) throws UIFieldFormatterParsingException;
+	protected abstract UIFieldFormatter createFormat(final String formattingString) throws UIFieldFormatterParsingException;
 
 	/**
 	 * Returns the help message (in HTML format) to be displayed in the formatter dialog.
