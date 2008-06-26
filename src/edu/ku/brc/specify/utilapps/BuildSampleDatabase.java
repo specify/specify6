@@ -138,6 +138,8 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
@@ -464,6 +466,8 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         commitTx();
         
+        makeFieldVisible();
+
         startTx();
         
         //DBTableIdMgr schema = new DBTableIdMgr(false);
@@ -837,6 +841,8 @@ public class BuildSampleDatabase
 
         commitTx();
         
+        makeFieldVisible();
+
         frame.setProcess(++createStep);
         
         startTx();
@@ -1592,6 +1598,8 @@ public class BuildSampleDatabase
 
         commitTx();
         
+        makeFieldVisible();
+
         frame.setProcess(++createStep);
         
         startTx();
@@ -2040,6 +2048,8 @@ public class BuildSampleDatabase
 
         commitTx();
         
+        makeFieldVisible();
+
         frame.setProcess(++createStep);
         
         startTx();
@@ -3052,6 +3062,8 @@ public class BuildSampleDatabase
 
         commitTx();
         
+        makeFieldVisible();
+
         frame.setProcess(++createStep);
         
         startTx();
@@ -4045,6 +4057,8 @@ public class BuildSampleDatabase
         
         commitTx();
         
+        makeFieldVisible();
+
         frame.setDesc("Creating Fish Trees...");
         
         ////////////////////////////////
@@ -7157,6 +7171,55 @@ public class BuildSampleDatabase
             
             discipline.getSpLocaleContainers().add(container);
             container.setDiscipline(discipline);
+        }
+    }
+    
+    /**
+     * Make specific fields visible.
+     */
+    public static void makeFieldVisible()
+    {
+        setFieldVisible("collectionobject", "timestampModified");
+        setFieldVisible("determination",    "yesNo1");
+        
+    }
+    
+    /**
+     * Looks up a table/field and sets it to be visible.
+     * @param tableName the table name
+     * @param fieldName the field name
+     */
+    protected static void setFieldVisible(final String tableName, final String fieldName)
+    {
+        DataProviderSessionIFace localSession = null;
+        try
+        {
+            localSession = DataProviderFactory.getInstance().createSession();
+            SpLocaleContainer container = localSession.getData(SpLocaleContainer.class, "name", tableName, DataProviderSessionIFace.CompareType.Equals);
+            if (container != null)
+            {
+                for (SpLocaleContainerItem item : container.getItems())
+                {
+                    System.out.println(fieldName+" "+ item.getName());
+                    if (item.getName().equals(fieldName))
+                    {
+                        item.setIsHidden(false);
+                        localSession.beginTransaction();
+                        localSession.save(item);
+                        localSession.commit();
+                        return;
+                    }
+                }
+            }
+        } catch (Exception ex)
+        {
+            
+        } finally 
+        {
+            if (localSession != null)
+            {
+                localSession.close();
+            }
         }
     }
     

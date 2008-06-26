@@ -1025,6 +1025,10 @@ public class ViewFactory
             bi.isRequired = cellField.isRequired() || (childInfo != null && childInfo.isRequired());
             
             DBFieldInfo fieldInfo = childInfo instanceof DBFieldInfo ? (DBFieldInfo)childInfo : null;
+            if (fieldInfo != null && fieldInfo.isHidden())
+            {
+                UIRegistry.showLocalizedError("ViewFactory.FORM_FIELD_HIDDEN", cellField.getIdent(), cellField.getName(), formViewDef.getName());
+            }
             
             FormCellField.FieldType uiType = cellField.getUiType();
             

@@ -1014,6 +1014,9 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Localizing the Schema");
                 conversion.doLocalizeSchema();
+                
+                BuildSampleDatabase.makeFieldVisible();
+
                 frame.incOverall();
 
                 System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
