@@ -366,7 +366,7 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         for (int i=0;i<labels.length;i++)
         {
             builder.add(checkerIcons[i] = new JLabel(exclaimYWIcon), cc.xy(col,row));
-            builder.add(checkerLabels[i] = new JLabel(labels[i]), cc.xy(col+2,row));
+            builder.add(checkerLabels[i] = UIHelper.createLabel(labels[i]), cc.xy(col+2,row));
             row += 2;
         }
 

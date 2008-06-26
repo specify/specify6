@@ -23,6 +23,7 @@ import javax.swing.ListCellRenderer;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.SpQueryField;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.db.PickListItemIFace;
 
@@ -134,7 +135,7 @@ public class PickListCriteriaCombo extends JComboBox
         {
             if (index == -1)
             {
-                return new JLabel(getSelectionsText());
+                return UIHelper.createLabel(getSelectionsText());
             }
             return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         }

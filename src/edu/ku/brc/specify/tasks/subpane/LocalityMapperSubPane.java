@@ -75,6 +75,7 @@ import edu.ku.brc.specify.tasks.services.CollectingEventLocalityKMLGenerator;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.ControlBarPanel;
 import edu.ku.brc.ui.forms.FormViewObj;
@@ -101,7 +102,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
     protected static final Cursor defCursor    = new Cursor(Cursor.DEFAULT_CURSOR);
 
     protected LocalityMapper                  localityMapper  = new LocalityMapper();
-    protected JLabel                          imageLabel      = new JLabel(getResourceString("LoadingImage"));
+    protected JLabel                          imageLabel      = createLabel(getResourceString("LoadingImage"));
     protected JLabel                          titleLabel      = createLabel("");
     protected MultiView                       multiView;
 

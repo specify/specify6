@@ -1402,7 +1402,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 //Using above method causes Hibernate 'Dirty Collection' issues for save as.
                 //Currently the only info involved is the name so using a simple dialog box is good enuf.
                 JTextField nameText = new JTextField(newQueryName);
-                JLabel nameLbl = new JLabel(UIRegistry.getResourceString("QB_Q_NAME_PROMPT"));
+                JLabel nameLbl = UIHelper.createLabel(UIRegistry.getResourceString("QB_Q_NAME_PROMPT"));
                 PanelBuilder pane = new PanelBuilder(new FormLayout("4dlu, p, 2dlu, fill:p:grow, 4dlu", "5dlu, p, 5dlu"));
                 CellConstraints cc = new CellConstraints();
                 pane.add(nameLbl, cc.xy(2, 2));
@@ -1671,7 +1671,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 {
                     colHeaderText = ((TableQRI)item).getTitle();
                 }
-                JLabel colHeader = new JLabel(colHeaderText);
+                JLabel colHeader = UIHelper.createLabel(colHeaderText);
                 colHeader.setHorizontalAlignment(SwingConstants.CENTER);
                 sp.setColumnHeaderView(colHeader);
                 
