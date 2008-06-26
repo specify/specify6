@@ -76,7 +76,6 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.ESResultsSubPane;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -653,7 +652,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         JPanel     searchPanel = new JPanel(gridbag);
         JLabel     spacer      = createLabel("  ");
 
-        searchBtn = createButton(getResourceString("Search"));
+        searchBtn = createButton(getResourceString("SEARCH"));
         searchBtn.setToolTipText(getResourceString("ExpressSearchTT"));
         HelpMgr.setHelpID(searchBtn, "Express_Search");
         
@@ -821,14 +820,14 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             } else if (cmdAction.isAction("ViewRecordSet"))
             {
                 RecordSetIFace recordSet = null;
-                if (cmdAction.getData() instanceof RecordSet)
+                if (cmdAction.getData() instanceof RecordSetIFace)
                 {
                     recordSet = (RecordSetIFace)cmdAction.getData();
                     
                 } else if (cmdAction.getData() instanceof RolloverCommand)
                 {
                     RolloverCommand roc = (RolloverCommand)cmdAction.getData();
-                    if (roc.getData() instanceof RecordSet)
+                    if (roc.getData() instanceof RecordSetIFace)
                     {
                         recordSet = (RecordSetIFace)roc.getData();
                     }
@@ -1177,7 +1176,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             if (menus == null)
             {
                 menus = new Vector<JComponent>();
-                allMenuItem = new JMenuItem(getResourceString("All"), SearchBox.getSearchIcon()); // I18N
+                allMenuItem = new JMenuItem(getResourceString("ALL"), SearchBox.getSearchIcon()); // I18N
                 allMenuItem.addActionListener(action);
                 menus.add(allMenuItem);
                 

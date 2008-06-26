@@ -158,7 +158,7 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
             panel.add(listScroller, BorderLayout.CENTER);
             
             // Bottom Button UI
-            cancelBtn         = createButton(getResourceString("Cancel"));
+            cancelBtn         = createButton(getResourceString("CANCEL"));
             okBtn             = createButton(getResourceString("OK"));
 
             okBtn.addActionListener(this);

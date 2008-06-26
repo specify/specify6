@@ -286,7 +286,7 @@ public class UploadMainPanel extends JPanel
         currOpProgress = createProgressBar();
         
         pPane.add(currOpProgress, cc.xy(1, 1));
-        cancelBtn = createButton(getResourceString("Cancel")); 
+        cancelBtn = createButton(getResourceString("CANCEL")); 
         cancelBtn.setActionCommand(CANCEL_OPERATION);
         pPane.add(cancelBtn, cc.xy(2, 1));
         add(pPane, cc.xywh(4, 2, 3, 1));
@@ -381,7 +381,7 @@ public class UploadMainPanel extends JPanel
         doUploadBtn.setActionCommand(DO_UPLOAD);
         viewUploadBtn   = createButton(getResourceString("WB_UPLOAD_VIEW_BTN"));
         viewUploadBtn.setActionCommand(VIEW_UPLOAD);
-        closeBtn        = createButton(getResourceString("Close")); 
+        closeBtn        = createButton(getResourceString("CLOSE")); 
         closeBtn.setActionCommand(CLOSE_UI);
         undoBtn         = createButton(getResourceString("WB_UPLOAD_UNDO_BTN")); 
         undoBtn.setActionCommand(UNDO_UPLOAD);

@@ -382,7 +382,7 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         panel.add(builder.getPanel(), BorderLayout.CENTER);
 
         builder = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
-        closeCheckerBtn = UIHelper.createButton(getResourceString("Close"));
+        closeCheckerBtn = UIHelper.createButton(getResourceString("CLOSE"));
         builder.add(closeCheckerBtn, cc.xy(1,1));
         panel.add(builder.getPanel(), BorderLayout.SOUTH);
 

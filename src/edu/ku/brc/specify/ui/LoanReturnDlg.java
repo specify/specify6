@@ -207,9 +207,9 @@ public class LoanReturnDlg extends JDialog
                 i++;
             }
             
-            JButton selectAllBtn = createButton(getResourceString("SelectAll"));
+            JButton selectAllBtn = createButton(getResourceString("SELECTALL"));
             okBtn = createButton(getResourceString("OK"));
-            JButton cancel = createButton(getResourceString("Cancel"));
+            JButton cancel = createButton(getResourceString("CANCEL"));
             
             summaryLabel = createLabel("");
             JPanel p = new JPanel(new BorderLayout());
@@ -764,7 +764,7 @@ public class LoanReturnDlg extends JDialog
                     "Loan",
                     null,
                     getResourceString("IAT_LOAN_REVIEW"),
-                    getResourceString("Close"),
+                    getResourceString("CLOSE"),
                     null, // className,
                     null, // idFieldName,
                     false, // isEdit,

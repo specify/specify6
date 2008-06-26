@@ -80,7 +80,7 @@ public class SchemaToolsDlg extends CustomDialog
     @Override
     public void createUI()
     {
-        setOkLabel(getResourceString("Close"));
+        setOkLabel(getResourceString("CLOSE"));
         
         super.createUI();
         

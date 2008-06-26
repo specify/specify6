@@ -104,11 +104,11 @@ public class SaveRecordSetDlg extends JDialog
             panel.add(splitPane, BorderLayout.CENTER);
    
             // Bottom Button UI
-            selectAllBtn      = createButton(getResourceString("SelectAll"));
+            selectAllBtn      = createButton(getResourceString("SELECTALL"));
             deselectAllBtn    = createButton(getResourceString("DeselectAll"));
             addAllBtn         = createButton(getResourceString("AddAll"));
             addAllSelectedBtn = createButton(getResourceString("AddAllSelected"));
-            cancelBtn         = createButton(getResourceString("Cancel"));
+            cancelBtn         = createButton(getResourceString("CANCEL"));
             okBtn             = createButton(getResourceString("OK"));
 
             ButtonBarBuilder btnBuilder = new ButtonBarBuilder();

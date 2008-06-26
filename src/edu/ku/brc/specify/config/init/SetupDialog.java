@@ -95,12 +95,12 @@ public class SetupDialog extends JFrame
         cardPanel = new JPanel(cardLayout);
         
         
-        cancelBtn  = createButton(UIRegistry.getResourceString("Cancel"));
-        helpBtn    = createButton(UIRegistry.getResourceString("Help"));
+        cancelBtn  = createButton(UIRegistry.getResourceString("CANCEL"));
+        helpBtn    = createButton(UIRegistry.getResourceString("HELP"));
         
         JPanel btnBar;
-        backBtn    = createButton("Back");    // XXX I18N
-        nextBtn    = createButton("Next");    // XXX I18N
+        backBtn    = createButton(UIRegistry.getResourceString("BACK"));
+        nextBtn    = createButton(UIRegistry.getResourceString("NEXT"));
         
         HelpMgr.registerComponent(helpBtn, "ConfiguringDatabase");
         CellConstraints cc = new CellConstraints();

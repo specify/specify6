@@ -491,7 +491,9 @@ public class QueryTask extends BaseTask
                 int id = query.getId();
                 if (hash.get(id) == null)
                 {
-                    RecordSet rs = new RecordSet(query.getName(), SpQuery.getClassTableId());
+                    RecordSet rs = new RecordSet();
+                    rs.initialize();
+                    rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
                     rs.addItem(query.getSpQueryId());
                     addToNavBox(rs);
                 }
@@ -954,7 +956,9 @@ public class QueryTask extends BaseTask
             {
                 Object[] obj = (Object[]) iter.next();
                 SpQuery query = (SpQuery) obj[0];
-                RecordSet rs = new RecordSet(query.getName(), SpQuery.getClassTableId());
+                RecordSet rs = new RecordSet();
+                rs.initialize();
+                rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
                 rs.addItem(query.getSpQueryId());
                 addToNavBox(rs);
             }
@@ -1084,7 +1088,7 @@ public class QueryTask extends BaseTask
     
     /**
      * Save it out to persistent storage.
-     * @param recordSet the RecordSet
+     * @param recordSets the RecordSet
      */
     protected void persistRecordSet(final SpQuery query)
     {
@@ -1112,7 +1116,7 @@ public class QueryTask extends BaseTask
     }
     /**
      * Save a record set.
-     * @param recordSet the rs to be saved
+     * @param recordSets the rs to be saved
      */
     public RolloverCommand saveNewQuery(final SpQuery query, final boolean enabled)
     {        
@@ -1125,7 +1129,9 @@ public class QueryTask extends BaseTask
         
         persistRecordSet(query);
         
-        RecordSet rs = new RecordSet(query.getName(), SpQuery.getClassTableId());
+        RecordSet rs = new RecordSet();
+        rs.initialize();
+        rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
         rs.addItem(query.getSpQueryId());
         
         RolloverCommand roc = (RolloverCommand)addToNavBox(rs);
@@ -1208,7 +1214,7 @@ public class QueryTask extends BaseTask
      * This method first checks to see if the boxItem is not null and uses that, if
      * it is null then it looks the box up by name and used that
      * @param boxItem the box item to be deleted
-     * @param recordSet the record set that is "owned" by some UI object that needs to be deleted (used for secondary lookup
+     * @param recordSets the record set that is "owned" by some UI object that needs to be deleted (used for secondary lookup
      */
     protected void deleteQueryFromUI(final NavBoxItemIFace boxItem, final RecordSet rs)
     {
@@ -1221,7 +1227,7 @@ public class QueryTask extends BaseTask
      */
     protected void processQueryCommands(final CommandAction cmdAction)
     {
-        if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSet)
+        if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSetIFace)
         {
             RecordSet recordSet = (RecordSet)cmdAction.getData();
             if (deleteQuery(recordSet))
@@ -1273,7 +1279,9 @@ public class QueryTask extends BaseTask
                cmd.setProperty("file", selectedRep.getFileName());
                if (selectedRep.isRequiresNewConnection())
                {
-                   RecordSet repRS  = new RecordSet(selectedRep.getReportName(), SpReport.getClassTableId());
+                   RecordSet repRS  = new RecordSet();
+                   repRS.initialize();
+                   repRS.set(selectedRep.getReportName(), SpReport.getClassTableId(), RecordSet.GLOBAL);
                    repRS.addItem(selectedRep.getSpReportId());
                    cmd.setProperty("spreport", repRS);
                }

@@ -272,9 +272,9 @@ public class DatabaseLoginPanel extends JPanel
         statusBar = new JStatusBar();
         statusBar.setErrorIcon(IconManager.getIcon("Error",IconManager.IconSize.Std16)); //$NON-NLS-1$
 
-        cancelBtn = createButton(getResourceString("Cancel")); //$NON-NLS-1$
+        cancelBtn = createButton(getResourceString("CANCEL")); //$NON-NLS-1$
         loginBtn  = createButton(getResourceString("Login")); //$NON-NLS-1$
-        helpBtn   = createButton(getResourceString("Help")); //$NON-NLS-1$
+        helpBtn   = createButton(getResourceString("HELP")); //$NON-NLS-1$
         
         forwardImgIcon = IconManager.getIcon("Forward"); //$NON-NLS-1$
         downImgIcon    = IconManager.getIcon("Down"); //$NON-NLS-1$

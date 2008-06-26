@@ -99,7 +99,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 true, 
                 OK_BTN,
                 null);
-        okLabel = getResourceString("Close");
+        okLabel = getResourceString("CLOSE");
     }
 
     /* (non-Javadoc)

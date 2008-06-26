@@ -114,7 +114,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
         }
         panelBuilder.add(textField, cc.xy(1,1));
 
-        browseBtn = createButton(getResourceString("Browse"));
+        browseBtn = createButton(getResourceString("BROWSE"));
         browseBtn.addActionListener(new BrowseAction(textField, doDirsOnly, isForInputArg));
         panelBuilder.add(browseBtn, cc.xy(3,1));
 

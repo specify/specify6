@@ -26,11 +26,11 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -131,24 +131,91 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 ContextMgr.registerService(ti.getTitle(), ti.getTableId(), new CommandAction(RECORD_SET, SAVE_RECORDSET), this, RECORD_SET, getResourceString("CreateRecordSetTT"));    
             }
             
-            // TODO RELEASE Search for the the users or group's RecordSets!
-            DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
-            List<?> recordSets = session.getDataList("From RecordSet where type = 0");
-
             navBox = new DroppableNavBox(title, RECORDSET_FLAVOR, RECORD_SET, SAVE_RECORDSET);
 
-            for (Iterator<?> iter=recordSets.iterator();iter.hasNext();)
+            // TODO RELEASE Search for the the users or group's RecordSets!
+            //List<?> recordSets = session.getDataList("FROM RecordSet where type = 0");
+            SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+            
+            //SQLExecutionProcessor sqlProc = new SQ
+            
+            String sqlStr = "SELECT rs.RecordSetID, Type, rs.Name, TableID, rs.Remarks FROM recordset as rs INNER JOIN specifyuser ON rs.SpecifyUserID = specifyuser.SpecifyUserID" +
+                            " WHERE type = 0 AND specifyuser.specifyUserID = " + spUser.getId();
+            
+            Connection connection = null;
+            Statement stmt        = null;
+            ResultSet rs          = null;
+            try
             {
-                RecordSetIFace recordSet = (RecordSetIFace)iter.next();
+                connection = DBConnection.getInstance().createConnection();
+                stmt       = connection.createStatement();
+                rs         = stmt.executeQuery(sqlStr);
+                
+                while (rs.next())
+                {
+                    int            dbTableId = rs.getInt(4);
+                    DBTableInfo    tableInfo = DBTableIdMgr.getInstance().getInfoById(dbTableId);
+                    RecordSetProxy rsProxy   = new RecordSetProxy(rs.getInt(1),
+                                                                  rs.getByte(2),
+                                                                  rs.getString(3),
+                                                                  dbTableId,
+                                                                  rs.getString(5),
+                                                                  tableInfo.getClassObj());
+                    addToNavBox(rsProxy);
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                
+            } finally
+            {
+                try
+                {
+                    if (rs != null)
+                    {
+                        rs.close();
+                    }
+                    if (stmt != null)
+                    {
+                        stmt.close();
+                    }
+                    if (connection != null)
+                    {
+                        connection.close();
+                    }
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+
+            /*for (Object row : rows)
+            {
+                Object[] data = (Object[])row;
+                
+                Integer     dbTableId = (Integer)data[1];
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(dbTableId);
+                RecordSetProxy rsProxy = new RecordSetProxy((Integer)data[0],
+                                                            (Byte)data[1],
+                                                            (String)data[1],
+                                                            dbTableId,
+                                                            tableInfo.getClassObj(),
+                                                            null);
+                addToNavBox(rsProxy);*/
+                
+                /*RecordSetIFace recordSet = (RecordSetIFace)iter.next();
                 
                 recordSet.getItems(); // loads all lazy object 
                                       // TODO Probably don't want to do this defer it to later when they are used.
                 session.evict(recordSet);
                 
                 addToNavBox(recordSet);
-            }
+                (*/
+            //}
             navBoxes.add(navBox);
-            session.close();
+            //session.close();
 
         }
     }
@@ -294,56 +361,38 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      */
     public void saveNewRecordSet(final RecordSet recordSet)
     {
-        NavBoxItemIFace nbi = addToNavBox(recordSet);
-        
+         
         recordSet.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         recordSet.setOwner(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
-        persistRecordSet(recordSet);
         
+        if (persistRecordSet(recordSet))
+        {
+            RecordSetProxy rsProxy   = new RecordSetProxy(recordSet.getId(),
+                                                          recordSet.getType(),
+                                                          recordSet.getName(),
+                                                          recordSet.getDbTableId(),
+                                                          recordSet.getRemarks(),
+                                                          recordSet.getDataClass());
 
-        NavBoxMgr.getInstance().addBox(navBox);
+            NavBoxItemIFace nbi = addToNavBox(rsProxy);
+            
+            NavBoxMgr.getInstance().addBox(navBox);
 
-        // XXX this is pathetic and needs to be generized
-        navBox.invalidate();
-        navBox.setSize(navBox.getPreferredSize());
-        navBox.doLayout();
-        navBox.repaint();
-        NavBoxMgr.getInstance().invalidate();
-        NavBoxMgr.getInstance().doLayout();
-        NavBoxMgr.getInstance().repaint();
-        UIRegistry.forceTopFrameRepaint();
+            // XXX this is pathetic and needs to be generisized
+            navBox.invalidate();
+            navBox.setSize(navBox.getPreferredSize());
+            navBox.doLayout();
+            navBox.repaint();
+            NavBoxMgr.getInstance().invalidate();
+            NavBoxMgr.getInstance().doLayout();
+            NavBoxMgr.getInstance().repaint();
+            UIRegistry.forceTopFrameRepaint();
 
-        CommandDispatcher.dispatch(new CommandAction("Labels", "NewRecordSet", nbi));
+            CommandDispatcher.dispatch(new CommandAction("Labels", "NewRecordSet", nbi));
+        }
+
     }
     
-    /**
-     * Save it out to persistent storage.
-     * @param recordSet the RecordSet
-     */
-    protected void persistRecordSet(final RecordSetIFace recordSet)
-    {
-        // TODO Add StaleObject Code from FormView
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            Object mergedRS = session.merge(recordSet);
-            
-            session.beginTransaction();
-            session.saveOrUpdate(mergedRS);
-            session.commit();
-            session.flush();
-            
-            FormHelper.updateLastEdittedInfo(mergedRS);
-
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            log.error(ex);
-        }
-        session.close();
-    }
-
     /**
      * Delete a record set
      * @param rs the recordSet to be deleted
@@ -435,7 +484,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      */
     public SubPaneIFace getStarterPane()
     {
-        return starterPane = new SimpleDescPane(name, this, getResourceString("RCT_DROP_BUNDLE_HERE"));
+        return starterPane = new SimpleDescPane(name, this, getResourceString("RecordSetTask.DROP_BUNDLE_HERE"));
     }
 
      /*
@@ -473,7 +522,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     
     /**
      * Checks to see if the recordset AND the NavBtn can be renamed. The scope is the 'user' space.
-     * @param roc the roolover navbtn
+     * @param roc the rollover navbtn
      * @param rs the recordset
      * @param oldName the old name
      * @param newName the new name
@@ -503,14 +552,209 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             persistRecordSet(rs);    
         } else
         {
-            String msg = String.format(UIRegistry.getResourceString("RST_RENAMING_ERROR"), newName);
+            String msg = String.format(UIRegistry.getResourceString("RecordSetTask.RENAMING_ERROR"), newName);
             UIRegistry.getStatusBar().setErrorMessage(msg);
             rs.setName(oldName);
             roc.setLabelText(oldName);
             roc.repaint();
         }
     }
+    
+    /**
+     * Merge two RecordSets removes duplicates and saves the destination RecordSet to the database
+     * @param srcObj the source data (better be a RecordSet)
+     * @param dstObj the destination data (better be a RecordSet)
+     */
+    protected void mergeRecordSets(final Object srcObj, final Object dstObj)
+    {
+        String MERGE_ERR = "RecordSetTask.MERGE_ERROR";
+        
+        if (srcObj != dstObj && 
+            srcObj != null && 
+            dstObj != null && 
+            srcObj instanceof RecordSetIFace && 
+            dstObj instanceof RecordSetIFace)
+        {
+            RecordSetIFace srcRecordSet = srcObj instanceof RecordSetProxy ? ((RecordSetProxy)srcObj).getRecordSet() : (RecordSetIFace)srcObj;
+            RecordSetIFace dstRecordSet = dstObj instanceof RecordSetProxy ? ((RecordSetProxy)dstObj).getRecordSet() : (RecordSetIFace)dstObj;
+            
+            if (srcRecordSet != null && dstRecordSet != null)
+            {
+                // It' just easier to build this up front
+                DBTableInfo srcTI = DBTableIdMgr.getInstance().getInfoById(srcRecordSet.getDbTableId());
+                DBTableInfo dstTI = DBTableIdMgr.getInstance().getInfoById(dstRecordSet.getDbTableId());
+                String mergeErrStr = String.format(getResourceString(MERGE_ERR), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()});
 
+                if (srcRecordSet.getDbTableId().intValue() == dstRecordSet.getDbTableId().intValue())
+                {
+                    int oldSize = dstRecordSet.getNumItems();
+                    Vector<RecordSetItemIFace> dstList  = new Vector<RecordSetItemIFace>(dstRecordSet.getItems());
+                    boolean debug = false;
+                    if (debug)
+                    {
+                        log.debug("Source:");
+                        for (RecordSetItemIFace rsi : srcRecordSet.getItems())
+                        {
+                            log.debug(" "+rsi.getRecordId());
+                        }                
+                        log.debug("\nDest:");
+                        for (RecordSetItemIFace rsi : dstRecordSet.getItems())
+                        {
+                            log.debug(" "+rsi.getRecordId());
+                        }    
+                        log.debug("");
+                    }
+                    for (RecordSetItemIFace rsi : srcRecordSet.getItems())
+                    {
+                        if (Collections.binarySearch(dstList, rsi) < 0)
+                        {
+                            RecordSetItem newrsi = new RecordSetItem(rsi.getRecordId());
+                            dstRecordSet.addItem(newrsi);
+                            newrsi.setRecordSet(dstRecordSet);
+                        }
+                    }
+                    
+                    if (debug)
+                    {
+                        log.debug("");
+                        log.debug("New Dest:");
+                        for (RecordSetItemIFace rsi : dstRecordSet.getItems())
+                        {
+                            log.debug(" "+rsi.getRecordId());
+                        }                
+                        log.debug("");
+                    }
+                    
+                    if (dstRecordSet.getNumItems() > oldSize)
+                    {
+                        boolean success = persistRecordSet(dstRecordSet);
+                        if (success)
+                        {
+                            String msg = String.format(getResourceString("RecordSetTask.MERGE_SUCCESS"), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()});
+                            UIRegistry.displayStatusBarText(msg);
+                        } else
+                        {
+                            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), mergeErrStr, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                } else
+                {
+                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), mergeErrStr, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                }
+            } else
+            {
+                log.error("The src or the dst RecordSet were null src["+srcRecordSet+"]  dst["+dstRecordSet+"]");
+            }
+        }  
+    }
+    
+    //-------------------------------------------------------
+    // static methods for loading and saving a RecordSet
+    //-------------------------------------------------------
+
+    public static RecordSet copyRecordSet(final RecordSetIFace recordSetArg)
+    {
+        RecordSetIFace recordSet = recordSetArg instanceof RecordSetProxy ? ((RecordSetProxy)recordSetArg).getRecordSet() : recordSetArg;
+        if (recordSet instanceof RecordSet)
+        {
+            try
+            {
+                RecordSet rs = (RecordSet)((RecordSet)recordSet).clone(); // shallow clone
+                rs.addAll(recordSet.getOrderedItems());
+                rs.setType(RecordSet.HIDDEN);
+                return rs;
+                
+            } catch (CloneNotSupportedException ex)
+            {
+                throw new RuntimeException(ex);
+            }
+        } else
+        {
+            throw new RuntimeException("copyRecordSet doesn't support class of type ["+recordSet.getClass().getSimpleName()+"]");
+        }
+    }
+    
+    /**
+     * Loads (or makes sure a RecordSet if loaded. This is a necessary because the RS in question
+     * maybe a RecordSetProxy and this returns the actual RecordSet from the database.
+     * @param recordSet the RecordSetIFace which could be proxy.
+     * @return the actual RecordSet from the database.
+     */
+    public static RecordSetIFace loadRecordSet(final RecordSetIFace recordSet)
+    {
+        if (recordSet.getRecordSetId() == null)
+        {
+            throw new RuntimeException("Try to load a RecordSet that has a null id");
+        }
+        
+        if (recordSet instanceof RecordSetProxy)
+        {
+            return ((RecordSetProxy)recordSet).getRecordSet();
+        }
+        
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            RecordSet rs = session.get(RecordSet.class, recordSet.getRecordSetId());
+            return rs;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Save the RecordSet to the Database.
+     * @param recordSet the RecordSetIFace
+     */
+    public static boolean persistRecordSet(final RecordSetIFace recordSet)
+    {
+        if (recordSet instanceof RecordSet)
+        {
+            // TODO Add StaleObject Code from FormView
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                
+                Object mergedRS = recordSet.getRecordSetId() != null ? session.merge(recordSet) : recordSet;
+                
+                session.beginTransaction();
+                FormHelper.updateLastEdittedInfo(mergedRS);
+                session.saveOrUpdate(mergedRS);
+                session.commit();
+                session.flush();
+                
+                return true;
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                log.error(ex);
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+            return false;
+        }
+        throw new RuntimeException("Trying to save object of class["+recordSet.getClass()+"] and it must be RecordSet.");
+    }
+    
     //-------------------------------------------------------
     // PropertyChangeListener Interface
     //-------------------------------------------------------
@@ -540,7 +784,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         if (cmdAction.isAction(SAVE_RECORDSET))
         {
             Object data = cmdAction.getData();
-            if (data instanceof RecordSet)
+            if (data instanceof RecordSetIFace)
             {
                 // If there is only one item in the RecordSet then the User will most likely want it named the same
                 // as the "identity" of the data object. So this goes and gets the Identity name and
@@ -563,7 +807,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                     session.close();
                 }
                 String rsName  = JOptionPane.showInputDialog(UIRegistry.get(UIRegistry.FRAME), 
-                                                             getResourceString("RST_ASKFORNAME"), intialName);
+                                                             getResourceString("RecordSetTask.ASKFORNAME")+":", intialName);
                 if (isNotEmpty(rsName))
                 {
                     RecordSet rs = (RecordSet)data;
@@ -575,14 +819,14 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         } else if (cmdAction.isAction(DELETE_CMD_ACT))
         {
             RecordSetIFace recordSet = null;
-            if (cmdAction.getData() instanceof RecordSet)
+            if (cmdAction.getData() instanceof RecordSetIFace)
             {
                 recordSet = (RecordSetIFace)cmdAction.getData();
                 
             } else if (cmdAction.getData() instanceof RolloverCommand)
             {
                 RolloverCommand roc = (RolloverCommand)cmdAction.getData();
-                if (roc.getData() instanceof RecordSet)
+                if (roc.getData() instanceof RecordSetIFace)
                 {
                     recordSet = (RecordSetIFace)roc.getData();
                 }
@@ -591,8 +835,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             if (recordSet != null)
             {
                 int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
-                        String.format(UIRegistry.getResourceString("RST_CONFIRM_DELETE"), recordSet.getName()),
-                        UIRegistry.getResourceString("RST_CONFIRM_DELETE_TITLE"), 
+                        String.format(UIRegistry.getResourceString("RecordSetTask.CONFIRM_DELETE"), recordSet.getName()),
+                        UIRegistry.getResourceString("RecordSetTask.CONFIRM_DELETE_TITLE"), 
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
                 
                 if (option == JOptionPane.YES_OPTION)
@@ -607,61 +851,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             Object srcObj = cmdAction.getSrcObj();
             Object dstObj = cmdAction.getDstObj();
             
-            if (srcObj != dstObj && 
-                srcObj != null && 
-                dstObj != null && 
-                srcObj instanceof RecordSet && 
-                dstObj instanceof RecordSet)
-            {
-                RecordSetIFace srcRecordSet = (RecordSetIFace)srcObj;
-                RecordSetIFace dstRecordSet = (RecordSetIFace)dstObj;
-                if (srcRecordSet.getDbTableId().intValue() == dstRecordSet.getDbTableId().intValue())
-                {
-                    int oldSize = dstRecordSet.getNumItems();
-                    Vector<RecordSetItemIFace> dstList  = new Vector<RecordSetItemIFace>(dstRecordSet.getItems());
-                    log.debug("Source:");
-                    for (RecordSetItemIFace rsi : srcRecordSet.getItems())
-                    {
-                        log.debug(" "+rsi.getRecordId());
-                    }                
-                    log.debug("\nDest:");
-                    for (RecordSetItemIFace rsi : dstRecordSet.getItems())
-                    {
-                        log.debug(" "+rsi.getRecordId());
-                    }    
-                    log.debug("");
-                    for (RecordSetItemIFace rsi : srcRecordSet.getItems())
-                    {
-                        if (Collections.binarySearch(dstList, rsi) < 0)
-                        {
-                            RecordSetItem newrsi = new RecordSetItem(rsi.getRecordId());
-                            dstRecordSet.addItem(newrsi);
-                            newrsi.setRecordSet(dstRecordSet);
-                        }
-                    }
-                    log.debug("");
-                    log.debug("New Dest:");
-                    for (RecordSetItemIFace rsi : dstRecordSet.getItems())
-                    {
-                        log.debug(" "+rsi.getRecordId());
-                    }                
-                    log.debug("");
-                    
-                    if (dstRecordSet.getNumItems() > oldSize)
-                    {
-                        persistRecordSet(dstRecordSet);
-                    }
-                } else
-                {
-                    DBTableInfo srcTI = DBTableIdMgr.getInstance().getInfoById(srcRecordSet.getDbTableId());
-                    DBTableInfo dstTI = DBTableIdMgr.getInstance().getInfoById(dstRecordSet.getDbTableId());
-                    JOptionPane.showMessageDialog(null, 
-                        String.format(getResourceString("RST_MERGE_ERROR"), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()}), 
-                            getResourceString("Error"), 
-                            JOptionPane.ERROR_MESSAGE);
-
-                }
-            }
+            mergeRecordSets(srcObj, dstObj);
         }
     }
 

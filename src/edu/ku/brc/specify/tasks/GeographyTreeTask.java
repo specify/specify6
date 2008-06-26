@@ -78,7 +78,7 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
      * @param list
      */
     protected void showCollectionObjects(final TreeTableViewer<Geography, GeographyTreeDef, GeographyTreeDefItem> ttv,
-                                    final JList list)
+                                         final JList list)
     {
         Geography geography = ttv.getSelectedNode(list);
 
@@ -131,7 +131,9 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
      */
     public void exectionDone(SQLExecutionProcessor process, ResultSet resultSet)
     {
-        final RecordSet recordSet = new RecordSet("TTV.showCollectionObjects", CollectionObject.getClassTableId());
+        RecordSet recordSet = new RecordSet();
+        recordSet.initialize();
+        recordSet.set(UIRegistry.getResourceString("TTV.showCollectionObjects"), CollectionObject.getClassTableId(), RecordSet.GLOBAL);
         try
         {
             while (resultSet.next())
@@ -145,12 +147,13 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
             ex.printStackTrace();
         }
         
+        final RecordSet rs = recordSet;
         UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_CO_FORM"));
         // This is needed so the StatusBar gets updated
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-                CommandDispatcher.dispatch(new CommandAction(DataEntryTask.DATA_ENTRY, DataEntryTask.EDIT_DATA, recordSet));
+                CommandDispatcher.dispatch(new CommandAction(DataEntryTask.DATA_ENTRY, DataEntryTask.EDIT_DATA, rs));
             }
         });
     }

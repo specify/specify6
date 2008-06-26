@@ -650,7 +650,7 @@ public class InteractionsTask extends BaseTask
     /**
      * Creates a new loan from a RecordSet.
      * @param fileNameArg the filename of the report (Invoice) to use (can be null)
-     * @param recordSet the recordset to use to create the loan
+     * @param recordSets the recordset to use to create the loan
      */
     protected void printLoan(final String fileNameArg, final Object data)
     {
@@ -714,7 +714,7 @@ public class InteractionsTask extends BaseTask
         try
         {
             session.attach(infoRequest);
-            rs = infoRequest.getRecordSet();
+            rs = infoRequest.getRecordSets().iterator().next();
             
         } catch (Exception ex)
         {
@@ -768,7 +768,7 @@ public class InteractionsTask extends BaseTask
     
     /**
      * Creates a new loan from a RecordSet.
-     * @param recordSet the recordset to use to create the loan
+     * @param recordSets the recordset to use to create the loan
      */
     @SuppressWarnings("unchecked")
     protected void createNewLoan(final InfoRequest infoRequest, final RecordSetIFace recordSetArg)
@@ -785,7 +785,9 @@ public class InteractionsTask extends BaseTask
                     CommandActionForDB cmdAction = (CommandActionForDB)obj;
                     int tableId = cmdAction.getTableId();
                     int id      = cmdAction.getId();
-                    RecordSet rs = new RecordSet(nbi.getTitle(), tableId);
+                    RecordSet rs = new RecordSet();
+                    rs.initialize();
+                    rs.set(nbi.getTitle(), tableId, RecordSet.GLOBAL);
                     rs.addItem(id);
                     rsList.add(rs);
                 }
@@ -832,7 +834,7 @@ public class InteractionsTask extends BaseTask
                         InfoRequest infoReq = session.get(InfoRequest.class, item.getRecordId().intValue());
                         if (infoReq != null)
                         {
-                            createNewLoan(infoReq, infoReq.getRecordSet());
+                            createNewLoan(infoReq, infoReq.getRecordSets().iterator().next());
                             
                         } else
                         {
@@ -993,7 +995,7 @@ public class InteractionsTask extends BaseTask
      * Creates a new InfoRequest from a RecordSet.
      * @param recordSet the recordSet to use to create the InfoRequest
      */
-    protected void createInfoRequest(final RecordSetIFace recordSet)
+    protected void createInfoRequest(final RecordSetIFace recordSetArg)
     {
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(InfoRequest.class.getSimpleName());
         
@@ -1001,24 +1003,29 @@ public class InteractionsTask extends BaseTask
 
         InfoRequest infoRequest = new InfoRequest();
         infoRequest.initialize();
-        if (recordSet != null)
-        {
-            infoRequest.setRecordSet(recordSet);
-            
-        } else
-        {
-            infoRequest.setRecordSet(askForRecordSet(CollectionObject.getClassTableId()));
-        }
         
-        if (infoRequest.getRecordSet() != null &&
-            infoRequest.getRecordSet().getItems() != null &&
-            infoRequest.getRecordSet().getNumItems() > 0)
+        RecordSetIFace recordSetFromDB = recordSetArg == null ? askForRecordSet(CollectionObject.getClassTableId()) : recordSetArg;
+        RecordSet      recordSet       = null;
+        if (recordSetFromDB != null)
         {
-            createFormPanel(name, view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT, null);
+            recordSet = RecordSetTask.copyRecordSet(recordSetFromDB);
+            if (recordSet == null)
+            {
+                UIRegistry.showLocalizedError("ERROR_COPYING_RS");
+                return;
+            }
+            recordSet.setName(recordSet.getName() + "_IT");
             
-        } else
-        {
-            UIRegistry.displayErrorDlgLocalized("ERROR_MISSING_RS_OR_NOITEMS");  
+            infoRequest.addReference(recordSet, "recordSets");
+            
+            if (recordSet.getOrderedItems() != null && recordSet.getNumItems() > 0)
+            {
+                createFormPanel(name, view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT, null);
+                
+            } else
+            {
+                UIRegistry.displayErrorDlgLocalized("ERROR_MISSING_RS_OR_NOITEMS");  
+            }
         }
     }
 
@@ -1045,7 +1052,7 @@ public class InteractionsTask extends BaseTask
             
             if (printLoan == null)
             {
-                Object[] options = {getResourceString("CreateLoanInvoice"), getResourceString("Cancel")};
+                Object[] options = {getResourceString("CreateLoanInvoice"), getResourceString("CANCEL")};
                 int n = JOptionPane.showOptionDialog(UIRegistry.get(UIRegistry.FRAME),
                                                     String.format(getResourceString("CreateLoanInvoiceForNum"), new Object[] {(loan.getLoanNumber())}),
                                                     getResourceString("CreateLoanInvoice"),
@@ -1473,14 +1480,14 @@ public class InteractionsTask extends BaseTask
              
             if (ContextMgr.getCurrentContext() == this)
             {
-                if (dstObj instanceof RecordSet)
+                if (dstObj instanceof RecordSetIFace)
                 {
-                    RecordSet rs = (RecordSet)dstObj;
+                    RecordSetIFace rs = (RecordSetIFace)dstObj;
                     if (rs.getDbTableId() == Loan.getClassTableId())
                     {
                         DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId());
                         
-                        super.createFormPanel(ti.getTitle(), "view", (RecordSetIFace)rs, IconManager.getIcon(ti.getShortClassName(), IconManager.IconSize.Std16));
+                        super.createFormPanel(ti.getTitle(), "view", rs, IconManager.getIcon(ti.getShortClassName(), IconManager.IconSize.Std16));
                     }
                 }
             }
@@ -1552,10 +1559,10 @@ public class InteractionsTask extends BaseTask
                 }
             }
             
-        } else if (cmdAction.isAction(INFO_REQ_MESSAGE) && cmdAction.getData() instanceof RecordSet)
+        } else if (cmdAction.isAction(INFO_REQ_MESSAGE) && cmdAction.getData() instanceof RecordSetIFace)
         {
             Object data = cmdAction.getData();
-            if (data instanceof RecordSet)
+            if (data instanceof RecordSetIFace)
             {
                 createInfoRequest((RecordSetIFace)data);
             }

@@ -578,7 +578,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected void createEditFrame(final boolean isNewObject)
     {
         String dlgName = StringUtils.isNotEmpty(displayDlgName) ? displayDlgName : tableInfo.getNewObjDialog();
-        String closeBtnTitle = getResourceString("Save");
+        String closeBtnTitle = getResourceString("SAVE");
         frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(this),
                                                                    dlgName,
                                                                    frameTitle,

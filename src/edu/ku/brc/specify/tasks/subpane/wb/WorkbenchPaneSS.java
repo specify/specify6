@@ -327,7 +327,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
 
-        saveBtn = createButton(getResourceString("Save"));
+        saveBtn = createButton(getResourceString("SAVE"));
         saveBtn.setToolTipText(String.format(getResourceString("WB_SAVE_DATASET_TT"), new Object[] {workbench.getName()}));
         saveBtn.setEnabled(false);
         saveBtn.addActionListener(new ActionListener()
@@ -1473,8 +1473,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         };
         dlg.setModal(false);
         dlg.setSelectedIndex(0);
-        dlg.setOkLabel(getResourceString("Apply"));
-        dlg.setCancelLabel(getResourceString("Close"));
+        dlg.setOkLabel(getResourceString("APPLY"));
+        dlg.setCancelLabel(getResourceString("CLOSE"));
         dlg.setVisible(true);
     }
     
@@ -2694,7 +2694,9 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         if (recordSet == null)
         {
-            recordSet = new RecordSet(workbench.getName(), Workbench.getClassTableId());
+            recordSet = new RecordSet();
+            recordSet.initialize();
+            recordSet.set(workbench.getName(), Workbench.getClassTableId(), RecordSet.GLOBAL);
             recordSet.addItem(workbench.getWorkbenchId());
         }
         return recordSet;

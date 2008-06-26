@@ -1751,7 +1751,7 @@
                     <cell type="field" id="3" name="remarks" uitype="textarea" cols="40" colspan="6"/>
                 </row>
                 <row>
-                    <cell type="subview" id="4" viewname="InfoRequestColObj" name="recordSet" colspan="8"/>
+                    <cell type="subview" id="4" viewname="InfoRequestColObj" name="recordSets" colspan="8"/>
                 </row>
                 <row>
                     <cell type="field" uitype="checkbox" id="5" name="sendEMail" label="Send EMail on Save" ignore="true" default="true" colspan="6"/>

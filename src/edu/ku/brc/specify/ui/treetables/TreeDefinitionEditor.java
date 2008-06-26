@@ -429,7 +429,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         Frame parentFrame = (Frame)UIRegistry.get(UIRegistry.FRAME);
         String displayName = "NODE_EDIT_DISPLAY_NAME";
         boolean isEdit = true;
-        String closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
+        String closeBtnText = (isEdit) ? getResourceString("SAVE") : getResourceString("CLOSE");
         String className = defItem.getClass().getName();
         DBTableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)defItem).getTableId());
         String idFieldName = nodeTableInfo.getIdFieldName();
@@ -687,7 +687,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         Frame parentFrame = (Frame)UIRegistry.get(UIRegistry.FRAME);
         String displayName = "NODE_EDIT_DISPLAY_NAME";
         boolean isEdit = true;
-        String closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
+        String closeBtnText = (isEdit) ? getResourceString("SAVE") : getResourceString("CLOSE");
         String className = newItem.getClass().getName();
         DBTableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)newItem).getTableId());
         String idFieldName = nodeTableInfo.getIdFieldName();
@@ -1079,7 +1079,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         Frame   parentFrame  = (Frame)UIRegistry.get(UIRegistry.FRAME);
         String  displayName  = "NODE_EDIT_DISPLAY_NAME";
         boolean isEdit       = true;
-        String  closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
+        String  closeBtnText = (isEdit) ? getResourceString("SAVE") : getResourceString("CLOSE");
         String  className    = def.getClass().getName();
         DBTableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)def).getTableId());
         String  idFieldName  = nodeTableInfo.getIdFieldName();

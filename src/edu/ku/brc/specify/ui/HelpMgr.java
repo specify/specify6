@@ -181,7 +181,7 @@ public class HelpMgr
                 public void actionPerformed(ActionEvent e)
                 {
                     JOptionPane.showConfirmDialog(null, getResourceString("HelpSystemNotLocated"),
-                            getResourceString("Help"), JOptionPane.CLOSED_OPTION);
+                            getResourceString("HELP"), JOptionPane.CLOSED_OPTION);
                 }
             });
         }
@@ -220,7 +220,7 @@ public class HelpMgr
                 public void actionPerformed(ActionEvent e)
                 {
                     JOptionPane.showConfirmDialog(null, getResourceString("HelpSystemNotLocated"),
-                            getResourceString("Help"), JOptionPane.CLOSED_OPTION);
+                            getResourceString("HELP"), JOptionPane.CLOSED_OPTION);
                 }
             });
         }
@@ -270,7 +270,7 @@ public class HelpMgr
     static private void helpless()
     {
         JOptionPane.showConfirmDialog(null, getResourceString("NoHelpForContext"),
-                getResourceString("Help"), JOptionPane.CLOSED_OPTION);
+                getResourceString("HELP"), JOptionPane.CLOSED_OPTION);
 
     }
 

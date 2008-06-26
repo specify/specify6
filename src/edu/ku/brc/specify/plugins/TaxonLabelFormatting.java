@@ -225,7 +225,7 @@ public class TaxonLabelFormatting extends UIPluginBase
             middlePanel.add(unmapBtn, cc.xy(1, 4));
             
             PanelBuilder rwPanel = new PanelBuilder(new FormLayout("p, 2px, f:p:g", "p"));
-            refWorkLabel = createLabel(getResourceString("None"));
+            refWorkLabel = createLabel(getResourceString("NONE"));
             rwPanel.add(createLabel(getResourceString("REFERENCEWORK")+":"), cc.xy(1, 1));
             rwPanel.add(refWorkLabel, cc.xy(3, 1));
             

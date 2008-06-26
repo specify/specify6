@@ -69,7 +69,7 @@ public class ListPopupDialog extends JDialog
 		add(lbl,BorderLayout.NORTH);
 		
 		buttonPanel  = new JPanel(new FlowLayout());
-		cancelButton = createButton(getResourceString("Cancel"));
+		cancelButton = createButton(getResourceString("CANCEL"));
 
 		cancelButton.addActionListener(new ActionListener()
 		{

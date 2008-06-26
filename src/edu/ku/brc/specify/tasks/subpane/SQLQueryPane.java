@@ -136,7 +136,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
             
-            selectAllBtn   = createButton(getResourceString("SelectAll"));
+            selectAllBtn   = createButton(getResourceString("SELECTALL"));
             deselectAllBtn = createButton(getResourceString("DeselectAll"));
             saveToRSBtn    = createButton(getResourceString("SaveToRecordSet"));
             

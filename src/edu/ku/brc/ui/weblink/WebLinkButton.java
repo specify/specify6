@@ -13,7 +13,6 @@ import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
-import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,7 +21,6 @@ import java.net.URISyntaxException;
 import java.util.Hashtable;
 import java.util.Properties;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -207,7 +205,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
                     y += 2;
                 }
                 
-                pb.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+                pb.setDefaultDialogBorder();
                 
                 return new CustomDialog((Frame)getTopWindow(), 
                                         getResourceString("WBLK_PROMPT_DATA"),
@@ -343,7 +341,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
      */
-    public void initialize(Properties properties, boolean isViewMode)
+    public void initialize(final Properties properties, final boolean isViewMode)
     {
         urlStr = properties.getProperty("url");
         
@@ -374,8 +372,10 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
             }
         }
         
-        setLayout(new BorderLayout());
-        add(launchBtn, BorderLayout.CENTER);
+        PanelBuilder    pb     = new PanelBuilder(new FormLayout("p,f:p:g", "p"), this); //$NON-NLS-1$ //$NON-NLS-2$
+        CellConstraints cc     = new CellConstraints();
+        
+        pb.add(launchBtn, cc.xy(1,1));
         
         /*if (!isViewMode)
         {

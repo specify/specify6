@@ -99,8 +99,6 @@ import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.datamodel.SpPrincipal;
-//import edu.ku.brc.specify.datamodel.UserPermission;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
@@ -1884,23 +1882,23 @@ public class DataBuilder
                                                 final String email,
                                                 final Calendar requestDate,
                                                 final Calendar replyDate,
-                                                final RecordSetIFace recordSet,
+                                                final RecordSet recordSet,
                                                 final Agent agent)
     {
-        InfoRequest inforequest = new InfoRequest();
-        inforequest.initialize();
-        inforequest.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        inforequest.setEmail(email);
-        inforequest.setAgent(agent);
-        inforequest.setFirstName(firstName);
-        inforequest.setLastName(lastName);
-        inforequest.setInfoRequestID(infoRequestID);
-        inforequest.setInstitution(institution);
-        inforequest.setRequestDate(requestDate);
-        inforequest.setReplyDate(replyDate);
-        inforequest.setRecordSet(recordSet);
-        persist(inforequest);
-        return inforequest;
+        InfoRequest infoRequest = new InfoRequest();
+        infoRequest.initialize();
+        infoRequest.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        infoRequest.setEmail(email);
+        infoRequest.setAgent(agent);
+        infoRequest.setFirstName(firstName);
+        infoRequest.setLastName(lastName);
+        infoRequest.setInfoRequestID(infoRequestID);
+        infoRequest.setInstitution(institution);
+        infoRequest.setRequestDate(requestDate);
+        infoRequest.setReplyDate(replyDate);
+        infoRequest.addReference(recordSet, "recordSets");
+        persist(infoRequest);
+        return infoRequest;
     }
 
     public static Journal createJournal(final String journalName, final String journalAbbreviation)

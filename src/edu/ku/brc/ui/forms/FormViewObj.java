@@ -448,7 +448,7 @@ public class FormViewObj implements Viewable,
         {
             if (!hideSaveBtn)
             {
-                saveControl = createButton(UIRegistry.getResourceString("Search"), 
+                saveControl = createButton(UIRegistry.getResourceString("SEARCH"), 
                         IconManager.getImage("Search", IconManager.IconSize.Std16));/*
                 {
                     public void setEnabled(boolean enabled)
@@ -633,7 +633,7 @@ public class FormViewObj implements Viewable,
      */
     protected void addSaveBtn()
     {
-        JButton saveBtn = createButton(UIRegistry.getResourceString("Save"));/*
+        JButton saveBtn = createButton(UIRegistry.getResourceString("SAVE"));/*
         {
             public void setEnabled(boolean enabled)
             {
@@ -1025,7 +1025,7 @@ public class FormViewObj implements Viewable,
                 super.setVisible(visible);
             }
         };
-        dialog.setOkLabel(getResourceString("Close"));
+        dialog.setOkLabel(getResourceString("CLOSE"));
         UIHelper.centerAndShow(dialog);
         dialog.dispose();
     }
@@ -1441,14 +1441,14 @@ public class FormViewObj implements Viewable,
             {
                 dlgOptions = JOptionPane.YES_NO_OPTION;
                 optionLabels = new String[] {getResourceString("DiscardChangesBtn"), 
-                                             getResourceString("Cancel")};
+                                             getResourceString("CANCEL")};
                 defaultRV = JOptionPane.NO_OPTION;
             } else
             {
                 dlgOptions = JOptionPane.YES_NO_CANCEL_OPTION;
                 optionLabels = new String[] {getResourceString("SaveChangesBtn"), 
                                              getResourceString("DiscardChangesBtn"), 
-                                             getResourceString("Cancel")};
+                                             getResourceString("CANCEL")};
                 defaultRV = JOptionPane.CANCEL_OPTION;
             }
             
@@ -2407,7 +2407,7 @@ public class FormViewObj implements Viewable,
     {
         boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
         
-        Object[] delBtnLabels = {getResourceString(addSearch ? "Remove" : "Delete"), getResourceString("Cancel")};
+        Object[] delBtnLabels = {getResourceString(addSearch ? "Remove" : "Delete"), getResourceString("CANCEL")};
         String title = dataObj instanceof FormDataObjIFace ? ((FormDataObjIFace)dataObj).getIdentityTitle() : tableInfo.getTitle();
         
         int rv = JOptionPane.showOptionDialog(null, UIRegistry.getLocalizedMessage(addSearch ? "ASK_REMOVE" : "ASK_DELETE", title),
@@ -3255,7 +3255,10 @@ public class FormViewObj implements Viewable,
             if (recordSet == null)
             {
                 // XXX This is VERY BAD, it needs it's own factory, I thought I had one already.
-                recordSet = new RecordSet("Temp", tableInfo.getTableId());
+                RecordSet rs = new RecordSet();
+                rs.initialize();
+                rs.set("Temp", tableInfo.getTableId(), RecordSet.GLOBAL);
+                recordSet = rs;
             }
             recordSetItemList.addAll(availableIdList);
             recordSet.addAll(availableIdList);
@@ -3281,7 +3284,7 @@ public class FormViewObj implements Viewable,
                 
                 if (availableIdList.size() != rs.getNumItems())
                 {
-                    UIRegistry.displayLocalizedStatusBarText("NOT_ALL_RECS_FOUND");
+                    UIRegistry.displayLocalizedStatusBarText("FormViewObj.NOT_ALL_RECS_FOUND");
                 }
                 
                 if (recordSet == null)
@@ -3292,6 +3295,7 @@ public class FormViewObj implements Viewable,
                     /////////////////////////////////////////////////////////////////////////////////////
                     /////////////////////////////////////////////////////////////////////////////////////
                     recordSet = new RecordSet();
+                    ((RecordSet)recordSet).initialize();
                 }
                 
                 recordSetItemList = new Vector<RecordSetItemIFace>(availableIdList.size());
@@ -4981,6 +4985,11 @@ public class FormViewObj implements Viewable,
         if (formValidator != null && formValidator.hasChanged())
         {
             getDataFromUI();
+        }
+        
+        if (list.size() == 0)
+        {
+            return;
         }
         
         Object listDO = list.get(newIndex);

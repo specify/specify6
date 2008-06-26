@@ -302,7 +302,9 @@ public class ReportsBaseTask extends BaseTask
                     {
                         tblContext = new Integer(rep.getQuery().getContextTableId());
                     }
-                    repRS  = new RecordSet(rep.getAppResource().getDescription(), SpReport.getClassTableId());
+                    repRS  = new RecordSet();
+                    repRS.initialize();
+                    repRS.set(rep.getAppResource().getDescription(), SpReport.getClassTableId(), RecordSet.GLOBAL);
                     repRS.addItem(rep.getId());
                     cmdAction.setProperty("spreport", repRS);
                 }
@@ -374,7 +376,7 @@ public class ReportsBaseTask extends BaseTask
      * Performs a command (to create a label).
      * @param labelName the name of lable (the file name)
      * @param labelTitle the localized title to be displayed as the tab title
-     * @param recordSet the recordSet to be turned into labels
+     * @param recordSets the recordSet to be turned into labels
      * @param params parameters for the report
      * @param originatingTask the Taskable requesting the the labels be made
      * @param paneIcon the icon of the pane(if it is null then it uses the Task's icon)
@@ -412,7 +414,7 @@ public class ReportsBaseTask extends BaseTask
         //
         if (recordSet.getNumItems() > 200) // XXX Pref
         {
-            Object[] options = {getResourceString("Create_New_Report"), getResourceString("Cancel")};
+            Object[] options = {getResourceString("Create_New_Report"), getResourceString("CANCEL")};
             int n = JOptionPane.showOptionDialog(UIRegistry.get(UIRegistry.FRAME),
                                                 String.format(getResourceString("LotsOfLabels"), new Object[] {(recordSet.getNumItems())}),
                                                 getResourceString("LotsOfLabelsTitle"),
@@ -672,7 +674,7 @@ public class ReportsBaseTask extends BaseTask
             params = UIHelper.parseProperties(paramList);
         }
         
-        if (cmdAction.getData() instanceof RecordSet)
+        if (cmdAction.getData() instanceof RecordSetIFace)
         {
             RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
             
@@ -788,9 +790,9 @@ public class ReportsBaseTask extends BaseTask
             {
                 openIReportEditor(cmdAction);
             }
-            if (cmdAction.getData() instanceof RecordSet)
+            if (cmdAction.getData() instanceof RecordSetIFace)
             {
-                RecordSet rs = (RecordSet)cmdAction.getData();
+                RecordSetIFace rs = (RecordSetIFace)cmdAction.getData();
                 if (rs.getDbTableId() != null && rs.getDbTableId() == SpReport.getClassTableId() || cmdAction.getProperty("spreport") != null)
                 {
                     runReport(cmdAction);
@@ -822,14 +824,14 @@ public class ReportsBaseTask extends BaseTask
         } else if (cmdAction.isAction(DELETE_CMD_ACT))
         {
             RecordSetIFace recordSet = null;
-            if (cmdAction.getData() instanceof RecordSet)
+            if (cmdAction.getData() instanceof RecordSetIFace)
             {
                 recordSet = (RecordSetIFace)cmdAction.getData();
                 
             } else if (cmdAction.getData() instanceof RolloverCommand)
             {
                 RolloverCommand roc = (RolloverCommand)cmdAction.getData();
-                if (roc.getData() instanceof RecordSet)
+                if (roc.getData() instanceof RecordSetIFace)
                 {
                     recordSet = (RecordSetIFace)roc.getData();
                 }
@@ -938,7 +940,7 @@ public class ReportsBaseTask extends BaseTask
     }
     
     /**
-     * @param recordSet
+     * @param recordSets
      */
     protected void deleteReportFromUI(final String btnName)
     {
@@ -1234,7 +1236,7 @@ public class ReportsBaseTask extends BaseTask
         SpReport toRun = null;
         CommandAction runAction = null;
         CommandAction repAction = null;
-        RecordSet rs = null;
+        RecordSetIFace rs = null;
         if (cmdAction.isAction(RUN_REPORT)) //RunReport was clicked or dropped on
         {
             runAction = cmdAction;
@@ -1252,9 +1254,9 @@ public class ReportsBaseTask extends BaseTask
             {
                 runAction = (CommandAction)data;
             }
-            else if (data instanceof RecordSet)
+            else if (data instanceof RecordSetIFace)
             {
-                rs = (RecordSet)data;
+                rs = (RecordSetIFace)data;
             }
         }
         

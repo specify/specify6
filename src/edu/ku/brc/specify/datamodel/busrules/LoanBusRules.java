@@ -48,9 +48,7 @@ import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.validation.UIValidatable;
-import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
 import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
-import edu.ku.brc.ui.forms.validation.ValTextField;
 
 /**
  * Business rules for validating a Loan.

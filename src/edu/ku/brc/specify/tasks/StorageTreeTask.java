@@ -18,6 +18,7 @@ import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -94,36 +95,48 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
             return;
         }
 
-        final RecordSet recordSet = new RecordSet("TTV.showCollectionObjects", CollectionObject.getClassTableId());
+        RecordSet recordSet = new RecordSet();
+        recordSet.initialize();
+        recordSet.set(UIRegistry.getResourceString("TTV.showCollectionObjects"), CollectionObject.getClassTableId(), RecordSet.GLOBAL);
+
         Hashtable<Integer, Boolean> duplicateHash = new Hashtable<Integer, Boolean>();
         
+        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+        Integer    colMemId   = collection != null ? collection.getCollectionId() : null;
+        
         // Get the Collection Objects from the Preparations
-        for(Preparation prep : storage.getPreparations())
+        for (Preparation prep : storage.getPreparations())
         {
-            duplicateHash.put(prep.getCollectionObject().getId(), true);
+            if (colMemId == null || prep.getCollectionMemberId().equals(colMemId))
+            {
+                duplicateHash.put(prep.getCollectionObject().getId(), true);
+            }
         }
         
         // Get the Collection Objects from the Containers
-        for(Container container : storage.getContainers())
+        for (Container container : storage.getContainers())
         {
             for (CollectionObject co : container.getCollectionObjects())
             {
-                duplicateHash.put(co.getId(), true);
+                if (colMemId == null || co.getCollectionMemberId().equals(colMemId))
+                {
+                    duplicateHash.put(co.getId(), true);
+                }
             }
         }
-
 
         for(Integer id : duplicateHash.keySet())
         {
             recordSet.addItem(id);
         }
 
+        final RecordSet rs = recordSet;
         UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_CO_FORM"));
         // This is needed so the StatusBar gets updated
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-                CommandDispatcher.dispatch(new CommandAction(DataEntryTask.DATA_ENTRY, DataEntryTask.EDIT_DATA, recordSet));
+                CommandDispatcher.dispatch(new CommandAction(DataEntryTask.DATA_ENTRY, DataEntryTask.EDIT_DATA, rs));
             }
         });
 

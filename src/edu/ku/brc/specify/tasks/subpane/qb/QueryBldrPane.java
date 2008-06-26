@@ -84,12 +84,12 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.dbsupport.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
@@ -390,7 +390,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         outer.add(saveBtn, cc.xy(5, 1));
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(outer.getPanel(), BorderLayout.EAST);
-        JButton helpBtn = new JButton(UIRegistry.getResourceString("Help"));
+        JButton helpBtn = createButton(UIRegistry.getResourceString("HELP"));
         if (ContextMgr.getCurrentContext() != null)
         {
             HelpMgr.registerComponent(helpBtn, ContextMgr.getCurrentContext().getName());
@@ -559,8 +559,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param keysToRetrieve
      * @return the hql paired with a list of parameters/objects to assign.
      */
-    protected static Pair<String, List<Pair<String, Object>>> buildHQL(final TableQRI rootTable, boolean distinct, final Vector<QueryFieldPanel> qfps,
-                              final TableTree tblTree, final RecordSet keysToRetrieve) throws ParseException
+    protected static Pair<String, List<Pair<String, Object>>> buildHQL(final TableQRI rootTable, 
+                                                                       final boolean distinct, 
+                                                                       final Vector<QueryFieldPanel> qfps,
+                                                                       final TableTree tblTree, 
+                                                                       final RecordSetIFace keysToRetrieve) throws ParseException
     {
         if (qfps.size() == 0)
             return null;
@@ -740,7 +743,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             criteriaStr.append(tableAbbreviator.getAbbreviation(rootTable.getTableTree()) + "." 
                     + rootTable.getTableInfo().getIdFieldName() + " in(");
             boolean comma = false;
-            for (RecordSetItemIFace item : keysToRetrieve.getRecordSetItems())
+            for (RecordSetItemIFace item : keysToRetrieve.getOrderedItems())
             {
                 if (comma)
                 {
@@ -1084,7 +1087,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * 
      * Loads and runs the query that acts as data source for report. Then runs report.
      */
-    public static void runReport(final SpReport report, final String title, final RecordSet rs)
+    public static void runReport(final SpReport report, final String title, final RecordSetIFace rs)
     {
         final TableTree tblTree = readTables();
         final Hashtable<String, TableTree> ttHash = QueryBldrPane.buildTableTreeHash(tblTree);

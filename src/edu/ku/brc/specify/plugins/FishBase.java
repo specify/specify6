@@ -93,7 +93,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(this),
                                                                    "FishBase",
                                                                    "Fish Base Information",
-                                                                   getResourceString("Close"),
+                                                                   getResourceString("CLOSE"),
                                                                    false,
                                                                    MultiView.NO_OPTIONS,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME); // false means View mode

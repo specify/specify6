@@ -174,7 +174,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(this),
                                                                displayInfoDialogName,
                                                                frameTitle,
-                                                               getResourceString("Close"), //$NON-NLS-1$
+                                                               getResourceString("CLOSE"), //$NON-NLS-1$
                                                                false,  // false means View mode
                                                                MultiView.NO_OPTIONS | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE,
                                                                ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME);

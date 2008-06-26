@@ -28,6 +28,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -66,10 +67,11 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 @org.hibernate.annotations.Table(appliesTo="recordset", indexes =
     {   @Index (name="RecordSetNameIDX", columnNames={"name"})
     })
-public class RecordSet extends DataModelObjBase implements java.io.Serializable, RecordSetIFace 
+public class RecordSet extends DataModelObjBase implements java.io.Serializable, RecordSetIFace, Cloneable
 {
     public final static Byte GLOBAL    = 0;
     public final static Byte WB_UPLOAD = 1;
+    public final static Byte HIDDEN    = 2;
        
     // Fields
      protected Integer                 recordSetId;
@@ -84,7 +86,7 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      protected Integer                 allPermissionLevel;
      protected SpPrincipal             group;
      
-     protected Set<InfoRequest>        infoRequests;
+     protected InfoRequest             infoRequest;
      
      // Transient
      protected Vector<RecordSetItemIFace> items = null;
@@ -98,39 +100,9 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     /** default constructor */
     public RecordSet() 
     {
-        initialize();
-    }
-
-    /** constructor with id */
-    public RecordSet(Integer recordSetId) 
-    {
-        initialize();
-        this.recordSetId = recordSetId;
-    }
-
-    /** constructor with id */
-    public RecordSet(final String name, final int dbTableId) 
-    {
-        initialize();
-        this.name = name;
-        this.dbTableId = dbTableId;
-        this.type = GLOBAL;
-    }
-
-    /** constructor with name, id, type */
-    public RecordSet(final String name, final int dbTableId, final Byte type) 
-    {
-        initialize();
-        this.name      = name;
-        this.dbTableId = dbTableId;
-        this.dbTableId = dbTableId;
-        this.type      = type;
     }
 
     // Initializer
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.RecordSet#initialize()
-     */
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#initialize()
      */
@@ -138,20 +110,32 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     public void initialize()
     {
         super.init();
-        recordSetId = null;
-        //type        = GLOBAL;
-        //name = null;
-        //tableId = null;
-        remarks = null;
+        recordSetId          = null;
+        type                 = GLOBAL;
+        name                 = null;
+        dbTableId            = null;
+        remarks              = null;
         ownerPermissionLevel = null;
         groupPermissionLevel = null;
         allPermissionLevel   = null;
         recordSetItems       = new HashSet<RecordSetItem>();
         specifyUser          = null;
         group                = null;
-        infoRequests         = new HashSet<InfoRequest>();
+        infoRequest          = null;
     }
     // End Initializer
+    
+    /**
+     * @param nameArg
+     * @param dbTableIdArg
+     * @param typeArg
+     */
+    public void set(final String nameArg, final int dbTableIdArg, final Byte typeArg)
+    {
+        this.name      = nameArg;
+        this.dbTableId = dbTableIdArg;
+        this.type      = typeArg;
+    }
 
     // Property accessors
 
@@ -271,23 +255,20 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     }
 
     /**
-     * @return the infoRequests
+     * 
      */
-    //@OneToMany(cascade = {}, targetEntity=RecordSetItem.class, fetch = FetchType.EAGER, mappedBy = "recordSet")
-    //@Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "recordSet")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<InfoRequest> getInfoRequests()
-    {
-        return infoRequests;
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "InfoRequestID", unique = false, nullable = true, insertable = true, updatable = true)
+    public InfoRequest getInfoRequest() {
+        return this.infoRequest;
     }
-
+    
     /**
-     * @param infoRequests the infoRequests to set
+     * @param infoRequest
      */
-    public void setInfoRequests(Set<InfoRequest> infoRequests)
+    public void setInfoRequest(InfoRequest infoRequest)
     {
-        this.infoRequests = infoRequests;
+        this.infoRequest = infoRequest;
     }
 
     /**
@@ -615,6 +596,33 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     public static int getClassTableId()
     {
         return 68;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        RecordSet obj = (RecordSet)super.clone();
+        obj.initialize();
+        
+        obj.recordSetId          = null;
+        obj.allPermissionLevel   = allPermissionLevel;
+        obj.dbTableId            = dbTableId;
+        obj.dataSpecificIcon     = dataSpecificIcon;
+        obj.group                = group;
+        obj.groupPermissionLevel = groupPermissionLevel;
+        obj.name                 = name;
+        obj.ownerPermissionLevel = ownerPermissionLevel;
+        obj.remarks              = remarks;
+        obj.specifyUser          = specifyUser;
+        obj.type                 = type;
+        
+        obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
+        obj.timestampModified    = timestampCreated;
+        
+        return obj;
     }
 
 }

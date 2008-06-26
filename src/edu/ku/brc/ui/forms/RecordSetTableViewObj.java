@@ -20,6 +20,7 @@ package edu.ku.brc.ui.forms;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -144,7 +145,28 @@ public class RecordSetTableViewObj extends TableViewObj
         return "RecordSetTable View";
     }
 
- 
+    /**
+     * @param recordSet
+     */
+    private void processRecordSet(final RecordSetIFace recordSet)
+    {
+        DBTableIdMgr.getInstance().getInClause(recordSet);
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
+        
+        DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
+        
+        if (tempSession == null)
+        {
+            tempSession = DataProviderFactory.getInstance().createSession();
+        }
+        
+        String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
+        if (StringUtils.isNotBlank(sqlStr))
+        {
+            dataObjList.addAll(tempSession.getDataList(sqlStr));
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setDataObj(java.lang.Object)
      */
@@ -166,23 +188,23 @@ public class RecordSetTableViewObj extends TableViewObj
             this.dataObj = dataObj;
             
             RecordSetIFace recordSet = (RecordSetIFace)dataObj;
-            
-            DBTableIdMgr.getInstance().getInClause(recordSet);
-            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
-            
-            DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
-            
-            if (tempSession == null)
-            {
-                tempSession = DataProviderFactory.getInstance().createSession();
-            }
-            
-            String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
-            if (StringUtils.isNotBlank(sqlStr))
-            {
-                dataObjList.addAll(tempSession.getDataList(sqlStr));
-            }
+            processRecordSet(recordSet);
   
+        } else if (dataObj instanceof Set<?>)
+        {
+            this.dataObj = null;
+            
+            Set<?> dataSet = (Set<?>)dataObj;
+            if (dataSet.size() > 0)
+            {
+                Object firstDataObj = dataSet.iterator().next();
+                if (firstDataObj instanceof RecordSetIFace)
+                {
+                    this.dataObj = firstDataObj;
+                    processRecordSet((RecordSetIFace)firstDataObj);
+                }
+            }
+            
         } else
         {
             this.dataObj = null;

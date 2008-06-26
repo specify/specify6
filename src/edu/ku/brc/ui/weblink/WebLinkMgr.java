@@ -84,6 +84,22 @@ public class WebLinkMgr
     }
     
     /**
+     * @return the hasChanged
+     */
+    public boolean isHasChanged()
+    {
+        return hasChanged;
+    }
+
+    /**
+     * @param hasChanged the hasChanged to set
+     */
+    public void setHasChanged(boolean hasChanged)
+    {
+        this.hasChanged = hasChanged;
+    }
+
+    /**
      * Resets the cache.
      */
     protected void reset()
@@ -147,6 +163,7 @@ public class WebLinkMgr
     public void add(final WebLinkDef wld)
     {
         webLinkDefs.add(wld);
+        hasChanged = true;
     }
     
     /**
@@ -155,6 +172,7 @@ public class WebLinkMgr
     public void remove(final WebLinkDef wld)
     {
         webLinkDefs.removeElement(wld);
+        hasChanged = true;
     }
     
     /**

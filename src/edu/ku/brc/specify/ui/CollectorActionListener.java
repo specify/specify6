@@ -81,7 +81,7 @@ public class CollectorActionListener implements ActionListener
         int     options    = iconViewObj.getViewOptions();
         boolean isEditting = iconViewObj.getAltView().getMode() == AltViewIFace.CreationMode.EDIT;
         String  title      = (MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT) && isEditting) ? 
-                                getResourceString("Edit") : collector.getIdentityTitle();
+                                getResourceString("EDIT") : collector.getIdentityTitle();
                                 
         if (!isEditting)
         {
@@ -91,7 +91,7 @@ public class CollectorActionListener implements ActionListener
         ViewBasedDisplayIFace dialog = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(iconViewObj.getUIComponent()),
                                                                     defFormName,
                                                                     title,
-                                                                    isEditting ? getResourceString("OK") : getResourceString("Close"),
+                                                                    isEditting ? getResourceString("OK") : getResourceString("CLOSE"),
                                                                     isEditting,
                                                                     options,
                                                                     FRAME_TYPE.DIALOG);

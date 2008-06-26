@@ -569,7 +569,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // tree editing buttons
         if (isEditMode)
         {
-            JLabel editLabel0 = createLabel(getResourceString("Edit"));
+            JLabel editLabel0 = createLabel(getResourceString("EDIT"));
             editLabel0.setSize(32,editLabel0.getHeight());
             buttonPanel0.add(editLabel0);
             editLabel0.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -1538,7 +1538,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		Frame       parentFrame   = (Frame)UIRegistry.get(UIRegistry.FRAME);
 		String      displayName   = "NODE_EDIT_DISPLAY_NAME";
         boolean     isEdit        = true;
-		String      closeBtnText  = (isEdit) ? getResourceString("Save") : getResourceString("Close");
+		String      closeBtnText  = (isEdit) ? getResourceString("SAVE") : getResourceString("CLOSE");
 		String      className     = node.getClass().getName();
         DBTableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(node.getTableId());
 		String      idFieldName   = nodeTableInfo.getIdFieldName();
@@ -1982,7 +1982,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 dlgOption = JOptionPane.YES_NO_CANCEL_OPTION;
             }
             
-            options[numOptions++] = getResourceString("Cancel");
+            options[numOptions++] = getResourceString("CANCEL");
             
             String msg = UIRegistry.getLocalizedMessage("TreeTableView.NODE_MSG", draggedRecord.getFullName(), droppedOnRecord.getFullName());
             int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
@@ -2578,10 +2578,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
      */
     private TreeNode createNode(final T dataRecord)
     {
-        String nodeName = dataRecord.getName();
-        String fullName = dataRecord.getFullName();
-        int id = dataRecord.getTreeId();
-        int rank = dataRecord.getRankId();
+        String nodeName  = dataRecord.getName();
+        String fullName  = dataRecord.getFullName();
+        int    id        = dataRecord.getTreeId();
+        int    rank      = dataRecord.getRankId();
         T acceptedParent = dataRecord.getAcceptedParent();
 
         int parentId;

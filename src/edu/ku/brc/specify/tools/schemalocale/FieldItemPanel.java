@@ -141,12 +141,12 @@ public class FieldItemPanel extends LocalizerBasePanel
     // WebLinks
     protected JComboBox        webLinkCombo;
     protected JButton          webLinkMoreBtn;
-    protected WebLinkDef       webLinkDefNone = new WebLinkDef(getResourceString("None"));
+    protected WebLinkDef       webLinkDefNone = new WebLinkDef(getResourceString("NONE"));
     
     // PickList
     protected JLabel           pickListLbl;
     protected JComboBox        pickListCBX;
-    protected PickList         pickListNone = new PickList(getResourceString("None")); // I18N
+    protected PickList         pickListNone = new PickList(getResourceString("NONE")); // I18N
 
     protected JLabel           autoNumLbl;
     protected JComboBox        autoNumberCombo;
@@ -163,7 +163,7 @@ public class FieldItemPanel extends LocalizerBasePanel
     protected JButton          fldSpellChkBtn = null;
     
     protected PropertyChangeListener pcl   = null;
-    protected String           noneStr = UIRegistry.getResourceString("None");
+    protected String           noneStr = UIRegistry.getResourceString("NONE");
     
     protected List<PickList>   pickLists;
     protected DisciplineType   disciplineType = null;
@@ -303,7 +303,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             };
             formatSwitcherCombo.addActionListener(switchAL);
             
-            String label = getResourceString("None");
+            String label = getResourceString("NONE");
             formatSwitcherCombo.addItem(label);
             formatterPanel.add(label, new JPanel());
 

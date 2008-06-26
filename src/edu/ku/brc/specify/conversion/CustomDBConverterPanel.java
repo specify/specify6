@@ -290,9 +290,9 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         statusBar = new JStatusBar();
         statusBar.setErrorIcon(IconManager.getIcon("Error",IconManager.IconSize.Std16));
 
-        cancelBtn = createButton(getResourceString("Cancel"));
+        cancelBtn = createButton(getResourceString("CANCEL"));
         loginBtn  = createButton(getResourceString("Login"));
-        helpBtn   = createButton(getResourceString("Help"));
+        helpBtn   = createButton(getResourceString("HELP"));
 
         forwardImgIcon = IconManager.getIcon("Forward");
         downImgIcon = IconManager.getIcon("Down");

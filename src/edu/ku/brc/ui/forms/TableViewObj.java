@@ -833,7 +833,7 @@ public class TableViewObj implements Viewable,
         FormDataObjIFace dObj = (FormDataObjIFace)dataObjList.get(rowIndex);
         if (dObj != null)
         {
-            Object[] delBtnLabels = {getResourceString("Delete"), getResourceString("Cancel")};
+            Object[] delBtnLabels = {getResourceString("Delete"), getResourceString("CANCEL")};
             int rv = JOptionPane.showOptionDialog(null, UIRegistry.getLocalizedMessage("ASK_DELETE", dObj.getIdentityTitle()),
                                                   getResourceString("Delete"),
                                                   JOptionPane.YES_NO_OPTION,

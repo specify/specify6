@@ -34,7 +34,6 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
@@ -43,15 +42,12 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -60,11 +56,9 @@ import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.InfoRequest;
-import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
@@ -73,7 +67,6 @@ import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.TableViewObj;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.
@@ -271,7 +264,7 @@ public class InfoRequestTask extends BaseTask
      */
     public static void createInfoRequest(final RecordSetIFace recordSet)
     {
-        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(InfoRequest.class.getSimpleName());
+        /*DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(InfoRequest.class.getSimpleName());
         
         ViewIFace view = AppContextMgr.getInstance().getView(tableInfo.getDefaultFormName());
 
@@ -306,7 +299,7 @@ public class InfoRequestTask extends BaseTask
         
         ((InfoRequestTask)TaskMgr.getTask(INFOREQUEST)).addSubPaneToMgr(formPane);
         //formPane.setIcon(iconForFormClass.get(createFullName(view.getViewSetName(), view.getName())));
-
+*/
     }
     
     /**
@@ -314,7 +307,7 @@ public class InfoRequestTask extends BaseTask
      * This method first checks to see if the boxItem is not null and uses that, i
      * f it is null then it looks the box up by name ans used that
      * @param boxItem the box item to be deleted
-     * @param recordSet the record set that is "owned" by some UI object that needs to be deleted (used for secodary lookup
+     * @param recordSets the record set that is "owned" by some UI object that needs to be deleted (used for secodary lookup
      */
     protected void deleteInfoRequestFromUI(final NavBoxItemIFace boxItem, final InfoRequest infoRequest)
     {
@@ -545,7 +538,7 @@ public class InfoRequestTask extends BaseTask
         } else if (cmdAction.isAction("Save"))
         {
             Object data = cmdAction.getData();
-            if (data instanceof RecordSet)
+            if (data instanceof RecordSetIFace)
             {
                 // XXX DEMO Code
                 InfoRequest infoRequest = new InfoRequest();
@@ -559,16 +552,16 @@ public class InfoRequestTask extends BaseTask
                 
                 saveInfoRequest(infoRequest);
             }
-        } else if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSet)
+        } else if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSetIFace)
         {
             InfoRequest inforRequest = (InfoRequest)cmdAction.getData();
             deleteInfoRequest(inforRequest);
             deleteInfoRequestFromUI(null, inforRequest);
 
-        } else if (cmdAction.isAction("Create") && cmdAction.getData() instanceof RecordSet)
+        } else if (cmdAction.isAction("Create") && cmdAction.getData() instanceof RecordSetIFace)
         {
             Object data = cmdAction.getData();
-            if (data instanceof RecordSet)
+            if (data instanceof RecordSetIFace)
             {
                 createInfoRequest((RecordSetIFace)data);
             }

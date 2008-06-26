@@ -478,7 +478,7 @@ public class UIFormatterDlg extends CustomDialog
         DefaultListModel listModel = new DefaultListModel();
 
         // add blank format, i.e, none
-        listModel.addElement(getResourceString("None")); 
+        listModel.addElement(getResourceString("NONE")); 
         // add available formatters
         for (UIFieldFormatterIFace format : fmtrs)
         {

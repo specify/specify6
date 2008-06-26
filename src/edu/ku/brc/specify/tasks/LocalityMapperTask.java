@@ -32,7 +32,6 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.LocalityMapperSubPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -147,7 +146,7 @@ public class LocalityMapperTask extends BaseTask
         {
             if (cmdAction.isAction("DoLocalityMap"))
             {
-                if (cmdAction.getData() instanceof RecordSet)
+                if (cmdAction.getData() instanceof RecordSetIFace)
                 {
                     RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
                     createMappingInfoFromRecordSet(recordSet);

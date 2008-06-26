@@ -279,7 +279,30 @@ public class ResultSetController implements ValidationListener
         
         if (addDelBtn)
         {
-            delRecBtn = UIHelper.createIconBtn("DeleteRecord", null, null);
+            if (false)
+            {
+                delRecBtn = new JButton("-")
+                {
+                    public void setEnabled(boolean enable)
+                    {
+                        //System.err.println(formValidator.getName() + " " + hashCode() + " "+enable);
+                        if (formValidator != null && formValidator.getName() != null && formValidator.getName().equals("Permit"))
+                        {
+                            int x = 0;
+                            x++;
+                        }
+                        if (!enable)
+                        {
+                            int x = 0;
+                            x++;
+                        }
+                        super.setEnabled(enable);
+                    }
+                };
+            } else
+            {
+                delRecBtn = UIHelper.createIconBtn("DeleteRecord", null, null);    
+            }
             delRecBtn.setToolTipText(createTooltip("RemoveRecordTT", objTitle));
             delRecBtn.setMargin(insets);
             btnsHash.put(CommandType.DelItem, delRecBtn);

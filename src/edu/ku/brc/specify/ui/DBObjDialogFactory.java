@@ -148,7 +148,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(info.getClassName());
             if (ti != null)
             {
-                title = ti.getTitle() + " " + UIRegistry.getResourceString("Search");
+                title = ti.getTitle() + " " + UIRegistry.getResourceString("SEARCH");
             }
             
             if (parent instanceof Frame)

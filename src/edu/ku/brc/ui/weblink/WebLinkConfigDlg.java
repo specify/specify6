@@ -190,7 +190,7 @@ public class WebLinkConfigDlg extends CustomDialog
      */
     protected void addWebLink()
     {
-        WebLinkDef wld = new WebLinkDef();
+        WebLinkDef    wld = new WebLinkDef();
         WebLinkArgDlg dlg = new WebLinkArgDlg(wld);
         dlg.setVisible(true);
         if (!dlg.isCancelled())
@@ -237,6 +237,7 @@ public class WebLinkConfigDlg extends CustomDialog
         if (!dlg.isCancelled())
         {
             hasChanged = true;
+            wlMgr.setHasChanged(true);
         }
     }
 

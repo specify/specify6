@@ -326,10 +326,9 @@ public class ToolsTask extends BaseTask
      */
     protected void processToolDataFromRecordSet(final Object data, final Properties requestParams, final RecordSetToolsIFace exporter)
     {
-        if (data instanceof RecordSet)
+        if (data instanceof RecordSetIFace)
         {
-            RecordSetIFace rs = (RecordSetIFace)data;
-            processTool(exporter, rs, requestParams);
+            processTool(exporter, (RecordSetIFace)data, requestParams);
         }
     }
     
@@ -342,8 +341,7 @@ public class ToolsTask extends BaseTask
     {
         if (data instanceof List)
         {
-            List<?> dataList = (List<?>)data;
-            doProcessTool(exporter, dataList, requestParams);
+            doProcessTool(exporter, (List<?>)data, requestParams);
         }
     }
     

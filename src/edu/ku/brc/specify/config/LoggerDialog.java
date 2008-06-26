@@ -98,7 +98,7 @@ public class LoggerDialog extends JDialog implements ActionListener
         CellConstraints cc      = new CellConstraints();
         
         // Bottom Button UI
-        cancelBtn = createButton(getResourceString("Cancel"));
+        cancelBtn = createButton(getResourceString("CANCEL"));
         okBtn     = createButton(getResourceString("OK"));
         cnt = 1;
         for (LoggerInfo logInfo : loggers)

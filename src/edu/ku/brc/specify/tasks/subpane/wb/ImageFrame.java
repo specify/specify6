@@ -247,7 +247,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         
         JMenuItem importImagesMI  = UIHelper.createLocalizedMenuItem(fileMenu, title, mneu, "", true, null);
         
-        title = "Close";
+        title = "CLOSE";
         mneu = "CloseMneu";
         closeMI = UIHelper.createLocalizedMenuItem(fileMenu, title, mneu,  "", true, null);
         closeMI.addActionListener(new ActionListener()
@@ -362,7 +362,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         
         loadImgBtn.addActionListener(addImg);
         
-        JMenu helpMenu = new JMenu(getResourceString("Help"));
+        JMenu helpMenu = new JMenu(getResourceString("HELP"));
         menuBar.add(HelpMgr.createHelpMenuItem(helpMenu, getResourceString("WB_IMAGE_WINDOW")));
 
         enableMenus(false);

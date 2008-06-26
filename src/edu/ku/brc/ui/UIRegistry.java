@@ -1353,7 +1353,7 @@ public class UIRegistry
     // Create the edit menu
     public JMenu createEditMenu()
     {
-       JMenu menu = new JMenu(getResourceString("Edit"));
+       JMenu menu = new JMenu(getResourceString("EDIT"));
        menu.setMnemonic(KeyEvent.VK_E);
        // Undo and redo are actions of our own creation.
        undoAction = (UndoAction) makeAction(UndoAction.class,

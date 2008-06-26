@@ -64,9 +64,9 @@ public class GeoLocateResultsChooser extends CustomDialog
         
         setContentPanel(resultsDisplayPanel);
         
-        this.cancelLabel = getResourceString("Skip");
-        this.applyLabel  = getResourceString("Accept");
-        this.okLabel     = getResourceString("Quit");
+        this.cancelLabel = getResourceString("SKIP");
+        this.applyLabel  = getResourceString("ACCEPT");
+        this.okLabel     = getResourceString("QUIT");
         
         rowIndex = -1;
     }

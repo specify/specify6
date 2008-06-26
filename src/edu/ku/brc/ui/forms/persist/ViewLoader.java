@@ -1319,7 +1319,7 @@ public class ViewLoader
             
             JScrollPane sp = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             CustomFrame dlg = new CustomFrame("Field Errors : "+instance.fldVerTableModel.getRowCount(), CustomFrame.OK_BTN, sp);
-            dlg.setOkLabel("Close");
+            dlg.setOkLabel(getResourceString("CLOSE"));
             dlg.createUI();
             dlg.setSize(500, 500);
             dlg.setVisible(true);

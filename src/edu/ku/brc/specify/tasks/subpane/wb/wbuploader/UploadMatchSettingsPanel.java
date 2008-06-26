@@ -164,7 +164,7 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
 
         if (showApplyBtn)
         {
-            applyBtn = createButton(getResourceString("Apply"));
+            applyBtn = createButton(getResourceString("APPLY"));
             applyBtn.setActionCommand("APPLY");
             applyBtn.addActionListener(this);
             add(applyBtn, BorderLayout.SOUTH);

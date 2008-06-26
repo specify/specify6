@@ -51,10 +51,12 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.expresssearch.ESTermParser;
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
+import edu.ku.brc.af.core.expresssearch.SearchTermField;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
@@ -307,7 +309,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
      */
     protected void createSearchBtn()
     {
-        searchBtn  = UIHelper.createButton(getResourceString("Search"));
+        searchBtn  = UIHelper.createButton(getResourceString("SEARCH"));
         searchBtn.addActionListener(doQuery);
     }
     
@@ -409,6 +411,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             for (ERTICaptionInfo captionInfo : esTableInfo.getVisibleCaptionInfo())
             {
                 Object value  = dataMap.get(captionInfo.getColName());
+                
                 log.debug("Column Name["+captionInfo.getColName()+"] Value["+value+"]");
                 if (value != null)
                 {
@@ -417,44 +420,33 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                     {
                         if (qafd.isUserInputNotInjectable(valStr))
                         {
-                            if (cnt > 0)
+                            if (ESTermParser.parse(valStr.toLowerCase(), true))
                             {
-                                strBuf.append(" OR ");
+                                if (StringUtils.isNotEmpty(valStr))
+                                {
+                                    List<SearchTermField> fields     = ESTermParser.getFields();
+                                    SearchTermField       firstTerm  = fields.get(0);
+                                    
+                                    if (cnt > 0)
+                                    {
+                                        strBuf.append(" OR ");
+                                    }
+                                    
+                                    String clause = ESTermParser.createWhereClause(firstTerm, null, captionInfo.getColName());
+                                    strBuf.append(clause);
+                                    cnt++;
+                                }
                             }
-                            
-                            boolean startWildCard   = false;
-                            boolean endWildCard     = false;
-                            
-                            if (valStr.startsWith("*"))
-                            {
-                                startWildCard = true;
-                                valStr = valStr.substring(1);
-                            }
-                            
-                            if (valStr.endsWith("*"))
-                            {
-                                endWildCard = true;
-                                valStr = valStr.substring(0, valStr.length()-1);
-                            }
-
-                            if (startWildCard || endWildCard)
-                            {
-                                strBuf.append(" LOWER("+captionInfo.getColName()+") like "+ (startWildCard ? "'#$#" : "'") + valStr + (endWildCard ? "#$#'" : "'"));
-                            } else
-                            {
-                                strBuf.append(" LOWER("+captionInfo.getColName()+") = "+ "'" + valStr + "'");
-                            }
-                            cnt++;
                         } else
                         {
                             UIRegistry.getStatusBar().setErrorMessage(getResourceString("ES_SUSPICIOUS_SQL"));
                             return;
                         }
                     }
-                } else
+                }/* else
                 {
                     log.debug("DataMap was null for Column Name["+captionInfo.getColName()+"] make sure there is a field of this name in the form.");
-                }
+                }*/
             }
             
             if (cnt == 0)
@@ -463,15 +455,8 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             }
             
             String fullStrSql = QueryAdjusterForDomain.getInstance().adjustSQL(sqlStr);
-            
-            //System.out.println("\n1["+sqlStr+"]");
-            //System.out.println("2["+strBuf+"]");
-            
-            String fullSQL = fullStrSql.replace("%s", strBuf.toString());
+            String fullSQL    = fullStrSql.replace("%s", strBuf.toString());
             log.info(fullSQL);
-            fullSQL = fullSQL.replace("#$#", "%");
-            log.info(fullSQL);
-            //tableInfo.setViewSql(fullSQL);
             setUIEnabled(false);
             
             resultsInfo = new QueryForIdResultsSQL(esTableInfo.getId(), null, esTableInfo, 0, "");

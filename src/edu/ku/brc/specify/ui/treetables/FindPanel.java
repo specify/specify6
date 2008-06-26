@@ -59,8 +59,8 @@ public class FindPanel extends JPanel implements TimingTarget
         this.setLayout(new BoxLayout(this,BoxLayout.LINE_AXIS));
         this.views = views;
         
-        String find = getResourceString("Find");
-        String next = getResourceString("Next");
+        String find = getResourceString("FIND");
+        String next = getResourceString("NEXT");
 
         // These should already be loaded
         //IconManager.setApplicationClass(Specify.class);

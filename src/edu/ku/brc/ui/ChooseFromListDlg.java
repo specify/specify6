@@ -347,7 +347,7 @@ public class ChooseFromListDlg<T> extends JDialog
             
             if ((whichBtns & CANCEL_BTN) == CANCEL_BTN)
             {
-                cancelBtn = createButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel : getResourceString("Cancel"));
+                cancelBtn = createButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel : getResourceString("CANCEL"));
                 cancelBtn.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent ae)
@@ -361,7 +361,7 @@ public class ChooseFromListDlg<T> extends JDialog
             
             if ((whichBtns & HELP_BTN) == HELP_BTN)
             {
-                helpBtn = createButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel : getResourceString("Help"));
+                helpBtn = createButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel : getResourceString("HELP"));
                 if (StringUtils.isNotEmpty(helpContext))
                 {
                     HelpMgr.registerComponent(helpBtn, helpContext);

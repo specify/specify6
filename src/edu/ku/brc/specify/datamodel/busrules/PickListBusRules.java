@@ -53,7 +53,7 @@ public class PickListBusRules extends BaseBusRules
 {
     private static final Logger log  = Logger.getLogger(PickListBusRules.class);
     
-    //protected static final String noneStr = getResourceString("None");
+    //protected static final String noneStr = getResourceString("NONE");
     
     public PickListBusRules()
     {
@@ -115,7 +115,7 @@ public class PickListBusRules extends BaseBusRules
 
         //int typeIndex = typesCBX.getComboBox().getSelectedIndex();
         
-        String noneStr = getResourceString("None");
+        String noneStr = getResourceString("NONE");
         
         PickList pickList = (PickList)fvo.getDataObj();
         if (pickList == null)
@@ -189,7 +189,7 @@ public class PickListBusRules extends BaseBusRules
         if (tablesCBX.getComboBox().getModel().getSize() == 0)
         {
             DefaultComboBoxModel tblModel = (DefaultComboBoxModel)tablesCBX.getComboBox().getModel();
-            String noneStr = UIRegistry.getResourceString("None");
+            String noneStr = UIRegistry.getResourceString("NONE");
             DBTableInfo none = new DBTableInfo(-1, PickList.class.getName(), "none", "", "");
             none.setTitle(noneStr);
             

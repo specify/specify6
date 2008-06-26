@@ -474,7 +474,7 @@ public class BaseBusRules implements BusinessRulesIFace
      */
     public boolean okToEnableDelete(final Object dataObj)
     {
-        return false;
+        return true;
     }
     
     /* (non-Javadoc)

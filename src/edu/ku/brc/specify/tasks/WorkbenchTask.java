@@ -85,6 +85,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.ImageFilter;
 import edu.ku.brc.helpers.SwingWorker;
@@ -384,7 +385,10 @@ public class WorkbenchTask extends BaseTask
     protected RolloverCommand addWorkbenchToNavBox(final Workbench workbench)
     {
         CommandAction cmd = new CommandAction(WORKBENCH, SELECTED_WORKBENCH, Workbench.getClassTableId());
-        RecordSet     rs  = new RecordSet(workbench.getName(), Workbench.getClassTableId());
+        RecordSet     rs  = new RecordSet();
+        rs.initialize();
+        rs.set(workbench.getName(), Workbench.getClassTableId(), RecordSet.GLOBAL);
+
         rs.addItem(workbench.getWorkbenchId());
         cmd.setProperty("workbench", rs);
         final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(workbenchNavBox, workbench.getName(), "DataSet16", cmd, 
@@ -402,18 +406,18 @@ public class WorkbenchTask extends BaseTask
         roc.addDropDataFlavor(new DataFlavor(Workbench.class, "Report"));
        
         JPopupMenu popupMenu = new JPopupMenu();
-        String title = "WB_EDIT_PROPS";
+        String menuTitle = "WB_EDIT_PROPS";
         String mneu = "WB_EDIT_PROPS_MNEU";
-        UIHelper.createlocalizedMenuItem(popupMenu, title, mneu, null, true, new ActionListener() {
+        UIHelper.createlocalizedMenuItem(popupMenu, menuTitle, mneu, null, true, new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 editWorkbenchProps(roc);
                 UsageTracker.incrUsageCount("WB.ShowWorkbenchProps");
             }
         });
-        title = "WB_EDIT_DATASET_MAPPING";
+        menuTitle = "WB_EDIT_DATASET_MAPPING";
         mneu = "WB_EDIT_DATASET_MAPPING_MNEU";
-        UIHelper.createlocalizedMenuItem(popupMenu, title, mneu, null, true, new ActionListener() {
+        UIHelper.createlocalizedMenuItem(popupMenu, menuTitle, mneu, null, true, new ActionListener() {
             @SuppressWarnings("synthetic-access")
             public void actionPerformed(ActionEvent e)
             {
@@ -427,9 +431,9 @@ public class WorkbenchTask extends BaseTask
         });
 
         popupMenu.addSeparator();
-        title = "Delete";
+        menuTitle = "Delete";
         mneu = "DELETE_MNEU";
-        UIHelper.createlocalizedMenuItem(popupMenu, title, mneu, null, true, new ActionListener() {
+        UIHelper.createlocalizedMenuItem(popupMenu, menuTitle, mneu, null, true, new ActionListener() {
             @SuppressWarnings("synthetic-access")
             public void actionPerformed(ActionEvent e)
             {
@@ -441,8 +445,8 @@ public class WorkbenchTask extends BaseTask
                 Object cmdActionObj = roc.getData();
                 if (cmdActionObj != null && cmdActionObj instanceof CommandAction)
                 {
-                    CommandAction subCmd    = (CommandAction)cmdActionObj;
-                    RecordSet     recordSet = (RecordSet)subCmd.getProperty("workbench");
+                    CommandAction  subCmd    = (CommandAction)cmdActionObj;
+                    RecordSetIFace recordSet = (RecordSetIFace)subCmd.getProperty("workbench");
                     if (recordSet != null)
                     {
                         deleteWorkbench(recordSet);
@@ -491,7 +495,7 @@ public class WorkbenchTask extends BaseTask
     {
         if (roc != null)
         {
-            Workbench workbench = loadWorkbench((RecordSet)((CommandAction)roc.getData()).getProperty("workbench"));
+            Workbench workbench = loadWorkbench((RecordSetIFace)((CommandAction)roc.getData()).getProperty("workbench"));
             if (workbench != null)
             {
                 if (fillInWorkbenchNameAndAttrs(workbench, workbench.getName(), true))
@@ -542,18 +546,18 @@ public class WorkbenchTask extends BaseTask
                 Object data  = roc.getData();
                 if (data != null)
                 {
-                    RecordSet rs = null;
+                    RecordSetIFace rs = null;
                     if (data instanceof CommandAction)
                     {
                         CommandAction cmd  = (CommandAction)data;
                         Object prop = cmd.getProperty(cmdAttrName);
-                        if (prop instanceof RecordSet)
+                        if (prop instanceof RecordSetIFace)
                         {
-                            rs  = (RecordSet)prop;
+                            rs  = (RecordSetIFace)prop;
                         }
-                    } else if (data instanceof RecordSet)
+                    } else if (data instanceof RecordSetIFace)
                     {
-                        rs  = (RecordSet)data;
+                        rs  = (RecordSetIFace)data;
                     }
                     
                     if (rs != null)
@@ -1882,7 +1886,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * Deletes a workbench.
      * @param workbench the workbench to be deleted
      */
-    protected void deleteWorkbench(final RecordSet recordSet)
+    protected void deleteWorkbench(final RecordSetIFace recordSet)
     {
         final Workbench workbench = loadWorkbench(recordSet);
         if (workbench == null)
@@ -1893,7 +1897,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         if (!UIRegistry.displayConfirm(getResourceString("WB_DELET_DS_TITLE"), 
                                        String.format(getResourceString("WB_DELET_DS_MSG"), new Object[] { workbench.getName() } ), 
                                        getResourceString("Delete"),
-                                       getResourceString("Cancel"), 
+                                       getResourceString("CANCEL"), 
                                        JOptionPane.QUESTION_MESSAGE))
         {
             return;
@@ -2134,17 +2138,17 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            RecordSet recordSet = (RecordSet)cmdAction.getProperty("workbench");
+            RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getProperty("workbench");
             if (recordSet == null)
             {
                 Object data = cmdAction.getData();
                 if (data instanceof CommandAction)
                 {
-                    recordSet = (RecordSet)((CommandAction)data).getProperty("workbench");
+                    recordSet = (RecordSetIFace)((CommandAction)data).getProperty("workbench");
                     
-                } else if (data instanceof RecordSet)
+                } else if (data instanceof RecordSetIFace)
                 {
-                    recordSet = (RecordSet)data;
+                    recordSet = (RecordSetIFace)data;
                 }
             }
             
@@ -2897,7 +2901,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param recordSet the RecordSet containing thew ID
      * @return the workbench or null
      */
-    protected Workbench loadWorkbench(final RecordSet recordSet)
+    protected Workbench loadWorkbench(final RecordSetIFace recordSet)
     {
         if (recordSet != null)
         {
@@ -2928,7 +2932,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param recordSet the RecordSet containing thew ID
      * @return the workbench or null
      */
-    protected WorkbenchTemplate loadWorkbenchTemplate(final RecordSet recordSet)
+    protected WorkbenchTemplate loadWorkbenchTemplate(final RecordSetIFace recordSet)
     {
         if (recordSet != null)
         {
@@ -2978,9 +2982,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 }
             }
             
-        } else if (cmdData instanceof RecordSet)
+        } else if (cmdData instanceof RecordSetIFace)
         {
-            Workbench workbench = loadWorkbench((RecordSet)cmdData);
+            Workbench workbench = loadWorkbench((RecordSetIFace)cmdData);
             if (workbench != null)
             {
                 createEditorForWorkbench(workbench, null, false);
@@ -2992,7 +2996,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         } else
         {
             // This is for when the user clicks directly on the workbench
-            Workbench workbench = loadWorkbench((RecordSet)cmdAction.getProperty("workbench"));
+            Workbench workbench = loadWorkbench((RecordSetIFace)cmdAction.getProperty("workbench"));
             if (workbench != null)
             {
                 createEditorForWorkbench(workbench, null, false);
@@ -3155,9 +3159,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             
         } else if (cmdAction.isAction(DELETE_CMD_ACT))
         {
-            if (cmdAction.getData() instanceof RecordSet)
+            if (cmdAction.getData() instanceof RecordSetIFace)
             {
-                RecordSet rs = (RecordSet)cmdAction.getData();
+                RecordSetIFace rs = (RecordSetIFace)cmdAction.getData();
                 if (rs.getDbTableId() == Workbench.getClassTableId())
                 {
                     deleteWorkbench(rs);

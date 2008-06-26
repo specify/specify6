@@ -18,6 +18,7 @@ import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -126,12 +127,21 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                     }
 
                     int collObjTableID = DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName());
-                    final RecordSet rs = new RecordSet("TTV.showCollectionObjects", collObjTableID);
+                    RecordSet recordSet = new RecordSet();
+                    recordSet.initialize();
+                    recordSet.set(UIRegistry.getResourceString("TTV.showCollectionObjects"), collObjTableID, RecordSet.GLOBAL);
+
+                    Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+                    Integer    colMemId   = collection != null ? collection.getCollectionId() : null;
                     for(Determination deter : taxon.getDeterminations())
                     {
-                        rs.addItem(deter.getCollectionObject().getId());
+                        if (colMemId == null || deter.getCollectionMemberId().equals(colMemId))
+                        {
+                            recordSet.addItem(deter.getCollectionObject().getId());
+                        }
                     }
 
+                    final RecordSet rs = recordSet;
                     UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_CO_FORM"));
                     // This is needed so the StatusBar gets updated
                     SwingUtilities.invokeLater(new Runnable() {

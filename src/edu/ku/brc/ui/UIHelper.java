@@ -563,7 +563,7 @@ public final class UIHelper
      */
     public static <T> Object convertDataFromString(final String dataStr, final Class<T> cls)
     {
-        log.debug("Trying to convertDataFromString dataStr [" + dataStr + "] of class[" + cls + "]");
+        //log.debug("Trying to convertDataFromString dataStr [" + dataStr + "] of class[" + cls + "]");
         if (cls == Integer.class)
         {
             return StringUtils.isNotEmpty(dataStr) ? Integer.parseInt(dataStr) : null;
@@ -1815,11 +1815,11 @@ public final class UIHelper
         if (StringUtils.isNotEmpty(defFormName))
         {
             int     opts = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | MultiView.HIDE_SAVE_BTN;
-            String  title   = (isNewObject && isEditMode) ? getResourceString("Edit") : dataObj.getIdentityTitle();
+            String  title   = (isNewObject && isEditMode) ? getResourceString("EDIT") : dataObj.getIdentityTitle();
             ViewBasedDisplayIFace dialog = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(mainComp),
                                                                         defFormName,
                                                                         title,
-                                                                        getResourceString(isEditMode ? "Accept" : "Close"),
+                                                                        getResourceString(isEditMode ? "Accept" : "CLOSE"),
                                                                         isEditMode,
                                                                         opts,
                                                                         FRAME_TYPE.DIALOG);

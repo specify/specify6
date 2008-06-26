@@ -264,7 +264,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             }
             popupMenu.add(delMenuItem);
             
-            JMenuItem viewMenuItem = new JMenuItem(UIRegistry.getResourceString("Edit"));
+            JMenuItem viewMenuItem = new JMenuItem(UIRegistry.getResourceString("EDIT"));
             viewMenuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent actionEvent) {
                     startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name",  roc.getName(), roc.getName(), "PickList");

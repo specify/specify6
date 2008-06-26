@@ -1215,8 +1215,8 @@ public class Uploader implements ActionListener, KeyListener
         {
             tooLate = false;
             if (UIRegistry.displayConfirm(getResourceString("WB_UPLOAD_FORM_TITLE"),
-                getResourceString(task.getCancelMsg()), getResourceString("Yes"),
-                getResourceString("No"), JOptionPane.QUESTION_MESSAGE))
+                getResourceString(task.getCancelMsg()), getResourceString("YES"),
+                getResourceString("NO"), JOptionPane.QUESTION_MESSAGE))
             {
                 if (!task.isDone())
                 {
@@ -2117,7 +2117,7 @@ public class Uploader implements ActionListener, KeyListener
         {
             if (UIRegistry.displayConfirm(getResourceString("WB_UPLOAD_FORM_TITLE"),
                     getResourceString("WB_UNDO_UPLOAD_MSG"), getResourceString("OK"),
-                    getResourceString("Cancel"), JOptionPane.QUESTION_MESSAGE))
+                    getResourceString("CANCEL"), JOptionPane.QUESTION_MESSAGE))
             {
                 undoUpload(true, false);
             }

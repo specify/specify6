@@ -232,7 +232,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         boolean isNewObject = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
         boolean isEditing   = MultiView.isOptionOn(options, MultiView.IS_EDITTING) || isNewObject;
         
-        String closeBtnTitle = isEditing ? getResourceString("Done") : getResourceString("Close");
+        String closeBtnTitle = isEditing ? getResourceString("DONE") : getResourceString("CLOSE");
         
         ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
                 subviewDef.getViewSetName(),
@@ -265,7 +265,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                         boolean  isNew   = fvo.isNewlyCreatedDataObj();
                         String   msgKey  = isNew ? "MV_INCOMPLETE_DATA_NEW" : "MV_INCOMPLETE_DATA";
                         String   btnKey  = isNew ? "MV_REMOVE_ITEM" : "MV_DISCARD_ITEM";
-                        Object[] optionLabels = { getResourceString(btnKey), getResourceString("Cancel") };
+                        Object[] optionLabels = { getResourceString(btnKey), getResourceString("CANCEL") };
                         int rv = JOptionPane.showOptionDialog(null, 
                                     getResourceString(msgKey),
                                     getResourceString("MV_INCOMPLETE_DATA_TITLE"),

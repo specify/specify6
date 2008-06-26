@@ -50,9 +50,12 @@ import edu.ku.brc.ui.forms.DataObjectSettableFactory;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.weblink.WebLinkDataProviderIFace;
 
 @MappedSuperclass
-public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
+public abstract class DataModelObjBase implements FormDataObjIFace,
+                                                  WebLinkDataProviderIFace, 
+                                                  Cloneable
 {
     private static final Logger log = Logger.getLogger(DataModelObjBase.class);
     
@@ -673,19 +676,40 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
         changes.removePropertyChangeListener(propertyName, listener);
     }
 
+    
+    //-------------------------------------------------------------------
+    //-- WebLinkProviderIFace
+    //-------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.weblink.WebLinkDataProviderIFace#getWebLinkData(java.lang.String)
+     */
+    public String getWebLinkData(final String dataName)
+    {
+        if (StringUtils.isNotEmpty(dataName))
+        {
+            Object data = FormHelper.getValue(this, dataName);
+            return data != null ? data.toString() : null;
+        }
+        return null;
+    }
+    
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        DataModelObjBase obj = (DataModelObjBase)super.clone();
+        DataModelObjBase obj  = (DataModelObjBase)super.clone();
         obj.timestampCreated  = timestampCreated;
         obj.timestampModified = timestampModified;
-        obj.modifiedByAgent      = modifiedByAgent;
+        obj.modifiedByAgent   = modifiedByAgent;
         return obj;
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {

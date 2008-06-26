@@ -369,9 +369,9 @@ public class DataImportDialog extends JDialog implements ActionListener
      */
     private JPanel buildButtons()
     {
-        cancelBtn = createButton(getResourceString("Cancel"));
+        cancelBtn = createButton(getResourceString("CANCEL"));
         okBtn     = createButton(getResourceString("OK"));
-        helpBtn   = createButton(getResourceString("Help"));
+        helpBtn   = createButton(getResourceString("HELP"));
 
         cancelBtn.addActionListener(new ActionListener()
         {

@@ -216,7 +216,9 @@ public class StatGroupTable extends JPanel
                     DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(clazz.getName());
                     if (tblInfo != null)
                     {
-                        RecordSet rs = new RecordSet("", tblInfo.getTableId());
+                        RecordSet rs = new RecordSet();
+                        rs.initialize();
+                        rs.set("", tblInfo.getTableId(), RecordSet.GLOBAL);
                         rs.addItem((Integer)colIdObj);
                         commandAction.setData(rs);
                         

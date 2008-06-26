@@ -511,7 +511,7 @@ public class IconViewObj implements Viewable
         FormDataObjIFace dataObj = iconTray.getSelection();
         if (dataObj != null)
         {
-            Object[] delBtnLabels = {getResourceString("Delete"), getResourceString("Cancel")};
+            Object[] delBtnLabels = {getResourceString("Delete"), getResourceString("CANCEL")};
             int rv = JOptionPane.showOptionDialog(null, UIRegistry.getLocalizedMessage("ASK_DELETE", dataObj.getIdentityTitle()),
                                                   getResourceString("Delete"),
                                                   JOptionPane.YES_NO_OPTION,

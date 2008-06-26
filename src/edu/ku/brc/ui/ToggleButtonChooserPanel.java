@@ -278,7 +278,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         
         if (addSelectAll && uiType == Type.Checkbox)
         {
-            selectAllBtn   = createButton(getResourceString("SelectAll"));
+            selectAllBtn   = createButton(getResourceString("SELECTALL"));
             deselectAllBtn = createButton(getResourceString("DeselectAll"));
 
             selectAllBtn.addActionListener(this);

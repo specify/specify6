@@ -567,9 +567,9 @@ public class DataEntryTask extends BaseTask
                     if (dataActionEv.getSourceObj() != null)
                     {
                         Object data = dataActionEv.getSourceObj().getData();
-                        if (data instanceof RecordSet)
+                        if (data instanceof RecordSetIFace)
                         {
-                            RecordSet rs = (RecordSet)data;
+                            RecordSetIFace rs = (RecordSetIFace)data;
                             for (DataEntryView deView : miscViews)
                             {
                                 if (deView.getTableInfo().getTableId() == rs.getDbTableId())
@@ -999,7 +999,7 @@ public class DataEntryTask extends BaseTask
                             final Object data, 
                             final String viewName)
     {
-        if (data instanceof RecordSet)
+        if (data instanceof RecordSetIFace)
         {
             addSubPaneToMgr(createFormFor(task, name, null, viewName, (RecordSetIFace)data));
             
@@ -1050,31 +1050,6 @@ public class DataEntryTask extends BaseTask
         {
             editData(this, cmdAction.getData(), null);
         }
-        
-//        else if (cmdAction.isAction(EDIT_IN_DIALOG))
-//        {
-//            if (cmdAction.getData() instanceof RecordSet)
-//            {
-//                RecordSet recordSet = (RecordSet)cmdAction.getData();
-//                FormPane form = createFormFor(this, name, recordSet);
-//                
-//                Window mostRecentWindow = UIRegistry.getMostRecentWindow();
-//                String viewSetName = form.getViewSetName();
-//                String viewName = form.getViewName();
-//                String displayName = "????";
-//                String formTitle = "????";
-//                String closeBtnText = "????";
-//                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getTableId());
-//                String className = tableInfo.getClassName();
-//                String idFieldName = tableInfo.getIdFieldName();
-//                boolean isEdit = false;
-//                int options = 0;
-//                
-//                ViewBasedDisplayDialog formDialog = new ViewBasedDisplayDialog((Frame)mostRecentWindow,viewSetName,viewName,displayName,formTitle,closeBtnText,className,idFieldName,isEdit,options);
-//                formDialog.setModal(true);
-//                formDialog.setVisible(true);
-//            }
-//        }
         else if (cmdAction.isAction("ShowView"))
         {
             if (cmdAction.getData() instanceof Object[])
@@ -1112,9 +1087,9 @@ public class DataEntryTask extends BaseTask
      */
     protected boolean processRecordSetCommand(final CommandAction cmdAction, final List<DataEntryView> list)
     {
-        if (ContextMgr.getCurrentContext() == this && cmdAction.getSrcObj() instanceof RecordSet)
+        if (ContextMgr.getCurrentContext() == this && cmdAction.getSrcObj() instanceof RecordSetIFace)
         {
-            RecordSet rs = (RecordSet)cmdAction.getSrcObj();
+            RecordSetIFace rs = (RecordSetIFace)cmdAction.getSrcObj();
             for (DataEntryView dev : list)
             {
                 if (dev.getTableInfo().getTableId() == rs.getDbTableId())
@@ -1135,9 +1110,9 @@ public class DataEntryTask extends BaseTask
         }
         
         /*
-        if (ContextMgr.getCurrentContext() == this && cmdAction.getSrcObj() instanceof RecordSet)
+        if (ContextMgr.getCurrentContext() == this && cmdAction.getSrcObj() instanceof RecordSetIFaced)
         {
-            RecordSet rs = (RecordSet)cmdAction.getSrcObj();
+            RecordSetIFace rs = (RecordSetIFace)cmdAction.getSrcObj();
             for (NavBoxItemIFace nbi : viewsNavBox.getItems())
             {
                 RolloverCommand roc = (RolloverCommand)nbi;
@@ -1221,7 +1196,7 @@ public class DataEntryTask extends BaseTask
         public void doAction(GhostActionable src)
         {
             Object srcData = src.getData();
-            if (srcData instanceof RecordSet)
+            if (srcData instanceof RecordSetIFace)
             {
                 addSubPaneToMgr(createFormFor(task, "XXXX", null, null, (RecordSetIFace)srcData));
             }

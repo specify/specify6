@@ -2111,9 +2111,11 @@ public class UploadTable implements Comparable<UploadTable>
      */
     public RecordSet getRecordSet()
     {
-        RecordSet result = new RecordSet(getRecordSetName(), DBTableIdMgr.getInstance()
-                .getByShortClassName(tblClass.getSimpleName()).getTableId(), RecordSet.WB_UPLOAD);
+        RecordSet result = new RecordSet();
         result.initialize();
+        result.set(getRecordSetName(), 
+                   DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTableId(), 
+                   RecordSet.WB_UPLOAD);
         result.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
         for (UploadedRecordInfo rec : uploadedRecs)
         {

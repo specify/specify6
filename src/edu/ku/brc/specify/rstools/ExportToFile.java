@@ -115,7 +115,7 @@ public class ExportToFile implements RecordSetToolsIFace
      */
     public String getName()
     {
-        return UIRegistry.getResourceString("File");
+        return UIRegistry.getResourceString("FILE");
     }
 
     /* (non-Javadoc)

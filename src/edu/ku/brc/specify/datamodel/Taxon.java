@@ -26,13 +26,13 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
-import edu.ku.brc.ui.weblink.WebLinkDataProviderIFace;
 
 @SuppressWarnings("serial")
 @Entity
@@ -48,8 +48,7 @@ import edu.ku.brc.ui.weblink.WebLinkDataProviderIFace;
     })
 public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<TaxonAttachment>, 
                                                        Serializable, 
-                                                       Treeable<Taxon,TaxonTreeDef,TaxonTreeDefItem>,
-                                                       WebLinkDataProviderIFace
+                                                       Treeable<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
     /**
      * A <code>Logger</code> object used for all log messages emanating from
@@ -1247,15 +1246,20 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.weblink.WebLinkDataProviderIFace#getWebLinkData(java.lang.String)
      */
+    @Override
     public String getWebLinkData(String dataName)
     {
-        if (dataName.equals("species"))
+        if (StringUtils.isNotEmpty(dataName))
         {
-            return getSpeciesName();
-            
-        } else if (dataName.equals("genus"))
-        {
-            return getGenusName();
+            if (dataName.equals("species"))
+            {
+                return getSpeciesName();
+                
+            } else if (dataName.equals("genus"))
+            {
+                return getGenusName();
+            }
+            return super.getWebLinkData(dataName);
         }
         return null;
     }

@@ -32,6 +32,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,6 +43,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -49,7 +52,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.RecordSetIFace;
 
 /**
 
@@ -74,7 +76,7 @@ public class InfoRequest extends CollectionMember implements java.io.Serializabl
      protected Calendar  requestDate;
      protected Calendar  replyDate;
      protected String    remarks;
-     protected RecordSet recordSet;
+     protected Set<RecordSet> recordSets;
      protected Agent     agent;
 
 
@@ -104,7 +106,7 @@ public class InfoRequest extends CollectionMember implements java.io.Serializabl
         requestDate   = null;
         replyDate     = null;
         remarks       = null;
-        recordSet     = null;
+        recordSets    = new HashSet<RecordSet>();
         agent         = null;
         
         // XXX For Demo
@@ -256,28 +258,21 @@ public class InfoRequest extends CollectionMember implements java.io.Serializabl
     }
 
     /**
-     * 
+     * @return the recordSets
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "RecordSetID", unique = false, nullable = false, insertable = true, updatable = true)
-    public RecordSet getRecordSet() {
-        return this.recordSet;
-    }
-    
-    /**
-     * @param recordSet
-     */
-    public void setRecordSet(RecordSet recordSet)
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "infoRequest")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<RecordSet> getRecordSets()
     {
-        this.recordSet = recordSet;
+        return recordSets;
     }
 
     /**
-     * @param recordSet
+     * @param recordSets the recordSets to set
      */
-    public void setRecordSet(RecordSetIFace recordSet)
+    public void setRecordSets(Set<RecordSet> recordSets)
     {
-        this.recordSet = (RecordSet)recordSet;
+        this.recordSets = recordSets;
     }
 
     @Column(name = "Number", unique = false, nullable = true, insertable = true, updatable = true, length = 32)

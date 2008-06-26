@@ -1760,7 +1760,7 @@ public class ViewFactory
                         parentTitle = ti.getTitle();
                     }
                     
-                    UIRegistry.showLocalizedError(String.format(UIRegistry.getResourceString("INVALID_FIELD_NAME"), fieldNames[i], parentTitle));
+                    UIRegistry.showError(String.format(UIRegistry.getResourceString("INVALID_FIELD_NAME"), fieldNames[i], parentTitle));
                 }
                 if (fld != null)
                 {

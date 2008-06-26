@@ -126,7 +126,7 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
             
             // Bottom Button UI
             restoreBtn         = createButton(getResourceString("Restore"));
-            okBtn             = createButton(getResourceString("Close"));
+            okBtn             = createButton(getResourceString("CLOSE"));
 
             restoreBtn.setEnabled(false);
             

@@ -56,8 +56,8 @@ public class LocalizableBaseApp extends JFrame
                 "Build: " + appBuildVersion + 
                 "</html>"), BorderLayout.EAST);
         panel.setBorder(BorderFactory.createEmptyBorder(6,6,0,6));
-        CustomDialog aboutDlg = new CustomDialog(this, getResourceString("About") + " " +appName, true, CustomDialog.OK_BTN, panel);
-        aboutDlg.setOkLabel(getResourceString("Close"));
+        CustomDialog aboutDlg = new CustomDialog(this, getResourceString("ABOUT") + " " +appName, true, CustomDialog.OK_BTN, panel);
+        aboutDlg.setOkLabel(getResourceString("CLOSE"));
         UIHelper.centerAndShow(aboutDlg);
     }
     
