@@ -2548,13 +2548,16 @@ public final class UIHelper
     public static String getInstall4JInstallString()
     {
         Element root = XMLHelper.readDOMFromConfigDir(".." + File.separator + ".install4j" + File.separator + "i4jparams.conf");
-        for (Object obj : root.selectNodes("/config/variables/variable")) //$NON-NLS-1$
+        if (root != null)
         {
-            Element varObj = (Element)obj;
-            String name = XMLHelper.getAttr(varObj, "name", null); //$NON-NLS-1$
-            if (name.equals("sys.version"))
+            for (Object obj : root.selectNodes("/config/variables/variable")) //$NON-NLS-1$
             {
-                return XMLHelper.getAttr(varObj, "value", null); //$NON-NLS-1$
+                Element varObj = (Element)obj;
+                String name = XMLHelper.getAttr(varObj, "name", null); //$NON-NLS-1$
+                if (name.equals("sys.version"))
+                {
+                    return XMLHelper.getAttr(varObj, "value", null); //$NON-NLS-1$
+                }
             }
         }
         return null;
