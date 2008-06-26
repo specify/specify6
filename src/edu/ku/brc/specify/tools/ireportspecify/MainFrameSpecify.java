@@ -515,7 +515,7 @@ public class MainFrameSpecify extends MainFrame
         JReportFrame[] result = null;
 
         Vector<AppResourceIFace> list = new Vector<AppResourceIFace>();
-        // DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
 
@@ -523,20 +523,38 @@ public class MainFrameSpecify extends MainFrame
             String[] mimes = {"jrxml/label", "jrxml/report"};
             for (int m = 0; m < mimes.length; m++)
             {
+                
                 for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimes[m]))
                 {
-                    Properties params = ap.getMetaDataMap();
-                    
-                    String tableid = params.getProperty("tableid"); //$NON-NLS-1$
-                    String rptType = params.getProperty("reporttype"); //$NON-NLS-1$
-                    
-                    if (StringUtils.isNotEmpty(tableid) && 
-                       (StringUtils.isNotEmpty(rptType) && rptType.equals("Report")))
+                    if (ap instanceof SpAppResource)
                     {
-                        list.add(ap);
+                        if (((SpAppResource) ap).getSpAppResourceId() != null)
+                        {
+                            session.attach(ap);
+                            if (session.getData(SpReport.class, "appResource", ap,
+                                    DataProviderSessionIFace.CompareType.Equals) != null)
+                            {
+                                Properties params = ap.getMetaDataMap();
+
+                                String tableid = params.getProperty("tableid"); //$NON-NLS-1$
+                                String rptType = params.getProperty("reporttype"); //$NON-NLS-1$
+
+                                if (StringUtils.isNotEmpty(tableid)
+                                        && (StringUtils.isNotEmpty(rptType) && rptType
+                                                .equals("Report")))
+                                {
+                                    list.add(ap);
+                                }
+                            }
+                            session.evict(ap);
+                        }
                     }
                 }
             }
+        } finally
+        {
+            session.close();
+        }
             
             Collections.sort(list, new Comparator<AppResourceIFace>()
             {
@@ -568,11 +586,11 @@ public class MainFrameSpecify extends MainFrame
                     result[0] = openReportFromResource(appRes);
                 }
             }
+            else
+            {
+                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_NO_REPORTS_TO_EDIT"), "", JOptionPane.INFORMATION_MESSAGE);
+            }
             return result;
-        } finally
-        {
-            // session.close();
-        }
     }
 
     /**
@@ -728,6 +746,11 @@ public class MainFrameSpecify extends MainFrame
             {
                 spConns.add((QBJRDataSourceConnection)conn);
             }
+        }
+        if (spConns.size() == 0)
+        {
+            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_NO_QUERIES_FOR_DATA_SOURCES"), "", JOptionPane.INFORMATION_MESSAGE);
+            return null;
         }
         ChooseFromListDlg<QBJRDataSourceConnection> dlg = new ChooseFromListDlg<QBJRDataSourceConnection>(this, 
                 UIRegistry.getResourceString("REP_CHOOSE_SP_QUERY"), 
