@@ -2506,7 +2506,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     
     protected void refreshQuery()
     {
-        if (query != null)
+        if (query != null && query.getId() != null)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance()
             .createSession();
