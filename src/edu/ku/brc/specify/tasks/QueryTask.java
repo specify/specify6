@@ -1246,10 +1246,6 @@ public class QueryTask extends BaseTask
                {
                    log.error("no reports for query. Should't have gotten here.");
                }
-               else if (reps.size() == 1)
-               {
-                   selectedRep = reps.get(0);
-               }
                else
                {
                    ChooseFromListDlg<QBResultReportServiceInfo> dlg = new ChooseFromListDlg<QBResultReportServiceInfo>((Frame) UIRegistry
