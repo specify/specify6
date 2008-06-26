@@ -348,9 +348,9 @@ public class RecordSetProxy implements RecordSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.RecordSetIFace#setName(java.lang.String)
      */
-    public void setName(String name)
+    public void setName(String nameArg)
     {
-        throw new RuntimeException("Can't call on proxy");
+        this.name = nameArg;
     }
 
     /* (non-Javadoc)

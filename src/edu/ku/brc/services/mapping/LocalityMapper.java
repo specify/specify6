@@ -21,16 +21,13 @@ import javax.swing.ImageIcon;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
-//import org.jdesktop.animation.timing.Cycle;
-//import org.jdesktop.animation.timing.Envelope;
-//import org.jdesktop.animation.timing.TimingController;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.Animator.RepeatBehavior;
 
+import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.SimpleCircleIcon;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.services.MapGrabber;
 

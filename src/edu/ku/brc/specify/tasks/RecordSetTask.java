@@ -531,10 +531,11 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     {
         String sqlStr = "select count(rs.name) From RecordSet as rs Inner Join rs.specifyUser as user where rs.name = '"+newName+"' AND user.specifyUserId = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId();
         
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = null;
         int                      count   = -1;
         try
         {
+            session = DataProviderFactory.getInstance().createSession();
             Object result = session.getData(sqlStr);
             count =  result != null ? (Integer)result : 0;
             
@@ -543,13 +544,28 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             
         } finally 
         {
-            session.close();
+            if (session != null)
+            {
+                session.close();
+            }
         }
          
         if (count == 0)
         {
-            rs.setName(roc.getLabelText());
-            persistRecordSet(rs);    
+            RecordSet recordSet = null;
+            if (rs instanceof RecordSetProxy)
+            {
+                recordSet = ((RecordSetProxy)rs).getRecordSet();
+                ((RecordSetProxy)rs).setName(roc.getLabelText());
+                
+            } else if (rs instanceof RecordSet)
+            {
+                recordSet = (RecordSet)rs;
+            }
+            
+            recordSet.setName(roc.getLabelText());
+            persistRecordSet(recordSet); 
+            
         } else
         {
             String msg = String.format(UIRegistry.getResourceString("RecordSetTask.RENAMING_ERROR"), newName);
