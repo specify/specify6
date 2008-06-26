@@ -34,10 +34,15 @@ import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -864,6 +869,22 @@ public class MainFrameSpecify extends MainFrame
      */
     public static void main(String[] args)
     {
+        log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        // This is for Windows and Exe4J, turn the args into System Properties
+        for (String s : args)
+        {
+            String[] pairs = s.split("="); //$NON-NLS-1$
+            if (pairs.length == 2)
+            {
+                log.debug("["+pairs[0]+"]["+pairs[1]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                if (pairs[0].startsWith("-D")) //$NON-NLS-1$
+                {
+                    System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
+                } 
+            }
+        }
+        
+        // Now check the System Properties
         String appDir = System.getProperty("appdir"); //$NON-NLS-1$
         if (StringUtils.isNotEmpty(appDir))
         {
@@ -915,7 +936,7 @@ public class MainFrameSpecify extends MainFrame
         }
         log.debug(UIRegistry.getJavaDBPath());
 
-        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        final AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
         adjustLocaleFromPrefs();
 
@@ -923,8 +944,35 @@ public class MainFrameSpecify extends MainFrame
         HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener()); //$NON-NLS-1$
         HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener()); //$NON-NLS-1$
         
-       UIHelper.doLogin(true, false, false, new IReportLauncher(), null, "iReport"); // true means do auto login if it can, second bool means use dialog instead of frame
+        SwingUtilities.invokeLater(new Runnable() {
+            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
+          public void run()
+            {
+                
+                try
+                {
+                    UIHelper.OSTYPE osType = UIHelper.getOSType();
+                    if (osType == UIHelper.OSTYPE.Windows )
+                    {
+                        UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                        PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+                        
+                    } else if (osType == UIHelper.OSTYPE.Linux )
+                    {
+                        UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                    }
+                }
+                catch (Exception e)
+                {
+                    log.error("Can't change L&F: ", e); //$NON-NLS-1$
+                }
+                UIHelper.doLogin(true, false, false, new IReportLauncher(), null, "iReport"); // true means do auto login if it can, second bool means use dialog instead of frame
+                
+                localPrefs.load();
+                
+            }
+        });
+
        
-       localPrefs.load();
     }
 }
