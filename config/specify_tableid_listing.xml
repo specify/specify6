@@ -318,7 +318,7 @@
             <display view="TaxonTreeDefItem" dataobjformatter="" searchdlg="TaxonTreeDefItemSearch" newobjdlg="TaxonTreeDefItemDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.TaxonBusRules</businessrule>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.TreatmentEvent" abbrev="te" id="122"/>
+        <table name="edu.ku.brc.specify.datamodel.TreatmentEvent" abbrev="te" id="122" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.Workbench" abbrev="wb" id="79"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchDataItem" abbrev="wbdi" id="80"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchRow" abbrev="wbr" id="90"/>
