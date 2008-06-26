@@ -260,7 +260,11 @@ public class MainFrameSpecify extends MainFrame
             appRes.setDataAsString(xml.toString());
             AppContextMgr.getInstance().saveResource(appRes);
             
-            if (rep != null)
+            if (rep == null)
+            {
+                result = true;
+            }
+            else
             {
                 boolean createReport = true;
                 if (rep.getSpReport() != null)
