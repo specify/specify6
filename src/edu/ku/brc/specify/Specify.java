@@ -2395,19 +2395,25 @@ public class Specify extends JPanel implements DatabaseLoginListener
               {
                   if (true)
                   {
-                      ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
+                      try
                       {
-                        public void exited(int exitValue)
-                        {
-                            System.err.println("exitValue: "+exitValue);
-                            startApp(doConfig);
-                        }
-                        public void prepareShutdown()
-                        {
-                        }
-                          
-                      };
-                      ApplicationLauncher.launchApplication("100", null, true, callback);
+                          ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
+                          {
+                            public void exited(int exitValue)
+                            {
+                                System.err.println("exitValue: "+exitValue);
+                                startApp(doConfig);
+                            }
+                            public void prepareShutdown()
+                            {
+                            }
+                              
+                          };
+                          ApplicationLauncher.launchApplication("100", null, true, callback);
+                      } catch (Exception ex)
+                      {
+                          startApp(doConfig);
+                      }
                   } else
                   {
                       startApp(doConfig);
