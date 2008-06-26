@@ -437,14 +437,7 @@ public class MainFrameSpecify extends MainFrame
      */
     private static AppResourceIFace createAppRes(final String repResName, final Integer tableid)
     {
-        //XXX - which Dir???
-        //XXX - what level???
-        AppResourceIFace result = AppContextMgr.getInstance().createAppResourceForDir("Collection");
-        result.setName(repResName);
-        result.setDescription(result.getName());
-        result.setLevel((short)3); 
-
-        RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, result, tableid == null);
+        RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, "Report", tableid == null);
         boolean goodProps = false;
         CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
                 UIRegistry.getResourceString("REP_PROPS_DLG_TITLE"),
@@ -473,8 +466,10 @@ public class MainFrameSpecify extends MainFrame
         }    
         if (goodProps /*just in case*/)
         {
+            //XXX - which Dir???
+            //XXX - what level???
+            AppResourceIFace result = AppContextMgr.getInstance().createAppResourceForDir("Collection");
             result.setName(propPanel.getNameTxt().getText());
-            //result.setDescription(propPanel.getTitleTxt().getText());
             result.setDescription(propPanel.getNameTxt().getText());
             result.setLevel(Short.valueOf(propPanel.getLevelTxt().getText()));
             String metaDataStr = "tableid=" + propPanel.getTableId() + ";";

@@ -18,7 +18,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.CustomDialog;
@@ -39,10 +38,10 @@ public class RepResourcePropsPanel extends JPanel
      */
     protected final String reportName;
     /**
-     * the resource to be associated with it (not necessarily it's current resource, i guess)
+     * type of report ("Label" or "Report")
      */
-    protected final AppResourceIFace resource;
-    
+    protected final String reportType;
+        
     /**
      * the id of the table the report is designed for. 
      */
@@ -59,11 +58,11 @@ public class RepResourcePropsPanel extends JPanel
      * @param report
      * @param resource
      */
-    public RepResourcePropsPanel(final String reportName, final AppResourceIFace resource, final boolean showTableIds)
+    public RepResourcePropsPanel(final String reportName, final String reportType, final boolean showTableIds)
     {
         super();
         this.reportName = reportName;
-        this.resource = resource;
+        this.reportType = reportType;
         this.showTableIds = showTableIds;
         createUI();
     }
@@ -74,42 +73,41 @@ public class RepResourcePropsPanel extends JPanel
         PanelBuilder builder = new PanelBuilder(new FormLayout("right:p, 2dlu, fill:p:grow", rowDefStr), this);
         CellConstraints cc = new CellConstraints();
         
-        builder.add(new JLabel(UIRegistry.getResourceString("REP_NAME_LBL")), cc.xy(1,1));
-        nameTxt = new JTextField(reportName != null? reportName : "untitled");
+        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_NAME_LBL")), cc.xy(1,1));
+        nameTxt = UIHelper.createTextField(reportName != null? reportName : "untitled");
         builder.add(nameTxt, cc.xy(3, 1));
         
-        JLabel titleLbl = new JLabel(UIRegistry.getResourceString("REP_TITLE_DESC_LBL"));
+        JLabel titleLbl = UIHelper.createLabel(UIRegistry.getResourceString("REP_TITLE_DESC_LBL"));
         builder.add(titleLbl, cc.xy(1,2));
-        titleTxt = new JTextField(resource != null ? resource.getDescription() : "none");
+        titleTxt = UIHelper.createTextField("none");
         builder.add(titleTxt, cc.xy(3, 2));
         titleLbl.setVisible(false);
         titleTxt.setVisible(false);
         
-        builder.add(new JLabel(UIRegistry.getResourceString("REP_LEVEL_LBL")), cc.xy(1,3));
-        levelTxt = new JTextField("3");
+        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_LEVEL_LBL")), cc.xy(1,3));
+        levelTxt = UIHelper.createTextField("3");
         levelTxt.setEnabled(false);
         builder.add(levelTxt, cc.xy(3, 3));
         
-        builder.add(new JLabel(UIRegistry.getResourceString("REP_REPTYPE_LBL")), cc.xy(1,4));
-        typeCombo = new JComboBox();
+        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPTYPE_LBL")), cc.xy(1,4));
+        typeCombo = UIHelper.createComboBox();
         typeCombo.addItem(UIRegistry.getResourceString("REP_REPORT"));
         typeCombo.addItem(UIRegistry.getResourceString("REP_LABEL"));
-        String repType = resource != null ? resource.getMetaDataMap().getProperty("reporttype") : null;
-        if (repType != null && repType.equals("Label"))
+        if (reportType != null && reportType.equals("Label"))
         {
             typeCombo.setSelectedIndex(1);
         }
         builder.add(typeCombo, cc.xy(3, 4));
         
-        builder.add(new JLabel(UIRegistry.getResourceString("REP_RESDIR_LBL")), cc.xy(1,5));
-        resDirTxt = new JTextField("Collection");
+        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_RESDIR_LBL")), cc.xy(1,5));
+        resDirTxt = UIHelper.createTextField("Collection");
         resDirTxt.setEnabled(false);
         builder.add(resDirTxt, cc.xy(3, 5));
 
         if (showTableIds)
         {
-            builder.add(new JLabel(UIRegistry.getResourceString("REP_TBL_LBL")), cc.xy(1,6));
-            tblCombo = new JComboBox();
+            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_TBL_LBL")), cc.xy(1,6));
+            tblCombo = UIHelper.createComboBox();
             fillTblCombo();
             tblCombo.setSelectedIndex(0);
             builder.add(tblCombo, cc.xy(3, 6));
