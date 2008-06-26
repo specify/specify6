@@ -89,35 +89,11 @@ public class ReportsTask extends ReportsBaseTask
     public void preInitialize()
     {
         super.preInitialize();
-        
-//        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("Create_New_Report"), name, 
-//                getResourceString("CREATE_REPORT_TT"), IconManager.STD_ICON_SIZE, 
-//                new ActionListener() {
-//
-//                    /* (non-Javadoc)
-//                     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-//                     */
-//                    //@Override
-//                    public void actionPerformed(ActionEvent e)
-//                    {
-//                        System.out.println("You clicked 'Create New Report'");
-//                        CommandAction cmd = new CommandAction(REPORTS, OPEN_EDITOR, SpReport.getClassTableId());
-//                        cmd.setProperty("newwizard", "true");
-//                        CommandDispatcher.dispatch(cmd);
-//                    }
-//        }));
-                
-//        RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(actionNavBox, getResourceString("ReportEditor"), "EditIcon", 
-//                getResourceString("EDIT_REPORT_TT"), 
-//                new CommandAction(REPORTS, OPEN_EDITOR, SpReport.getClassTableId()), null, true, false);// true means make it draggable
-//        roc.addDropDataFlavor(spReportFlavor);
-//        roc.addDragDataFlavor(new DataFlavor(SpReport.class, OPEN_EDITOR));
-       
+               
         RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(actionNavBox, getResourceString("ReportRunner"), name, 
                 getResourceString("RUN_REPORT_TT"), 
-                new CommandAction(REPORTS, RUN_REPORT, SpReport.getClassTableId()), null, true, false);// true means make it draggable
+                new CommandAction(REPORTS, RUN_REPORT, SpReport.getClassTableId()), null, false, false);// true means make it draggable
         roc.addDropDataFlavor(runReportFlavor);
-        roc.addDragDataFlavor(runReportFlavor);   
         
         actionNavBox.add(NavBox.createBtnWithTT(getResourceString("RefreshReports"), name,
                 getResourceString("REFRESH_REPORT_TT"), IconManager.STD_ICON_SIZE,

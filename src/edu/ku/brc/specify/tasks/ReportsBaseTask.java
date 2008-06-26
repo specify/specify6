@@ -111,9 +111,6 @@ public class ReportsBaseTask extends BaseTask
     protected DataFlavor              defaultFlavor    = null;
     protected DataFlavor              spReportFlavor   = new DataFlavor(SpReport.class, "SpReport");
     protected DataFlavor              runReportFlavor  = new DataFlavor(SpReport.class, RUN_REPORT);
-    protected DataFlavor              editReportFlavor = new DataFlavor(SpReport.class, OPEN_EDITOR);  
-    //protected String[]                mimeTypes        = null;
-    //protected String[]                navBoxNames      = null;
     protected List<Pair<String,String>>   navMimeDefs      = null;
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
     protected Vector<NavBoxItemIFace> reportsList      = new Vector<NavBoxItemIFace>();
@@ -336,7 +333,6 @@ public class ReportsBaseTask extends BaseTask
                                             true); // true means add sorted
         reportsList.add(nbi);
         
-        //XXX work out appResource/SpReport details...
         RolloverCommand roc = (RolloverCommand)nbi;
         String tblIdStr = tcd.getParams().getProperty("tableid");
         if (StringUtils.isEmpty(tblIdStr))
@@ -354,8 +350,6 @@ public class ReportsBaseTask extends BaseTask
         if (cmdAction.getProperties().get("spreport") != null)
         {
             roc.addDragDataFlavor(spReportFlavor);
-            roc.addDropDataFlavor(runReportFlavor);
-            roc.addDropDataFlavor(editReportFlavor);
             if (tblContext != null)
             {
                 roc.addDropDataFlavor(new DataFlavorTableExt(ReportsBaseTask.class, "RECORD_SET", tblContext));
