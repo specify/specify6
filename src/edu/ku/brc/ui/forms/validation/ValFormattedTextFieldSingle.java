@@ -101,13 +101,13 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     protected boolean                     isFromUIFmtOverride = false;
     protected Integer                     suggestedNumCols    = null;
     
-    protected Object                      origValue      = null;
-    protected UndoManager                 undoManager    = null;
+    protected Object                      origValue           = null;
+    protected UndoManager                 undoManager         = null;
     
     //--- Background Drawing of faint text
-    protected String                      bgStr     = null;
-    protected Point                       pnt       = null;
-    protected Color                       textColor = new Color(0,0,0,64);
+    protected String                      bgStr               = null;
+    protected Point                       pnt                 = null;
+    protected Color                       textColor           = new Color(200,200,200);
     protected Insets                      inner;
     
     /**
