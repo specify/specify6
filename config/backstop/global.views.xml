@@ -1336,6 +1336,7 @@
             <desc><![CDATA[New Storage Node Form]]></desc>
             <enableRules>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
+                <!-- AshleyJohn Storeadd --><rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
             <columnDef>100px,3dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
@@ -1359,6 +1360,14 @@
                 <row>
                     <cell type="label" labelfor="definitionItem"/>
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
+                </row>
+                <!-- AshleyJohn Storeadd --><row>
+                	<cell type="label" labelfor="isAccepted"/>
+                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="acceptedParent" label="ACCEPTEDPARENT"/>
+                	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Storage;title=Storage;editbtn=false;newbtn=false" name="acceptedParent"/>
                 </row>
                 <row>
                     <cell type="separator" label="CHILDREN" colspan="3"/>
