@@ -1363,7 +1363,7 @@
                 </row>
                 <!-- AshleyJohn Storeadd --><row>
                 	<cell type="label" labelfor="isAccepted"/>
-                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true"/>
+                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="acceptedParent" label="ACCEPTEDPARENT"/>
