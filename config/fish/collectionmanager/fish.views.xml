@@ -108,7 +108,9 @@
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
                 </row>
              <!--   <row>
-                    <cell type="subview" viewname="TreatmentEventForCollObj" id="23" name="treatmentEvents" colspan="12" initialize="btn=true"/>
+                    <cell type="subview" viewname="TreatmentEventForCollObj" id="23" name="treatmentEvents" initialize="btn=true"/>
+                    
+                    <cell type="subview" viewname="DNASequence" id="14" name="dnaSequence" initialize="btn=true"/>
                 </row> -->
                 <row>
 			  <cell type="separator" label="Attachments" colspan="12"/>
