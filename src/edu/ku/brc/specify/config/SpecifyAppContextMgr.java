@@ -62,6 +62,7 @@ import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpAppResourceData;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
@@ -167,14 +168,41 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
 
     /**
+     * @return the array of virtual directory names.
+     */
+    public static String[] getVirtualDirNames()
+    {
+        //                     0            1             2             3             4           5
+        String[] levels = {PERSONALDIR, USERTYPEDIR, COLLECTIONDIR, DISCPLINEDIR, COMMONDIR, BACKSTOPDIR};
+        return levels;
+    }
+
+    /**
      * Returns the String name of the level given a level index.
      * @param index the index of the level
      * @return the name of the level
      */
     public static String getVirtualDirName(final int index)
     {
-        String[] levels = {PERSONALDIR, USERTYPEDIR, COLLECTIONDIR, DISCPLINEDIR, COMMONDIR, BACKSTOPDIR};
+        String[] levels = getVirtualDirNames();
         return levels[index];
+    }
+
+    /**
+     * @param virtualDirName the name of the virtual Directory
+     * @return the index of the virtual directory name
+     */
+    public static int getVirtualDirIndex(final String virtualDirName)
+    {
+        String[] levels = getVirtualDirNames();
+        for (int i=0;i<levels.length;i++)
+        {
+            if (virtualDirName.equals(levels[i]))
+            {
+                return i;
+            }
+        }
+        throw new RuntimeException("Virtual Directory name ["+virtualDirName+"] isn't found.");
     }
 
     /**
@@ -614,13 +642,65 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param virtualDirName
      */
     public AppResourceIFace revertResource(final String virtualDirName,
-                                           final AppResourceIFace appRes)
+                                           final AppResourceIFace appResource)
     {
-        Pair<String, File> pair = viewSetMgrHash.get(virtualDirName);
+        int                 virtualNameIndex = getVirtualDirIndex(virtualDirName);
+        String[] levels = getVirtualDirNames();
         
-        AppResourceMgr   appResMgr = new AppResourceMgr();
-        AppResourceIFace newAppRes = appResMgr.loadResourceByName(pair.second, appRes.getName());
-        return newAppRes;
+        SpAppResource    fndAppRes = null;
+        SpAppResourceDir fndAppDir = null;
+        for (int i=virtualNameIndex;i<levels.length;i++)
+        {
+            fndAppDir = spAppResourceList.get(i);
+            for (SpAppResource appRes : (new ArrayList<SpAppResource>(fndAppDir.getSpAppResources())))
+            {
+                System.out.println(appRes.getFileName());
+                
+                if (appRes.getName().equals(appResource.getName()))
+                {
+                    fndAppRes = appRes;
+                    
+                    if (fndAppRes.getSpAppResourceId() == null)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (fndAppRes == null)
+        {
+            throw new RuntimeException("Couldn't find resource with name["+appResource.getName()+"]");
+        }
+        
+        if (fndAppRes.getSpAppResourceId() == null)
+        {
+            String         path      = fndAppRes.getFileName();
+            String         dirPath   = path.substring(0, path.length() - (new File(path).getName().length())-1);
+            AppResourceMgr appResMgr = new AppResourceMgr();
+            SpAppResource  newAppRes = (SpAppResource)appResMgr.loadResourceByName(new File(dirPath), appResource.getName());
+            removeAppResource(virtualDirName, appResource);
+            
+            return newAppRes;
+        }
+        
+        try
+        {
+            SpAppResource newAppRes = (SpAppResource)fndAppRes.clone();
+            for (SpAppResourceData data : fndAppRes.getSpAppResourceDatas())
+            {
+                SpAppResourceData newData = (SpAppResourceData)data.clone();
+                newAppRes.addReference(newData, "spAppResourceDatas");
+            }
+            removeAppResource(virtualDirName, appResource);
+            saveResource(newAppRes);
+            
+            return newAppRes;
+            
+        } catch (CloneNotSupportedException ex)
+        {
+            throw new RuntimeException(ex);
+        }
     }
     
     /**
@@ -1354,6 +1434,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         } catch (Exception ex)
         {
             log.error(ex);
+            ex.printStackTrace();
             
         } finally 
         {
@@ -1639,7 +1720,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appResDir.getSpPersistedAppResources().remove(appRes);
                 appResDir.getSpAppResources().remove(appRes);
                 session.saveOrUpdate(appResDir);
-                session.evict(appResDir);
                 session.delete(appRes);
                 session.commit();
                 session.flush();
@@ -1799,7 +1879,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                 
                                 appResources.put(name, appRes);
 
-                            } else
+                            } else if (name == null)
                             {
                                 log.error("AppResource Name["+name+"] is in use.");
                             }
@@ -1816,6 +1896,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     ex.printStackTrace();
                     log.error(ex);
                 }
+            } else
+            {
+                log.error("Directory ["+file.getAbsolutePath()+"] doesn't exist!");
             }
         }
 

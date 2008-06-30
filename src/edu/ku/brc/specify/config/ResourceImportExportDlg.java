@@ -289,8 +289,6 @@ public class ResourceImportExportDlg extends CustomDialog
             if (index > -1)
             {
                 AppResourceIFace appRes = resources.get(index);
-                //fileName = FilenameUtils.getName(appRes.getName());
-                //data = appRes.getDataAsString();
                 
                 AppResourceIFace revertedNewAR = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertResource(virtualDirName, appRes);
                 if (revertedNewAR != null)
