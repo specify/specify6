@@ -676,6 +676,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                             row       = new Vector<Object>();
                             firstTime = false;
                             cache.add(row);
+                            ids.add(id);
                             
                         } else if (id != prevId)
                         {
@@ -695,6 +696,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                 
                                 row = new Vector<Object>();
                                 cache.add(row);
+                                ids.add(id);
                             }
                             prevId = id;
                             
@@ -702,14 +704,14 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                         {
                             row = new Vector<Object>();
                             cache.add(row);
+                            ids.add(id);
                         }
                     } else
                     {
                         row = new Vector<Object>();
                         cache.add(row);
+                        ids.add(id);
                     }
-                    
-                    ids.add(id);
                     
                     // Now for each Caption column get a value
                     for (ERTICaptionInfo caption :  captions)
