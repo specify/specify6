@@ -514,12 +514,12 @@ public class DataEntryTask extends BaseTask
                     
                 } else
                 {
-                    log.error("View's Class name["+view.getClassName()+"] was found in the DBTableIdMgr");
+                    UIRegistry.showError("View's Class name["+view.getClassName()+"] was found in the DBTableIdMgr");
                 }
                 
             } else
             {
-                log.error("View doesn't exist view["+dev.getView()+"]");
+                UIRegistry.showError("View doesn't exist view["+dev.getView()+"] for entry in dataentry_task.xml");
             }
         }
     }
@@ -546,7 +546,7 @@ public class DataEntryTask extends BaseTask
 
             } else
             {
-                log.debug("Couldn't find view["+dev.getView()+"]");
+                UIRegistry.showError("Couldn't find view["+dev.getView()+"] for entry in dataentry_task.xml");
             }
         }
     }
@@ -602,7 +602,6 @@ public class DataEntryTask extends BaseTask
         {
             try
             {
-                int x= 0 ;
                 XStream xstream = new XStream();
                 
                 config(xstream);
