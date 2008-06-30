@@ -208,7 +208,7 @@ public class DataObjAggregator
 		xmlAttr(sb, "separator", 	  separator);                  sb.append(padding);
 		xmlAttr(sb, "ending", 		  ending);                     sb.append(padding);
 		xmlAttr(sb, "count",          String.valueOf(count));      sb.append(padding);
-		xmlAttr(sb, "formatName",     formatName);                 sb.append(padding);
+		xmlAttr(sb, "format",         formatName);                 sb.append(padding);
         xmlAttr(sb, "orderFieldName", orderFieldName);             sb.append(padding);
 		sb.append("/>\n\n");
 	}
