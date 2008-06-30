@@ -102,6 +102,10 @@ public class DataEntryView implements TaskConfigItemIFace, Comparable<TaskConfig
      */
     public void setTableInfo(DBTableInfo tableInfo)
     {
+        if (tableInfo == null)
+        {
+            throw new RuntimeException("tableInfo is null!");
+        }
         this.tableInfo = tableInfo;
     }
 

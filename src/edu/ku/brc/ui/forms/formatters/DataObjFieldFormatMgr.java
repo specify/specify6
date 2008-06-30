@@ -168,15 +168,15 @@ public class DataObjFieldFormatMgr
             return XMLHelper.readDOMFromConfigDir("backstop/dataobj_formatters.xml"); //$NON-NLS-1$
         }
 
-        AppContextMgr instance = AppContextMgr.getInstance();
+        AppContextMgr appMgrInstance = AppContextMgr.getInstance();
         
-        if (instance != null)
+        if (appMgrInstance != null)
         {
-        	AppResourceIFace appRes = instance.getResourceFromDir("Collection", "DataObjFormatters"); //$NON-NLS-1$ //$NON-NLS-2$
+        	AppResourceIFace appRes = appMgrInstance.getResourceFromDir("Collection", "DataObjFormatters"); //$NON-NLS-1$ //$NON-NLS-2$
         
         	if (appRes != null)
         	{
-        		return AppContextMgr.getInstance().getResourceAsDOM(appRes);
+        		return appMgrInstance.getResourceAsDOM(appRes);
         	} 
         }
         

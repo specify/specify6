@@ -61,7 +61,6 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -603,6 +602,7 @@ public class DataEntryTask extends BaseTask
         {
             try
             {
+                int x= 0 ;
                 XStream xstream = new XStream();
                 
                 config(xstream);
@@ -852,17 +852,23 @@ public class DataEntryTask extends BaseTask
                 "DET_MOVE_TO_STD_TT");
         dlg.setVisible(true);
         if (!dlg.isCancelled())
-{
+        {
             // Unregister all the exiting DataViewEntry Objects
             // they will get registered.
             for (DataEntryView entry : stdViews)
             {
-                ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, entry.getTableInfo().getTableId());  
+                if (entry.getTableInfo() != null)
+                {
+                    ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, entry.getTableInfo().getTableId());
+                }
             }
             
             for (DataEntryView entry : miscViews)
             {
-                ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, entry.getTableInfo().getTableId());  
+                if (entry.getTableInfo() != null)
+                {
+                    ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, entry.getTableInfo().getTableId());  
+                }
             }
             
             // Clear the current lists
