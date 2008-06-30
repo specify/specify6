@@ -44,8 +44,8 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.DroppableNavBox;
 import edu.ku.brc.af.core.MenuItemDesc;
+import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
@@ -97,7 +97,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     protected Vector<DataFlavor> droppableFlavors = new Vector<DataFlavor>();
 
     // Data Members
-    protected DroppableNavBox navBox = null;
+    protected NavBox navBox = null;
 
     /**
      * Default Constructor
@@ -131,8 +131,9 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 ContextMgr.registerService(ti.getTitle(), ti.getTableId(), new CommandAction(RECORD_SET, SAVE_RECORDSET), this, RECORD_SET, getResourceString("CreateRecordSetTT"));    
             }
             
-            navBox = new DroppableNavBox(title, RECORDSET_FLAVOR, RECORD_SET, SAVE_RECORDSET);
-
+            //navBox = new DroppableNavBox(title, RECORDSET_FLAVOR, RECORD_SET, SAVE_RECORDSET);
+            navBox = new NavBox(title);
+            
             // TODO RELEASE Search for the the users or group's RecordSets!
             //List<?> recordSets = session.getDataList("FROM RecordSet where type = 0");
             SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
