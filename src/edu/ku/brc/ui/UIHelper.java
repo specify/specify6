@@ -110,7 +110,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -136,6 +135,7 @@ import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCellIFace;
 
@@ -1124,12 +1124,26 @@ public final class UIHelper
                 if (inx > -1)
                 {
                     StringTokenizer st = new StringTokenizer(fldName, ".");
-                    Object data = dataObj;
+                    Object data       = dataObj;
+                    Object parentData = null;
+                    String fieldName  = null;
                     while (data != null && st.hasMoreTokens())
                     {
-                        data = getter.getFieldValue(data, st.nextToken());
+                        parentData = data;
+                        fieldName  = st.nextToken();
+                        data = getter.getFieldValue(parentData, fieldName);
                     }
+                    
                     dataValue = data;
+                    if (parentData instanceof FormDataObjIFace && dataValue != null)
+                    {
+                        FormDataObjIFace parentObj = (FormDataObjIFace)parentData;
+                        UIFieldFormatterIFace fmtr = DBTableIdMgr.getFieldFormatterFor(parentObj.getDataClass(), fieldName);
+                        if (fmtr != null)
+                        {
+                            dataValue = fmtr.formatToUI(dataValue);
+                        }
+                    }
                 } else
                 {
                     dataValue = getter.getFieldValue(dataObj, fldName);
