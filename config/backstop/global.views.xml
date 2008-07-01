@@ -2027,6 +2027,7 @@
             
             <desc><![CDATA[The ObjectAttachment form.]]></desc>
             
+   <!--         <columnDef>110px,2dlu,p:g,5dlu,100px,2dlu,85px</columnDef> -->
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
@@ -2038,7 +2039,36 @@
                 	<cell type="label" labelfor="title" label="TITLE"/>
                 	<cell type="field" id="title" name="attachment.title" cols="30"/>
                 </row>
-			</rows>
+    		    <!--	    <row>
+    		        <cell type="label" labelfor="dateImaged" label="Date Imaged"/>
+    		        <cell type="field" id="dateImaged" name="attachment.dateImaged" uitype="formattedtext" uifieldformatter="Date" default="today" cols="20"/>
+    		        <cell type="label" labelfor="fileCreatedDate" label="File Created Date"/>
+    		        <cell type="field" id="fileCreatedDate" name="attachment.fileCreatedDate" uitype= "formattedtext" uifieldformatter="Date" default="today" cols="30"/>
+    		        </row>
+    		        <row>
+    		        <cell type="label" labelfor="copyrightHolder" label="Copyright Holder"/>
+    		        <cell type="field" id="copyrightHolder" name="attachment.copyrightHolder" uitype="text" cols="20"/>
+    		        <cell type="label" labelfor="copyrightDate" label="Copyright Date"/>
+    		        <cell type="field" id="copyrightDate" name="attachment.copyrightDate" uitype="formattedtext" uifieldformatter="Date"/>
+    		        </row>
+    		        <row>
+    		        <cell type="label" labelfor="attachmentLocation" label="Attachment Location"/>
+    		        <cell type="field" id="attachmentLocation" name="attachment.attachmentLocation" uitype="text" cols="30"/>
+    		        <cell type="label" labelfor="license" label="License"/>
+    		        <cell type="field" id="license" name="attachment.license" uitype="text" cols="30"/>
+    		        </row>
+    		        <row>
+    		        <cell type="label" labelfor="credit" label="Credit"/>
+    		        <cell type="field" id="credit" name="attachment.credit" uitype="text" cols="20"/>
+    		        <cell type="label" labelfor="mimeType" label="Mime Type"/>
+    		        <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text" cols="20"/>
+    		        </row>
+    		        <row>
+    		        <cell type="label" labelfor="remarks" label="Remarks"/>
+    		        <cell type="field" id="remarks" name="attachment.remarks" uitype="textarea"/>
+    		        </row>
+    		    -->	
+    		</rows>
 		</viewdef>
 
         <viewdef
