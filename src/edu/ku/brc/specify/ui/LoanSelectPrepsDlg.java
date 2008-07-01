@@ -104,7 +104,7 @@ public class LoanSelectPrepsDlg extends JDialog
     {
         this.colObjs = colObjs;
         
-        setTitle("Create Loan from Preparations"); // I18N
+        setTitle(getResourceString("LoanSelectPrepsDlg.CREATE_LN_FR_PREP"));
         
         //List<Object> dataObjs = BuildSampleDatabase.createSingleDiscipline("fish", "fish");       
         //List<CollectionObject> colObjs = (List<CollectionObject>)BuildSampleDatabase.getObjectsByClass(dataObjs, CollectionObject.class);
@@ -164,21 +164,18 @@ public class LoanSelectPrepsDlg extends JDialog
         int y = 1;
         for (CollectionObject co : colObjList)
         {
-            if (getCurrentDetermination(co) != null)
+            if (i > 0)
             {
-                if (i > 0)
-                {
-                    pbuilder.addSeparator("", cc.xy(1,y));
-                }
-                y += 2;
-                
-                ColObjPanel panel = new ColObjPanel(this, co);
-                colObjPanels.add(panel);
-                panel.addActionListener(al, cl);
-                pbuilder.add(panel, cc.xy(1,y));
-                y += 2;
-                i++;
+                pbuilder.addSeparator("", cc.xy(1,y));
             }
+            y += 2;
+            
+            ColObjPanel panel = new ColObjPanel(this, co);
+            colObjPanels.add(panel);
+            panel.addActionListener(al, cl);
+            pbuilder.add(panel, cc.xy(1,y));
+            y += 2;
+            i++;
         }
         JButton selectAllBtn = createButton(getResourceString("SELECTALL"));
         okBtn = createButton(getResourceString("OK"));
@@ -323,24 +320,45 @@ public class LoanSelectPrepsDlg extends JDialog
             PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", "p,5px,p"), this);
             CellConstraints cc      = new CellConstraints();
      
-            String taxonName = "";
-            for (Determination deter : colObj.getDeterminations())
+            String        taxonName     = null;
+            Determination newestDet     = null;
+            long          newestDetDate = -1;
+            
+            if (colObj.getDeterminations().size() > 0)
             {
-                if (deter.getStatus().getType() == DeterminationStatus.CURRENT)
+                for (Determination deter : colObj.getDeterminations())
                 {
-                    if (deter.getTaxon().getFullName() == null)
+                    if (deter.getStatus().getType() == DeterminationStatus.CURRENT)
                     {
-                        Taxon parent = deter.getTaxon().getParent();
-                        String genus = parent.getFullName() == null ? parent.getName() : parent.getFullName();
-                        taxonName = genus + " " + deter.getTaxon().getName();
-                        
+                        taxonName = getTaxonName(deter);
+                        break;
+                    }
+                    
+                    // Try to find the newest Determination
+                    long date = getRepresentitiveDate(deter);
+                    if (newestDetDate != -1 && date != -1 && deter.getTaxon() != null)
+                    {
+                        if (date < newestDetDate)
+                        {
+                            newestDetDate = date;
+                            newestDet     = deter;
+                        }
+                    }
+                }
+                
+                if (taxonName == null)
+                {
+                    if (newestDet != null)
+                    {
+                        taxonName = getTaxonName(newestDet);
                     } else
                     {
-                        taxonName = deter.getTaxon().getFullName();
+                        taxonName = getResourceString("LoanSelectPrepsDlg.NO_DET");
                     }
-
-                    break;
                 }
+            } else
+            {
+                taxonName = getResourceString("LoanSelectPrepsDlg.NO_DET");
             }
             String descr = String.format("%s - %s", colObj.getIdentityTitle(), taxonName);
             descr = StringUtils.stripToEmpty(descr);
@@ -393,6 +411,36 @@ public class LoanSelectPrepsDlg extends JDialog
                     repaint();
                 }
             });
+        }
+        
+        public String getTaxonName(final Determination deter)
+        {
+            String taxonName;
+            if (deter.getTaxon().getFullName() == null)
+            {
+                Taxon  parent = deter.getTaxon().getParent();
+                String genus  = parent.getFullName() == null ? parent.getName() : parent.getFullName();
+                taxonName = genus + " " + deter.getTaxon().getName();
+                
+            } else
+            {
+                taxonName = deter.getTaxon().getFullName();
+            }
+            return taxonName;
+        }
+        
+        public long getRepresentitiveDate(final Determination det)
+        {
+            if (det.getDeterminedDate() != null)
+            {
+                return det.getDeterminedDate().getTime().getTime();
+            }
+            
+            if (det.getTimestampCreated() != null)
+            {
+                return det.getTimestampCreated().getTime();
+            }
+            return -1;
         }
         
         public void addActionListener(final ActionListener al, final ChangeListener cl)
