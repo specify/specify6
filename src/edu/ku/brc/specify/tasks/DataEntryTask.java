@@ -475,46 +475,48 @@ public class DataEntryTask extends BaseTask
                 
                 //System.err.println(tableInfo.getName()+"  "+tableInfo.isHidden());
                 
-                if (tableInfo != null && !tableInfo.isHidden())
+                if (tableInfo != null)
                 {
-                    CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);
-                    //cmdAction.setProperty("viewset", dev.getViewSet());
-                    cmdAction.setProperty("view",    dev.getView());
-                    
-                    ContextMgr.registerService(dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
-                    
-                    if (dev.isSideBar())
+                    if (!tableInfo.isHidden())
                     {
-                        cmdAction = new CommandAction(DATA_ENTRY, OPEN_NEW_VIEW);
-                        //cmdAction.setProperty("viewset",   dev.getViewSet());
-                        cmdAction.setProperty("view",      dev.getView());
-                        cmdAction.setProperty("tableInfo", dev.getTableInfo());
+                        CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);
+                        //cmdAction.setProperty("viewset", dev.getViewSet());
+                        cmdAction.setProperty("view",    dev.getView());
                         
-                        NavBoxAction nba = new NavBoxAction(cmdAction);
+                        ContextMgr.registerService(dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
                         
-                        NavBoxItemIFace nbi = NavBox.createBtnWithTT(tableInfo.getTitle(), dev.getIconName(), dev.getToolTip(), IconManager.STD_ICON_SIZE, nba);
-                        if (nbi instanceof NavBoxButton)
+                        if (dev.isSideBar())
                         {
-                            NavBoxButton nbb = (NavBoxButton)nbi;
-                            if (isColObj)
-                            {
-                               colObjNavBtn = nbb; 
-                            }
+                            cmdAction = new CommandAction(DATA_ENTRY, OPEN_NEW_VIEW);
+                            //cmdAction.setProperty("viewset",   dev.getViewSet());
+                            cmdAction.setProperty("view",      dev.getView());
+                            cmdAction.setProperty("tableInfo", dev.getTableInfo());
                             
-                            // When Being Dragged
-                            nbb.addDragDataFlavor(Trash.TRASH_FLAVOR);
-                            nbb.addDragDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "Data_Entry", tableInfo.getTableId()));
-                    
-                            // When something is dropped on it
-                            nbb.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", tableInfo.getTableId()));//RecordSetTask.RECORDSET_FLAVOR);
+                            NavBoxAction nba = new NavBoxAction(cmdAction);
+                            
+                            NavBoxItemIFace nbi = NavBox.createBtnWithTT(tableInfo.getTitle(), dev.getIconName(), dev.getToolTip(), IconManager.STD_ICON_SIZE, nba);
+                            if (nbi instanceof NavBoxButton)
+                            {
+                                NavBoxButton nbb = (NavBoxButton)nbi;
+                                if (isColObj)
+                                {
+                                   colObjNavBtn = nbb; 
+                                }
+                                
+                                // When Being Dragged
+                                nbb.addDragDataFlavor(Trash.TRASH_FLAVOR);
+                                nbb.addDragDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "Data_Entry", tableInfo.getTableId()));
+                        
+                                // When something is dropped on it
+                                nbb.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", tableInfo.getTableId()));//RecordSetTask.RECORDSET_FLAVOR);
+                            }
+        
+                            viewsNavBox.add(nbi);
                         }
-    
-                        viewsNavBox.add(nbi);
                     }
-                    
-                } else
+                } else 
                 {
-                    UIRegistry.showError("View's Class name["+view.getClassName()+"] was found in the DBTableIdMgr");
+                    UIRegistry.showError("View's Class name["+view.getClassName()+"] was not found in the DBTableIdMgr");
                 }
                 
             } else
