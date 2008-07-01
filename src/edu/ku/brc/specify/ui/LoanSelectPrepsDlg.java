@@ -233,6 +233,11 @@ public class LoanSelectPrepsDlg extends JDialog
         setSize(size);
     }
     
+    /**
+     * Returns the current Determination for a Collection Object
+     * @param colObj the collection object
+     * @return the current Determination
+     */
     protected Determination getCurrentDetermination(final CollectionObject colObj)
     {
         for (Determination d : colObj.getDeterminations())
@@ -245,12 +250,18 @@ public class LoanSelectPrepsDlg extends JDialog
         return null;
     }
     
+    /**
+     * Enables the OK btn depending on what is activated.
+     */
     protected void doEnableOKBtn()
     {
         int count = 0;
         for (ColObjPanel pp : colObjPanels)
         {
-            count += pp.getNewLoanCount();
+            if (pp.isColObjEnabled())
+            {
+                count += pp.getNewLoanCount();
+            }
         }
         okBtn.setEnabled(count > 0);
         //if (count > 0)
@@ -283,11 +294,14 @@ public class LoanSelectPrepsDlg extends JDialog
         
         for (ColObjPanel colObjPanel : colObjPanels)
         {
-            for (PrepPanel pp : colObjPanel.getPanels())
+            if (colObjPanel.isColObjEnabled())
             {
-                if (pp.getCount() > 0)
+                for (PrepPanel pp : colObjPanel.getPanels())
                 {
-                    hash.put(pp.getPreparation(), pp.getCount());
+                    if (pp.getCount() > 0)
+                    {
+                        hash.put(pp.getPreparation(), pp.getCount());
+                    }
                 }
             }
         }
@@ -376,7 +390,6 @@ public class LoanSelectPrepsDlg extends JDialog
                     {
                         pp.setEnabled(checkBox.isSelected());
                     }
-                    //System.out.println(getNewLoanCount());
                     repaint();
                 }
             });
@@ -408,9 +421,9 @@ public class LoanSelectPrepsDlg extends JDialog
             }
         }
         
-        public JCheckBox getCheckBox()
+        public boolean isColObjEnabled()
         {
-            return checkBox;
+            return checkBox.isSelected();
         }
         
         public int getNewLoanCount()
