@@ -1033,6 +1033,7 @@ public class SpecifyDBConverter
                 frame.setDesc("Localizing the Schema");
                 conversion.doLocalizeSchema();
                 
+                BuildSampleDatabase.makeFieldVisible(null);
                 BuildSampleDatabase.makeFieldVisible(dscp.getName());
 
                 frame.incOverall();

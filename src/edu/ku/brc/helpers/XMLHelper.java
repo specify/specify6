@@ -164,7 +164,8 @@ public class XMLHelper
             }
             configDir = cfgDir;
         }
-        return configDir.getAbsolutePath() + File.separator + (fileName != null ? (File.separator + fileName) : ""); //$NON-NLS-1$
+        
+        return configDir.getAbsolutePath() + File.separator + (fileName != null ? fileName : ""); //$NON-NLS-1$
     }
 
     /**

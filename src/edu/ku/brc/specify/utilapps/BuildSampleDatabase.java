@@ -469,6 +469,7 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         commitTx();
         
+        makeFieldVisible(null);
         makeFieldVisible(config.getDiscipline().getName());
 
         startTx();
@@ -844,6 +845,7 @@ public class BuildSampleDatabase
 
         commitTx();
         
+        makeFieldVisible(null);
         makeFieldVisible(disciplineType.getName());
 
         frame.setProcess(++createStep);
@@ -1601,6 +1603,7 @@ public class BuildSampleDatabase
 
         commitTx();
         
+        makeFieldVisible(null);
         makeFieldVisible(disciplineType.getName());
 
         frame.setProcess(++createStep);
@@ -2051,6 +2054,7 @@ public class BuildSampleDatabase
 
         commitTx();
         
+        makeFieldVisible(null);
         makeFieldVisible(disciplineType.getName());
 
         frame.setProcess(++createStep);
@@ -3065,6 +3069,7 @@ public class BuildSampleDatabase
 
         commitTx();
         
+        makeFieldVisible(null);
         makeFieldVisible(disciplineType.getName());
 
         frame.setProcess(++createStep);
@@ -4060,6 +4065,7 @@ public class BuildSampleDatabase
         
         commitTx();
         
+        makeFieldVisible(null);
         makeFieldVisible(disciplineType.getName());
 
         frame.setDesc("Creating Fish Trees...");
