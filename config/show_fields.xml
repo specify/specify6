@@ -8,4 +8,8 @@
 		<field name="numberOfPackages"/>
 	</table>
 	
+	<table name="Determination">
+		<field name="yesNo1"/>
+	</table>
+	
 </tables>
