@@ -100,13 +100,20 @@ public class TableQRI extends ExpandableQRI
      * @param classObj
      * @return false if rel represents a 'system' relationship.
      */
-    protected static boolean isRelevantRel(final DBRelationshipInfo rel, final Class<?> classObj)
+    protected boolean isRelevantRel(final DBRelationshipInfo rel, final Class<?> classObj)
     {
         if (classObj.equals(edu.ku.brc.specify.datamodel.Agent.class))
         {
-            return rel.getColName() == null ||
-                (!rel.getColName().equalsIgnoreCase("modifiedbyagentid") &&
-                 !rel.getColName().equalsIgnoreCase("createdbyagentid"));
+            if (rel.getColName() == null)
+            {
+                return true;
+            }
+            if (!rel.getColName().equalsIgnoreCase("modifiedbyagentid") && !rel.getColName().equalsIgnoreCase("createdbyagentid"))
+            {
+                return !tableTree.getField().equals("modifiedByAgent") && !tableTree.getField().equals("createdByAgent");
+            }
+            return (!rel.getColName().equalsIgnoreCase("modifiedbyagentid") || tableTree.getField().equals("modifiedByAgent")) && 
+                    (!rel.getColName().equalsIgnoreCase("createdbyagentid") || tableTree.getField().equals("createdByAgent"));
         }
         return true;
     }

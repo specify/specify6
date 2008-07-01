@@ -1154,7 +1154,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 QueryBldrPane.this.searchBtn.setText(UIRegistry.getResourceString("QB_SEARCH")); 
                 UIRegistry.getStatusBar().setText("");
-                UIRegistry.getStatusBar().getProgressBar().setVisible(false);
+                UIRegistry.getStatusBar().setIndeterminate(query.getName(), false);
                 return null;
             }
         }.start();
@@ -1176,10 +1176,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         String msg = String.format(UIRegistry.getResourceString("QB_DISPLAYING_RETRIEVED_RESULTS"), String.valueOf(results), 
                             String.valueOf((doneTime.get() - startTime.get())/1000000000D));
                         UIRegistry.getStatusBar().setText(msg); 
-                        UIRegistry.getStatusBar().getProgressBar().setVisible(true);
-                        UIRegistry.getStatusBar().getProgressBar().setIndeterminate(true);
+                        UIRegistry.getStatusBar().setIndeterminate(query.getName(), true);
                         return null;
                     }
+
                 }.start();
             }
             else
@@ -1191,7 +1191,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     {
                         QueryBldrPane.this.searchBtn.setText(UIRegistry.getResourceString("QB_SEARCH")); 
                         UIRegistry.getStatusBar().setText("");
-                        UIRegistry.getStatusBar().getProgressBar().setVisible(false);
+                        UIRegistry.getStatusBar().setIndeterminate(query.getName(), false);
                         return null;
                     }
                 }.start();            
@@ -1242,8 +1242,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 {
                     searchBtn.setText(UIRegistry.getResourceString("QB_CANCEL")); 
                     UIRegistry.getStatusBar().setText("Searching..."); //XXX i18n
-                    UIRegistry.getStatusBar().getProgressBar().setIndeterminate(true);
-                    UIRegistry.getStatusBar().getProgressBar().setVisible(true);
+                    UIRegistry.getStatusBar().setIndeterminate(query.getName(), true);
                 }
                 //else the query got cancelled or crashed before this thread was executed
                 return null;
@@ -1505,14 +1504,18 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 else
                 {
                     addIt = !tblQRI.getTableTree().getKid(k).getTableInfo().isHidden();
-                    if (addIt)
-                    {
-                        tblQRI.getTableTree().getKid(k).getTableQRI().determineRel();
-                    }
+//                    if (addIt)
+//                    {
+//                        tblQRI.getTableTree().getKid(k).getTableQRI().determineRel();
+//                    }
                 }
                 if (addIt)
                 {
-                    model.addElement(tblQRI.getTableTree().getKid(k).getTableQRI());
+                    TableTree kid = tblQRI.getTableTree().getKid(k);
+                    if (kid.getTableQRI().getRelationship() == null || !kid.getTableQRI().getRelationship().isHidden())
+                    {
+                        model.addElement(tblQRI.getTableTree().getKid(k).getTableQRI());
+                    }
                 }
             }
         }

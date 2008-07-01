@@ -12,9 +12,18 @@
         <table name="AccessionAuthorization" field="accessionAuthorizations">
             <alias name="Permit"/>
         </table>
+        <alias name="AddressOfRecord" field="addressOfRecord"/>
+        <alias name="Agent" field="createdByAgent" />
         <alias name="CollectionObject" field="collectionObjects"/>
+        <alias name="Deaccession" field="deaccessions" />
+        <alias name="Agent" field="modifiedByAgent" />
+        <alias name="RepositoryAgreement" field="repositoryAgreement" />
+        <alias name="TreatmentEvent" field="treatmentEvents" />
     </table>
 
+	<table name="AddressOfRecord">
+	</table>
+	
     <table name="Agent">
         <table name="Address" field="addresses"/>
         <table name="AgentAttachment" field="agentAttachments">
@@ -22,7 +31,11 @@
         </table>
         <table name="AgentVariant"/>
     </table>
-    
+
+	<table name="Appraisal">
+		<alias name="Agent" field="agent"/>
+	</table>
+	     
     <table name="Attachment">
         <table name="AttachmentMetadata"/>
     </table>
@@ -47,11 +60,17 @@
         <table name="CollectingEventAttachment" field="collectingEventAttachments">
             <alias name="Attachment"/>
         </table>
+        <table name="CollectingEventAttribute"/>
+        <alias name="CollectingTrip"/>
         <alias name="CollectionObject" field="collectionObjects"/>
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifedByAgent" />
     </table>
     
     <table name="CollectingTrip">
         <alias name="CollectingEvent"/>
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifedByAgent" />
     </table>
 
     <table name="Collection">
@@ -84,6 +103,30 @@
     		<table name="LithoStrat"/>
     	</table>
         <alias name="Preparation" field="preparations"/>
+      	<alias name="Appraisal" field="appraisal" />
+      	<alias name="Agent" field="cataloger" />
+      	<alias name="Collection" field="collection" />
+      	<table name="ConservDescription" field="conservDescriptions" />
+      	<table name="Container" field="container" />
+      	<table name="Container" field="containerOwner" />
+      	<alias name="Agent" field="createdByAgent" />
+      	<table name="DNASequence" field="dnaSequence" />
+      	<table name="FieldNotebookPage" field="fieldNotebookPage" />
+      	<table name="CollectionRelationship" field="leftSideRels" />
+      	<alias name="Agent" field="modifiedByAgent" />
+      	<table name="OtherIdentifier" field="otherIdentifiers" />
+      	<table name="Project" field="projects" />
+      	<table name="CollectionRelationship" field="rightSideRels" />
+      	<table name="TreatmentEvent" field="treatmentEvents" />
+    </table>
+    
+    <table name="Deaccession">
+      <table name="DeaccessionAgent" field="deaccessionAgents" >
+      	<alias name="Agent"/>
+      </table>
+      <table name="DeaccessionPreparation" field="deaccessionPreparations" >
+      	<alias name="Preparation"/>
+      </table>
     </table>
     
     <table name="Loan">
@@ -135,6 +178,13 @@
         </table>
     </table>
     
+    <table name="RepositoryAgreement">
+    	<alias name="Agent" field="originator"/>
+      	<table name="RepositoryAgreementAttachment" field="repositoryAgreementAttachments">
+      		<alias name="Attachment"/>
+      	</table>
+    </table>
+    
     <table name="Taxon">
         <table name="TaxonAttachment" field="taxonAttachments">
            	<alias name="Attachment"/>
@@ -154,6 +204,11 @@
             <alias name="Agent" field="determiner"/>
         </table>
     </table>
+    
+    <table name="TreatmentEvent">
+   		<alias name="CollectionObject" field="collectionObject"/>
+   	</table>
+    	
     
     <!-- Not Searchable
     <table name="AppResource" id="83"/>
