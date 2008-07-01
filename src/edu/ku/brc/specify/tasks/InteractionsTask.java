@@ -20,6 +20,7 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -29,13 +30,20 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JToolBar;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -71,6 +79,8 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.ExchangeIn;
 import edu.ku.brc.specify.datamodel.ExchangeOut;
@@ -88,6 +98,7 @@ import edu.ku.brc.specify.ui.db.AskForNumbersDlg;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
@@ -750,6 +761,42 @@ public class InteractionsTask extends BaseTask
     }
     
     /**
+     * @param list
+     */
+    protected void showMissingDetsDlg(final List<CollectionObject> noCurrDetList)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (CollectionObject co : noCurrDetList)
+        {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(co.getIdentityTitle());
+        }
+        
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p:g", "p,2px,p"));
+        CellConstraints cc = new CellConstraints();
+        JTextArea       ta = UIHelper.createTextArea(5, 40);
+        ta.setLineWrap(true);
+        ta.setWrapStyleWord(true);
+        JScrollPane     scroll = new JScrollPane(ta, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JLabel          lbl    = UIHelper.createLabel(getResourceString("InteractionsTask.MISSING_DET"));
+        
+        pb.add(lbl,    cc.xy(1, 1));
+        pb.add(scroll, cc.xy(1, 3));
+        
+        ta.setText(sb.toString());
+        
+        pb.setDefaultDialogBorder();
+        
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+                getResourceString("InteractionsTask.MISSING_DET_TITLE"), 
+                true, 
+                CustomDialog.OK_BTN, 
+                pb.getPanel());
+        //dlg.setOkLabel(getResourceString(key))
+        dlg.setVisible(true);
+    }
+    
+    /**
      * @return
      */
     protected boolean askToEnterCatNumbers()
@@ -860,7 +907,40 @@ public class InteractionsTask extends BaseTask
             String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
             if (StringUtils.isNotBlank(sqlStr))
             {
-                final LoanSelectPrepsDlg loanSelectPrepsDlg = new LoanSelectPrepsDlg((List<CollectionObject>)session.getDataList(sqlStr));
+                ArrayList<CollectionObject> availColObjList = new ArrayList<CollectionObject>();
+                ArrayList<CollectionObject> noCurrDetList   = new ArrayList<CollectionObject>();
+                List<CollectionObject>      colObjList      = (List<CollectionObject>)session.getDataList(sqlStr);
+                for (CollectionObject co : colObjList)
+                {
+                    boolean hasCurrDet = false;
+                    for (Determination det : co.getDeterminations())
+                    {
+                        if (det.getStatus() != null && 
+                            det.getStatus().getType() != null &&
+                            det.getStatus().getType().equals(DeterminationStatus.CURRENT))
+                        {
+                            hasCurrDet = true;
+                            availColObjList.add(co);
+                            break;
+                        }
+                    }
+                    if (!hasCurrDet)
+                    {
+                        noCurrDetList.add(co);
+                    }
+                }
+                
+                if (noCurrDetList.size() == colObjList.size())
+                {
+                    UIRegistry.showLocalizedError("InteractionsTask.ALL_COLOBJ_BAD");
+                    return; 
+                    
+                } else if (noCurrDetList.size() > 0)
+                {
+                    showMissingDetsDlg(noCurrDetList);
+                }
+                
+                final LoanSelectPrepsDlg loanSelectPrepsDlg = new LoanSelectPrepsDlg(availColObjList);
                 loanSelectPrepsDlg.setModal(true);
                 
                 UIHelper.centerAndShow(loanSelectPrepsDlg);

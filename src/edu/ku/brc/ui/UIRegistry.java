@@ -19,7 +19,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
@@ -793,6 +792,19 @@ public class UIRegistry
         return instance.viewbasedFactory;
     }
     
+    /**
+     * Displays a Warning dialog with a non-localized error message.
+     * @param titleKey the title localize key
+     * @param msgKey the message localize key
+     * @param args any args
+     */
+    public static void showLocalizedMsg(final String titleKey, final String msgKey, final Object ... args)
+    {
+        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                String.format(getResourceString(msgKey), args), 
+                getResourceString(titleKey), JOptionPane.WARNING_MESSAGE);
+    }
+
     /**
      * Displays an error dialog with a non-localized error message.
      * @param msg the message
