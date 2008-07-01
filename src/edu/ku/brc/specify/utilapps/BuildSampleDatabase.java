@@ -96,6 +96,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -137,7 +138,9 @@ import com.thoughtworks.xstream.XStream;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
@@ -466,7 +469,7 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         commitTx();
         
-        makeFieldVisible();
+        makeFieldVisible(config.getDiscipline().getName());
 
         startTx();
         
@@ -788,7 +791,7 @@ public class BuildSampleDatabase
         String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
         String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
-        String           password         = initPrefs.getProperty("useragent.password", "rods");
+        //String           password         = initPrefs.getProperty("useragent.password", "rods");
         
         System.out.println("----- User Agent -----");
         System.out.println("Title:     "+title);
@@ -841,7 +844,7 @@ public class BuildSampleDatabase
 
         commitTx();
         
-        makeFieldVisible();
+        makeFieldVisible(disciplineType.getName());
 
         frame.setProcess(++createStep);
         
@@ -1598,7 +1601,7 @@ public class BuildSampleDatabase
 
         commitTx();
         
-        makeFieldVisible();
+        makeFieldVisible(disciplineType.getName());
 
         frame.setProcess(++createStep);
         
@@ -2048,7 +2051,7 @@ public class BuildSampleDatabase
 
         commitTx();
         
-        makeFieldVisible();
+        makeFieldVisible(disciplineType.getName());
 
         frame.setProcess(++createStep);
         
@@ -3062,7 +3065,7 @@ public class BuildSampleDatabase
 
         commitTx();
         
-        makeFieldVisible();
+        makeFieldVisible(disciplineType.getName());
 
         frame.setProcess(++createStep);
         
@@ -4057,7 +4060,7 @@ public class BuildSampleDatabase
         
         commitTx();
         
-        makeFieldVisible();
+        makeFieldVisible(disciplineType.getName());
 
         frame.setDesc("Creating Fish Trees...");
         
@@ -6223,7 +6226,7 @@ public class BuildSampleDatabase
     }
     
     /** 
-     * Starts the Build on a swinf worker thread.
+     * Starts the Build on a swing worker thread.
      * 
      * @throws SQLException
      * @throws IOException
@@ -6233,9 +6236,9 @@ public class BuildSampleDatabase
                               final DisciplineType disciplineType,
                               final String     username, 
                               final String     password,
-                              final List<CollectionChoice> selectedChoices)
+                              final List<CollectionChoice> selectedChoicesArg)
     {
-        this.selectedChoices = selectedChoices;
+        this.selectedChoices = selectedChoicesArg;
         final SwingWorker worker = new SwingWorker()
         {
             @Override
@@ -6789,7 +6792,7 @@ public class BuildSampleDatabase
             builder.add(createLabel("Cat. Num Fmt:", SwingConstants.RIGHT), cc.xy(1,11));
             builder.add(catNumFmts,                                         cc.xy(3,11));
             
-            int y = 13;
+            //int y = 13;
             CollectionChoice[] choicesArray = {
                     new CollectionChoice(DisciplineType.STD_DISCIPLINES.fish, false, true),
                     new CollectionChoice(DisciplineType.STD_DISCIPLINES.fish, true, true),
@@ -7177,10 +7180,63 @@ public class BuildSampleDatabase
     /**
      * Make specific fields visible.
      */
-    public static void makeFieldVisible()
+    public static void makeFieldVisible(final String disciplineDirName)
     {
-        setFieldVisible("collectionobject", "timestampModified");
-        setFieldVisible("determination",    "yesNo1");
+        //setFieldVisible("collectionobject", "timestampModified");
+        //setFieldVisible("determination",    "yesNo1");
+        
+        try
+        {
+            String dirName  = disciplineDirName != null ? disciplineDirName + File.separator : "";
+            String filePath = XMLHelper.getConfigDirPath(dirName + "show_fields.xml");
+            File showFieldsFile = new File(filePath);
+            if (showFieldsFile.exists())
+            {
+                System.out.println(FileUtils.readFileToString(showFieldsFile));
+                
+                Element root = XMLHelper.readDOMFromConfigDir(dirName + "show_fields.xml");
+                if (root != null)
+                {
+                    List<?> tables = root.selectNodes("/tables/table");
+                    for (Iterator<?> iter = tables.iterator(); iter.hasNext(); )
+                    {
+                        Element table = (Element)iter.next();
+                        String  tName = XMLHelper.getAttr(table, "name", null);
+                        if (StringUtils.isNotEmpty(tName))
+                        {
+                            DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName(tName.toLowerCase());
+                            if (tbl != null)
+                            {
+                                List<?> fields = table.selectNodes("field");
+                                for (Iterator<?> fIter = fields.iterator(); fIter.hasNext(); )
+                                {
+                                    Element fieldEl = (Element)fIter.next();
+                                    String  fName   = XMLHelper.getAttr(fieldEl, "name", null);
+                                    if (StringUtils.isNotEmpty(fName))
+                                    {
+                                        DBFieldInfo fld = tbl.getFieldByName(fName);
+                                        if (fld != null)
+                                        {
+                                            setFieldVisible(tbl.getName(), fld.getName());
+                                        } else
+                                        {
+                                            UIRegistry.showError("show_list.xml in ["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]");
+                                        }
+                                    }
+                                }
+                            } else
+                            {
+                                UIRegistry.showError("show_list.xml in ["+disciplineDirName+"] has bad table name ["+tName+"]");
+                            }
+                        }
+                    }   
+                }
+            }
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
         
     }
     

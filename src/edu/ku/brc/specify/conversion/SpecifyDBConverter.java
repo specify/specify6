@@ -938,86 +938,105 @@ public class SpecifyDBConverter
                 }
                 frame.incOverall();
                 
+                
+                //-------------------------------------------
+                // Get Discipline and Collection
+                //-------------------------------------------
+                
+                frame.incOverall();
+                
+                if (DataBuilder.getSession() != null)
+                {
+                    DataBuilder.getSession().close();
+                    DataBuilder.setSession(null);
+                }
+
+                boolean    status       = false;
+                Collection collection   = null;
+                Discipline dscp         = null;
+                Session    localSession = HibernateUtil.getNewSession();
+                try
+                {
+                    if (conversion.getCurDisciplineID() == null || conversion.getCurDisciplineID() == 0)
+                    {
+                        List<?> list = localSession.createQuery("FROM Discipline").list();
+                        dscp = (Discipline)list.get(0);
+                        
+                    } else
+                    {
+                        List<?> list = localSession.createQuery("FROM Discipline WHERE disciplineId = "+conversion.getCurDisciplineID()).list();
+                        dscp = (Discipline)list.get(0);
+                    }
+                    AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
+                    
+                    if (dscp.getCollections().size() == 1)
+                    {
+                        collection = dscp.getCollections().iterator().next();
+                    }
+                    
+                    if (collection == null)
+                    {
+                        if (conversion.getCurCollectionID() == null || conversion.getCurCollectionID() == 0)
+                        {
+                            List<?> list = localSession.createQuery("FROM Collection").list();
+                            collection = (Collection)list.get(0);
+                            
+                        } else
+                        {
+                            List<?> list = localSession.createQuery("FROM Collection WHERE collectionId = "+conversion.getCurDisciplineID()).list();
+                            collection = (Collection)list.get(0);
+                        }
+                    }
+                    AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+                    status = true;
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+                
                 frame.setDesc("Converting USYS Tables.");
                 log.info("Converting USYS Tables.");
                 boolean copyUSYSTables = false;
                 if (copyUSYSTables || doAll)
                 {
-                    frame.incOverall();
-                    
-                    BasicSQLUtils.deleteAllRecordsFromTable("picklist", BasicSQLUtils.myDestinationServerType);
-                    BasicSQLUtils.deleteAllRecordsFromTable("picklistitem", BasicSQLUtils.myDestinationServerType);
-
-                    if (DataBuilder.getSession() != null)
+                    if (status)
                     {
-                        DataBuilder.getSession().close();
-                        DataBuilder.setSession(null);
-                    }
-                    
-                    Collection collection   = null;
-                    Discipline dscp         = null;
-                    Session    localSession = HibernateUtil.getNewSession();
-                    try
-                    {
-                        if (conversion.getCurDisciplineID() == null || conversion.getCurDisciplineID() == 0)
-                        {
-                            List<?> list = localSession.createQuery("FROM Discipline").list();
-                            dscp = (Discipline)list.get(0);
-                            
-                        } else
-                        {
-                            List<?> list = localSession.createQuery("FROM Discipline WHERE disciplineId = "+conversion.getCurDisciplineID()).list();
-                            dscp = (Discipline)list.get(0);
-                        }
-                        AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
-                        
-                        if (dscp.getCollections().size() == 1)
-                        {
-                            collection = dscp.getCollections().iterator().next();
-                        }
-                        
-                        if (collection == null)
-                        {
-                            if (conversion.getCurCollectionID() == null || conversion.getCurCollectionID() == 0)
-                            {
-                                List<?> list = localSession.createQuery("FROM Collection").list();
-                                collection = (Collection)list.get(0);
-                                
-                            } else
-                            {
-                                List<?> list = localSession.createQuery("FROM Collection WHERE collectionId = "+conversion.getCurDisciplineID()).list();
-                                collection = (Collection)list.get(0);
-                            }
-                        }
-                        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
-                        
+                        BasicSQLUtils.deleteAllRecordsFromTable("picklist", BasicSQLUtils.myDestinationServerType);
+                        BasicSQLUtils.deleteAllRecordsFromTable("picklistitem", BasicSQLUtils.myDestinationServerType);
+    
                         conversion.convertUSYSTables(localSession, collection);
                         
                         frame.setDesc("Creating PickLists from XML.");
                         BuildSampleDatabase.createPickLists(localSession, null, true, collection);
                         BuildSampleDatabase.createPickLists(localSession, dscp, true, collection);
-                        
-                    } catch (Exception ex)
+                    } else
                     {
-                        ex.printStackTrace();
-                    } finally
-                    {
-                        localSession.close();
+                        log.error("STATUS was FALSE for PickList creation!");
                     }
+                    
                     frame.incOverall();
                     
                 } else
                 {
                     frame.incOverall();
-                    frame.incOverall();
                 }
                 
+                if (localSession != null)
+                {
+                    localSession.close();
+                }
+                
+                //------------------------------------------------
+                // Localize Schema and make form fields visible
+                //------------------------------------------------
                 frame.setDesc("Localizing the Schema");
                 conversion.doLocalizeSchema();
                 
-                BuildSampleDatabase.makeFieldVisible();
+                BuildSampleDatabase.makeFieldVisible(dscp.getName());
 
                 frame.incOverall();
+                
 
                 System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
                 System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
