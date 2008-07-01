@@ -201,6 +201,11 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         }
         
         SearchConfigService.getInstance().reset();
+        
+        if (searchBox != null && searchBox.getMenuCreator() != null)
+        {
+            searchBox.getMenuCreator().reset();
+        }
     }
     
     /**
@@ -1176,7 +1181,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             if (menus == null)
             {
                 menus = new Vector<JComponent>();
-                allMenuItem = new JMenuItem(getResourceString("ALL"), SearchBox.getSearchIcon()); // I18N
+                allMenuItem = new JMenuItem(getResourceString("ALL"), SearchBox.getSearchIcon());
                 allMenuItem.addActionListener(action);
                 menus.add(allMenuItem);
                 

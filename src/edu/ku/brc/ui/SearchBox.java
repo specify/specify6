@@ -137,6 +137,14 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
     }
     
     /**
+     * @return the menuCreator
+     */
+    public MenuCreator getMenuCreator()
+    {
+        return menuCreator;
+    }
+
+    /**
      * @return the "All" icon from the search box.
      */
     public static ImageIcon getSearchIcon()
