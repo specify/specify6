@@ -913,21 +913,28 @@ public class InteractionsTask extends BaseTask
                 List<CollectionObject>      colObjList      = (List<CollectionObject>)session.getDataList(sqlStr);
                 for (CollectionObject co : colObjList)
                 {
-                    boolean hasCurrDet = false;
-                    for (Determination det : co.getDeterminations())
+                    if (co.getDeterminations().size() > 0)
                     {
-                        if (det.getStatus() != null && 
-                            det.getStatus().getType() != null &&
-                            det.getStatus().getType().equals(DeterminationStatus.CURRENT))
+                        boolean hasCurrDet = false;
+                        for (Determination det : co.getDeterminations())
                         {
-                            hasCurrDet = true;
-                            availColObjList.add(co);
-                            break;
+                            if (det.getStatus() != null && 
+                                det.getStatus().getType() != null &&
+                                det.getStatus().getType().equals(DeterminationStatus.CURRENT))
+                            {
+                                hasCurrDet = true;
+                                availColObjList.add(co);
+                                break;
+                            }
                         }
-                    }
-                    if (!hasCurrDet)
+                        
+                        if (!hasCurrDet)
+                        {
+                            noCurrDetList.add(co);
+                        }
+                    } else
                     {
-                        noCurrDetList.add(co);
+                        availColObjList.add(co);
                     }
                 }
                 
