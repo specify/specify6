@@ -91,7 +91,7 @@ import edu.ku.brc.ui.forms.persist.ViewIFace;
  */
 public class LoanSelectPrepsDlg extends JDialog
 {
-    protected ColorWrapper           requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+    protected ColorWrapper           requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     protected List<CollectionObject> colObjs;
     protected List<ColObjPanel>      colObjPanels = new Vector<ColObjPanel>();
     protected JButton                okBtn;
@@ -104,7 +104,7 @@ public class LoanSelectPrepsDlg extends JDialog
     {
         this.colObjs = colObjs;
         
-        setTitle(getResourceString("LoanSelectPrepsDlg.CREATE_LN_FR_PREP"));
+        setTitle(getResourceString("LoanSelectPrepsDlg.CREATE_LN_FR_PREP")); //$NON-NLS-1$
         
         //List<Object> dataObjs = BuildSampleDatabase.createSingleDiscipline("fish", "fish");       
         //List<CollectionObject> colObjs = (List<CollectionObject>)BuildSampleDatabase.getObjectsByClass(dataObjs, CollectionObject.class);
@@ -132,8 +132,8 @@ public class LoanSelectPrepsDlg extends JDialog
                 }
             }
         }
-        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (colObjs.size()*2)-1) + ",10px,p";
-        PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", rowDef), mainPanel);
+        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (colObjs.size()*2)-1) + ",10px,p"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", rowDef), mainPanel); //$NON-NLS-1$
         CellConstraints cc      = new CellConstraints();
         
         ActionListener al = new ActionListener()
@@ -166,7 +166,7 @@ public class LoanSelectPrepsDlg extends JDialog
         {
             if (i > 0)
             {
-                pbuilder.addSeparator("", cc.xy(1,y));
+                pbuilder.addSeparator("", cc.xy(1,y)); //$NON-NLS-1$
             }
             y += 2;
             
@@ -177,12 +177,12 @@ public class LoanSelectPrepsDlg extends JDialog
             y += 2;
             i++;
         }
-        JButton selectAllBtn = createButton(getResourceString("SELECTALL"));
-        okBtn = createButton(getResourceString("OK"));
-        JButton cancel = createButton(getResourceString("CANCEL"));
+        JButton selectAllBtn = createButton(getResourceString("SELECTALL")); //$NON-NLS-1$
+        okBtn = createButton(getResourceString("OK")); //$NON-NLS-1$
+        JButton cancel = createButton(getResourceString("CANCEL")); //$NON-NLS-1$
         y += 2;
         
-        summaryLabel = createLabel("");
+        summaryLabel = createLabel(""); //$NON-NLS-1$
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createEmptyBorder(5, 1, 5, 1));
         p.add(summaryLabel, BorderLayout.CENTER);
@@ -255,7 +255,7 @@ public class LoanSelectPrepsDlg extends JDialog
         okBtn.setEnabled(count > 0);
         //if (count > 0)
         //{
-            summaryLabel.setText(String.format("%d Preparation(s) selected", new Object[] {count}));
+            summaryLabel.setText(String.format(getResourceString("LoanSelectPrepsDlg.NUM_PREP_SEL"), new Object[] {count})); //$NON-NLS-1$
         //}
     }
     
@@ -274,8 +274,8 @@ public class LoanSelectPrepsDlg extends JDialog
     }
     
     /**
-     * Returns a Hastable of Preparation to Count.
-     * @return a Hastable of Preparation to Count.
+     * Returns a Hashtable of Preparation to Count.
+     * @return a Hashtable of Preparation to Count.
      */
     public Hashtable<Preparation, Integer> getPreparationCounts()
     {
@@ -317,50 +317,19 @@ public class LoanSelectPrepsDlg extends JDialog
             //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
             //setBorder(new CurvedBorder(new Color(160,160,160)));
      
-            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", "p,5px,p"), this);
+            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", "p,5px,p"), this); //$NON-NLS-1$ //$NON-NLS-2$
             CellConstraints cc      = new CellConstraints();
      
-            String        taxonName     = null;
-            Determination newestDet     = null;
-            long          newestDetDate = -1;
-            
-            if (colObj.getDeterminations().size() > 0)
+            String taxonName = getResourceString("LoanSelectPrepsDlg.NO_DET"); // This title should never happen //$NON-NLS-1$
+            for (Determination deter : colObj.getDeterminations())
             {
-                for (Determination deter : colObj.getDeterminations())
+                if (deter.getStatus().getType() == DeterminationStatus.CURRENT)
                 {
-                    if (deter.getStatus().getType() == DeterminationStatus.CURRENT)
-                    {
-                        taxonName = getTaxonName(deter);
-                        break;
-                    }
-                    
-                    // Try to find the newest Determination
-                    long date = getRepresentitiveDate(deter);
-                    if (newestDetDate != -1 && date != -1 && deter.getTaxon() != null)
-                    {
-                        if (date < newestDetDate)
-                        {
-                            newestDetDate = date;
-                            newestDet     = deter;
-                        }
-                    }
+                    taxonName = getTaxonName(deter);
+                    break;
                 }
-                
-                if (taxonName == null)
-                {
-                    if (newestDet != null)
-                    {
-                        taxonName = getTaxonName(newestDet);
-                    } else
-                    {
-                        taxonName = getResourceString("LoanSelectPrepsDlg.NO_DET");
-                    }
-                }
-            } else
-            {
-                taxonName = getResourceString("LoanSelectPrepsDlg.NO_DET");
             }
-            String descr = String.format("%s - %s", colObj.getIdentityTitle(), taxonName);
+            String descr = String.format(getResourceString("LoanSelectPrepsDlg.TITLE_PAIR"), colObj.getIdentityTitle(), taxonName); //$NON-NLS-1$
             descr = StringUtils.stripToEmpty(descr);
             
             pbuilder.add(checkBox = createCheckBox(descr), cc.xy(1,1));
@@ -420,27 +389,13 @@ public class LoanSelectPrepsDlg extends JDialog
             {
                 Taxon  parent = deter.getTaxon().getParent();
                 String genus  = parent.getFullName() == null ? parent.getName() : parent.getFullName();
-                taxonName = genus + " " + deter.getTaxon().getName();
+                taxonName = genus + " " + deter.getTaxon().getName(); //$NON-NLS-1$
                 
             } else
             {
                 taxonName = deter.getTaxon().getFullName();
             }
             return taxonName;
-        }
-        
-        public long getRepresentitiveDate(final Determination det)
-        {
-            if (det.getDeterminedDate() != null)
-            {
-                return det.getDeterminedDate().getTime().getTime();
-            }
-            
-            if (det.getTimestampCreated() != null)
-            {
-                return det.getTimestampCreated().getTime();
-            }
-            return -1;
         }
         
         public void addActionListener(final ActionListener al, final ChangeListener cl)
@@ -506,7 +461,7 @@ public class LoanSelectPrepsDlg extends JDialog
             setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
             //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
      
-            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p,2px,p:g", "c:p"), this);
+            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p,2px,p:g", "c:p"), this); //$NON-NLS-1$ //$NON-NLS-2$
             CellConstraints cc      = new CellConstraints();
             
             
@@ -531,12 +486,12 @@ public class LoanSelectPrepsDlg extends JDialog
                     fixBGOfJSpinner(spinner);
                     pbuilder.add(spinner, cc.xy(3, 1));
                     //String str = " of " + Integer.toString(quantityAvailable) + "  " + (quantityOut > 0 ? "(" + quantityOut + " on loan.)" : "");
-                    String fmtStr = String.format(" of %3d  ", quantityAvailable); // TODO I18N
+                    String fmtStr = String.format(" of %3d  ", quantityAvailable); // TODO I18N //$NON-NLS-1$
                     pbuilder.add(label2 = createLabel(fmtStr), cc.xy(5, 1));
                     if (quantityOut > 0)
                     {
-                        fmtStr = String.format("(%d on loan)", new Object[] {quantityOut}); // TODO I18N
-                        prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon"));
+                        fmtStr = String.format(getResourceString("LoanSelectPrepsDlg.NUM_ON_LOAN"), new Object[] {quantityOut}); // TODO I18N //$NON-NLS-1$
+                        prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon")); //$NON-NLS-1$
                         //prepInfoBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
                         pbuilder.add(prepInfoBtn, cc.xy(7, 1));
                     }
@@ -544,7 +499,7 @@ public class LoanSelectPrepsDlg extends JDialog
                     
                 } else
                 {
-                    pbuilder.add(label2 = createLabel("(None Available)"), cc.xywh(3, 1, 5, 1));// I18N
+                    pbuilder.add(label2 = createLabel(getResourceString("LoanSelectPrepsDlg.NONE_AVAIL")), cc.xywh(3, 1, 5, 1));// I18N //$NON-NLS-1$
                 }
             } else
             {
@@ -555,7 +510,7 @@ public class LoanSelectPrepsDlg extends JDialog
                 spinner = new JSpinner(model);
                 fixBGOfJSpinner(spinner);
                 pbuilder.add(spinner, cc.xy(3, 1));
-                pbuilder.add(label2 = createLabel(" (Unknown Number Available)"), cc.xywh(5, 1, 2, 1)); // I18N
+                pbuilder.add(label2 = createLabel(getResourceString("LoanSelectPrepsDlg.UNKN_NUM_AVAIL")), cc.xywh(5, 1, 2, 1)); // I18N //$NON-NLS-1$
                 unknownQuantity = true;
                 maxValue = 1;
             }
@@ -659,13 +614,13 @@ public class LoanSelectPrepsDlg extends JDialog
                 loans.add(lpo.getLoan());
             }
             
-            ViewIFace view  = AppContextMgr.getInstance().getView("Loan");
+            ViewIFace view  = AppContextMgr.getInstance().getView("Loan"); //$NON-NLS-1$
             final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog(parent,
                     view.getViewSetName(),
-                    "Loan",
+                    "Loan", //$NON-NLS-1$
                     null,
-                    getResourceString("IAT_LOAN_REVIEW"),
-                    getResourceString("CLOSE"),
+                    getResourceString("IAT_LOAN_REVIEW"), //$NON-NLS-1$
+                    getResourceString("CLOSE"), //$NON-NLS-1$
                     null, // className,
                     null, // idFieldName,
                     false, // isEdit,
@@ -676,7 +631,7 @@ public class LoanSelectPrepsDlg extends JDialog
             if (currentViewable != null && currentViewable instanceof FormViewObj)
             {
                 FormViewObj formViewObj = (FormViewObj)currentViewable;
-                Component comp      = formViewObj.getControlByName("generateInvoice");
+                Component comp      = formViewObj.getControlByName("generateInvoice"); //$NON-NLS-1$
                 if (comp instanceof JCheckBox)
                 {
                     comp.setVisible(false);
@@ -714,7 +669,7 @@ public class LoanSelectPrepsDlg extends JDialog
             {
                 public void mouseClicked(MouseEvent e) 
                 {
-                    al.actionPerformed(new ActionEvent(this, 0, ""));
+                    al.actionPerformed(new ActionEvent(this, 0, "")); //$NON-NLS-1$
                 }
 
                 /**
