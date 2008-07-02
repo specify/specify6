@@ -211,7 +211,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify"; //$NON-NLS-1$
     private String               appVersion          = "6.0"; //$NON-NLS-1$
 
-    private String               appBuildVersion     = "200806271150 (SVN: 4289)"; //$NON-NLS-1$
+    private String               appBuildVersion     = "(Unknown)"; //$NON-NLS-1$
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -1725,7 +1725,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         if (StringUtils.isNotEmpty(install4JStr))
         {
             appVersion = install4JStr;
-            title = appName + " " + appVersion; //$NON-NLS-1$
+            title = appName + " Alpha " + appVersion; //$NON-NLS-1$
         } else
         {
             title = appName + " " + appVersion + "  - " + appBuildVersion; //$NON-NLS-1$ //$NON-NLS-2$
