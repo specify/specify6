@@ -37,7 +37,7 @@
 	</table>
 	     
     <table name="Attachment">
-        <table name="AttachmentMetadata"/>
+        <table name="AttachmentMetadata" field="metadata"/>
     </table>
    
     <table name="Author">
@@ -89,14 +89,7 @@
     	
     	<alias name="CollectingEvent"/>
     	
-        <table name="Determination" field="determinations" title="Determinations">
-            <alias name="Taxon"/>
-            <table name="DeterminationCitation">
-                <alias name="ReferenceWork"/>
-            </table>
-            <table name="DeterminationStatus" field="status"/>
-            <alias name="Agent" field="determiner"/>
-        </table>
+        <alias name="Determination" field="determinations"/>
         
         <table name="PaleoContext" field="paleoContext">
     		<table name="GeologicTimePeriod"/>
@@ -127,6 +120,15 @@
       <table name="DeaccessionPreparation" field="deaccessionPreparations" >
       	<alias name="Preparation"/>
       </table>
+    </table>
+
+    <table name="Determination" field="determinations" title="Determinations">
+    	<alias name="Taxon"/>
+        <table name="DeterminationCitation" field="determinationCitations">
+        	<alias name="ReferenceWork"/>
+        </table>
+        <table name="DeterminationStatus" field="status"/>
+        <alias name="Agent" field="determiner"/>
     </table>
     
     <table name="Loan">
@@ -197,7 +199,7 @@
         </table>
         <table name="Determination" field="determinations" title="Determinations">
             <alias name="CollectionObject"/>
-            <table name="DeterminationCitation">
+            <table name="DeterminationCitation" field="determinationCitations">
                 <alias name="ReferenceWork"/>
             </table>
             <table name="DeterminationStatus" field="status"/>
