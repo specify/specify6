@@ -3715,7 +3715,7 @@ public class FormViewObj implements Viewable,
      * @param doResetAfterFill tells the form to be reset after filling, as if it was new data.
      * 
      */
-    protected synchronized void setDataIntoUI(final boolean doResetAfterFill)
+    protected void setDataIntoUI(final boolean doResetAfterFill)
     {
         if (businessRules != null)
         {
