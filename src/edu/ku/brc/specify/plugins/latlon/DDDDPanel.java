@@ -24,6 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.StringUtils;
@@ -82,6 +83,9 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     protected Vector<ValFormattedTextFieldSingle> textFields  = new Vector<ValFormattedTextFieldSingle>();
     protected Vector<DataChangeNotifier>          dcNotifiers = new Vector<DataChangeNotifier>();
 
+    // For helper methods
+    protected StringBuilder sb = new StringBuilder();
+    protected enum ValState {Empty, Valid, Error}
 
     /**
      * Constructor. 
@@ -131,7 +135,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      */
     public void init()
     {
-        createUI("p, 2px, p, 2px, p", 10, 10, 5);
+        createUI("p, 2px, p, 2px, p", 10, 10, 5, false);
     }
     
     /**
@@ -145,10 +149,11 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     protected PanelBuilder createUI(final String colDef, 
                                     final int latCols,
                                     final int lonCols,
-                                    final int cbxIndex)
+                                    final int cbxIndex,
+                                    final boolean asDDIntegers)
     {
-        latitudeDD    = createTextField(Double.class, latCols, 0.0, 90.0);
-        longitudeDD   = createTextField(Double.class, lonCols, 0.0, 180.0);
+        latitudeDD    = asDDIntegers ? createTextField(Integer.class, latCols, 0, 90) : createTextField(Double.class, latCols, 0.0, 90.0);
+        longitudeDD   = asDDIntegers? createTextField(Integer.class, lonCols, 0, 180) : createTextField(Double.class, lonCols, 0.0, 180.0);
 
         PanelBuilder    builder    = new PanelBuilder(new FormLayout(colDef, "p, 1px, p, c:p:g"), this);
         CellConstraints cc         = new CellConstraints();
@@ -244,6 +249,70 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     }
     
     /**
+     * @param txtFields
+     * @return
+     */
+    protected String getStringFromFields(final ValFormattedTextFieldSingle... txtFields)
+    {
+        sb.setLength(0);
+        
+        for (ValFormattedTextFieldSingle tf : txtFields)
+        {
+            String str = StringUtils.deleteWhitespace(tf.getText());
+            if (StringUtils.isEmpty(str))
+            {
+                str = "0";
+            }
+            if (sb.length() > 0) sb.append(' ');
+            sb.append(str);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * @param txtFields
+     * @return
+     */
+    protected ValState evalState(final ValFormattedTextFieldSingle... txtFields)
+    {
+        for (ValFormattedTextFieldSingle tf : txtFields)
+        {
+            tf.setState(UIValidatable.ErrorType.Valid);
+            tf.repaint();
+        }
+        ValState                    state   = ValState.Empty;
+        boolean                     isEmpty = false;
+        ValFormattedTextFieldSingle prevTF  = null;
+        for (ValFormattedTextFieldSingle tf : txtFields)
+        {
+            String str = StringUtils.deleteWhitespace(tf.getText());
+            if (StringUtils.isEmpty(str))
+            {
+                isEmpty = true;
+                
+            } else if (tf.getState() == UIValidatable.ErrorType.Valid && tf.getText().length() > 0)
+            {
+                if (isEmpty)
+                {
+                    if (prevTF != null)
+                    {
+                        prevTF.setState(UIValidatable.ErrorType.Error);
+                        prevTF.repaint();
+                    }
+                    return ValState.Error;
+                }
+                state =  ValState.Valid;
+                
+            } else
+            {
+                return ValState.Error;
+            }
+            prevTF = tf;
+        }
+        return state;
+    }
+
+    /**
      * Helper method for setting the data into the UI.
      * @param doLatitude true does latitude, false does longitude
      */
@@ -277,7 +346,25 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
                                                           final Number   maxValue)
     {
         NumberMinMaxFormatter       fmt       = new NumberMinMaxFormatter(dataCls, columns, minValue, maxValue);
-        ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(fmt, false, false);
+        ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(fmt, false, false, false);
+        
+        /*textField.addFocusListener(new FocusAdapter()
+        {
+            @Override
+            public void focusGained(FocusEvent e)
+            {
+                ((JTextField)e.getSource()).selectAll();
+                repaint();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                ((ValFormattedTextFieldSingle)e.getSource()).setNew(false);
+                doDataChanged();
+                repaint();
+            }
+        });*/
         
         if (isViewMode)
         {
@@ -300,16 +387,29 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     }
     
     /**
+     * Notify the changeListeners.
+     */
+    protected void doDataChangeNotify()
+    {
+        SwingUtilities.invokeLater(new Runnable() {
+            //@Override
+            public void run()
+            {
+                hasChanged = true;
+                if (changeListener != null)
+                {
+                    changeListener.stateChanged(null);
+                }
+            }
+        });
+    }
+    
+    /**
      *  Helper to notify data has changed.
      */
     protected void doDataChanged()
     {
-        hasChanged = true;
-        
-        if (changeListener != null)
-        {
-            changeListener.stateChanged(null);
-        }
+        doDataChangeNotify();
     }
     
     /* (non-Javadoc)
@@ -430,7 +530,14 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      */
     public ErrorType validateState()
     {
-        
+        return validateStateTexFields();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#validateState()
+     */
+    protected ErrorType validateStateTexFields()
+    {
         UIValidatable.ErrorType valState = UIValidatable.ErrorType.Valid;
         for (ValFormattedTextFieldSingle vtf : textFields)
         {
@@ -453,6 +560,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     public void dataChanged(String name, Component comp, DataChangeNotifier dcn)
     {
         doDataChanged();
+
     }
     
     //--------------------------------------------------------
@@ -466,5 +574,4 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     {
         doDataChanged();
     }
-
 }

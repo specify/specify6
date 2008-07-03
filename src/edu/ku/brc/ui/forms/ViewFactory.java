@@ -842,15 +842,13 @@ public class ViewFactory
                     throw new RuntimeException("Plugin of class ["+pluginClass.getName()+"] doesn't implement the GetSetValueIFace!");
                 }
                 
-                if (validator != null && (cellField.isChangeListenerOnly() || 
-                        isRequired || 
-                        isNotEmpty(cellField.getValidationRule())))
+                if (validator != null)
                 {
                     DataChangeNotifier dcn = validator.hookupComponent(pluginUI, 
                                                                        cellField.getIdent(),
                                                                        parseValidationType(cellField.getValidationType()), 
                                                                        cellField.getValidationRule(), 
-                                                                       cellField.isChangeListenerOnly());
+                                                                       false);
                     uip.setChangeListener(dcn);
                 }
 

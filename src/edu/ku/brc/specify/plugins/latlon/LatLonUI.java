@@ -627,32 +627,24 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     {
         // this validates the state
         valState = UIValidatable.ErrorType.Valid;
-        for (LatLonUIIFace panel : panels)
+        
+        for (int i=(currentInx*2);i<(currentInx*2)+2;i++)
+        {
+            UIValidatable.ErrorType errType = panels[i].validateState();
+            if (errType.ordinal() > valState.ordinal())
+            {
+                valState = errType;
+            }
+        }
+        
+        /*for (LatLonUIIFace panel : panels)
         {
             UIValidatable.ErrorType errType = panel.validateState();
             if (errType.ordinal() > valState.ordinal())
             {
                 valState = errType;
             }
-
-            /*
-            if (errType != UIValidatable.ErrorType.Valid)
-            {
-                switch (errType)
-                {
-                    case Valid:
-                        break;
-                        
-                    case Incomplete:
-                        valState = valState == UIValidatable.ErrorType.Error ? UIValidatable.ErrorType.Error :  UIValidatable.ErrorType.Incomplete;
-                        break;
-                        
-                    case Error:
-                        valState = UIValidatable.ErrorType.Error;
-                        break;
-                }
-            }*/
-        } 
+        } */
         
         return valState;
     }
@@ -663,6 +655,8 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
 
     public void stateChanged(ChangeEvent e)
     {
+        validateState();
+        
         isChanged = true;
         if (changeListener != null)
         {

@@ -16,8 +16,8 @@ import org.apache.log4j.Logger;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 
-import edu.ku.brc.ui.forms.validation.UIValidatable;
 import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
+import edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType;
 import edu.ku.brc.util.LatLonConverter;
 
 /**
@@ -52,23 +52,24 @@ public class DDMMMMPanel extends DDDDPanel
     @Override
     public void init()
     {
-        createUI("p, p, p, p, p, 2px, p", 3, 3, 7);
+        createUI("p, p, p, p, p, 2px, p", 3, 3, 7, true, false);
     }
     
     /* (non-Javadoc)
      * @see DDDDPanel#createUI(java.lang.String, int, int, int)
      */
-    @Override
     protected PanelBuilder createUI(final String colDef, 
                                     final int latCols,
                                     final int lonCols,
-                                    final int cbxIndex)
+                                    final int cbxIndex,
+                                    final boolean asDDIntegers,
+                                    final boolean asMMIntegers)
     {
-        PanelBuilder    builder = super.createUI(colDef, latCols, lonCols, cbxIndex);
+        PanelBuilder    builder = super.createUI(colDef, latCols, lonCols, cbxIndex, asDDIntegers);
         CellConstraints cc      = new CellConstraints();
 
-        latitudeMM   = createTextField(Double.class, 8, 0.0, 59.99999999);
-        longitudeMM  = createTextField(Double.class, 8, 0.0, 59.99999999);
+        latitudeMM   = asMMIntegers ? createTextField(Integer.class, 8, 0, 59) : createTextField(Double.class, 8, 0.0, 59.99999999);
+        longitudeMM  = asMMIntegers ? createTextField(Integer.class, 8, 0, 59) : createTextField(Double.class, 8, 0.0, 59.99999999);
 
         builder.add(createLabel(" "), cc.xy(4,1));
         builder.add(latitudeMM, cc.xy(5,1));
@@ -139,17 +140,16 @@ public class DDMMMMPanel extends DDDDPanel
     {
         if (doLatitude)
         {
-            String str = latitudeDD.getText() + " " + latitudeMM.getText();
-            if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
+            if (evalState(latitudeDD, latitudeMM) == ValState.Valid)
             {
-                latitude = LatLonConverter.convertDDMMMMToDDDD(str, NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
+                latitude = LatLonConverter.convertDDMMMMToDDDD(getStringFromFields(latitudeDD, latitudeMM), NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
             }
         } else
         {
-            String str = longitudeDD.getText() + " " + longitudeMM.getText();
-            if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
+            
+            if (evalState(longitudeDD, longitudeMM) == ValState.Valid)
             {
-                longitude =  LatLonConverter.convertDDMMMMToDDDD(str, EAST_WEST[longitudeDir.getSelectedIndex()]);
+                longitude =  LatLonConverter.convertDDMMMMToDDDD(getStringFromFields(longitudeDD, longitudeMM), EAST_WEST[longitudeDir.getSelectedIndex()]);
             }
         }
     }
@@ -165,29 +165,17 @@ public class DDMMMMPanel extends DDDDPanel
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.latlon.DDDDPanel#doDataChanged()
+     * @see edu.ku.brc.specify.plugins.latlon.DDDDPanel#validateState()
      */
-    @Override
-    protected void doDataChanged()
+    public ErrorType validateState()
     {
-        if (latitudeMM.getText().length() > 0 && latitudeDD.getText().length() == 0)
+        ErrorType state = validateStateTexFields();
+        if (state == ErrorType.Valid)
         {
-            if (latitudeDD.getState().ordinal() < UIValidatable.ErrorType.Error.ordinal())
-            {
-                latitudeDD.setState(UIValidatable.ErrorType.Error);
-                latitudeDD.repaint();
-            }
+            ValState valStateLat = evalState(latitudeDD, latitudeMM);
+            ValState valStateLon = evalState(longitudeDD, longitudeMM);
+            state = valStateLat != ValState.Error && valStateLon != ValState.Error ? ErrorType.Valid : ErrorType.Error;
         }
-        
-        if (longitudeMM.getText().length() > 0 && longitudeDD.getText().length() == 0)
-        {
-            if (longitudeDD.getState().ordinal() < UIValidatable.ErrorType.Error.ordinal())
-            {
-                longitudeDD.setState(UIValidatable.ErrorType.Error);
-                longitudeDD.repaint();
-            }
-        }
-        super.doDataChanged();
+        return state;
     }
-    
 }

@@ -127,11 +127,28 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     public ValFormattedTextFieldSingle(final UIFieldFormatterIFace formatter, 
                                        final boolean isViewOnly, 
+                                       final boolean isPartialOK, 
+                                       final boolean addFocusListeners)
+    {
+      super();
+      
+      init(formatter, isViewOnly, isPartialOK, null, addFocusListeners);
+
+    }
+
+    /**
+     * Constructor
+     * @param formatter the formatter
+     * @param isViewOnly is it for view mode
+     * @param isPartialOK can only a part of the format be typed in (used for search forms)
+     */
+    public ValFormattedTextFieldSingle(final UIFieldFormatterIFace formatter, 
+                                       final boolean isViewOnly, 
                                        final boolean isPartialOK)
     {
       super();
       
-      init(formatter, isViewOnly, isPartialOK, null);
+      init(formatter, isViewOnly, isPartialOK, null, false);
 
     }
 
@@ -149,7 +166,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     {
         super();
 
-        init(UIFieldFormatterMgr.getInstance().getFormatter(formatterName), isViewOnly, isPartialOK, suggestedNumCols);
+        init(UIFieldFormatterMgr.getInstance().getFormatter(formatterName), isViewOnly, isPartialOK, suggestedNumCols, false);
 
     }
     
@@ -162,7 +179,8 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     protected void init(final UIFieldFormatterIFace formatterArg, 
                         final boolean isViewOnlyArg, 
                         final boolean isPartialOK,
-                        final Integer suggNumCols)
+                        final Integer suggNumCols, 
+                        final boolean addFocusListeners)
     {
         setControlSize(this);
 
@@ -203,25 +221,28 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             
         });
         
-        addFocusListener(new FocusAdapter()
+        if (addFocusListeners)
         {
-            @Override
-            public void focusGained(FocusEvent e)
+            addFocusListener(new FocusAdapter()
             {
-                ((JTextField)e.getSource()).selectAll();
-                //System.err.println(e);
-                repaint();
-            }
-
-            @Override
-            public void focusLost(FocusEvent e)
-            {
-                isNew = false;
-                validateState();
-                repaint();
-
-            }
-        });
+                @Override
+                public void focusGained(FocusEvent e)
+                {
+                    ((JTextField)e.getSource()).selectAll();
+                    //System.err.println(e);
+                    repaint();
+                }
+    
+                @Override
+                public void focusLost(FocusEvent e)
+                {
+                    isNew = false;
+                    validateState();
+                    repaint();
+    
+                }
+            });
+        }
 
         if (!isViewOnly) // NOTE: This is checking the method argument NOT the class member!
         {
@@ -236,6 +257,14 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         }
     }
     
+    /**
+     * @param isNew
+     */
+    public void setNew(boolean isNew)
+    {
+        this.isNew = isNew;
+    }
+
     /**
      * Sets the formatter.
      * @param dataObjFormatterName the formatter to use
@@ -325,6 +354,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             g.setClip(r.x, r.y, r.width, r.height); // reset clip
         }
 
+        //System.out.println(hashCode() + " " +isNew+" "+valState+"  "+isEnabled());
         if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
             Graphics2D g2d = (Graphics2D)g;

@@ -14,8 +14,8 @@ import org.apache.commons.lang.StringUtils;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 
-import edu.ku.brc.ui.forms.validation.UIValidatable;
 import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
+import edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType;
 import edu.ku.brc.util.LatLonConverter;
 
 /**
@@ -47,7 +47,7 @@ public class DDMMSSPanel extends DDMMMMPanel
     @Override
     public void init()
     {
-        PanelBuilder builder = createUI("p, p, p, p, p, p, p, 2px, p", 3, 3, 9);
+        PanelBuilder builder = createUI("p, p, p, p, p, p, p, 2px, p", 3, 3, 9, true, true);
         
         latitudeSS   = createTextField(Double.class, 6, 0.0, 59.99999999);
         longitudeSS  = createTextField(Double.class, 6, 0.0, 59.99999999);
@@ -126,48 +126,30 @@ public class DDMMSSPanel extends DDMMMMPanel
     {
         if (doLatitude)
         {
-            String str = latitudeDD.getText() + " " + latitudeMM.getText() + " " + latitudeSS.getText();
-            if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
+            if (evalState(latitudeDD, latitudeMM, latitudeSS) == ValState.Valid)
             {
-                latitude =  LatLonConverter.convertDDMMSSToDDDD(str, NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
+                latitude =  LatLonConverter.convertDDMMSSToDDDD(getStringFromFields(latitudeDD, latitudeMM, latitudeSS), NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
             }
 
-        } else
+        } else if (evalState(longitudeDD, longitudeMM, longitudeSS) == ValState.Valid)
         {
-            String str = longitudeDD.getText() + " " + longitudeMM.getText() + " " + longitudeSS.getText();
-            if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
-            {
-                longitude = LatLonConverter.convertDDMMSSToDDDD(str, EAST_WEST[longitudeDir.getSelectedIndex()]);
-            }
+            longitude = LatLonConverter.convertDDMMSSToDDDD(getStringFromFields(longitudeDD, longitudeMM, longitudeSS), EAST_WEST[longitudeDir.getSelectedIndex()]);
         }
     }
     
-
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.latlon.DDDDPanel#doDataChanged()
+     * @see edu.ku.brc.specify.plugins.latlon.DDDDPanel#validateState()
      */
-    @Override
-    protected void doDataChanged()
+    public ErrorType validateState()
     {
-        if (latitudeDD.getText().length() > 0 && latitudeSS.getText().length() == 0)
+        ErrorType state = validateStateTexFields();
+        if (state == ErrorType.Valid)
         {
-            if (latitudeSS.getState().ordinal() < UIValidatable.ErrorType.Error.ordinal())
-            {
-                latitudeSS.setState(UIValidatable.ErrorType.Error);
-                latitudeSS.repaint();
-            }
+            ValState valStateLat = evalState(latitudeDD, latitudeMM, latitudeSS);
+            ValState valStateLon = evalState(longitudeDD, longitudeMM, longitudeSS);
+            state = valStateLat != ValState.Error && valStateLon != ValState.Error ? ErrorType.Valid : ErrorType.Error;
         }
-        
-        if (longitudeDD.getText().length() > 0 && longitudeSS.getText().length() == 0)
-        {
-            if (longitudeSS.getState().ordinal() < UIValidatable.ErrorType.Error.ordinal())
-            {
-                longitudeSS.setState(UIValidatable.ErrorType.Error);
-                longitudeSS.repaint();
-            }
-        }
-        super.doDataChanged();
+        return state;
     }
-
 }
 

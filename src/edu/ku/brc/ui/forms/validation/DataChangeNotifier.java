@@ -376,7 +376,7 @@ public class DataChangeNotifier implements FocusListener,
     //--------------------------------------------------------
     public void stateChanged(ChangeEvent e) 
     {
-        notifyDataChangeListeners();
+        doValidateOnChange();
     }
     
     //--------------------------------------------------------
