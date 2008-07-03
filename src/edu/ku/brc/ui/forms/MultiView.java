@@ -855,7 +855,9 @@ public class MultiView extends JPanel
                 parentVal.remove(currentValidator);
             }
             currentValidator.setParent(null);
-            currentValidator = null;
+            // rods - 7/3/08 - Setting this to null is very bad
+            // it clears an existing validator when called from ViewBtn
+            //currentValidator = null;
         }
     }
 
