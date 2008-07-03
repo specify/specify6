@@ -677,11 +677,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             String         path      = fndAppRes.getFileName();
             String         dirPath   = path.substring(0, path.length() - (new File(path).getName().length())-1);
-            AppResourceMgr appResMgr = new AppResourceMgr();
-            SpAppResource  newAppRes = (SpAppResource)appResMgr.loadResourceByName(new File(dirPath), appResource.getName());
+            
+            //AppResourceMgr appResMgr = new AppResourceMgr();
+            //SpAppResource  newAppRes = (SpAppResource)appResMgr.loadResourceByName(new File(dirPath), appResource.getName());
             removeAppResource(virtualDirName, appResource);
             
-            return newAppRes;
+            return null;
         }
         
         try

@@ -11,8 +11,6 @@ package edu.ku.brc.specify.tools.schemalocale;
 
 import java.util.Collection;
 
-import javax.persistence.Column;
-
 /**
  * @author rod
  *
@@ -23,6 +21,9 @@ import javax.persistence.Column;
  */
 public interface LocalizableContainerIFace extends LocalizableItemIFace, Comparable<LocalizableContainerIFace>
 {
+    
+    public abstract Integer getId();
+    
     /**
      * @param item
      */

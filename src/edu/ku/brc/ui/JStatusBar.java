@@ -322,9 +322,12 @@ public class JStatusBar extends JPanel
         if (progressBar != null)
         {
             ProgressItem item = getProgressItem(name);
-            item.setIndeterminate(isIndeterminate);
-            item.setUsePlatformUI(usePlatformLnF);
-            updateProgress(item);
+            if (item != null)
+            {
+                item.setIndeterminate(isIndeterminate);
+                item.setUsePlatformUI(usePlatformLnF);
+                updateProgress(item);
+            }
         }
     }
     
@@ -377,14 +380,17 @@ public class JStatusBar extends JPanel
         if (progressBar != null)
         {
             ProgressItem item = getProgressItem(name);
-            item.clear();
-            item.setIndStatusChanged(true);
-            
-            updateProgress(item);
-            
-            prgHash.remove(name);
-            prgItems.remove(item);
-            prgItemsRecycler.add(item);
+            if (item != null)
+            {
+                item.clear();
+                item.setIndStatusChanged(true);
+                
+                updateProgress(item);
+                
+                prgHash.remove(name);
+                prgItems.remove(item);
+                prgItemsRecycler.add(item);
+            }
         }
     }
     

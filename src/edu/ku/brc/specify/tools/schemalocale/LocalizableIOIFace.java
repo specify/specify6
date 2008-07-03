@@ -41,7 +41,9 @@ public interface LocalizableIOIFace
      * @param item
      * @return
      */
-    public abstract LocalizableContainerIFace getContainer(LocalizableJListItem item);
+    public abstract void getContainer(LocalizableJListItem item, LocalizableIOIFaceListener l);
+    
+    public abstract void containerChanged(LocalizableContainerIFace container);
     
     /**
      * @param container
@@ -60,12 +62,6 @@ public interface LocalizableIOIFace
      * @return
      */
     public abstract Vector<LocalizableJListItem> getDisplayItems(LocalizableJListItem container);
-    
-    /**
-     * @param item
-     * @return
-     */
-    public abstract LocalizableItemIFace realize(LocalizableItemIFace item);
     
     /**
      * @param locale

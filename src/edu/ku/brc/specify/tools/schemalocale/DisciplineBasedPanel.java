@@ -56,7 +56,8 @@ import edu.ku.brc.ui.UIHelper;
  * Created Date: Nov 2, 2007
  *
  */
-public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, PropertyChangeListener
+public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
+                                                            PropertyChangeListener
 {
     protected JComboBox disciplineCBX = createComboBox();
     protected JButton   addBtn;
@@ -321,11 +322,14 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainer(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainer(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem, edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFaceListener)
      */
-    public LocalizableContainerIFace getContainer(LocalizableJListItem item)
+    public void getContainer(LocalizableJListItem item, final LocalizableIOIFaceListener l)
     {
-        return currentBaselineContainer;
+        if (l != null)
+        {
+            l.containterRetrieved(currentBaselineContainer);
+        }
     }
 
     /* (non-Javadoc)
@@ -375,13 +379,12 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
     {
         return false;
     }
-
+    
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#realize(edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#containerChanged(edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace)
      */
-    public LocalizableItemIFace realize(LocalizableItemIFace item)
+    public void containerChanged(LocalizableContainerIFace container)
     {
-        return item;
     }
 
     /* (non-Javadoc)

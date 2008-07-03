@@ -88,6 +88,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     protected Vector<SpLocaleContainer>                     tables     = new Vector<SpLocaleContainer>();
     protected Hashtable<Integer, LocalizableContainerIFace> tableHash  = new Hashtable<Integer, LocalizableContainerIFace>();
     
+    protected Vector<SpLocaleContainer>                     changedTables     = new Vector<SpLocaleContainer>();
+    protected Hashtable<Integer, LocalizableContainerIFace> changedTableHash  = new Hashtable<Integer, LocalizableContainerIFace>();
+    
     protected Vector<LocalizableJListItem>                 tableDisplayItems;
     protected Hashtable<String, LocalizableJListItem>      tableDisplayItemsHash = new Hashtable<String, LocalizableJListItem>();
     
@@ -327,17 +330,11 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainer(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainer(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem, edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFaceListener)
      */
-    public LocalizableContainerIFace getContainer(LocalizableJListItem item)
+    public void getContainer(LocalizableJListItem item, LocalizableIOIFaceListener l)
     {
-        LocalizableContainerIFace tmpContainer = tableHash.get(item.getId().intValue());
-        if (tmpContainer == null)
-        {
-            log.error("Coulent' find container["+item.getId()+"]");
-                
-        }
-        return tmpContainer;
+        loadTable(item.getId(), item.getName(), l);
     }
 
     /* (non-Javadoc)
@@ -405,11 +402,36 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     {
         enabledDlgBtns(false);
         
-        UIRegistry.getStatusBar().setIndeterminate(SCHEMALOCDLG, true);
+        //UIRegistry.getStatusBar().setIndeterminate(SCHEMALOCDLG, true);
+        //UIRegistry.getStatusBar().setText(UIRegistry.getResourceString("LOADING_SCHEMA"));
+        
+        return true;
+    }
+    
+    /**
+     * @param containerId
+     */
+    protected void loadTable(final int    containerId,
+                             final String name,
+                             final LocalizableIOIFaceListener l)
+    {
+        LocalizableContainerIFace cntr = tableHash.get(containerId);
+        if (cntr != null)
+        {
+            l.containterRetrieved(cntr);
+            return;
+        }
+        
+        UIRegistry.getStatusBar().setIndeterminate(name, true);
         UIRegistry.getStatusBar().setText(UIRegistry.getResourceString("LOADING_SCHEMA"));
+        
+        enabledDlgBtns(false);
+        schemaLocPanel.enableUIControls(false);
         
         SwingWorker workerThread = new SwingWorker()
         {
+            protected SpLocaleContainer container = null;
+            
             @Override
             public Object construct()
             {
@@ -417,38 +439,23 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 try
                 {
                     session = DataProviderFactory.getInstance().createSession();
-                    List<?> list = session.getDataList("SELECT count(disciplineId) FROM SpLocaleContainer WHERE disciplineId = "+AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId());
-                    //double total = -1.0;
-                    if (list.get(0) != null && list.get(0) instanceof Integer)
-                    {
-                        int total = (Integer)list.get(0);
-                        //UIRegistry.getStatusBar().setProgressDone(SCHEMALOCDLG);
-                        //UIRegistry.getStatusBar().getProgressBar().setVisible(true);
-                        UIRegistry.getStatusBar().setProgressRange(SCHEMALOCDLG, 0, total);
-                    } else
-                    {
-                        UIRegistry.getStatusBar().setProgressDone(SCHEMALOCDLG);
-                    }
                     
-                    int cnt = 0;
-                    list = session.getDataList("FROM SpLocaleContainer WHERE disciplineId = "+AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId());
-                    for (Object containerObj : list)
+                    container = (SpLocaleContainer)session.getData("FROM SpLocaleContainer WHERE disciplineId = "+
+                                                        AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId() + 
+                                                        " AND spLocaleContainerId = " + containerId);
+                    tables.add(container);
+                    tableHash.put(container.getId().intValue(), container);
+
+                    for (SpLocaleContainerItem item : container.getItems())
                     {
-                        UIRegistry.getStatusBar().setValue(SCHEMALOCDLG, cnt++);
-                        
-                        SpLocaleContainer container = (SpLocaleContainer)containerObj;
-                        tables.add(container);
-                        tableHash.put(container.getId().intValue(), container);
-                        
-                        for (SpLocaleContainerItem item : container.getItems())
-                        {
-                            // force Load of lazy collections
-                            container.getDescs().size();
-                            container.getNames().size();
-                            item.getDescs().size();
-                            item.getNames().size();
-                        }
+                        // force Load of lazy collections
+                        container.getDescs().size();
+                        container.getNames().size();
+                        item.getDescs().size();
+                        item.getNames().size();
                     }
+                    return container;
+                    
                 } catch (Exception e)
                 {
                     e.printStackTrace();
@@ -466,17 +473,20 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             @Override
             public void finished()
             {
+                l.containterRetrieved(container);
+                
                 enabledDlgBtns(true);
-                UIRegistry.getStatusBar().setProgressDone(SCHEMALOCDLG);
+                //schemaLocPanel.enableUIControls(true);
+
+                UIRegistry.getStatusBar().setProgressDone(name);
                 UIRegistry.getStatusBar().setText("");
                 schemaLocPanel.getContainerList().setEnabled(true);
+                
             }
         };
         
         // start the background task
         workerThread.start();
-
-        return true;
     }
 
     /* (non-Javadoc)
@@ -494,7 +504,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
-            for (SpLocaleContainer container : tables)
+            for (SpLocaleContainer container : changedTables)
             {
                 SpLocaleContainer c = session.merge(container);
                 session.saveOrUpdate(c);
@@ -526,13 +536,16 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         return true;
     }
     
-
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#realize(edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#containerChanged(edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace)
      */
-    public LocalizableItemIFace realize(final LocalizableItemIFace liif)
+    public void containerChanged(LocalizableContainerIFace container)
     {
-        return liif;
+        if (container instanceof SpLocaleContainer)
+        {
+            changedTables.add((SpLocaleContainer)container);
+            changedTableHash.put(container.getId().intValue(), container);
+        }
     }
 
     /* (non-Javadoc)
@@ -800,9 +813,22 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             {
                 session = DataProviderFactory.getInstance().createSession();
     
+                pickLists = new Vector<PickList>();
                 // unchecked warning: Criteria results are always the requested class
-                String sql = "FROM PickList WHERE collectionId = "+ AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId();
-                pickLists = (List<PickList>)session.getDataList(sql);
+                String sql = "SELECT name, type, tableName, fieldName FROM PickList WHERE collectionId = "+ AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId();
+                List<?> list = session.getDataList(sql);
+                for (Object row : list)
+                {
+                    Object[] data = (Object[])row;
+                    PickList pl = new PickList();
+                    pl.initialize();
+                    pl.setName((String)data[0]);
+                    pl.setType((Integer)data[1]);
+                    pl.setTableName((String)data[2]);
+                    pl.setFieldName((String)data[3]);
+                    pickLists.add(pl);
+                }
+                //pickLists = (List<PickList>)session.getDataList(sql);
                 
             } catch (Exception ex)
             {

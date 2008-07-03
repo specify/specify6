@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -71,6 +72,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DBTableChildIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.config.DisciplineType;
@@ -96,9 +98,15 @@ import edu.ku.brc.ui.weblink.WebLinkMgr;
  * Sep 25, 2007
  *
  */
-public class FieldItemPanel extends LocalizerBasePanel
+public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOIFaceListener
 {
     private static final Logger log = Logger.getLogger(FieldItemPanel.class);
+    
+    protected final String SL_NONE     = getResourceString("NONE");
+    protected final String SL_FORMAT   = getResourceString("SL_FORMAT");
+    protected final String SL_WEBLINK  = getResourceString("SL_WEBLINK");
+    protected final String SL_PICKLIST = getResourceString("SL_PICKLIST");
+
             
     protected LocalizableIOIFace        localizableIO = null;
     
@@ -163,10 +171,10 @@ public class FieldItemPanel extends LocalizerBasePanel
     protected JButton          fldSpellChkBtn = null;
     
     protected PropertyChangeListener pcl   = null;
-    protected String           noneStr = UIRegistry.getResourceString("NONE");
     
-    protected List<PickList>   pickLists;
+    protected List<PickList>   pickLists      = new Vector<PickList>();
     protected DisciplineType   disciplineType = null;
+    protected String           disciplineName = null;
     
     /**
      * 
@@ -298,14 +306,17 @@ public class FieldItemPanel extends LocalizerBasePanel
             ActionListener switchAL = new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    fmtCardLayout.show(formatterPanel, (String)formatSwitcherCombo.getSelectedItem());
+                    String item = (String)formatSwitcherCombo.getSelectedItem();
+                    if (item != null)
+                    {
+                        fmtCardLayout.show(formatterPanel, item);
+                        webLinkCombo.setEnabled(item.equals(SL_WEBLINK));
+                    }
                 }
             };
             formatSwitcherCombo.addActionListener(switchAL);
             
-            String label = getResourceString("NONE");
-            formatSwitcherCombo.addItem(label);
-            formatterPanel.add(label, new JPanel());
+            formatterPanel.add(SL_NONE, new JPanel());
 
             //--------------------------
             // UIFieldFormatter
@@ -334,9 +345,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                 }
             });
             
-            label = getResourceString("SL_FORMAT");
-            formatterPanel.add(label, inner.getPanel());
-            formatSwitcherCombo.addItem(label);
+            formatterPanel.add(SL_FORMAT, inner.getPanel());
             
             ActionListener changed = new ActionListener() {
                 public void actionPerformed(ActionEvent e)
@@ -398,9 +407,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             };
             webLinkCombo.addActionListener(wlchanged);
             
-            label = getResourceString("SL_WEBLINK");
-            formatterPanel.add(label, inner.getPanel());
-            formatSwitcherCombo.addItem(label);
+            formatterPanel.add(SL_WEBLINK, inner.getPanel());
         }
         
         //--------------------------
@@ -429,13 +436,11 @@ public class FieldItemPanel extends LocalizerBasePanel
             inner.add(pickListCBX,   cc.xy(1, 1));   
             //inner.add(formatMoreBtn, cc.xy(3, 1));
             
-            String label = getResourceString("SL_PICKLIST");
-            formatterPanel.add(label, inner.getPanel());
-            formatSwitcherCombo.addItem(label);
+            formatterPanel.add(SL_PICKLIST, inner.getPanel());
             
         } else
         {
-            pb.add(pickListLbl   = createLabel(getResourceString("SL_PICKLIST") + ":", SwingConstants.RIGHT), cc.xy(3, y));
+            pb.add(pickListLbl   = createLabel(SL_PICKLIST + ":", SwingConstants.RIGHT), cc.xy(3, y));
             pb.add(pickListCBX,   cc.xy(5, y));   y += 2;
         }
         
@@ -520,6 +525,41 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         setIgnoreChanges(false);
     }
+    
+    /**
+     * @param item
+     */
+    protected void fillFormatSwticherCBX(final DBTableChildIFace item)
+    {
+        formatSwitcherCombo.removeAllItems();
+        
+        formatSwitcherCombo.addItem(SL_NONE);
+        
+        if (item instanceof DBRelationshipInfo)
+        {
+            if (((DBRelationshipInfo)item).getType() == DBRelationshipInfo.RelationshipType.ManyToOne)
+            {
+                formatSwitcherCombo.addItem(SL_PICKLIST);
+            }
+            
+        } else
+        {
+            DBFieldInfo fi = (DBFieldInfo)item;
+            if (fi.getDataClass() == String.class)
+            {
+                String ts      = fi.getType();
+                String typeStr = ts.indexOf('.') > -1 ? StringUtils.substringAfterLast(fi.getType(), ".") : ts;
+                if (StringUtils.isNotEmpty(typeStr) && !typeStr.equals("text"))
+                {
+                    formatSwitcherCombo.addItem(SL_FORMAT);
+                    formatSwitcherCombo.addItem(SL_WEBLINK);
+                    formatSwitcherCombo.addItem(SL_PICKLIST);
+                }
+            }
+        }
+        
+        formatSwitcherCombo.setEnabled(formatSwitcherCombo.getModel().getSize() > 1);
+    }
 
     /**
      * @param formatter
@@ -568,7 +608,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             webLinkCombo.setSelectedItem(webLinkDef);
             setHasChanged(true);
         }
-
+        webLinkCombo.setEnabled(webLinkCombo.getModel().getSize() > 1);
     }
     
     /**
@@ -698,7 +738,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         DefaultComboBoxModel cbxModel = (DefaultComboBoxModel)formatCombo.getModel();
         cbxModel.removeAllElements();
         
-        cbxModel.addElement(noneStr); // Add None
+        cbxModel.addElement(SL_NONE); // Add None
         
         if (fieldInfo.getType().equals("java.lang.String") ||
         	UIHelper.isClassNumeric(fieldInfo.getDataClass()))
@@ -893,7 +933,7 @@ public class FieldItemPanel extends LocalizerBasePanel
      * @param tableName
      * @return
      */
-    public LocalizableStrIFace getItemDesc(final LocalizableJListItem tableListItem, 
+    /*public LocalizableStrIFace getItemDesc(final LocalizableJListItem tableListItem, 
                                            final LocalizableJListItem fieldListItem)
     {
         LocalizableContainerIFace table = localizableIO.getContainer(tableListItem);
@@ -910,13 +950,13 @@ public class FieldItemPanel extends LocalizerBasePanel
         }
         log.error("Couldn't find table ["+tableListItem.getName()+"]");
         return null;
-    }
+    }*/
     
     /**
      * @param tableName
      * @return
      */
-    public LocalizableStrIFace getItemNameDesc(final LocalizableJListItem tableListItem, 
+    /*public LocalizableStrIFace getItemNameDesc(final LocalizableJListItem tableListItem, 
                                                final LocalizableJListItem fieldListItem)
     {
         LocalizableContainerIFace table = localizableIO.getContainer(tableListItem);
@@ -932,7 +972,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         }
         log.error("Couldn't find table ["+tableListItem.getName()+"]");
         return null;
-    }
+    }*/
     
     /**
      * 
@@ -967,7 +1007,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                 LocalizableItemIFace f = getFieldItem(i);
                 if (f != null)
                 {
-                    f = localizableIO.realize(f);
+                    //f = localizableIO.realize(f);
                     LocalizableStrIFace  desc = getDescForCurrLocale(f);
                     if (desc != null && StringUtils.isEmpty(desc.getText()))
                     {
@@ -1087,16 +1127,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         if (currJListItem != null)
         {
-            LocalizableContainerIFace tbl = localizableIO.getContainer(currJListItem);
-            if (tbl != null)
-            {
-                for (LocalizableJListItem fItem : localizableIO.getDisplayItems(currJListItem))
-                {
-                    fieldsModel.addElement(fItem);
-                }
-    
-                fieldsList.setSelectedIndex(0);
-            }
+            localizableIO.getContainer(currJListItem, this);
         }
         updateBtns();
     }
@@ -1127,9 +1158,9 @@ public class FieldItemPanel extends LocalizerBasePanel
      */
     protected LocalizableItemIFace getSelectedFieldItem()
     {
-        if (currContainer != null)
+        if (fieldsList.getSelectedIndex() > -1)
         {
-            if (fieldsList.getSelectedIndex() > -1)
+            if (currContainer != null)
             {
                 LocalizableJListItem jlistFieldItem = (LocalizableJListItem)fieldsList.getSelectedValue();
                 if (jlistFieldItem != null)
@@ -1137,10 +1168,10 @@ public class FieldItemPanel extends LocalizerBasePanel
                     return localizableIO.getItem(currContainer, jlistFieldItem);
                 }
                 log.error("fieldsList item was null");
+            } else
+            {
+                log.error("currContainer was null");
             }
-        } else
-        {
-            log.error("currContainer was null");
         }
 
         return null;
@@ -1160,7 +1191,6 @@ public class FieldItemPanel extends LocalizerBasePanel
             statusBar.setText("");
         }
         
-        int switcherInx = 0;
         LocalizableItemIFace fld = getSelectedFieldItem();
         if (fld != null)
         {
@@ -1169,28 +1199,47 @@ public class FieldItemPanel extends LocalizerBasePanel
             fieldInfo = fld != null ? tableInfo.getFieldByName(fld.getName()) : null;
             relInfo   = fieldInfo == null ? tableInfo.getRelationshipByName(fld.getName()) : null;
             
+            fillFormatSwticherCBX(tableInfo.getItemByName(fld.getName()));
+            
             if (pcl != null)
             {
                 pcl.propertyChange(new PropertyChangeEvent(fieldsList, "index", null, fld));
             }
             
-            fld = localizableIO.realize(fld);
+            //fld = localizableIO.realize(fld);
             fieldDescText.setText(getDescStrForCurrLocale(fld));
             fieldNameText.setText(getNameDescStrForCurrLocale(fld));
             fieldHideChk.setSelected(fld.getIsHidden());
             
-            String disciplineName = disciplineType != null ? disciplineType.getName() : null;
+            String dspName = disciplineType != null ? disciplineType.getName() : null;
             if (AppContextMgr.getInstance() != null && AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
             {
-                disciplineName = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+                dspName = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
             }
             
-            pickLists = localizableIO.getPickLists(null);
-            //for (PickList pl : pickLists) System.out.println("0: "+pl.getName());
-            if (disciplineName != null)
+            if (disciplineName == null || !dspName.equals(disciplineName))
             {
-                pickLists.addAll(localizableIO.getPickLists(disciplineName));
-                //for (PickList pl : localizableIO.getPickLists(disciplineName)) System.out.println("1: "+pl.getName());
+                disciplineName = dspName;
+                
+                pickLists.clear();
+                List<PickList> plList = localizableIO.getPickLists(null);
+                if (plList != null)
+                {
+                    pickLists.addAll(plList);
+                }
+                
+                //for (PickList pl : pickLists) System.out.println("0: "+pl.getName());
+                if (disciplineName != null)
+                {
+                    plList = localizableIO.getPickLists(disciplineName);
+                    if (plList != null)
+                    {
+                        pickLists.addAll(plList);
+                    }
+                    //for (PickList pl : localizableIO.getPickLists(disciplineName)) System.out.println("1: "+pl.getName());
+                }
+                
+                Collections.sort(pickLists);
             }
             
             if (pickLists != null)
@@ -1283,11 +1332,11 @@ public class FieldItemPanel extends LocalizerBasePanel
                             String title = ri.getType().toString();
                             if (ri.getType() == DBRelationshipInfo.RelationshipType.OneToMany)
                             {
-                                title = DBRelationshipInfo.RelationshipType.ManyToOne.toString();
+                                title = DBRelationshipInfo.RelationshipType.OneToMany.toString();
                                 
                             } else if (ri.getType() == DBRelationshipInfo.RelationshipType.ManyToOne)
                             {
-                                title = DBRelationshipInfo.RelationshipType.OneToMany.toString();
+                                title = DBRelationshipInfo.RelationshipType.ManyToOne.toString();
                             }
                             fieldTypeTxt.setText(title +" "+getResourceString("SL_TO")+" "+getNameDescStrForCurrLocale(currContainer));
                             fieldTypeLbl.setEnabled(true);
@@ -1295,7 +1344,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                             fieldLengthTxt.setText(" ");
                             fieldLengthLbl.setEnabled(false);
                             fieldLengthTxt.setEnabled(false);
-                            fieldReqTxt.setText(getResourceString(ri.isRequired() ? getResourceString("SL_YES") : getResourceString("SL_NO")));
+                            fieldReqTxt.setText(getResourceString(ri.isRequired() ? "SL_YES" : "SL_NO"));
                         }
                     }
                 }
@@ -1319,22 +1368,24 @@ public class FieldItemPanel extends LocalizerBasePanel
         fillFormatBox();
         fillWebLinkBox();
         
+        String label = SL_NONE;
+        
         if (pickListCBX.getSelectedIndex() > 0)
         {
-            switcherInx = 3;
+            label = SL_PICKLIST;
         }
         
         if (formatCombo.getSelectedIndex() > 0)
         {
-            switcherInx = 1;
+            label = SL_FORMAT;
         }
         
         if (webLinkCombo.getSelectedIndex() > 0)
         {
-            switcherInx = 2;
+            label = SL_WEBLINK;
         }
         
-        formatSwitcherCombo.setSelectedIndex(switcherInx);
+        formatSwitcherCombo.setSelectedItem(label);
         
         boolean ok = fld != null;
         fieldDescText.setEnabled(ok);
@@ -1410,4 +1461,34 @@ public class FieldItemPanel extends LocalizerBasePanel
     {
         // do nothing
     }
+    
+    //--------------------------------------------------------------
+    // LocalizableIOIFaceListener
+    //--------------------------------------------------------------
+    
+ 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFaceListener#containterRetrieved(edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace)
+     */
+    public void containterRetrieved(LocalizableContainerIFace container)
+    {
+        if (container != null)
+        {
+            for (LocalizableJListItem fItem : localizableIO.getDisplayItems(currJListItem))
+            {
+                fieldsModel.addElement(fItem);
+            }
+
+            fieldsList.setSelectedIndex(0);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFaceListener#realizeComplete(edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace)
+     */
+    public void realizeComplete(LocalizableItemIFace liif)
+    {
+    }
+    
+    
 }

@@ -832,9 +832,12 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainer(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
-    public LocalizableContainerIFace getContainer(LocalizableJListItem item)
+    public void getContainer(LocalizableJListItem item, final LocalizableIOIFaceListener l)
     {
-        return tableHash.get(item.getName());
+        if (l != null)
+        {
+            l.containterRetrieved(tableHash.get(item.getName()));
+        }
     }
 
 
@@ -893,14 +896,13 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#realize(edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#containerChanged(edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace)
      */
-    public LocalizableItemIFace realize(LocalizableItemIFace item)
+    public void containerChanged(LocalizableContainerIFace container)
     {
-        return item;
+        // no op - doesn't matter
     }
-    
-    
+
     /**
      * @param lang
      * @param country
@@ -1039,7 +1041,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
      */
     public void copyLocale(Locale srcLocale, Locale dstLocale)
     {
-        for (LocalizableJListItem listItem : getContainerDisplayItems())
+        /*for (LocalizableJListItem listItem : getContainerDisplayItems())
         {
             LocalizableContainerIFace table = getContainer(listItem);
             
@@ -1049,7 +1051,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             {
                 copyLocale(field, srcLocale, dstLocale);
             }
-        }
+        }*/
     }
 
     /* (non-Javadoc)
