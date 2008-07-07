@@ -489,4 +489,52 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         }
         return false;
     }
+    
+    /**
+     * @param appRes
+     * 
+     * Removes appRes from spPersistedAppResources and spAppResources sets.
+     * 
+     * @return true if resource was removed from both sets. 
+     */
+    public boolean removeResource(final SpAppResource appRes)
+    {
+        /* the removeResource(XXX) methods were added because, for reasons I am unable to determine, contrary
+         * to the documentation, during calls to the remove method for the spPersistedAppResources and spAppResources the
+         * SpAppResources.equals() method is NOT used to determine equality. This caused SpecifyAppContextMgr.removeResourceFromDir to
+         * fail or throw an execption.
+         */
+        return removeResource(appRes, true) && removeResource(appRes, false);
+    }
+    
+    /**
+     * @param appRes
+     * @param persistedOnly - if true remove from spPersistedAppResources else remove from spAppResources
+     * @return true if appRes was removed from the specified set.
+     */
+    public boolean removeResource(final SpAppResource appRes, final boolean persistedOnly)
+    {
+        /* the removeResource(XXX) methods were added because, for reasons I am unable to determine, contrary
+         * to the documentation, during calls to the remove method for the spPersistedAppResources and spAppResources the
+         * SpAppResources.equals() method is NOT used to determine equality. This caused SpecifyAppContextMgr.removeResourceFromDir to
+         * fail or throw an execption.
+         */
+        Set<SpAppResource> appResSet;
+        if (persistedOnly)
+        {
+            appResSet = getSpPersistedAppResources();
+        }
+        else
+        {
+            appResSet = getSpAppResources();
+        }
+        for (SpAppResource item : appResSet)
+        {
+            if (item.equals(appRes))
+            {
+                return appResSet.remove(item);
+            }
+        }
+        return false; 
+    }
 }

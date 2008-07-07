@@ -1718,13 +1718,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 session = DataProviderFactory.getInstance().createSession();
                 session.beginTransaction();
-                appResDir.getSpPersistedAppResources().remove(appRes);
-                appResDir.getSpAppResources().remove(appRes);
-                session.saveOrUpdate(appResDir);
+                if (!appResDir.removeResource(appRes))
+                {
+                    session.rollback();
+                    log.error("Unable to remove AppResource '" + appResource + "' from directory '" + appResDirName + "'");
+                    return false;
+                }
                 session.delete(appRes);
+                session.saveOrUpdate(appResDir);
                 session.commit();
                 session.flush();
-                
                 return true;
             } catch (Exception ex)
             {
