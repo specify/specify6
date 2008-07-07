@@ -375,21 +375,25 @@ public class ResultSetController implements ValidationListener
     }
     
     /**
-     * Sets whether the record controller should be enabled
+     * Resets the current index to zero.
      * @param enabled true enabled, false not enabled
      */
-    public void setEnabled(final boolean enabled)
+    public void reset()
     {
-        if (enabled)
-        {
-            currentInx = 0;
+        currentInx = 0;
             
-        } else
-        {
-            currentInx = -1;
-            numRecords = 0;
-            lastInx    = -1;
-        }
+        updateUI();
+    }
+
+    /**
+     * Set the the controller to have no items and the number of records to zero.
+     * @param enabled true enabled, false not enabled
+     */
+    public void clear()
+    {
+        currentInx = -1;
+        numRecords = 0;
+        lastInx    = -1;
         updateUI();
     }
 

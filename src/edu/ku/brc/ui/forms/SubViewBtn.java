@@ -111,7 +111,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         this.classToCreate = classToCreate;
         
         // 02/12/08 - rods - Removing the "IS_NEW_OBJECT" of the parent object because it doesn't
-        // matter to the popup form it creates. he form takes care o everything.
+        // matter to the popup form it creates. The form takes care of everything.
         this.options &= ~MultiView.IS_NEW_OBJECT;
         
         //log.debug("Editing "+MultiView.isOptionOn(options, MultiView.IS_EDITTING));

@@ -2371,10 +2371,11 @@ public class FormViewObj implements Viewable,
                 isEditting = false;
                 rsController.setIndex(newInx, mvParent == null); // only send notification about index change top form
                 isEditting = true;
-                
-                dataObj = list.get(newInx);
-                
-                setDataObj(dataObj, true); // true means the dataObj is already in the current "list" of data items we are working with
+
+                // rods - 07/07/2008 - This has already been at this point when the index changed.
+                // and this ends 
+                //dataObj = list.get(newInx);
+                //setDataObj(dataObj, true); // true means the dataObj is already in the current "list" of data items we are working with
                 
                 if (formValidator != null)
                 {
@@ -3598,12 +3599,13 @@ public class FormViewObj implements Viewable,
                     if (!alreadyInTheList)
                     {
                         //controlPanel.setRSCVisibility(!isEditting);
+                        rsController.reset(); // rods - 07/07/08 just moved this into the this 'if' statement
+                        // it has already caused problems not being n there.
                     }
-                    rsController.setEnabled(true);
                     
                 } else
                 {
-                    rsController.setEnabled(false);
+                    rsController.clear();
                 }
                 updateControllerUI();
             }
@@ -3845,7 +3847,7 @@ public class FormViewObj implements Viewable,
             // Disable the ResultSet Controller
             if (rsController != null)
             {
-                rsController.setEnabled(false);
+                rsController.clear();
             }
             wasNull    = true;
             weHaveData = false;
@@ -3857,7 +3859,7 @@ public class FormViewObj implements Viewable,
             // Enable the ResultSet Controller
             if (rsController != null)
             {
-                rsController.setEnabled(true);
+                rsController.reset();
             }
             wasNull = false;
         }
