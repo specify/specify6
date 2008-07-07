@@ -73,6 +73,14 @@ public class UploadResults implements QueryForIdResultsIFace
         return result;        
     }
     
+    /**
+     * @return the total number records uploaded for uploadTable.
+     */
+    public int getUploadedRecCount()
+    {
+        return uploadTable.getUploadedRecs().size();
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#cleanUp()
      */

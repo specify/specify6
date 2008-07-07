@@ -46,4 +46,17 @@ public class UploadResultsTablePanel extends ESResultsTablePanel
         return new UploadResultSetTableModel(this, results);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel#setTitleBar()
+     */
+    @Override
+    protected void setTitleBar()
+    {
+        super.setTitleBar();
+        UploadResults ur = (UploadResults )results;
+        if (ur.getUploadedRecCount() > rowCount)
+        {
+            topTitleBar.setText(String.format("%s - %d/%d", results.getTitle(), rowCount, ur.getUploadedRecCount()));
+        }
+    }
 }

@@ -35,6 +35,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     protected final UploadData uploadData;
     protected final List<Object[]> dataObjects; 
     protected int maxFldIdx;
+    protected final static int MAX_DISPLAYED_ROWS = 2000;
     
     /**
      * @param fldDef
@@ -73,6 +74,7 @@ public class UploadResultsQuery implements CustomQueryIFace
         Vector<Vector<edu.ku.brc.util.Pair<Integer, Integer>>> indexes = setupFldIdxInfo(uploadTable);
         if (indexes != null)
         {
+            int row = 0;
             for (UploadedRecordInfo rec : uploadTable.getUploadedRecs())
             {
                 Object[] rowData = new Object[maxFldIdx + 2];
@@ -84,6 +86,10 @@ public class UploadResultsQuery implements CustomQueryIFace
                             .getData(getWbCol(index.get(i)));
                 }
                 dataObjects.add(rowData);
+                if (++row == MAX_DISPLAYED_ROWS)
+                {
+                    break;
+                }
             }
         }
         
