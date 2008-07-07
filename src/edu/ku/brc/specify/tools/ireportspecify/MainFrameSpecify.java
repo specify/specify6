@@ -459,7 +459,7 @@ public class MainFrameSpecify extends MainFrame
             {
                 return null;
             }
-            if (StringUtils.isEmpty(propPanel.getNameTxt().getText()))
+            if (StringUtils.isEmpty(propPanel.getNameTxt().getText().trim()))
             {
                 JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_NAME_MUST_NOT_BE_BLANK"), propPanel.getNameTxt().getText()));
             }
@@ -478,8 +478,8 @@ public class MainFrameSpecify extends MainFrame
             //XXX - which Dir???
             //XXX - what level???
             AppResourceIFace result = AppContextMgr.getInstance().createAppResourceForDir("Collection");
-            result.setName(propPanel.getNameTxt().getText());
-            result.setDescription(propPanel.getNameTxt().getText());
+            result.setName(propPanel.getNameTxt().getText().trim());
+            result.setDescription(propPanel.getNameTxt().getText().trim());
             result.setLevel(Short.valueOf(propPanel.getLevelTxt().getText()));
             String metaDataStr = "tableid=" + propPanel.getTableId() + ";";
             if (propPanel.getTypeCombo().getSelectedIndex() == 0)
