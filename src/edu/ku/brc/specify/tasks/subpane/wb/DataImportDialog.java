@@ -450,8 +450,8 @@ public class DataImportDialog extends JDialog implements ActionListener
         textQualLabel = createLabel(getResourceString("TEXT_QUAL"));
         String[] qualifiers = { "\"", "\'", "{"+getResourceString("WB_NONE")+"}" };
         textQualCombo = createComboBox(qualifiers);
-        textQualCombo.setSelectedIndex(0);
-        textQualCombo.setSelectedItem(((ConfigureCSV )config).getTextQualifier());
+        //textQualCombo.setSelectedIndex(0);
+        textQualCombo.setSelectedItem(String.valueOf(((ConfigureCSV )config).getTextQualifier()));
         textQualCombo.addActionListener(this);
 
         charSetLabel = createLabel(getResourceString("CHAR_SET"));
