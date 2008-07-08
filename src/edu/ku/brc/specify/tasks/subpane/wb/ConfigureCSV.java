@@ -303,7 +303,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     }
     private char getDefaultTextQualifier()
     {
-        return '"';
+        return '\'';
     }
     /**
      * Lame prompt for Character set.
