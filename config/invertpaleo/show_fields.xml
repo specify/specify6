@@ -12,9 +12,15 @@
 	<table name="Determination">
 		<field name="yesNo1"/>
 	</table>
+
+
+	<!--  *****Thinking the datamodel does not distinguish between determination and determination table
 	<table name="Determination">
 		<field name="yesNo1"/>
 	</table>
+	-->
+
+
 	<table name="PaleoContext">
 		<field name="text1"/>
 	</table>

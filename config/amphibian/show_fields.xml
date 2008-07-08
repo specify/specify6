@@ -15,6 +15,9 @@
 	<table name="CollectionObject">
 		<field name="timestampModified" />
 	</table>
+	<table name="Deaccession">
+		<field name="timestampModified" />
+	</table>
 	<table name="Determination">
 		<field name="yesNo1" />
 	</table>
