@@ -161,6 +161,41 @@ public class DateConverter
                 result.setTime(df.parse(dateStr));
                 return result;
             }
+        },
+        LYEAR_MON_DAY(
+        // "[0123456789]?[0123456789]([ /\\.-])[0123456789]?[0123456789]\\1[0-9][0-9][0-9][0-9]")
+                "[0-9][0-9][0-9][0-9]([ /\\.-])[0123456789]?[0123456789]\\1[0123456789]?[0123456789]")
+        {
+            @Override
+            public Calendar convertToCalendar(String dateStr) throws ParseException
+            {
+                DateFormat df;
+                if (dateStr.contains(" "))
+                {
+                    df = new SimpleDateFormat("yyyy MM dd");
+                }
+                else if (dateStr.contains("/"))
+                {
+                    df = new SimpleDateFormat("yyyy/MM/dd");
+                }
+                else if (dateStr.contains("."))
+                {
+                    df = new SimpleDateFormat("yyyy.MM.dd");
+                }
+                else if (dateStr.contains("-"))
+                {
+                    df = new SimpleDateFormat("yyyy-MM-dd");
+                }
+                else
+                {
+                    return null;
+                }
+                Calendar result = new GregorianCalendar();
+                result.setLenient(false);
+                result.setTime(df.parse(dateStr));
+                return result;
+            }
+
         };
         public final String regex;
 
