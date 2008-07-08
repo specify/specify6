@@ -8,7 +8,6 @@
 package edu.ku.brc.specify.utilapps;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
-
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccession;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAddress;
@@ -64,12 +63,10 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createStorageTreeDefIte
 import static edu.ku.brc.specify.config.init.DataBuilder.createTaxon;
 import static edu.ku.brc.specify.config.init.DataBuilder.createTaxonChildren;
 import static edu.ku.brc.specify.config.init.DataBuilder.createTaxonTreeDef;
-//import static edu.ku.brc.specify.config.init.DataBuilder.createUserGroup;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbench;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchDataItem;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchMappingItem;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchTemplate;
-
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
@@ -208,6 +205,7 @@ import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -219,7 +217,6 @@ import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
@@ -3098,17 +3095,45 @@ public class BuildSampleDatabase
         Vector<Object> taxa = new Vector<Object>();
         createTaxonTreeFromXML(taxa, taxonTreeDef, disciplineType);
         
+        boolean isPaleo = disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.paleobotany ||
+                          disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.vertpaleo;
+        
+        if (isPaleo)
+        {
+            LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Earth", 0, false);
+            LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
+            LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
+            LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
+            LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
+            @SuppressWarnings("unused")
+            LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
+            persist(earth);
+        }
+        
         List<Object> geos        = createSimpleGeography(geoTreeDef);
         List<Object> locs        = createSimpleStorage(locTreeDef);
         List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
-        List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
+        List<Object> lithoStrats = isPaleo ? null : createSimpleLithoStrat(lithoStratTreeDef);
         
         persist(journal);
         persist(taxa);
         persist(geos);
         persist(locs);
         persist(gtps);
-        persist(lithoStrats);
+        
+        if (lithoStrats != null)
+        {
+            persist(lithoStrats);
+            
+        } else if (isPaleo)
+        {
+            LithoStrat earthLithoStrat = convertLithoStratFromCSV(lithoStratTreeDef);
+            if (earthLithoStrat == null)
+            {
+                lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
+                persist(lithoStrats);
+            }  
+        }
         commitTx();
         
         startTx();

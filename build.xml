@@ -198,6 +198,7 @@
 		<copy file="packaging/specify.icns" todir="${installer.dir}" />
 		<copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
 		<copy file="./packaging/SpecifyBigSplash.png" todir="${installer.dir}" />
+		<copy file="./demo_files/Stratigraphy.csv" todir="${installer.dir}/config" />
 		
 	</target>
 		
