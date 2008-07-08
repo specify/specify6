@@ -466,8 +466,8 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         commitTx();
         
-        makeFieldVisible(null);
-        makeFieldVisible(config.getDiscipline().getName());
+        makeFieldVisible(null, discipline);
+        makeFieldVisible(config.getDiscipline().getName(), discipline);
 
         startTx();
         
@@ -842,8 +842,8 @@ public class BuildSampleDatabase
 
         commitTx();
         
-        makeFieldVisible(null);
-        makeFieldVisible(disciplineType.getName());
+        makeFieldVisible(null, discipline);
+        makeFieldVisible(disciplineType.getName(), discipline);
 
         frame.setProcess(++createStep);
         
@@ -1600,8 +1600,8 @@ public class BuildSampleDatabase
 
         commitTx();
         
-        makeFieldVisible(null);
-        makeFieldVisible(disciplineType.getName());
+        makeFieldVisible(null, discipline);
+        makeFieldVisible(disciplineType.getName(), discipline);
 
         frame.setProcess(++createStep);
         
@@ -2051,8 +2051,8 @@ public class BuildSampleDatabase
 
         commitTx();
         
-        makeFieldVisible(null);
-        makeFieldVisible(disciplineType.getName());
+        makeFieldVisible(null, discipline);
+        makeFieldVisible(disciplineType.getName(), discipline);
 
         frame.setProcess(++createStep);
         
@@ -3066,8 +3066,8 @@ public class BuildSampleDatabase
 
         commitTx();
         
-        makeFieldVisible(null);
-        makeFieldVisible(disciplineType.getName());
+        makeFieldVisible(null, discipline);
+        makeFieldVisible(disciplineType.getName(), discipline);
 
         frame.setProcess(++createStep);
         
@@ -4090,8 +4090,8 @@ public class BuildSampleDatabase
         
         commitTx();
         
-        makeFieldVisible(null);
-        makeFieldVisible(disciplineType.getName());
+        makeFieldVisible(null, discipline);
+        makeFieldVisible(disciplineType.getName(), discipline);
 
         frame.setDesc("Creating Fish Trees...");
         
@@ -7211,7 +7211,8 @@ public class BuildSampleDatabase
     /**
      * Make specific fields visible.
      */
-    public static void makeFieldVisible(final String disciplineDirName)
+    public static void makeFieldVisible(final String disciplineDirName,
+                                        final Discipline discipline)
     {
         //setFieldVisible("collectionobject", "timestampModified");
         //setFieldVisible("determination",    "yesNo1");
@@ -7248,7 +7249,7 @@ public class BuildSampleDatabase
                                         DBFieldInfo fld = tbl.getFieldByName(fName);
                                         if (fld != null)
                                         {
-                                            setFieldVisible(tbl.getName(), fld.getName());
+                                            setFieldVisible(tbl.getName(), fld.getName(), discipline);
                                         } else
                                         {
                                             UIRegistry.showError("show_list.xml in ["+disciplineDirName+"] for table name ["+tName+"] has bad field name["+fName+"]");
@@ -7276,13 +7277,16 @@ public class BuildSampleDatabase
      * @param tableName the table name
      * @param fieldName the field name
      */
-    protected static void setFieldVisible(final String tableName, final String fieldName)
+    protected static void setFieldVisible(final String tableName, 
+                                          final String fieldName,
+                                          final Discipline discipline)
     {
         DataProviderSessionIFace localSession = null;
         try
         {
             localSession = DataProviderFactory.getInstance().createSession();
-            SpLocaleContainer container = localSession.getData(SpLocaleContainer.class, "name", tableName, DataProviderSessionIFace.CompareType.Equals);
+            Object[] cols = (Object[])localSession.getData("FROM SpLocaleContainer as sp INNER JOIN sp.discipline as d WHERE sp.name = '" + tableName + "' AND d.disciplineId = "+discipline.getId());
+            SpLocaleContainer container = (SpLocaleContainer)cols[0];
             if (container != null)
             {
                 for (SpLocaleContainerItem item : container.getItems())
@@ -7294,12 +7298,14 @@ public class BuildSampleDatabase
                         localSession.beginTransaction();
                         localSession.save(item);
                         localSession.commit();
+                        localSession.flush();
                         return;
                     }
                 }
             }
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             
         } finally 
         {
