@@ -7,7 +7,6 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -61,7 +60,7 @@ public class DNASequence extends CollectionMember
     protected Agent    sequencer;
     protected String   ncbiNumber;
     
-    protected Set<CollectionObject> collectionObjects;
+    protected CollectionObject collectionObject;
     protected Set<DNASequenceAttachment> attachments;
     
     /**
@@ -92,7 +91,7 @@ public class DNASequence extends CollectionMember
         submissionDate    = null;
         sequencer         = null;
         ncbiNumber        = null;
-        collectionObjects = new HashSet<CollectionObject>();
+        collectionObject  = null;
         attachments       = new TreeSet<DNASequenceAttachment>();
     }
 
@@ -194,13 +193,12 @@ public class DNASequence extends CollectionMember
         this.ncbiNumber = ncbiNumber;
     }
 
-
     /**
-     * @param collectionObjects the collectionObjects to set
+     * @param dnaSequence the dnaSequence to set
      */
-    public void setCollectionObjects(Set<CollectionObject> collectionObjects)
+    public void setCollectionObject(CollectionObject collectionObject)
     {
-        this.collectionObjects = collectionObjects;
+        this.collectionObject = collectionObject;
     }
 
     /**
@@ -318,17 +316,17 @@ public class DNASequence extends CollectionMember
         return ncbiNumber;
     }
 
-
     /**
-     * @return the collectionObjects
+     * @return the dnaSequence
      */
-    @OneToMany(mappedBy = "dnaSequence")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
-    public Set<CollectionObject> getCollectionObjects()
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionObjectID", unique = false, nullable = true, insertable = true, updatable = true)
+    public CollectionObject getCollectionObject()
     {
-        return collectionObjects;
+        return collectionObject;
     }
-    
+
+
     @OneToMany(mappedBy = "dnaSequence")
     @Cascade( {CascadeType.ALL} )
     @OrderBy("ordinal ASC")

@@ -500,7 +500,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     /**
      * @return the treatmentEvents
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "accession")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<TreatmentEvent> getTreatmentEvents()
     {

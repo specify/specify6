@@ -242,6 +242,15 @@
 	                <param name="searchdlg" type="string" required="false" default="">
 	                    <desc>Overrides the view name in the schema for the search dialog.</desc>
 	                </param>
+	                <param name="editbtn" type="boolean" required="false" default="true">
+	                    <desc>Indicates whether to add the 'edit' button.</desc>
+	                </param>
+	                <param name="newbtn" type="boolean" required="false" default="true">
+	                    <desc>Indicates whether to add the 'add' (the '+') button.</desc>
+	                </param>
+	                <param name="searchbtn" type="boolean" required="false" default="true">
+	                    <desc>Indicates whether to add the 'search' button.</desc>
+	                </param>
                 </params>
             </subcontrol>
             

@@ -141,7 +141,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Set<CollectionRelationship>   leftSideRels;
     protected Set<CollectionRelationship>   rightSideRels;
     protected PaleoContext                  paleoContext;
-    protected DNASequence                   dnaSequence;
+    protected Set<DNASequence>              dnaSequences;
     protected FieldNotebookPage             fieldNotebookPage;
     
     protected Set<ConservDescription>         conservDescriptions;
@@ -217,7 +217,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         container             = null;
         containerOwner        = null;
         paleoContext          = null;
-        dnaSequence           = null;
+        dnaSequences          = new HashSet<DNASequence>();
         fieldNotebookPage     = null;
         
         leftSideRels          = new HashSet<CollectionRelationship>();
@@ -921,21 +921,21 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
 //    }
 
     /**
-     * @return the dnaSequence
+     * @return the collectionObjects
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "DNASequenceID", unique = false, nullable = true, insertable = true, updatable = true)
-    public DNASequence getDnaSequence()
+    @OneToMany(mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<DNASequence> getDnaSequences()
     {
-        return dnaSequence;
+        return dnaSequences;
     }
-
+    
     /**
-     * @param dnaSequence the dnaSequence to set
+     * @param dnaSequences the dnaSequences to set
      */
-    public void setDnaSequence(DNASequence dnaSequence)
+    public void setDnaSequences(Set<DNASequence> dnaSequences)
     {
-        this.dnaSequence = dnaSequence;
+        this.dnaSequences = dnaSequences;
     }
 
     /**
@@ -1175,4 +1175,5 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         // else
         return timestampCreated.compareTo(obj.timestampCreated);
     }
+
 }

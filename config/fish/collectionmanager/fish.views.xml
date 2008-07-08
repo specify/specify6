@@ -86,7 +86,13 @@
                     <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                     <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="name=PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
                 </row>
+                <!--  Used for testing WebLinks
                 <row>
+                    <cell type="label" labelfor="99"/>
+                    <cell type="field" id="99" name="this" uitype="plugin" initialize="name=WebLinkButton;weblink=CatNum"/>
+                </row>
+                -->
+				<row>
                     <cell type="separator" label="Determinations" collapse="determinations" colspan="12"/>
                 </row>
                 
@@ -110,7 +116,7 @@
              <!--   <row>
                     <cell type="subview" viewname="TreatmentEventForCollObj" id="23" name="treatmentEvents" initialize="btn=true"/>
                     
-                    <cell type="subview" viewname="DNASequence" id="14" name="dnaSequence" initialize="btn=true"/>
+                    <cell type="subview" viewname="DNASequence" id="14" name="dnaSequences" initialize="btn=true"/>
                 </row> -->
                 <row>
 			  <cell type="separator" label="Attachments" colspan="12"/>

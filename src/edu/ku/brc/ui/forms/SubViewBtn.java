@@ -42,9 +42,12 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
@@ -130,7 +133,13 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             if (tableInfo != null)
             {
                 baseLabel = tableInfo.getTitle();
-                icon = IconManager.getIcon(StringUtils.isNotEmpty(iconName) ? iconName : tableInfo.getName(), IconManager.IconSize.NonStd);
+                if (StringUtils.isNotEmpty(iconName))
+                {
+                    icon = IconManager.getIcon(iconName, IconManager.IconSize.NonStd);
+                } else
+                {
+                    icon = IconManager.getIcon(tableInfo.getName(), IconManager.IconSize.Std24);   
+                }
                 if (frameTitle == null)
                 {
                     frameTitle = baseLabel;
@@ -178,7 +187,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         label.setHorizontalAlignment(SwingConstants.CENTER);
         label.setOpaque(true);
         label.setBackground(Color.WHITE);
-        label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        label.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         
         PanelBuilder    pb = new PanelBuilder(new FormLayout(colDef, "p"), this);
         CellConstraints cc = new CellConstraints();
@@ -285,8 +294,31 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         dlg.setCancelLabel(closeBtnTitle);
         frame = dlg;
         multiView = frame.getMultiView();
-        multiView.setParentDataObj(mvParent.getData());
-        multiView.setData(dataObj);
+        
+        
+        DataProviderSessionIFace sessionLocal = null;
+        try
+        {
+            sessionLocal = DataProviderFactory.getInstance().createSession();
+            parentObj = sessionLocal.merge(parentObj);
+            
+            DataObjectGettable getter = DataObjectGettableFactory.get(parentObj.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
+            Object[] objs = UIHelper.getFieldValues(subviewDef, parentObj, getter);
+            dataObj = objs[0];
+            multiView.setParentDataObj(parentObj);
+            multiView.setData(dataObj);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            if (sessionLocal != null)
+            {
+                sessionLocal.close();
+            }
+        }
+        
         multiView.setClassToCreate(classToCreate);
         
         FormValidator formVal = multiView.getCurrentViewAsFormViewObj().getValidator();
