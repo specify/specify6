@@ -68,6 +68,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
@@ -450,6 +451,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         String[] qualifiers = { "\"", "\'", "{"+getResourceString("WB_NONE")+"}" };
         textQualCombo = createComboBox(qualifiers);
         textQualCombo.setSelectedIndex(0);
+        textQualCombo.setSelectedItem(((ConfigureCSV )config).getTextQualifier());
         textQualCombo.addActionListener(this);
 
         charSetLabel = createLabel(getResourceString("CHAR_SET"));
@@ -478,6 +480,11 @@ public class DataImportDialog extends JDialog implements ActionListener
         return myPanel;       
     }
     
+    protected void changeQualifier(final String newQualifier)
+    {
+        ((ConfigureCSV )config).setTextQualifier(!StringUtils.isEmpty(newQualifier), newQualifier.charAt(0));
+        updateTableDisplay();
+    }
 
     /* 
      * Does actionPerformed on all of the Combo box selections
@@ -492,15 +499,17 @@ public class DataImportDialog extends JDialog implements ActionListener
         log.debug("actionPerformed");
         if (str.equals("\""))
         {
-            stringQualifierChar = '\"';         
+            stringQualifierChar = '\"';    
+            changeQualifier(str);
         }
         else if (str.equals("\'"))
         {
             stringQualifierChar = '\'';
+            changeQualifier(str);
         }
         else if (str.equals("{"+getResourceString("NONE")+"}" ))
         {
-            
+            changeQualifier(str);
         }
         else if (str.equals("US-ASCII") || 
         		str.equals("ISO-8859-1") || 
