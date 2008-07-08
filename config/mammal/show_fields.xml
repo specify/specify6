@@ -5,8 +5,8 @@
 	</table>
 	<table name="CollectionObject">
 		<field name="text1"/>
+		<field name="text2"/>
 		<field name="timestampModified"/>
-		<field name="yesNo1"/>
 	</table>
 	<table name="Deaccession">
 		<field name="timestampModified"/>
