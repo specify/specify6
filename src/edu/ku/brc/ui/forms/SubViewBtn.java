@@ -90,7 +90,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     protected Object                dataObj;
     protected Object                newDataObj;
     protected Class<?>              classObj;
-    protected Object                parentObj;
+    protected FormDataObjIFace      parentObj;
     
     
     /**
@@ -221,7 +221,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
      */
     public void setParentDataObj(final Object pObj)
     {
-        this.parentObj = pObj;
+        this.parentObj = (FormDataObjIFace)pObj;
     }
     
     /**
@@ -292,31 +292,38 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         };
         
         dlg.setCancelLabel(closeBtnTitle);
-        frame = dlg;
+        frame     = dlg;
         multiView = frame.getMultiView();
         
         
-        DataProviderSessionIFace sessionLocal = null;
-        try
+        if (parentObj.getId() != null)
         {
-            sessionLocal = DataProviderFactory.getInstance().createSession();
-            parentObj = sessionLocal.merge(parentObj);
-            
-            DataObjectGettable getter = DataObjectGettableFactory.get(parentObj.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
-            Object[] objs = UIHelper.getFieldValues(subviewDef, parentObj, getter);
-            dataObj = objs[0];
+            DataProviderSessionIFace sessionLocal = null;
+            try
+            {
+                sessionLocal = DataProviderFactory.getInstance().createSession();
+                parentObj = sessionLocal.merge(parentObj);
+                
+                DataObjectGettable getter = DataObjectGettableFactory.get(parentObj.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
+                Object[] objs = UIHelper.getFieldValues(subviewDef, parentObj, getter);
+                dataObj = objs[0];
+                multiView.setParentDataObj(parentObj);
+                multiView.setData(dataObj);
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            } finally
+            {
+                if (sessionLocal != null)
+                {
+                    sessionLocal.close();
+                }
+            }
+        } else
+        {
             multiView.setParentDataObj(parentObj);
             multiView.setData(dataObj);
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        } finally
-        {
-            if (sessionLocal != null)
-            {
-                sessionLocal.close();
-            }
         }
         
         multiView.setClassToCreate(classToCreate);
