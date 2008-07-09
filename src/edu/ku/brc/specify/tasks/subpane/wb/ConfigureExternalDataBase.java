@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -23,6 +25,8 @@ import org.apache.log4j.Logger;
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 
+import edu.ku.brc.ui.UIRegistry;
+
 /**
  * @author timbo
  *
@@ -33,6 +37,9 @@ import com.csvreader.CsvWriter;
 public abstract class ConfigureExternalDataBase implements ConfigureExternalDataIFace
 {
     private static final Logger log = Logger.getLogger(ConfigureExternalDataBase.class);
+    
+    private final String TRUE  = "true";
+    private final String FALSE = "false";
     
     protected Status                   status = Status.None;
     
@@ -46,7 +53,7 @@ public abstract class ConfigureExternalDataBase implements ConfigureExternalData
     
     public ConfigureExternalDataBase()
     {
-        log.debug("ConfigureExternalDataBase()");
+        log.debug("ConfigureExternalDataBase()"); //$NON-NLS-1$
         interactive = true;
         firstRowHasHeaders = true;
         appendData = false;     
@@ -54,13 +61,13 @@ public abstract class ConfigureExternalDataBase implements ConfigureExternalData
 
     public ConfigureExternalDataBase(final Properties props)
     {
-        log.debug("ConfigureExternalDataBase(Properties props)");
-        interactive        = (props.getProperty("interactive", "true") == "true");
-        firstRowHasHeaders = (props.getProperty("firstRowHasHeaders", "false") == "true");
-        appendData         = (props.getProperty("appendData", "false") == "false");
-        fileName           = props.getProperty("fileName");
+        log.debug("ConfigureExternalDataBase(Properties props)"); //$NON-NLS-1$
+        interactive        = (props.getProperty("interactive", TRUE) == TRUE); //$NON-NLS-1$
+        firstRowHasHeaders = (props.getProperty("firstRowHasHeaders", FALSE) == TRUE); //$NON-NLS-1$
+        appendData         = (props.getProperty("appendData", FALSE) == FALSE); //$NON-NLS-1$
+        fileName           = props.getProperty("fileName"); //$NON-NLS-1$
         
-        readHeaders(props.getProperty("headers"));
+        readHeaders(props.getProperty("headers")); //$NON-NLS-1$
     }
     
     /* (non-Javadoc)
@@ -94,7 +101,7 @@ public abstract class ConfigureExternalDataBase implements ConfigureExternalData
     {
         if (headers == null) 
         { 
-            return ""; 
+            return "";  //$NON-NLS-1$
         }
         StringWriter sw = new StringWriter();
         CsvWriter csv = new CsvWriter(sw, ',');
@@ -157,8 +164,8 @@ public abstract class ConfigureExternalDataBase implements ConfigureExternalData
     
     protected boolean determineFirstRowHasHeaders()
     {
-        Object[] options = { "Yes", "No" };
-        int n = JOptionPane.showOptionDialog(null, "Does the first row contain column names?", "",
+        Object[] options = { getResourceString("Yes"), getResourceString("No") }; //$NON-NLS-1$ //$NON-NLS-2$
+        int n = JOptionPane.showOptionDialog(null, UIRegistry.getResourceString("ConfigureExternalDataBase.DOES_1ST_COL_NM"), "", //I18N //$NON-NLS-1$ //$NON-NLS-2$
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         return n == JOptionPane.YES_OPTION;
     }
@@ -173,7 +180,7 @@ public abstract class ConfigureExternalDataBase implements ConfigureExternalData
      */
     public void readConfig(final File file)
     {
-        log.debug("ConfigureExternalDataBase getConfig(File)" + file.toString());
+        log.debug("ConfigureExternalDataBase getConfig(File)" + file.toString()); //$NON-NLS-1$
         externalFile = file;
         fileName = externalFile.getName();
         if (interactive)
@@ -187,21 +194,21 @@ public abstract class ConfigureExternalDataBase implements ConfigureExternalData
     
     public Properties getProperties()
     {
-        log.debug("ConfigureExternalDataBase getProperties()" );
+        log.debug("ConfigureExternalDataBase getProperties()" ); //$NON-NLS-1$
         Properties result = new Properties();
-        addBoolProperty(result, "interactive", interactive);
-        addBoolProperty(result, "firstRowHasHeaders", firstRowHasHeaders);
-        addBoolProperty(result, "appendData", appendData);
+        addBoolProperty(result, "interactive", interactive); //$NON-NLS-1$
+        addBoolProperty(result, "firstRowHasHeaders", firstRowHasHeaders); //$NON-NLS-1$
+        addBoolProperty(result, "appendData", appendData); //$NON-NLS-1$
         if (fileName != null)
         {
-            result.setProperty("fileName", fileName);
+            result.setProperty("fileName", fileName); //$NON-NLS-1$
         }
-        result.setProperty("headers", this.getHeaderString());
+        result.setProperty("headers", this.getHeaderString()); //$NON-NLS-1$
         return result;
     }
     
     protected void addBoolProperty(final Properties props, final String key, final boolean value)    
     {
-        props.setProperty(key, (value ? "true" : "false"));
+        props.setProperty(key, (value ? TRUE : FALSE));
     }
 }
