@@ -51,7 +51,7 @@ public class AppraisalBusRules extends BaseBusRules
             Integer id = dbObj.getId();
             if (id == null)
             {
-                isOK = false;
+                isOK = true;
                 
             } else
             {
