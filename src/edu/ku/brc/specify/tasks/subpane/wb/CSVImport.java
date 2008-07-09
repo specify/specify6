@@ -122,8 +122,7 @@ public class CSVImport extends DataImport implements DataImportIFace
                             if (wbtmi != null)
                             {
                                 wbRow.setData(truncateIfNecessary(csv.get(col), config
-                                        .getFirstRowHasHeaders() ? row - 1 : row, wbtmi
-                                        .getViewOrder(), wbtmi.getCaption()), wbtmi.getViewOrder());
+                                        .getFirstRowHasHeaders() ? row - 1 : row, wbtmi), wbtmi.getViewOrder());
                             }
                         }
                     }

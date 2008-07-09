@@ -22,6 +22,7 @@ public class DataImportTruncation
 {
     protected int    row;
     protected short    col;
+    protected int len;
     protected String colHeader;
     protected String originalValue;
 
@@ -62,14 +63,15 @@ public class DataImportTruncation
      */
     public String getExcluded()
     {
-        return this.originalValue.substring(WorkbenchDataItem.getCellDataLength()-1);
+        return this.originalValue.substring(len-1);
     }
     
-    public DataImportTruncation(final int row, final short col, final String colHeader, final String originalValue)
+    public DataImportTruncation(final int row, final short col, final int len, final String colHeader, final String originalValue)
     {
         super();
         this.row = row;
         this.col = col;
+        this.len = len;
         this.colHeader = colHeader;
         this.originalValue = originalValue;
      }
