@@ -1370,6 +1370,18 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
     /**
+     * @param pte
+     * @param recNum
+     * @return the current value for the parent represented by pte.
+     * @throws UploaderException
+     */
+    @SuppressWarnings("unused")
+    protected DataModelObjBase getParentRecordForMatching(final ParentTableEntry pte, final int recNum) throws UploaderException
+    {
+        return pte.getImportTable().getCurrentRecord(recNum);
+    }
+    
+    /**
      * @param recNum
      * @return
      * @throws UploaderException
@@ -1409,8 +1421,7 @@ public class UploadTable implements Comparable<UploadTable>
                 for (ParentTableEntry pte : ptes)
                 {
                     restrictedVals.add(new Pair<String, String>(pte.getPropertyName(),
-                            addRestriction(critter, pte.getPropertyName(), pte.getImportTable()
-                                    .getCurrentRecord(recNum), false)));
+                            addRestriction(critter, pte.getPropertyName(), getParentRecordForMatching(pte, recNum), false)));
                 }
             }
             for (RelatedClassSetter rce : relatedClassDefaults)

@@ -32,6 +32,7 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
 
 /**
  * @author timbo
@@ -193,6 +194,23 @@ public class UploadTableTree extends UploadTable
             //this probably will already have been done in UploadTable.setParents, unless immediate parent id is null.
             tRec.setParent((Treeable)parentRec);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getParentRecordForMatching(edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry, int)
+     * 
+     */
+    /*
+     * Climbs the tree looking for a non-null parent.
+     */
+    @Override
+    protected DataModelObjBase getParentRecordForMatching(final ParentTableEntry pte, final int recNum) throws UploaderException
+    {
+        DataModelObjBase result = super.getParentRecordForMatching(pte, recNum);
+        if (result != null) { return result; }
+        result = getParentRec(recNum);
+        if (result == null) { return (DataModelObjBase) getDefaultParent2(getTreeDefItem()); }
+        return result;
     }
 
     /**
