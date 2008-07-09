@@ -417,12 +417,21 @@ public class QueryFieldPanel extends JPanel
     */
     public String getOrderSpec(int pos)
     {
-        if (queryField.getSortType() == SpQueryField.SORT_NONE) { return null; }
+        Byte sortType;
+        if (ownerQuery.isPromptMode())
+        {
+            sortType = (byte)sortCheckbox.getState();
+        }
+        else
+        {
+            sortType = queryField.getSortType();
+        }
+        if (sortType.equals(SpQueryField.SORT_NONE)) { return null; }
         
         StringBuilder result = new StringBuilder();
         //result.append(String.valueOf(this.queryBldrPane.getFldPosition(this)+1));
         result.append(String.valueOf(pos));
-        if (queryField.getSortType() == SpQueryField.SORT_DESC)
+        if (sortType.equals(SpQueryField.SORT_DESC))
         {
             result.append(" DESC");
         }
