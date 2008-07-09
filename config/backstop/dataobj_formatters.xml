@@ -415,7 +415,7 @@
     <format
         name="LocalityLatitude"
         class="edu.ku.brc.specify.datamodel.Locality"
-        default="true"
+        default="false"
         >
         <switch single="true">
             <external class="edu.ku.brc.specify.ui.LocalityLatLonFormatter">
@@ -430,7 +430,7 @@
     <format
         name="LocalityLongitude"
         class="edu.ku.brc.specify.datamodel.Locality"
-        default="true"
+        default="false"
         >
         <switch single="true">
             <external class="edu.ku.brc.specify.ui.LocalityLatLonFormatter">

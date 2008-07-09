@@ -115,6 +115,7 @@ public class DataObjFieldFormatMgr
      * Copy constructor
      * @param source Source to copy from, usually the static instance
      */
+    @SuppressWarnings("unchecked")
     public DataObjFieldFormatMgr(DataObjFieldFormatMgr source)
     {
     	formatHash      = (Hashtable<String,   DataObjSwitchFormatter>) source.getFormatHash().clone();
@@ -263,6 +264,14 @@ public class DataObjFieldFormatMgr
                         DataObjSwitchFormatter sf = formatClassHash.get(dataClass);
                         if (sf == null || isDefault)
                         {
+                            if (isDefault)
+                            {
+                                DataObjSwitchFormatter curDO = formatClassHash.get(dataClass);
+                                if (curDO != null && curDO.isDefault())
+                                {
+                                    throw new RuntimeException("There are two default DataObjectFormatters current ["+curDO.getName()+"] adding["+sf.getName()+"] for class"+dataClass.getSimpleName());
+                                }
+                            }
                             formatClassHash.put(dataClass, switchFormatter);
                         }
                         
@@ -438,10 +447,10 @@ public class DataObjFieldFormatMgr
      */
     public void save() 
     {
-    	DataObjFieldFormatMgr instance = DataObjFieldFormatMgr.getInstance();
+    	DataObjFieldFormatMgr localInstance = DataObjFieldFormatMgr.getInstance();
     	
 		// can only save the static instance
-    	if (instance.getLocalFileName() == null)
+    	if (localInstance.getLocalFileName() == null)
     	{
     		return;
     	}
@@ -453,7 +462,7 @@ public class DataObjFieldFormatMgr
 		// data obj formatters
 		sb.append("<formatters>\n");
 
-		Vector<DataObjSwitchFormatter> formatVector = new Vector<DataObjSwitchFormatter>(instance.getFormatHash().values());
+		Vector<DataObjSwitchFormatter> formatVector = new Vector<DataObjSwitchFormatter>(localInstance.getFormatHash().values());
 		Collections.sort(formatVector, new Comparator<DataObjSwitchFormatter>()
 		{
 			public int compare(DataObjSwitchFormatter o1, DataObjSwitchFormatter o2)
@@ -470,7 +479,7 @@ public class DataObjFieldFormatMgr
 		// aggregators
 		sb.append("  <aggregators>\n");
 
-		Vector<DataObjAggregator> aggVector = new Vector<DataObjAggregator>(instance.getAggHash().values());
+		Vector<DataObjAggregator> aggVector = new Vector<DataObjAggregator>(localInstance.getAggHash().values());
 		Collections.sort(aggVector, new Comparator<DataObjAggregator>()
 		{
 			public int compare(DataObjAggregator o1, DataObjAggregator o2)

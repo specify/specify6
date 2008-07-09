@@ -272,7 +272,7 @@ public class LatLonConverter
                                          final DEGREES_FORMAT degreesFMT,
                                          final DIRECTION      direction)
     {
-        if (bc.doubleValue() == 0.0)
+        if (bc == null || bc.doubleValue() == 0.0)
         {
             return "0.0";
         }

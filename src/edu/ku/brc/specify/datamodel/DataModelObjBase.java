@@ -109,7 +109,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
             return str;
         } catch (Exception ex)
         {
-            
+            ex.printStackTrace();
         }
         return getClass().getName() + hashCode();
     }
