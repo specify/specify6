@@ -140,9 +140,8 @@ public class DatabaseLoginPanel extends JPanel
     protected long                       loginAccumTime = 0;
     protected ProgressWorker             progressWorker = null;
 
-    //non-Specify log-in stuff
-    protected boolean                    isSpecifyApp   = true; //false if logging in when starting iReport or other app.
-    protected String                     nonSpecifyAppName;
+    protected String                     title;
+    protected String                     appName;
     
     /**
      * Constructor that has the form created from the view system
@@ -165,19 +164,22 @@ public class DatabaseLoginPanel extends JPanel
      * Constructor that has the form created from the view system
      * @param dbListener listener to the panel (usually the frame or dialog)
      * @param isDlg whether the parent is a dialog (false mean JFrame)
-     * @param isSpecifyApp whether Specify or another application is using the login.
+     * @param title the title for the title bar
+     * @param appName the name of the app
      * @param iconName name of icon to use
      */
     public DatabaseLoginPanel(final DatabaseLoginListener dbListener,  
                               final boolean isDlg, 
-                              final String nonSpecifyAppName,
+                              final String title,
+                              final String appName,
                               final String iconName)
     {
         log.debug("constructor with jaas"); //$NON-NLS-1$
-        this.dbListener = dbListener;
+        this.dbListener  = dbListener;
         this.jaasContext = new JaasContext(); 
-        this.isSpecifyApp = false;
-        this.nonSpecifyAppName = nonSpecifyAppName;
+        this.title       = title;
+        this.appName     = appName;
+        
         createUI(isDlg, iconName);
     }
 
@@ -776,7 +778,7 @@ public class DatabaseLoginPanel extends JPanel
 
                 if (isLoggedIn)
                 {                    
-                    if (!isSpecifyApp)
+                    if (StringUtils.isNotEmpty(appName))
                     {
                         SwingUtilities.invokeLater(new Runnable(){
 
@@ -787,7 +789,7 @@ public class DatabaseLoginPanel extends JPanel
                             public void run()
                             {
                                 //Not exactly true yet, but make sure users know that this is NOT Specify starting up. 
-                                setMessage(String.format(getResourceString("Starting"), nonSpecifyAppName), false); //$NON-NLS-1$
+                                setMessage(String.format(getResourceString("Starting"), appName), false); //$NON-NLS-1$
                             }
                             
                         });

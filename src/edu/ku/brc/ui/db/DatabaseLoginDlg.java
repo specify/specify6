@@ -14,8 +14,6 @@
  */
 package edu.ku.brc.ui.db;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
 import java.awt.Frame;
 import java.awt.Window;
 
@@ -59,7 +57,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
         
         this.listener = listener;
 
-        setTitle(getResourceString("LOGINTITLE")); //$NON-NLS-1$
+        //setTitle(getResourceString("LOGINTITLE")); //$NON-NLS-1$
 
         dbPanel = new DatabaseLoginPanel(this, true, iconName);
         setContentPane(dbPanel);

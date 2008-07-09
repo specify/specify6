@@ -966,7 +966,8 @@ public class MainFrameSpecify extends MainFrame
                 {
                     log.error("Can't change L&F: ", e); //$NON-NLS-1$
                 }
-                UIHelper.doLogin(true, false, false, new IReportLauncher(), null, "iReport"); // true means do auto login if it can, second bool means use dialog instead of frame
+                String nameAndTitle = "Specify iReport";
+                UIHelper.doLogin(true, false, false, new IReportLauncher(), null, nameAndTitle, nameAndTitle); // true means do auto login if it can, second bool means use dialog instead of frame
                 
                 localPrefs.load();
                 

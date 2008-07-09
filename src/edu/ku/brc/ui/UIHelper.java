@@ -1414,7 +1414,7 @@ public final class UIHelper
                                              final DatabaseLoginListener listener,
                                              final String iconName)
     {     
-        return doLogin(doAutoLogin, doAutoClose, useDialog, listener, iconName, null);
+        return doLogin(doAutoLogin, doAutoClose, useDialog, listener, iconName, null, null);
     }
     
     /**
@@ -1425,29 +1425,31 @@ public final class UIHelper
      * @param useDialog use a Dialog or a Frame
      * @param listener a listener for when it is logged in or fails
      * @param iconName name of icon to use
-     * @param nonSpecifyAppName name
+     * @param title name
+     * @param appName name
      */
     public static DatabaseLoginPanel doLogin(final boolean doAutoLogin,
                                              final boolean doAutoClose,
                                              final boolean useDialog,
                                              final DatabaseLoginListener listener,
                                              final String iconName,
-                                             final String nonSpecifyAppName)
+                                             final String title,
+                                             final String appName)
     {     
         boolean doAutoLoginNow = doAutoLogin && AppPreferences.getLocalPrefs().getBoolean("login.autologin", false);
         
         if (useDialog)
         {
             JDialog.setDefaultLookAndFeelDecorated(false); 
-            if (nonSpecifyAppName == null)
-            {
-                log.warn("Ignoring nonSpecifyAppName parameter.");
-            }
             DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UIRegistry.getTopWindow(), listener, iconName);
             JDialog.setDefaultLookAndFeelDecorated(true); 
             dlg.setDoAutoLogin(doAutoLoginNow);
             dlg.setDoAutoClose(doAutoClose);
             dlg.setModal(true);
+            if (StringUtils.isNotEmpty(title))
+            {
+                dlg.setTitle(title);
+            }
             UIHelper.centerAndShow(dlg);
             return dlg.getDatabaseLoginPanel();
 
@@ -1484,12 +1486,11 @@ public final class UIHelper
         }
         JFrame.setDefaultLookAndFeelDecorated(false);
 
-        JFrame frame = new JFrame(nonSpecifyAppName == null ? getResourceString("LOGINTITLE") 
-                : String.format(getResourceString("Launcher"), nonSpecifyAppName));
+        JFrame frame = new JFrame(title);
         DatabaseLoginPanel panel;
-        if (nonSpecifyAppName != null)
+        if (StringUtils.isNotEmpty(title))
         {
-            panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false, nonSpecifyAppName, iconName);
+            panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false, title, appName, iconName);
         }
         else
         {

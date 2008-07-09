@@ -340,7 +340,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         catch (IOException e1)
         {
             log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-            // TODO RELEASE -  Instead of exiting we need to disable Attachements
+            // TODO RELEASE -  Instead of exiting we need to disable Attachments
             throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
@@ -432,13 +432,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
             HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener()); //$NON-NLS-1$
             HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener()); //$NON-NLS-1$
             // SInce Update get called when deleting an object there is no need to register this class.
-            // The update deletes becuase first it removes the Lucene document and then goes to add it back in, but since the
+            // The update deletes because first it removes the Lucene document and then goes to add it back in, but since the
             // the record is deleted it doesn't get added.
             HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener()); //$NON-NLS-1$
             //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
         }
-        adjustLocaleFromPrefs();         
-        dbLoginPanel = UIHelper.doLogin(true, false, false, this, "SpecifyLargeIcon"); // true means do auto login if it can, second bool means use dialog instead of frame
+        adjustLocaleFromPrefs();
+        dbLoginPanel = UIHelper.doLogin(true, false, false, this, "SpecifyLargeIcon", getTitle(), null); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
     
@@ -1713,12 +1713,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
             }
         }
     }
-
+    
     /**
-     * Bring up the PPApp demo by showing the frame (only applicable if coming up
-     * as an application, not an applet);
+     * If the version number is '(Unknown)' then it wasn't installed with install4j.
+     * @return the title for Specify which may include the version number.
      */
-    public void showApp()
+    protected String getTitle()
     {
         String title        = "";
         String install4JStr = UIHelper.getInstall4JInstallString();
@@ -1730,9 +1730,17 @@ public class Specify extends JPanel implements DatabaseLoginListener
         {
             title = appName + " " + appVersion + "  - " + appBuildVersion; //$NON-NLS-1$ //$NON-NLS-2$
         }
-        
+        return title;
+    }
+
+    /**
+     * Bring up the PPApp demo by showing the frame (only applicable if coming up
+     * as an application, not an applet);
+     */
+    public void showApp()
+    {
         JFrame f = getFrame();
-        f.setTitle(title);
+        f.setTitle(getTitle());
         f.getContentPane().add(this, BorderLayout.CENTER);
         f.pack();
 
