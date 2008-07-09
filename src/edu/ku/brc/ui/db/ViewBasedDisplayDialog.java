@@ -20,6 +20,7 @@ import java.awt.Frame;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
@@ -250,6 +251,18 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
             viewBasedPanel.aboutToShow(visible);
         }
         super.setVisible(visible);
+    }
+    
+    /**
+     * Sets the form adjuster into the panel.
+     * @param adjusterthe adjuster (usually the BusinessRules)
+     */
+    public void setFormAdjuster(final FormPaneAdjusterIFace adjuster)
+    {
+        if (viewBasedPanel != null)
+        {
+            viewBasedPanel.setFormAdjuster(adjuster);
+        }
     }
     
     //------------------------------------------------------------

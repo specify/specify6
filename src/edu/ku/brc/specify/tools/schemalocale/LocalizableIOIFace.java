@@ -43,6 +43,9 @@ public interface LocalizableIOIFace
      */
     public abstract void getContainer(LocalizableJListItem item, LocalizableIOIFaceListener l);
     
+    /**
+     * @param container
+     */
     public abstract void containerChanged(LocalizableContainerIFace container);
     
     /**

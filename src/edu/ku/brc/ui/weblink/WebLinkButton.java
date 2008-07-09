@@ -68,6 +68,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
     protected String                        urlStr;
     protected Properties                    initProps;
     protected FormDataObjIFace              dataObj;
+    protected boolean                       usingThisData = true;
     
     protected WebLinkDataProviderIFace      provider = null;
     
@@ -75,6 +76,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
     protected Hashtable<String, String>     valueHash     = new Hashtable<String, String>();
     
     protected CustomDialog                  promptDialog  = null;
+    
     /**
      * 
      */
@@ -254,7 +256,10 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
                             backupPrompt.put(name, arg.getTitle() == null ? arg.getName() : arg.getTitle());
                         }
                     }
-                    valueHash.put(name, value);
+                    if (value != null)
+                    {
+                        valueHash.put(name, value);
+                    }
                 }
             }
             
@@ -396,7 +401,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
      */
     public void setCellName(String cellName)
     {
-        // ignore
+        usingThisData = StringUtils.isNotEmpty(cellName) && cellName.equals("this"); //$NON-NLS-1$ 
     }
 
     /* (non-Javadoc)

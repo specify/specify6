@@ -24,6 +24,7 @@ import javax.swing.JButton;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.UIRegistry;
@@ -161,6 +162,18 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
             viewBasedPanel.aboutToShow(visible);
         }
         super.setVisible(visible);
+    }
+    
+    /**
+     * Sets the form adjuster into the panel.
+     * @param adjusterthe adjuster (usually the BusinessRules)
+     */
+    public void setFormAdjuster(final FormPaneAdjusterIFace adjuster)
+    {
+        if (viewBasedPanel != null)
+        {
+            viewBasedPanel.setFormAdjuster(adjuster);
+        }
     }
     
     //------------------------------------------------------------

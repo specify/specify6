@@ -1,17 +1,15 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.config.init;
 
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,7 +42,7 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
  */
 public class CatNumScheme extends BaseSetupPanel
 {
-    protected JCheckBox isNumericChk    = createCheckBox("Is Numeric Only?");
+    protected JCheckBox isNumericChk    = createCheckBox("Is Numeric Only?");// I18N
     protected JComboBox catNumSchemeCBX = createComboBox(new DefaultComboBoxModel());
     protected JLabel    isNumericLbl    = createLabel("");
     
@@ -59,7 +57,7 @@ public class CatNumScheme extends BaseSetupPanel
                 UIFieldFormatterIFace fmt = (UIFieldFormatterIFace)catNumSchemeCBX.getSelectedItem();
                 if (fmt != null)
                 {
-                    isNumericLbl.setText(fmt.isNumeric() ? "Yes" : "No");
+                    isNumericLbl.setText(getResourceString(fmt.isNumeric() ? "Yes" : "No"));
                 }
             }
         });
@@ -69,7 +67,7 @@ public class CatNumScheme extends BaseSetupPanel
                 UIFieldFormatterIFace fmt = (UIFieldFormatterIFace)catNumSchemeCBX.getSelectedItem();
                 if (fmt != null)
                 {
-                    isNumericLbl.setText(fmt.isNumeric() ? "Yes" : "No");
+                    isNumericLbl.setText(getResourceString(fmt.isNumeric() ? "Yes" : "No"));
                 }
             }
             public void intervalAdded(ListDataEvent e)
@@ -84,18 +82,18 @@ public class CatNumScheme extends BaseSetupPanel
         
         for (UIFieldFormatterIFace fmt : UIFieldFormatterMgr.getInstance().getFormatterList(CollectionObject.class))
         {
-            System.out.println(fmt.getName()+"  "+fmt.getTitle());
+            //System.out.println(fmt.getName()+"  "+fmt.getTitle());
             ((DefaultComboBoxModel)catNumSchemeCBX.getModel()).addElement(fmt);
         }
         
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder pb = new PanelBuilder(new FormLayout("p,4px,p,f:p:g", "p,4px,p,4px,p"), this);
-        pb.add(createLabel("Choose a Catalog Numbering Format:"), cc.xywh(1, 1, 4, 1));
-        pb.add(createLabel("Format:", SwingConstants.RIGHT), cc.xy(1, 3));
+        pb.add(createLabel("Choose a Catalog Numbering Format:"), cc.xywh(1, 1, 4, 1)); // I18N
+        pb.add(createLabel("Format:", SwingConstants.RIGHT), cc.xy(1, 3));// I18N
         pb.add(catNumSchemeCBX, cc.xy(3, 3));
         
-        pb.add(createLabel("Is Numeric:", SwingConstants.RIGHT), cc.xy(1, 5));
+        pb.add(createLabel("Is Numeric:", SwingConstants.RIGHT), cc.xy(1, 5));// I18N
         pb.add(isNumericLbl, cc.xy(3, 5));
 
     }

@@ -771,7 +771,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     public void adjustForm(FormViewObj fvo)
     {
-        PickListBusRules.adjustForm(fvo);
+        new PickListBusRules().adjustForm(fvo);
     }
 
     //-----------------------------------------------------------------------------------

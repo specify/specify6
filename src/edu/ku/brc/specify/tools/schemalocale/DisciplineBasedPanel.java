@@ -172,6 +172,10 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     }
     
 
+    /**
+     * @param container
+     * @param jListContainerItem
+     */
     public void set(final DisciplineBasedContainer container,
                     final LocalizableJListItem     jListContainerItem)
     {

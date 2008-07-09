@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.tools.schemalocale;
 
+import static edu.ku.brc.ui.UIRegistry.*;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -91,11 +93,11 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         
         new MacOSAppHandler(this);
         
-        appName             = "Schema Localizer";
-        appVersion          = "6.0";
-        appBuildVersion     = "200706111309 (SVN: 2291)";
+        appName             = "Schema Localizer"; //$NON-NLS-1$
+        appVersion          = "6.0"; //$NON-NLS-1$
+        appBuildVersion     = "200706111309 (SVN: 2291)"; //$NON-NLS-1$
         
-        setTitle(appName + " " + appVersion);// + "  -  "+ appBuildVersion);
+        setTitle(appName + " " + appVersion);// + "  -  "+ appBuildVersion); //$NON-NLS-1$
     }
     
     /**
@@ -137,20 +139,20 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         schemaLocPanel.buildUI();
         schemaLocPanel.setHasChanged(localizableIO.didModelChangeDuringLoad());
         
-        statusBar.setSectionText(1, schemaType == SpLocaleContainer.CORE_SCHEMA ? "Full Schema" : "WorkBench Schema");
+        statusBar.setSectionText(1, schemaType == SpLocaleContainer.CORE_SCHEMA ? getResourceString("SchemaLocalizerFrame.FULL_SCHEMA") : getResourceString("SchemaLocalizerFrame.WB_SCHEMA")); //$NON-NLS-1$ //$NON-NLS-2$
         
         UIRegistry.setStatusBar(statusBar);
         
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
         
-        String title = "File";
-        String mneu = "F";
+        String title = "File"; //$NON-NLS-1$
+        String mneu = "F"; //$NON-NLS-1$
         JMenu fileMenu = UIHelper.createLocalizedMenu(menuBar, title, mneu);
         
-        title = "Save";
-        mneu = "S";
-        JMenuItem saveMenuItem = UIHelper.createLocalizedMenuItem(fileMenu, title, mneu, "", false, new ActionListener()
+        title = "Save"; //$NON-NLS-1$
+        mneu = "S"; //$NON-NLS-1$
+        JMenuItem saveMenuItem = UIHelper.createLocalizedMenuItem(fileMenu, title, mneu, "", false, new ActionListener() //$NON-NLS-1$
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -159,9 +161,9 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         });
         saveMenuItem.setEnabled(false);
         
-        title = "Export";
-        mneu = "E";
-        UIHelper.createLocalizedMenuItem(fileMenu, title, mneu,  "", true, new ActionListener()
+        title = "Export"; //$NON-NLS-1$
+        mneu = "E"; //$NON-NLS-1$
+        UIHelper.createLocalizedMenuItem(fileMenu, title, mneu,  "", true, new ActionListener() //$NON-NLS-1$
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -169,13 +171,13 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
             }
         });
         
-        title = "Exit";
-        mneu = "x";
+        title = "Exit"; //$NON-NLS-1$
+        mneu = "x"; //$NON-NLS-1$
         if (!UIHelper.isMacOS())
         {
             fileMenu.addSeparator();
             
-            UIHelper.createLocalizedMenuItem(fileMenu, title, mneu,  "", true, new ActionListener()
+            UIHelper.createLocalizedMenuItem(fileMenu, title, mneu,  "", true, new ActionListener() //$NON-NLS-1$
             {
                 public void actionPerformed(ActionEvent e)
                 {
@@ -197,7 +199,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         menuBar.add(SchemaI18NService.getInstance().createLocaleMenu(this, new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt)
             {
-                if (evt.getPropertyName().equals("locale"))
+                if (evt.getPropertyName().equals("locale")) //$NON-NLS-1$
                 {
                     schemaLocPanel.localeChanged((Locale)evt.getNewValue());
                 }
@@ -227,7 +229,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
-                    JFrame frame = new JFrame("Changes To the Schema");
+                    JFrame frame = new JFrame(getResourceString("SchemaLocalizerFrame.CHG_TO_SCHEMA")); //$NON-NLS-1$
                     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                     
                     JTextPane   tp = new JTextPane();
@@ -254,7 +256,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
     {
         if (schemaLocPanel.hasChanged())
         {
-            int rv = JOptionPane.showConfirmDialog(this, "Save changes?", "Save Changes", JOptionPane.YES_NO_OPTION); // I18N
+            int rv = JOptionPane.showConfirmDialog(this, getResourceString("SchemaLocalizerFrame.SV_CHNGES"), getResourceString("SchemaLocalizerFrame.CHGS_SAVED"), JOptionPane.YES_NO_OPTION); // I18N //$NON-NLS-1$ //$NON-NLS-2$
             if (rv == JOptionPane.YES_OPTION)
             {
                 write();
@@ -272,7 +274,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
      */
     protected void write()
     {
-        statusBar.setText("Saving...");
+        statusBar.setText(getResourceString("SchemaLocalizerFrame.SAVING")); //$NON-NLS-1$
         statusBar.paintImmediately(statusBar.getBounds());
         
         schemaLocPanel.getAllDataFromUI();
@@ -284,11 +286,11 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         if (localizableIO.save())
         {
             schemaLocPanel.setHasChanged(false);
-            statusBar.setText("Saved.");
+            statusBar.setText(getResourceString("SchemaLocalizerFrame.SAVED")); //$NON-NLS-1$
             
         } else
         {
-            statusBar.setText("There was an error saving.");
+            statusBar.setText(getResourceString("SchemaLocalizerFrame.ERROR_SAVING")); //$NON-NLS-1$
         }
     }
     
@@ -297,18 +299,18 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
      */
     protected void export()
     {
-        statusBar.setText("Exporting...");
+        statusBar.setText(getResourceString("SchemaLocalizerFrame.EXPORTING")); //$NON-NLS-1$
         statusBar.paintImmediately(statusBar.getBounds());
         
         schemaLocPanel.getAllDataFromUI();
         
-        File outDir = new File(UIRegistry.getUserHomeDir() + File.separator + "schemas");
+        File outDir = new File(UIRegistry.getUserHomeDir() + File.separator + "schemas"); //$NON-NLS-1$
         if (outDir.exists())
         {
             if (!outDir.isDirectory())
             {
-                JOptionPane.showMessageDialog(this, "There is a file named at: "+outDir.getAbsolutePath() + " is not a directory. Please deleted it and try again.",
-                        "Error Exporting", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, getFormattedResStr("SchemaLocalizerFrame.FILE_AT_ERR", outDir.getAbsolutePath()), //$NON-NLS-1$
+                        getResourceString("SchemaLocalizerFrame.FILE_EXP"), JOptionPane.INFORMATION_MESSAGE); //$NON-NLS-1$
                 return;
             }
             
@@ -321,21 +323,21 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 
             } else
             {
-                JOptionPane.showMessageDialog(this, "There was a problem creating directory: "+outDir.getAbsolutePath() + " Please check your permissions and make sure this can be created, or create it yourself.",
-                        "Error Exporting", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, getFormattedResStr("SchemaLocalizerFrame.FILE_PROBLEM", outDir.getAbsolutePath()), //$NON-NLS-1$
+                        getResourceString("SchemaLocalizerFrame.FILE_EXP"), JOptionPane.INFORMATION_MESSAGE); //$NON-NLS-1$
                 return;
             }
         }
         
         if (localizableIO.exportToDirectory(outDir))
         {
-            JOptionPane.showMessageDialog(this, "The Schema was exported to: "+outDir.getAbsolutePath(),
-                    "Exported", JOptionPane.INFORMATION_MESSAGE);
-            statusBar.setText("Exported.");
+            JOptionPane.showMessageDialog(this, getFormattedResStr("SchemaLocalizerFrame.EXPORTED_TO", outDir.getAbsolutePath()), //$NON-NLS-1$
+                    getResourceString("SchemaLocalizerFrame.EXPORTED"), JOptionPane.INFORMATION_MESSAGE); //$NON-NLS-1$
+            statusBar.setText(getResourceString("SchemaLocalizerFrame.EXPORTED")); //$NON-NLS-1$
             
         } else
         {
-            statusBar.setText("There was an error exporting.");
+            statusBar.setText(getResourceString("SchemaLocalizerFrame.EXPORTING_ERR")); //$NON-NLS-1$
         }
     }
     
@@ -347,7 +349,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
     protected void createResourceFiles()
     {
         localizableIO.createResourceFiles();
-        statusBar.setText("Done writing resource file(s)");
+        statusBar.setText(getResourceString("SchemaLocalizerFrame.DONE_WRT_RES_FILES")); //$NON-NLS-1$
     }
     
     /**
@@ -398,15 +400,15 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
      */
     public static void main(String[] args)
     {
-        log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]");
+        log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         // This is for Windows and Exe4J, turn the args into System Properties
         for (String s : args)
         {
-            String[] pairs = s.split("=");
+            String[] pairs = s.split("="); //$NON-NLS-1$
             if (pairs.length == 2)
             {
-                log.debug("["+pairs[0]+"]["+pairs[1]+"]");
-                if (pairs[0].startsWith("-D"))
+                log.debug("["+pairs[0]+"]["+pairs[1]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                if (pairs[0].startsWith("-D")) //$NON-NLS-1$
                 {
                     System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
                 } 
@@ -414,19 +416,19 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         }
 
         // Now check the System Properties
-        String appDir = System.getProperty("appdir");
+        String appDir = System.getProperty("appdir"); //$NON-NLS-1$
         if (StringUtils.isNotEmpty(appDir))
         {
             UIRegistry.setDefaultWorkingPath(appDir);
         }
 
-        String appdatadir = System.getProperty("appdatadir");
+        String appdatadir = System.getProperty("appdatadir"); //$NON-NLS-1$
         if (StringUtils.isNotEmpty(appdatadir))
         {
             UIRegistry.setBaseAppDataDir(appdatadir);
         }
 
-        String javadbdir = System.getProperty("javadbdir");
+        String javadbdir = System.getProperty("javadbdir"); //$NON-NLS-1$
         if (StringUtils.isNotEmpty(javadbdir))
         {
             UIRegistry.setJavaDBDir(javadbdir);
@@ -438,13 +440,13 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
             {
                 
 //              Set App Name, MUST be done very first thing!
-                UIRegistry.setAppName("Specify"); 
+                UIRegistry.setAppName("Specify");  //$NON-NLS-1$
                 
                 // Then set this
                 IconManager.setApplicationClass(Specify.class);
-                IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml"));
-                IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml"));
-                IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml"));
+                IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
+                IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
+                IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
                 
                 try
                 {
@@ -473,24 +475,25 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 UIFieldFormatterMgr.setDoingLocal(true);
                 SpecifyWebLinkMgr.setDoingLocal(true);
                 
-                System.setProperty(SchemaI18NService.factoryName,      "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema
-                System.setProperty(UIFieldFormatterMgr.factoryName,    "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumbering
-                System.setProperty(WebLinkMgr.factoryName,             "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                  // Needed for WebLnkButton
+                System.setProperty(SchemaI18NService.factoryName,      "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema //$NON-NLS-1$
+                System.setProperty(UIFieldFormatterMgr.factoryName,    "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumbering //$NON-NLS-1$
+                System.setProperty(WebLinkMgr.factoryName,             "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                  // Needed for WebLnkButton //$NON-NLS-1$
                 System.setProperty(DataObjFieldFormatMgr.factoryName,  "edu.ku.brc.specify.ui.SpecifyDataObjFieldFormatMgr");                // Needed for WebLnkButton //$NON-NLS-1$
 
                 SpecifyDataObjFieldFormatMgr.setDoingLocal(true);
                 SpecifyUIFieldFormatterMgr.setDoingLocal(true);
                 //UIFieldFormatterMgr.setDoingLocal(true); // reads from local disk
                
-                Object[] options = { "Full Specify Schema", "WorkBench Schema" };
-                int retVal = JOptionPane.showOptionDialog(null, "Which Schema would you like to localize?", "Choose a Schema", JOptionPane.YES_NO_CANCEL_OPTION,
+                Object[] options = { getResourceString("SchemaLocalizerFrame.FULL_SCHEMA"), //$NON-NLS-1$ 
+                                     getResourceString("SchemaLocalizerFrame.WB_SCHEMA") }; //$NON-NLS-1$
+                int retVal = JOptionPane.showOptionDialog(null, getResourceString("SchemaLocalizerFrame.WHICH_SCHEMA"), getResourceString("SchemaLocalizerFrame.CHOOSE_SCHEMA"), JOptionPane.YES_NO_CANCEL_OPTION, //$NON-NLS-1$ //$NON-NLS-2$
                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
                 SchemaLocalizerFrame sla;
                 if (retVal == JOptionPane.NO_OPTION)
                 {
                     DBTableIdMgr schema = new DBTableIdMgr(false);
-                    schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
+                    schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml"))); //$NON-NLS-1$
                     sla = new SchemaLocalizerFrame(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
                     
                 } else

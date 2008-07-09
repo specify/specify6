@@ -64,6 +64,7 @@ import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.tools.schemalocale.LocalizerApp.PackageTracker;
 import edu.ku.brc.ui.CustomDialog;
@@ -284,11 +285,11 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
 
         ActionListener comboAL = new ActionListener() 
         {
-        	public void actionPerformed(ActionEvent e)
-        	{
-        		setHasChanged(true);
+            public void actionPerformed(ActionEvent e)
+            {
+                setHasChanged(true);
                 setTableInfoChanged(true);
-        	}
+            }
         };
         
         dataObjFmtCbo.addActionListener(comboAL);
@@ -343,6 +344,14 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     }
     
     /**
+     * @return the hasTableInfoChanged
+     */
+    public boolean hasTableInfoChanged()
+    {
+        return hasTableInfoChanged;
+    }
+
+    /**
      * 
      */
     private void fillFormatterCombo()
@@ -365,7 +374,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     	if (currContainer == null)
     		return;
     	
-    	String fmtName = currContainer.getAggregator();
+    	String fmtName = currContainer.getFormat();
 
     	int selectedInx = -1;
         for (DataObjSwitchFormatter format : fList)
@@ -577,17 +586,17 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     }
     
     /**
-     * 
+     * Starts the table selection process (it really starts the table load process).
      */
     protected void startTableSelected()
     {
+        log.debug("Changed " + hasTableInfoChanged+" " + (currContainer != null ? currContainer.getName() : "null"));
+        getAllDataFromUI();
+        
         if (hasTableInfoChanged)
         {
             localizableIO.containerChanged(currContainer);
         }
-        
-        log.debug("Changed " + hasTableInfoChanged+" " + (currContainer != null ? currContainer.getName() : "null"));
-        getAllDataFromUI();
        
         setIgnoreChanges(true);
        
@@ -595,9 +604,20 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         if (jlistItem != null)
         {
             localizableIO.getContainer(jlistItem, this);
+            
+        } else
+        {
+            currContainer = null;
+            tableInfo     = null;
+            enableUIControls(false);
+            fieldPanel.fieldSelected();
+            
+            //containterRetrieved(null);
+            noTableSelected();
+            
+            setIgnoreChanges(false);
+            setTableInfoChanged(false);
         }
-        setIgnoreChanges(false);
-        setTableInfoChanged(false);
     }
     
     /**
@@ -657,99 +677,9 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         // start the background task
         workerThread.start();
     }
-
-    /**
-     * @param tableName
-     * @return
-     */
-    /*public String getContainerDescStr(final LocalizableJListItem listItem)
-    {
-        LocalizableContainerIFace table = localizableIO.getContainer(listItem);
-        if (table != null)
-        {
-           return getDescStrForCurrLocale(table);
-        }
-        log.error("Couldn't find table ["+listItem.getName()+"]");
-        return null;
-    }*/
     
     /**
-     * @param tableName
-     * @return
-     */
-    /*public LocalizableStrIFace getContainerDesc(final LocalizableJListItem listItem)
-    {
-        LocalizableContainerIFace table = localizableIO.getContainer(listItem);
-        if (table != null)
-        {
-           return getDescForCurrLocale(table);
-        }
-        log.error("Couldn't find table ["+listItem.getName()+"]");
-        return null;
-    }*/
-    
-    /**
-     * @param tableName
-     * @return
-     */
-    /*public LocalizableStrIFace getContainerNameDesc(final LocalizableJListItem listItem)
-    {
-        LocalizableContainerIFace table = localizableIO.getContainer(listItem);
-        if (table != null)
-        {
-           return getNameDescForCurrLocale(table);
-        }
-        log.error("Couldn't find table ["+listItem.getName()+"]");
-        return null;
-    }*/
-    
-    /**
-     * @param tableName
-     * @return
-     */
-    /*public LocalizableStrIFace getItemDesc(final LocalizableJListItem tableListItem, 
-                                           final LocalizableJListItem fieldListItem)
-    {
-        LocalizableContainerIFace table = localizableIO.getContainer(tableListItem);
-        if (table != null)
-        {
-            for (LocalizableItemIFace f : table.getContainerItems())
-            {
-                if (f.getName().equals(fieldListItem.getName()))
-                {
-                    return getDescForCurrLocale(f);
-                }
-            }
-           
-        }
-        log.error("Couldn't find table ["+tableListItem.getName()+"]");
-        return null;
-    }*/
-    
-    /**
-     * @param tableName
-     * @return
-     */
-    /*public LocalizableStrIFace getItemNameDesc(final LocalizableJListItem tableListItem, 
-                                               final LocalizableJListItem fieldListItem)
-    {
-        LocalizableContainerIFace table = localizableIO.getContainer(tableListItem);
-        if (table != null)
-        {
-            for (LocalizableItemIFace f : table.getContainerItems())
-            {
-                if (f.getName().equals(fieldListItem.getName()))
-                {
-                    return getNameDescForCurrLocale(f);
-                }
-            }
-        }
-        log.error("Couldn't find table ["+tableListItem.getName()+"]");
-        return null;
-    }*/
-    
-    /**
-     * 
+     * Geta ll the data from the UI for both the container and the field.
      */
     protected void getAllDataFromUI()
     {
@@ -759,13 +689,19 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     }
     
     /**
-     * 
+     * Gets the data from the UI (that hasn't yet been set) and put it into the container.
      */
     protected void getContainerDataFromUI()
     {
         if (prevTable != null && hasTableInfoChanged)
         {
             prevTable.setIsHidden(tblHideChk.isSelected());
+            
+            DataObjSwitchFormatter dataObjFmt = (DataObjSwitchFormatter)dataObjFmtCbo.getSelectedItem();
+            prevTable.setFormat(dataObjFmt != null ? dataObjFmt.getName() : null);
+            
+            DataObjAggregator dataObjAgg = (DataObjAggregator)aggregatorCbo.getSelectedItem();
+            ((SpLocaleContainer)prevTable).setAggregator(dataObjAgg != null ? dataObjAgg.getName() : null);
             
             boolean nameChanged = setNameDescStrForCurrLocale(prevTable, tblNameText.getText());
             boolean descChanged = setDescStrForCurrLocale(prevTable,     tblDescText.getText());
@@ -845,7 +781,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     protected void enableSpellCheck()
     {
         boolean ok = SchemaI18NService.getCurrentLocale().getLanguage().equals("en")  && tablesList.isEnabled();
-        tblSpellChkBtn.setEnabled(ok && checker != null && spellCheckLoaded);
+        tblSpellChkBtn.setEnabled(ok && checker != null && spellCheckLoaded && currContainer != null);
     }
 
     /* (non-Javadoc)
@@ -894,11 +830,29 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         }
     }
 
-
-
+	/**
+	 * @return the UiFieldFormatterMgrCache
+	 */
 	public UIFieldFormatterMgr getUiFieldFormatterMgrCache()
 	{
 		return uiFieldFormatterMgrCache;
+	}
+	
+	/**
+	 * Called when table has been selecteed and the dialog should clear and disable itself.
+	 */
+	protected void noTableSelected()
+	{
+        tblDescText.setText("");
+        tblNameText.setText("");
+        
+        fieldPanel.setContainer(null, null);
+        if (disciplineBasedPanel != null)
+        {
+            disciplineBasedPanel.set((DisciplineBasedContainer)null, null);
+        }
+        
+        tblHideChk.setSelected(false);
 	}
 
 	//--------------------------------------------------------------
@@ -944,13 +898,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
 
                 } else
                 {
-                    tblDescText.setText("");
-                    tblNameText.setText("");
-                    
-                    fieldPanel.setContainer(null, null);
-                    disciplineBasedPanel.set((DisciplineBasedContainer)null, jlistItem);
-                    
-                    tblHideChk.setSelected(false);
+                    noTableSelected();
                 }
 
                 prevTable = currContainer;
@@ -963,11 +911,13 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
                 log.error("jlistItem was null in list");
             }
             enableUIControls(currContainer != null);
+            
         } else
         {
-            UIRegistry.showError("Couldn't load container["+jlistItem.getId()+"]");
+            UIRegistry.showError("Couldn't load container["+(jlistItem != null ? jlistItem.getId() : "null")+"]");
         }
-
+        setIgnoreChanges(false);
+        setTableInfoChanged(false);
     }
 
 }

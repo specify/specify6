@@ -155,6 +155,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     protected JLabel           pickListLbl;
     protected JComboBox        pickListCBX;
     protected PickList         pickListNone = new PickList(getResourceString("NONE")); // I18N
+    protected JButton          pickListMoreBtn;
 
     protected JLabel           autoNumLbl;
     protected JComboBox        autoNumberCombo;
@@ -232,6 +233,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         // setting min and pref sizes to some bogus values so that textarea shrinks with dialog
         fieldDescText.setMinimumSize(new Dimension(50, 5));
         fieldDescText.setPreferredSize(new Dimension(50, 5));
+        fieldDescText.setColumns(40);
         fieldNameText.addKeyListener(new LengthWatcher(64));
 
         CellConstraints cc = new CellConstraints();
@@ -429,19 +431,32 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 }
             }
         });
+        pickListMoreBtn = createButton("...");
+        pickListMoreBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                PickListEditorDlg dlg = new PickListEditorDlg(localizableIO);
+                dlg.setVisible(true);
+                if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+                {
+                    
+                }
+            }
+        });
 
         if (includeFormatAndAutoNumUI)
         {
             PanelBuilder inner = new PanelBuilder(new FormLayout("max(p;150px),2px,min", "p"));
             inner.add(pickListCBX,   cc.xy(1, 1));   
-            //inner.add(formatMoreBtn, cc.xy(3, 1));
+            inner.add(pickListMoreBtn, cc.xy(3, 1));
             
             formatterPanel.add(SL_PICKLIST, inner.getPanel());
             
         } else
         {
             pb.add(pickListLbl   = createLabel(SL_PICKLIST + ":", SwingConstants.RIGHT), cc.xy(3, y));
-            pb.add(pickListCBX,   cc.xy(5, y));   y += 2;
+            pb.add(pickListCBX,   cc.xy(5, y));
+            pb.add(pickListMoreBtn,   cc.xy(7, y));   y += 2;
         }
         
         nxtBtn         = createButton(getResourceString("SL_NEXT"));
@@ -814,7 +829,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         currContainer = container;
         currJListItem = jListContainerItem;
         
-        tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(currContainer.getName());
+        tableInfo = currContainer == null ? null : DBTableIdMgr.getInstance().getInfoByTableName(currContainer.getName());
         
         fillFieldList();
     }
@@ -980,7 +995,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     protected void updateBtns()
     {
         int     inx     = fieldsList.getSelectedIndex();
-        boolean enabled = inx < fieldsModel.size() -1;
+        boolean enabled = inx != -1 && (inx < (fieldsModel.size() -1));
         nxtBtn.setEnabled(enabled);
         checkForMoreEmpties();
     }
@@ -1321,7 +1336,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                         fieldLengthLbl.setEnabled(StringUtils.isNotEmpty(lenStr));
                         fieldLengthTxt.setEnabled(StringUtils.isNotEmpty(lenStr));
                         
-                        fieldReqTxt.setText(getResourceString(fi.isRequired() ? getResourceString("SL_YES") : getResourceString("SL_NO")));
+                        fieldReqTxt.setText(getResourceString(fi.isRequired() ? "SL_YES" : "SL_NO"));
                         
 
                     } else

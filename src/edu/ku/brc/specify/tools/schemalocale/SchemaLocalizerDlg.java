@@ -196,10 +196,16 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     }
     
     /**
-     * 
+     * Saves the changes.
      */
     protected void saveAndShutdown()
     {
+        // Check to make sure whether the current container has changes.
+        if (schemaLocPanel.hasTableInfoChanged() && schemaLocPanel.getCurrentContainer() != null)
+        {
+            localizableIOIFace.containerChanged(schemaLocPanel.getCurrentContainer());
+        }
+        
         schemaLocPanel.setSaveBtn(null);
         
         enabledDlgBtns(false);
@@ -400,10 +406,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
      */
     public boolean load()
     {
-        enabledDlgBtns(false);
-        
-        //UIRegistry.getStatusBar().setIndeterminate(SCHEMALOCDLG, true);
-        //UIRegistry.getStatusBar().setText(UIRegistry.getResourceString("LOADING_SCHEMA"));
+        enabledDlgBtns(true);
         
         return true;
     }
@@ -440,9 +443,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 {
                     session = DataProviderFactory.getInstance().createSession();
                     
-                    container = (SpLocaleContainer)session.getData("FROM SpLocaleContainer WHERE disciplineId = "+
-                                                        AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId() + 
-                                                        " AND spLocaleContainerId = " + containerId);
+                    String sql = "FROM SpLocaleContainer WHERE disciplineId = "+
+                    AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId() + " AND spLocaleContainerId = " + containerId;
+                    container = (SpLocaleContainer)session.getData(sql);
                     tables.add(container);
                     tableHash.put(container.getId().intValue(), container);
 
@@ -500,38 +503,51 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         DataObjFieldFormatMgr.getInstance().applyChanges(dataObjFieldFormatMgrCache);
         UIFieldFormatterMgr.getInstance().applyChanges(uiFieldFormatterMgrCache);
 
-        try
+        if (changedTables.size() > 0)
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            session.beginTransaction();
-            for (SpLocaleContainer container : changedTables)
+            DataProviderSessionIFace session = null;
+            try
             {
-                SpLocaleContainer c = session.merge(container);
-                session.saveOrUpdate(c);
-                for (SpLocaleItemStr str : c.getNames())
-                {
-                    session.saveOrUpdate(session.merge(str));
-                    //System.out.println(str.getText());
-                }
+                session = DataProviderFactory.getInstance().createSession();
                 
-                for (SpLocaleContainerItem item : c.getItems())
+                session.beginTransaction();
+                for (SpLocaleContainer container : changedTables)
                 {
-                    SpLocaleContainerItem i = session.merge(item);
-                    session.saveOrUpdate(i);
-                    for (SpLocaleItemStr str : i.getNames())
+                    SpLocaleContainer c = session.merge(container);
+                    session.saveOrUpdate(c);
+                    for (SpLocaleItemStr str : c.getNames())
                     {
                         session.saveOrUpdate(session.merge(str));
                         //System.out.println(str.getText());
                     }
+                    
+                    for (SpLocaleContainerItem item : c.getItems())
+                    {
+                        SpLocaleContainerItem i = session.merge(item);
+                        session.saveOrUpdate(i);
+                        for (SpLocaleItemStr str : i.getNames())
+                        {
+                            session.saveOrUpdate(session.merge(str));
+                            //System.out.println(str.getText());
+                        }
+                    }
+                }
+                session.commit();
+                session.flush();
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
                 }
             }
-            session.commit();
-            
-            session.close();
-            
-        } catch (Exception ex)
+        } else
         {
-            ex.printStackTrace();
+            log.warn("No Changes were saved!");
         }
         return true;
     }
@@ -815,7 +831,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     
                 pickLists = new Vector<PickList>();
                 // unchecked warning: Criteria results are always the requested class
-                String sql = "SELECT name, type, tableName, fieldName FROM PickList WHERE collectionId = "+ AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId();
+                String sql = "SELECT name, type, tableName, fieldName, pickListId FROM PickList WHERE collectionId = "+ 
+                            AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId() + 
+                            " ORDER BY name";
                 List<?> list = session.getDataList(sql);
                 for (Object row : list)
                 {
@@ -826,6 +844,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                     pl.setType((Integer)data[1]);
                     pl.setTableName((String)data[2]);
                     pl.setFieldName((String)data[3]);
+                    pl.setPickListId((Integer)data[4]);
                     pickLists.add(pl);
                 }
                 //pickLists = (List<PickList>)session.getDataList(sql);

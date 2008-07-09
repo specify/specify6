@@ -104,7 +104,7 @@ public class WebLinkConfigDlg extends CustomDialog
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g,2px,p")); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc = new CellConstraints();
         
-        pb.add(UIHelper.createLabel(UIRegistry.getResourceString("WebLinkConfigDlg.WEB_LINKS"), SwingConstants.CENTER), cc.xy(1, 1)); // I18N //$NON-NLS-1$
+        pb.add(UIHelper.createLabel(UIRegistry.getResourceString("WebLinkConfigDlg.WEB_LINKS"), SwingConstants.CENTER), cc.xy(1, 1)); //$NON-NLS-1$
         
         list = new JList(new DefaultListModel());
         JScrollPane sp = new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);

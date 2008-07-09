@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
@@ -20,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
@@ -30,7 +32,6 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
@@ -49,7 +50,7 @@ import edu.ku.brc.ui.forms.validation.ValSpinner;
  * Jan 10, 2008
  *
  */
-public class PickListBusRules extends BaseBusRules
+public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIFace
 {
     private static final Logger log  = Logger.getLogger(PickListBusRules.class);
     
@@ -64,7 +65,7 @@ public class PickListBusRules extends BaseBusRules
      * Fixes up the Comboboxes.
      * @param fvo the form
      */
-    public static void adjustForm(final FormViewObj fvo)
+    public void adjustForm(final FormViewObj fvo)
     {
         final ValComboBox formatterCBX = (ValComboBox)fvo.getControlByName("formatterCBX");
         final ValComboBox tablesCBX     = (ValComboBox)fvo.getControlByName("tablesCBX");
@@ -92,7 +93,7 @@ public class PickListBusRules extends BaseBusRules
         
         DefaultComboBoxModel model = (DefaultComboBoxModel)typesCBX.getComboBox().getModel();
         model.removeAllElements();
-        String[] types = {UIRegistry.getResourceString("PL_ITEMS"), UIRegistry.getResourceString("PL_TABLE"), UIRegistry.getResourceString("PLTABLEFIELD")};
+        String[] types = {getResourceString("PL_ITEMS"), getResourceString("PL_TABLE"), getResourceString("PLTABLEFIELD")};
         for (String title : types)
         {
             model.addElement(title);
@@ -189,7 +190,7 @@ public class PickListBusRules extends BaseBusRules
         if (tablesCBX.getComboBox().getModel().getSize() == 0)
         {
             DefaultComboBoxModel tblModel = (DefaultComboBoxModel)tablesCBX.getComboBox().getModel();
-            String noneStr = UIRegistry.getResourceString("NONE");
+            String noneStr = getResourceString("NONE");
             DBTableInfo none = new DBTableInfo(-1, PickList.class.getName(), "none", "", "");
             none.setTitle(noneStr);
             
@@ -444,7 +445,7 @@ public class PickListBusRules extends BaseBusRules
             //log.debug("["+dbPL.getId().intValue()+"]["+pickList.getId().intValue()+"]");
             if (dbPL != null && dbPL.getId().intValue() != pickList.getId().intValue())
             {
-                reasonList.add(UIRegistry.getLocalizedMessage("PL_DUPLICATE_NAME", pickList.getName()));
+                reasonList.add(getLocalizedMessage("PL_DUPLICATE_NAME", pickList.getName()));
                 return STATUS.Error;
             }
             

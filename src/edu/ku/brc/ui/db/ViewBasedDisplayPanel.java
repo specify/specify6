@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
+import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
@@ -182,6 +183,17 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         if (parentWin != null && parentWin instanceof JDialog)
         {
             ((JDialog)parentWin).getRootPane().setDefaultButton(okBtn);
+        }
+    }
+    
+    /**
+     * @param adjuster
+     */
+    public void setFormAdjuster(final FormPaneAdjusterIFace adjuster)
+    {
+        if (adjuster != null && multiView.getCurrentViewAsFormViewObj() != null)
+        {
+            adjuster.adjustForm(multiView.getCurrentViewAsFormViewObj());
         }
     }
     

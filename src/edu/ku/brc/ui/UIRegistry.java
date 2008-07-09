@@ -424,6 +424,17 @@ public class UIRegistry
     } 
     
     /**
+     * Returns a localized string from the resource bundle that has a format.
+     * @param key the key to look up
+     * @param params the object to be inserted into the string
+     * @return  Returns a localized string from the resource bundle
+     */
+    public static String getFormattedResStr(final String key, final Object... params)
+    {
+        return String.format(instance.getResourceStringInternal(key), params);
+    } 
+    
+    /**
      * @return the getPermanentFocusOwner
      */
     public static Component getPermanentFocusOwner()
