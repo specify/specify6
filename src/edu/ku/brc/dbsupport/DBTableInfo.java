@@ -63,8 +63,9 @@ public class DBTableInfo extends DBInfoBase
     protected String searchDialog;
     protected String newObjDialog;
     
-    protected List<DBRelationshipInfo> relationships;
-    protected List<DBFieldInfo>        fields;
+    protected List<DBRelationshipInfo>  relationships;
+    protected List<DBFieldInfo>         fields;
+    protected Hashtable<String, String> fieldAliases;
     
     // Transient 
     protected Hashtable<String, DBFieldInfo>        fieldsHash = null;
@@ -293,6 +294,20 @@ public class DBTableInfo extends DBInfoBase
     }
 
     /**
+     * Adds maping for cirtual name to actual name.
+     * @param virtualName the virtual name
+     * @param actualName  the actual name
+     */
+    public void addFieldAlias(final String virtualName, final String actualName)
+    {
+        if (fieldAliases == null)
+        {
+            fieldAliases = new Hashtable<String, String>();
+        }
+        fieldAliases.put(virtualName, actualName);
+    }
+    
+    /**
      * Assumes all fields have names and returns a DBFieldInfo object by name
      * @param name the name of the field
      * @return the DBFieldInfo
@@ -322,7 +337,17 @@ public class DBTableInfo extends DBInfoBase
                 fieldsHash.put(fldInfo.getName().toLowerCase(), fldInfo);
             }
         }
-        return fieldsHash.get(fieldName.toLowerCase());
+        
+        DBFieldInfo fInfo = fieldsHash.get(fieldName.toLowerCase());
+        if (fInfo == null && fieldAliases != null)
+        {
+            String actualName = fieldAliases.get(fieldName);
+            if (actualName != null)
+            {
+                return fieldsHash.get(actualName.toLowerCase());
+            }
+        }
+        return fInfo;
     }
     
     /**
@@ -359,7 +384,17 @@ public class DBTableInfo extends DBInfoBase
                 relsHash.put(rel.getName().toLowerCase(), rel);
             }
         }
-        return relsHash.get(relName.toLowerCase());
+        
+        DBRelationshipInfo rInfo = relsHash.get(relName.toLowerCase());
+        if (rInfo == null && fieldAliases != null)
+        {
+            String actualName = fieldAliases.get(relName);
+            if (actualName != null)
+            {
+                return relsHash.get(actualName.toLowerCase());
+            }
+        }
+        return rInfo;
     }
     
     /**

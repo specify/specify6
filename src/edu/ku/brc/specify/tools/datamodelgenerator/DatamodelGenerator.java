@@ -54,6 +54,7 @@ import edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace;
 import edu.ku.brc.specify.tools.schemalocale.LocalizableStrIFace;
 import edu.ku.brc.specify.tools.schemalocale.LocalizerBasePanel;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
+import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.util.DatamodelHelper;
 
@@ -250,6 +251,27 @@ public class DatamodelGenerator
         return null;
     }
     
+    private Vector<FieldAlias> createFieldAliases(final Element element)
+    {
+        if (element != null)
+        {
+            Vector<FieldAlias> aliases = new Vector<FieldAlias>();
+            List<?> items = element.selectNodes("fieldaliases/field");
+            if (items.size() > 0)
+            {
+                for (Iterator<?> iter = items.iterator(); iter.hasNext(); )
+                {
+                    Element    faItem = (Element)iter.next();
+                    FieldAlias fa     = new FieldAlias(XMLHelper.getAttr(faItem, "vname", null),
+                                                       XMLHelper.getAttr(faItem, "aname", null));
+                    aliases.add(fa);
+                }
+                return aliases;
+            }
+        }
+        return null;
+    }
+    
     /**
      * Given and XML node, returns a Table object by grabbing the appropriate
      * attribute values.
@@ -276,7 +298,8 @@ public class DatamodelGenerator
                          tableName, 
                          null, 
                          tableMetaData.getId(), 
-                         tableMetaData.getDisplay(), 
+                         tableMetaData.getDisplay(),
+                         tableMetaData.getFieldAliase(), 
                          tableMetaData.isSearchable(), 
                          tableMetaData.getBusinessRule(),
                          tableMetaData.getAbbrv());
@@ -713,6 +736,12 @@ public class DatamodelGenerator
                         continue;
                     }
                     
+                    if (method.getName().equals("getAcceptedTaxon"))
+                    {
+                        int x= 0;
+                        x++;
+                    }
+                    
                     if (DEBUG)
                     {
                         System.out.println(className + " " + method.getName());
@@ -733,10 +762,12 @@ public class DatamodelGenerator
                             }
                         }
                     }
-                    if (typeClass == classObj || 
-                            typeClass == AttributeIFace.class || 
-                            typeClass == PickListItemIFace.class || 
-                            typeClass == RecordSetItemIFace.class)
+                    
+                    // rods 07/10/08 - Used to skip all relationships that point to themslves
+                    // that works now and is needed.
+                    if (typeClass == AttributeIFace.class || 
+                        typeClass == PickListItemIFace.class || 
+                        typeClass == RecordSetItemIFace.class)
                     {
                         continue;
                     }
@@ -766,6 +797,7 @@ public class DatamodelGenerator
                         
                     } else if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
                     {
+                        
                         String otherSideName = getRightSideForManyToOne(classObj, typeClass, thisSideName);
                         
                         javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
@@ -1366,6 +1398,7 @@ public class DatamodelGenerator
                     tblMetaDataHash.put(tablename, new TableMetaData(id, 
                                                                      defaultView, 
                                                                      createDisplay(element), 
+                                                                     createFieldAliases(element),
                                                                      isSearchable, 
                                                                      busRule,
                                                                      abbrv));

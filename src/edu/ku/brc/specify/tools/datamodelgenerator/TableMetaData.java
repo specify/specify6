@@ -1,5 +1,7 @@
 package edu.ku.brc.specify.tools.datamodelgenerator;
 
+import java.util.Vector;
+
 
 /**
  * @author rods
@@ -9,13 +11,14 @@ package edu.ku.brc.specify.tools.datamodelgenerator;
  */
 public class TableMetaData
 {
-	private String id;
-    private String className;
+	private String  id;
+    private String  className;
     private Display display;
     private boolean isForWorkBench;
     private boolean isSearchable;
-    private String businessRule;
-    private String abbrv;
+    private String  businessRule;
+    private String  abbrv;
+    private Vector<FieldAlias> fieldAliase; 
 
 	/**
 	 * @param id
@@ -25,6 +28,7 @@ public class TableMetaData
 	public TableMetaData(final String  id, 
                          final String  className, 
                          final Display display, 
+                         final Vector<FieldAlias> fieldAliase,
                          final boolean isSearchable,
                          final String businessRule,
                          final String abbrv)
@@ -32,6 +36,7 @@ public class TableMetaData
 		this.id             = id;
         this.className      = className;
         this.display        = display;
+        this.fieldAliase    = fieldAliase;
         this.isSearchable   = isSearchable;
         this.businessRule   = businessRule;
         this.abbrv          = abbrv;
@@ -79,4 +84,13 @@ public class TableMetaData
     {
         return abbrv;
     }
+
+    /**
+     * @return the fieldAliase
+     */
+    public Vector<FieldAlias> getFieldAliase()
+    {
+        return fieldAliase;
+    }
+    
 }

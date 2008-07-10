@@ -29,7 +29,8 @@ public class Table implements Comparable<Table>
     private List<Id>                 ids           = new ArrayList<Id>();
     private List<Relationship>       relationships = new ArrayList<Relationship>();
     private Display                  display;
-    
+    private List<FieldAlias>         fieldAliases = new ArrayList<FieldAlias>();
+
     // These are needed for the DataMode Tools for generating schema diagrams etc
     private LocalizedStrIFace        desc;
     private LocalizedStrIFace        nameDesc;
@@ -49,6 +50,7 @@ public class Table implements Comparable<Table>
                  String lazy,
                  String tableId, 
                  Display display,
+                 List<FieldAlias> fieldAliases,
                  boolean searchable, 
                  String businessRule,
                  String abbrv)
@@ -58,6 +60,7 @@ public class Table implements Comparable<Table>
         this.lazy      = lazy;
         this.tableId   = tableId;
         this.display   = display;
+        this.fieldAliases = fieldAliases;
         this.searchable = searchable;
         this.businessRule = businessRule;
         this.abbrv     = abbrv;
@@ -310,6 +313,22 @@ public class Table implements Comparable<Table>
     public LocalizedStrIFace getNameDesc()
     {
         return nameDesc;
+    }
+
+    /**
+     * @return the fieldAliases
+     */
+    public List<FieldAlias> getFieldAliases()
+    {
+        return fieldAliases;
+    }
+
+    /**
+     * @param fieldAliases the fieldAliases to set
+     */
+    public void setFieldAliases(List<FieldAlias> fieldAliases)
+    {
+        this.fieldAliases = fieldAliases;
     }
 
     // Comparable

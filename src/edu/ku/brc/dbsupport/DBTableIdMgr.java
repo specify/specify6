@@ -217,6 +217,18 @@ public class DBTableIdMgr
                                                                 getAttr(irNode, "indexed", false)); //$NON-NLS-1$
                         tblInfo.addField(fieldInfo);
                     }
+                    
+                    for (Iterator<?> faIter = tableNode.elementIterator("fieldalias"); faIter.hasNext();) //$NON-NLS-1$
+                    {
+                        Element faNode = (Element) faIter.next();
+                        String  vName  = getAttr(faNode, "vname", null);//$NON-NLS-1$
+                        String  aName  = getAttr(faNode, "aname", null);//$NON-NLS-1$
+                        if (vName != null && aName != null)
+                        {
+                            tblInfo.addFieldAlias(vName, aName);
+                        }
+                    }
+
                     //Collections.sort(tblInfo.getFields());
 				}
 			} else

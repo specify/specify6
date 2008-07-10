@@ -161,6 +161,9 @@
         <table name="edu.ku.brc.specify.datamodel.Geography" abbrev="geo" id="3" workbench="true" searchable="true">
             <display view="Geography" dataobjformatter="Geography" searchdlg="GeographySearch" newobjdlg="GeographyDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeographyBusRules</businessrule>          
+            <fieldaliases>
+                <field vname="acceptedParent" aname="acceptedGeography"/>
+            </fieldaliases>                                            
         </table>
         <table name="edu.ku.brc.specify.datamodel.GeographyTreeDef" abbrev="gtd" id="44"/>
         <table name="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" abbrev="gtdi" id="45">
@@ -169,6 +172,9 @@
         <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriod" abbrev="gtp" id="46" workbench="false" searchable="true">
             <display view="GeologicTimePeriod" dataobjformatter="GeologicTimePeriod" searchdlg="GeologicTimePeriodSearch" newobjdlg="GeologicTimePeriodDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules</businessrule>          
+            <fieldaliases>
+                <field vname="acceptedParent" aname="acceptedGeologicTimePeriod"/>
+            </fieldaliases>                                            
         </table>
         <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" abbrev="gtpd" id="47"/>
         <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" abbrev="gtpdi" id="48">
@@ -190,6 +196,9 @@
         <table name="edu.ku.brc.specify.datamodel.LithoStrat" abbrev="ls" id="100" workbench="true" searchable="true">
             <display view="LithoStrat" dataobjformatter="" searchdlg="LithoStratSearch" newobjdlg="LithoStratDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.LithoStratBusRules</businessrule>            
+            <fieldaliases>
+                <field vname="acceptedParent" aname="acceptedLithoStrat"/>
+            </fieldaliases>                                            
         </table>
         <table name="edu.ku.brc.specify.datamodel.LithoStratTreeDef" abbrev="lstd" id="101"/>
         <table name="edu.ku.brc.specify.datamodel.LithoStratTreeDefItem" abbrev="lstdi" id="102"/>
@@ -220,6 +229,9 @@
         <table name="edu.ku.brc.specify.datamodel.Storage" abbrev="lcn" id="58" searchable="true">
             <display view="Storage" dataobjformatter="Storage" searchdlg="StorageSearch" newobjdlg="StorageDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.StorageBusRules</businessrule>            
+            <fieldaliases>
+                <field vname="acceptedParent" aname="acceptedStorage"/>
+            </fieldaliases>                                            
         </table>
         <table name="edu.ku.brc.specify.datamodel.StorageTreeDef" abbrev="lntd" id="59"/>
         <table name="edu.ku.brc.specify.datamodel.StorageTreeDefItem" abbrev="lntdi" id="60">
@@ -306,7 +318,10 @@
         
         <table name="edu.ku.brc.specify.datamodel.Taxon" abbrev="tx" id="4" workbench="true" searchable="true">
             <display view="Taxon" dataobjformatter="Taxon" searchdlg="TaxonSearch" newobjdlg="TaxonDisplay"/>
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.TaxonBusRules</businessrule>                                                
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.TaxonBusRules</businessrule>
+            <fieldaliases>
+                <field vname="acceptedParent" aname="acceptedTaxon"/>
+            </fieldaliases>                                            
         </table>
         <table name="edu.ku.brc.specify.datamodel.TaxonAttachment" abbrev="txat" id="119" searchable="true">
         	<display view="ObjectAttachment" newobjdlg="TaxonAttachmentDisplay"/>
