@@ -646,7 +646,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             String sqlStr = "SELECT a.lastName,a.firstName FROM Agent a JOIN a.disciplines as d WHERE d.disciplineId = 1 AND  LOWER(lastName) LIKE 's%'  ORDER BY lastName ASC"; //$NON-NLS-1$
             session = DataProviderFactory.getInstance().createSession();
             Object  result     = session.getDataList(sqlStr);
-            System.out.println(result);
+            //System.out.println(result);
             
         } catch (Exception ex)
         {

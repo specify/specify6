@@ -221,7 +221,7 @@ public class DataObjFieldFormatMgr
                     String title      = formatElement.attributeValue("title");
                     String className  = formatElement.attributeValue("class");
                     String format     = formatElement.attributeValue("format");
-                    boolean isDefault = XMLHelper.getAttr(formatElement, "default", true);
+                    boolean isDefault = XMLHelper.getAttr(formatElement, "default", false);
                     
                     if (StringUtils.isEmpty(title))
                     {
@@ -269,7 +269,7 @@ public class DataObjFieldFormatMgr
                                 DataObjSwitchFormatter curDO = formatClassHash.get(dataClass);
                                 if (curDO != null && curDO.isDefault())
                                 {
-                                    throw new RuntimeException("There are two default DataObjectFormatters current ["+curDO.getName()+"] adding["+sf.getName()+"] for class"+dataClass.getSimpleName());
+                                    throw new RuntimeException("There are two default DataObjectFormatters current ["+curDO.getName()+"] adding["+sf.getName()+"] for class "+dataClass.getSimpleName());
                                 }
                             }
                             formatClassHash.put(dataClass, switchFormatter);

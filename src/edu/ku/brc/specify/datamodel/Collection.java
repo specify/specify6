@@ -59,7 +59,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected String                     description;
     protected String                     remarks;
     
-    // TDWG Fields
+    // TDWG Fields (ABCD Schema)
     protected String                     kingdomCoverage;
     protected String                     primaryFocus;
     protected String                     collectionType;
@@ -67,6 +67,8 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected String                     preservationMethodType;
     protected String                     developmentStatus;
     protected String                     institutionType;
+    protected String                     scope;
+    protected String                     dbContentVersion;
     
     // Relationships
     protected Discipline                 discipline;
@@ -117,6 +119,8 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         preservationMethodType = null;
         developmentStatus      = null;
         institutionType        = null;
+        scope                  = null;
+        dbContentVersion       = null;
         spAppResourceDirs      = new HashSet<SpAppResourceDir>();
         collectionObjects      = new HashSet<CollectionObject>();
         fieldNoteBooks         = new HashSet<FieldNotebook>();
@@ -380,6 +384,41 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     public void setInstitutionType(String institutionType)
     {
         this.institutionType = institutionType;
+    }
+
+    /**
+     * @return the scope
+     */
+    @Lob
+    @Column(name = "Scope", unique = false, nullable = true, insertable = true, updatable = true, length = 2048)
+    public String getScope()
+    {
+        return scope;
+    }
+
+    /**
+     * @param scope the scope to set
+     */
+    public void setScope(String scope)
+    {
+        this.scope = scope;
+    }
+
+    /**
+     * @return the dbContentVersion
+     */
+    @Column(name = "DbContentVersion", length = 32)
+    public String getDbContentVersion()
+    {
+        return dbContentVersion;
+    }
+
+    /**
+     * @param dbContentVersion the dbContentVersion to set
+     */
+    public void setDbContentVersion(String dbContentVersion)
+    {
+        this.dbContentVersion = dbContentVersion;
     }
 
     /**

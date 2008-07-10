@@ -324,7 +324,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         {
             public void mouseClicked(MouseEvent e) 
             {
-                System.out.println(e.getButton());
+                //System.out.println(e.getButton());
                 if (e.getClickCount() == 2 && e.getButton() == 1)
                 {
                     if (propChangeListener != null) 

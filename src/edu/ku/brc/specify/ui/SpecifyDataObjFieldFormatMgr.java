@@ -68,7 +68,7 @@ public class SpecifyDataObjFieldFormatMgr extends DataObjFieldFormatMgr implemen
     protected void saveXML(final String xml)
     {
         // save resource back to database
-        if (AppContextMgr.getInstance() != null)
+        if (AppContextMgr.getInstance() != null && !doingLocal)
         {
             AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "DataObjFormatters");
             if (escAppRes != null)

@@ -74,7 +74,7 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
         ObjectAttachmentIFace<?> attRef = (ObjectAttachmentIFace<?>)dataObj;
         
         Attachment a = attRef.getAttachment();
-        System.out.println("afterSaveCommit(): " + a.getOrigFilename());
+        //System.out.println("afterSaveCommit(): " + a.getOrigFilename());
         
         AttachmentBusRules attachBusRules = new AttachmentBusRules();
         boolean okToDelete = attachBusRules.okToEnableDelete(a);

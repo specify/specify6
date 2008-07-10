@@ -113,7 +113,7 @@ public class FishBaseInfoGetter extends HTTPGetter
         imageURL = url;
 
         String fullPath = tmpDir + File.separator + fileName;
-        System.out.println(fullPath);
+        //System.out.println(fullPath);
         File file = new File(fullPath);
         if (file.exists())
         {

@@ -654,7 +654,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             fndAppDir = spAppResourceList.get(i);
             for (SpAppResource appRes : (new ArrayList<SpAppResource>(fndAppDir.getSpAppResources())))
             {
-                System.out.println(appRes.getFileName());
+                //System.out.println(appRes.getFileName());
                 
                 if (appRes.getName().equals(appResource.getName()))
                 {

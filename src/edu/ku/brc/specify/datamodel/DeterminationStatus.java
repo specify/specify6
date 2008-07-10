@@ -37,6 +37,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -173,7 +175,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     }
     
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "status")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @Cascade( { CascadeType.MERGE, CascadeType.LOCK })
     public Set<Determination> getDeterminations()
     {
         return determinations;

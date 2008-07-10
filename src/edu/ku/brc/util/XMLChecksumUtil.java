@@ -112,7 +112,7 @@ public class XMLChecksumUtil
                 long checkSum = checksumCRC32(file);
                 
                 long newCheckSum = Long.parseLong(checksumStr);
-                System.out.println(file.getName()+" ["+checkSum+"]["+newCheckSum+"]");
+                //System.out.println(file.getName()+" ["+checkSum+"]["+newCheckSum+"]");
                 return checkSum == newCheckSum; 
             }
         } else

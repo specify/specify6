@@ -169,7 +169,7 @@ public class SystemPrefs extends GenericPrefsPanel
                     AppPreferences.getLocalPrefs().remove("locale.country");
                     AppPreferences.getLocalPrefs().remove("locale.var");
                     
-                    System.out.println("["+AppPreferences.getLocalPrefs().get("locale.lang", null)+"]");
+                    //System.out.println("["+AppPreferences.getLocalPrefs().get("locale.lang", null)+"]");
                     Locale.setDefault(UIRegistry.getPlatformLocale());
                     
                 } else

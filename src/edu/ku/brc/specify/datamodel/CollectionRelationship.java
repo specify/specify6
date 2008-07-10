@@ -45,6 +45,8 @@ public class CollectionRelationship extends DataModelObjBase implements java.io.
     protected CollectionRelType collectionRelType;
     protected CollectionObject  leftSide;
     protected CollectionObject  rightSide;
+    protected String            text1;
+    protected String            text2;
     
     public CollectionRelationship()
     {
@@ -61,7 +63,9 @@ public class CollectionRelationship extends DataModelObjBase implements java.io.
         
         collectionRelationshipId = null;
         collectionRelType = null;
-        leftSide = null;
+        text1     = null;
+        text2     = null;
+        leftSide  = null;
         rightSide = null;
     }
 
@@ -83,6 +87,40 @@ public class CollectionRelationship extends DataModelObjBase implements java.io.
     public void setCollectionRelationshipId(Integer collectionRelationshipId)
     {
         this.collectionRelationshipId = collectionRelationshipId;
+    }
+
+    /**
+     * @return the text1
+     */
+    @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getText1()
+    {
+        return text1;
+    }
+
+    /**
+     * @param text1 the text1 to set
+     */
+    public void setText1(String text1)
+    {
+        this.text1 = text1;
+    }
+
+    /**
+     * @return the text2
+     */
+    @Column(name = "Text2", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getText2()
+    {
+        return text2;
+    }
+
+    /**
+     * @param text2 the text2 to set
+     */
+    public void setText2(String text2)
+    {
+        this.text2 = text2;
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)

@@ -48,22 +48,23 @@ public class Determination extends CollectionMember implements java.io.Serializa
                                                                Cloneable
 {
      // Fields    
-     protected Integer determinationId;
+     protected Integer             determinationId;
      protected DeterminationStatus status;
-     protected String typeStatusName;
-     protected Calendar determinedDate;
-     protected String confidence;
-     protected String method;
-     protected String featureOrBasis;
-     protected String remarks;
-     protected String text1;
-     protected String text2;
-     protected Float number1;
-     protected Float number2;
-     protected Boolean yesNo1;
-     protected Boolean yesNo2;
-     protected Taxon taxon;
-     protected CollectionObject collectionObject;
+     protected String              typeStatusName;
+     protected Calendar            determinedDate;
+     protected String              qualifier;
+     protected String              confidence;
+     protected String              method;
+     protected String              featureOrBasis;
+     protected String              remarks;
+     protected String              text1;
+     protected String              text2;
+     protected Float               number1;
+     protected Float               number2;
+     protected Boolean             yesNo1;
+     protected Boolean             yesNo2;
+     protected Taxon               taxon;
+     protected CollectionObject    collectionObject;
      protected Set<DeterminationCitation> determinationCitations;
      protected Agent determiner;
 
@@ -96,6 +97,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
         typeStatusName = null;
         determinedDate = null;
         confidence = null;
+        qualifier  = null;
         method = null;
         featureOrBasis = null;
         remarks = null;
@@ -213,6 +215,23 @@ public class Determination extends CollectionMember implements java.io.Serializa
     public void setConfidence(String confidence) 
     {
         this.confidence = confidence;
+    }
+
+    /**
+     * @return the qualifier
+     */
+    @Column(name = "Qualifier", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
+    public String getQualifier()
+    {
+        return qualifier;
+    }
+
+    /**
+     * @param qualifier the qualifier to set
+     */
+    public void setQualifier(String qualifier)
+    {
+        this.qualifier = qualifier;
     }
 
     /**

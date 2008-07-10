@@ -205,7 +205,7 @@ public class JAutoCompComboBox extends JEditComboBox
             @Override
             public void keyReleased(KeyEvent ev)
             {
-                System.out.println(hasDBAdapter() +"  "+dbAdapter.getType()+"  [" + ((JTextField)cbx.getEditor().getEditorComponent()).getText()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                //System.out.println(hasDBAdapter() +"  "+dbAdapter.getType()+"  [" + ((JTextField)cbx.getEditor().getEditorComponent()).getText()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 if (!cbx.isPopupVisible() && hasDBAdapter() && dbAdapter.getType() != PickListDBAdapterIFace.Type.Table)
                 {
                     if (ev.getKeyCode() == SEARCH_KEY)
@@ -250,7 +250,7 @@ public class JAutoCompComboBox extends JEditComboBox
                     {
                         if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
                         {
-                            System.out.println("*&******"); //$NON-NLS-1$
+                            //System.out.println("*&******"); //$NON-NLS-1$
                             addNewItemFromTextField();
                             
                         } else if (ev.getKeyCode() == KeyEvent.VK_END)

@@ -140,16 +140,22 @@
 		<mapping class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Shipment"/>
 
-		<mapping class="edu.ku.brc.specify.datamodel.SpPrincipal"/>
-		<mapping class="edu.ku.brc.specify.datamodel.SpPermission"/>
-		<mapping class="edu.ku.brc.specify.datamodel.SpecifyUser"/>
-		<mapping class="edu.ku.brc.specify.datamodel.SpFieldValueDefault"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpAppResourceDir"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpAppResource"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpAppResourceData"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpecifyUser"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpExportSchema"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpExportSchemaItem"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpFieldValueDefault"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpLocaleContainer"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpLocaleContainerItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpLocaleItemStr"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpPrincipal"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpPermission"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpQuery"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpQueryField"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpReport"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpViewSetObj"/>
 		
 		
 		<!--
@@ -161,10 +167,6 @@
 		<mapping class="edu.ku.brc.specify.datamodel.SpUIViewDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpUIViewSet"/>
 		  -->
-		<mapping class="edu.ku.brc.specify.datamodel.SpQuery"/>
-		<mapping class="edu.ku.brc.specify.datamodel.SpQueryField"/>
-		<mapping class="edu.ku.brc.specify.datamodel.SpReport"/>
-		<mapping class="edu.ku.brc.specify.datamodel.SpViewSetObj"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Storage"/>
 		<mapping class="edu.ku.brc.specify.datamodel.StorageTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.StorageTreeDefItem"/>

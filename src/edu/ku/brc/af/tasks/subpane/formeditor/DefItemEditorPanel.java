@@ -189,7 +189,7 @@ public class DefItemEditorPanel extends JPanel
             propsPanel.getDataFromUI();
             item.setDefStr(propsPanel.getDefStr());
         }
-        System.out.println(item);
+        //System.out.println(item);
         
         item.toString();
     }

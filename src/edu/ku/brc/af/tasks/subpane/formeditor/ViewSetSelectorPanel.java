@@ -843,7 +843,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
                     ((DefaultTreeModel)tree.getModel()).insertNodeInto(newNode, parentNode, position+1);
                 }
                 
-                System.out.println("******* ADDING ["+formCell.getIdent()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                //System.out.println("******* ADDING ["+formCell.getIdent()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                 
                 idHash.put(formCell.getIdent(), true);
                 

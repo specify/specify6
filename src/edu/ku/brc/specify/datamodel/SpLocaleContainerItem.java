@@ -64,14 +64,10 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     
     protected Set<SpLocaleItemStr> names;
     protected Set<SpLocaleItemStr> descs;
+    protected Set<SpExportSchemaItem> spExportSchemaItems;
     
     protected String               webLinkName;
 
-    // Transient
-    //protected Vector<LocalizableStrIFace> names;
-    //protected Vector<LocalizableStrIFace> desc;
-
- 
     /**
      * 
      */
@@ -110,6 +106,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
         
         names = new HashSet<SpLocaleItemStr>();
         descs = new HashSet<SpLocaleItemStr>();
+        spExportSchemaItems = new HashSet<SpExportSchemaItem>();
         
         container = null;
 
@@ -184,6 +181,24 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     public void setWebLinkName(String webLinkName)
     {
         this.webLinkName = webLinkName;
+    }
+
+    /**
+     * @return the spExportSchemaItems
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spLocaleContainerItem")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<SpExportSchemaItem> getSpExportSchemaItems()
+    {
+        return spExportSchemaItems;
+    }
+
+    /**
+     * @param spExportSchemaItems the spExportSchemaItems to set
+     */
+    public void setSpExportSchemaItems(Set<SpExportSchemaItem> spExportSchemaItems)
+    {
+        this.spExportSchemaItems = spExportSchemaItems;
     }
 
     /* (non-Javadoc)

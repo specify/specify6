@@ -107,7 +107,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Short                         catalogedDatePrecision;   // Accurate to Year, Month, Day
     protected String                        catalogedDateVerbatim;
     protected String                        guid;
-    // protected String altCatalogNumber;
+    protected String                        altCatalogNumber;
     protected Integer                       groupPermittedToView;
     protected Boolean                       deaccessioned;
     protected String                        catalogNumber;
@@ -190,7 +190,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         catalogedDate         = null;
         catalogedDateVerbatim = null;
         guid                  = null;
-        //altCatalogNumber = null;
+        altCatalogNumber      = null;
         groupPermittedToView  = null;
         deaccessioned         = null;
         catalogNumber         = null;
@@ -530,16 +530,19 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         this.guid = guid;
     }
 
-//    /**
-//     *
-//     */
-//    public String getAltCatalogNumber() {
-//        return this.altCatalogNumber;
-//    }
-//
-//    public void setAltCatalogNumber(String altCatalogNumber) {
-//        this.altCatalogNumber = altCatalogNumber;
-//    }
+    /**
+     *
+     */
+    @Column(name = "AltCatalogNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getAltCatalogNumber() 
+    {
+        return this.altCatalogNumber;
+    }
+
+    public void setAltCatalogNumber(String altCatalogNumber) 
+    {
+        this.altCatalogNumber = altCatalogNumber;
+    }
 
     /**
      *

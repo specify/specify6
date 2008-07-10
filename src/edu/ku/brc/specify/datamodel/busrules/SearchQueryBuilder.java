@@ -165,7 +165,7 @@ public class SearchQueryBuilder<T> implements ViewBasedSearchQueryBuilderIFace
         String queryFormatStr = "SELECT %s.%s, %s from %s INNER JOIN %s d ON %s.%s = d.%s INNER JOIN discipline dsp ON d.%s = dsp.%s WHERE (%s) AND dsp.DisciplineID = %d ORDER BY %s";
         String queryStr = String.format(queryFormatStr, tableName, idColName, colNames.toString(), tableName, defTableName, tableName, defIdColName, defIdColName, 
                                         defIdColName, defIdColName, criteria.toString(), disciplineId, orderBy.toString());
-        System.out.println(queryStr);
+        //System.out.println(queryStr);
         return queryStr;
     }
 

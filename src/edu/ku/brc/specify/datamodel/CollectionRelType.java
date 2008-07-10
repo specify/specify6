@@ -49,6 +49,7 @@ public class CollectionRelType extends DataModelObjBase implements java.io.Seria
 {
     protected Integer                     collectionRelTypeId;
     protected String                      name;
+    protected String                      remarks;
     protected Set<CollectionRelationship> relationships;
     protected Collection                  leftSideCollection;
     protected Collection                  rightSideCollection;
@@ -63,6 +64,7 @@ public class CollectionRelType extends DataModelObjBase implements java.io.Seria
         name                = null;
         leftSideCollection  = null;
         rightSideCollection = null;
+        remarks             = null;
     }
     
     /**
@@ -99,6 +101,23 @@ public class CollectionRelType extends DataModelObjBase implements java.io.Seria
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    /**
+     * @return the remarks
+     */
+    @Column(name = "Remarks", unique = false, nullable = true, insertable = true, updatable = true, length = 4096)
+    public String getRemarks()
+    {
+        return remarks;
+    }
+
+    /**
+     * @param remarks the remarks to set
+     */
+    public void setRemarks(String remarks)
+    {
+        this.remarks = remarks;
     }
 
     /**
@@ -205,5 +224,4 @@ public class CollectionRelType extends DataModelObjBase implements java.io.Seria
     {
         return name != null ? name : super.getIdentityTitle();
     }
-
 }

@@ -363,7 +363,7 @@ public class EditorPropPanelBase extends JPanel
             for (DBFieldInfo fi : tableInfo.getFields())
             {
                 model.addElement(fi.getTitle());
-                System.out.println("["+fi.getName()+"]["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                //System.out.println("["+fi.getName()+"]["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 if (fi.getTitle().equals(fName) || fi.getName().equals(fName))
                 {
                     inx = cnt;
@@ -377,7 +377,7 @@ public class EditorPropPanelBase extends JPanel
                     model.addElement(ri.getTitle());
                     if (inx == -1)
                     {
-                        System.out.println("*["+ri.getTitle()+"]["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        //System.out.println("*["+ri.getTitle()+"]["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         if (ri.getTitle().equals(fName) || ri.getName().equals(fName))
                         {
                             inx = cnt;
@@ -569,7 +569,7 @@ public class EditorPropPanelBase extends JPanel
             boolean fnd = false;
             for (DBFieldInfo fi : tableInfo.getFields())
             {
-                System.out.println("["+fi.getName()+"]["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                //System.out.println("["+fi.getName()+"]["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 if (fi.getTitle().equals(fName) || fi.getName().equals(fName))
                 {
                     fc.setName(fi.getName());
@@ -583,7 +583,7 @@ public class EditorPropPanelBase extends JPanel
                 {
                     if (ri.getType() == DBRelationshipInfo.RelationshipType.ManyToOne)
                     {
-                        System.out.println("*["+ri.getTitle()+"]["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        //System.out.println("*["+ri.getTitle()+"]["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         if (ri.getTitle().equals(fName) || ri.getName().equals(fName))
                         {
                             fc.setName(ri.getName());

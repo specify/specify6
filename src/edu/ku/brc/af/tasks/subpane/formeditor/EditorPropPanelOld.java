@@ -460,7 +460,7 @@ public class EditorPropPanelOld extends JPanel
             for (DBFieldInfo fi : tableInfo.getFields())
             {
                 model.addElement(fi.getTitle());
-                System.out.println("["+fi.getName()+"]["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                //System.out.println("["+fi.getName()+"]["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 if (fi.getTitle().equals(fName) || fi.getName().equals(fName))
                 {
                     inx = cnt;
@@ -474,7 +474,7 @@ public class EditorPropPanelOld extends JPanel
                     model.addElement(ri.getTitle());
                     if (inx == -1)
                     {
-                        System.out.println("*["+ri.getTitle()+"]["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        //System.out.println("*["+ri.getTitle()+"]["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         if (ri.getTitle().equals(fName) || ri.getName().equals(fName))
                         {
                             inx = cnt;

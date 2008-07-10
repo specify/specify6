@@ -228,13 +228,18 @@ public class ResultSetController implements ValidationListener
                 {
                     public void setEnabled(boolean enable)
                     {
-                        //System.err.println(formValidator.getName() + " " + hashCode() + " "+enable);
-                        if (formValidator != null && formValidator.getName() != null && formValidator.getName().equals("Determination"))
+                        //System.err.println("RS: "+ formValidator.getName() + " " + newRecBtn.hashCode() + " "+enable+"  isNewObj: "+isNewObj);
+                        if (formValidator != null && formValidator.getName() != null && formValidator.getName().equals("Collection Object"))
                         {
                             int x = 0;
                             x++;
+                            if (enable)
+                            {
+                                int y = 0;
+                                y++;
+                            }
                         }
-                        if (!enable)
+                        if (enable)
                         {
                             int x = 0;
                             x++;
@@ -324,24 +329,28 @@ public class ResultSetController implements ValidationListener
         firstBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
-                notifyListenersAboutToChangeIndex(currentInx, 0);
-                currentInx = 0;
-                updateUI();
-                notifyListeners();
+                if (notifyListenersAboutToChangeIndex(currentInx, 0))
+                {
+                    currentInx = 0;
+                    updateUI();
+                    notifyListeners();
+                }
             }
         });
         prevBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
-                notifyListenersAboutToChangeIndex(currentInx, currentInx-1);
-                // Note: notifyListenersAboutToChangeIndex sometimes can call a method
-                // that ends up setting the currentInx and therefore we should make
-                // sure that by decrementing it will still have a good value
-                if (currentInx > 0)
+                if (notifyListenersAboutToChangeIndex(currentInx, currentInx-1))
                 {
-                    currentInx--;
-                    updateUI();
-                    notifyListeners();
+                    // Note: notifyListenersAboutToChangeIndex sometimes can call a method
+                    // that ends up setting the currentInx and therefore we should make
+                    // sure that by decrementing it will still have a good value
+                    if (currentInx > 0)
+                    {
+                        currentInx--;
+                        updateUI();
+                        notifyListeners();
+                    }
                 }
             }
         });
@@ -349,20 +358,24 @@ public class ResultSetController implements ValidationListener
                 {
             public void actionPerformed(ActionEvent ae)
             {
-                notifyListenersAboutToChangeIndex(currentInx, currentInx+1);
-                currentInx++;
-                updateUI();
-                notifyListeners();
+                if (notifyListenersAboutToChangeIndex(currentInx, currentInx+1))
+                {
+                    currentInx++;
+                    updateUI();
+                    notifyListeners();
+                }
             }
         });
         lastBtn.addActionListener(new ActionListener()
                 {
             public void actionPerformed(ActionEvent ae)
             {
-                notifyListenersAboutToChangeIndex(currentInx, lastInx);
-                currentInx = lastInx;
-                updateUI();
-                notifyListeners();
+                if (notifyListenersAboutToChangeIndex(currentInx, lastInx))
+                {
+                    currentInx = lastInx;
+                    updateUI();
+                    notifyListeners();
+                }
             }
         });
         
@@ -568,16 +581,23 @@ public class ResultSetController implements ValidationListener
     }
     
     /**
-     * Notifies all the listeners that the index has changed.
+     * Notifies all the listeners that the index has changed. But any one listener can return
+     * false that it isn't OK and then it stops and returns false.
      * @param oldIndex the old index
      * @param newIndex the new index
+     * @return returns whether it was ok to change indexes
      */
-    protected void notifyListenersAboutToChangeIndex(final int oldIndex, final int newIndex)
+    protected boolean notifyListenersAboutToChangeIndex(final int oldIndex, final int newIndex)
     {
         for (ResultSetControllerListener rscl : listeners)
         {
-            rscl.indexAboutToChange(oldIndex, newIndex);
+            boolean isOK = rscl.indexAboutToChange(oldIndex, newIndex);
+            if (!isOK)
+            {
+                return false;
+            }
         }
+        return true;
     }
     
     /**

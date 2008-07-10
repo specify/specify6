@@ -139,7 +139,7 @@ public class HTTPGetter implements Runnable
             // execute the method
             httpClient.executeMethod(mthod);
 
-            System.out.println("Get executed"); //$NON-NLS-1$
+            //System.out.println("Get executed"); //$NON-NLS-1$
             // get the response body as an array of bytes
             bytes = mthod.getResponseBody();
 

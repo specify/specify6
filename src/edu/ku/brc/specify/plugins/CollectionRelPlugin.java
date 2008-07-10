@@ -146,7 +146,7 @@ public class CollectionRelPlugin extends UIPluginBase
         sql.append("WHERE co.collectionMemberId = ");
         sql.append(isLeftSide ? rightSideCol.getCollectionId() : leftSideCol.getCollectionId());
         sql.append(" AND %s2");
-        System.out.println(sql.toString());
+        //System.out.println(sql.toString());
         cbx.setSqlTemplate(sql.toString());
     }
 

@@ -53,7 +53,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     /**
      * A <code>Logger</code> object used for all log messages emanating from
      * this class.
-     */
+     */ 
     protected static final Logger log = Logger.getLogger(Taxon.class);
 
     // ID
@@ -63,6 +63,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	protected String               name;
     protected String               fullName;
     protected String               commonName;
+    protected String               cultivarName;
     
     // scientific identifiers
 	protected String               taxonomicSerialNumber;
@@ -90,6 +91,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	
     protected String               remarks;
 	protected String               environmentalProtectionStatus;
+	protected String               labelFormat;
 	
     // for hybrid support
     protected Boolean              isHybrid;
@@ -176,9 +178,11 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         unitName4                     = null;
         fullName                      = null;
         commonName                    = null;
+        cultivarName                  = null;
         author                        = null;
         source                        = null;
         environmentalProtectionStatus = null;
+        labelFormat                   = null;
         nodeNumber                    = null;
         highestChildNodeNumber        = null;
         isAccepted                    = true; // null for isAccepted means the same as true.  true is more clear.  So, I put true in here.
@@ -278,6 +282,23 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     public void setCommonName(String commonName)
     {
         this.commonName = commonName;
+    }
+
+    /**
+     * @return the cultivarName
+     */
+    @Column(name = "CultivarName", length = 32)
+    public String getCultivarName()
+    {
+        return cultivarName;
+    }
+
+    /**
+     * @param cultivarName the cultivarName to set
+     */
+    public void setCultivarName(String cultivarName)
+    {
+        this.cultivarName = cultivarName;
     }
 
     @Column(name = "TaxonomicSerialNumber", length = 50)
@@ -434,6 +455,23 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	{
 		this.environmentalProtectionStatus = environmentalProtectionStatus;
 	}
+
+    /**
+     * @return the labelFormat
+     */
+    @Column(name = "LabelFormat", length = 64)
+    public String getLabelFormat()
+    {
+        return labelFormat;
+    }
+
+    /**
+     * @param labelFormat the labelFormat to set
+     */
+    public void setLabelFormat(String labelFormat)
+    {
+        this.labelFormat = labelFormat;
+    }
 
     @Column(name="CitesStatus", length = 32)
     public String getCitesStatus()
@@ -849,11 +887,17 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         return taxonAttachments;
     }
 
+    /**
+     * @param taxonAttachments
+     */
     public void setTaxonAttachments(Set<TaxonAttachment> taxonAttachments)
     {
         this.taxonAttachments = taxonAttachments;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.Treeable#addChild(edu.ku.brc.specify.datamodel.Treeable)
+     */
     public void addChild(Taxon child)
 	{
 		Taxon oldParent = child.getParent();
@@ -866,60 +910,90 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		child.setParent(this);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.Treeable#removeChild(edu.ku.brc.specify.datamodel.Treeable)
+	 */
 	public void removeChild(Taxon child)
 	{
 		children.remove(child);
 		child.setParent(null);
 	}
 
+	/**
+	 * @param child
+	 */
 	public void addAcceptedChild(Taxon child)
 	{
 		acceptedChildren.add(child);
 		child.setAcceptedTaxon(this);
 	}
 
+	/**
+	 * @param child
+	 */
 	public void removeAcceptedChild(Taxon child)
 	{
 		acceptedChildren.remove(child);
 		child.setAcceptedTaxon(null);
 	}
 
+	/**
+	 * @param taxonCitation
+	 */
 	public void addTaxonCitations(final TaxonCitation taxonCitation)
 	{
 		this.taxonCitations.add(taxonCitation);
 		taxonCitation.setTaxon(this);
 	}
 
+	/**
+	 * @param determination
+	 */
 	public void addDetermination(final Determination determination)
 	{
 		determinations.add(determination);
 		determination.setTaxon(this);
 	}
 
+	/**
+	 * @param determination
+	 */
 	public void removeDetermination(final Determination determination)
 	{
 		determinations.remove(determination);
 		determination.setTaxon(null);
 	}
 
+	/**
+	 * @param taxonCitation
+	 */
 	public void removeTaxonCitations(final TaxonCitation taxonCitation)
 	{
 		this.taxonCitations.remove(taxonCitation);
 		taxonCitation.setTaxon(null);
 	}
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+     */
     @Override
     public String toString()
     {
         return (fullName != null) ? fullName : ((name != null) ? name : super.toString());
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.Treeable#getFullNameDirection()
+     */
     @Transient
     public int getFullNameDirection()
     {
         return definition.getFullNameDirection();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.Treeable#getFullNameSeparator()
+     */
     @Transient
     public String getFullNameSeparator()
     {

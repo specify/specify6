@@ -153,7 +153,7 @@ public class ResourceImportExportDlg extends CustomDialog
         pb.add(centerPB.getPanel(), cc.xy(1,1));
         pb.add(tabbedPane,          cc.xy(1,3));
         
-        exportBtn = createButton(getResourceString("RIE_EXPORT"));
+        /*exportBtn = createButton(getResourceString("RIE_EXPORT"));
         importBtn = createButton(getResourceString("RIE_IMPORT"));
         reverBtn  = createButton(getResourceString("RIE_REVERT"));
         PanelBuilder btnPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g,p,f:p:g", "p,10px"));
@@ -162,6 +162,7 @@ public class ResourceImportExportDlg extends CustomDialog
         btnPB.add(reverBtn,  cc.xy(6,1));
         
         pb.add(btnPB.getPanel(), cc.xy(1,5));
+        */
         
         pb.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         contentPanel = pb.getPanel();
@@ -183,7 +184,7 @@ public class ResourceImportExportDlg extends CustomDialog
         
         pack();
         
-        exportBtn.addActionListener(new ActionListener() {
+        /*exportBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 exportResource();
@@ -203,6 +204,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 revertResource();
             }
         });
+        */
         
         viewSetsList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e)
@@ -291,11 +293,17 @@ public class ResourceImportExportDlg extends CustomDialog
                 AppResourceIFace appRes = resources.get(index);
                 
                 AppResourceIFace revertedNewAR = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertResource(virtualDirName, appRes);
-                if (revertedNewAR != null)
+                /*if (revertedNewAR != null)
                 {
                     resModel.insertElementAt(revertedNewAR, index);
                     resList.setSelectedIndex(index);
-                }
+                } else
+                {
+                    resModel.removeElementAt(index);
+                    resList.clearSelection();
+                }*/
+                
+                levelSelected();
                 
             } else
             {

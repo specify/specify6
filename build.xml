@@ -26,6 +26,7 @@
 
 	<!-- Needed for building help search index -->
 	<property name ="javahelp-home" value="/home/timbo/installs/jh2.0" />
+	<property name ="javahelp-home-mac" value="/Users/rod/workspace/jh2.0" />
 	
 	<!-- Needed for Packing on the Mac -->
 	<property name="packaging" value="packaging" />
@@ -156,7 +157,25 @@
 	<!-- *************************************************************
 	     Mac Common Components Build
 	     ************************************************************* -->
-	<target name="installer" depends="">
+	
+	<target name="installer-linux" depends="">
+	    <antcall target="installer-base"/>
+		<copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
+		<!--
+	    <antcall target="build-help-index"/>
+	    <antcall target="build-help-fulltext-linux"/>
+	    -->
+    </target>
+	
+	<target name="installer-mac" depends="">
+	    <antcall target="installer-base"/>
+		<!--
+	    <antcall target="build-help-index"/>
+	    <antcall target="build-help-fulltext-mac"/>
+	    -->
+    </target>
+	
+	<target name="installer-base" depends="">
 		
 		<delete dir="${installer.dir}"/>
 		<mkdir dir="${installer.dir}" />
@@ -185,9 +204,19 @@
 				<exclude name="**/*.svn" />
 			</fileset>
 		</copy>
+		
         <copy todir="${installer.dir}/mac">
 			<fileset dir="system_dep_libs/mac">
 				<exclude name="**/*.svn" />
+			</fileset>
+		</copy>
+		
+		<!-- Copy Help -->
+		<copy todir="${installer.dir}/help">
+			<fileset dir="help">
+				<include name="**/*" />
+				<exclude name="**/.svn" />
+				<exclude name="**/*.psd" />
 			</fileset>
 		</copy>
 		
@@ -196,7 +225,6 @@
 		<copy file="${source.root}/edu/ku/brc/specify/images/specify32.png" todir="${installer.dir}" />
 		<!-- <copy file="${source.root}/edu/ku/brc/specify/images/SpecifyBigSplash.png" todir="${installer.dir}" /> -->
 		<copy file="packaging/specify.icns" todir="${installer.dir}" />
-		<copy file="./system_dep_libs/non-mac-application-adapter.jar" todir="${installer.dir}" />
 		<copy file="./packaging/SpecifyBigSplash.png" todir="${installer.dir}" />
 		<copy file="./demo_files/Stratigraphy.csv" todir="${installer.dir}/config" />
 		
@@ -266,8 +294,8 @@
 			</fileset>
 		</copy>
 		
-		<antcall target="build-help-index"/>
-		<antcall target="build-help-fulltext-mac"/>
+	    <antcall target="build-help-index"/>
+	    <antcall target="build-help-fulltext-mac"/>
 
     </target>
 	
@@ -755,15 +783,14 @@
 	</target>
 	
 	<target name="build-help-fulltext-mac">
-	  <java jar="${javahelp-home}/javahelp/bin/jhindexer.jar" fork="true">
+	  <java jar="${javahelp-home-mac}/javahelp/bin/jhindexer.jar" fork="true">
 	  	<!-- if definitions for dist-linux,dist-mac, or dist-win change then
 	  		contents of xxxSearchConfig.txt files will need to be changed accordingly -->
 	  	<arg value="-c" />
-	  	<arg value="${appdir}/help/${dist-mac}SearchConfig.txt"/>
+	  	<arg value="${installer.dir}/help/${dist-mac}SearchConfig.txt"/>
 	  	<arg value="-db" />
-	  	<arg value="${appdir}/Contents/Resources/Java/help/SpecifyHelpSearchIndex"/>
-	    <arg value="${appdir}/Contents/Resources/Java/help/SpecifyHelp"/>
-
+	  	<arg value="${installer.dir}/help/SpecifyHelpSearchIndex"/>
+	    <arg value="${installer.dir}/help/SpecifyHelp"/>
 	  </java>
 		<antcall target="delete-config-files"/>
 	</target>
@@ -773,7 +800,7 @@
 	  	<!-- if definitions for dist-linux,dist-mac, or dist-win change then
 	  		contents of xxxSearchConfig.txt files will need to be changed accordingly -->
 	  	<arg value="-c" />
-	  	<arg value="${dist-win}SearchConfig.txt"/>
+	  	<arg value="${installer.dir}SearchConfig.txt"/>
 	  	<arg value="-db" />
 	  	<arg value="SpecifyHelpSearchIndex"/>
 	    <arg value="SpecifyHelp/Workbench"/>

@@ -61,7 +61,7 @@ public class ViewSetTreeModel implements TreeModel
      */
     public Object getChild(Object parent, int index)
     {
-        System.out.println(parent + " " + index); //$NON-NLS-1$
+        //System.out.println(parent + " " + index); //$NON-NLS-1$
         
         if (parent.toString().equals("Views")) //$NON-NLS-1$
         {

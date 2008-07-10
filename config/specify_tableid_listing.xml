@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 133 or 523
+    Last used ID is 133 or 525
     
     78, 86, 89, 104, 105 is available
     
@@ -291,7 +291,9 @@
         <table name="edu.ku.brc.specify.datamodel.SpAppResource" abbrev="spar" id="514"/>
         <table name="edu.ku.brc.specify.datamodel.SpAppResourceData" abbrev="sparda" id="515"/>
         <table name="edu.ku.brc.specify.datamodel.SpAppResourceDir" abbrev="spard" id="516"/>    
-        <table name="edu.ku.brc.specify.datamodel.SpFieldValueDefault" abbrev="sfvd" id="520"/>
+        <table name="edu.ku.brc.specify.datamodel.SpExportSchema" abbrev="exs" id="520"/>
+        <table name="edu.ku.brc.specify.datamodel.SpExportSchemaItem" abbrev="exsi" id="524"/>
+        <table name="edu.ku.brc.specify.datamodel.SpFieldValueDefault" abbrev="sfvd" id="525"/>
         <table name="edu.ku.brc.specify.datamodel.SpecifyUser" abbrev="spu" id="72"/>
         <table name="edu.ku.brc.specify.datamodel.SpLocaleContainer" abbrev="splc" id="503"/>
         <table name="edu.ku.brc.specify.datamodel.SpLocaleContainerItem" abbrev="splci" id="504"/>

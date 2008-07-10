@@ -3386,13 +3386,13 @@ public class FormViewObj implements Viewable,
         boolean enableNewBtn = false;
         if (newRecBtn != null)
         {
-            if (MultiView.isOptionOn(options, MultiView.IS_SINGLE_OBJ))
+            /*if (MultiView.isOptionOn(options, MultiView.IS_SINGLE_OBJ))
             {
                 enableNewBtn = dataObj == null && parentDataObj != null;
             } else 
             {
                 enableNewBtn = dataObj != null || parentDataObj != null;// || mvParent.isTopLevel();
-            }
+            }*/
             //log.info(formViewDef.getName()+" Enabling The New Btn: "+enableNewBtn);
             /*if (isEditting)
             {
@@ -3418,7 +3418,7 @@ public class FormViewObj implements Viewable,
                 //enableNewBtn = mvParent.isTopLevel() || !mvParent.isTopLevel() ? mvParent.getMultiViewParent().getData() != null : false;
             }
             
-            //log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
+            log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
             
             // 03/27/08 - rods - Add isSingle check for SubForms that hold a single Object
             boolean isSingle = rsController == null && origDataSet == null;

@@ -186,6 +186,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
     /**
      * @param comp
+     * @param type
      */
     public void addEnableItem(final Component comp, 
                               final EnableType type)
@@ -200,6 +201,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
         comp.setEnabled(false);
     }
     
+    /**
+     * @param comp
+     * @param type
+     */
     public void removeEnabledItem(final Component comp, final EnableType type)
     {
         
@@ -251,12 +256,9 @@ public class FormValidator implements ValidationListener, DataChangeListener
         {
             if (this.formValidationState != formValidationState)
             {
-                //this.formValidationState = formValidationState;
                 updateValidationBtnUIState();
-            }// else
-            //{
-                this.formValidationState = formValidationState;
-            //}
+            }
+            this.formValidationState = formValidationState;
         }
     }
 

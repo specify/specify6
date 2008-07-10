@@ -184,7 +184,7 @@ public class CustomStatQueries implements CustomQueryIFace
         //for (Object data : resultsList)
         //{
           //System.out.println(((CollectionObject)data).getIdentityTitle());
-        //    System.out.println(data);
+          //System.out.println(data);
         //}
         session.close();
 

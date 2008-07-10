@@ -49,18 +49,19 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
 
     // Fields    
 
-     protected Integer    institutionId;
-     protected String     name;
-     protected String     title;
-     protected String     abbrev;
-     protected String     uri;
-     protected String     iconURI;
-     protected String     ipr;
-     protected String     copyright;
-     protected String     termsOfUse;
-     protected String     disclaimer;
-     protected String     remarks;
-     protected String     description;
+     protected Integer       institutionId;
+     protected String        name;
+     protected String        title;
+     protected String        abbrev;
+     protected String        uri;
+     protected String        iconURI;
+     protected String        ipr;
+     protected String        copyright;
+     protected String        termsOfUse;
+     protected String        disclaimer;
+     protected String        remarks;
+     protected String        description;
+     protected String        license;
      
      protected Address       address;
      protected Set<Agent>    technicalContacts;
@@ -71,11 +72,13 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
     // Constructors
 
     /** default constructor */
-    public Institution() {
+    public Institution() 
+    {
     }
     
     /** constructor with id */
-    public Institution(Integer institutionId) {
+    public Institution(Integer institutionId) 
+    {
         this.institutionId = institutionId;
     }
    
@@ -97,6 +100,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
         disclaimer        = null;
         remarks           = null;
         description       = null;
+        license           = null;
         address           = null;
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
@@ -181,6 +185,24 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
     public String getIpr()
     {
         return ipr;
+    }
+
+    /**
+     * @return the license
+     */
+    @Lob
+    @Column(name = "License", unique = false, nullable = true, insertable = true, updatable = true, length = 2048)
+    public String getLicense()
+    {
+        return license;
+    }
+
+    /**
+     * @param license the license to set
+     */
+    public void setLicense(String license)
+    {
+        this.license = license;
     }
 
     /**
