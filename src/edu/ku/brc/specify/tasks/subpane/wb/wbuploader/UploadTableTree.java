@@ -488,7 +488,9 @@ public class UploadTableTree extends UploadTable
     {
         try
         {
-            return getTreeDefItem().getName();
+            TreeDefItemIface td = getTreeDefItem();
+            if (td != null) return td.getName();
+            return tblClass.getSimpleName();
         }
         catch (UploaderException ux)
         {
