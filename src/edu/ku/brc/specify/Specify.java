@@ -106,6 +106,7 @@ import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;

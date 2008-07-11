@@ -2715,7 +2715,7 @@ public class DataBuilder
             Element root = null;
             if (true)
             {
-                root = XMLHelper.readFileToDOM4J(new File("/Users/rod/Downloads/darwin2jrw030315.xsd"));
+                root = XMLHelper.readDOMFromConfigDir("darwin2_core.xsd");
                 
             } else
             {
