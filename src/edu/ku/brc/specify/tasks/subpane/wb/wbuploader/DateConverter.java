@@ -130,7 +130,7 @@ public class DateConverter
                 return result;
             }
         },
-        DAY_MON_SYEAR("[0123456789]?[0123456789]([ /\\.-])[0123456789]?[0123456789]\\1[0-9][0-9]")
+        DAY_MON_SYEAR("[0-9]?[0-9]([ /\\.-])[0-9]?[0-9]\\1[0-9][0-9]")
         {
             @Override
             public Calendar convertToCalendar(String dateStr) throws ParseException
@@ -164,7 +164,7 @@ public class DateConverter
         },
         LYEAR_MON_DAY(
         // "[0123456789]?[0123456789]([ /\\.-])[0123456789]?[0123456789]\\1[0-9][0-9][0-9][0-9]")
-                "[0-9][0-9][0-9][0-9]([ /\\.-])[0123456789]?[0123456789]\\1[0123456789]?[0123456789]")
+                "[0-9][0-9][0-9][0-9]([ /\\.-])[0-9]?[0-9]\\1[0-9]?[0-9]")
         {
             @Override
             public Calendar convertToCalendar(String dateStr) throws ParseException
@@ -196,7 +196,42 @@ public class DateConverter
                 return result;
             }
 
-        };
+        },
+        DAY_CMON_LYEAR(
+                // "[0123456789]?[0123456789]([ /\\.-])[0123456789]?[0123456789]\\1[0-9][0-9][0-9][0-9]")
+                        "[0-9][0-9]([ /\\.-])[A-z][A-z][A-z]\\1[0-9][0-9][0-9][0-9]")
+                {
+                    @Override
+                    public Calendar convertToCalendar(String dateStr) throws ParseException
+                    {
+                        DateFormat df;
+                        if (dateStr.contains(" "))
+                        {
+                            df = new SimpleDateFormat("dd MMM yyyy");
+                        }
+                        else if (dateStr.contains("/"))
+                        {
+                            df = new SimpleDateFormat("dd/MMM/yyy");
+                        }
+                        else if (dateStr.contains("."))
+                        {
+                            df = new SimpleDateFormat("dd.MMM.yyyy");
+                        }
+                        else if (dateStr.contains("-"))
+                        {
+                            df = new SimpleDateFormat("dd-MMM-yyyy");
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                        Calendar result = new GregorianCalendar();
+                        result.setLenient(false);
+                        result.setTime(df.parse(dateStr));
+                        return result;
+                    }
+
+                };
         public final String regex;
 
         DateFormats(String regex)
