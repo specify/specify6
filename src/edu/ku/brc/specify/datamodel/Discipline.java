@@ -87,6 +87,7 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
     protected Set<DeterminationStatus>  determinationStatuss;
     
     protected Set<SpLocaleContainer>    spLocaleContainers;
+    protected Set<SpExportSchema>       spExportSchemas;  // Zero or One
      
 
     // Constructors
@@ -140,6 +141,7 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
         spAppResourceDirs     = new HashSet<SpAppResourceDir>();
         spLocaleContainers    = new HashSet<SpLocaleContainer>();
         agents                = new HashSet<Agent>();
+        spExportSchemas       = new HashSet<SpExportSchema>();
     }
     // End Initializer
 
@@ -417,6 +419,24 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
     public Division getDivision()
     {
         return division;
+    }
+
+    /**
+     * @return the spExportSchemas
+     */
+    @OneToMany(mappedBy="discipline")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<SpExportSchema> getSpExportSchemas()
+    {
+        return spExportSchemas;
+    }
+
+    /**
+     * @param spExportSchemas the spExportSchemas to set
+     */
+    public void setSpExportSchemas(Set<SpExportSchema> spExportSchemas)
+    {
+        this.spExportSchemas = spExportSchemas;
     }
 
     /**

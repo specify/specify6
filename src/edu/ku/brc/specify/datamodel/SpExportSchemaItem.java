@@ -37,6 +37,8 @@ public class SpExportSchemaItem extends DataModelObjBase
     protected Integer               spExportSchemaItemId;
     protected String                fieldName;
     protected String                dataType;
+    protected String                description;
+    protected String                formatter;
     protected SpLocaleContainerItem spLocaleContainerItem;
     protected SpExportSchema        spExportSchema;
     
@@ -58,6 +60,8 @@ public class SpExportSchemaItem extends DataModelObjBase
         spExportSchemaItemId  = null;
         fieldName             = null;
         dataType              = null;
+        description           = null;
+        formatter             = null;
         spLocaleContainerItem = null;
         spExportSchema        = null;
     }
@@ -85,10 +89,28 @@ public class SpExportSchemaItem extends DataModelObjBase
     /**
      * @return the dataType
      */
-    @Column(name = "DataType", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
+    @Column(name = "DataType", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
     public String getDataType()
     {
         return dataType;
+    }
+
+    /**
+     * @return the description
+     */
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+    public String getDescription()
+    {
+        return description;
+    }
+
+    /**
+     * @return the formatter
+     */
+    @Column(name = "Formatter", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getFormatter()
+    {
+        return formatter;
     }
 
     /**
@@ -105,7 +127,7 @@ public class SpExportSchemaItem extends DataModelObjBase
      * @return the exportSchema
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "SpExportSchemaID", unique = false, nullable = true, insertable = true, updatable = true)
+    @JoinColumn(name = "SpExportSchemaID", unique = false, nullable = false, insertable = true, updatable = true)
     public SpExportSchema getSpExportSchema()
     {
         return spExportSchema;
@@ -133,6 +155,22 @@ public class SpExportSchemaItem extends DataModelObjBase
     public void setDataType(String dataType)
     {
         this.dataType = dataType;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
+
+    /**
+     * @param formatter the formatter to set
+     */
+    public void setFormatter(String formatter)
+    {
+        this.formatter = formatter;
     }
 
     /**

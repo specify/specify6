@@ -7,10 +7,13 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.hibernate.Session;
 
 import com.thoughtworks.xstream.XStream;
@@ -20,7 +23,10 @@ import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.helpers.HTTPGetter;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
@@ -87,6 +93,9 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.specify.datamodel.SpExportSchema;
+import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
+import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
@@ -2650,4 +2659,260 @@ public class DataBuilder
         }
     }
 
+    
+    /**
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    public static void buildDarwinCoreSchema(final Discipline disciplineArg)
+    {
+        
+        XStream xstream = new XStream();
+        xstream.alias("field",     FieldMap.class);
+        
+        xstream.useAttributeFor(FieldMap.class, "name");
+        xstream.useAttributeFor(FieldMap.class, "table");
+        xstream.useAttributeFor(FieldMap.class, "field");
+        xstream.useAttributeFor(FieldMap.class, "formatter");
+        
+        DataProviderSessionIFace localSession = null;
+        
+        try
+        {
+            localSession = DataProviderFactory.getInstance().createSession();
+            
+            if (false)
+            {
+                localSession.beginTransaction();
+                
+                List<SpExportSchema> schemaList = (List<SpExportSchema>)localSession.getDataList(SpExportSchema.class);
+                if (schemaList != null)
+                {
+                    for (SpExportSchema s : schemaList)
+                    {
+                        for (SpExportSchemaItem item : s.getSpExportSchemaItems())
+                        {
+                            if (item.getSpLocaleContainerItem() != null)
+                            {
+                                item.getSpLocaleContainerItem().removeReference(item, "spExportSchemaItems");
+                            }
+                        }
+                        localSession.delete(s);
+                    }
+                }
+                localSession.commit();
+                localSession.flush();
+            }
+            
+            
+            File           mapFile   = new File(XMLHelper.getConfigDirPath("darwin_core_map.xml"));
+            List<FieldMap> fieldList = (List<FieldMap>)xstream.fromXML(FileUtils.readFileToString(mapFile));
+            Hashtable<String, FieldMap> fieldMap = new Hashtable<String, FieldMap>();
+            for (FieldMap fm : fieldList)
+            {
+                fieldMap.put(fm.getName(), fm);
+            }
+            Element root = null;
+            if (true)
+            {
+                root = XMLHelper.readFileToDOM4J(new File("/Users/rod/Downloads/darwin2jrw030315.xsd"));
+                
+            } else
+            {
+                String url = "http://www.digir.net/schema/conceptual/darwin/2003/1.0/darwin2.xsd";
+                HTTPGetter getter = new HTTPGetter();
+                byte[] bytes = getter.doHTTPRequest(url);
+                if (getter.getStatus() == HTTPGetter.ErrorCode.NoError)
+                {
+                    String xml = new String(bytes);
+                    //System.out.println(xml);
+                    root = XMLHelper.readStrToDOM4J(xml);
+                }
+            }
+            
+            Discipline disciplineTmp;
+            if (disciplineArg == null)
+            {
+                disciplineTmp = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            } else
+            {
+                disciplineTmp = disciplineArg; 
+            }
+            
+            Discipline discipline = (Discipline)localSession.getData("FROM Discipline WHERE disciplineId = " + disciplineTmp.getId());
+            
+            SpExportSchema schema = new SpExportSchema();
+            schema.initialize();
+            schema.setSchemaName("Darwin Core");
+            schema.setSchemaVersion("2.0");
+            
+            discipline.addReference(schema, "spExportSchemas");
+            
+            StringBuilder sb = new StringBuilder();
+            for (Object obj : root.selectNodes("/xsd:schema/xsd:annotation/xsd:documentation"))
+            {
+                Element e = (Element)obj;
+                sb.append(e.getTextTrim());
+            }
+            schema.setDescription(sb.toString().substring(0, Math.min(sb.length(), 255)));
+            
+            localSession.beginTransaction();
+            
+            localSession.saveOrUpdate(discipline);
+            localSession.save(schema);
+            
+            for (Object obj : root.selectNodes("/xsd:schema/xsd:element"))
+            {
+                Element e = (Element)obj;
+                String  name      = XMLHelper.getAttr(e, "name", null);
+                String  type      = XMLHelper.getAttr(e, "type", null);
+                
+                FieldMap fm = fieldMap.get(name);
+                
+                if (name != null && type != null && fm != null && StringUtils.isNotEmpty(fm.getField()))
+                {
+                    SpExportSchemaItem item = new SpExportSchemaItem();
+                    item.initialize();
+                    item.setFieldName(name);
+                    item.setDataType(type.substring(4));
+                    item.setFormatter(fm.getFormatter());
+                    
+                    schema.addReference(item, "spExportSchemaItems");
+                    
+                    //System.out.println(type.substring(4)+"  "+type.substring(4).length());
+                    
+                    localSession.save(item);
+                    
+                    String sql = "FROM SpLocaleContainerItem spi INNER JOIN spi.container spc INNER JOIN spc.discipline dsp WHERE spc.name='%s' AND spi.name='%s' AND dsp.disciplineId = %s";
+                    sql = String.format(sql, fm.getTable(), fm.getField(), discipline.getDisciplineId().toString());
+                    Object[] cols = (Object[])localSession.getData(sql);
+                    if (cols != null)
+                    {
+                        System.out.println(name);
+                        SpLocaleContainerItem spItem = (SpLocaleContainerItem)cols[0];
+                        if (spItem != null)
+                        {
+                            item.setSpLocaleContainerItem(spItem);
+                            spItem.getSpExportSchemaItems().add(item);
+                            
+                            localSession.saveOrUpdate(item);
+                            localSession.saveOrUpdate(spItem);
+                            
+                        } else
+                        {
+                            System.err.println("Couldn't find ["+sql+"]");
+                        }
+                    }
+;                }
+                
+                /*if (name != null && type != null)
+                {
+                    System.out.println("    <field name=\""+name+"\" table=\"\" field=\"\" formatter=\"\"/>");
+                    //System.out.println("<field name=\""+name+"\" type=\""+ type.substring(4)+"\" table=\"\" field=\"\"/>");
+                    Object node = e.selectObject("xsd:annotation/xsd:documentation");
+                    if (node instanceof Element)
+                    {
+                        Element descEl = (Element)node;
+                        if (descEl != null)
+                        {
+                            String  desc = descEl.getTextTrim();
+                            //System.out.println(desc+"\n");
+                        }
+                    }
+                }*/
+            }
+            localSession.commit();
+            localSession.flush();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (localSession != null)
+            {
+                localSession.close();
+            }
+        }
+    }
+    
+    // USed for Mapping from Export Schema to the Specify Schema
+    class FieldMap 
+    {
+        protected String name;
+        protected String table;
+        protected String field;
+        protected String formatter;
+        
+        public FieldMap()
+        {
+            
+        }
+
+        /**
+         * @return the name
+         */
+        public String getName()
+        {
+            return name;
+        }
+
+        /**
+         * @param name the name to set
+         */
+        public void setName(String name)
+        {
+            this.name = name;
+        }
+
+        /**
+         * @return the table
+         */
+        public String getTable()
+        {
+            return table;
+        }
+
+        /**
+         * @param table the table to set
+         */
+        public void setTable(String table)
+        {
+            this.table = table;
+        }
+
+        /**
+         * @return the field
+         */
+        public String getField()
+        {
+            return field;
+        }
+
+        /**
+         * @param field the field to set
+         */
+        public void setField(String field)
+        {
+            this.field = field;
+        }
+
+        /**
+         * @return the formatter
+         */
+        public String getFormatter()
+        {
+            return formatter;
+        }
+
+        /**
+         * @param formatter the formatter to set
+         */
+        public void setFormatter(String formatter)
+        {
+            this.formatter = formatter;
+        }
+        
+    }
 }

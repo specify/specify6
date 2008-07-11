@@ -59,14 +59,13 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
 {
     private static final Logger log = Logger.getLogger(SpLocaleContainerItem.class);
     
-    protected Integer              spLocaleContainerItemId;
-    protected SpLocaleContainer    container;
+    protected Integer                 spLocaleContainerItemId;
+    protected SpLocaleContainer       container;
     
-    protected Set<SpLocaleItemStr> names;
-    protected Set<SpLocaleItemStr> descs;
+    protected Set<SpLocaleItemStr>    names;
+    protected Set<SpLocaleItemStr>    descs;
     protected Set<SpExportSchemaItem> spExportSchemaItems;
-    
-    protected String               webLinkName;
+    protected String                  webLinkName;
 
     /**
      * 

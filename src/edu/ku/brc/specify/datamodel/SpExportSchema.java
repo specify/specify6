@@ -11,8 +11,11 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -32,10 +35,12 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Table(appliesTo="spexportschema")
 public class SpExportSchema extends DataModelObjBase
 {
-    protected Integer spExportSchemaId;
-    protected String  schemaName;
-    protected String  schemaVersion;
+    protected Integer    spExportSchemaId;
+    protected String     schemaName;
+    protected String     schemaVersion;
+    protected String     description;
     protected Set<SpExportSchemaItem> spExportSchemaItems;
+    protected Discipline discipline;
     
     /**
      * 
@@ -55,7 +60,9 @@ public class SpExportSchema extends DataModelObjBase
         spExportSchemaId    = null;
         schemaName          = null;
         schemaVersion       = null;
+        description         = null;
         spExportSchemaItems = new HashSet<SpExportSchemaItem>();
+        discipline          = null;
     }
 
     /**
@@ -83,6 +90,14 @@ public class SpExportSchema extends DataModelObjBase
     }
 
     /**
+     * @param description the description to set
+     */
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
+
+    /**
      * @param items the items to set
      */
     public void setSpExportSchemaItems(Set<SpExportSchemaItem> items)
@@ -90,7 +105,14 @@ public class SpExportSchema extends DataModelObjBase
         this.spExportSchemaItems = items;
     }
     
-    
+    /**
+     * @param discipline the discipline to set
+     */
+    public void setDiscipline(Discipline discipline)
+    {
+        this.discipline = discipline;
+    }
+
     /**
      * @return the exportSchemaId
      */
@@ -121,6 +143,15 @@ public class SpExportSchema extends DataModelObjBase
     }
 
     /**
+     * @return the description
+     */
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+    public String getDescription()
+    {
+        return description;
+    }
+
+    /**
      * @return the items
      */
     @OneToMany(mappedBy = "spExportSchema")
@@ -128,6 +159,16 @@ public class SpExportSchema extends DataModelObjBase
     public Set<SpExportSchemaItem> getSpExportSchemaItems()
     {
         return spExportSchemaItems;
+    }
+    
+    /**
+     * @return the schemaItem
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Discipline getDiscipline()
+    {
+        return discipline;
     }
 
     /* (non-Javadoc)

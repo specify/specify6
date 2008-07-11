@@ -8,6 +8,7 @@
 package edu.ku.brc.specify.utilapps;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
+import static edu.ku.brc.specify.config.init.DataBuilder.buildDarwinCoreSchema;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccession;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAddress;
@@ -465,7 +466,7 @@ public class BuildSampleDatabase
         frame.setDesc("Commiting...");
         frame.setProcess(++createStep);
         commitTx();
-        
+
         makeFieldVisible(null, discipline);
         makeFieldVisible(config.getDiscipline().getName(), discipline);
 
@@ -474,7 +475,8 @@ public class BuildSampleDatabase
         //DBTableIdMgr schema = new DBTableIdMgr(false);
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
-        
+        //buildDarwinCoreSchema(discipline);
+
         AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
         user.addReference(userAgent, "agents");
         
@@ -544,6 +546,8 @@ public class BuildSampleDatabase
         commitTx();
         
         frame.setProcess(++createStep);
+        
+        buildDarwinCoreSchema(discipline);
 
         return dataObjects;
     }
@@ -852,7 +856,8 @@ public class BuildSampleDatabase
         //DBTableIdMgr schema = new DBTableIdMgr(false);
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
-        
+        //buildDarwinCoreSchema(discipline);
+
         AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
         user.addReference(userAgent, "agents");        
         persist(user);
@@ -1508,6 +1513,7 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
+        buildDarwinCoreSchema(discipline);
 
         // done
         log.info("Done creating Botany disciplineType database: " + disciplineType.getTitle());
@@ -1610,7 +1616,8 @@ public class BuildSampleDatabase
         //DBTableIdMgr schema = new DBTableIdMgr(false);
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
-        
+        //buildDarwinCoreSchema(discipline);
+
         AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
         user.addReference(userAgent, "agents");
         
@@ -1924,6 +1931,8 @@ public class BuildSampleDatabase
         commitTx();
         
         frame.setProcess(++createStep);
+        
+        buildDarwinCoreSchema(discipline);
 
 
         // done
@@ -2730,7 +2739,7 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        
+        buildDarwinCoreSchema(discipline);
 
         // done
         log.info("Done creating "+disciplineType.getTitle()+" disciplineType database: " + disciplineType.getTitle());
@@ -3059,6 +3068,7 @@ public class BuildSampleDatabase
         // Create Collection
         ////////////////////////////////
         log.info("Creating a Collection");
+        frame.setDesc("Creating a Collection");
         Collection collection = createCollection("KU", disciplineType.getTitle(), cns, discipline, disciplineType.isEmbeddedCollecingEvent());
         persist(collection);
         
@@ -3079,7 +3089,8 @@ public class BuildSampleDatabase
         //DBTableIdMgr schema = new DBTableIdMgr(false);
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
-        
+        //buildDarwinCoreSchema(discipline);
+
         AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
         user.addReference(userAgent, "agents");
         
@@ -3226,6 +3237,7 @@ public class BuildSampleDatabase
         // agents and addresses
         ////////////////////////////////
         log.info("Creating agents and addresses");
+        frame.setDesc("Creating agents and addresses");
         
         List<Agent>    agents      = new Vector<Agent>();
         
@@ -3764,6 +3776,8 @@ public class BuildSampleDatabase
         commitTx();
         
         frame.setProcess(++createStep);
+        
+        buildDarwinCoreSchema(discipline);
 
         // done
         log.info("Done creating "+disciplineType.getTitle()+" disciplineType database: " + disciplineType.getTitle());
@@ -4087,7 +4101,6 @@ public class BuildSampleDatabase
         persist(groups);
              
         loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
-        
         commitTx();
         
         makeFieldVisible(null, discipline);
@@ -4148,6 +4161,7 @@ public class BuildSampleDatabase
             commitTx(); 
         }
 
+        buildDarwinCoreSchema(discipline);
 
         globalLocalities.clear();
     }
@@ -4233,24 +4247,24 @@ public class BuildSampleDatabase
      */
     @SuppressWarnings("unchecked")
     public Collection createFishCollection(final Discipline                discipline,
-                                             final SpecifyUser               user,
-                                             final Agent                     userAgent,
-                                             final Division                  division,                  
-                                             final TaxonTreeDef              taxonTreeDef,
-                                             final GeographyTreeDef          geoTreeDef,
-                                             final GeologicTimePeriodTreeDef gtpTreeDef,
-                                             final LithoStratTreeDef         lithoStratTreeDef,
-                                             final StorageTreeDef            locTreeDef,
-                                             final Journal                   journal,
-                                             final List<Object>              taxa,
-                                             final List<Object>              geos,
-                                             final List<Object>              locs,
-                                             final List<Object>              gtps,
-                                             final List<Object>              lithoStrats,
-                                             final String                    colPrefix,
-                                             final String                    colName,
-                                             final boolean                   isVoucherCol,
-                                             final boolean                   doTissues)
+                                           final SpecifyUser               user,
+                                           final Agent                     userAgent,
+                                           final Division                  division,                  
+                                           final TaxonTreeDef              taxonTreeDef,
+                                           final GeographyTreeDef          geoTreeDef,
+                                           final GeologicTimePeriodTreeDef gtpTreeDef,
+                                           final LithoStratTreeDef         lithoStratTreeDef,
+                                           final StorageTreeDef            locTreeDef,
+                                           final Journal                   journal,
+                                           final List<Object>              taxa,
+                                           final List<Object>              geos,
+                                           final List<Object>              locs,
+                                           final List<Object>              gtps,
+                                           final List<Object>              lithoStrats,
+                                           final String                    colPrefix,
+                                           final String                    colName,
+                                           final boolean                   isVoucherCol,
+                                           final boolean                   doTissues)
     {
         int createStep = 0;
         frame.setProcess(0, 15);
@@ -4288,7 +4302,8 @@ public class BuildSampleDatabase
         //DBTableIdMgr schema = new DBTableIdMgr(false);
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
-        
+        //buildDarwinCoreSchema(discipline);
+
         AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
         
         user.addReference(userAgent, "agents");
