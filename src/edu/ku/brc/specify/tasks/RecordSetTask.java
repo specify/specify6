@@ -17,6 +17,7 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,6 +53,7 @@ import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -904,6 +906,52 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         throw new RuntimeException("Trying to save object of class["+recordSet.getClass()+"] and it must be RecordSet.");
     }
     
+    /**
+     * @param intialName
+     * @return
+     */
+    public String getUniqueRecordSetName(final String intialName)
+    {
+        String rsName = null;
+        do 
+        {
+            rsName = JOptionPane.showInputDialog(UIRegistry.get(UIRegistry.FRAME), getResourceString("RecordSetTask.ASKFORNAME")+":", intialName);
+            if (rsName == null)
+            {
+                UIRegistry.displayStatusBarText("");
+                return null;
+            }
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                SpecifyUser spu = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                String sql = String.format("SELECT count(*) FROM RecordSet rs INNER JOIN rs.specifyUser spu WHERE rs.name = '%s' AND spu.specifyUserId = %s", rsName, spu.getId().toString());
+                Object obj = session.getData(sql);
+                if (obj instanceof Integer)
+                {
+                    if (((Integer)obj) == 0)
+                    {
+                        UIRegistry.displayStatusBarText("");
+                        return rsName;
+                    }
+                }
+                UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("RecordSetTask.RS_NAME_DUP"), rsName));
+                Toolkit.getDefaultToolkit().beep();
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                //log.error(ex);
+                
+            } finally
+            {
+                session.close();    
+            }
+        } while (rsName != null);
+        
+        return null;
+    }
+    
     //-------------------------------------------------------
     // PropertyChangeListener Interface
     //-------------------------------------------------------
@@ -955,8 +1003,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                     }
                     session.close();
                 }
-                String rsName  = JOptionPane.showInputDialog(UIRegistry.get(UIRegistry.FRAME), 
-                                                             getResourceString("RecordSetTask.ASKFORNAME")+":", intialName);
+                String rsName  = getUniqueRecordSetName(intialName);
                 if (isNotEmpty(rsName))
                 {
                     RecordSet rs = (RecordSet)data;
