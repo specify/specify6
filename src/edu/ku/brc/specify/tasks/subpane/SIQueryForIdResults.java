@@ -82,7 +82,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#enableEditing()
      */
     //@Override
-    public boolean enableEditing()
+    public boolean isEditingEnabled()
     {
         return false;
     }

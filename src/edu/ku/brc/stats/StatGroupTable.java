@@ -47,9 +47,10 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CurvedBorder;
@@ -216,9 +217,9 @@ public class StatGroupTable extends JPanel
                     DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(clazz.getName());
                     if (tblInfo != null)
                     {
-                        RecordSet rs = new RecordSet();
-                        rs.initialize();
-                        rs.set("", tblInfo.getTableId(), RecordSet.GLOBAL);
+                        RecordSetIFace rs = RecordSetFactory.getInstance().createRecordSet();
+                        rs.setName("");
+                        rs.setDbTableId(tblInfo.getTableId());
                         rs.addItem((Integer)colIdObj);
                         commandAction.setData(rs);
                         

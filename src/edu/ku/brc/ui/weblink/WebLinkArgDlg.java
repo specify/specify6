@@ -64,6 +64,8 @@ public class WebLinkArgDlg extends CustomDialog
     protected Vector<WebLinkDefArg>     args       = new Vector<WebLinkDefArg>();
     protected Hashtable<String, String> fields     = new Hashtable<String, String>();
     
+    protected boolean                   hasChanged = false; 
+    
     // Type Format 
     protected String format = ""; //$NON-NLS-1$
     protected int    curInx = 0;
@@ -85,6 +87,8 @@ public class WebLinkArgDlg extends CustomDialog
                 args.add(wlda);
             } catch (CloneNotSupportedException ex) {}
         }
+        
+        helpContext = "WEBLNK_ARGS_EDITOR";
     }
 
     /**
@@ -148,20 +152,23 @@ public class WebLinkArgDlg extends CustomDialog
         setDataIntoUI();
         
         DocumentListener docLis = new DocumentListener() {
-            public void changedUpdate(DocumentEvent e)
+            protected void changed()
             {
+                hasChanged = true;
                 parseForFields();
                 enableUI();
             }
+            public void changedUpdate(DocumentEvent e)
+            {
+                changed();
+            }
             public void insertUpdate(DocumentEvent e)
             {
-                parseForFields();
-                enableUI(); 
+                changed();
             }
             public void removeUpdate(DocumentEvent e)
             {
-                parseForFields();
-                enableUI(); 
+                changed();
             }
         };
         
@@ -307,7 +314,17 @@ public class WebLinkArgDlg extends CustomDialog
         okBtn.setEnabled(okEnable);
     }
     
+
+    /**
+     * @return the hasChanged
+     */
+    public boolean hasChanged()
+    {
+        return hasChanged;
+    }
     
+    //--------------------------------------------------------
+    //-- Table Model
     //--------------------------------------------------------
     class WebLinkArgsTableModel extends DefaultTableModel
     {
@@ -334,7 +351,7 @@ public class WebLinkArgDlg extends CustomDialog
         {
             args.add(new WebLinkDefArg(name, title, isPrompt));
             fireTableDataChanged();
-
+            hasChanged = true;
         }
 
         /* (non-Javadoc)
@@ -429,9 +446,13 @@ public class WebLinkArgDlg extends CustomDialog
             {
                 case 0 : 
                     break;
-                case 1 : arg.setTitle((String)value);
+                case 1 : 
+                    arg.setTitle((String)value);
+                    hasChanged = true;
                     break;
-                case 2 : arg.setPrompt((Boolean)value);
+                case 2 : 
+                    arg.setPrompt((Boolean)value);
+                    hasChanged = true;
                     break;
             }
         }

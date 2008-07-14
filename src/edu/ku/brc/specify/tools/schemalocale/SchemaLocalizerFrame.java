@@ -76,6 +76,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
     // used to hold changes to formatters before committing them to DB
     protected DataObjFieldFormatMgr dataObjFieldFormatMgrCache = new DataObjFieldFormatMgr(DataObjFieldFormatMgr.getInstance());
     protected UIFieldFormatterMgr   uiFieldFormatterMgrCache   = new UIFieldFormatterMgr(UIFieldFormatterMgr.getInstance());
+    protected SpecifyWebLinkMgr     webLinkMgrCache            = new SpecifyWebLinkMgr((SpecifyWebLinkMgr)SpecifyWebLinkMgr.getInstance());
     
     protected JStatusBar           statusBar     = new JStatusBar(new int[] {5,5});
     
@@ -133,10 +134,11 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         LocalizerBasePanel.setLocalizableStrFactory(localizableStrFactory);
         SchemaLocalizerXMLHelper.setLocalizableStrFactory(localizableStrFactory);
         
-        schemaLocPanel = new SchemaLocalizerPanel(null, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache);
+        schemaLocPanel = new SchemaLocalizerPanel(null, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, webLinkMgrCache);
         schemaLocPanel.setLocalizableIO(localizableIO);
         schemaLocPanel.setStatusBar(statusBar);
-        schemaLocPanel.setIncludeHiddenUI(true);
+        // rods - for now 
+        //schemaLocPanel.setIncludeHiddenUI(true);
         schemaLocPanel.buildUI();
         schemaLocPanel.setHasChanged(localizableIO.didModelChangeDuringLoad());
         
@@ -473,9 +475,6 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                     e.printStackTrace();
                 }
                 
-                UIFieldFormatterMgr.setDoingLocal(true);
-                SpecifyWebLinkMgr.setDoingLocal(true);
-                
                 System.setProperty(AppContextMgr.factoryName,          "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
                 System.setProperty(SchemaI18NService.factoryName,      "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema //$NON-NLS-1$
                 System.setProperty(UIFieldFormatterMgr.factoryName,    "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumbering //$NON-NLS-1$
@@ -484,7 +483,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
 
                 SpecifyDataObjFieldFormatMgr.setDoingLocal(true);
                 SpecifyUIFieldFormatterMgr.setDoingLocal(true);
-                //UIFieldFormatterMgr.setDoingLocal(true); // reads from local disk
+                SpecifyWebLinkMgr.setDoingLocal(true);
                
                 Object[] options = { getResourceString("SchemaLocalizerFrame.FULL_SCHEMA"), //$NON-NLS-1$ 
                                      getResourceString("SchemaLocalizerFrame.WB_SCHEMA") }; //$NON-NLS-1$

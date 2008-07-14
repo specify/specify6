@@ -546,10 +546,11 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         SearchTableConfig searchTableConfig = config.getSearchTableConfigById(recordSet.getDbTableId());
         if (searchTableConfig != null)
         {
-            ESResultsSubPane esrPane = new ESResultsSubPane("", this, true);
+            ESResultsSubPane esrPane = new ESResultsSubPane(getResourceString("RecordSet"), this, true);
             
             Hashtable<String, QueryForIdResultsSQL> resultsForJoinsHash = new Hashtable<String, QueryForIdResultsSQL>();
             QueryForIdResultsHQL results = new QueryForIdResultsHQL(searchTableConfig, new Color(30, 144, 255), recordSet);
+            results.setEditable(true);
             results.setExpanded(true);
             //results.setShouldInstallServices(false);
             displayResults(esrPane, results, resultsForJoinsHash);

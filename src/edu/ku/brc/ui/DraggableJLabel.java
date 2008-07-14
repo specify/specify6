@@ -36,7 +36,6 @@ public class DraggableJLabel extends JLabel implements GhostActionable
     protected BufferedImage           sizeBufImg       = null;
 
     protected GhostMouseInputAdapter  mouseInputAdapter   = null;
-    protected RenderingHints          hints               = null;
     protected BufferedImage           shadowBuffer        = null;
     protected BufferedImage           buffer              = null;
     protected boolean                 generateImgBuf      = true;    
@@ -182,32 +181,11 @@ public class DraggableJLabel extends JLabel implements GhostActionable
     }
 
     /**
-     * Initialize rendering hints
-     *
-     */
-    private void createRenderingHints()
-    {
-        if (hints == null)
-        {
-            hints = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
-                                       RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            Object value = RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
-            try {
-                Field declaredField = RenderingHints.class.getDeclaredField("VALUE_TEXT_ANTIALIAS_LCD_HRGB");
-                value = declaredField.get(null);
-            } catch (Exception e) {
-            }
-            hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, value);
-        }
-    }
-
-    /**
      * Render the control to a buffer
      */
     private void renderOffscreen()
     {
         
-        createRenderingHints();
         BufferedImage bgBufImg = getBackgroundImageBuffer();
 
         
@@ -222,7 +200,7 @@ public class DraggableJLabel extends JLabel implements GhostActionable
         int height = getItemHeight() - 2;
 
         Graphics2D g2 = buffer.createGraphics();
-        g2.setRenderingHints(hints);
+        g2.setRenderingHints(UIHelper.createTextRenderingHints());
 
         
         g2.drawImage(bgBufImg, 0, 0, bgBufImg.getWidth(), bgBufImg.getHeight(), null);
@@ -268,7 +246,6 @@ public class DraggableJLabel extends JLabel implements GhostActionable
     {
         if (shadowBuffer == null || generateImgBuf)
         {
-            createRenderingHints();
             ShadowFactory factory = new ShadowFactory(SHADOW_SIZE, 0.17f, Color.BLACK);
 
             BufferedImage image = new BufferedImage(getItemWidth(), getItemHeight(), BufferedImage.TYPE_INT_ARGB);

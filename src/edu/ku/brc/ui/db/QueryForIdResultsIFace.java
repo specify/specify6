@@ -128,7 +128,7 @@ public interface QueryForIdResultsIFace
     /**
      * @return indicates whether the table of items can be edited.
      */
-    public abstract boolean enableEditing();
+    public abstract boolean isEditingEnabled();
     
     /**
      * Requests an id be removed.

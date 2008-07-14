@@ -15,7 +15,6 @@ import org.apache.commons.lang.StringUtils;
 
 import com.thoughtworks.xstream.XStream;
 
-import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
 
 /**
@@ -36,7 +35,7 @@ public class WebLinkMgr
     
     protected static WebLinkMgr instance = null;
     
-    protected Vector<WebLinkDef> webLinkDefs = new Vector<WebLinkDef>();
+    protected Vector<WebLinkDef> webLinkDefs;;
     protected boolean            hasChanged  = false;
     
     /**
@@ -44,7 +43,16 @@ public class WebLinkMgr
      */
     protected WebLinkMgr()
     {
-        // no-op
+        webLinkDefs = new Vector<WebLinkDef>();
+    }
+
+    /**
+     * @param webLinkMgr
+     */
+    @SuppressWarnings("unchecked")
+    public WebLinkMgr(final WebLinkMgr webLinkMgr)
+    {
+        webLinkDefs = (Vector<WebLinkDef>)webLinkMgr.webLinkDefs.clone();
     }
 
     /**
@@ -81,6 +89,15 @@ public class WebLinkMgr
         // if not factory than pass an instance of this in
         // and this does nothing to the SQL.
         return instance = new WebLinkMgr();
+    }
+    
+    /**
+     * Reloads the data from peristent storage.
+     */
+    public void reload()
+    {
+        reset();
+        read();
     }
     
     /**
@@ -191,9 +208,19 @@ public class WebLinkMgr
     /**
      * @return the webLinkDefs
      */
-    public Vector<WebLinkDef> getWebLinkDefs()
+    public Vector<WebLinkDef> getWebLinkDefs(final DBTableInfo tableInfo)
     {
-        return webLinkDefs;
+        Vector<WebLinkDef> list  = new Vector<WebLinkDef>();
+        for (WebLinkDef wld : webLinkDefs)
+        {
+            if ((tableInfo != null && wld.getTableName() != null && wld.getTableName().equals(tableInfo.getName())) ||
+                (tableInfo == null && wld.getTableName() == null))
+            {
+                System.out.println(wld.getName() + "  "+wld.getTableName());
+                list.add(wld);
+            }
+        }
+        return list;
     }
 
     /**
@@ -201,9 +228,11 @@ public class WebLinkMgr
      * @param fieldInfo
      */
     public WebLinkConfigDlg editWebLinks(final DBTableInfo tableInfo,
-                                         final DBFieldInfo fieldInfo)
+                                         final boolean     isTableMode)
     {
-        WebLinkConfigDlg dlg = new WebLinkConfigDlg(tableInfo, fieldInfo);
+        WebLinkConfigDlg dlg = new WebLinkConfigDlg(this, tableInfo, isTableMode);
+        dlg.createUI();
+        dlg.setSize(400,400);
         dlg.setVisible(true);
         
         if (dlg.hasChanged())

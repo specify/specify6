@@ -13,6 +13,7 @@ import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,6 +45,11 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
+import edu.ku.brc.ui.forms.ViewFactory;
+import edu.ku.brc.ui.forms.validation.DataChangeListener;
+import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
+import edu.ku.brc.ui.forms.validation.UIValidatable;
+import edu.ku.brc.ui.forms.validation.ValTextField;
 import edu.ku.brc.util.AttachmentUtils;
 
 /**
@@ -56,19 +62,25 @@ import edu.ku.brc.util.AttachmentUtils;
  * Apr 13, 2008
  *
  */
-public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIFace, ActionListener
+public class WebLinkButton extends JPanel implements UIPluginable, 
+                                                     GetSetValueIFace, 
+                                                     ActionListener, 
+                                                     UIValidatable,
+                                                     DataChangeListener
 {
     protected Logger log = Logger.getLogger(WebLinkButton.class);
     
     protected JButton                       launchBtn;
     protected JButton                       editBtn     = null;
+    protected ValTextField                  textField        = null;
     
     protected WebLinkDef                    webLinkDef  = null;
     
     protected String                        urlStr;
     protected Properties                    initProps;
-    protected FormDataObjIFace              dataObj;
+    protected Object                        dataObj;
     protected boolean                       usingThisData = true;
+    protected boolean                       isTableSpecific;
     
     protected WebLinkDataProviderIFace      provider = null;
     
@@ -77,12 +89,98 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
     
     protected CustomDialog                  promptDialog  = null;
     
+    // UIPluginable
+    protected String             cellName       = null;
+    protected ChangeListener     changeListener = null;
+    
+    // UIValidatable && UIPluginable
+    protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
+    protected boolean            isRequired = false;
+    protected boolean            isChanged  = false;
+    protected boolean            isNew      = false;
+
     /**
      * 
      */
     public WebLinkButton()
     {
+        
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
+     */
+    public void initialize(final Properties properties, final boolean isViewMode)
+    {
+        urlStr = properties.getProperty("url");
+        
+        String iconName = properties.getProperty("icon"); //$NON-NLS-1$
+        ImageIcon icon = null;
+        if (StringUtils.isNotEmpty(iconName))
+        {
+            icon = IconManager.getIcon(iconName, IconManager.STD_ICON_SIZE);
+        }
+        
+        if (icon == null)
+        {
+            icon = IconManager.getIcon("WebLink", IconManager.STD_ICON_SIZE); //$NON-NLS-1$
+        }
+        launchBtn = createButton(icon);
+        launchBtn.addActionListener(this);
+        
+        String wlName = properties.getProperty("weblink"); //$NON-NLS-1$
+        if (StringUtils.isNotEmpty(wlName))
+        {
+            webLinkDef = WebLinkMgr.getInstance().get(wlName);
+            if (webLinkDef != null)
+            {
+                this.setToolTipText(webLinkDef.getDesc());
+            } else
+            {
+                launchBtn.setToolTipText(""); //$NON-NLS-1$
+            }
+        }
+        
+        isTableSpecific = StringUtils.isNotEmpty(webLinkDef.getTableName());
+        
+        PanelBuilder    pb     = new PanelBuilder(new FormLayout("p,"+ (isTableSpecific ? "" : "2px,p,") + "f:p:g", "p"), this); //$NON-NLS-1$ //$NON-NLS-2$
+        CellConstraints cc     = new CellConstraints();
+
+        pb.add(launchBtn, cc.xy(1,1));
+        
+        if (!isTableSpecific)
+        {
+            textField = new ValTextField(10);
+            pb.add(textField, cc.xy(3,1));
+            
+            textField.setRequired(isRequired);
+            
+            DataChangeNotifier dcn = new DataChangeNotifier(null, textField, null);
+            dcn.addDataChangeListener(this);
+            textField.getDocument().addDocumentListener(dcn);
+            
+            if (isViewMode)
+            {
+                ViewFactory.changeTextFieldUIForDisplay(textField, false);
+            }
+        }
+        
+        
+        
+        /*if (!isViewMode)
+        {
+            editBtn = createButton(IconManager.getIcon("EditIcon"));
+            add(editBtn, BorderLayout.EAST);
+            
+            editBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    doEdit();
+                }
+            });
+        }*/
+    }
+
 
     /* (non-Javadoc)
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
@@ -93,7 +191,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
         String urlString;
         try
         {
-            urlString = buildURL();
+            urlString = buildURL(false);
         }
         catch (Exception e1)
         {
@@ -223,12 +321,12 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
      * @return
      * @throws Exception
      */
-    protected String buildURL() throws Exception
+    protected String buildURL(final boolean forToolTip)
     {
-        if (StringUtils.isNotEmpty(urlStr))
-        {
-            return urlStr;
-        }
+        //if (StringUtils.isNotEmpty(urlStr))
+        //{
+        //    return urlStr;
+        //}
         
         if (webLinkDef != null)
         {
@@ -245,9 +343,10 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
                     if (provider != null)
                     {
                         value = provider.getWebLinkData(name);
-                    } else
+                        
+                    } else if (dataObj instanceof FormDataObjIFace)
                     {
-                        Object data = FormHelper.getValue(dataObj, name);
+                        Object data = FormHelper.getValue((FormDataObjIFace)dataObj, name);
                         if (data != null)
                         {
                             value = data.toString();
@@ -255,32 +354,42 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
                         {
                             backupPrompt.put(name, arg.getTitle() == null ? arg.getName() : arg.getTitle());
                         }
+                    } else if (dataObj instanceof String && textField != null)
+                    {
+                        value = (String)dataObj;
                     }
+                    
                     if (value != null)
                     {
                         valueHash.put(name, value);
                     }
+                } else
+                {
+                    valueHash.put(arg.getName(), "??");
                 }
             }
             
-            int promptCnt = webLinkDef.getPromptCount();
-            if (promptCnt > 0 || backupPrompt.size() > 0)
+            if (!forToolTip)
             {
-                valueHash.clear();
-                promptDialog = createPromptDlg(backupPrompt);
-                promptDialog.setVisible(true);
-                if (!promptDialog.isCancelled())
+                int promptCnt = webLinkDef.getPromptCount();
+                if (promptCnt > 0 || backupPrompt.size() > 0)
                 {
-                    for (String key : textFieldHash.keySet())
+                    valueHash.clear();
+                    promptDialog = createPromptDlg(backupPrompt);
+                    promptDialog.setVisible(true);
+                    if (!promptDialog.isCancelled())
                     {
-                        valueHash.put(key, textFieldHash.get(key).getText());
+                        for (String key : textFieldHash.keySet())
+                        {
+                            valueHash.put(key, textFieldHash.get(key).getText());
+                        }
+                        
+                    } else
+                    {
+                        return null;
                     }
-                    
-                } else
-                {
-                    return null;
+                    promptDialog = null;
                 }
-                promptDialog = null;
             }
             
             String url = webLinkDef.getBaseURLStr();
@@ -344,63 +453,11 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
-     */
-    public void initialize(final Properties properties, final boolean isViewMode)
-    {
-        urlStr = properties.getProperty("url");
-        
-        String iconName = properties.getProperty("icon"); //$NON-NLS-1$
-        ImageIcon icon = null;
-        if (StringUtils.isNotEmpty(iconName))
-        {
-            icon = IconManager.getIcon(iconName, IconManager.STD_ICON_SIZE);
-        }
-        
-        if (icon == null)
-        {
-            icon = IconManager.getIcon("WebLink", IconManager.STD_ICON_SIZE); //$NON-NLS-1$
-        }
-        launchBtn = createButton(icon);
-        launchBtn.addActionListener(this);
-        
-        String wlName = properties.getProperty("weblink"); //$NON-NLS-1$
-        if (StringUtils.isNotEmpty(wlName))
-        {
-            webLinkDef = WebLinkMgr.getInstance().get(wlName);
-            if (webLinkDef != null)
-            {
-                this.setToolTipText(webLinkDef.getDesc());
-            } else
-            {
-                launchBtn.setToolTipText(""); //$NON-NLS-1$
-            }
-        }
-        
-        PanelBuilder    pb     = new PanelBuilder(new FormLayout("p,f:p:g", "p"), this); //$NON-NLS-1$ //$NON-NLS-2$
-        CellConstraints cc     = new CellConstraints();
-        
-        pb.add(launchBtn, cc.xy(1,1));
-        
-        /*if (!isViewMode)
-        {
-            editBtn = createButton(IconManager.getIcon("EditIcon"));
-            add(editBtn, BorderLayout.EAST);
-            
-            editBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    doEdit();
-                }
-            });
-        }*/
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.UIPluginable#setCellName(java.lang.String)
      */
     public void setCellName(String cellName)
     {
+        this.cellName = cellName;
         usingThisData = StringUtils.isNotEmpty(cellName) && cellName.equals("this"); //$NON-NLS-1$ 
     }
 
@@ -409,7 +466,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
      */
     public void setChangeListener(ChangeListener listener)
     {
-        // ignore
+        this.changeListener = listener;
     }
 
     /* (non-Javadoc)
@@ -418,6 +475,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
     public void shutdown()
     {
         dataObj = null;
+        changeListener = null;
     }
     
     //--------------------------------------------------------
@@ -437,16 +495,23 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
             
         } else
         {
-            if (value instanceof FormDataObjIFace)
-            {
-                dataObj = (FormDataObjIFace)value;
-            }
+            dataObj = value;
             
             if (value instanceof WebLinkDataProviderIFace)
             {
                 provider = (WebLinkDataProviderIFace)value;
             }
+            String url = buildURL(true);
+            if (StringUtils.isNotEmpty(url))
+            {
+                setToolTips();
+            }
             setEnabled(isEnabled());
+        }
+        
+        if (dataObj instanceof String && textField != null)
+        {
+            textField.setText((String)dataObj);
         }
     }
 
@@ -457,4 +522,160 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
     {
         return dataObj;
     }
+
+    
+    //-----------------------------------------------------------
+    //-- UIValidatable
+    //-----------------------------------------------------------
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#cleanUp()
+     */
+    public void cleanUp()
+    {
+        changeListener = null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getState()
+     */
+    public ErrorType getState()
+    {
+        return valState;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getValidatableUIComp()
+     */
+    public Component getValidatableUIComp()
+    {
+        return this;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#isChanged()
+     */
+    public boolean isChanged()
+    {
+        return isChanged;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#isInError()
+     */
+    public boolean isInError()
+    {
+        return valState != UIValidatable.ErrorType.Valid;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#isRequired()
+     */
+    public boolean isRequired()
+    {
+        return isRequired;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#reset()
+     */
+    public void reset()
+    {
+        valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+        isChanged = false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setAsNew(boolean)
+     */
+    public void setAsNew(final boolean isNew)
+    {
+        this.isNew = isNew;    
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setChanged(boolean)
+     */
+    public void setChanged(boolean isChanged)
+    {
+        this.isChanged = isChanged;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setRequired(boolean)
+     */
+    public void setRequired(boolean isRequired)
+    {
+        this.isRequired = isRequired;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setState(edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType)
+     */
+    public void setState(ErrorType state)
+    {
+        this.valState = state;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#validateState()
+     */
+    public ErrorType validateState()
+    {
+        // this validates the state
+        valState = textField != null ? textField.getState() : UIValidatable.ErrorType.Valid;
+        
+        return valState;
+    }
+    
+    //--------------------------------------------------------
+    // DataChangedListener Interface
+    //--------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.forms.validation.DataChangeNotifier)
+     */
+    public void dataChanged(String name, Component comp, DataChangeNotifier dcn)
+    {
+        validateState();
+        
+        isChanged = true;
+        if (changeListener != null)
+        {
+            changeListener.stateChanged(null);
+        }
+        
+        String text = textField.getText();
+        if (dataObj == null && text != null)
+        {
+            launchBtn.setEnabled(true);
+            dataObj = text;
+            
+        } else if (dataObj != null && text.length() == 0)
+        {
+            launchBtn.setEnabled(false);
+            dataObj = null;
+        } else
+        {
+            dataObj = text;
+        }
+        
+        if (dataObj != null)
+        {
+            setToolTips();
+        }
+    }
+    
+    /**
+     * Creates a tool for btn and the textfield.
+     */
+    protected void setToolTips()
+    {
+        String url = buildURL(true);
+        launchBtn.setToolTipText(url);
+        if (textField != null)
+        {
+            textField.setToolTipText(url);
+        }  
+    }
+    
 }

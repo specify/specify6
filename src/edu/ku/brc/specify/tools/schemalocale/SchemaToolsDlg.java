@@ -37,7 +37,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -72,6 +71,8 @@ public class SchemaToolsDlg extends CustomDialog
         super(frame, getResourceString("SL_TOOLS_TITLE"), true, OKHELP, null);
         this.schemaType = schemaType;
         this.tableMgr   = tableMgr;
+        
+        helpContext = "SL_TOOLS_HELP_CONTEXT";
     }
 
     /* (non-Javadoc)
@@ -108,8 +109,6 @@ public class SchemaToolsDlg extends CustomDialog
         
         contentPanel = builder.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
-        
-        HelpMgr.setHelpID(getHelpBtn(), getResourceString("SL_TOOLS_HELP_CONTEXT"));
         
         enableBtns(false);
         
@@ -214,6 +213,7 @@ public class SchemaToolsDlg extends CustomDialog
                     dlg.setVisible(true);
                     
                     SchemaI18NService.setCurrentLocale(currLocale);
+
                 }
             }
         });

@@ -149,7 +149,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     // WebLinks
     protected JComboBox        webLinkCombo;
     protected JButton          webLinkMoreBtn;
-    protected WebLinkDef       webLinkDefNone = new WebLinkDef(getResourceString("NONE"));
+    protected WebLinkDef       webLinkDefNone = new WebLinkDef(getResourceString("NONE"), null);
     
     // PickList
     protected JLabel           pickListLbl;
@@ -164,7 +164,6 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     protected JButton          nxtBtn;
     protected JButton          nxtEmptyBtn;
     protected JCheckBox        fieldHideChk  = createCheckBox(getResourceString("SL_FIELD_HIDE_CHK"));
-    protected boolean          hasFieldInfoChanged  = false;
 
     protected LocalizableItemIFace prevField = null;
     
@@ -352,10 +351,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             ActionListener changed = new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    setHasChanged(true);
-                    schemaPanel.setHasChanged(true);
-                    hasFieldInfoChanged = true;
-                    
+                    formHasChanged();
+                        
                     boolean hasFormat = formatCombo.getSelectedIndex() > 0;
                     webLinkCombo.setEnabled(!hasFormat);
                     if (hasFormat)
@@ -374,10 +371,20 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             webLinkMoreBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    WebLinkConfigDlg dlg = WebLinkMgr.getInstance().editWebLinks(tableInfo, fieldInfo);
+                    WebLinkDef       selectedWL = (WebLinkDef)webLinkCombo.getSelectedItem();
+                    WebLinkConfigDlg dlg        = WebLinkMgr.getInstance().editWebLinks(tableInfo, false);
                     if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                     {
-                        setSelectedWebLink(dlg.getSelectedItem());
+                        formHasChanged();
+                        
+                        if (selectedWL != null && !selectedWL.getName().equals(SL_WEBLINK))
+                        {
+                            dlg.setWebLink(selectedWL.getName());
+                        }
+                        if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+                        {
+                            setSelectedWebLink(dlg.getSelectedItem());
+                        }
                     }
                 }
             });
@@ -394,9 +401,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             ActionListener wlchanged = new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    setHasChanged(true);
-                    schemaPanel.setHasChanged(true);
-                    hasFieldInfoChanged = true;
+                    formHasChanged();
                     
                     boolean hasWL = webLinkCombo.getSelectedIndex() > 0;
                     webLinkCombo.setEnabled(hasWL);
@@ -420,10 +425,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         pickListCBX.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                setHasChanged(true);
-                schemaPanel.setHasChanged(true);
-                hasFieldInfoChanged = true;
-                
+                formHasChanged();
                 if (formatCombo != null && pickListCBX.getSelectedIndex() > 0)
                 {
                     formatCombo.setSelectedIndex(formatCombo.getModel().getSize() > 0 ? 0 : -1);
@@ -443,7 +445,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 }
             }
         });
-
+        
         if (includeFormatAndAutoNumUI)
         {
             PanelBuilder inner = new PanelBuilder(new FormLayout("max(p;150px),2px,min", "p"));
@@ -495,34 +497,23 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         fieldHideChk.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e)
             {
-                setHasChanged(true);
-                schemaPanel.setHasChanged(true);
-                hasFieldInfoChanged = true;
+                formHasChanged();
             }
             
         });
         
         DocumentListener dl = new DocumentListener() {
-            protected void changed()
-            {
-                if (!hasFieldInfoChanged)
-                {
-                    hasFieldInfoChanged = true;
-                    setHasChanged(true);
-                    schemaPanel.setHasChanged(true);
-                }
-            }
             public void changedUpdate(DocumentEvent e)
             {
-                changed();
+                formHasChanged();
             }
             public void insertUpdate(DocumentEvent e)
             {
-                changed();
+                formHasChanged();
             }
             public void removeUpdate(DocumentEvent e)
             {
-                changed();
+                formHasChanged();
             }
         };
         
@@ -539,6 +530,19 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         enableUIControls(false);
         
         setIgnoreChanges(false);
+    }
+    
+    /**
+     * Sets the this panel as changed and the parent panel as changed.
+     */
+    protected void formHasChanged()
+    {
+        if (!isIgnoreChanges())
+        {
+            setHasChanged(true);
+            schemaPanel.setHasChanged(true);
+            schemaPanel.setTableInfoChanged(true);
+        }
     }
     
     /**
@@ -605,7 +609,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         
         int fndInx = 0;
         int index  = 0;
-        for (WebLinkDef wld : WebLinkMgr.getInstance().getWebLinkDefs())
+        for (WebLinkDef wld : WebLinkMgr.getInstance().getWebLinkDefs(null))
         {
             model.addElement(wld);
             if (webLinkDef == wld)
@@ -624,15 +628,6 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             setHasChanged(true);
         }
         webLinkCombo.setEnabled(webLinkCombo.getModel().getSize() > 1);
-    }
-    
-    /**
-     * 
-     */
-    protected void formTextChanged()
-    {
-        setHasChanged(true);
-        schemaPanel.setHasChanged(true);
     }
     
     /**
@@ -655,7 +650,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             //if (wlModel.getSize() == 0)
             {
                 wlModel.addElement(webLinkDefNone);
-                for (WebLinkDef wld : WebLinkMgr.getInstance().getWebLinkDefs())
+                for (WebLinkDef wld : WebLinkMgr.getInstance().getWebLinkDefs(null))
                 {
                     wlModel.addElement(wld);
                 }
@@ -857,6 +852,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     public void setLocalizableIO(final LocalizableIOIFace localizableIO)
     {
         this.localizableIO = localizableIO;
+        pickListMoreBtn.setEnabled(localizableIO.hasUpdatablePickLists());
     }
     
     /* (non-Javadoc)
@@ -1037,17 +1033,19 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     /**
      * 
      */
-    public void getAllDataFromUI()
+    public boolean getAllDataFromUI()
     {
-        getItemDataFromUI();
+        return getItemDataFromUI();
     }
     
     /**
      * 
      */
-    protected void getItemDataFromUI()
+    protected boolean getItemDataFromUI()
     {
-        if (prevField != null && hasFieldInfoChanged)
+        boolean changed = hasChanged;
+        
+        if (prevField != null && changed)
         {
             prevField.setPickListName(null);
             prevField.setWebLinkName(null);
@@ -1059,8 +1057,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             boolean descChanged = setDescStrForCurrLocale(prevField,     fieldDescText.getText());
             if (nameChanged || descChanged)
             {
-                setHasChanged(true);
-                schemaPanel.setHasChanged(true);
+                formHasChanged();
             }
             
             if (pickListCBX.getSelectedIndex() > 0)
@@ -1100,7 +1097,9 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             
             prevField = null;
         }
-        hasFieldInfoChanged = false;
+        hasChanged = false;
+        
+        return changed;
     }
     
     /**
@@ -1108,7 +1107,11 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
      */
     protected void next()
     {
-        getItemDataFromUI();
+        if (getItemDataFromUI())
+        {
+            formHasChanged();
+        }
+        
         int inx = fieldsList.getSelectedIndex();
         if (inx < fieldsModel.size()-1)
         {
@@ -1123,7 +1126,10 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
      */
     protected void nextEmpty()
     {
-        getItemDataFromUI();
+        if (getItemDataFromUI())
+        {
+            formHasChanged();
+        }
         
         int inx = getNextEmptyIndex(fieldsList.getSelectedIndex()+1);
         if (inx > -1)
@@ -1414,7 +1420,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         
         updateBtns();
         
-        hasFieldInfoChanged = false;
+        hasChanged = false;
     }
 
     /* (non-Javadoc)

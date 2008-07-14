@@ -105,7 +105,7 @@ public class UploadResults implements QueryForIdResultsIFace
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#enableEditing()
      */
     //@Override
-    public boolean enableEditing()
+    public boolean isEditingEnabled()
     {
         // TODO Auto-generated method stub
         return false;

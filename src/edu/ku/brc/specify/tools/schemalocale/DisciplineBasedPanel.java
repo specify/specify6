@@ -407,6 +407,14 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
         
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#hasUpdatablePickLists()
+     */
+    public boolean hasUpdatablePickLists()
+    {
+        return false;
+    }
+
     /**
      * Helper to get the common or discipline specific PickLists.
      * @param pickLists the list

@@ -440,6 +440,138 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         }
     }
 
+    
+    /**
+     * Delete a record set
+     * @param rs the recordSet to be deleted
+     */
+    public static void deleteItems(final Integer rsId, final List<Integer> rsiIds, final Integer rsiId)
+    {
+        // Deleting this manually because the RecordSet may not be loaded (with Hibernate)
+        // and the items are loaded EAGER, and there is not reason to take all the time (and memory)
+        // to load them all just to delete them.
+        // So doing this manually with JDBC is the faster way.
+        Connection connection      = null;
+        Statement  updateStatement = null;
+        try
+        {
+            connection = DBConnection.getInstance().createConnection();
+            StringBuilder sb = new StringBuilder("DELETE FROM recordsetitem WHERE RecordSetID = ");
+            sb.append(rsId);
+            sb.append(" AND RecordID ");
+            if (rsiIds != null)
+            {
+                sb.append("in (");
+                for (int i=0;i<rsiIds.size();i++)
+                {
+                    if (i > 0) sb.append(',');
+                    sb.append(rsiIds.get(i));
+                }
+                sb.append(")");
+            } else
+            {
+                sb.append("= " + rsiId);
+            }
+            updateStatement = connection.createStatement();
+            log.debug(sb.toString());
+            int numItems = updateStatement.executeUpdate(sb.toString());
+            log.debug(numItems+"  "+sb.toString());
+            updateStatement.clearBatch();
+            updateStatement.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (updateStatement != null)
+                {
+                    updateStatement.close();
+                }
+                if (connection != null)
+                {
+                    connection.close();
+                }
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected void processDeleteRSItems(final CommandAction cmd)
+    {
+        Object data = cmd.getData();
+        if (data instanceof Object[])
+        {
+            RecordSetIFace rs  = (RecordSetIFace)((Object[])data)[0];
+            List<Integer>  ids = (List<Integer>)((Object[])data)[1];
+            
+            if (rs instanceof RecordSetProxy)
+            {
+                RecordSetProxy recordSet = (RecordSetProxy)rs;
+
+                deleteItems(recordSet.getRecordSetId(), ids, null);
+                
+            } else if (rs instanceof RecordSet)
+            {
+                RecordSet recordSet = (RecordSet)rs;
+                if (recordSet.getRecordSetId() == null)
+                {
+                    for (RecordSetItem rsi : new Vector<RecordSetItem>(recordSet.getRecordSetItems()))
+                    {
+                        recordSet.getRecordSetItems().remove(rsi);
+                    }
+                    
+                } else
+                {
+                    // TODO Add StaleObject Code from FormView
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    try
+                    {
+                        FormHelper.updateLastEdittedInfo(recordSet);
+                        
+                        session.beginTransaction();
+            
+                        Vector<RecordSetItemIFace> items = new Vector<RecordSetItemIFace>(recordSet.getOrderedItems());
+                        for (Integer id : ids)
+                        {
+                            for (RecordSetItemIFace rsi : items)
+                            {
+                                if (rsi.getRecordId().intValue() == id.intValue())
+                                {
+                                    //System.out.println(recordSet.getItems().contains(rsi));
+                                    recordSet.removeItem(rsi);
+                                    session.delete(rsi);
+                                    //System.out.println(recordSet.getItems().contains(rsi));
+                                }
+                            }
+                        }
+                        
+                        items.clear();
+                        session.saveOrUpdate(recordSet);
+                        session.commit();
+                        session.flush();
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                        //log.error(ex);
+                        
+                    } finally
+                    {
+                        session.close();    
+                    }
+  
+                }
+            }
+        }
+    }
+
     /**
      * Delete the RecordSet from the UI, which really means remove the NavBoxItemIFace.
      * This method first checks to see if the boxItem is not null and uses that, i
@@ -869,7 +1001,13 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             Object dstObj = cmdAction.getDstObj();
             
             mergeRecordSets(srcObj, dstObj);
+            
+        } else if (cmdAction.isAction("DELETEITEMS"))
+        {
+            processDeleteRSItems(cmdAction);
         }
+        
+
     }
 
     /* (non-Javadoc)

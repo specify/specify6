@@ -2596,6 +2596,18 @@ public final class UIHelper
         return btn;
     }
 
+    /**
+     * Creates a JButton and set the localized text
+     * @param key Localization key for title string
+     * @return the button
+     */
+    public static JButton createI18NButton(final String key)
+    {
+        JButton btn = new JButton(getResourceString(key));
+        setControlSize(btn);
+        return btn;
+    }
+
     public static JButton createButton(final String text)
     {
         JButton btn = new JButton(text);

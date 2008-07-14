@@ -23,11 +23,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -37,6 +40,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -47,6 +51,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.MouseInputListener;
+import javax.swing.plaf.basic.BasicTableUI;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -56,14 +62,19 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.ServiceProviderIFace;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
+import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.ui.CloseButton;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.GradiantButton;
 import edu.ku.brc.ui.GradiantLabel;
 import edu.ku.brc.ui.IconManager;
@@ -71,6 +82,8 @@ import edu.ku.brc.ui.TriangleButton;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where
@@ -97,8 +110,10 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     protected int                      rowCount       = 0;
     protected boolean                  showingAllRows = false;
     protected boolean                  hasResults     = false;
-    protected boolean                  enableEditing  = false;
+    protected boolean                  isEditable     = false;
     protected JPopupMenu               popupMenu      = null;
+    protected JButton                  delRSItems     = null;
+
     
     protected Hashtable<ServiceInfo, JButton> serviceBtns = null;
 
@@ -129,15 +144,17 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         this.esrPane       = esrPane;
         this.results       = results;
         this.bannerColor   = results.getBannerColor();
-        this.enableEditing = results.enableEditing();
+        this.isEditable    = results.isEditingEnabled();
         
-        table = new JTable();
+        table = new DragTable();
+        table.setUI(new MyTableUI());
+        
         table.setShowVerticalLines(false);
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(results.isMultipleSelection() ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION : ListSelectionModel.SINGLE_SELECTION);
         setBackground(table.getBackground());
         
-        if (enableEditing)
+        if (isEditable)
         {
             addContextMenu();
         }
@@ -232,7 +249,36 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         tablePane.add(table.getTableHeader(), BorderLayout.PAGE_START);
         tablePane.add(table, BorderLayout.CENTER);
         tablePane.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        
+        //table.setDragEnabled(true);
+        //table.setDropMode(DropMode.ON_OR_INSERT);
+        
+        //table.setTransferHandler(new RowTransferHandler());
+        //TableRowDnDListener recgn = new TableRowDnDListener();
+        //table.addMouseListener(recgn);
+        //table.addMouseMotionListener(recgn);
+        
 
+        if (isEditable)
+        {
+            PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
+            delRSItems = UIHelper.createI18NButton("RESTBL_DEL_ITEMS");
+            delRSItems.addActionListener(createRemoveItemAL());
+            delRSItems.setEnabled(false);
+            pb.add(delRSItems, cc.xy(2,1));
+            tablePane.add(pb.getPanel(), BorderLayout.SOUTH);
+            
+            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e)
+                {
+                    if (!e.getValueIsAdjusting())
+                    {
+                        delRSItems.setEnabled(table.getSelectedRowCount() > 0);
+                    }
+                }
+            });
+        }
+        
         add(tablePane, BorderLayout.CENTER);
 
         expandBtn.addActionListener(new ActionListener() {
@@ -360,6 +406,28 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     }
     
     /**
+     * @return creates an action listneer for removing an item from the table.
+     */
+    protected ActionListener createRemoveItemAL()
+    {
+        return new ActionListener() {
+            public void actionPerformed(ActionEvent ae)
+            {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
+                    {
+                        removeRows(table.getSelectedRows());
+                        if (popupMenu != null)
+                        {
+                            popupMenu.setVisible(false);
+                        }
+                    }
+                });
+            }
+        };
+    }
+    
+    /**
      * 
      */
     protected void addContextMenu()
@@ -384,13 +452,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
                         {
                             popupMenu = new JPopupMenu();
                             JMenuItem mi = popupMenu.add(new JMenuItem(UIRegistry.getResourceString("Remove")));
-                            mi.addActionListener(new ActionListener() {
-                                public void actionPerformed(ActionEvent ae)
-                                {
-                                    removeRows(table.getSelectedRows());
-                                    popupMenu.setVisible(false);
-                                }
-                            });
+                            mi.addActionListener(createRemoveItemAL());
                         }
                         Point p = table.getLocationOnScreen();
                         popupMenu.setLocation(p.x + e.getX() + 1, p.y + e.getY() + 1);
@@ -408,7 +470,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     protected void removeRows(int[] rows)
     {
         ResultSetTableModel model = (ResultSetTableModel)table.getModel();
-        Vector<Integer> ids = new Vector<Integer>();
+        Vector<Integer>     ids   = new Vector<Integer>();
         for (int i=0;i<rows.length;i++)
         {
             ids.add(model.getRowId(rows[i]-i));
@@ -776,4 +838,229 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         }
     }
 
+    
+    //-------------------------------------------------------------
+    // Table Class to enbale DnD of rows using Ghosting.
+    //-------------------------------------------------------------
+    class DragTable extends JTable implements GhostActionable
+    {
+        protected GhostMouseInputAdapter mouseInputAdapter;
+        protected List<DataFlavor>       dataFlovars = new Vector<DataFlavor>();
+        protected BufferedImage          destImage   = null;
+        
+        /**
+         * 
+         */
+        public DragTable()
+        {
+            super();
+            
+            dataFlovars.add(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", results.getTableId()));
+            createMouseInputAdapter();
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#createMouseInputAdapter()
+         */
+        public void createMouseInputAdapter()
+        {
+            mouseInputAdapter = new GhostMouseInputAdapter(UIRegistry.getGlassPane(), "action", this);
+            addMouseListener(mouseInputAdapter);
+            addMouseMotionListener(mouseInputAdapter);
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#doAction(edu.ku.brc.ui.dnd.GhostActionable)
+         */
+        public void doAction(GhostActionable source)
+        {
+            
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#getBufferedImage()
+         */
+        public BufferedImage getBufferedImage()
+        {
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(results.getTableId());
+            if (tableInfo != null)
+            {
+                ImageIcon icon = tableInfo.getIcon(IconManager.STD_ICON_SIZE);
+                if (destImage == null)
+                {
+                    destImage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+                }
+                Graphics2D graphics2D = destImage.createGraphics();
+                graphics2D.drawImage(icon.getImage(), 0, 0, icon.getIconWidth(), icon.getIconHeight(), null);
+                graphics2D.dispose();
+                
+                return destImage;
+            }
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#getData()
+         */
+        public Object getData()
+        {
+            if (table.getSelectedRowCount() > 0)
+            {
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(results.getTableId());
+                if (tableInfo != null)
+                {
+                    RecordSetIFace rs = RecordSetFactory.getInstance().createRecordSet();
+                    rs.setDbTableId(results.getTableId());
+                    
+                    for (int inx : table.getSelectedRows())
+                    {
+                        int id = results.getRecIds().get(inx);
+                        rs.addItem(id);
+                    }
+                    return rs;
+                }
+            }
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
+         */
+        public Object getDataForClass(Class<?> classObj)
+        {
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(results.getTableId());
+            if (tableInfo != null)
+            {
+                return tableInfo.getClassObj();
+            }
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#getDragDataFlavors()
+         */
+        public List<DataFlavor> getDragDataFlavors()
+        {
+            return dataFlovars;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#getDropDataFlavors()
+         */
+        public List<DataFlavor> getDropDataFlavors()
+        {
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#getMouseInputAdapter()
+         */
+        public GhostMouseInputAdapter getMouseInputAdapter()
+        {
+            return mouseInputAdapter;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#setActive(boolean)
+         */
+        public void setActive(boolean isActive)
+        {
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.dnd.GhostActionable#setData(java.lang.Object)
+         */
+        public void setData(Object data)
+        {
+        }
+        
+    }
+    
+    // Taken from the Web
+    public class MyTableUI extends BasicTableUI
+    {
+        
+        protected MouseInputListener createMouseInputListener() {
+            return new MyMouseInputHandler();
+        }
+     
+        /* This class listens for selections on table rows. It prevents table row selections when mouse is dragged 
+         * (default behavior for multi-row interval selections) and instead fires row drag (DND) events.
+         * (This class taken from a Web example)
+         */
+        class MyMouseInputHandler extends MouseInputHandler {
+            
+            private boolean ignoreDrag = false;
+            private boolean doingDrag  = false;
+            
+            public void mousePressed(MouseEvent e) 
+            {
+                
+                // Cancel the selected area if the user
+                // clicks twice, otherwise if the user had
+                // selected all of the cells they couldn't
+                // de-select them with the mouse
+                if (e.getClickCount() == 2)
+                {
+                    table.clearSelection();
+                }
+                
+                // Always set this to true - it will be
+                // set if the user has clicked on a cell
+                // that is already selected.
+                ignoreDrag = true;
+                doingDrag  = false;
+                
+                // Found out whether the user has clicked
+                // on a cell that it is already selected
+                Point origin = e.getPoint();
+                int row    = table.rowAtPoint(origin);
+                int column = table.columnAtPoint(origin);
+                if (row != -1 && column != -1) 
+                {
+                    if (table.isCellSelected(row, column)) 
+                    {
+                        // The cell is selected, so we
+                        // need to ignore the mouse drag
+                        // events completely.
+                        ignoreDrag = true;
+     
+                    }
+                    else{
+                        // Only perform the usual mouse pressed
+                        // operation of the user has not clicked
+                        // on a cell that is already selected.
+                        super.mousePressed(e);                        
+                    }
+                }
+            }
+            
+            public void mouseDragged(MouseEvent e) 
+            {
+                if (!ignoreDrag)
+                {
+                    // We only call this method when a user has NOT clicked on a cell that is
+                    // already selected
+                    super.mouseDragged(e);
+                } else
+                {
+                    // Start a table row drag operation
+                    // table.getTransferHandler().exportAsDrag(table, e, DnDConstants.ACTION_COPY);
+                    doingDrag = true;
+                }
+            }    
+            
+            public void mouseReleased(MouseEvent e)
+            {
+                if (ignoreDrag && !doingDrag)
+                {
+                    // When clicking on an already selected row and releasing mouse => clear selection on table
+                    //table.clearSelection();
+                }
+                
+                super.mouseReleased(e);
+            }
+        }
+     
+    }
 }

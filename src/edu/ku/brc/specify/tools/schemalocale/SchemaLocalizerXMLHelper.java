@@ -1084,6 +1084,14 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         return pickLists;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#hasUpdatablePickLists()
+     */
+    public boolean hasUpdatablePickLists()
+    {
+        return false;
+    }
+    
     /**
      * @param itemStrs
      * @param locale

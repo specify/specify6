@@ -33,6 +33,12 @@ public class WebLinkUsedBy
         this.tableName = tableName;
         this.fieldName = fieldName;
     }
+    
+    public WebLinkUsedBy(String tableName)
+    {
+        this.tableName = tableName;
+        this.fieldName = null;
+    }
     /**
      * @return the tableName
      */

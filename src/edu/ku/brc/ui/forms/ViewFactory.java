@@ -857,6 +857,7 @@ public class ViewFactory
             } catch (Exception ex)
             {
                log.error(ex);
+               ex.printStackTrace();
                throw new RuntimeException(ex);
             }
         }

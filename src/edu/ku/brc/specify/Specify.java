@@ -80,6 +80,7 @@ import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MainPanel;
+import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
@@ -106,7 +107,6 @@ import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -462,8 +462,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         System.setProperty(QueryAdjusterForDomain.factoryName,          "edu.ku.brc.specify.dbsupport.SpecifyQueryAdjusterForDomain"); // Needed for ExpressSearch //$NON-NLS-1$
         System.setProperty(SchemaI18NService.factoryName,               "edu.ku.brc.specify.config.SpecifySchemaI18NService");         // Needed for Localization and Schema //$NON-NLS-1$
         System.setProperty(WebLinkMgr.factoryName,                      "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                // Needed for WebLnkButton //$NON-NLS-1$
-        System.setProperty(DataObjFieldFormatMgr.factoryName,           "edu.ku.brc.specify.ui.SpecifyDataObjFieldFormatMgr");                // Needed for WebLnkButton //$NON-NLS-1$
-        
+        System.setProperty(DataObjFieldFormatMgr.factoryName,           "edu.ku.brc.specify.ui.SpecifyDataObjFieldFormatMgr");         // Needed for WebLnkButton //$NON-NLS-1$
+        System.setProperty(RecordSetFactory.factoryName,                "edu.ku.brc.specify.config.SpecifyRecordSetFactory");          // Needed for Searching //$NON-NLS-1$
     }
 
     /**

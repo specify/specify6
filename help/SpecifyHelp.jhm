@@ -40,6 +40,15 @@
 	<!-- Search Help -->
 	<mapID target="CBXQSearch"              url="SpecifyHelp/Search/CBXQSearch.html"/>
 	
+	<!-- System Tools -->
+	<mapID target="SL_HELP_CONTEXT"         url="SpecifyHelp/System/SchemaLoc.html"/>
+	<mapID target="SL_TOOLS_HELP_CONTEXT"   url="SpecifyHelp/System/SchemaLocTools.html"/>
+	<mapID target="WEBLNK_EDITOR"           url="SpecifyHelp/System/WebLinksEditor.html"/>
+	<mapID target="WEBLNK_ARGS_EDITOR"      url="SpecifyHelp/System/WebLinksArgsEditor.html"/>
+	<mapID target="PL_ITEM_EDITOR"          url="SpecifyHelp/System/PickListItemEditor.html"/>
+	<mapID target="PL_HELP_CONTEXT"         url="SpecifyHelp/System/PickListEditor.html"/>
+	
+	<!-- Workbench -->
 	
 	<mapID target="Workbench"                  url="SpecifyHelp/Workbench/Overview.html"/>
 	<mapID target="WorkbenchOverview"          url="SpecifyHelp/Workbench/Overview.html"/>

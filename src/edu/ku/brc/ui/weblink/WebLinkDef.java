@@ -11,6 +11,8 @@ package edu.ku.brc.ui.weblink;
 
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.thoughtworks.xstream.XStream;
 
 /**
@@ -23,9 +25,10 @@ import com.thoughtworks.xstream.XStream;
  */
 public class WebLinkDef
 {
-    protected String name;
-    protected String desc;
-    protected String baseURLStr;
+    protected String                name;
+    protected String                tableName;
+    protected String                desc;
+    protected String                baseURLStr;
     protected Vector<WebLinkDefArg> args;
     protected Vector<WebLinkUsedBy> usedByList;
     
@@ -34,21 +37,20 @@ public class WebLinkDef
      */
     public WebLinkDef()
     {
-        super();
-        
-        args       = new Vector<WebLinkDefArg>();
-        usedByList = new Vector<WebLinkUsedBy>();
+        this(null, null, null, null);
+        this.args       = new Vector<WebLinkDefArg>();
+        this.usedByList = new Vector<WebLinkUsedBy>();
     }
     
     /**
      * 
      */
-    public WebLinkDef(final String name)
+    public WebLinkDef(final String name, 
+                      final String tableName)
     {
-        super();
-        this.name = name;
-        args       = new Vector<WebLinkDefArg>();
-        usedByList = new Vector<WebLinkUsedBy>();
+        this(name, tableName, null, null);
+        this.args       = new Vector<WebLinkDefArg>();
+        this.usedByList = new Vector<WebLinkUsedBy>();
     }
     
     
@@ -57,11 +59,47 @@ public class WebLinkDef
      * @param desc
      * @param baseURLStr
      */
-    public WebLinkDef(String name, String desc, String baseURLStr)
+    public WebLinkDef(final String name, 
+                      final String tableName, 
+                      final String desc, 
+                      final String baseURLStr)
     {
-        this.name = name;
-        this.desc = desc;
+        this.name       = name;
+        this.tableName  = tableName;
+        this.desc       = desc;
         this.baseURLStr = baseURLStr;
+        this.args       = null;
+        this.usedByList = null;
+    }
+    
+    /**
+     * @param tblName
+     * @return
+     */
+    public boolean isOwnedByTable(final String tblName)
+    {
+        return StringUtils.isNotEmpty(tableName) && StringUtils.isNotEmpty(tblName) && tableName.equals(tblName);
+    }
+    
+    /**
+     * @param tblName
+     * @return
+     */
+    public boolean isUSedByTable(final String tblName)
+    {
+        if (usedByList == null || usedByList.size() == 0)
+        {
+            return false;
+        }
+        
+        for (WebLinkUsedBy ub : usedByList)
+        {
+            if (tblName.equals(ub.getTableName()))
+            {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
@@ -78,6 +116,22 @@ public class WebLinkDef
             }
         }
         return cnt;
+    }
+
+    /**
+     * @param tableName the tableName to set
+     */
+    public void setTableName(String tableName)
+    {
+        this.tableName = tableName;
+    }
+
+    /**
+     * @return the tableName
+     */
+    public String getTableName()
+    {
+        return tableName;
     }
 
     /**

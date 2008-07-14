@@ -23,7 +23,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -54,14 +53,15 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
+import edu.ku.brc.specify.tools.schemalocale.PickListEditorDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
@@ -71,6 +71,8 @@ import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
+import edu.ku.brc.ui.weblink.WebLinkConfigDlg;
+import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
  *
@@ -143,58 +145,40 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
 
             // Temporary
             NavBox sysNavBox = new NavBox(getResourceString("CORE_DATA_OBJECTS"));
-            createSysNavBtn(sysNavBox, DataType.getClassTableId());
+            //createSysNavBtn(sysNavBox, DataType.getClassTableId());
             createSysNavBtn(sysNavBox, Discipline.getClassTableId());
             createSysNavBtn(sysNavBox, PrepType.getClassTableId());
             createSysNavBtn(sysNavBox, DeterminationStatus.getClassTableId());
             createSysNavBtn(sysNavBox, edu.ku.brc.specify.datamodel.Collection.getClassTableId());
             
-            sysNavBox.add(NavBox.createBtnWithTT(getResourceString("PL_NEWPICKLIST"), "PickList", "", IconManager.STD_ICON_SIZE, new ActionListener() {
+            sysNavBox.add(NavBox.createBtnWithTT(getResourceString("PICKLIST_EDITOR"), "PickList", "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "PickList", null, name, "PickList");
+                    PickListEditorDlg dlg = new PickListEditorDlg(null);
+                    dlg.createUI();
+                    dlg.setSize(400,400);
+                    dlg.setVisible(true);
+                }
+            })); 
+            sysNavBox.add(NavBox.createBtnWithTT(getResourceString("WEBLINKS_EDITOR"), "WebLink", "", IconManager.STD_ICON_SIZE, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    editWebLinks();
                 }
             })); 
             navBoxes.add(sysNavBox);
 
-            
-            DataProviderSessionIFace session = null;
-            try
-            {
-                session = DataProviderFactory.getInstance().createSession();
-                
-                String sql = QueryAdjusterForDomain.getInstance().adjustSQL("FROM PickList WHERE collectionId = COLLID");
-                List<?> pickLists = session.getDataList(sql);
+        }
+    }
     
-                navBox = new NavBox(getResourceString("PL_PICKLISTS"), true, true);
-    
-                Vector<PickList> pls = new Vector<PickList>();
-                for (Object obj : pickLists)
-                {
-                    pls.add((PickList)obj);
-                }
-                Collections.sort(pls);
-                
-                for (PickList pickList : pls)
-                {
-                    addPickList(pickList, false);
-                }
-    
-                navBoxes.add(navBox);
-                
-            }  catch (Exception ex)
-            {
-                log.error(ex);
-                ex.printStackTrace();
-                // XXX error dialog
-                
-            } finally
-            {
-                if (session != null)
-                {
-                    session.close();
-                }
-            }
+    /**
+     * Start Web Links Editor.
+     */
+    protected void editWebLinks()
+    {
+        WebLinkConfigDlg dlg = WebLinkMgr.getInstance().editWebLinks(null, false);
+        if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+        {
         }
     }
     

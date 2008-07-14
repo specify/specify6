@@ -55,7 +55,7 @@ import edu.ku.brc.ui.forms.FormHelper;
  * by the changes made on the dialogs. Those changes are only committed if the object holder (the objects that called the
  * dialogs) choose to do so (e.g. when the user clicks SAVE on the Localizer Tool frame).
  *   
- * @author rods
+ * @author rods, ricardo
  *
  * @code_status Complete
  *
@@ -81,6 +81,7 @@ public class DataObjFieldFormatMgr
     protected Hashtable<String, Class<?>>                 typeHash        = new Hashtable<String, Class<?>>();
     
     protected String                                      localFileName   = null;
+    protected boolean                                     hasChanged      = false;
     
     protected static boolean                              doingLocal      = false;
     
@@ -89,10 +90,13 @@ public class DataObjFieldFormatMgr
      */
     protected DataObjFieldFormatMgr()
     {
-    	init();
+        init();
         load();
     }
     
+    /**
+     * 
+     */
     private void init()
     {
         localFileName = "backstop"+File.separator+"dataobj_formatters.xml";
@@ -118,8 +122,8 @@ public class DataObjFieldFormatMgr
     @SuppressWarnings("unchecked")
     public DataObjFieldFormatMgr(DataObjFieldFormatMgr source)
     {
-    	formatHash      = (Hashtable<String,   DataObjSwitchFormatter>) source.getFormatHash().clone();
-    	formatClassHash = (Hashtable<Class<?>, DataObjSwitchFormatter>) source.getFormatClassHash().clone();
+        formatHash      = (Hashtable<String,   DataObjSwitchFormatter>) source.getFormatHash().clone();
+        formatClassHash = (Hashtable<Class<?>, DataObjSwitchFormatter>) source.getFormatClassHash().clone();
         aggHash         = (Hashtable<String,   DataObjAggregator>)      source.getAggHash().clone();
         aggClassHash    = (Hashtable<Class<?>, DataObjAggregator>)      source.getAggClassHash().clone();
     }
@@ -129,10 +133,10 @@ public class DataObjFieldFormatMgr
      */
     public void copyFrom(DataObjFieldFormatMgr source)
     {
-    	setFormatHash(source.getFormatHash());
-    	setFormatClassHash(source.getFormatClassHash());
-    	setAggHash(source.getAggHash());
-    	setAggClassHash(source.getAggClassHash());
+        setFormatHash(source.getFormatHash());
+        setFormatClassHash(source.getFormatClassHash());
+        setAggHash(source.getAggHash());
+        setAggClassHash(source.getAggClassHash());
     }
     
     /**
@@ -173,17 +177,17 @@ public class DataObjFieldFormatMgr
         
         if (appMgrInstance != null)
         {
-        	AppResourceIFace appRes = appMgrInstance.getResourceFromDir("Collection", "DataObjFormatters"); //$NON-NLS-1$ //$NON-NLS-2$
+            AppResourceIFace appRes = appMgrInstance.getResourceFromDir("Collection", "DataObjFormatters"); //$NON-NLS-1$ //$NON-NLS-2$
         
-        	if (appRes != null)
-        	{
-        		return appMgrInstance.getResourceAsDOM(appRes);
-        	} 
+            if (appRes != null)
+            {
+                return appMgrInstance.getResourceAsDOM(appRes);
+            } 
         }
         
         return XMLHelper.readDOMFromConfigDir("backstop/dataobj_formatters.xml"); //$NON-NLS-1$
 
-    	//throw new RuntimeException("Not Implemented.");
+        //throw new RuntimeException("Not Implemented.");
     }
     
     /**
@@ -225,7 +229,7 @@ public class DataObjFieldFormatMgr
                     
                     if (StringUtils.isEmpty(title))
                     {
-                    	title = name;
+                        title = name;
                     }
                     
                     Class<?> dataClass = null;
@@ -398,9 +402,9 @@ public class DataObjFieldFormatMgr
      */
     private void getFormatterUniqueName(DataObjSwitchFormatter formatter)
     {
-    	String name   = formatter.getName();
-    	String prefix = formatter.getDataClass().getSimpleName();
-    	formatter.setName(getUniqueNameInHash(name, prefix, formatHash));
+        String name   = formatter.getName();
+        String prefix = formatter.getDataClass().getSimpleName();
+        formatter.setName(getUniqueNameInHash(name, prefix, formatHash));
     }
     
     /**
@@ -408,38 +412,39 @@ public class DataObjFieldFormatMgr
      */
     private void getAggregatorUniqueName(DataObjAggregator aggregator)
     {
-    	String name   = aggregator.getName();
-    	String prefix = aggregator.getDataClass().getSimpleName();
-    	aggregator.setName(getUniqueNameInHash(name, prefix, aggHash));
+        String name   = aggregator.getName();
+        String prefix = aggregator.getDataClass().getSimpleName();
+        aggregator.setName(getUniqueNameInHash(name, prefix, aggHash));
     }
     
     /**
      * Generic method that creates a unique name for an object in a hash if it doesn't yet have one
      */
     private <T> String getUniqueNameInHash(final String name, 
-    									   final String prefix, 
-    									   final Hashtable<String, T> hash)
+                                           final String prefix, 
+                                           final Hashtable<String, T> hash)
     {
-    	String newName = name;
-    	if (name == null || name.equals(""))
-    	{
-    		// find a name that doesn't yet exist in the hash
-    		// name formation patter is prefix.i, where i is a counter
-    		int i = 1;
-    		Set<String> names = hash.keySet();
-    		newName = prefix + "." + Integer.toString(i);
-    		while (names.contains((String) newName))
-    		{
-    			newName = prefix + "." + Integer.toString(++i);
-    		}
-    	}
-    	return newName;
+        String newName = name;
+        if (name == null || name.equals(""))
+        {
+            // find a name that doesn't yet exist in the hash
+            // name formation patter is prefix.i, where i is a counter
+            int i = 1;
+            Set<String> names = hash.keySet();
+            newName = prefix + "." + Integer.toString(i);
+            while (names.contains((String) newName))
+            {
+                newName = prefix + "." + Integer.toString(++i);
+            }
+        }
+        return newName;
     }
     
     public void applyChanges(DataObjFieldFormatMgr source)
     {
-    	copyFrom(source);
-    	save();
+        this.hasChanged = source.hasChanged;
+        copyFrom(source);
+        save();
     }
     
     /**
@@ -447,55 +452,55 @@ public class DataObjFieldFormatMgr
      */
     public void save() 
     {
-    	DataObjFieldFormatMgr localInstance = DataObjFieldFormatMgr.getInstance();
-    	
-		// can only save the static instance
-    	if (localInstance.getLocalFileName() == null)
-    	{
-    		return;
-    	}
-    	
-		StringBuilder sb = new StringBuilder(1024);
-    	
-		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		
-		// data obj formatters
-		sb.append("<formatters>\n");
+        DataObjFieldFormatMgr localInstance = DataObjFieldFormatMgr.getInstance();
+        
+        // can only save the static instance
+        //if (localInstance.getLocalFileName() == null)
+        //{
+        //    return;
+        //}
+        
+        StringBuilder sb = new StringBuilder(1024);
+        
+        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        
+        // data obj formatters
+        sb.append("<formatters>\n");
 
-		Vector<DataObjSwitchFormatter> formatVector = new Vector<DataObjSwitchFormatter>(localInstance.getFormatHash().values());
-		Collections.sort(formatVector, new Comparator<DataObjSwitchFormatter>()
-		{
-			public int compare(DataObjSwitchFormatter o1, DataObjSwitchFormatter o2)
-			{
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
-		
-		for (DataObjSwitchFormatter format : formatVector)
-		{
-    		format.toXML(sb);
-    	}
+        Vector<DataObjSwitchFormatter> formatVector = new Vector<DataObjSwitchFormatter>(localInstance.getFormatHash().values());
+        Collections.sort(formatVector, new Comparator<DataObjSwitchFormatter>()
+        {
+            public int compare(DataObjSwitchFormatter o1, DataObjSwitchFormatter o2)
+            {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        
+        for (DataObjSwitchFormatter format : formatVector)
+        {
+            format.toXML(sb);
+        }
 
-		// aggregators
-		sb.append("  <aggregators>\n");
+        // aggregators
+        sb.append("  <aggregators>\n");
 
-		Vector<DataObjAggregator> aggVector = new Vector<DataObjAggregator>(localInstance.getAggHash().values());
-		Collections.sort(aggVector, new Comparator<DataObjAggregator>()
-		{
-			public int compare(DataObjAggregator o1, DataObjAggregator o2)
-			{
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
-		for (DataObjAggregator agg : aggVector)
-		{
-    		agg.toXML(sb);
-    	}
-		
-		sb.append("  </aggregators>\n");
-		sb.append("\n\n</formatters>\n");
-		
-		saveXML(sb.toString());
+        Vector<DataObjAggregator> aggVector = new Vector<DataObjAggregator>(localInstance.getAggHash().values());
+        Collections.sort(aggVector, new Comparator<DataObjAggregator>()
+        {
+            public int compare(DataObjAggregator o1, DataObjAggregator o2)
+            {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        for (DataObjAggregator agg : aggVector)
+        {
+            agg.toXML(sb);
+        }
+        
+        sb.append("  </aggregators>\n");
+        sb.append("\n\n</formatters>\n");
+        
+        saveXML(sb.toString());
     }
     
     /**
@@ -505,9 +510,9 @@ public class DataObjFieldFormatMgr
     protected void saveXML(final String xml)
     {
 
-		// save resource back to database
-		if (AppContextMgr.getInstance() != null)
-		{
+        // save resource back to database
+        if (AppContextMgr.getInstance() != null || !doingLocal)
+        {
             AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "DataObjFormatters");
             if (escAppRes != null)
             {
@@ -518,18 +523,18 @@ public class DataObjFieldFormatMgr
             {
                 AppContextMgr.getInstance().putResourceAsXML("DataObjFormatters", xml);    
             }
-		} else
-		{
-		    File outFile = XMLHelper.getConfigDir(instance.getLocalFileName());
-		    try
-		    {
-		        FileUtils.writeStringToFile(outFile, xml);
-		        
-		    } catch (Exception ex)
-		    {
-		        ex.printStackTrace();
-		    }
-		}
+        } else
+        {
+            File outFile = XMLHelper.getConfigDir(instance.getLocalFileName());
+            try
+            {
+                FileUtils.writeStringToFile(outFile, xml);
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
     }
     
     /**
@@ -537,11 +542,11 @@ public class DataObjFieldFormatMgr
      */
     public void addFormatter(DataObjSwitchFormatter formatter)
     {
-    	getFormatterUniqueName(formatter);
-    	Object previousObj = formatHash.put(formatter.getName(), formatter);
-    	if (previousObj != null)
-    		log.debug("Formatter in formatHash replaced by new value. That's ok.");
-    	formatClassHash.put(formatter.getDataClass(), formatter);
+        getFormatterUniqueName(formatter);
+        Object previousObj = formatHash.put(formatter.getName(), formatter);
+        if (previousObj != null)
+            log.debug("Formatter in formatHash replaced by new value. That's ok.");
+        formatClassHash.put(formatter.getDataClass(), formatter);
     }
     
     /**
@@ -549,8 +554,8 @@ public class DataObjFieldFormatMgr
      */
     public void removeFormatter(DataObjSwitchFormatter formatter)
     {
-    	formatHash.remove(formatter.getName());
-    	formatClassHash.remove(formatter.getName());
+        formatHash.remove(formatter.getName());
+        formatClassHash.remove(formatter.getName());
     }
     
     /**
@@ -604,7 +609,7 @@ public class DataObjFieldFormatMgr
         
         for (Enumeration<DataObjSwitchFormatter> e=formatHash.elements();e.hasMoreElements();)
         {
-        	DataObjSwitchFormatter f = e.nextElement();
+            DataObjSwitchFormatter f = e.nextElement();
             if (clazz == f.getDataClass())
             {
                 if (f.isDefault() && defFormatter == null)
@@ -982,7 +987,7 @@ public class DataObjFieldFormatMgr
         
         for (Enumeration<DataObjAggregator> e=aggHash.elements();e.hasMoreElements();)
         {
-        	DataObjAggregator f = e.nextElement();
+            DataObjAggregator f = e.nextElement();
             if (clazz == f.getDataClass())
             {
                 if (f.isDefault() && defFormatter == null)
@@ -1006,15 +1011,15 @@ public class DataObjFieldFormatMgr
      */
     protected static <T> String getUniqueName(final String prefix, final String separator, final Set<String> names)
     {
-    	// find a name that doesn't yet exist in the hash
-    	// name formation patter is prefix.i, where i is a counter
-    	int i = 1;
-    	String name = prefix + separator + Integer.toString(i);
-    	while (names.contains((String) name))
-    	{
-    		name = prefix + separator + Integer.toString(++i);
-    	}
-    	return name;
+        // find a name that doesn't yet exist in the hash
+        // name formation patter is prefix.i, where i is a counter
+        int i = 1;
+        String name = prefix + separator + Integer.toString(i);
+        while (names.contains((String) name))
+        {
+            name = prefix + separator + Integer.toString(++i);
+        }
+        return name;
     }
 
     /**
@@ -1022,9 +1027,9 @@ public class DataObjFieldFormatMgr
      */
     public void addAggregator(DataObjAggregator aggregator)
     {
-    	getAggregatorUniqueName(aggregator);
-    	aggHash.put(aggregator.getName(), aggregator);
-    	aggClassHash.put(aggregator.getDataClass(), aggregator);
+        getAggregatorUniqueName(aggregator);
+        aggHash.put(aggregator.getName(), aggregator);
+        aggClassHash.put(aggregator.getDataClass(), aggregator);
     }
     
     /**
@@ -1032,8 +1037,8 @@ public class DataObjFieldFormatMgr
      */
     public void removeAggregator(DataObjAggregator aggregator)
     {
-    	aggHash.remove(aggregator.getName());
-    	aggClassHash.remove(aggregator.getName());
+        aggHash.remove(aggregator.getName());
+        aggClassHash.remove(aggregator.getName());
     }
     
     /**
@@ -1085,50 +1090,50 @@ public class DataObjFieldFormatMgr
         // must be executed after the instance is set
         for ( DataObjSwitchFormatter format : instance.formatHash.values() )
         {
-        	format.setTableAndFieldInfo();
+            format.setTableAndFieldInfo();
         }
 
         return instance;
     }
 
-	public Hashtable<String, DataObjSwitchFormatter> getFormatHash()
-	{
-		return formatHash;
-	}
+    public Hashtable<String, DataObjSwitchFormatter> getFormatHash()
+    {
+        return formatHash;
+    }
 
-	public void setFormatHash(Hashtable<String, DataObjSwitchFormatter> formatHash)
-	{
-		this.formatHash = formatHash;
-	}
+    public void setFormatHash(Hashtable<String, DataObjSwitchFormatter> formatHash)
+    {
+        this.formatHash = formatHash;
+    }
 
-	public Hashtable<Class<?>, DataObjSwitchFormatter> getFormatClassHash()
-	{
-		return formatClassHash;
-	}
+    public Hashtable<Class<?>, DataObjSwitchFormatter> getFormatClassHash()
+    {
+        return formatClassHash;
+    }
 
-	public void setFormatClassHash(
-			Hashtable<Class<?>, DataObjSwitchFormatter> formatClassHash)
-	{
-		this.formatClassHash = formatClassHash;
-	}
+    public void setFormatClassHash(
+            Hashtable<Class<?>, DataObjSwitchFormatter> formatClassHash)
+    {
+        this.formatClassHash = formatClassHash;
+    }
 
-	public Hashtable<String, DataObjAggregator> getAggHash()
-	{
-		return aggHash;
-	}
+    public Hashtable<String, DataObjAggregator> getAggHash()
+    {
+        return aggHash;
+    }
 
-	public void setAggHash(Hashtable<String, DataObjAggregator> aggHash)
-	{
-		this.aggHash = aggHash;
-	}
+    public void setAggHash(Hashtable<String, DataObjAggregator> aggHash)
+    {
+        this.aggHash = aggHash;
+    }
 
-	public Hashtable<Class<?>, DataObjAggregator> getAggClassHash()
-	{
-		return aggClassHash;
-	}
+    public Hashtable<Class<?>, DataObjAggregator> getAggClassHash()
+    {
+        return aggClassHash;
+    }
 
-	public void setAggClassHash(Hashtable<Class<?>, DataObjAggregator> aggClassHash)
-	{
-		this.aggClassHash = aggClassHash;
-	}
+    public void setAggClassHash(Hashtable<Class<?>, DataObjAggregator> aggClassHash)
+    {
+        this.aggClassHash = aggClassHash;
+    }
 }

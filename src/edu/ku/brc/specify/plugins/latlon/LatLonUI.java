@@ -182,7 +182,8 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
             cardSubPanes[i] = new JPanel(new BorderLayout());
             try
             {
-                LatLonUIIFace latLon1 = Class.forName("edu.ku.brc.specify.plugins.latlon."+formatClass[i]).asSubclass(LatLonUIIFace.class).newInstance();
+                String packageName = "edu.ku.brc.specify.plugins.latlon.";
+                LatLonUIIFace latLon1 = Class.forName(packageName+formatClass[i]).asSubclass(LatLonUIIFace.class).newInstance();
                 latLon1.setIsRequired(isRequired);
                 latLon1.setViewMode(isViewMode);
                 latLon1.init();
@@ -193,7 +194,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
                 panels[paneInx++] = latLon1;
                 latLonPanes[i]    = panel1;
 
-                LatLonUIIFace latlon2 = Class.forName("edu.ku.brc.specify.plugins.latlon."+formatClass[i]).asSubclass(LatLonUIIFace.class).newInstance();
+                LatLonUIIFace latlon2 = Class.forName(packageName+formatClass[i]).asSubclass(LatLonUIIFace.class).newInstance();
                 latlon2.setIsRequired(isRequired);
                 latlon2.setViewMode(isViewMode);
                 latlon2.init();

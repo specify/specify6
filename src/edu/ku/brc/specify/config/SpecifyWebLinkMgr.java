@@ -49,6 +49,15 @@ public class SpecifyWebLinkMgr extends WebLinkMgr implements CommandListener
         read();
     }
     
+    /**
+     * @param specifyWebLinkMgr
+     */
+    public SpecifyWebLinkMgr(final SpecifyWebLinkMgr specifyWebLinkMgr)
+    {
+        super(specifyWebLinkMgr);
+        read();
+    }
+    
 
     /**
      * @param doingLocal the doingLocal to set

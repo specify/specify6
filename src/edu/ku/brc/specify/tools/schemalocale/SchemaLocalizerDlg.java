@@ -47,19 +47,20 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.config.SpecifyWebLinkMgr;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
-import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
  * @author rods
@@ -80,6 +81,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     // used to hold changes to formatters before committing them to DB
     protected DataObjFieldFormatMgr dataObjFieldFormatMgrCache = new DataObjFieldFormatMgr(DataObjFieldFormatMgr.getInstance()); 
     protected UIFieldFormatterMgr   uiFieldFormatterMgrCache   = new UIFieldFormatterMgr(UIFieldFormatterMgr.getInstance());
+    protected SpecifyWebLinkMgr     webLinkMgrCache            = new SpecifyWebLinkMgr((SpecifyWebLinkMgr)SpecifyWebLinkMgr.getInstance());
 
     protected SchemaLocalizerPanel                         schemaLocPanel;
     protected LocalizableIOIFace                           localizableIOIFace;
@@ -114,6 +116,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         super(frame, "", true, OKCANCELAPPLYHELP, null);
         this.schemaType = schemaType;
         this.tableMgr   = tableMgr;
+        
+        helpContext = "SL_HELP_CONTEXT";
     }
 
 
@@ -148,7 +152,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         localizableIOIFace = this;
         localizableIOIFace.load();
         
-        schemaLocPanel = new SchemaLocalizerPanel(this, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache);
+        schemaLocPanel = new SchemaLocalizerPanel(this, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, webLinkMgrCache);
         schemaLocPanel.setLocalizableIO(localizableIOIFace);
         schemaLocPanel.setUseDisciplines(false);
         
@@ -164,8 +168,6 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         
         setTitle();
-        
-        HelpMgr.setHelpID(getHelpBtn(), getResourceString("SL_HELP_CONTEXT"));
         
         pack();
     }
@@ -223,6 +225,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
                 int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
                 SchemaI18NService.getInstance().loadWithLocale(schemaType, disciplineeId, tableMgr, Locale.getDefault());
+                
+                
+                WebLinkMgr.getInstance().reload();
                 
                 return null;
             }
@@ -559,8 +564,11 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     {
         if (container instanceof SpLocaleContainer)
         {
-            changedTables.add((SpLocaleContainer)container);
-            changedTableHash.put(container.getId().intValue(), container);
+            if (changedTableHash.get(container.getId().intValue()) == null)
+            {
+                changedTables.add((SpLocaleContainer)container);
+                changedTableHash.put(container.getId().intValue(), container);
+            }
         }
     }
 
@@ -722,13 +730,6 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
      */
     protected void enabledDlgBtns(final boolean enable)
     {
-        if (enable)
-        {
-            okBtn.setEnabled(schemaLocPanel != null ? schemaLocPanel.hasChanged() : false);
-        } else
-        {
-            okBtn.setEnabled(false);
-        }
         okBtn.setEnabled(enable ? (schemaLocPanel != null ? schemaLocPanel.hasChanged() : false) : false);
         cancelBtn.setEnabled(enable);
         applyBtn.setEnabled(enable);
@@ -874,6 +875,14 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         throw new RuntimeException("Export is not implemented.");
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#hasUpdatablePickLists()
+     */
+    public boolean hasUpdatablePickLists()
+    {
+        return true;
+    }
+    
     /* (non-Javadoc)
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */

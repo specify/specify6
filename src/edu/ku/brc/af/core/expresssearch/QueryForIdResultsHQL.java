@@ -24,13 +24,12 @@ import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
-import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -54,6 +53,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     protected boolean               shouldInstallServices = true;
     protected RecordSetIFace        recordSet;
     protected boolean               isMultipleSelection   = true;
+    protected boolean               isEditable            = false;
     
     @SuppressWarnings("unchecked") //$NON-NLS-1$
     public QueryForIdResultsHQL(final SearchTableConfig searchTableConfig,
@@ -219,9 +219,17 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#enableEditing()
      */
-    public boolean enableEditing()
+    public boolean isEditingEnabled()
     {
-        return false;
+        return isEditable;
+    }
+    
+    /**
+     * @param isEditable the isEditable to set
+     */
+    public void setEditable(boolean isEditable)
+    {
+        this.isEditable = isEditable;
     }
 
     /* (non-Javadoc)
@@ -229,44 +237,8 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
      */
     public void removeIds(List<Integer> ids)
     {
-        // TODO Add StaleObject Code from FormView
-        
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            FormHelper.updateLastEdittedInfo(recordSet);
-            
-            session.beginTransaction();
-
-            Vector<RecordSetItemIFace> items = new Vector<RecordSetItemIFace>(recordSet.getOrderedItems());
-            for (Integer id : ids)
-            {
-                for (RecordSetItemIFace rsi : items)
-                {
-                    if (rsi.getRecordId().intValue() == id.intValue())
-                    {
-                        //System.out.println(recordSet.getItems().contains(rsi));
-                        recordSet.removeItem(rsi);
-                        session.delete(rsi);
-                        //System.out.println(recordSet.getItems().contains(rsi));
-                    }
-                }
-            }
-            
-            items.clear();
-            session.saveOrUpdate(recordSet);
-            session.commit();
-            session.flush();
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            //log.error(ex);
-            
-        } finally
-        {
-            session.close();    
-        }
+        CommandAction cmd = new CommandAction("Record_Set", "DELETEITEMS", new Object[] {recordSet, ids});
+        CommandDispatcher.dispatch(cmd);
     }
     
     /**

@@ -318,7 +318,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#enableEditing()
      */
-    public boolean enableEditing()
+    public boolean isEditingEnabled()
     {
         return false;
     }

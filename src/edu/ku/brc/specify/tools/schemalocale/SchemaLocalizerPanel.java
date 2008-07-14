@@ -76,6 +76,8 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatDlg;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.ui.weblink.WebLinkConfigDlg;
+import edu.ku.brc.ui.weblink.WebLinkMgr;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 /**
@@ -105,6 +107,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     // used to hold changes to formatters before these are committed to DB
     protected DataObjFieldFormatMgr 	dataObjFieldFormatMgrCache;
     protected UIFieldFormatterMgr		uiFieldFormatterMgrCache;
+    protected WebLinkMgr                webLinkMgrCache;
     
     // LocalizableContainerIFace Fields
     protected FieldItemPanel            fieldPanel;
@@ -125,11 +128,15 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     
     // data obj formatter and aggregator controls
     protected JLabel                    dataObjFmtLbl = null;
-    protected JLabel 					aggregatorLbl = null;
     protected JComboBox					dataObjFmtCbo = null;
-    protected JComboBox					aggregatorCbo = null;
     protected JButton					dataObjFmtBtn = null;
-    protected JButton					aggregatorBtn = null;
+    
+    protected JLabel                    aggregatorLbl = null;
+    protected JComboBox                 aggregatorCbo = null;
+    protected JButton                   aggregatorBtn = null;
+    
+    protected JLabel                    webLinkLbl    = null;
+    protected JButton                   webLinkBtn = null;
     
     protected Hashtable<String, String>         resHash     = new Hashtable<String, String>();
     protected Hashtable<String, PackageTracker> packageHash = new Hashtable<String, PackageTracker>();
@@ -139,15 +146,19 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     
 
     /**
-     * 
+     * @param l
+     * @param dataObjFieldFormatMgrCache
+     * @param uiFieldFormatterMgrCache
      */
-    public SchemaLocalizerPanel(final PropertyChangeListener l, 
+    public SchemaLocalizerPanel(final PropertyChangeListener pcListener, 
                                 final DataObjFieldFormatMgr  dataObjFieldFormatMgrCache,
-                                final UIFieldFormatterMgr    uiFieldFormatterMgrCache)
+                                final UIFieldFormatterMgr    uiFieldFormatterMgrCache,
+                                final WebLinkMgr             webLinkMgrCache)
     {
-        listener = l;
+        this.listener                   = pcListener;
         this.dataObjFieldFormatMgrCache = dataObjFieldFormatMgrCache;
         this.uiFieldFormatterMgrCache   = uiFieldFormatterMgrCache;
+        this.webLinkMgrCache            = webLinkMgrCache;
         init();
     }
 
@@ -201,6 +212,11 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         fillAggregatorCombo();
         addAggregatorActionListener();
         
+        // WebLinks controls
+        webLinkLbl = createLabel(getResourceString("SL_WEBLINKS")+":", SwingConstants.RIGHT);
+        webLinkBtn = createButton("...");
+        addWebLinkActionListener();
+        
         
         String descStr  = getResourceString("SL_DESC") + ":";
         String nameStr  = getResourceString("SL_NAME") + ":";
@@ -209,7 +225,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         PanelBuilder topInner   = new PanelBuilder(new FormLayout("p,2px,f:p:g",
                                                                   "p,2px," + (includeHiddenUI ? "p,2px," : "") + "p,2px,p" +
                                                                   (useDisciplines ? ",2px,p" : "") +
-                                                                  ",6px,p,2px,p"  // formatter & aggregator panel
+                                                                  ",6px,p,2px,p,2px,p"  // formatter, aggregator & weblink panel
                                                                   ));
         
         topInner.add(tblDescLbl = createLabel(nameStr, SwingConstants.RIGHT), cc.xy(1, y));
@@ -235,10 +251,17 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         aggPanel.add(aggregatorCbo, cc.xy(1, 1));
         aggPanel.add(aggregatorBtn, cc.xy(2, 1));
 
+        // WebLink panel
+        PanelBuilder wlPanel = new PanelBuilder(new FormLayout("p,f:p:g", "p"));
+        //wlPanel.add(webLinkCbo, cc.xy(1, 1));
+        wlPanel.add(webLinkBtn, cc.xy(1, 1));
+
         topInner.add(dataObjFmtLbl, cc.xy(1, y)); 
         topInner.add(fmtPanel.getPanel(), cc.xy(3, y)); y += 2;
         topInner.add(aggregatorLbl,    cc.xy(1, y)); 
         topInner.add(aggPanel.getPanel(), cc.xy(3, y)); y += 2;
+        topInner.add(webLinkLbl,    cc.xy(1, y)); 
+        topInner.add(wlPanel.getPanel(), cc.xy(3, y)); y += 2;
         
         JScrollPane tblsp = new JScrollPane(tablesList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
@@ -340,6 +363,10 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         if (!isIgnoreChanges())
         {
             this.hasTableInfoChanged = hasChanged;
+            if (currContainer != null)
+            {
+                localizableIO.containerChanged(currContainer);
+            }
         }
     }
     
@@ -396,34 +423,34 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
      */
     private void fillAggregatorCombo()
     {
-    	List<DataObjAggregator> fList;
-    	if (tableInfo != null)
-    	{
+        List<DataObjAggregator> fList;
+        if (tableInfo != null)
+        {
             fList = dataObjFieldFormatMgrCache.getAggregatorList(tableInfo.getClassObj());
             // list must be sorted in the same way it's sorted on UIFormatterDlg because selection index is considered equivalent between combo boxes
             Collections.sort(fList, new ComparatorByStringRepresentation<DataObjAggregator>()); 
-    	}
-    	else 
-    	{
-    		fList = new Vector<DataObjAggregator>(0);
-    	}
+        }
+        else 
+        {
+            fList = new Vector<DataObjAggregator>(0);
+        }
         
         DefaultComboBoxModel model = (DefaultComboBoxModel) aggregatorCbo.getModel();
-    	model.removeAllElements();
+        model.removeAllElements();
 
-    	if (currContainer == null) return;
-    	
+        if (currContainer == null) return;
+        
         String aggName = currContainer.getAggregator();
 
         int selectedInx = -1;
         for (DataObjAggregator aggregator : fList)
         {
-        	model.addElement(aggregator);
-        	
-        	if (aggName != null && aggName.equals(aggregator.getName()))
-        	{
-        		selectedInx = model.getSize() - 1;
-        	}
+            model.addElement(aggregator);
+            
+            if (aggName != null && aggName.equals(aggregator.getName()))
+            {
+                selectedInx = model.getSize() - 1;
+            }
         }
         
         // select format from list that is currently assigned to table
@@ -493,6 +520,26 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         aggregatorBtn.addActionListener(aggregatorBtnAL);
     }
     
+    /**
+     * Creates and adds action listeners for web link ellipsis button
+     */
+    private void addWebLinkActionListener()
+    {
+        ActionListener wbFmtBtnAL = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                WebLinkConfigDlg dlg = webLinkMgrCache.editWebLinks(tableInfo, true);
+                if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+                {
+                    setTableInfoChanged(true);
+                    setHasChanged(true);
+                }
+            }
+        };
+        webLinkBtn.addActionListener(wbFmtBtnAL);
+    }
+
     /**
      * @return the statusBar
      */
@@ -575,6 +622,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         aggregatorLbl.setEnabled(enable);
         aggregatorCbo.setEnabled(enable);
         aggregatorBtn.setEnabled(enable);
+        webLinkLbl.setEnabled(enable);
+        webLinkBtn.setEnabled(enable);
     }
     
     /**
@@ -685,7 +734,10 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     {
         getContainerDataFromUI();
         
-        fieldPanel.getItemDataFromUI();
+        if (fieldPanel.getItemDataFromUI())
+        {
+            hasTableInfoChanged = true;
+        }
     }
     
     /**

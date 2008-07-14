@@ -131,7 +131,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         Point pos = c.getLocation();
         pos.x = pnt.x - pos.x;
         pos.y = pnt.y - pos.y;
-        //System.out.println(button+" startDrag "+DragAndDropLock.isDragAndDropStarted()+" "+DragAndDropLock.isLocked()+"  dragButtonIndex "+dragButtonIndex);
+        System.out.println(button+" startDrag "+DragAndDropLock.isDragAndDropStarted()+" "+DragAndDropLock.isLocked()+"  dragButtonIndex "+dragButtonIndex);
 
         if (DragAndDropLock.isLocked() || button != dragButtonIndex)
         {
@@ -170,7 +170,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     @Override
     public void mousePressed(MouseEvent e)
     {
-        //System.out.println("mousePressed "+e.getPoint());
+        System.out.println("mousePressed "+e.getPoint());
         firstPosition.setLocation(e.getPoint());
     }
 
@@ -342,6 +342,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     @Override
     public void mouseDragged(MouseEvent e)
     {
+        System.out.println("mouseDragged "+e.getPoint());
         if (!ghostActionable.isEnabled())
         {
             return;

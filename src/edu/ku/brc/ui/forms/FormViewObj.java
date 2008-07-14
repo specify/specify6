@@ -82,6 +82,7 @@ import com.jgoodies.forms.debug.FormDebugPanel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
@@ -100,7 +101,6 @@ import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
@@ -1868,6 +1868,11 @@ public class FormViewObj implements Viewable,
 
         if (!isNewlyCreatedDataObj)
         {
+            if (mvParent != null && mvParent.isTopLevel())
+            {
+                collectionViewState();
+            }
+            
             if (session != null && (mvParent == null || mvParent.isTopLevel()))
             {
                 session.close();
@@ -1878,11 +1883,18 @@ public class FormViewObj implements Viewable,
             
             if (dataObj instanceof FormDataObjIFace)
             {
+                int index = list.indexOf(dataObj);
                 Integer id = ((FormDataObjIFace)dataObj).getId();
                 if (id != null)
                 {
                     Class<?> cls = dataObj.getClass();
                     dataObj = session.get(cls, id);
+                    
+                    if (index > -1)
+                    {
+                        list.remove(index);
+                        list.insertElementAt(dataObj, index);
+                    }
                 } else
                 {
                     // Bail out if the id is null meaning it is a new object
@@ -1905,6 +1917,15 @@ public class FormViewObj implements Viewable,
                 this.setDataObj(dataObj);
             }
             this.setDataIntoUI();
+            
+            if (viewStateList != null && viewStateList.size() > 0 && mvParent != null && mvParent.isTopLevel())
+            {
+                if (mvParent != null)
+                {
+                    mvParent.setViewState(viewStateList, altView.getMode(), 0);
+                }
+                viewStateList.clear();
+            }
         }
     }
     
@@ -2560,17 +2581,19 @@ public class FormViewObj implements Viewable,
                 {
                     mvParent.getDeletedItems().clear();
                 }
-                if (((FormDataObjIFace)dataObj).getId() != null)
+                
+                FormDataObjIFace fdo   = (FormDataObjIFace)dataObj;
+                Integer          objId = fdo.getId();
+                if (objId != null)
                 {
                     session.beginTransaction();
+                    
+                    // Reload the object from the database  to avoid a stale object exception.
+                    Object dbDataObj = session.getData(fdo.getDataClass(), "id", objId, DataProviderSessionIFace.CompareType.Equals);
+                    session.delete(dbDataObj);
                     if (businessRules != null)
                     {
-                        businessRules.beforeDelete(dataObj, session);
-                    }
-                    session.delete(dataObj);
-                    if (businessRules != null)
-                    {
-                        if (!businessRules.beforeDeleteCommit(dataObj, session))
+                        if (!businessRules.beforeDeleteCommit(dbDataObj, session))
                         {
                             session.rollback();
                             throw new Exception("Business rules processing failed");
@@ -2580,7 +2603,7 @@ public class FormViewObj implements Viewable,
                     session.flush();
                     if (businessRules != null)
                     {
-                        businessRules.afterDeleteCommit(dataObj);
+                        businessRules.afterDeleteCommit(dbDataObj);
                     }
                     
                     isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
@@ -2596,6 +2619,7 @@ public class FormViewObj implements Viewable,
                 
             } catch (edu.ku.brc.dbsupport.StaleObjectException e)
             {
+                e.printStackTrace();
                 doClearObj = false;
                 session.rollback();
                 recoverFromStaleObject("DELETE_DATA_STALE", null);
@@ -3255,10 +3279,9 @@ public class FormViewObj implements Viewable,
             
             if (recordSet == null)
             {
-                // XXX This is VERY BAD, it needs it's own factory, I thought I had one already.
-                RecordSet rs = new RecordSet();
-                rs.initialize();
-                rs.set("Temp", tableInfo.getTableId(), RecordSet.GLOBAL);
+                RecordSetIFace rs = RecordSetFactory.getInstance().createRecordSet();
+                rs.setName("Temp");
+                rs.setDbTableId(tableInfo.getTableId());
                 recordSet = rs;
             }
             recordSetItemList.addAll(availableIdList);
@@ -3290,13 +3313,7 @@ public class FormViewObj implements Viewable,
                 
                 if (recordSet == null)
                 {
-                    /////////////////////////////////////////////////////////////////////////////////////
-                    /////////////////////////////////////////////////////////////////////////////////////
-                    // XXX This is VERY BAD, it needs it's own factory, I thought I had one already.
-                    /////////////////////////////////////////////////////////////////////////////////////
-                    /////////////////////////////////////////////////////////////////////////////////////
-                    recordSet = new RecordSet();
-                    ((RecordSet)recordSet).initialize();
+                    recordSet = RecordSetFactory.getInstance().createRecordSet();
                 }
                 
                 recordSetItemList = new Vector<RecordSetItemIFace>(availableIdList.size());

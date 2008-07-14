@@ -30,7 +30,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.AddRemoveEditPanel;
 import edu.ku.brc.ui.CustomDialog;
@@ -49,24 +48,30 @@ public class WebLinkConfigDlg extends CustomDialog
 {
     protected JList              list;
     protected AddRemoveEditPanel itemsPanelADE;
-    protected WebLinkMgr         wlMgr      = WebLinkMgr.getInstance();
+    protected WebLinkMgr         wlMgr;
     protected boolean            hasChanged = false;
+    protected boolean            isTableMode;
     
     protected DBTableInfo        tableInfo;
-    protected DBFieldInfo        fieldInfo;
     
     /**
      * @throws HeadlessException
      */
-    public WebLinkConfigDlg(final DBTableInfo tableInfo,
-                            final DBFieldInfo fieldInfo) throws HeadlessException
+    public WebLinkConfigDlg(final WebLinkMgr  wlMgr,
+                            final DBTableInfo tableInfo,
+                            final boolean     isTableMode) throws HeadlessException
     {
-        super((Frame)UIRegistry.getTopWindow(), UIRegistry.getResourceString("WebLinkConfigDlg.WEB_LNK_EDT"), true, OKHELP, null); // I18N //$NON-NLS-1$
+        super((Frame)UIRegistry.getTopWindow(), UIRegistry.getResourceString("WebLinkConfigDlg.WEB_LNK_EDT"), true, isTableMode ? OKHELP : OKCANCELHELP, null); // I18N //$NON-NLS-1$
         
-        this.tableInfo = tableInfo;
-        this.fieldInfo = fieldInfo;
+        this.wlMgr       = wlMgr;
+        this.tableInfo   = tableInfo;
+        this.isTableMode = isTableMode;
         
-        okLabel = UIRegistry.getResourceString("CLOSE"); //$NON-NLS-1$
+        if (isTableMode)
+        {
+            okLabel = UIRegistry.getResourceString("CLOSE"); //$NON-NLS-1$
+        }
+        helpContext = "WEBLNK_EDITOR";
     }
 
     /* (non-Javadoc)
@@ -113,7 +118,7 @@ public class WebLinkConfigDlg extends CustomDialog
         itemsPanelADE = new AddRemoveEditPanel(addItemAL, delItemAL, editItemAL);
         pb.add(itemsPanelADE, cc.xy(1, 5));
         
-        for (WebLinkDef wld : wlMgr.getWebLinkDefs())
+        for (WebLinkDef wld : wlMgr.getWebLinkDefs(isTableMode ? tableInfo : null))
         {
             ((DefaultListModel)list.getModel()).addElement(wld);
         }
@@ -148,6 +153,26 @@ public class WebLinkConfigDlg extends CustomDialog
         pack();
         
         enableUI();
+    }
+    
+    /**
+     * @param wbName
+     */
+    public void setWebLink(final String wbName)
+    {
+        if (!isTableMode && wbName != null)
+        {
+            DefaultListModel model = (DefaultListModel)list.getModel();
+            for (int i=0;i<model.size();i++)
+            {
+                WebLinkDef wld = (WebLinkDef)model.getElementAt(i);
+                if (wld.getName().equals(wbName))
+                {
+                    list.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
     }
     
     /* (non-Javadoc)
@@ -195,12 +220,27 @@ public class WebLinkConfigDlg extends CustomDialog
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
-            wld.getUsedByList().add(new WebLinkUsedBy(tableInfo.getName(), fieldInfo.getName()));
-            
-            ((DefaultListModel)list.getModel()).addElement(wld);
-            list.setSelectedValue(wld, true);
-            wlMgr.add(wld);
-            hasChanged = true;
+            if (dlg.hasChanged())
+            {
+                if (tableInfo != null)
+                {
+                    if (isTableMode)
+                    {
+                        wld.setTableName(tableInfo.getName());
+                    } else
+                    {
+                        wld.getUsedByList().add(new WebLinkUsedBy(tableInfo.getName()));  
+                    }
+                }
+                
+                ((DefaultListModel)list.getModel()).addElement(wld);
+                list.setSelectedValue(wld, true);
+                wlMgr.add(wld);
+                hasChanged = true;
+            } else
+            {
+                System.err.println("Not changed.");
+            }
         }
     }
 
@@ -210,13 +250,15 @@ public class WebLinkConfigDlg extends CustomDialog
     protected void delWebLink()
     {
         WebLinkDef wld = (WebLinkDef)list.getSelectedValue();
-        for (WebLinkUsedBy wlub : wld.getUsedByList())
+        if (tableInfo != null)
         {
-            if (wlub.getTableName().equals(tableInfo.getName()) &&
-                wlub.getFieldName().equals(fieldInfo.getName()))
+            for (WebLinkUsedBy wlub : wld.getUsedByList())
             {
-                wld.getUsedByList().remove(wlub);
-                break;
+                if (wlub.getTableName().equals(tableInfo.getName()))
+                {
+                    wld.getUsedByList().remove(wlub);
+                    break;
+                }
             }
         }
         ((DefaultListModel)list.getModel()).removeElement(wld);

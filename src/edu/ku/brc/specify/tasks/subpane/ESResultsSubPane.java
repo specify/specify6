@@ -77,15 +77,15 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     
     protected List<ESResultsTablePanelIFace> expTblResults        = new Vector<ESResultsTablePanelIFace>();
     
-    protected NavBox      navBox  = null;
-    protected int         positionOfUnIndexed = -1;
-    protected boolean     showing = false;
-    protected boolean     added   = false;
+    protected NavBox               navBox              = null;
+    protected int                  positionOfUnIndexed = -1;
+    protected boolean              showing             = false;
+    protected boolean              added               = false;
     
     // Tables are added here waiting for their first results to come back.
     protected Vector<ESResultsTablePanelIFace> expTblResultsCache = new Vector<ESResultsTablePanelIFace>();
     
-    protected JPanel      explainPanel = null;
+    protected JPanel               explainPanel        = null;
     
     protected Comparator<ESResultsTablePanelIFace> sorter;
     

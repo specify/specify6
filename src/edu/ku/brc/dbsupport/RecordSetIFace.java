@@ -141,5 +141,10 @@ public interface RecordSetIFace
      * @return
      */
     public abstract Class<?> getDataClassFormItems();
+    
+    /**
+     * @param type
+     */
+    public abstract void setType(Byte type);
 
 }

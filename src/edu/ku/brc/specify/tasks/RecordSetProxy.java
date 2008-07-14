@@ -24,6 +24,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.RecordSetItem;
 
 /**
  * @author rod
@@ -316,9 +317,22 @@ public class RecordSetProxy implements RecordSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.RecordSetIFace#removeItem(edu.ku.brc.dbsupport.RecordSetItemIFace)
      */
-    public void removeItem(RecordSetItemIFace rsi)
+    public void removeItem(final RecordSetItemIFace rsi)
     {
-        throw new RuntimeException("Can't call on proxy");
+        if (rsi instanceof RecordSetItem)
+        {
+            RecordSetTask.deleteItems(recordSetId, null, ((RecordSetItem)rsi).getRecordSetItemId());
+        } else
+        {
+            throw new RuntimeException("Trying to delete record set item from non persisten RS");
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.RecordSetIFace#setType(java.lang.Byte)
+     */
+    public void setType(Byte type)
+    {
     }
 
     /* (non-Javadoc)

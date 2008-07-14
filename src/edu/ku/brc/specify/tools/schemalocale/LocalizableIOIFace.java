@@ -39,7 +39,7 @@ public interface LocalizableIOIFace
     
     /**
      * @param item
-     * @return
+     * @param l
      */
     public abstract void getContainer(LocalizableJListItem item, LocalizableIOIFaceListener l);
     
@@ -99,11 +99,15 @@ public interface LocalizableIOIFace
      */
     public abstract boolean createResourceFiles();
     
-   
     /**
      * The implementor MUST return all the 'common' and all the discipline specific picklists.
      * @param disciplineName the name of the discipline
      * @return
      */
     public abstract List<PickList> getPickLists(String disciplineName);
+    
+    /**
+     * @return true if the PickLists can be created/updates/deleted.
+     */
+    public abstract boolean hasUpdatablePickLists();
 }

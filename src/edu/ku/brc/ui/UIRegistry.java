@@ -918,15 +918,16 @@ public class UIRegistry
     /**
      * Displays a message in the status bar. (Note: this updates on the SwingThread via SwingUtilities)
      * @param key the key of the string that is to appear in the status bar. The resource string will be looked up
+     * @param args for the message
      */
-    public static void displayLocalizedStatusBarText(final String key)
+    public static void displayLocalizedStatusBarText(final String key, final Object... args)
     {
         if (key == null) throw new NullPointerException("Call to displayLocalizedStatusBarText cannot be null!");
 
         String localizedStr = instance.getResourceStringInternal(key);
         assert localizedStr != null : "Localized String for key["+key+"]";
 
-        displayStatusBarText(localizedStr);
+        displayStatusBarText(String.format(localizedStr, args));
 
 
     }
