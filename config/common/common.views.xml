@@ -731,12 +731,6 @@
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="remarks" uitype="textarea" colspan="10" cols="40" rows="3"/>
                 </row>
-                <row>
-                    <cell type="separator" label="Collection Events" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="subview" id="10" name="collectingEvents" viewname="CollectingEventSubform" colspan="12"/>
-                 </row>
                 
             </rows>
         </viewdef>
