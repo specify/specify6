@@ -26,6 +26,8 @@ import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.util.Pair;
 
@@ -75,7 +77,7 @@ public class FormValidatorInfo extends JPanel
     
     class FormValidatorInfoModel extends AbstractTableModel
     {
-        protected Vector<Pair<String, UIValidatable.ErrorType>> rows   = new Vector<Pair<String, UIValidatable.ErrorType>>();
+        protected Vector<Pair<String, String>> rows   = new Vector<Pair<String, String>>();
         protected String[]            header = {getResourceString("VAL_CONTROLSUBFORM_LABEL"), getResourceString("VAL_STATUS_LABEL")};
         
         /**
@@ -89,7 +91,7 @@ public class FormValidatorInfo extends JPanel
             {
                 if (!kidValidator.isFormValid())
                 {
-                    rows.add(new Pair<String, UIValidatable.ErrorType>(kidValidator.getName(), kidValidator.getState()));
+                    rows.add(new Pair<String, String>(kidValidator.getName(), kidValidator.getState().toString()));
                 }
             }
                 
@@ -98,9 +100,19 @@ public class FormValidatorInfo extends JPanel
                 if (dcn.getUIV() != null)
                 {
                     UIValidatable uval =  dcn.getUIV().getUIV();
-                    if (uval.getValidatableUIComp().isEnabled() && uval.getState() != UIValidatable.ErrorType.Valid)
+                    if (uval != null && uval.getValidatableUIComp().isEnabled() && uval.getState() != UIValidatable.ErrorType.Valid)
                     {
-                        rows.add(new Pair<String, UIValidatable.ErrorType>(validator.getLabelTextForId(dcn.getId()), uval.getState()));
+                        String titleStr = validator.getLabelTextForId(dcn.getId());
+                        if (titleStr == null || titleStr.trim().length() == 0)
+                        {
+                            titleStr = uval.getValidatableUIComp().getClass().getSimpleName();
+                        }
+                        String reason = uval.getReason();
+                        if (StringUtils.isEmpty(reason))
+                        {
+                            reason = uval.getState().toString();
+                        }
+                        rows.add(new Pair<String, String>(titleStr, reason));
                     }
                 }
             }
@@ -125,7 +137,7 @@ public class FormValidatorInfo extends JPanel
 
         public Object getValueAt(int row, int column)
         {
-            Pair<String, UIValidatable.ErrorType> item = rows.get(row);
+            Pair<String, String> item = rows.get(row);
             return column == 0 ? item.first : getResourceString(item.second.toString());
         }
 

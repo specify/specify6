@@ -820,24 +820,24 @@ public class ViewFactory
             try
             {
                 // instantiate the plugin object
-                UIPluginable uip = pluginClass.asSubclass(UIPluginable.class).newInstance();
+                UIPluginable uiPlugin = pluginClass.asSubclass(UIPluginable.class).newInstance();
 
                 // This needs to be done before the initialize.
-                if (uip instanceof UIValidatable)
+                if (uiPlugin instanceof UIValidatable)
                 {
-                    ((UIValidatable)uip).setRequired(isRequired);
+                    ((UIValidatable)uiPlugin).setRequired(isRequired);
                 }
 
                 // initialize the plugin object
                 Properties props = (Properties)cellField.getProperties().clone();
                 props.put("parent", parent);
-                uip.initialize(props, isViewMode);
+                uiPlugin.initialize(props, isViewMode);
                 
                 // get the UI component provided by the plugin object
-                JComponent pluginUI = uip.getUIComponent();
+                JComponent pluginUI = uiPlugin.getUIComponent();
                 
                 // check for another required interface (GetSetValueIFace)
-                if (!(uip instanceof GetSetValueIFace))
+                if (!(uiPlugin instanceof GetSetValueIFace))
                 {
                     throw new RuntimeException("Plugin of class ["+pluginClass.getName()+"] doesn't implement the GetSetValueIFace!");
                 }
@@ -849,10 +849,10 @@ public class ViewFactory
                                                                        parseValidationType(cellField.getValidationType()), 
                                                                        cellField.getValidationRule(), 
                                                                        false);
-                    uip.setChangeListener(dcn);
+                    uiPlugin.setChangeListener(dcn);
                 }
 
-                return uip;
+                return uiPlugin;
                 
             } catch (Exception ex)
             {
@@ -1172,7 +1172,7 @@ public class ViewFactory
                     if (validator != null)
                     {
                         DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getIdent(), checkbox, null);
-                        checkbox.addActionListener(dcn);
+                        checkbox.addChangeListener(dcn);
                     }
                     bi.compToAdd = checkbox;
                     break;

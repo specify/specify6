@@ -205,6 +205,14 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getReason()
+     */
+    public String getReason()
+    {
+        return null;
+    }
+
     //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------

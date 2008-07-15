@@ -34,7 +34,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.text.JTextComponent;
@@ -448,6 +447,14 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
         UIHelper.removeKeyListeners(this);
         comboBox = null;
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getReason()
+     */
+    public String getReason()
+    {
+        return null;
     }
 
     //--------------------------------------------------------

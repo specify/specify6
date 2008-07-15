@@ -43,6 +43,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIPluginable;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.ViewFactory;
@@ -137,7 +138,9 @@ public class WebLinkButton extends JPanel implements UIPluginable,
                 this.setToolTipText(webLinkDef.getDesc());
             } else
             {
+                UIRegistry.showLocalizedError("WEBLNK_MISSING", wlName);
                 launchBtn.setToolTipText(""); //$NON-NLS-1$
+                return;
             }
         }
         
@@ -225,6 +228,7 @@ public class WebLinkButton extends JPanel implements UIPluginable,
         }
         catch (Exception e)
         {
+            UIRegistry.showLocalizedError("WEBLNK_BAD", "\n"+uri);
             log.error("Failed to open URL: " + uri.toString(), e); //$NON-NLS-1$
             return;
         }
@@ -626,7 +630,15 @@ public class WebLinkButton extends JPanel implements UIPluginable,
         
         return valState;
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getReason()
+     */
+    public String getReason()
+    {
+        return null;
+    }
+
     //--------------------------------------------------------
     // DataChangedListener Interface
     //--------------------------------------------------------

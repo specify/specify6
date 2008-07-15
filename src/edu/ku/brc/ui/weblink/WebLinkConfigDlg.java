@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.ui.weblink;
 
@@ -216,7 +213,7 @@ public class WebLinkConfigDlg extends CustomDialog
     protected void addWebLink()
     {
         WebLinkDef    wld = new WebLinkDef();
-        WebLinkArgDlg dlg = new WebLinkArgDlg(wld);
+        WebLinkEditorDlg dlg = new WebLinkEditorDlg(wld);
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
@@ -272,7 +269,7 @@ public class WebLinkConfigDlg extends CustomDialog
     protected void editWebLink()
     {
         WebLinkDef    wld = (WebLinkDef)list.getSelectedValue();
-        WebLinkArgDlg dlg = new WebLinkArgDlg(wld);
+        WebLinkEditorDlg dlg = new WebLinkEditorDlg(wld);
         dlg.setEdit(true);
         dlg.setVisible(true);
         

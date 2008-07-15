@@ -747,6 +747,14 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         fields    = null;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getReason()
+     */
+    public String getReason()
+    {
+        return null;
+    }
+
     //--------------------------------------------------------
     // UIRegistry.UndoableTextIFace
     //--------------------------------------------------------

@@ -79,6 +79,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     protected boolean        hasChanged = false;
     protected boolean        isRequired = false;
     protected ChangeListener changeListener = null;
+    protected String         reason         = null;
     
     protected Vector<ValFormattedTextFieldSingle> textFields  = new Vector<ValFormattedTextFieldSingle>();
     protected Vector<DataChangeNotifier>          dcNotifiers = new Vector<DataChangeNotifier>();
@@ -515,6 +516,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         {
             dcn.cleanUp();
         }
+        reason = null;
     }
     
     /* (non-Javadoc)
@@ -526,34 +528,79 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#validateState()
+     * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#validateState(boolean)
      */
-    public ErrorType validateState()
+    public ErrorType validateState(final boolean includeEmptyCheck)
     {
-        return validateStateTexFields();
+        reason = null;
+        return validateStateTexFields(includeEmptyCheck);
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#validateState()
+    /**
+     * @param includeEmptyCheck indicates that empty is invalid
+     * @return whether the field is valid
      */
-    protected ErrorType validateStateTexFields()
+    protected ErrorType validateStateTexFields(final boolean includeEmptyCheck)
     {
+        int completeCnt = 0;
         UIValidatable.ErrorType valState = UIValidatable.ErrorType.Valid;
         for (ValFormattedTextFieldSingle vtf : textFields)
         {
-            UIValidatable.ErrorType errType = vtf.validateState();
-            if (errType.ordinal() > valState.ordinal())
+            if (vtf.getText().length() == 0)
             {
-                valState = errType;
+                if (includeEmptyCheck)
+                {
+                    if (valState != UIValidatable.ErrorType.Error)
+                    {
+                        valState = UIValidatable.ErrorType.Incomplete;
+                    }
+                } else
+                {
+                    completeCnt++;
+                }
+                
+            } else
+            {
+                UIValidatable.ErrorType errType = vtf.validateState();
+                if (errType.ordinal() > valState.ordinal())
+                {
+                    valState = errType;
+                }
             }
         }
+        if (completeCnt > 0 && textFields.size() != completeCnt)
+        {
+            return UIValidatable.ErrorType.Incomplete;
+        }
         return valState;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#clear()
+     */
+    public void clear()
+    {
+        latitudeDD.setText("");
+        longitudeDD.setText("");
+        
+        latitude  = null;
+        longitude = null;
+        reason    = null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#getReason()
+     */
+    public String getReason()
+    {
+        return reason;
     }
     
     //--------------------------------------------------------
     // DataChangedListener Interface
     //--------------------------------------------------------
-    
+
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.forms.validation.DataChangeNotifier)
      */

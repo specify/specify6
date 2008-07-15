@@ -372,8 +372,15 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
      */
     public void stateChanged(final ChangeEvent arg0)
     {
-        
-
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getReason()
+     */
+    public String getReason()
+    {
+        return null;
+    }
+
 
 }

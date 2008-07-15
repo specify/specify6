@@ -1012,7 +1012,15 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         textWithQuery = null;
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getReason()
+     */
+    public String getReason()
+    {
+        return null;
+    }
+
     /**
      * Registers an interface that can be asked for the Query string and the results info.
      * @param builder the builder object

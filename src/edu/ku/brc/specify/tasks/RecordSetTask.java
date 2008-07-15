@@ -53,7 +53,6 @@ import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -933,6 +932,9 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                     {
                         UIRegistry.displayStatusBarText("");
                         return rsName;
+                    } else
+                    {
+                        throw new RuntimeException("Return value should have been an Integer!");
                     }
                 }
                 UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("RecordSetTask.RS_NAME_DUP"), rsName));

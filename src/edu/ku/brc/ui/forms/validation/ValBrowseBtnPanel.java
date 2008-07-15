@@ -156,4 +156,13 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
         
         return err.ordinal() > fileError.ordinal() ? err : fileError;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getReason()
+     */
+    public String getReason()
+    {
+        return null;
+    }
+
 }

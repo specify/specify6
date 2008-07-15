@@ -90,15 +90,27 @@ public interface LatLonUIIFace
     public abstract void setChangeListener(final ChangeListener changeListener);
     
     /**
-     * @return
+     * @param includeEmptyCheck indicates it should also check for empty as part of
+     * the validation process. It is the same a required, but they can't be set to required.
+     * @return whether the fields are valid
      */
-    public abstract ErrorType validateState();
+    public abstract ErrorType validateState(boolean includeEmptyCheck);
+    
+    /**
+     * @return a reason for being in Error or Incomplete or it can return null.
+     */
+    public abstract String getReason();
     
     /**
      * Enables or Disabled the UI.
      * @param enabled true to enable the UI
      */
     public abstract void setEnabled(boolean enabled);
+    
+    /**
+     * Clears (resets) all the values);
+     */
+    public abstract void clear();
     
     /**
      * 

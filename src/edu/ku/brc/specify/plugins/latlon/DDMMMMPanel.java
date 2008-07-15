@@ -165,11 +165,11 @@ public class DDMMMMPanel extends DDDDPanel
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.latlon.DDDDPanel#validateState()
+     * @see edu.ku.brc.specify.plugins.latlon.DDDDPanel#validateState(boolean)
      */
-    public ErrorType validateState()
+    public ErrorType validateState(final boolean includeEmptyCheck)
     {
-        ErrorType state = validateStateTexFields();
+        ErrorType state = validateStateTexFields(includeEmptyCheck);
         if (state == ErrorType.Valid)
         {
             ValState valStateLat = evalState(latitudeDD, latitudeMM);
@@ -178,4 +178,16 @@ public class DDMMMMPanel extends DDDDPanel
         }
         return state;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.latlon.DDDDPanel#clear()
+     */
+    @Override
+    public void clear()
+    {
+        super.clear();
+        latitudeMM.setText("");
+        longitudeMM.setText("");
+    }
+    
 }

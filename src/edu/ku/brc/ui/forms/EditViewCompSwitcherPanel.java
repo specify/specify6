@@ -33,7 +33,10 @@ import edu.ku.brc.ui.forms.validation.ValidationListener;
  * Nov 4, 2007
  *
  */
-public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFace, UIValidatable, DataChangeListener, ValidationListener
+public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFace, 
+                                                                 UIValidatable, 
+                                                                 DataChangeListener, 
+                                                                 ValidationListener
 {
     protected Component          editComp;
     protected Component          viewComp;
@@ -219,6 +222,14 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
         dataObj = value;
         FormViewObj.setDataIntoUIComp(editComp, value, defaultValue);
         FormViewObj.setDataIntoUIComp(viewComp, value, defaultValue);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getReason()
+     */
+    public String getReason()
+    {
+        return null;
     }
 
     /* (non-Javadoc)

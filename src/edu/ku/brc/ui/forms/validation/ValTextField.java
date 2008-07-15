@@ -350,7 +350,15 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         document = null;
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getReason()
+     */
+    public String getReason()
+    {
+        return null;
+    }
+
     //--------------------------------------------------------
     // UIRegistry.UndoableTextIFace
     //--------------------------------------------------------

@@ -46,7 +46,7 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
-import edu.ku.brc.ui.UIRegistry;
+import static edu.ku.brc.ui.UIRegistry.*;
 import edu.ku.brc.ui.forms.validation.UIValidatable;
 
 
@@ -73,6 +73,8 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     protected final static String[] typeNamesKeys           = {"Point", "Line", "Rect"};
     protected final static LatLonUIIFace.LatLonType[] types = {LatLonUIIFace.LatLonType.LLPoint, LatLonUIIFace.LatLonType.LLLine, LatLonUIIFace.LatLonType.LLRect};
     protected final static String[] typeStrs                = {"Point",                          "Line",                          "Rectangle"};
+    
+    protected String[]              errorMessages;
     
     protected CellConstraints cc       = new CellConstraints();
     
@@ -112,6 +114,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     protected boolean            isRequired = false;
     protected boolean            isChanged  = false;
     protected boolean            isNew      = false;
+    protected String             reason     = null;
     
     
     /**
@@ -119,15 +122,25 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
      */
     public LatLonUI()
     {
-        UIRegistry.loadAndPushResourceBundle("specify_plugins");
+        loadAndPushResourceBundle("specify_plugins");
 
         typeNamesLabels = new String[typeNamesKeys.length];
         int i = 0;
         for (String key : typeNamesKeys)
         {
-            typeNamesLabels[i++] = UIRegistry.getResourceString(key);
+            typeNamesLabels[i++] = getResourceString(key);
         }
-        UIRegistry.popResourceBundle();
+        
+        String[] keys = new String[] {"LatLonUI.POINT_ERR", "LatLonUI.POINT_INCMP", "LatLonUI.FIRST_POINT_ERR", 
+                                      "LatLonUI.FIRST_POINT_INCMP", "LatLonUI.SEC_POINT_ERR", "LatLonUI.SEC_POINT_INCMP"};
+        errorMessages = new String[keys.length];
+        i = 0;
+        for (String key : keys)
+        {
+            errorMessages[i++] = getResourceString(key);    
+        }
+        
+        popResourceBundle();
     }
     
     /**
@@ -253,6 +266,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
             rb.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent ce)
                 {
+                    stateChanged(null);
                     currentType = selectedTypeHash.get(ce.getSource());
                     swapForm(formatSelector.getSelectedIndex(), currentType);
                 }
@@ -301,7 +315,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
      */
     protected void swapForm(final int formInx, final LatLonUIIFace.LatLonType type)
     {
-        if (currentInx != -1)
+       if (currentInx != -1)
         {
             LatLonUIIFace prevPanel1 = panels[(currentInx*2)];
             LatLonUIIFace prevPanel2 = panels[(currentInx*2)+1];
@@ -309,15 +323,23 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
             LatLonUIIFace nextPanel1 = panels[(formInx*2)];
             LatLonUIIFace nextPanel2 = panels[(formInx*2)+1];
             
-            if (prevPanel1.hasChanged() && prevPanel1.validateState() == UIValidatable.ErrorType.Valid)
+            if (prevPanel1.hasChanged() && prevPanel1.validateState(false) == UIValidatable.ErrorType.Valid)
             {
                 nextPanel1.set(prevPanel1.getLatitude(), prevPanel1.getLongitude());
             }
             
-            if (prevPanel2.hasChanged() && prevPanel2.validateState() == UIValidatable.ErrorType.Valid)
+            if (prevPanel2.hasChanged())
             {
-                nextPanel2.set(prevPanel2.getLatitude(), prevPanel2.getLongitude());
+                if (type == LatLonUIIFace.LatLonType.LLPoint)
+                {
+                    nextPanel2.clear();
+                    
+                } else if (prevPanel2.validateState(true) == UIValidatable.ErrorType.Valid)
+                {
+                    nextPanel2.set(prevPanel2.getLatitude(), prevPanel2.getLongitude());
+                }
             }
+            stateChanged(null);
         }
         
         // Set the radio button accordingly
@@ -626,30 +648,51 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
      */
     public ErrorType validateState()
     {
+        reason = null;
         // this validates the state
         valState = UIValidatable.ErrorType.Valid;
         
-        for (int i=(currentInx*2);i<(currentInx*2)+2;i++)
+        int startInx = (currentInx * 2);
+        for (int i=startInx;i<startInx+2;i++)
         {
-            UIValidatable.ErrorType errType = panels[i].validateState();
-            if (errType.ordinal() > valState.ordinal())
+            // First check to see if the panel is Valid
+            // Empty is Valid.
+            boolean isNotPoint  = currentType != LatLonUIIFace.LatLonType.LLPoint;
+            if (i == startInx || isNotPoint)
             {
-                valState = errType;
+                UIValidatable.ErrorType errType = panels[i].validateState(isNotPoint);
+                if (errType.ordinal() > valState.ordinal())
+                {
+                    //reason   = panels[i].getReason();
+                    valState = errType;
+                    if (i == startInx)
+                    {
+                        if (valState == UIValidatable.ErrorType.Incomplete)
+                        {
+                            reason = isNotPoint ? errorMessages[3] : errorMessages[1];
+                        } else
+                        {
+                            reason = isNotPoint ? errorMessages[2] : errorMessages[0];
+                        }
+                    } else
+                    {
+                        reason = valState == UIValidatable.ErrorType.Incomplete ? errorMessages[5] : errorMessages[4];
+                    }
+                }
             }
         }
         
-        /*for (LatLonUIIFace panel : panels)
-        {
-            UIValidatable.ErrorType errType = panel.validateState();
-            if (errType.ordinal() > valState.ordinal())
-            {
-                valState = errType;
-            }
-        } */
-        
         return valState;
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getReason()
+     */
+    public String getReason()
+    {
+        return reason;
+    }
+
     //--------------------------------------------------------
     // ChangeListener Interface
     //--------------------------------------------------------

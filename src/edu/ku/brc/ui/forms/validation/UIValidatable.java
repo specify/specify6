@@ -33,62 +33,66 @@ public interface UIValidatable
      * Returns the isInError.
      * @return the isInError.
      */
-    public boolean isInError();
-
+    public abstract boolean isInError();
 
     /**
      * Returns the validation state.
      * @return the validation state
      */
-    public ErrorType getState();
+    public abstract ErrorType getState();
 
     /**
      * Sets the validation state
      * @param state The isInError to set.
      */
-    public void setState(ErrorType state);
+    public abstract void setState(ErrorType state);
+    
+    /**
+     * @return the localized text description of the error, (ok if null).
+     */
+    public abstract String getReason();
 
     /**
      * Rests the state of the control to "empty" or what ever that means for the control
      */
-    public void reset();
+    public abstract void reset();
 
     /**
      * Returns the isRequired.
      * @return Returns the isRequired.
      */
-    public boolean isRequired();
+    public abstract boolean isRequired();
 
     /**
      * Sets whether it is required
      * @param isRequired The isRequired to set.
      */
-    public void setRequired(boolean isRequired);
+    public abstract void setRequired(boolean isRequired);
 
     /**
      * Returns whether it has changed.
      * @return whether it has changed
      */
-    public boolean isChanged();
+    public abstract boolean isChanged();
 
     /**
      * Sets whether it has changed.
      * @param isChanged whether it has changed.
      */
-    public void setChanged(boolean isChanged);
+    public abstract void setChanged(boolean isChanged);
 
     /**
      * Tells a control that it is new and not to validate until it has received focus.
      * @param isNew true it's new, false it is not
      */
-    public void setAsNew(boolean isNew);
+    public abstract void setAsNew(boolean isNew);
 
 
     /**
      * Asks it to validate itself.
      * @return the result of the validation
      */
-    public ErrorType validateState();
+    public abstract ErrorType validateState();
 
 
     /**
@@ -96,10 +100,10 @@ public interface UIValidatable
      * so this is the actual control the user interact with
      * @return the actual Component being validated
      */
-    public Component getValidatableUIComp();
+    public abstract Component getValidatableUIComp();
 
     /**
      * Tells it clean up, meaning unregistering listeners etc.
      */
-    public void cleanUp();
+    public abstract void cleanUp();
 }

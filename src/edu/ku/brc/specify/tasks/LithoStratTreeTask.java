@@ -38,7 +38,7 @@ public class LithoStratTreeTask extends BaseTreeTask<LithoStrat,LithoStratTreeDe
         
         treeClass        = LithoStrat.class;
         treeDefClass     = LithoStratTreeDef.class;
-        icon             = IconManager.getIcon(LITHO, IconManager.IconSize.Std24);
+        icon             = IconManager.getIcon(LITHO, IconManager.IconSize.Std16);
         
         menuItemText     = getResourceString("LithoStratMenu");
         menuItemMnemonic = getResourceString("LithoStratMnemonic");

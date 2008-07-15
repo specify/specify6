@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.ui.weblink;
 
@@ -44,14 +41,18 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.ViewFactory;
 
 /**
+ * This class is used for editing a single WebLink Object and all of it's arguments. 
+ * The arguments can be references to fields in a data object or they can be values
+ * that are prompted for with a popup dialog.
+ * 
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Apr 13, 2008
  *
  */
-public class WebLinkArgDlg extends CustomDialog
+public class WebLinkEditorDlg extends CustomDialog
 {
     protected JTextField                nameTF;
     protected JTextField                baseUrlTF;
@@ -71,9 +72,10 @@ public class WebLinkArgDlg extends CustomDialog
     protected int    curInx = 0;
     
     /**
+     * @param webLinkDef the WebLink to be edited
      * @throws HeadlessException
      */
-    public WebLinkArgDlg(final WebLinkDef webLinkDef) throws HeadlessException
+    public WebLinkEditorDlg(final WebLinkDef webLinkDef) throws HeadlessException
     {
         super((Frame)UIRegistry.getTopWindow(), getResourceString("WebLinkArgDlg.WEB_LNK_EDTR"), true, OKCANCELHELP, null); // I18N //$NON-NLS-1$
         

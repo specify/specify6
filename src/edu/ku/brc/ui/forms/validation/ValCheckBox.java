@@ -189,6 +189,14 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
         UIHelper.removeKeyListeners(this);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getReason()
+     */
+    public String getReason()
+    {
+        return null;
+    }
+
     //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------

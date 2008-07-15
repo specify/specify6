@@ -2586,24 +2586,30 @@ public class FormViewObj implements Viewable,
                 Integer          objId = fdo.getId();
                 if (objId != null)
                 {
-                    session.beginTransaction();
-                    
                     // Reload the object from the database  to avoid a stale object exception.
                     Object dbDataObj = session.getData(fdo.getDataClass(), "id", objId, DataProviderSessionIFace.CompareType.Equals);
-                    session.delete(dbDataObj);
-                    if (businessRules != null)
+                    if (dbDataObj != null)
                     {
-                        if (!businessRules.beforeDeleteCommit(dbDataObj, session))
+                        session.beginTransaction();
+                        session.delete(dbDataObj);
+                        if (businessRules != null)
                         {
-                            session.rollback();
-                            throw new Exception("Business rules processing failed");
+                            if (!businessRules.beforeDeleteCommit(dbDataObj, session))
+                            {
+                                session.rollback();
+                                throw new Exception("Business rules processing failed");
+                            }
                         }
-                    }
-                    session.commit();
-                    session.flush();
-                    if (businessRules != null)
+                        session.commit();
+                        session.flush();
+                        if (businessRules != null)
+                        {
+                            businessRules.afterDeleteCommit(dbDataObj);
+                        }
+                    } else
                     {
-                        businessRules.afterDeleteCommit(dbDataObj);
+                        doClearObj = true;
+                        UIRegistry.showLocalizedMsg("Warning", "OBJ_ALREADY_DEL");
                     }
                     
                     isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
@@ -2615,6 +2621,7 @@ public class FormViewObj implements Viewable,
                     {
                         formValidator.setNewObj(isNewlyCreatedDataObj);
                     }
+
                 }
                 
             } catch (edu.ku.brc.dbsupport.StaleObjectException e)
@@ -2791,6 +2798,10 @@ public class FormViewObj implements Viewable,
                 {
                     UIValidator.setIgnoreAllValidation(this, true);
                     createNewDataObject(false);
+                    if (formValidator != null)
+                    {
+                        formValidator.processFormRules();
+                    }
                     UIValidator.setIgnoreAllValidation(this, false);
                     //focusFirstFormControl();
                 }

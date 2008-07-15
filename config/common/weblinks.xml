@@ -33,7 +33,80 @@
         <prompt>false</prompt>
       </weblinkdefarg>
     </args>
+    <usedByList/>
+  </weblinkdef>
+  <weblinkdef>
+    <name>aaaa</name>
+    <desc></desc>
+    <baseURLStr>a[aa]</baseURLStr>
+    <args>
+      <weblinkdefarg>
+        <name>aa</name>
+        <prompt>true</prompt>
+      </weblinkdefarg>
+    </args>
     <usedByList>
+      <usedby>
+        <tableName>accession</tableName>
+      </usedby>
     </usedByList>
+  </weblinkdef>
+  <weblinkdef>
+    <name>eeeeeee</name>
+    <desc></desc>
+    <baseURLStr>eeeeeee[eee]</baseURLStr>
+    <args>
+      <weblinkdefarg>
+        <name>eee</name>
+        <prompt>true</prompt>
+      </weblinkdefarg>
+    </args>
+    <usedByList>
+      <usedby>
+        <tableName>accession</tableName>
+      </usedby>
+    </usedByList>
+  </weblinkdef>
+  <weblinkdef>
+    <name>wwww</name>
+    <desc></desc>
+    <baseURLStr>w[w]</baseURLStr>
+    <args>
+      <weblinkdefarg>
+        <name>w</name>
+        <prompt>true</prompt>
+      </weblinkdefarg>
+    </args>
+    <usedByList>
+      <usedby>
+        <tableName>accession</tableName>
+      </usedby>
+    </usedByList>
+  </weblinkdef>
+  <weblinkdef>
+    <name>wwwww</name>
+    <tableName>accession</tableName>
+    <desc></desc>
+    <baseURLStr>wwww[wwww]</baseURLStr>
+    <args>
+      <weblinkdefarg>
+        <name>wwww</name>
+        <prompt>true</prompt>
+      </weblinkdefarg>
+    </args>
+    <usedByList/>
+  </weblinkdef>  
+  <weblinkdef>
+    <name>WEBLINK</name>
+    <tableName></tableName>
+    <desc></desc>
+    <baseURLStr>http://specify6-test.nhm.ku.edu/echo.php?text1=[this]</baseURLStr>
+    <args>
+      <weblinkdefarg>
+        <name>this</name>
+        <prompt>false</prompt>
+      </weblinkdefarg>
+    </args>
+    <usedByList/>
   </weblinkdef>
 </vector>
