@@ -1374,11 +1374,10 @@ public class FormViewObj implements Viewable,
         }
     }
 
-    /**
-     * Checks to see if the current item has changed and asks if it should be saved
-     * @return true to continue false to stop
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#isDataCompleteAndValid(boolean)
      */
-    public boolean isDataCompleteAndValid()
+    public boolean isDataCompleteAndValid(final boolean throwAwayOnDiscard)
     {
         //log.debug((formValidator != null) +" "+ formValidator.hasChanged() +"  "+mvParent.isTopLevel() +" "+ mvParent.hasChanged());
         
@@ -1470,7 +1469,7 @@ public class FormViewObj implements Viewable,
             {
                 if (rv == JOptionPane.YES_OPTION)
                 {
-                    discardCurrentObject();
+                    discardCurrentObject(throwAwayOnDiscard);
                     return true;
                     
                 } else if (rv == JOptionPane.NO_OPTION)
@@ -1491,7 +1490,7 @@ public class FormViewObj implements Viewable,
                 } else if (rv == JOptionPane.NO_OPTION)
                 {
                     // NO means Discard
-                    discardCurrentObject();
+                    discardCurrentObject(throwAwayOnDiscard);
                     return true;
                 }
             }
@@ -1600,7 +1599,7 @@ public class FormViewObj implements Viewable,
     {
         //log.debug("createNewDataObject " + this.getView().getName());
 
-        if (!isDataCompleteAndValid())
+        if (!isDataCompleteAndValid(false))
         {
             return;
         }
@@ -1864,8 +1863,15 @@ public class FormViewObj implements Viewable,
      */
     protected void recoverFromStaleObject(final String msgResStr, final String actualMsg)
     {
-        JOptionPane.showMessageDialog(null, actualMsg != null ? actualMsg : getResourceString(msgResStr), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
-
+        JOptionPane.showMessageDialog(null, actualMsg != null ? actualMsg : getResourceString(msgResStr), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+        reloadDataObj();
+    }
+    
+    /**
+     * Reloads a current (non-new) object from the database i nto the the form.
+     */
+    protected void reloadDataObj()
+    {
         if (!isNewlyCreatedDataObj)
         {
             if (mvParent != null && mvParent.isTopLevel())
@@ -3643,33 +3649,38 @@ public class FormViewObj implements Viewable,
     /**
      * Discards the current data object in the form. It may have been added to the List/Set
      * and need to be removed.
+     * @param throwAway indicates whether it should throw or reload the data object.
      */
-    public void discardCurrentObject()
+    public void discardCurrentObject(final boolean throwAway)
     {
         if (parentDataObj instanceof FormDataObjIFace)
         {
             ((FormDataObjIFace)parentDataObj).removeReference((FormDataObjIFace)dataObj, cellName);
         }
         
-        if (list != null)
+        if (throwAway || (dataObj instanceof FormDataObjIFace  && ((FormDataObjIFace)dataObj).getId() == null))
         {
-            list.remove(dataObj);
-            int len = list.size();
-            rsController.setLength(len);
-            rsController.setIndex(len-1, false);
-        }
-        
-        // I am punting here and just removing the last one
-        if (recordSetItemList != null)
-        {
-            recordSetItemList.remove(recordSetItemList.size()-1);
-        }
+            if (list != null)
+            {
+                list.remove(dataObj);
+                int len = list.size();
+                rsController.setLength(len);
+                rsController.setIndex(len-1, false);
+            }
             
-        //} else if (parentDataObj != null)
-        //{
-        //    throw new RuntimeException("Not Implemented!");
-        //    //FormHelper.removeFromoParent(parentDataObj, dataObj);
-        //}
+            // I am punting here and just removing the last one
+            if (recordSetItemList != null)
+            {
+                recordSetItemList.remove(recordSetItemList.size()-1);
+            }
+        } else if (dataObj instanceof FormDataObjIFace)
+        {
+            reloadDataObj();
+            
+        } else
+        {
+            setDataIntoUI();
+        }
     }
 
     /* (non-Javadoc)
@@ -5087,7 +5098,7 @@ public class FormViewObj implements Viewable,
      */
     public boolean indexAboutToChange(final int oldIndex, final int newIndex)
     {
-        return isDataCompleteAndValid();
+        return isDataCompleteAndValid(false);
         
         /*if (formValidator != null && formValidator.hasChanged())
         {

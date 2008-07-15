@@ -1694,9 +1694,9 @@ public class TableViewObj implements Viewable,
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.Viewable#checkForChanges()
+     * @see edu.ku.brc.ui.forms.Viewable#isDataCompleteAndValid(boolean)
      */
-    public boolean isDataCompleteAndValid()
+    public boolean isDataCompleteAndValid(final boolean throwAwayOnDiscard)
     {
         return true;
     }

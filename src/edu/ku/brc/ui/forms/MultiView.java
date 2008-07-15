@@ -586,7 +586,7 @@ public class MultiView extends JPanel
     {
         if (hasChanged())
         {
-            if (currentViewable != null && currentViewable.isDataCompleteAndValid())
+            if (currentViewable != null && currentViewable.isDataCompleteAndValid(false))
             {
                 showView(altView.getName());         
             }

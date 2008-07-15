@@ -511,7 +511,7 @@ public class FormPane extends DroppableTaskPane
             FormViewObj formViewObj = multiView.getCurrentViewAsFormViewObj();
             if (formViewObj != null)
             {
-                return formViewObj.isDataCompleteAndValid();
+                return formViewObj.isDataCompleteAndValid(true);
             }
         }
         return true;

@@ -246,9 +246,11 @@ public interface Viewable
     public abstract JComponent getSaveComponent();
     
     /**
-     * @return
+     * Checks to see if the current item has changed and asks if it should be saved.
+     * @param throwAwayOnDiscard indicates whether to throw away or reload the data object on discard
+     * @return true to continue false to stop
      */
-    public abstract boolean isDataCompleteAndValid();
+    public abstract boolean isDataCompleteAndValid(boolean throwAwayOnDiscard);
     
     /**
      * Focus the appropriate UI element.
