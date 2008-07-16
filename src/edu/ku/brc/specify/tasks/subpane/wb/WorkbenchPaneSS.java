@@ -45,6 +45,7 @@ import java.net.ConnectException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventObject;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
@@ -727,6 +728,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 // do nothing
             }
         });
+        //compareSchemas();
     }
     
     /**
@@ -3145,5 +3147,71 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         return this.columnMaxWidths[col];
     }
+    
+    /**
+     * A debugging tool Used to find discrepancies between workbench and specify schemas.
+     */
+    protected void compareSchemas()
+    {
+        List<Pair<DBFieldInfo, DBFieldInfo>> badFlds = new LinkedList<Pair<DBFieldInfo, DBFieldInfo>>();
+        DBTableIdMgr wbSchema = WorkbenchTask.getDatabaseSchema();
+        for (DBTableInfo wbTbl : wbSchema.getTables())
+        {
+            DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoByTableName(wbTbl.getName());
+            if (tbl != null)
+            {
+                for (DBFieldInfo wbFld : wbTbl.getFields())
+                {
+                    DBFieldInfo fld = tbl.getFieldByName(wbFld.getName());
+                    if (fld == null && wbFld.getName().contains("emarks"))
+                    {
+                        fld = tbl.getFieldByName("remarks");
+                    }
+                    if (fld == null && wbFld.getName().matches(".*Text[1|2|3|4|5|6|7|8|9][0|1|2|3|4|5|6|7|8|9]*"))
+                    {
+                        fld = tbl.getFieldByName("text" + wbFld.getName().substring(wbFld.getName().indexOf("Text", wbFld.getName().length()-6)+4));
+                    }
+                    if (fld == null && wbFld.getName().matches(".*YesNo[1|2|3|4|5|6|7|8|9]"))
+                    {
+                        fld = tbl.getFieldByName("yesNo" + wbFld.getName().substring(wbFld.getName().length()-1));
+                    }
+                    if (fld == null && wbFld.getName().matches(".*Number[1|2|3|4|5|6|7|8|9]"))
+                    {
+                        fld = tbl.getFieldByName("number" + wbFld.getName().substring(wbFld.getName().length()-1));
+                    }
+                    if (fld != null)
+                    {
+                        if (fld.getLength() != -1 && fld.getLength() != wbFld.getLength())
+                        {
+                            badFlds.add(new Pair<DBFieldInfo, DBFieldInfo>(fld, wbFld));
+                        }
+                    }
+                    else
+                    {
+                        System.out.println("couldn't find field: " + wbTbl.getName() + "." + wbFld.getName());
+                    }
+                }
+            }
+            else
+            {
+                System.out.println("couldn't find table: " + wbTbl.getName());
+            }
+        }
+        if (badFlds.size() > 0)
+        {
+            System.out.println("Change the lengths for the following fields...");
+            for (Pair<DBFieldInfo, DBFieldInfo> badFld : badFlds)
+            {
+                DBFieldInfo fld = badFld.getFirst();
+                DBFieldInfo wbFld = badFld.getSecond();
+                System.out.println(fld.getTableInfo().getName() + "." + fld.getName() + "(" + wbFld.getTableInfo().getName() + "." + wbFld.getName() + ") - " + fld.getLength());
+            }
+        }
+        else
+        {
+            System.out.println("All field lengths are OK.");
+        }
+    }
+    
 }
 

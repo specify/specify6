@@ -13,6 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 
@@ -28,6 +30,7 @@ public class TableQRI extends ExpandableQRI
 {
     protected DBRelationshipInfo relationship = null;
     protected boolean relChecked = false;
+    protected static final Logger log = Logger.getLogger(TableQRI.class);
 
     public TableQRI(final TableTree tableTree)
     {
@@ -90,9 +93,25 @@ public class TableQRI extends ExpandableQRI
                 relationship = rels.get(0); 
                 return;
             }
-            //XXX else ??? 
+            if (rels.size() > 1)
+            {
+                if (tableTree.getField() != null)
+                {
+                    for (DBRelationshipInfo rel : rels)
+                    {
+                        if (rel.getName().equalsIgnoreCase(tableTree.getField()))
+                        {
+                            relationship = rel;
+                            return;
+                        }
+                    }
+                }
+            }
+            if (relationship == null)
+            {
+                log.error("Unable to determine relationship for " + this.getTitle());
+            }
         }
-        relationship = null;
     }
 
     /**

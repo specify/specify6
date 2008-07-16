@@ -2851,24 +2851,39 @@ public class Uploader implements ActionListener, KeyListener
      * This prevents problems caused by the DeleteOrphan annotation for the XXX->XXXAttribute relationships.
      * This is a horrible hack, but should work for now. If not, it could be achieved more effectively by
      * checking the annotations properties and re-ordering according.
+     * 
+     * 
      */
     protected List<UploadTable> reorderUploadTablesForUndo()
     {
-        Vector<UploadTable> result = new Vector<UploadTable>(uploadTables.size());
-        for (int ut = uploadTables.size()-1; ut >= 0; ut--)
+        /*Actually, regardless of order, it seems impossible to undo coherently with the current
+         * strange cascade definition on the many side of the CollectionObjectAttribute/CollectionObjects relationship.
+         * 
+         * So just leaving the ordering alone
+         */
+//        Vector<UploadTable> result = new Vector<UploadTable>(uploadTables.size());
+      Vector<UploadTable> result = uploadTables;
+//        for (UploadTable ut : uploadTables)
+//        {
+//            if (ut.getTable().getName().endsWith("Attribute"))
+//            {
+//                result.insertElementAt(ut, 0);
+//            }
+//            else
+//            {
+//                result.add(ut);
+//            }
+//
+//        }
+        
+        for (UploadTable ut : result)
         {
-            if (uploadTables.get(ut).getTable().getName().endsWith("Attribute"))
-            {
-                result.insertElementAt(uploadTables.get(ut), 0);
-            }
-            else
-            {
-                result.add(uploadTables.get(ut));
-            }
+            System.out.println(ut);
         }
-        Collections.reverse(result);
+
         return result;
     }
+    
     /**
      * Undoes the most recent upload.
      * 
@@ -2936,8 +2951,10 @@ public class Uploader implements ActionListener, KeyListener
                         }
                         List<UploadTable> fixedUp = reorderUploadTablesForUndo();
                         for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
+                        //for (int ut = 0; ut < fixedUp.size(); ut++)
                         {
                             setCurrentOpProgress(fixedUp.size() - ut, false);
+                            //setCurrentOpProgress(ut+1, false);
                             fixedUp.get(ut).undoUpload();
                         }
                         success = true;

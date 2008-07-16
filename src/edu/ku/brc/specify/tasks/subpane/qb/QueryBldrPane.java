@@ -1497,22 +1497,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             for (int k = 0; k < tblQRI.getTableTree().getKids(); k++)
             {
                 boolean addIt;
-                if (tblQRI.getTableTree().getKid(k).isAlias())
+                TableTree kidK = tblQRI.getTableTree().getKid(k);
+                if (kidK.isAlias())
                 {
-                    addIt = fixAliases(tblQRI.getTableTree().getKid(k), tableTreeHash);
+                    if (!fixAliases(kidK, tableTreeHash))
+                    {
+                        addIt = false;
+                    }
+                    else
+                    {
+                        addIt = tblIsDisplayable(kidK, tableTreeHash.get(kidK.getName()).getTableInfo());
+                    }
                 }
                 else
                 {
-                    addIt = !tblQRI.getTableTree().getKid(k).getTableInfo().isHidden();
-//                    if (addIt)
-//                    {
-//                        tblQRI.getTableTree().getKid(k).getTableQRI().determineRel();
-//                    }
+                    addIt = !kidK.getTableInfo().isHidden() && tblIsDisplayable(kidK, kidK.getTableInfo());
                 }
                 if (addIt)
                 {
-                    TableTree kid = tblQRI.getTableTree().getKid(k);
-                    if (kid.getTableQRI().getRelationship() == null || !kid.getTableQRI().getRelationship().isHidden())
+                    if (kidK.getTableQRI().getRelationship() == null || !kidK.getTableQRI().getRelationship().isHidden())
                     {
                         model.addElement(tblQRI.getTableTree().getKid(k).getTableQRI());
                     }
@@ -1528,12 +1531,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected static boolean tblIsDisplayable(final TableTree aliasTbl, final DBTableInfo tblInfo)
     {
+        /*
         if (aliasTbl.isAlias())
         {
             return !isCyclic(aliasTbl, tblInfo.getTableId()) || isCyclicable(aliasTbl, tblInfo);
         }
         //else
         return true;
+        */
+        
+        return !isCyclic(aliasTbl, tblInfo.getTableId()) || isCyclicable(aliasTbl, tblInfo);
+        
     }
     
     /**

@@ -103,7 +103,7 @@
       	<table name="Container" field="container" />
       	<table name="Container" field="containerOwner" />
       	<alias name="Agent" field="createdByAgent" />
-      	<table name="DNASequence" field="dnaSequence" />
+      	<table name="DNASequence" field="dnaSequences" />
       	<table name="FieldNotebookPage" field="fieldNotebookPage" />
       	<table name="CollectionRelationship" field="leftSideRels" />
       	<alias name="Agent" field="modifiedByAgent" />
@@ -117,11 +117,17 @@
       <table name="DeaccessionAgent" field="deaccessionAgents" >
       	<alias name="Agent"/>
       </table>
-      <table name="DeaccessionPreparation" field="deaccessionPreparations" >
-      	<alias name="Preparation"/>
-      </table>
+      <alias name="DeaccessionPreparation" field="deaccessionPreparations" />
     </table>
 
+	<table name="DeaccessionPreparation">
+      	<alias name="Preparation"/>
+		<alias name="Deaccession"/>
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
+      	<alias name="LoanReturnPreparation" field="loanReturnPreparations"/>
+	</table>
+	
     <table name="Determination" field="determinations" title="Determinations">
     	<alias name="Taxon"/>
         <table name="DeterminationCitation" field="determinationCitations">
@@ -132,9 +138,7 @@
     </table>
     
     <table name="Loan">
-    	<table name="LoanPreparation" field="loanPreparations">
-    		<alias name="Preparation"/>
-    	</table>
+    	<alias name="LoanPreparation" field="loanPreparations"/>
          <table name="LoanAgent" field="loanAgents">
             <alias name="Agent"/>
         </table>
@@ -144,9 +148,24 @@
         <table name="Shipment" field="shipments" />
     </table>
     
+    <table name="LoanPreparation">
+   		<alias name="Preparation"/>
+        <alias name="Loan"/>
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
+      	<alias name="LoanReturnPreparation" field="loanReturnPreparations"/>
+    </table>
+    
+    <table name="LoanReturnPreparation">
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
+       	<alias name="Agent" field="receivedBy" />
+      	<alias name="DeaccessionPreparation" />
+      	<alias name="LoanPreparation" />
+    </table>
+    
     <table name="Locality">
-    	<table name="Geography">
-    	</table>
+    	<table name="Geography"/>
         <table name="LocalityDetail" field="localityDetails"/>
         <table name="LocalityNameAlias" field="localityNameAliass"/>
         <table name="LocalityAttachment" field="localityAttachments">
@@ -162,6 +181,13 @@
         <table name="PermitAttachment" field="permitAttachments">
             <alias name="Attachment"/>
         </table>
+        <table name="AccessionAuthorization" field="accessionAuthorizations">
+            <alias name="Accession"/>
+        </table>
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="issuedBy" />
+      	<alias name="Agent" field="issuedTo" />
+      	<alias name="Agent" field="modifiedByAgent" />
     </table>
 
     <table name="Preparation">
@@ -171,12 +197,29 @@
         </table>
         <table name="PreparationAttribute"/>
         <alias name="CollectionObject"/>
+        <alias name="LoanPreparation" field="loanPreparations"/>
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
     </table>
     
     <table name="ReferenceWork">
         <table name="Journal"/>
         <table name="Author" field="authors">
             <alias name="Agent"/>
+        </table>
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
+        <table name="LocalityCitation" field="localityCitations">
+            <alias name="Locality"/>
+        </table>
+        <table name="CollectionObjectCitation" field="collectionObjectCitations">
+            <alias name="CollectionObject"/>
+        </table>
+        <table name="TaxonCitation" field="taxonCitations">
+            <alias name="Taxon"/>
+        </table>
+        <table name="DeterminationCitation" field="determinationCitations">
+            <alias name="Determination"/>
         </table>
     </table>
     
@@ -185,6 +228,8 @@
       	<table name="RepositoryAgreementAttachment" field="repositoryAgreementAttachments">
       		<alias name="Attachment"/>
       	</table>
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
     </table>
     
     <table name="Taxon">
@@ -205,10 +250,14 @@
             <table name="DeterminationStatus" field="status"/>
             <alias name="Agent" field="determiner"/>
         </table>
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
     </table>
     
     <table name="TreatmentEvent">
    		<alias name="CollectionObject" field="collectionObject"/>
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
    	</table>
     	
     
