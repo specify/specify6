@@ -44,13 +44,6 @@
   <format system="true" name="Date" class="java.util.Date" type="date" partialdate="Full">
   </format>
 
-  <format system="true" name="GiftNumber" class="edu.ku.brc.specify.datamodel.Gift" fieldname="giftNumber" default="true">
-  <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
-    <field type="year" size="4" value="YEAR" byyear="true"/>
-    <field type="separator" size="1" value="-"/>
-    <field type="numeric" size="3" inc="true"/>
-  </format>
-
   <format system="true" name="InfoRequestNumber" class="edu.ku.brc.specify.datamodel.InfoRequest" fieldname="number" default="true">
   <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
     <field type="year" size="4" value="YEAR" byyear="true"/>
@@ -59,16 +52,23 @@
   </format>
 
   <format system="true" name="LoanNumber" class="edu.ku.brc.specify.datamodel.Loan" fieldname="loanNumber" default="true">
-  <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
+    <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
     <field type="year" size="4" value="YEAR" byyear="true"/>
     <field type="separator" size="1" value="-"/>
     <field type="numeric" size="3" inc="true"/>
   </format>
 
-  <format system="true" name="NumericBigDecimal" class="java.math.BigDecimal" type="numeric">
+  <format system="true" name="GiftNumber" class="edu.ku.brc.specify.datamodel.Gift" fieldname="giftNumber" default="true">
+    <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
+    <field type="year" size="4" value="YEAR" byyear="true"/>
+    <field type="separator" size="1" value="-"/>
+    <field type="numeric" size="3" inc="true"/>
   </format>
 
   <format system="true" name="NumericByte" class="java.lang.Byte" type="numeric">
+  </format>
+
+  <format system="true" name="NumericBigDecimal" class="java.math.BigDecimal" type="numeric">
   </format>
 
   <format system="true" name="NumericDouble" class="java.lang.Double" type="numeric">
@@ -91,6 +91,4 @@
 
   <format system="true" name="PartialDateYear" class="java.util.Date" type="date" partialdate="Year">
   </format>
-
-
 </formats>
