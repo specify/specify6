@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 133 or 525
+    Last used ID is 133 or 526
     
     78, 86, 89, 104, 105 is available
     
@@ -316,6 +316,8 @@
         <table name="edu.ku.brc.specify.datamodel.SpPermission"  abbrev="spper" id="521"/>
         <table name="edu.ku.brc.specify.datamodel.SpPrincipal" abbrev="spprin" id="522"/>
 		<table name="edu.ku.brc.specify.datamodel.SpPrincipalSpPermissionType" abbrev="spspt" id="523"/>
+		<table name="edu.ku.brc.specify.datamodel.SpTaskSemaphore" abbrev="spts" id="526"/>
+		
         <!--  Done Internal Specify Tables -->
         
         <table name="edu.ku.brc.specify.datamodel.Taxon" abbrev="tx" id="4" workbench="true" searchable="true">

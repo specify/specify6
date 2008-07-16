@@ -76,6 +76,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
 import edu.ku.brc.specify.treeutils.ChildNodeCounter;
 import edu.ku.brc.specify.treeutils.TreeDataService;
@@ -192,6 +193,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     
     protected Icon icon_split;
     protected Icon icon_single;
+    
+    protected boolean doUnlock = true;
 
     
     // tools to help figure the number of "related" records for a node in the background
@@ -2538,10 +2541,22 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	public void shutdown()
 	{
         countGrabberExecutor.shutdownNow();
+        if (doUnlock)
+        {
+            TaskSemaphoreMgr.unlock(name, treeDef.getClass().getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline);
+        }
 		super.shutdown();
 	}
 	
 	/**
+     * @param doUnlock the doUnlock to set
+     */
+    public void setUnlock(boolean doUnlock)
+    {
+        this.doUnlock = doUnlock;
+    }
+
+    /**
 	 * @param list
 	 * @return
 	 */

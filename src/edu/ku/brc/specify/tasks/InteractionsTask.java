@@ -311,6 +311,9 @@ public class InteractionsTask extends BaseTask
     @Override
     public void doConfigure()
     {
+        
+        boolean isEmpty = infoRequestNavBox.getItems().size() == 0;
+        
         Vector<TaskConfigItemIFace> stdList  = new Vector<TaskConfigItemIFace>();
         Vector<TaskConfigItemIFace> miscList = new Vector<TaskConfigItemIFace>();
         
@@ -379,9 +382,18 @@ public class InteractionsTask extends BaseTask
                 AppPreferences.getRemote().putBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, false);
                 JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
                 indexOfTBB = toolBar.getComponentIndex(toolBarBtn);
-                TaskMgr.removeToolbarBtn(toolBarBtn);
-                toolBar.validate();
-                toolBar.repaint();
+                if (indexOfTBB > -1)
+                {
+                    TaskMgr.removeToolbarBtn(toolBarBtn);
+                    toolBar.validate();
+                    toolBar.repaint();
+                }
+                
+            } else if (isEmpty && stdList.size() > 0)
+            {
+                String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+                AppPreferences.getRemote().putBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
+                prefsChanged(new CommandAction(null, null, AppPreferences.getRemote()));
             }
         }
     }
@@ -949,9 +961,21 @@ public class InteractionsTask extends BaseTask
                 }
                 
                 final LoanSelectPrepsDlg loanSelectPrepsDlg = new LoanSelectPrepsDlg(availColObjList);
+                loanSelectPrepsDlg.createUI();
+                
+                if (!loanSelectPrepsDlg.hasAvaliblePrepsToLoan())
+                {
+                    UIRegistry.showLocalizedMsg("InteractionsTask.NO_PREPS_TITLE", "InteractionsTask.NO_PREPS");
+                    return;
+                }
                 loanSelectPrepsDlg.setModal(true);
                 
                 UIHelper.centerAndShow(loanSelectPrepsDlg);
+                
+                if (loanSelectPrepsDlg.isCancelled())
+                {
+                    return;
+                }
     
                 final Taskable thisTask = this;
                 final Hashtable<Preparation, Integer> prepsHash = loanSelectPrepsDlg.getPreparationCounts();
@@ -1525,6 +1549,7 @@ public class InteractionsTask extends BaseTask
     protected void prefsChanged(final CommandAction cmdAction)
     {
         AppPreferences remotePrefs = (AppPreferences)cmdAction.getData();
+        
         if (remotePrefs == AppPreferences.getRemote())
         {
             String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();

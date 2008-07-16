@@ -59,9 +59,10 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
 
     // Data Members
     protected Hashtable<String, SubPaneIFace> panes = new Hashtable<String, SubPaneIFace>();
-    protected SubPaneIFace currentPane = null;
+    protected SubPaneIFace             currentPane = null;
 
     protected List<SubPaneMgrListener> listeners = new ArrayList<SubPaneMgrListener>();
+    protected boolean                  globalShutdown = false;
 
     /**
      * Singleton Constructor.
@@ -411,14 +412,20 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             
             panes.remove(pane.getPaneName());
             
-            // This let's focus get taken away.
-            SwingUtilities.invokeLater(new Runnable()
+            if (!globalShutdown)
             {
-                public void run()
+                // This let's focus get taken away.
+                SwingUtilities.invokeLater(new Runnable()
                 {
-                    pane.shutdown();
-                }
-            });
+                    public void run()
+                    {
+                        pane.shutdown();
+                    }
+                });
+            } else
+            {
+                pane.shutdown();
+            }
             
         } else
         {
@@ -533,6 +540,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public boolean aboutToShutdown()
     {
+        globalShutdown = true;
         // Move all the elements to a List so the iterator on the Hashtable works correctly
         // if the a SubPane wants to remove itself
         List<SubPaneIFace> list = new ArrayList<SubPaneIFace>(panes.values());

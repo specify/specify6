@@ -171,6 +171,7 @@ public class CustomStatQueries implements CustomQueryIFace
         System.out.println(" * "+sdf.format(endDate.getTime()));//new Date(startDate.get(Calendar.YEAR), startDate.get(Calendar.MONTH), startDate.get(Calendar.DAY_OF_MONTH))));
         */
         
+        // XXX (need try block)
         Session  session  = HibernateUtil.getNewSession();
         
         Criteria criteria = session.createCriteria(CollectionObject.class);

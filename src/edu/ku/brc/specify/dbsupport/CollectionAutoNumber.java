@@ -79,6 +79,7 @@ public class CollectionAutoNumber extends AutoNumberGeneric
             ids.add(collection.getCollectionId());
         }
         
+        // XXX (Needs try block)
         Criteria criteria = session.createCriteria(classObj);
         criteria.addOrder( Order.desc(fieldName) );
         criteria.createCriteria("collection").add(Restrictions.in("collectionId", ids));

@@ -675,8 +675,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         if (fndAppRes.getSpAppResourceId() == null)
         {
-            String         path      = fndAppRes.getFileName();
-            String         dirPath   = path.substring(0, path.length() - (new File(path).getName().length())-1);
+            //String         path      = fndAppRes.getFileName();
+            //String         dirPath   = path.substring(0, path.length() - (new File(path).getName().length())-1);
             
             //AppResourceMgr appResMgr = new AppResourceMgr();
             //SpAppResource  newAppRes = (SpAppResource)appResMgr.loadResourceByName(new File(dirPath), appResource.getName());

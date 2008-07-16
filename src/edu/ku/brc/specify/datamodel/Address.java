@@ -389,7 +389,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
         this.positionHeld = positionHeld;
     }
     
-    protected void append(final StringBuilder sb, final String val)
+    public static void append(final StringBuilder sb, final String val)
     {
         if (StringUtils.isNotEmpty(val))
         {

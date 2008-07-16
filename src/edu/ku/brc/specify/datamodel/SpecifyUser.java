@@ -39,11 +39,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.security.auth.Subject;
 
 import org.hibernate.annotations.Cascade;
 
@@ -72,6 +70,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     protected Set<SpAppResourceDir>     spAppResourceDirs;
     protected Set<SpQuery>              spQuerys;
     protected Set<Agent>              	agents;
+    protected Set<SpTaskSemaphore>      taskSemaphores;
 
     //protected SpPrincipal             principal;
 
@@ -107,6 +106,8 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         spAppResourceDirs = new HashSet<SpAppResourceDir>();
         spQuerys           = new HashSet<SpQuery>();
         agents             = new HashSet<Agent>();
+        taskSemaphores     = new HashSet<SpTaskSemaphore>();
+
     }
 
     // End Initializer
@@ -387,6 +388,24 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     public Set<Agent> getAgents()
     {
         return this.agents;
+    }
+    
+    /**
+     * @return the taskSemaphores
+     */
+    @OneToMany(mappedBy = "owner")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<SpTaskSemaphore> getTaskSemaphores()
+    {
+        return taskSemaphores;
+    }
+
+    /**
+     * @param taskSemaphores the taskSemaphores to set
+     */
+    public void setTaskSemaphores(Set<SpTaskSemaphore> taskSemaphores)
+    {
+        this.taskSemaphores = taskSemaphores;
     }
 
 //    /**

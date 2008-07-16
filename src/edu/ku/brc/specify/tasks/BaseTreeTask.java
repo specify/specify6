@@ -36,6 +36,7 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandAction;
@@ -147,34 +148,37 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
      * Opens a TreeViewer in a BG Thread.
      * @param isEditMode the mode
      */
-    protected void openTreeViewerInBGThread(final String title, final boolean isEditMode)
+    protected void openTreeViewerInBGThread(final String titleArg, final boolean isEditMode)
     {
     	if (!isOpeningTree)
     	{
-    		isOpeningTree = true;
-	        SwingWorker bgWorker = new SwingWorker()
-	        {
-	            private TreeTableViewer<T,D,I> treeViewer;
-	            
-	            @Override
-	            public Object construct()
-	            {
-	                treeViewer = createTreeViewer(title, isEditMode);
-	                return treeViewer;
-	            }
-	
-	            @Override
-	            public void finished()
-	            {
-	                super.finished();
-	                ContextMgr.requestContext(BaseTreeTask.this);
-	                currentDefInUse = true;
-	                visibleSubPane = treeViewer;
-	                addSubPaneToMgr(treeViewer);
-	                isOpeningTree = false;
-	            }
-	        };
-	        bgWorker.start();
+            if (TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true))
+            {
+        		isOpeningTree = true;
+    	        SwingWorker bgWorker = new SwingWorker()
+    	        {
+    	            private TreeTableViewer<T,D,I> treeViewer;
+    	            
+    	            @Override
+    	            public Object construct()
+    	            {
+    	                treeViewer = createTreeViewer(titleArg, isEditMode);
+    	                return treeViewer;
+    	            }
+    	
+    	            @Override
+    	            public void finished()
+    	            {
+    	                super.finished();
+    	                ContextMgr.requestContext(BaseTreeTask.this);
+    	                currentDefInUse = true;
+    	                visibleSubPane = treeViewer;
+    	                addSubPaneToMgr(treeViewer);
+    	                isOpeningTree = false;
+    	            }
+    	        };
+    	        bgWorker.start();
+            }
     	}
     }
     
@@ -183,7 +187,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
      * @param isEditMode whether it is in edit mode
      * @return the AL
      */
-    protected Action createActionForTreeEditing(final String title, final boolean isEditMode)
+    protected Action createActionForTreeEditing(final String titleArg, final boolean isEditMode)
     {
         return new AbstractAction()
         {
@@ -194,7 +198,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 {
                     if (visibleSubPane == null || visibleSubPane instanceof TreeTableViewer<?,?,?>)
                     {
-                        openTreeViewerInBGThread(title, isEditMode);
+                        openTreeViewerInBGThread(titleArg, isEditMode);
                     } else
                     {
                         switchViewType(isEditMode, true);
@@ -226,7 +230,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     /**
      * @return the action for tree editing
      */
-    private Action createActionForTreeDefEditing(final String title)
+    private Action createActionForTreeDefEditing(final String titleArg)
     {
         return new AbstractAction()
         {
@@ -235,28 +239,31 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             {
                 if (!currentDefInUse)
                 {
-                    SwingWorker bgWorker = new SwingWorker()
+                    if (TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true))
                     {
-                        private TreeDefinitionEditor<T,D,I> defEditor;
-                        
-                        @Override
-                        public Object construct()
+                        SwingWorker bgWorker = new SwingWorker()
                         {
-                            defEditor = createDefEditor(title);
-                            return defEditor;
-                        }
-
-                        @Override
-                        public void finished()
-                        {
-                            super.finished();
-                            ContextMgr.requestContext(BaseTreeTask.this);
-                            currentDefInUse = true;
-                            visibleSubPane = defEditor;
-                            addSubPaneToMgr(defEditor);
-                        }
-                    };
-                    bgWorker.start();
+                            private TreeDefinitionEditor<T,D,I> defEditor;
+                            
+                            @Override
+                            public Object construct()
+                            {
+                                defEditor = createDefEditor(titleArg);
+                                return defEditor;
+                            }
+    
+                            @Override
+                            public void finished()
+                            {
+                                super.finished();
+                                ContextMgr.requestContext(BaseTreeTask.this);
+                                currentDefInUse = true;
+                                visibleSubPane = defEditor;
+                                addSubPaneToMgr(defEditor);
+                            }
+                        };
+                        bgWorker.start();
+                    }
                 }
                 else
                 {
@@ -343,14 +350,14 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
      * @return
      */
     @SuppressWarnings("unchecked")
-    protected TreeTableViewer<T,D,I> createTreeViewer(final String title, final boolean isEditMode)
+    protected TreeTableViewer<T,D,I> createTreeViewer(final String titleArg, final boolean isEditMode)
     {
         DataProviderSessionIFace session = null;
         try
         {
             session = DataProviderFactory.getInstance().createSession();
             D treeDef = (D)session.load(currentDef.getClass(), currentDef.getTreeDefId());
-            TreeTableViewer<T,D,I> ttv = new TreeTableViewer<T,D,I>(treeDef, title, this, isEditMode);
+            TreeTableViewer<T,D,I> ttv = new TreeTableViewer<T,D,I>(treeDef, titleArg, this, isEditMode);
             return ttv;
             
         } catch (Exception ex)
@@ -373,7 +380,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
      * @return the editor
      */
     @SuppressWarnings("unchecked")
-    protected TreeDefinitionEditor<T,D,I> createDefEditor(final String title)
+    protected TreeDefinitionEditor<T,D,I> createDefEditor(final String titleArg)
 	{
         DataProviderSessionIFace session = null;
         try
@@ -422,6 +429,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	            	
 	                if (visibleSubPane instanceof TreeTableViewer && !switchMode)
 	                {
+	                    ((TreeTableViewer<?,?,?>)visibleSubPane).setUnlock(false);
 	                    TreeDefinitionEditor<T,D,I> defEditor = createDefEditor(tabTitle);
 	                    oldPane         = visibleSubPane;
 	                    currentDefInUse = true;
@@ -429,7 +437,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	                }
 	                else if (visibleSubPane instanceof TreeDefinitionEditor || switchMode)
 	                {
-	                    
+	                    ((TreeDefinitionEditor<?,?,?>)visibleSubPane).setUnlock(false);
 	                    TreeTableViewer<T,D,I> treeViewer = createTreeViewer(tabTitle, isEditMode);
 	                    oldPane         = visibleSubPane;
 	                    currentDefInUse = true;
@@ -444,7 +452,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	                super.finished();
 	                
 	                SubPaneMgr.getInstance().replacePane(oldPane, visibleSubPane);
-	                
 	                isOpeningTree = false;
 	            }
 	        };

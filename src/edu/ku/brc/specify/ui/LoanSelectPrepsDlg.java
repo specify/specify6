@@ -14,7 +14,6 @@
  */
 package edu.ku.brc.specify.ui;
 
-import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
@@ -25,6 +24,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -37,7 +37,6 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -50,14 +49,12 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -71,8 +68,10 @@ import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
@@ -89,31 +88,35 @@ import edu.ku.brc.ui.forms.persist.ViewIFace;
  * Created Date: Nov 21, 2006
  *
  */
-public class LoanSelectPrepsDlg extends JDialog
+public class LoanSelectPrepsDlg extends CustomDialog
 {
     protected ColorWrapper           requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     protected List<CollectionObject> colObjs;
     protected List<ColObjPanel>      colObjPanels = new Vector<ColObjPanel>();
-    protected JButton                okBtn;
     protected JLabel                 summaryLabel;
+    protected int                    totalCntLoanablePreps = 0;
     
     /**
      * @param colObjs
      */
     public LoanSelectPrepsDlg(List<CollectionObject> colObjs)
     {
+        super((Frame)UIRegistry.getTopWindow(), getResourceString("LoanSelectPrepsDlg.CREATE_LN_FR_PREP"),//$NON-NLS-1$
+                true, OKCANCELAPPLYHELP, null);
         this.colObjs = colObjs;
+    }
         
-        setTitle(getResourceString("LoanSelectPrepsDlg.CREATE_LN_FR_PREP")); //$NON-NLS-1$
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#createUI()
+     */
+    @Override
+    public void createUI()
+    {
+        applyLabel = getResourceString("SELECTALL");//$NON-NLS-1$
         
-        //List<Object> dataObjs = BuildSampleDatabase.createSingleDiscipline("fish", "fish");       
-        //List<CollectionObject> colObjs = (List<CollectionObject>)BuildSampleDatabase.getObjectsByClass(dataObjs, CollectionObject.class);
+        super.createUI();
         
-        JPanel contentPanel = new JPanel(new BorderLayout());
-        
-        JPanel mainPanel = new JPanel();
-        
-        int cntColObj = 0;
+        Vector<CollectionObject> availCOsToLoan = new Vector<CollectionObject>();
         for (CollectionObject co : colObjs)
         {
             if (getCurrentDetermination(co) != null)
@@ -128,13 +131,15 @@ public class LoanSelectPrepsDlg extends JDialog
                 }
                 if (cntLoanablePreps > 0)
                 {
-                    cntColObj++;
+                    availCOsToLoan.add(co);
                 }
+                totalCntLoanablePreps += cntLoanablePreps;
             }
         }
+        
         String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (colObjs.size()*2)-1) + ",10px,p"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", rowDef), mainPanel); //$NON-NLS-1$
-        CellConstraints cc      = new CellConstraints();
+        PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", rowDef)); //$NON-NLS-1$
+        CellConstraints cc       = new CellConstraints();
         
         ActionListener al = new ActionListener()
         {
@@ -152,17 +157,11 @@ public class LoanSelectPrepsDlg extends JDialog
             }
         };
         
-        // XXX Try this Collections.sort(Collections.list(Collections.enumeration(colObjs)))
-        Vector<CollectionObject> colObjList = new Vector<CollectionObject>();
-        for (CollectionObject co : colObjs)
-        {
-            colObjList.add(co);
-        }
-        Collections.sort(colObjList);
+        Collections.sort(availCOsToLoan);
         
         int i = 0;
         int y = 1;
-        for (CollectionObject co : colObjList)
+        for (CollectionObject co : availCOsToLoan)
         {
             if (i > 0)
             {
@@ -177,32 +176,6 @@ public class LoanSelectPrepsDlg extends JDialog
             y += 2;
             i++;
         }
-        JButton selectAllBtn = createButton(getResourceString("SELECTALL")); //$NON-NLS-1$
-        okBtn = createButton(getResourceString("OK")); //$NON-NLS-1$
-        JButton cancel = createButton(getResourceString("CANCEL")); //$NON-NLS-1$
-        y += 2;
-        
-        summaryLabel = createLabel(""); //$NON-NLS-1$
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createEmptyBorder(5, 1, 5, 1));
-        p.add(summaryLabel, BorderLayout.CENTER);
-        
-        contentPanel.add(p, BorderLayout.NORTH);
-        contentPanel.add(new JScrollPane(mainPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
-        
-        p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createEmptyBorder(5, 0, 2, 0));
-        p.add(ButtonBarFactory.buildOKCancelApplyBar(okBtn, cancel, selectAllBtn), BorderLayout.CENTER);
-        contentPanel.add(p, BorderLayout.SOUTH);
-        
-        setContentPane(contentPanel);
-        
-        doEnableOKBtn();
-
-        //setIconImage(IconManager.getIcon("Preparation", IconManager.IconSize.Std16).getImage());
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        
-        doEnableOKBtn();
         
         okBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
@@ -211,26 +184,47 @@ public class LoanSelectPrepsDlg extends JDialog
             }
         });
         
-        cancel.addActionListener(new ActionListener() {
+        cancelBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
                 setVisible(false);
             }
         });
         
-        selectAllBtn.addActionListener(new ActionListener() {
+        applyBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
                 selectAllItems();
             }
         });
 
+        JPanel tPanel = new JPanel(new BorderLayout());
+        summaryLabel = createLabel(""); //$NON-NLS-1$
+        tPanel.setBorder(BorderFactory.createEmptyBorder(5, 1, 5, 1));
+        tPanel.add(summaryLabel, BorderLayout.NORTH);
+        
+        JScrollPane sp = new JScrollPane(pbuilder.getPanel(), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        tPanel.add(sp, BorderLayout.CENTER);
+        
+        contentPanel = tPanel;
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
+
         pack();
         
+        doEnableOKBtn();
+
         Dimension size = getPreferredSize();
         size.width += 20;
         size.height = size.height > 500 ? 500 : size.height;
         setSize(size);
+    }
+    
+    /**
+     * @return whether there is at least one prep that can be loaned.
+     */
+    public boolean hasAvaliblePrepsToLoan()
+    {
+        return totalCntLoanablePreps > 0;
     }
     
     /**
@@ -354,9 +348,9 @@ public class LoanSelectPrepsDlg extends JDialog
             outerPanel.setLayout(new BoxLayout(outerPanel, BoxLayout.Y_AXIS));
             outerPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
             
-            JPanel contentPanel = new JPanel();
-            contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-            outerPanel.add(contentPanel);
+            JPanel containerPane = new JPanel();
+            containerPane.setLayout(new BoxLayout(containerPane, BoxLayout.Y_AXIS));
+            outerPanel.add(containerPane);
             
             Color[] colors = new Color[] { new Color(255,255,255), new Color(235,235,255)};
             
@@ -376,7 +370,7 @@ public class LoanSelectPrepsDlg extends JDialog
                 PrepPanel pp = new PrepPanel(dlgParent, prep);
                 panels.add(pp);
                 pp.setBackground(colors[i % 2]);
-                contentPanel.add(pp);
+                containerPane.add(pp);
                 i++;
 
             }

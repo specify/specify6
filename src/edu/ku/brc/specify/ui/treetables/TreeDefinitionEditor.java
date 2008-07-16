@@ -54,6 +54,7 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
@@ -107,6 +108,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	protected JStatusBar statusBar;
 	
     protected boolean isEditMode;
+    protected boolean doUnlock = true;
 	
 	/**
 	 * @param treeDef
@@ -167,9 +169,21 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	@Override
 	public void shutdown()
 	{
+	    if (doUnlock)
+	    {
+	        TaskSemaphoreMgr.unlock(name, displayedDef.getClass().getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline);
+	    }
 		super.shutdown();
 	}
-
+    
+    /**
+     * @param doUnlock the doUnlock to set
+     */
+    public void setUnlock(boolean doUnlock)
+    {
+        this.doUnlock = doUnlock;
+    }
+    
 	/**
 	 * @param isEditMode whether to enable editing.
 	 */

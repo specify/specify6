@@ -155,6 +155,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.SpQuery"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpQueryField"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpReport"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpTaskSemaphore"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpViewSetObj"/>
 		
 		
