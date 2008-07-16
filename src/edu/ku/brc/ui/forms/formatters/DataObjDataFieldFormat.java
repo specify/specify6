@@ -71,8 +71,11 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
         	this.value = "";
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     public String toString()
-    {
+    {   
     	if (fields == null)
     	{
     		return "";
@@ -86,6 +89,9 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
         return str.toString();
     }
     
+    /**
+     * @return the format
+     */
     public String getFormat()
     {
         return format;

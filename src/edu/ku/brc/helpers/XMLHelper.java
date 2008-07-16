@@ -61,10 +61,19 @@ public class XMLHelper
     
     private static boolean useChecksum = false;
     
-    private static File configDir   = null;
+    private static File    configDir     = null;
+    private static boolean isEmptyAttrOK = false;
 
     
    /**
+     * @param isEmptyAttrOK the isEmptyAttrOK to set
+     */
+    public static void setEmptyAttrOK(boolean isEmptyAttrOK)
+    {
+        XMLHelper.isEmptyAttrOK = isEmptyAttrOK;
+    }
+
+/**
      * @param useChecksum the useChecksum to set
      */
     public static void setUseChecksum(boolean useChecksum)
@@ -432,7 +441,7 @@ public class XMLHelper
    
    public static void xmlAttr(final StringBuilder sb, final String attr, final String val)
    {
-       if (StringUtils.isNotEmpty(val))
+       if (StringUtils.isNotEmpty(val) || isEmptyAttrOK)
        {
            sb.append(' ');
            sb.append(attr);
@@ -444,7 +453,7 @@ public class XMLHelper
    
    public static void xmlAttr(final StringBuilder sb, final String attr, final Integer val)
    {
-       if (val != null)
+       if (val != null || isEmptyAttrOK)
        {
            xmlAttr(sb, attr, val.toString());
        }
@@ -452,7 +461,7 @@ public class XMLHelper
    
    public static void xmlAttr(final StringBuilder sb, final String attr, final Short val)
    {
-       if (val != null)
+       if (val != null || isEmptyAttrOK)
        {
            xmlAttr(sb, attr, val.toString());
        }
@@ -460,7 +469,7 @@ public class XMLHelper
    
    public static void xmlAttr(final StringBuilder sb, final String attr, final Byte val)
    {
-       if (val != null)
+       if (val != null || isEmptyAttrOK)
        {
            xmlAttr(sb, attr, val.toString());
        }
@@ -468,7 +477,7 @@ public class XMLHelper
    
    public static void xmlAttr(final StringBuilder sb, final String attr, final Boolean val)
    {
-       if (val != null)
+       if (val != null || isEmptyAttrOK)
        {
            xmlAttr(sb, attr, val.toString());
        }
@@ -476,7 +485,7 @@ public class XMLHelper
    
    public static void xmlNode(final StringBuilder sb, final String tag, final String val, final boolean useCData)
    {
-       if (val != null)
+       if (val != null || isEmptyAttrOK)
        {
            sb.append("<"); //$NON-NLS-1$
            sb.append(tag);

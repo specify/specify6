@@ -651,7 +651,6 @@ public class DataObjFieldFormatMgr
                 {
                     Object[] values = UIHelper.getFieldValues(new String[]{field.getName()}, dataObj, getter);
                     
-                    
                     Object value = values != null ? values[0] : null;//getter.getFieldValue(dataObj, field.getName());
                     if (value != null)
                     {
@@ -734,7 +733,6 @@ public class DataObjFieldFormatMgr
                         Object value = dataObjs[inx++];
                         if (value != null)
                         {
-                            
                             if (field.getDataObjFormatterName() != null )
                             {
                                 String fmtStr = formatInternal(getDataFormatter(value, field.getDataObjFormatterName()), value);
@@ -811,8 +809,6 @@ public class DataObjFieldFormatMgr
                         aggStr.append(agg.getSeparator());
                     }
 
-                    aggStr.append(formatInternal(getDataFormatter(obj, agg.getFormatName()), obj));
-
                     if (agg.useIdentity() && obj instanceof FormDataObjIFace)
                     {
                         aggStr.append(((FormDataObjIFace)obj).getIdentityTitle());
@@ -821,9 +817,15 @@ public class DataObjFieldFormatMgr
                         aggStr.append(formatInternal(getInstance().getDataFormatter(obj, agg.getFormatName()), obj));
                     }
                     
+                    //System.out.println(aggStr.toString());
+                    
+                    String endingStr = agg.getEnding();
                     if (agg.getCount() != null && count < agg.getCount())
                     {
-                        aggStr.append(agg.getEnding());
+                        if (StringUtils.isNotEmpty(endingStr))
+                        {
+                            aggStr.append(endingStr);
+                        }
                         break;
                     }
                 }

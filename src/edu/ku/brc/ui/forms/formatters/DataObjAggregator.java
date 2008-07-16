@@ -18,6 +18,8 @@ import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.helpers.XMLHelper;
+
 /**
  * This class aggregates to several Data Objects into a single value by taking the output from the formatters and appending them
  * together with a separator character (or string).
@@ -199,17 +201,19 @@ public class DataObjAggregator
 	 */
 	public void toXML(StringBuilder sb)
 	{
+	    XMLHelper.setEmptyAttrOK(true);
 		String padding = "\n               ";
-		sb.append         ("    <aggregator");
-		xmlAttr(sb, "name", 		  name);                       sb.append(padding);
-		xmlAttr(sb, "title", 		  title);                      sb.append(padding);
-		xmlAttr(sb, "class", 		  dataClass.getName());        sb.append(padding);
-		xmlAttr(sb, "default", 	      String.valueOf(isDefault));  sb.append(padding);
-		xmlAttr(sb, "separator", 	  separator);                  sb.append(padding);
-		xmlAttr(sb, "ending", 		  ending);                     sb.append(padding);
-		xmlAttr(sb, "count",          String.valueOf(count));      sb.append(padding);
-		xmlAttr(sb, "format",         formatName);                 sb.append(padding);
-        xmlAttr(sb, "orderFieldName", orderFieldName);             sb.append(padding);
+		sb.append("    <aggregator");
+		xmlAttr(sb, "name", 		  name);                                         sb.append(padding);
+		xmlAttr(sb, "title", 		  title);                                        sb.append(padding);
+		xmlAttr(sb, "class", 		  dataClass.getName());                          sb.append(padding);
+		xmlAttr(sb, "default", 	      String.valueOf(isDefault));                    sb.append(padding);
+		xmlAttr(sb, "separator", 	  separator != null ? separator : "");           sb.append(padding);
+		xmlAttr(sb, "ending", 		  ending != null ? ending : "");                 sb.append(padding);
+		xmlAttr(sb, "count",          count != null ? String.valueOf(count) : "");   sb.append(padding);
+		xmlAttr(sb, "format",         formatName != null ? formatName : "");         sb.append(padding);
+        xmlAttr(sb, "orderfieldname", orderFieldName != null ? orderFieldName : ""); sb.append(padding);
 		sb.append("/>\n\n");
+        XMLHelper.setEmptyAttrOK(false);
 	}
 }
