@@ -46,7 +46,7 @@ import javax.persistence.Transient;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "taskSemaphore")
+@Table(name = "sptasksemaphore")
 public class SpTaskSemaphore extends DataModelObjBase implements java.io.Serializable 
 {
 
@@ -55,6 +55,7 @@ public class SpTaskSemaphore extends DataModelObjBase implements java.io.Seriali
     protected Integer           spTaskSemaphoreId;
     protected String            taskName;
     protected String            context;
+    protected String            machineName;
     protected Byte              scope;
     protected SpecifyUser       owner; 
     protected Discipline        discipline;
@@ -84,6 +85,8 @@ public class SpTaskSemaphore extends DataModelObjBase implements java.io.Seriali
         super.init();
         spTaskSemaphoreId = null;
         taskName        = null;
+        context         = null;
+        machineName     = null;
         owner           = null;
         isLocked        = null;
         lockedTime      = null;
@@ -135,7 +138,7 @@ public class SpTaskSemaphore extends DataModelObjBase implements java.io.Seriali
     /**
      *
      */
-    @Column(name = "TaskName", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "TaskName", unique = true, nullable = true, insertable = true, updatable = true, length = 32)
     public String getTaskName() 
     {
         return this.taskName;
@@ -195,6 +198,23 @@ public class SpTaskSemaphore extends DataModelObjBase implements java.io.Seriali
     public void setContext(String context)
     {
         this.context = context;
+    }
+
+    /**
+     * @return the machineName
+     */
+    @Column(name = "MachineName", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getMachineName()
+    {
+        return machineName;
+    }
+
+    /**
+     * @param machineName the machineName to set
+     */
+    public void setMachineName(String machineName)
+    {
+        this.machineName = machineName;
     }
 
     /**

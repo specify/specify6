@@ -4,10 +4,11 @@ NOTE: The "name" must be entered into the localization resource file.
  -->
 <icons type="disciplines" subdir="disciplines">
 
+
     <!-- Discipline Icons -->
     <icon name="Bird"        file="bird.png" sizes="all"/>    
     <icon name="Bug"         file="bug.png" sizes="all"/>    
-    <icon name="Fish"        file="fish.png" sizes="all"/>    
+    <icon name="fish"        file="fish.png" sizes="all"/>    
     <icon name="Frogs"       file="frog.png" sizes="all"/>    
     <icon name="InvertPaleo" file="paleo_invert.png" sizes="all"/>    
     <icon name="Lizard"      file="lizard.png" sizes="all"/>    
@@ -17,6 +18,32 @@ NOTE: The "name" must be entered into the localization resource file.
     <icon name="Plants"      file="flower.png" sizes="all"/>    
     <icon name="Snake"       file="snake.png" sizes="all"/>    
     <icon name="Spider"      file="spider.png" sizes="all"/>    
+    <icon name="Invert"      file="seahorse.png" sizes="all"/>    
     <icon name="VertPaleo"   file="paleo_vert.png" sizes="all"/>    
+ 
+    <!--
+    fish, amphibian, reptile, paleobotany, invertpaleo, vertpaleo, bird, 
+    mammal, insect, botany, invertebrate, 
     
+    These do not have icons
+    minerals, fungi, 
+    anthropology
+    -->
+    
+    <icon name="amphibian"   alias="Frogs"/>
+    <icon name="bird"        alias="Bird"/>
+    <icon name="insect"      alias="Bug"/>
+    <icon name="fish"        alias="Fish"/>
+    <icon name="frogs"       alias="Frogs"/>
+    <icon name="invertpaleo" alias="InvertPaleo"/>
+    <icon name="lizard"      alias="Lizard"/>
+    <icon name="lowerplants" alias="LowerPlants"/>
+    <icon name="mammal"      alias="Mammal"/>
+    <icon name="paleobotany" alias="PaleoBotany"/>
+    <icon name="botany"      alias="Plants"/>
+    <icon name="reptile"     alias="Snake"/>
+    <icon name="spider"      alias="Spider"/>
+    <icon name="vertpaleo"    alias="VertPaleo"/>
+    <icon name="invertebrate" alias="Invert"/>
+ 
 </icons>

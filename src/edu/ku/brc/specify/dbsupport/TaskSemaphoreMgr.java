@@ -11,9 +11,12 @@ package edu.ku.brc.specify.dbsupport;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.net.InetAddress;
 import java.sql.Timestamp;
 
 import javax.swing.JOptionPane;
+
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -198,6 +201,26 @@ public class TaskSemaphoreMgr
                         
                     } else
                     {
+                        // Check to see if we have the same user on the same machine.
+                        SpecifyUser user            = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                        String      currMachineName = InetAddress.getLocalHost().toString();
+                        String      dbMachineName   = semaphore.getMachineName();
+                        if (StringUtils.isNotEmpty(dbMachineName) && StringUtils.isNotEmpty(currMachineName) && currMachineName.equals(dbMachineName) &&
+                            semaphore.getOwner() != null && user != null && user.getId().equals(semaphore.getOwner().getId()))
+                        {
+                            String msg = UIRegistry.getLocalizedMessage("SpTaskSemaphore.IN_USE_BY_YOU", title);//$NON-NLS-1$
+                            Object[] options = { getResourceString("SpTaskSemaphore.OVERRIDE"),  //$NON-NLS-1$
+                                                 getResourceString("NO")  //$NON-NLS-1$
+                                  };
+                            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                                         msg,
+                                                                         getResourceString("SpTaskSemaphore.IN_USE_TITLE"),  //$NON-NLS-1$
+                                                                         JOptionPane.YES_NO_CANCEL_OPTION,
+                                                                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                            return userChoice == JOptionPane.YES_OPTION;
+                            
+                        }
+                        
                         String userStr = prevLockedBy != null ? prevLockedBy : semaphore.getOwner().getIdentityTitle();
                         String msg = UIRegistry.getLocalizedMessage("SpTaskSemaphore.IN_USE_OV", title, userStr, semaphore.getLockedTime().toString());
                         
@@ -435,6 +458,7 @@ public class TaskSemaphoreMgr
         
         semaphore.setIsLocked(doLock);
         semaphore.setContext(context);
+        semaphore.setMachineName(doLock ? InetAddress.getLocalHost().toString() : null);
         semaphore.setScope(new Byte((byte)scope.ordinal()));
         semaphore.setLockedTime(now);
         semaphore.setTimestampModified(now);

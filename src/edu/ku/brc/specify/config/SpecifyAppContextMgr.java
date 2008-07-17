@@ -17,7 +17,6 @@ package edu.ku.brc.specify.config;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.Timestamp;
@@ -73,13 +72,10 @@ import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UnhandledExceptionDialog;
-import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -359,6 +355,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             for (Object obj : sessionArg.getDataList(sqlStr))
             {
                 Collection cs = (Collection)obj; 
+                cs.getDiscipline();// force load of Discipline
                 collectionHash.put(cs.getCollectionName(), cs);
             }
     
@@ -419,21 +416,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         log.error("Collection was null!");
                     }
     
-                    // For some reason the call to setDefaultLookAndFeelDecorated isn't working
-                    // so I put in the loop make sure they pick something.
-                    ToggleButtonChooserDlg<Collection> colDlg = null;
+                    ChooseCollectionDlg colDlg = null;
+                    JDialog.setDefaultLookAndFeelDecorated(false);
                     do {
-                        
-                        JDialog.setDefaultLookAndFeelDecorated(false);
-                        colDlg = new ToggleButtonChooserDlg<Collection>((Frame)UIRegistry.get(UIRegistry.FRAME),
-                                                                          "CHOOSE_COLLECTION_TITLE", 
-                                                                          null,
-                                                                          list,
-                                                                          IconManager.getIcon("Collection"),
-                                                                          CustomDialog.OK_BTN, Type.RadioButton);
+                        colDlg = new ChooseCollectionDlg(list);
                         colDlg.setSelectedIndex(selectColInx);
-                        colDlg.setModal(true);
-                        colDlg.setUseScrollPane(true);
                         colDlg.createUI();
                         colDlg.pack();
                         Dimension size = colDlg.getSize();
@@ -447,7 +434,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         UIHelper.centerWindow(colDlg);
                         colDlg.setVisible(true);
                         
-                    } while (colDlg.isCancelled());
+                    } while (colDlg.getSelectedObject() == null);
                     
                     collection = colDlg.getSelectedObject();
                     JDialog.setDefaultLookAndFeelDecorated(true);
