@@ -21,10 +21,10 @@ import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.dbsupport.DBRelationshipInfo;
-import edu.ku.brc.dbsupport.DBFieldInfo;
 
 /**
  * This describes a single field that is used as part of a DataObjectFormatter.
@@ -51,9 +51,12 @@ public class DataObjDataField {
 	protected UIFieldFormatterIFace uiFieldFormatter;
 	
 
-	public DataObjDataField(final String name, final Class<?> type,
-			final String format, final String sep,
-			final String dataObjFormatterName, final String uiFieldFormatterName) {
+	public DataObjDataField(final String name, 
+	                        final Class<?> type,
+			                final String format, 
+			                final String sep,
+			                final String dataObjFormatterName, 
+			                final String uiFieldFormatterName) {
 		super();
 
 		this.name = name;
@@ -94,7 +97,10 @@ public class DataObjDataField {
 				StringUtils.isEmpty(getDataObjFormatterName()));
 	}
 	
-	public void toXML(StringBuilder sb)
+	/**
+	 * @param sb
+	 */
+	public void toXML(final StringBuilder sb)
 	{
         sb.append("        <field");
 
@@ -106,13 +112,18 @@ public class DataObjDataField {
         
         xmlAttr(sb, "format",    format);
         xmlAttr(sb, "sep",       sep);
+        xmlAttr(sb, "formatter", dataObjFormatterName);
         xmlAttr(sb, "uifieldformatter", uiFieldFormatterName);
         sb.append(">");
         sb.append(name);
         sb.append("</field>\n");
 	}
 
-	public String toString() {
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() 
+	{
 		if (objFormatter != null)
 		{
 			return objFormatter.toString();

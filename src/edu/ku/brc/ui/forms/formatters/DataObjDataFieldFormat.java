@@ -48,11 +48,22 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
     protected DataObjDataField[] fields;
     protected DBTableInfo		 tableInfo;
 
+    /**
+     * 
+     */
     public DataObjDataFieldFormat()
     {
     	value = "";
     }
 
+    /**
+     * @param name
+     * @param dataClass
+     * @param isDefault
+     * @param format
+     * @param value
+     * @param fields
+     */
     public DataObjDataFieldFormat(final String   name, 
                                   final Class<?> dataClass, 
                                   final boolean  isDefault, 
@@ -177,6 +188,9 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
 		this.value = value;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#toXML(java.lang.StringBuilder)
+	 */
 	public void toXML(StringBuilder sb)
 	{
         sb.append("      <fields");
