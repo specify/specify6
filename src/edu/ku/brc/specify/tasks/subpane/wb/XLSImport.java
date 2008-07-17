@@ -13,7 +13,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.NumberFormat;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
@@ -166,6 +168,9 @@ public class XLSImport extends DataImport implements DataImportIFace
                                         double numeric = cell.getNumericCellValue();
                                         value = Integer.toString((int) numeric);
         
+                                    } else if (classObj.equals(Calendar.class) || classObj.equals(Date.class))
+                                    {
+                                        value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
                                     } else
                                     {
                                         double numeric = cell.getNumericCellValue();
