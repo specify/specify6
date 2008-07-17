@@ -123,9 +123,11 @@ public class UploadTableTree extends UploadTable
     {
         if (treeDef == null)
         {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                treeDef = AppContextMgr.getInstance().getClassObject(Collection.class).getDiscipline().getTreeDef(capitalize(tblClass.getSimpleName()) + "TreeDef");
+                DataModelObjBase tempdef = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Collection.class).getDiscipline().getTreeDef(capitalize(tblClass.getSimpleName()) + "TreeDef");
+                treeDef = (TreeDefIface )session.get(tempdef.getDataClass(), tempdef.getId());
             }
             catch (Exception ex)
             {
