@@ -27,6 +27,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.exception.JDBCConnectionException;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -48,6 +49,7 @@ public class JPAQuery implements CustomQueryIFace
     protected boolean                   inError     = false;
     protected List<?>                   resultsList = null;
     protected boolean                   isUnique    = false;
+    protected boolean                   doDebug     = AppPreferences.getLocalPrefs().getBoolean("esdebug", false);
     
     /**
      * A list of <Name, Value> pairs for each parameter in the query.
@@ -166,11 +168,6 @@ public class JPAQuery implements CustomQueryIFace
         {
             try
             {
-                log.debug("["+sqlStr+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-                if (sqlStr.startsWith("SELECT gtp.geologicTimePeriodId")) //$NON-NLS-1$
-                {
-                    sqlStr = "SELECT gtp.geologicTimePeriodId FROM GeologicTimePeriod as gtp WHERE lower(gtp.fullName) like '%taylor%' OR lower(gtp.name) like '%taylor%'"; //$NON-NLS-1$
-                }
                 Query qry = query != null ? query : session.createQuery(sqlStr);
                 
                 if (params != null)
@@ -261,6 +258,32 @@ public class JPAQuery implements CustomQueryIFace
      */
     public List<?> getDataObjects()
     {
+        if (doDebug)
+        {
+            StringBuilder sb = new StringBuilder();
+            log.debug("-- Results Start --");
+            int rowNum = 0;
+            for (Object row : resultsList)
+            {
+                if (row instanceof Object[])
+                {
+                    sb.setLength(0);
+                    Object[] cols = (Object[])row;
+                    for (Object colData : cols)
+                    {
+                        sb.append('|');
+                        sb.append(colData);
+                    }
+                    sb.append('|');
+                    log.debug(rowNum+" - " + sb.toString());
+                } else
+                {
+                    log.debug(rowNum+" - " + row);
+                }
+                rowNum++;
+            }
+            log.debug("-- Results End --");
+        }
         return resultsList;
     }
 

@@ -33,6 +33,7 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
@@ -90,6 +91,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     protected PropertyChangeListener      propertyListener  = null;
     
     protected JStatusBar                  statusBar         = UIRegistry.getStatusBar();
+    protected boolean                     doDebug           = AppPreferences.getLocalPrefs().getBoolean("esdebug", false);
     
     // Frame buffer
     protected int startInx = 0;
@@ -885,6 +887,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                 if (colObj instanceof Integer)
                                 {
                                     ids.add((Integer)colObj);
+                                    if (doDebug) log.debug("*** 1 Adding id["+colObj+"]");
                                 } else
                                 {
                                     log.error("First Column must be Integer id! ["+colObj+"]");
@@ -892,7 +895,9 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                 }
                             } else
                             {
-                                row.add(cols.next().processValue(colObj));
+                                Object obj = cols.next().processValue(colObj);
+                                row.add(obj);
+                                if (doDebug) log.debug("*** 2 Adding id["+obj+"]");
                             }
                             col++;
                         }
