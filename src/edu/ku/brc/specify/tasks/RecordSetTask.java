@@ -31,7 +31,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -739,7 +738,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 if (srcRecordSet.getDbTableId().intValue() == dstRecordSet.getDbTableId().intValue())
                 {
                     int oldSize = dstRecordSet.getNumItems();
-                    Vector<RecordSetItemIFace> dstList  = new Vector<RecordSetItemIFace>(dstRecordSet.getItems());
+                    //Vector<RecordSetItemIFace> dstList  = new Vector<RecordSetItemIFace>(dstRecordSet.getItems());
                     boolean debug = false;
                     if (debug)
                     {

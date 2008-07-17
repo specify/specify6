@@ -137,6 +137,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     protected ESResultsSubPane              queryResultsPane      = null;
     protected SIQueryForIdResults           searchWarningsResults = null;
     protected JStatusBar                    statusBar             = null;
+    protected boolean                       doingDebug            = false;
 
 
     /**
@@ -332,6 +333,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                                         final String     searchTextStr,
                                         final ExpressSearchResultsPaneIFace esrPane)
     {
+        
+        doingDebug = AppPreferences.getLocalPrefs().getBoolean("esdebug", false);
         searchWarningsResults = null;
         
         String searchTerm = (searchTextArg != null ? searchTerm = searchTextArg.getText() : searchTextStr).toLowerCase();
@@ -477,6 +480,11 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                         //log.debug("ExpressSearchResults erti.getId()["+erti.getId()+"] joinColTableId["+joinColTableId+"] displayOrder["+displayOrder+"]");
                         results = new QueryForIdResultsSQL(erti.getId(), joinColTableId, erti, displayOrder, searchTerm);
                         resultsForJoinsHash.put(erti.getId(), results);
+                    }
+                    
+                    if (doingDebug)
+                    {
+                        log.debug("*** Adding recId["+recId+"] to erti["+erti.getId()+"] ");
                     }
                     results.add(recId);
                 }
