@@ -32,6 +32,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
@@ -754,9 +755,16 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                         }    
                         log.debug("");
                     }
+                    
+                    Hashtable<Integer, Boolean> dupHash = new Hashtable<Integer, Boolean>();
+                    for (RecordSetItemIFace rsi : dstRecordSet.getItems())
+                    {
+                        dupHash.put(rsi.getRecordId().intValue(), true);
+                    }    
+
                     for (RecordSetItemIFace rsi : srcRecordSet.getItems())
                     {
-                        if (Collections.binarySearch(dstList, rsi) < 0)
+                        if (dupHash.get(rsi.getRecordId().intValue()) == null)
                         {
                             RecordSetItem newrsi = new RecordSetItem(rsi.getRecordId());
                             dstRecordSet.addItem(newrsi);
@@ -818,10 +826,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             {
                 throw new RuntimeException(ex);
             }
-        } else
-        {
-            throw new RuntimeException("copyRecordSet doesn't support class of type ["+recordSet.getClass().getSimpleName()+"]");
         }
+        throw new RuntimeException("copyRecordSet doesn't support class of type ["+recordSet.getClass().getSimpleName()+"]");
     }
     
     /**
@@ -932,10 +938,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                     {
                         UIRegistry.displayStatusBarText("");
                         return rsName;
-                    } else
-                    {
-                        throw new RuntimeException("Return value should have been an Integer!");
                     }
+                    throw new RuntimeException("Return value should have been an Integer!");
                 }
                 UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("RecordSetTask.RS_NAME_DUP"), rsName));
                 Toolkit.getDefaultToolkit().beep();
