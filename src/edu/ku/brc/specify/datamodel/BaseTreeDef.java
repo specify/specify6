@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -211,6 +212,74 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     public void setNodeNumbersAreUpToDate(final boolean arg)
     {
         nodeNumbersAreUpToDate = arg;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.Nameable#getName()
+     */
+    @Override
+    public String getName()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.Nameable#setName(java.lang.String)
+     */
+    @Override
+    public void setName(String name)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getDataClass()
+     */
+    @Override
+    public Class<?> getDataClass()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
+     */
+    @Override
+    public Integer getId()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getTableId()
+     */
+    @Override
+    public int getTableId()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.TreeDefIface#getStandardLevels()
+     */
+    @Override
+    public List<TreeDefItemStandardEntry> getStandardLevels()
+    {
+        return new LinkedList<TreeDefItemStandardEntry>();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.TreeDefIface#getRankIncrement()
+     */
+    @Override
+    public int getRankIncrement()
+    {
+        return 1000; //plenty of space for inserts?
     }
 
     

@@ -29,6 +29,8 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -44,11 +46,13 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-@SuppressWarnings("serial")
+import edu.ku.brc.ui.UIRegistry;
+
+@SuppressWarnings("serial") //$NON-NLS-1$
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "geographytreedef")
+@Table(name = "geographytreedef") //$NON-NLS-1$
 public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, GeographyTreeDefItem> implements java.io.Serializable
 {
 	protected Integer				    geographyTreeDefId;
@@ -86,7 +90,7 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
 
     @Id
     @GeneratedValue
-    @Column(name = "GeographyTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "GeographyTreeDefID", unique = false, nullable = false, insertable = true, updatable = true) //$NON-NLS-1$
 	public Integer getGeographyTreeDefId()
 	{
 		return this.geographyTreeDefId;
@@ -118,7 +122,7 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
 		this.geographyTreeDefId = geographyTreeDefId;
 	}
 
-    @Column(name = "Name", nullable=false, length = 64)
+    @Column(name = "Name", nullable=false, length = 64) //$NON-NLS-1$
 	public String getName()
 	{
 		return this.name;
@@ -130,7 +134,7 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
 	}
 
     @Lob
-    @Column(name = "Remarks", length = 4096)
+    @Column(name = "Remarks", length = 4096) //$NON-NLS-1$
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -141,7 +145,7 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
 		this.remarks = remarks;
 	}
 
-    @Column(name = "FullNameDirection", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "FullNameDirection", unique = false, nullable = true, insertable = true, updatable = true) //$NON-NLS-1$
 	public Integer getFullNameDirection()
     {
         return fullNameDirection;
@@ -152,7 +156,7 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
         this.fullNameDirection = fullNameDirection;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geographyTreeDef")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geographyTreeDef") //$NON-NLS-1$
     public Set<Discipline> getDisciplines()
 	{
 		return this.disciplines;
@@ -175,7 +179,7 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
         ct.setGeographyTreeDef(null);
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definition")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definition") //$NON-NLS-1$
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
 	public Set<Geography> getTreeEntries()
 	{
@@ -187,7 +191,7 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
 		this.treeEntries = treeEntries;
 	}
 
-    @OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "treeDef")
+    @OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "treeDef") //$NON-NLS-1$
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
 	public Set<GeographyTreeDefItem> getTreeDefItems()
 	{
@@ -373,4 +377,31 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
     {
         return getIdentityTitle();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.BaseTreeDef#getRankIncrement()
+     */
+    @Override
+    @Transient
+    public int getRankIncrement()
+    {
+        return 100;  //tradition
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.BaseTreeDef#getStandardLevels()
+     */
+    @Override
+    @Transient
+    public List<TreeDefItemStandardEntry> getStandardLevels()
+    {
+        List<TreeDefItemStandardEntry> result = new LinkedList<TreeDefItemStandardEntry>();    
+        result.add(new TreeDefItemStandardEntry(UIRegistry.getResourceString("GeographyTreeDef.9"), 100)); //$NON-NLS-1$
+        result.add(new TreeDefItemStandardEntry(UIRegistry.getResourceString("GeographyTreeDef.10"), 200)); //$NON-NLS-1$
+        result.add(new TreeDefItemStandardEntry(UIRegistry.getResourceString("GeographyTreeDef.11"), 300)); //$NON-NLS-1$
+        result.add(new TreeDefItemStandardEntry(UIRegistry.getResourceString("GeographyTreeDef.12"), 400)); //$NON-NLS-1$
+        return result;
+    }
+    
+    
 }

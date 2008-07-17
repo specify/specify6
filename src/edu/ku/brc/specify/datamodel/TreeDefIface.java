@@ -28,6 +28,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.List;
 import java.util.Set;
 
 import edu.ku.brc.util.Nameable;
@@ -113,5 +114,19 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
      * @return the rank id of the level of the tree that items below it can be synonymized to.
      */
     public int getSynonymizedLevel();
+    
+    /**
+     * @return a List of 'Standard' levels for the tree in order from lowest rank to highest.
+     * Such as Continent, Country, State, County for a Geography Tree.  
+     */
+    public List<TreeDefItemStandardEntry> getStandardLevels();
+    
+    /**
+     * When a new TreeDefItem with no children is created, it's rank can be determined by adding the value returned by this function
+     * to it's parent's rank.
+     * 
+     * @return rank increment.
+     */
+    public int getRankIncrement();
 	
 }
