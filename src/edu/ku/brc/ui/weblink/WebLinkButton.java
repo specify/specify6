@@ -142,6 +142,10 @@ public class WebLinkButton extends JPanel implements UIPluginable,
                 launchBtn.setToolTipText(""); //$NON-NLS-1$
                 return;
             }
+        } else
+        {
+            int x = 0;
+            x++;
         }
         
         isTableSpecific = StringUtils.isNotEmpty(webLinkDef.getTableName());
@@ -506,6 +510,7 @@ public class WebLinkButton extends JPanel implements UIPluginable,
                 provider = (WebLinkDataProviderIFace)value;
             }
             String url = buildURL(true);
+            int x = 0;
             if (StringUtils.isNotEmpty(url))
             {
                 setToolTips();

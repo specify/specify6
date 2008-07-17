@@ -109,6 +109,7 @@ import edu.ku.brc.ui.forms.validation.ValSpinner;
 import edu.ku.brc.ui.forms.validation.ValTextArea;
 import edu.ku.brc.ui.forms.validation.ValTextField;
 import edu.ku.brc.ui.forms.validation.ValidatedJPanel;
+import edu.ku.brc.ui.weblink.WebLinkButton;
 
 /**
  * Creates FormViewObj object that implement the Viewable interface.
@@ -821,6 +822,30 @@ public class ViewFactory
             {
                 // instantiate the plugin object
                 UIPluginable uiPlugin = pluginClass.asSubclass(UIPluginable.class).newInstance();
+                
+                Properties props = (Properties)cellField.getProperties().clone();
+                
+                System.out.println(cellField.getName());
+                if (uiPlugin instanceof WebLinkButton)
+                {
+                    //if (StringUtils.isNotEmpty((String)props.get("weblink")))
+                    {
+                        DBTableInfo tInfo = DBTableIdMgr.getInstance().getByClassName(parent.getView().getClassName());
+                        if (tInfo != null)
+                        {
+                            System.out.println(cellField.getName());
+                            DBFieldInfo fInfo = tInfo.getFieldByName(cellField.getName());
+                            if (fInfo != null)
+                            {
+                                System.out.println(fInfo.getFormatStr() + " weblink: "+fInfo.getWebLinkName());
+                                if (StringUtils.isEmpty((String)props.get("weblink")) && StringUtils.isNotEmpty(fInfo.getWebLinkName()))
+                                {
+                                    props.put("weblink", fInfo.getWebLinkName());
+                                }
+                            }
+                        }                        
+                    }
+                }
 
                 // This needs to be done before the initialize.
                 if (uiPlugin instanceof UIValidatable)
@@ -829,7 +854,7 @@ public class ViewFactory
                 }
 
                 // initialize the plugin object
-                Properties props = (Properties)cellField.getProperties().clone();
+               
                 props.put("parent", parent);
                 uiPlugin.initialize(props, isViewMode);
                 
@@ -1049,6 +1074,19 @@ public class ViewFactory
                     throw new RuntimeException("PickList Adapter ["+pickListName+"] cannot be null!");
                 }
             }
+            
+            /*if (uiType == FormCellFieldIFace.FieldType.text)
+            {
+                String weblink = cellField.getProperty("weblink");
+                if (StringUtils.isNotEmpty(weblink))
+                {
+                    String name = cellField.getProperty("name");
+                    if (StringUtils.isNotEmpty(name) && name.equals("WebLink"))
+                    {
+                        uiType
+                    }
+                }
+            }*/
 
             // The Default Display for combox is dsptextfield, except when there is a TableBased PickList
             // At the time we set the display we don't want to go get the picklist to find out. So we do it

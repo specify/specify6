@@ -1507,7 +1507,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFaceListener#realizeComplete(edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace)
      */
-    public void realizeComplete(LocalizableItemIFace liif)
+    public void realizeComplete(@SuppressWarnings("unused")LocalizableItemIFace liif)
     {
     }
     

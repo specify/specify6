@@ -121,7 +121,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
         
         sql = "SELECT splocalecontainer.Name,splocalecontaineritem.Name,splocalecontaineritem.Format, " +
               "splocalecontaineritem.IsUIFormatter, splocalecontaineritem.PickListName, splocaleitemstr.Text, " +
-              "splocalecontaineritem.IsHidden " +
+              "splocalecontaineritem.IsHidden, splocalecontaineritem.WebLinkName  " +
               "FROM splocalecontainer INNER JOIN splocalecontaineritem ON splocalecontainer.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
               "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemNameID "+
               " where splocaleitemstr.Language = '"+locale.getLanguage()+"' AND " +
@@ -159,6 +159,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                     
                     DBFieldInfo fieldInfo = (DBFieldInfo)tblChild;
                     fieldInfo.setPickListName(p.get(4));
+                    fieldInfo.setWebLinkName(p.get(7));
                     
                     if (isUIFmt)
                     {
