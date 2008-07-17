@@ -176,15 +176,23 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		super.shutdown();
 	}
     
-    /**
+    /*  *
      * @param doUnlock the doUnlock to set
      */
-    public void setUnlock(boolean doUnlock)
+    public void setDoUnlock(boolean doUnlock)
     {
         this.doUnlock = doUnlock;
     }
     
 	/**
+     * @return the doUnlock
+     */
+    public boolean isDoUnlock()
+    {
+        return doUnlock;
+    }
+
+    /**
 	 * @param isEditMode whether to enable editing.
 	 */
 	protected void initUI()

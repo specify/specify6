@@ -2551,9 +2551,17 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	/**
      * @param doUnlock the doUnlock to set
      */
-    public void setUnlock(boolean doUnlock)
+    public void setDoUnlock(boolean doUnlock)
     {
         this.doUnlock = doUnlock;
+    }
+
+    /**
+     * @return the doUnlock
+     */
+    public boolean isDoUnlock()
+    {
+        return doUnlock;
     }
 
     /**

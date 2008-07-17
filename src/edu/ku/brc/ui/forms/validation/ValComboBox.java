@@ -53,6 +53,7 @@ import edu.ku.brc.ui.AutoCompletion;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -535,6 +536,11 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
                             break;
                         }
                     }
+                }
+                
+                if (fndInx == -1 && comboBox.getModel() instanceof PickListDBAdapterIFace)
+                {
+                    UIRegistry.showLocalizedError("ValComboBox.PL_ITEM_NOTFND", value.toString());//$NON-NLS-1$
                 }
 
             } else

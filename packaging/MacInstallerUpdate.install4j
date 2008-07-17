@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="4.1.3" transformSequenceNumber="2">
   <directoryPresets config="../InstallerFiles" />
-  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MacMediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Alpha_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.0.8" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" javaMinVersion="1.5" javaMaxVersion="1.5" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MacMediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Alpha_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.1.00" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" javaMinVersion="1.5" javaMaxVersion="1.5" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -22,15 +22,11 @@
     <entries>
       <dirEntry mountPoint="18" file="../InstallerFiles" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes=".DS_Store, .svn" dirMode="755">
         <exclude>
+          <entry location="help" fileType="regular" />
           <entry location="hibernate_libs" fileType="regular" />
           <entry location="iReportLibs" fileType="regular" />
           <entry location="libs" fileType="regular" />
           <entry location="mac" fileType="regular" />
-          <entry location="non-mac-application-adapter.jar" fileType="regular" />
-          <entry location="specify.icns" fileType="regular" />
-          <entry location="specify16.png" fileType="regular" />
-          <entry location="specify32.png" fileType="regular" />
-          <entry location="SpecifyBigSplash.png" fileType="regular" />
         </exclude>
       </dirEntry>
     </entries>
@@ -482,7 +478,7 @@
                         <boolean>false</boolean>
                       </void>
                       <void property="updateDescriptorUrl">
-                        <string>http://localhost/specify/updates.xml</string>
+                        <string>http://specify6-test.nhm.ku.edu/specifydownloads/specify6/alpha/updates.xml</string>
                       </void>
                       <void property="variable">
                         <string>updateDescriptor</string>

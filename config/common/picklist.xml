@@ -25,7 +25,7 @@
   </picklist>
   <picklist name="PermitType" issystem="true" type="0" readonly="true" sizelimit="5">
     <items>
-      <picklistitem title="US Dept Fish and Wildlife" value="US Dept Fish and Wildlife"/>
+      <picklistitem title="US Dept Wildlife" value="US Dept Fish and Wildlife"/>
       <picklistitem title="State" value="State"/>
       <picklistitem title="International" value="International"/>
       <picklistitem title="Federal" value="Federal"/>

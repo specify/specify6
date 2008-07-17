@@ -40,14 +40,9 @@ import edu.ku.brc.ui.DateWrapper;
 @Table(name = "treatmentevent")
 @org.hibernate.annotations.Table(appliesTo="treatmentevent", indexes =
     {   @Index (name="TEDateReceivedIDX",        columnNames={"DateReceived"}),
-        @Index (name="TEDateCompletedIDX",       columnNames={"DateCompleted"}),
         @Index (name="TEDateTreatmentStartedIDX", columnNames={"DateTreatmentStarted"}),
-        @Index (name="TEDateTreatmentEndedIDX",  columnNames={"DateTreatmentEnded"}),
-        @Index (name="TEDateCleanedIDX",         columnNames={"DateCleaned"}),
-        @Index (name="TEDateBoxedIDX",           columnNames={"DateBoxed"}),
-        @Index (name="TEDateToIsolationIDX",    columnNames={"DateToIsolation"}),
-        @Index (name="TETypeIDX", columnNames={"Type"}),
-        @Index (name="TEFieldNumberIDX", columnNames={"FieldNumber"})
+        @Index (name="TEFieldNumberIDX", columnNames={"FieldNumber"}),
+        @Index (name="TETreatmentNumberIDX", columnNames={"TreatmentNumber"})
     })
 public class TreatmentEvent extends DataModelObjBase
 {

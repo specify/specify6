@@ -40,7 +40,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class TaskSemaphoreMgr
 {
-    public enum SCOPE {Global, Instititution, Division, Discipline, Collection}
+    public enum SCOPE {Global, Discipline, Collection}
     
     private static boolean previouslyLocked = false;
     private static String prevLockedBy = null;
@@ -337,6 +337,42 @@ public class TaskSemaphoreMgr
         //System.err.println(sql);
         Object[] cols = (Object[])session.getData(sql);
         return cols != null && cols.length > 0 ? (SpTaskSemaphore)cols[0] : null;
+    }
+    
+    /**
+     * @param name
+     * @param context
+     * @param scope
+     * @return
+     */
+    public static SpTaskSemaphore getSemaphore(final String name, 
+                                               final String context,
+                                               final SCOPE  scope)
+    {
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+
+            SpecifyUser user      = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+            Discipline discipline = scope == SCOPE.Discipline ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
+            Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
+    
+            return getSemaphore(session, name, scope, user, discipline, collection);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            //log.error(ex);
+            
+        } finally 
+        {
+             if (session != null)
+             {
+                 session.close();
+             }
+        }
+        return null;
     }
     
     /**

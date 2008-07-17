@@ -1134,7 +1134,7 @@ public class BuildSampleDatabase
         startDate.set(1993, 2, 1);
         Calendar endDate = Calendar.getInstance();
         endDate.set(1993, 5, 30);
-        Permit permit = createPermit("1991-PLAN-0001", "US Dept Botany", issuedDate, startDate, endDate, null);
+        Permit permit = createPermit("1991-PLAN-0001", "US Dept Wildlife", issuedDate, startDate, endDate, null);
         permit.setIssuedTo(ku);
         permit.setIssuedBy(agents.get(4));
         dataObjects.add(permit);
@@ -2360,7 +2360,7 @@ public class BuildSampleDatabase
         startDate.set(1993, 2, 1);
         Calendar endDate = Calendar.getInstance();
         endDate.set(1993, 5, 30);
-        Permit permit = createPermit("1980-INVRTP-0001", "US Dept "+disciplineType.getTitle(), issuedDate, startDate, endDate, null);
+        Permit permit = createPermit("1980-INVRTP-0001", "US Dept Wildlife", issuedDate, startDate, endDate, null);
         permit.setIssuedTo(ku);
         permit.setIssuedBy(agents.get(4));
         dataObjects.add(permit);
@@ -3398,7 +3398,7 @@ public class BuildSampleDatabase
         Calendar endDate = Calendar.getInstance();
         endDate.set(1993, 5, 30);
         
-        Permit permit = createPermit("1980-"+disciplineType.getAbbrev()+"-0001", "US Dept "+disciplineType.getTitle(), issuedDate, startDate, endDate, null);
+        Permit permit = createPermit("1980-"+disciplineType.getAbbrev()+"-0001", "US Dept Wildlife", issuedDate, startDate, endDate, null);
         permit.setIssuedTo(ku);
         permit.setIssuedBy(agents.get(4));
         dataObjects.add(permit);
@@ -4565,7 +4565,7 @@ public class BuildSampleDatabase
         startDate.set(1993, 2, 1);
         Calendar endDate = Calendar.getInstance();
         endDate.set(1993, 5, 30);
-        Permit permit = createPermit("1993-FISH-0001", "US Dept Fish and Wildlife", issuedDate, startDate, endDate, null);
+        Permit permit = createPermit("1993-FISH-0001", "US Dept Wildlife", issuedDate, startDate, endDate, null);
         permit.setIssuedTo(ku);
         permit.setIssuedBy(agents.get(4));
         dataObjects.add(permit);

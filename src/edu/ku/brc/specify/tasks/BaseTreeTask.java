@@ -9,6 +9,7 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
@@ -33,6 +34,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -146,39 +148,44 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     
     /**
      * Opens a TreeViewer in a BG Thread.
-     * @param isEditMode the mode
+     * @param isEditModeArg the mode
      */
-    protected void openTreeViewerInBGThread(final String titleArg, final boolean isEditMode)
+    protected void openTreeViewerInBGThread(final String titleArg, final boolean isEditModeArg)
     {
+        
     	if (!isOpeningTree)
     	{
-            if (TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true))
-            {
-        		isOpeningTree = true;
-    	        SwingWorker bgWorker = new SwingWorker()
-    	        {
-    	            private TreeTableViewer<T,D,I> treeViewer;
-    	            
-    	            @Override
-    	            public Object construct()
-    	            {
-    	                treeViewer = createTreeViewer(titleArg, isEditMode);
-    	                return treeViewer;
-    	            }
-    	
-    	            @Override
-    	            public void finished()
-    	            {
-    	                super.finished();
-    	                ContextMgr.requestContext(BaseTreeTask.this);
-    	                currentDefInUse = true;
-    	                visibleSubPane = treeViewer;
-    	                addSubPaneToMgr(treeViewer);
-    	                isOpeningTree = false;
-    	            }
-    	        };
-    	        bgWorker.start();
-            }
+            final boolean gotLock    = TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true);
+            final boolean isEditMode = !gotLock ? false : isEditModeArg;
+            
+    		isOpeningTree = true;
+	        SwingWorker bgWorker = new SwingWorker()
+	        {
+	            private TreeTableViewer<T,D,I> treeViewer;
+	            
+	            @Override
+	            public Object construct()
+	            {
+	                treeViewer = createTreeViewer(titleArg, isEditMode);
+	                if (!gotLock)
+	                {
+	                    treeViewer.setDoUnlock(false);
+	                }
+	                return treeViewer;
+	            }
+	
+	            @Override
+	            public void finished()
+	            {
+	                super.finished();
+	                ContextMgr.requestContext(BaseTreeTask.this);
+	                currentDefInUse = true;
+	                visibleSubPane = treeViewer;
+	                addSubPaneToMgr(treeViewer);
+	                isOpeningTree = false;
+	            }
+	        };
+	        bgWorker.start();
     	}
     }
     
@@ -328,7 +335,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         
         boolean hasPermissionToEdit = true;
         
-        String tabtitle = UIRegistry.getResourceString(name);
+        final String tabtitle = UIRegistry.getResourceString(name);
         
         Action treeEditAction = createActionForTreeEditing(tabtitle, hasPermissionToEdit);
         UIRegistry.registerAction("TreeEditing_"+treeClass.getSimpleName(), treeEditAction);
@@ -340,6 +347,27 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         UIRegistry.registerAction("TreeDefEditing_"+treeDefClass.getSimpleName(), treeDefEditAction);
         subMenu.add(editDefMenuItem);
 
+        /*
+        // XXX SECURITY - Check to see if they can edit the tree def
+        ActionListener treeDefClearLockAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent arg0)
+            {
+                if (TaskSemaphoreMgr.isLocked(tabtitle, treeDefClass.getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline))
+                {
+                    TaskSemaphoreMgr.unlock(tabtitle, treeDefClass.getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline);
+                } else
+                {
+                    // Show Dialog ?? or Taskbar message ??
+                    log.warn(tabtitle + " was not locked.");
+                }
+            }
+        };
+        JMenuItem treeDefClearLockMI = new JMenuItem(getResourceString("TTV_UNLOCK_MENU_ITEM"));
+        treeDefClearLockMI.addActionListener(treeDefClearLockAction);
+        subMenu.add(treeDefClearLockMI);
+        */
+        
         adjustMenus();
         
         return menus;
@@ -429,7 +457,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	            	
 	                if (visibleSubPane instanceof TreeTableViewer && !switchMode)
 	                {
-	                    ((TreeTableViewer<?,?,?>)visibleSubPane).setUnlock(false);
+	                    ((TreeTableViewer<?,?,?>)visibleSubPane).setDoUnlock(false);
 	                    TreeDefinitionEditor<T,D,I> defEditor = createDefEditor(tabTitle);
 	                    oldPane         = visibleSubPane;
 	                    currentDefInUse = true;
@@ -437,7 +465,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	                }
 	                else if (visibleSubPane instanceof TreeDefinitionEditor || switchMode)
 	                {
-	                    ((TreeDefinitionEditor<?,?,?>)visibleSubPane).setUnlock(false);
+	                    ((TreeDefinitionEditor<?,?,?>)visibleSubPane).setDoUnlock(false);
 	                    TreeTableViewer<T,D,I> treeViewer = createTreeViewer(tabTitle, isEditMode);
 	                    oldPane         = visibleSubPane;
 	                    currentDefInUse = true;
