@@ -250,15 +250,6 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         tablePane.add(table, BorderLayout.CENTER);
         tablePane.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         
-        //table.setDragEnabled(true);
-        //table.setDropMode(DropMode.ON_OR_INSERT);
-        
-        //table.setTransferHandler(new RowTransferHandler());
-        //TableRowDnDListener recgn = new TableRowDnDListener();
-        //table.addMouseListener(recgn);
-        //table.addMouseMotionListener(recgn);
-        
-
         if (isEditable)
         {
             PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
@@ -904,20 +895,26 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
          */
         public Object getData()
         {
-            if (table.getSelectedRowCount() > 0)
+            if (table.getSelectedRowCount() > 0 )
             {
-                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(results.getTableId());
-                if (tableInfo != null)
+                if (results.getRecIds() != null && results.getRecIds().size() > 0)
                 {
-                    RecordSetIFace rs = RecordSetFactory.getInstance().createRecordSet();
-                    rs.setDbTableId(results.getTableId());
-                    
-                    for (int inx : table.getSelectedRows())
+                    DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(results.getTableId());
+                    if (tableInfo != null)
                     {
-                        int id = results.getRecIds().get(inx);
-                        rs.addItem(id);
+                        RecordSetIFace rs = RecordSetFactory.getInstance().createRecordSet();
+                        rs.setDbTableId(results.getTableId());
+                        
+                        for (int inx : table.getSelectedRows())
+                        {
+                            int id = results.getRecIds().get(inx);
+                            rs.addItem(id);
+                        }
+                        return rs;
                     }
-                    return rs;
+                } else
+                {
+                    log.error("results doesn't have any ids.");
                 }
             }
             return null;
