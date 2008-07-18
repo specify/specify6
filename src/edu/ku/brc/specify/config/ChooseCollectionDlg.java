@@ -75,7 +75,7 @@ public class ChooseCollectionDlg extends CustomDialog
      */
     public ChooseCollectionDlg(List<Collection> collectionList) throws HeadlessException
     {
-        super((Frame)UIRegistry.getTopWindow(), getResourceString("ExpressSearchConfigDlg.ES_DLG_TITLE"), true, OK_BTN, null);
+        super((Frame)UIRegistry.getTopWindow(), getResourceString("CHOOSE_COLLECTION_TITLE"), true, OK_BTN, null);
         
         this.collectionList = collectionList;
         

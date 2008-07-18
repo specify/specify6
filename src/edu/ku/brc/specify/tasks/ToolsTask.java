@@ -302,6 +302,19 @@ public class ToolsTask extends BaseTask
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#subPaneRemoved(edu.ku.brc.af.core.SubPaneIFace)
+     */
+    public void subPaneRemoved(final SubPaneIFace subPane)
+    {
+        super.subPaneRemoved(subPane);
+        
+        if (subPane == starterPane)
+        {
+            starterPane = null;
+        }
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
     @Override
