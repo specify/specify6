@@ -267,7 +267,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.TreeDefIface#getStandardLevels()
      */
-    @Override
+    //@Override
     public List<TreeDefItemStandardEntry> getStandardLevels()
     {
         return new LinkedList<TreeDefItemStandardEntry>();
@@ -276,7 +276,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.TreeDefIface#getRankIncrement()
      */
-    @Override
+    //@Override
     public int getRankIncrement()
     {
         return 1000; //plenty of space for inserts?
