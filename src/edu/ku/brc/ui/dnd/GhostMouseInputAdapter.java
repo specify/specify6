@@ -170,7 +170,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     @Override
     public void mousePressed(MouseEvent e)
     {
-        System.out.println("mousePressed "+e.getPoint());
+        //System.out.println("mousePressed "+e.getPoint());
         firstPosition.setLocation(e.getPoint());
     }
 
@@ -342,7 +342,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     @Override
     public void mouseDragged(MouseEvent e)
     {
-        System.out.println("mouseDragged "+e.getPoint());
+        //System.out.println("mouseDragged "+e.getPoint());
         if (!ghostActionable.isEnabled())
         {
             return;
