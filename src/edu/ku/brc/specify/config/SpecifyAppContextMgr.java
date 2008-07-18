@@ -327,24 +327,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
     
     /**
-     * Sets up the "current" Collection by first checking prefs for the most recent primary key,
-     * if it can't get it then it asks the user to select one. (Note: if there is only one it automatically chooses it)
-     * @param sessionArg a session
-     * @param user the user object of the current object
-     * @param alwaysAsk indicates the User should always be asked which Collection to use
-     * @return the current Collection or null
+     * @param sessionArg
+     * @param user
+     * @return
      */
-    @SuppressWarnings("unchecked")
-    protected Collection setupCurrentCollection(final DataProviderSessionIFace sessionArg, 
-                                                final SpecifyUser user,
-                                                final boolean startingOver)
+    protected Collection getLastUSedCollection(final DataProviderSessionIFace sessionArg, 
+                                               final SpecifyUser user)
     {
-
-        if (sessionArg == null)
-        {
-            UIRegistry.showLocalizedError("SESSION_WAS_NULL");
-            System.exit(0);
-        }
         try
         {
             final String prefName = mkUserDBPrefName("recent_collection_id");
@@ -380,6 +369,72 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             if (collection != null && collectionHash.get(collection.getCollectionName()) == null)
             {
+                return null;
+            }
+            
+            return collection;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            UIRegistry.showLocalizedError(ex.toString()); // Yes, I know it isn't localized.
+        }
+        return null;
+    }
+    
+    /**
+     * Sets up the "current" Collection by first checking prefs for the most recent primary key,
+     * if it can't get it then it asks the user to select one. (Note: if there is only one it automatically chooses it)
+     * @param sessionArg a session
+     * @param userArg the user object of the current object
+     * @param alwaysAsk indicates the User should always be asked which Collection to use
+     * @return the current Collection or null
+     */
+    @SuppressWarnings("unchecked")
+    protected Collection setupCurrentCollection(final SpecifyUser userArg,
+                                                final boolean startingOver)
+    {
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            
+            SpecifyUser spUser = session.getData(SpecifyUser.class, "id", userArg.getId(), DataProviderSessionIFace.CompareType.Equals);
+            
+            final String prefName = mkUserDBPrefName("recent_collection_id");
+            
+            // First get the Collections the User has access to.
+            Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
+            String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+spUser.getSpecifyUserId();
+            for (Object obj : session.getDataList(sqlStr))
+            {
+                Collection cs = (Collection)obj; 
+                cs.getDiscipline();// force load of Discipline
+                cs.getDiscipline().getAgents(); // force load of agents
+                collectionHash.put(cs.getCollectionName(), cs);
+            }
+    
+            Collection collection = null;
+            
+            AppPreferences appPrefs  = AppPreferences.getRemote();
+            String         recentIds = appPrefs.get(prefName, null);
+            if (StringUtils.isNotEmpty(recentIds))
+            {
+                List<?> list = session.getDataList("FROM Collection WHERE collectionId = " + recentIds);
+                if (list.size() == 1)
+                {
+
+                    collection = (Collection)list.get(0);
+
+                }
+                else
+                {
+                    log.debug("could NOT find recent ids");
+                }
+            }
+            
+            if (collection != null && collectionHash.get(collection.getCollectionName()) == null)
+            {
 
                 collection = null;
             }
@@ -393,6 +448,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 } else if (collectionHash.size() > 0)
                 {
                     //Collections.sort(list); // Why doesn't this work?
+                    
                     
                     List<Collection> list = new Vector<Collection>();
                     list.addAll(collectionHash.values());
@@ -416,6 +472,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         log.error("Collection was null!");
                     }
     
+                    
+                    session.close();
+                    session = null;
+
                     ChooseCollectionDlg colDlg = null;
                     JDialog.setDefaultLookAndFeelDecorated(false);
                     do {
@@ -435,10 +495,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         colDlg.setVisible(true);
                         
                     } while (colDlg.getSelectedObject() == null);
+
                     
                     collection = colDlg.getSelectedObject();
                     JDialog.setDefaultLookAndFeelDecorated(true);
-
+                    
+                    session = DataProviderFactory.getInstance().createSession();
+                    session.attach(collection);
+                    session.attach(spUser);
+                    
                 } else
                 {
                     // Accession / Registrar / Director may not be assigned to any Collection
@@ -465,9 +530,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 
                 Discipline discipline = collection.getDiscipline();
+                session.attach(discipline);
+                
                 if (discipline != null)
                 {
-                    Agent.setUserAgent(user, discipline.getAgents());
+                    Agent.setUserAgent(spUser, discipline.getAgents());
                     
                     AppContextMgr am = AppContextMgr.getInstance();
                 	am.setClassObject(TaxonTreeDef.class, discipline.getTaxonTreeDef());
@@ -487,9 +554,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             ex.printStackTrace();
             UIRegistry.showLocalizedError(ex.toString()); // Yes, I know it isn't localized.
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
         
-        System.exit(0);
+        //System.exit(0);
         return null;
         
     }
@@ -954,13 +1028,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
             int prevCollectionId = AppContextMgr.getInstance().getClassObject(Collection.class) != null ? AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId() : -1;
             
             // Ask the User to choose which Collection they will be working with
-            Collection collection = setupCurrentCollection(session, user, startingOver);
+            Collection collection = setupCurrentCollection(user, startingOver);
             if (collection == null)
             {
                 // Return false but don't mess with anything that has been set up so far
                 currentStatus  = currentStatus == CONTEXT_STATUS.Initial ? CONTEXT_STATUS.Error : CONTEXT_STATUS.Ignore;
                 return currentStatus;
             }
+            
+            collection = session.merge(collection);
             
             String userType = user.getUserType();
             

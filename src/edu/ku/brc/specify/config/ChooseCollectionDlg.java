@@ -155,7 +155,6 @@ public class ChooseCollectionDlg extends CustomDialog
                 label.setText(col.toString());
                 
                 DisciplineType disciplineType = DisciplineType.getDiscipline(DisciplineType.STD_DISCIPLINES.valueOf(col.getDiscipline().getName()));
-                System.out.println(col.getDiscipline().getName()+"  "+disciplineType.getTitle()+"  "+disciplineType.getDisciplineType().toString()+"  "+disciplineType.getName());
                 label.setIcon(iconHash.get(disciplineType.getDisciplineType().toString()));
                 
                 ImageIcon imgIcon = IconManager.getIcon(col.getDiscipline().getName(), IconManager.IconSize.Std24);
