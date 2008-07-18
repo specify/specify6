@@ -217,7 +217,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     /* (non-Javadoc)
      * @see edu.ku.brc.util.Nameable#getName()
      */
-    @Override
+    //@Override
     public String getName()
     {
         // TODO Auto-generated method stub
@@ -227,7 +227,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     /* (non-Javadoc)
      * @see edu.ku.brc.util.Nameable#setName(java.lang.String)
      */
-    @Override
+    //@Override
     public void setName(String name)
     {
         // TODO Auto-generated method stub
