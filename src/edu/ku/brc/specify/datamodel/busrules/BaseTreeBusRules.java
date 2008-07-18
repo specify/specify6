@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
@@ -86,40 +87,44 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         super.initialize(viewableArg);
         
         GetSetValueIFace  parentField  = (GetSetValueIFace)formViewObj.getControlByName("parent");
-        final ValComboBox rankComboBox = (ValComboBox)formViewObj.getControlByName("definitionItem");
-
-        if (parentField instanceof ValComboBoxFromQuery)
+        Component comp = formViewObj.getControlByName("definitionItem");
+        if (comp instanceof ValComboBox)
         {
-            final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery)parentField;
-            if (parentCBX != null && rankComboBox != null)
+            final ValComboBox rankComboBox = (ValComboBox)comp;
+    
+            if (parentField instanceof ValComboBoxFromQuery)
             {
-                parentCBX.addListSelectionListener(new ListSelectionListener() {
-                    public void valueChanged(ListSelectionEvent e)
-                    {
-                        if (e == null || !e.getValueIsAdjusting())
+                final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery)parentField;
+                if (parentCBX != null && rankComboBox != null)
+                {
+                    parentCBX.addListSelectionListener(new ListSelectionListener() {
+                        public void valueChanged(ListSelectionEvent e)
                         {
-                            parentChanged(formViewObj, parentCBX, rankComboBox);
+                            if (e == null || !e.getValueIsAdjusting())
+                            {
+                                parentChanged(formViewObj, parentCBX, rankComboBox);
+                            }
+                        }
+                    });
+                }
+            }
+    
+            final JCheckBox            acceptedCheckBox     = (JCheckBox)formViewObj.getControlByName("isAccepted");
+            final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery)formViewObj.getControlByName("acceptedParent");
+            if (acceptedCheckBox != null && acceptedParentWidget != null)
+            {
+                acceptedCheckBox.addItemListener(new ItemListener()
+                {
+                    public void itemStateChanged(ItemEvent e)
+                    {
+                        if (acceptedCheckBox.isSelected())
+                        {
+                            acceptedParentWidget.setValue(null, null);
+                            acceptedParentWidget.setChanged(true); // This should be done automatically
                         }
                     }
                 });
             }
-        }
-
-        final JCheckBox            acceptedCheckBox     = (JCheckBox)formViewObj.getControlByName("isAccepted");
-        final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery)formViewObj.getControlByName("acceptedParent");
-        if (acceptedCheckBox != null && acceptedParentWidget != null)
-        {
-            acceptedCheckBox.addItemListener(new ItemListener()
-            {
-                public void itemStateChanged(ItemEvent e)
-                {
-                    if (acceptedCheckBox.isSelected())
-                    {
-                        acceptedParentWidget.setValue(null, null);
-                        acceptedParentWidget.setChanged(true); // This should be done automatically
-                    }
-                }
-            });
         }
     }
 
@@ -412,40 +417,44 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         final T nodeInForm = (T)formViewObj.getDataObj();
 
         GetSetValueIFace  parentField  = (GetSetValueIFace)formViewObj.getControlByName("parent");
-        final ValComboBox rankComboBox = (ValComboBox)formViewObj.getControlByName("definitionItem");
+        Component comp = formViewObj.getControlByName("definitionItem");
+        if (comp instanceof ValComboBox)
+        {
+            final ValComboBox rankComboBox = (ValComboBox)comp;
 
-        if (parentField instanceof ValComboBoxFromQuery)
-        {
-            final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery)parentField;
-            if (parentCBX != null && rankComboBox != null)
+            if (parentField instanceof ValComboBoxFromQuery)
             {
-                parentCBX.registerQueryBuilder(new SearchQueryBuilder<T>(nodeInForm));
+                final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery)parentField;
+                if (parentCBX != null && rankComboBox != null)
+                {
+                    parentCBX.registerQueryBuilder(new SearchQueryBuilder<T>(nodeInForm));
+                }
             }
-        }
-        
-        if (nodeInForm != null && nodeInForm.getDefinitionItem() != null)
-        {
-            //log.debug("node in form already has a set rank: forcing a call to adjustRankComboBoxModel()");
-            UIValidator.setIgnoreAllValidation(this, true);
-            adjustRankComboBoxModel(parentField, rankComboBox, nodeInForm);
-            UIValidator.setIgnoreAllValidation(this, false);
-        }
-        
-        // TODO: the form system MUST require the accepted parent widget to be present if the isAccepted checkbox is present
-        final JCheckBox            acceptedCheckBox     = (JCheckBox)formViewObj.getControlByName("isAccepted");
-        final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery)formViewObj.getControlByName("acceptedParent");
-        if (acceptedCheckBox != null && acceptedParentWidget != null)
-        {
-            acceptedParentWidget.setEnabled(!acceptedCheckBox.isSelected() && acceptedCheckBox.isEnabled());
-            if (acceptedCheckBox.isSelected())
+            
+            if (nodeInForm != null && nodeInForm.getDefinitionItem() != null)
             {
-                acceptedParentWidget.setValue(null, null);
+                //log.debug("node in form already has a set rank: forcing a call to adjustRankComboBoxModel()");
+                UIValidator.setIgnoreAllValidation(this, true);
+                adjustRankComboBoxModel(parentField, rankComboBox, nodeInForm);
+                UIValidator.setIgnoreAllValidation(this, false);
             }
-        }
-
-        if (parentField instanceof ValComboBoxFromQuery)
-        {
-            parentChanged(formViewObj, (ValComboBoxFromQuery)parentField, rankComboBox);
+            
+            // TODO: the form system MUST require the accepted parent widget to be present if the isAccepted checkbox is present
+            final JCheckBox            acceptedCheckBox     = (JCheckBox)formViewObj.getControlByName("isAccepted");
+            final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery)formViewObj.getControlByName("acceptedParent");
+            if (acceptedCheckBox != null && acceptedParentWidget != null)
+            {
+                acceptedParentWidget.setEnabled(!acceptedCheckBox.isSelected() && acceptedCheckBox.isEnabled());
+                if (acceptedCheckBox.isSelected())
+                {
+                    acceptedParentWidget.setValue(null, null);
+                }
+            }
+    
+            if (parentField instanceof ValComboBoxFromQuery)
+            {
+                parentChanged(formViewObj, (ValComboBoxFromQuery)parentField, rankComboBox);
+            }
         }
     }
 
