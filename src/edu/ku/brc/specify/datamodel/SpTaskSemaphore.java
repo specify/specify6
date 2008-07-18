@@ -203,7 +203,7 @@ public class SpTaskSemaphore extends DataModelObjBase implements java.io.Seriali
     /**
      * @return the machineName
      */
-    @Column(name = "MachineName", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "MachineName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getMachineName()
     {
         return machineName;

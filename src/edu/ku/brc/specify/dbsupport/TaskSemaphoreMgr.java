@@ -458,7 +458,8 @@ public class TaskSemaphoreMgr
         
         semaphore.setIsLocked(doLock);
         semaphore.setContext(context);
-        semaphore.setMachineName(doLock ? InetAddress.getLocalHost().toString() : null);
+        String machineName = InetAddress.getLocalHost().toString();
+        semaphore.setMachineName(doLock && StringUtils.isNotEmpty(machineName) ? machineName.substring(0, Math.min(64, machineName.length())) : null);
         semaphore.setScope(new Byte((byte)scope.ordinal()));
         semaphore.setLockedTime(now);
         semaphore.setTimestampModified(now);
