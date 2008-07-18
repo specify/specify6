@@ -37,7 +37,7 @@ import edu.ku.brc.util.Pair;
 public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryListener
 {
     protected static final Logger log = Logger.getLogger(QBJRDataSource.class);
-
+    
     /**
      * hql that produces the data.
      */
@@ -71,31 +71,50 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         	return String.valueOf(resultSetSize);  //currently returned as a string for convenience.
         }
     	
-    	//XXX Bad Code Alert!
-        while (rows.get() == null) { 
-            /*wait till done executing the query. (forever and ever??)
-             * Do we know that exectionDone and executionError will be called on different threads?
-             * */
+    	boolean logIt = rows.get() == null;
+        if (logIt)
+        {
+            log.debug(this + " waiting for rows...");
         }
-        int fldIdx = getFldIdx(arg0.getName());
-        if (fldIdx < 0)
-            return null;
-        
-        return processValue(fldIdx, columnInfo.get(fldIdx).processValue(rowVals[recordIdsIncluded ? fldIdx + 1 : fldIdx]));
-    }
-    
-    /* (non-Javadoc)
-     * @see net.sf.jasperreports.engine.JRDataSource#next()
-     */
-    @Override
-    public boolean next() throws JRException
-    {
         //XXX Bad Code Alert!
         while (rows.get() == null) { 
             /*wait till done executing the query. (forever and ever??)
              * Do we know that exectionDone and executionError will be called on different threads?
              * */
         }
+        if (logIt)
+        {
+            log.debug("... " + this + " got rows");
+        }
+        int fldIdx = getFldIdx(arg0.getName());
+        if (fldIdx < 0)
+            return null;
+        int processIdx = recordIdsIncluded ? fldIdx-1 : fldIdx;
+        return processValue(processIdx, columnInfo.get(processIdx).processValue(rowVals[fldIdx]));
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#getNext()
+     */
+    @Override
+    public boolean getNext() 
+    {
+        boolean logIt = rows.get() == null;
+        if (logIt)
+        {
+            log.debug(this + " waiting for rows...");
+        }
+        //XXX Bad Code Alert!
+        while (rows.get() == null) { 
+            /*wait till done executing the query. (forever and ever??)
+             * Do we know that exectionDone and executionError will be called on different threads?
+             * */
+        }
+        if (logIt)
+        {
+            log.debug("... " + this + " got rows");
+        }
+        
         if (rows.get().hasNext())
         {
             Object nextRow = rows.get().next();
@@ -114,7 +133,17 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         rowVals = null;
         return false;
     }
+
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#getRepeaterRowVals()
+     */
+    @Override
+    protected Object[] getRepeaterRowVals()
+    {
+        return rowVals;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQueryIFace)
      */
@@ -136,16 +165,51 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
 
     /**
      * @param hql
+     * @param params
      * @param columnInfo
+     * @param recordIdsIncluded
      */
     public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfo> columnInfo,
                           final boolean recordIdsIncluded)
     {
-        super(columnInfo, recordIdsIncluded);
+        super(columnInfo, recordIdsIncluded, "Count Amount", null);
         this.hql = hql;
         this.params = params;
         startDataAcquisition();
     }
+    
+    /**
+     * @param hql
+     * @param params
+     * @param columnInfo
+     * @param recordIdsIncluded
+     * @param repeatCount - number of repeats for each record
+     */
+    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfo> columnInfo,
+                          final boolean recordIdsIncluded, final int repeatCount)
+    {
+        super(columnInfo, recordIdsIncluded, null, repeatCount);
+        this.hql = hql;
+        this.params = params;
+        startDataAcquisition();
+    }
+
+    /**
+     * @param hql
+     * @param params
+     * @param columnInfo
+     * @param recordIdsIncluded
+     * @param repeatColumnName - name of the column whose value determines number of repeats for it's row.
+     */
+    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfo> columnInfo,
+                          final boolean recordIdsIncluded, final String repeatColumnName)
+    {
+        super(columnInfo, recordIdsIncluded, repeatColumnName, null);
+        this.hql = hql;
+        this.params = params;
+        startDataAcquisition();
+    }
+    
     
     /**
      * 
@@ -168,6 +232,16 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
             return super.getRecordId();
         }
         return rowVals[0];
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#getFldIdx(java.lang.String)
+     */
+    @Override
+    protected int getFldIdx(String fldName)
+    {
+        int result = super.getFldIdx(fldName);
+        return recordIdsIncluded ? result + 1 : result;
     }
 
     

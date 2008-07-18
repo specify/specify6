@@ -42,10 +42,25 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
     public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfo> columnInfo)
     {
         //XXX setting rowIds to true doesn't guarantee that rowIds will be available if Select Distinct was used
-        super(columnInfo, true);
+        super(columnInfo, true, null, 2);
         this.data = data;
     }
 
+    public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfo> columnInfo, final int repeatCount)
+    {
+        //XXX setting rowIds to true doesn't guarantee that rowIds will be available if Select Distinct was used
+        super(columnInfo, true, null, repeatCount);
+        this.data = data;
+    }
+ 
+    public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfo> columnInfo, final String repeatColumnName)
+    {
+        //XXX setting rowIds to true doesn't guarantee that rowIds will be available if Select Distinct was used
+        super(columnInfo, true, repeatColumnName, null);
+        this.data = data;
+    }
+
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#getFieldValue(net.sf.jasperreports.engine.JRField)
      */
@@ -63,13 +78,28 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
         return processValue(fldIdx, data.getCacheValueAt(row, fldIdx));
     }
 
+    
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#next()
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#getNext()
      */
     @Override
-    public boolean next() throws JRException
+    protected boolean getNext()
     {
         return ++row < data.getRowCount();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#getRepeaterRowVals()
+     */
+    @Override
+    protected Object[] getRepeaterRowVals()
+    {
+        Object[] rowData = new Object[colNames.size()];
+        for (int c = 0; c < colNames.size(); c++)
+        {
+            rowData[c] = data.getCacheValueAt(row, c);
+        }
+        return rowData;
     }
 
     /* (non-Javadoc)

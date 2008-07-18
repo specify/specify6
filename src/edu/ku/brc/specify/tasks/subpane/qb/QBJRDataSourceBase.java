@@ -40,6 +40,15 @@ public class QBJRDataSourceBase implements JRDataSource
     protected final List<ERTICaptionInfo> columnInfo;
     protected final boolean recordIdsIncluded;
     protected final ArrayList<Pair<String, Integer>> colNames = new ArrayList<Pair<String, Integer>>();
+    /**
+     * Sends repeats of rows to consumer of this source.
+     */
+    protected final RowRepeater repeater;
+    /**
+     * Number of repeats of the currently row.
+     */
+    protected int currentRowRepeats = 0;
+
     protected final Comparator<Pair<String, Integer>> colPairComparator = 
         new Comparator<Pair<String, Integer>>()
         {
@@ -71,14 +80,47 @@ public class QBJRDataSourceBase implements JRDataSource
     //@Override
     public boolean next() throws JRException
     {
-        // TODO Auto-generated method stub
-        return false;
+        if (currentRowRepeats > 0)
+        {
+            currentRowRepeats--;
+            return true;
+        }
+        boolean result = getNext();
+        if (result)
+        {
+        if (repeater != null)
+        {
+            currentRowRepeats = repeater.repeats(getRepeaterRowVals()) - 1;
+        }
+        else
+        {
+            currentRowRepeats = 0;
+        }
+        }
+        return result;
     }
 
     /**
+     * @return true if next row exists.
+     */
+    protected boolean getNext()
+    {
+        return false;
+    }
+    
+    /**
+     * @return array of row vals for processing by repeater.
+     */
+    protected Object[] getRepeaterRowVals()
+    {
+        return null;
+    }
+    
+    /**
      * @param columnInfo
      */
-    public QBJRDataSourceBase(final List<ERTICaptionInfo> columnInfo, final boolean recordIdsIncluded)
+    public QBJRDataSourceBase(final List<ERTICaptionInfo> columnInfo, final boolean recordIdsIncluded, final String repeatColumnName,
+                              final Integer repeatCount)
     {
         this.columnInfo = columnInfo;
         this.recordIdsIncluded = recordIdsIncluded;
@@ -93,6 +135,20 @@ public class QBJRDataSourceBase implements JRDataSource
             colNames.add(new Pair<String, Integer>(QueryBldrPane.fixFldNameForJR(lbl), new Integer(c++)));
         }
         Collections.sort(colNames, colPairComparator);
+        if (repeatColumnName == null && repeatCount == null)
+        {
+            repeater = null;
+        }
+        else if (repeatColumnName != null)
+        {
+            //assuming repeatColumnName does not refer to a formatted or aggregated column-
+            //also assuming valid columnName-
+            this.repeater = new RowRepeaterColumn(getFldIdx(QueryBldrPane.fixFldNameForJR(repeatColumnName)));
+        }
+        else
+        {
+            repeater = new RowRepeaterConst(repeatCount);
+        }
     }
     
     /**
