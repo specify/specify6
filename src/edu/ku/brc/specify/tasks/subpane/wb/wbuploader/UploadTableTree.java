@@ -133,6 +133,10 @@ public class UploadTableTree extends UploadTable
             {
                 throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
             }
+            finally
+            {
+                session.close();
+            }
         }
         if (treeDef != null)
         {
