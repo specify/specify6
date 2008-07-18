@@ -66,12 +66,20 @@ public class UIFieldFormatterMgr
         load();
     }
 
+    /**
+     * Copy constructor.
+     * @param source
+     */
     public UIFieldFormatterMgr(UIFieldFormatterMgr source)
     {
         setHash(source.getHash());
     }
 
-    public void copyFrom(UIFieldFormatterMgr source)
+    /**
+     * Copies the internal data structures.
+     * @param source a format manager
+     */
+    public void copyFrom(final UIFieldFormatterMgr source)
     {
         this.hasChanged = source.hasChanged;
         setHash(source.getHash());
@@ -135,7 +143,7 @@ public class UIFieldFormatterMgr
     }
 
     /**
-     * @return
+     * @return the formatters list
      */
     public List<UIFieldFormatterIFace> getFormatters()
     {
@@ -571,14 +579,20 @@ public class UIFieldFormatterMgr
      */
     public void applyChanges(UIFieldFormatterMgr source)
     {
-        copyFrom(source);
-        save();
+        if (source.hasChanged)
+        {
+            copyFrom(source);
+            save();
+            
+        } else
+        {
+            log.debug("Not saved = No Changes");
+        }
     }
 
     /**
-     * Saves formatters
+     * Saves formatters.
      * 
-     * @param
      */
     public void save()
     {

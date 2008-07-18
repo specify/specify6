@@ -81,7 +81,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     // used to hold changes to formatters before committing them to DB
     protected DataObjFieldFormatMgr dataObjFieldFormatMgrCache = new DataObjFieldFormatMgr(DataObjFieldFormatMgr.getInstance()); 
     protected UIFieldFormatterMgr   uiFieldFormatterMgrCache   = new UIFieldFormatterMgr(UIFieldFormatterMgr.getInstance());
-    protected SpecifyWebLinkMgr     webLinkMgrCache            = new SpecifyWebLinkMgr((SpecifyWebLinkMgr)SpecifyWebLinkMgr.getInstance());
+    protected SpecifyWebLinkMgr     webLinkMgrCache            = new SpecifyWebLinkMgr((SpecifyWebLinkMgr)WebLinkMgr.getInstance());
 
     protected SchemaLocalizerPanel                         schemaLocPanel;
     protected LocalizableIOIFace                           localizableIOIFace;
@@ -507,6 +507,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         // apply changes to formatters and save them to db
         DataObjFieldFormatMgr.getInstance().applyChanges(dataObjFieldFormatMgrCache);
         UIFieldFormatterMgr.getInstance().applyChanges(uiFieldFormatterMgrCache);
+        WebLinkMgr.getInstance().applyChanges(webLinkMgrCache);
 
         if (changedTables.size() > 0)
         {

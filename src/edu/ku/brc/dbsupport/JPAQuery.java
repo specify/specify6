@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -168,6 +169,12 @@ public class JPAQuery implements CustomQueryIFace
         {
             try
             {
+                // for testing
+                if (sqlStr.endsWith(" or co0 is null)"))
+                {
+                    sqlStr = StringUtils.replace(sqlStr, " or co0 is null)", ")");
+                    log.debug("isUnique: "+isUnique);
+                }
                 Query qry = query != null ? query : session.createQuery(sqlStr);
                 
                 if (params != null)
@@ -188,6 +195,11 @@ public class JPAQuery implements CustomQueryIFace
                 {
                     resultsList = qry.list();
                 }
+                
+               if (doDebug)
+               {
+                   dumpResults();
+               }
                 
             } catch (JDBCConnectionException ex)
             {
@@ -253,37 +265,56 @@ public class JPAQuery implements CustomQueryIFace
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.CustomQuery#getDataObjects()
+    /**
+     * Dumps the results to the log file.
      */
-    public List<?> getDataObjects()
+    protected void dumpResults()
     {
-        if (doDebug)
+        log.debug("-- Results Start -- Size: "+resultsList.size());
+        StringBuilder sb       = new StringBuilder();
+        int           rowNum   = 0;
+        boolean       firstRow = true;
+        for (Object row : resultsList)
         {
-            StringBuilder sb = new StringBuilder();
-            log.debug("-- Results Start --");
-            int rowNum = 0;
-            for (Object row : resultsList)
+            if (row instanceof Object[])
             {
-                if (row instanceof Object[])
+                if (firstRow)
                 {
+                    firstRow = false;
                     sb.setLength(0);
                     Object[] cols = (Object[])row;
                     for (Object colData : cols)
                     {
                         sb.append('|');
-                        sb.append(colData);
+                        sb.append(colData.getClass().getSimpleName());
                     }
                     sb.append('|');
-                    log.debug(rowNum+" - " + sb.toString());
-                } else
-                {
-                    log.debug(rowNum+" - " + row);
+                    log.debug(" --- " + sb.toString()+" --- ");
                 }
-                rowNum++;
+                
+                sb.setLength(0);
+                Object[] cols = (Object[])row;
+                for (Object colData : cols)
+                {
+                    sb.append('|');
+                    sb.append(colData);
+                }
+                sb.append('|');
+                log.debug(rowNum+" - " + sb.toString());
+            } else
+            {
+                log.debug(rowNum+" - " + row);
             }
-            log.debug("-- Results End --");
+            rowNum++;
         }
+        log.debug("-- Results End --");
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQuery#getDataObjects()
+     */
+    public List<?> getDataObjects()
+    {
         return resultsList;
     }
 

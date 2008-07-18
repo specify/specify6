@@ -91,14 +91,14 @@ public class WebLinkButton extends JPanel implements UIPluginable,
     protected CustomDialog                  promptDialog  = null;
     
     // UIPluginable
-    protected String             cellName       = null;
-    protected ChangeListener     changeListener = null;
+    protected String                        cellName       = null;
+    protected ChangeListener                changeListener = null;
     
     // UIValidatable && UIPluginable
-    protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
-    protected boolean            isRequired = false;
-    protected boolean            isChanged  = false;
-    protected boolean            isNew      = false;
+    protected UIValidatable.ErrorType       valState  = UIValidatable.ErrorType.Valid;
+    protected boolean                       isRequired = false;
+    protected boolean                       isChanged  = false;
+    protected boolean                       isNew      = false;
 
     /**
      * 
@@ -136,19 +136,10 @@ public class WebLinkButton extends JPanel implements UIPluginable,
             if (webLinkDef != null)
             {
                 this.setToolTipText(webLinkDef.getDesc());
-            } else
-            {
-                UIRegistry.showLocalizedError("WEBLNK_MISSING", wlName);
-                launchBtn.setToolTipText(""); //$NON-NLS-1$
-                return;
             }
-        } else
-        {
-            int x = 0;
-            x++;
         }
         
-        isTableSpecific = StringUtils.isNotEmpty(webLinkDef.getTableName());
+        isTableSpecific = webLinkDef != null ? StringUtils.isNotEmpty(webLinkDef.getTableName()) : null;
         
         PanelBuilder    pb     = new PanelBuilder(new FormLayout("p,"+ (isTableSpecific ? "" : "2px,p,") + "f:p:g", "p"), this); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc     = new CellConstraints();
@@ -331,11 +322,6 @@ public class WebLinkButton extends JPanel implements UIPluginable,
      */
     protected String buildURL(final boolean forToolTip)
     {
-        //if (StringUtils.isNotEmpty(urlStr))
-        //{
-        //    return urlStr;
-        //}
-        
         if (webLinkDef != null)
         {
             // Start by getting the data needed to build the URL
@@ -412,24 +398,12 @@ public class WebLinkButton extends JPanel implements UIPluginable,
             return url;
         }
         
-        return null;
-    }
-    
-    /**
-     * 
-     */
-    protected void doEdit()
-    {
-        boolean doSimpleDialog = true;
-        if (webLinkDef != null)
+        if (textField != null)
         {
-            
-        } 
-        
-        if (doSimpleDialog)
-        {
-            // simple dialog
+            return textField.getText();
         }
+        
+        return null;
     }
     
     /* (non-Javadoc)
@@ -510,7 +484,6 @@ public class WebLinkButton extends JPanel implements UIPluginable,
                 provider = (WebLinkDataProviderIFace)value;
             }
             String url = buildURL(true);
-            int x = 0;
             if (StringUtils.isNotEmpty(url))
             {
                 setToolTips();

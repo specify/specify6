@@ -131,8 +131,9 @@ public class DataObjFieldFormatMgr
     /**
      * Transfer state of free manager instance to static instance
      */
-    public void copyFrom(DataObjFieldFormatMgr source)
+    public void copyFrom(final DataObjFieldFormatMgr source)
     {
+        this.hasChanged = source.hasChanged;
         setFormatHash(source.getFormatHash());
         setFormatClassHash(source.getFormatClassHash());
         setAggHash(source.getAggHash());
@@ -432,7 +433,7 @@ public class DataObjFieldFormatMgr
             int i = 1;
             Set<String> names = hash.keySet();
             newName = prefix + "." + Integer.toString(i);
-            while (names.contains((String) newName))
+            while (names.contains(newName))
             {
                 newName = prefix + "." + Integer.toString(++i);
             }
@@ -440,11 +441,21 @@ public class DataObjFieldFormatMgr
         return newName;
     }
     
-    public void applyChanges(DataObjFieldFormatMgr source)
+    /**
+     * Copies the internal data structures from the soutve to this object. But oinly if they have changed.
+     * @param source the source of the changes
+     */
+    public void applyChanges(final DataObjFieldFormatMgr source)
     {
-        this.hasChanged = source.hasChanged;
-        copyFrom(source);
-        save();
+        if (source.hasChanged)
+        {
+            copyFrom(source);
+            save();
+            
+        } else
+        {
+            log.debug("Not saved = No Changes");
+        }
     }
     
     /**
@@ -1010,6 +1021,11 @@ public class DataObjFieldFormatMgr
 
     /**
      * Generic method that creates a unique name for an object in a hash if it doesn't yet have one
+     * @param <T>
+     * @param prefix
+     * @param separator
+     * @param names
+     * @return
      */
     protected static <T> String getUniqueName(final String prefix, final String separator, final Set<String> names)
     {
@@ -1017,7 +1033,7 @@ public class DataObjFieldFormatMgr
         // name formation patter is prefix.i, where i is a counter
         int i = 1;
         String name = prefix + separator + Integer.toString(i);
-        while (names.contains((String) name))
+        while (names.contains(name))
         {
             name = prefix + separator + Integer.toString(++i);
         }
@@ -1025,9 +1041,10 @@ public class DataObjFieldFormatMgr
     }
 
     /**
-     * Adds a new aggregator
+     * Adds a new aggregator.
+     * @param aggregator the aggregator to add
      */
-    public void addAggregator(DataObjAggregator aggregator)
+    public void addAggregator(final DataObjAggregator aggregator)
     {
         getAggregatorUniqueName(aggregator);
         aggHash.put(aggregator.getName(), aggregator);
@@ -1036,8 +1053,9 @@ public class DataObjFieldFormatMgr
     
     /**
      * Deletes a aggregator from the hashes
+     * @param aggregator the aggregator to remove
      */
-    public void removeAggregator(DataObjAggregator aggregator)
+    public void removeAggregator(final DataObjAggregator aggregator)
     {
         aggHash.remove(aggregator.getName());
         aggClassHash.remove(aggregator.getName());

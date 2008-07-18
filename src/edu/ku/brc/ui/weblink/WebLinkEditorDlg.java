@@ -35,6 +35,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -54,6 +56,7 @@ import edu.ku.brc.ui.forms.ViewFactory;
  */
 public class WebLinkEditorDlg extends CustomDialog
 {
+    protected DBTableInfo               tableInfo;
     protected JTextField                nameTF;
     protected JTextField                baseUrlTF;
     protected JTextArea                 descTA;
@@ -65,6 +68,8 @@ public class WebLinkEditorDlg extends CustomDialog
     protected Vector<WebLinkDefArg>     args       = new Vector<WebLinkDefArg>();
     protected Hashtable<String, String> fields     = new Hashtable<String, String>();
     
+    protected Hashtable<String, DBFieldInfo> fieldInfoHash = new Hashtable<String, DBFieldInfo>();
+    
     protected boolean                   hasChanged = false; 
     
     // Type Format 
@@ -75,18 +80,34 @@ public class WebLinkEditorDlg extends CustomDialog
      * @param webLinkDef the WebLink to be edited
      * @throws HeadlessException
      */
-    public WebLinkEditorDlg(final WebLinkDef webLinkDef) throws HeadlessException
+    public WebLinkEditorDlg(final WebLinkDef webLinkDef,
+                            final DBTableInfo tableInfo) throws HeadlessException
     {
         super((Frame)UIRegistry.getTopWindow(), getResourceString("WebLinkArgDlg.WEB_LNK_EDTR"), true, OKCANCELHELP, null); // I18N //$NON-NLS-1$
         
         this.webLinkDef = webLinkDef;
+        this.tableInfo  = tableInfo;
+        
+        if (tableInfo != null)
+        {
+            for (DBFieldInfo fi : tableInfo.getFields())
+            {
+                fieldInfoHash.put(fi.getName(), fi);
+            }
+        }
         
         for (WebLinkDefArg arg : webLinkDef.getArgs())
         {
             try
             {
                 WebLinkDefArg wlda = (WebLinkDefArg)arg.clone();
+                
+                if (tableInfo != null)
+                {
+                    wlda.setField(fieldInfoHash.get(wlda.getName()) != null);
+                }
                 args.add(wlda);
+                
             } catch (CloneNotSupportedException ex) {}
         }
         
@@ -351,7 +372,21 @@ public class WebLinkEditorDlg extends CustomDialog
          */
         public void addItem(final String name, final String title, final boolean isPrompt)
         {
-            args.add(new WebLinkDefArg(name, title, isPrompt));
+            WebLinkDefArg arg = new WebLinkDefArg(name, title, isPrompt);
+            if (tableInfo != null)
+            {
+                DBFieldInfo fi = fieldInfoHash.get(arg.getName());
+                if (fi != null)
+                {
+                    arg.setField(true);
+                    arg.setTitle(fi.getTitle());
+                } else
+                {
+                    arg.setPrompt(true);
+                }
+            }
+            args.add(arg);
+            
             fireTableDataChanged();
             hasChanged = true;
         }
@@ -423,7 +458,7 @@ public class WebLinkEditorDlg extends CustomDialog
             {
                 case 0 : return arg.getName();
                 case 1 : return arg.getTitle();
-                case 2 : return arg.isPrompt();
+                case 2 : return arg.isPrompt() && !arg.isField();
             }
             return ""; //$NON-NLS-1$
         }
@@ -434,7 +469,16 @@ public class WebLinkEditorDlg extends CustomDialog
         @Override
         public boolean isCellEditable(int row, int column)
         {
-            return column > 0;
+            WebLinkDefArg arg = args.get(row);
+            boolean canPrompt = arg.isPrompt() && !arg.isField();
+            
+            switch (column)
+            {
+                case 0 : return false;
+                case 1 : return canPrompt;
+                case 2 : return !arg.isField() && tableInfo == null;
+            }
+            throw new RuntimeException("Missing case!");
         }
 
         /* (non-Javadoc)
@@ -448,10 +492,12 @@ public class WebLinkEditorDlg extends CustomDialog
             {
                 case 0 : 
                     break;
+                    
                 case 1 : 
                     arg.setTitle((String)value);
                     hasChanged = true;
                     break;
+                    
                 case 2 : 
                     arg.setPrompt((Boolean)value);
                     hasChanged = true;

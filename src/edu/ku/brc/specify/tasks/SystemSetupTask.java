@@ -179,6 +179,10 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         WebLinkConfigDlg dlg = WebLinkMgr.getInstance().editWebLinks(null, false);
         if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
         {
+            if (dlg.hasChanged())
+            {
+                WebLinkMgr.getInstance().write(); // saves
+            }
         }
     }
     

@@ -12,6 +12,7 @@ import java.security.AccessController;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -31,11 +32,11 @@ public class WebLinkMgr
 {
     public static final String factoryName = "edu.ku.brc.ui.weblink.WebLinkMgr"; //$NON-NLS-1$
     
-    //private static final Logger log = Logger.getLogger(WebLinkMgr.class);
+    private static final Logger log = Logger.getLogger(WebLinkMgr.class);
     
     protected static WebLinkMgr instance = null;
     
-    protected Vector<WebLinkDef> webLinkDefs;;
+    protected Vector<WebLinkDef> webLinkDefs;
     protected boolean            hasChanged  = false;
     
     /**
@@ -53,6 +54,16 @@ public class WebLinkMgr
     public WebLinkMgr(final WebLinkMgr webLinkMgr)
     {
         webLinkDefs = (Vector<WebLinkDef>)webLinkMgr.webLinkDefs.clone();
+    }
+    
+    /**
+     * Copies internal data structures.
+     * @param webLinkMgr source of the changes
+     */
+    protected void copyFrom(final WebLinkMgr webLinkMgr)
+    {
+        this.hasChanged  = webLinkMgr.hasChanged;
+        this.webLinkDefs = webLinkMgr.webLinkDefs;
     }
 
     /**
@@ -98,6 +109,23 @@ public class WebLinkMgr
     {
         reset();
         read();
+    }
+    
+    /**
+     * @param source
+     */
+    public void applyChanges(final WebLinkMgr source)
+    {
+        if (source.hasChanged)
+        {
+            this.hasChanged = source.hasChanged;
+            copyFrom(source);
+            write();
+            
+        } else
+        {
+            log.debug("Not saved = No Changes");
+        }
     }
     
     /**

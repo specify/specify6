@@ -22,6 +22,9 @@ public class WebLinkDefArg implements Cloneable
     protected String  title;
     protected boolean prompt;
     
+    // Transient
+    protected boolean isField = false;
+    
     /**
      * 
      */
@@ -32,13 +35,15 @@ public class WebLinkDefArg implements Cloneable
     
     /**
      * @param name
+     * @param title
      * @param prompt
      */
     public WebLinkDefArg(String name, String title, boolean prompt)
     {
         super();
-        this.name = name;
+        this.name   = name;
         this.prompt = prompt;
+        this.title  = title;
     }
 
     /**
@@ -89,6 +94,16 @@ public class WebLinkDefArg implements Cloneable
         this.title = title;
     }
 
+    public boolean isField()
+    {
+        return isField;
+    }
+
+    public void setField(boolean isField)
+    {
+        this.isField = isField;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
@@ -98,6 +113,7 @@ public class WebLinkDefArg implements Cloneable
         WebLinkDefArg arg = (WebLinkDefArg)super.clone();
         arg.name   = name;
         arg.prompt = prompt;
+        arg.title  = title;
         return arg;
     }
 
@@ -107,5 +123,6 @@ public class WebLinkDefArg implements Cloneable
     public static void configXStream(final XStream xstream)
     {
         xstream.alias("weblinkdefarg", WebLinkDefArg.class);  //$NON-NLS-1$
+        xstream.omitField(WebLinkDefArg.class, "isField");
     }
 }

@@ -178,10 +178,10 @@ public class WebLinkConfigDlg extends CustomDialog
     @Override
     protected void okButtonPressed()
     {
-        if (hasChanged)
-        {
-            wlMgr.write();
-        }
+        //if (hasChanged)
+        //{
+        //    wlMgr.write();
+        //}
         
         super.okButtonPressed();
     }
@@ -213,7 +213,7 @@ public class WebLinkConfigDlg extends CustomDialog
     protected void addWebLink()
     {
         WebLinkDef    wld = new WebLinkDef();
-        WebLinkEditorDlg dlg = new WebLinkEditorDlg(wld);
+        WebLinkEditorDlg dlg = new WebLinkEditorDlg(wld, tableInfo);
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
@@ -269,7 +269,7 @@ public class WebLinkConfigDlg extends CustomDialog
     protected void editWebLink()
     {
         WebLinkDef    wld = (WebLinkDef)list.getSelectedValue();
-        WebLinkEditorDlg dlg = new WebLinkEditorDlg(wld);
+        WebLinkEditorDlg dlg = new WebLinkEditorDlg(wld, tableInfo);
         dlg.setEdit(true);
         dlg.setVisible(true);
         
