@@ -420,6 +420,10 @@ public class TaskSemaphoreMgr
         SpecifyUser user      = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
         Discipline discipline = scope == SCOPE.Discipline ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
         Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
+        
+        // Get our own copies of the Global Objects.
+        discipline = discipline != null ? session.getData(Discipline.class, "id", discipline.getId(), DataProviderSessionIFace.CompareType.Equals) : null;
+        collection = collection != null ? session.getData(Collection.class, "id", collection.getId(), DataProviderSessionIFace.CompareType.Equals) : null;
 
         SpTaskSemaphore semaphore = getSemaphore(session, name, scope, user, discipline, collection);
         
@@ -459,7 +463,8 @@ public class TaskSemaphoreMgr
         semaphore.setIsLocked(doLock);
         semaphore.setContext(context);
         String machineName = InetAddress.getLocalHost().toString();
-        semaphore.setMachineName(doLock && StringUtils.isNotEmpty(machineName) ? machineName.substring(0, Math.min(64, machineName.length())) : null);
+        machineName =  StringUtils.isNotEmpty(machineName) ? machineName.substring(0, Math.min(64, machineName.length())) : null;
+        semaphore.setMachineName(doLock ? machineName : null);
         semaphore.setScope(new Byte((byte)scope.ordinal()));
         semaphore.setLockedTime(now);
         semaphore.setTimestampModified(now);
