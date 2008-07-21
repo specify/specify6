@@ -17,6 +17,15 @@
 	    <view sidebar="false" name="LocalityNameAlias"  view="LocalityNameAlias"  iconname="LocalityNameAlias"  tooltip=""/>
 	    <view sidebar="false" name="CommonNameTx"       view="CommonNameTx"       iconname="CommonNameTx"       tooltip=""/>
 	    <view sidebar="false" name="Division"           view="Division"           iconname="Division"           tooltip=""/>
+	    <view sidebar="false" name="TreatmentEvent"     view="TreatmentEvent"     iconname="TreatmentEvent"     tooltip=""/>
+	    <view sidebar="false" name="CollectingTrip"     view="CollectingTripForm" iconname="CollectingTrip"     tooltip=""/>
+	    <view sidebar="false" name="Journal"            view="Journal"            iconname="Journal"            tooltip=""/>
+	    <view sidebar="false" name="DNASequence"        view="DNASequence"        iconname="DNASequence"        tooltip=""/>
+	    <view sidebar="false" name="Project"            view="Project"            iconname="Project"            tooltip=""/>
+	    <view sidebar="false" name="Appraisal"          view="Appraisal"          iconname="Appraisal"          tooltip=""/>
+	    <view sidebar="false" name="ReferenceWork"      view="ReferenceWork"      iconname="ReferenceWork"      tooltip=""/>
+	    <view sidebar="false" name="FieldNotebook"      view="FieldNotebook"      iconname="FieldNotebook"      tooltip=""/>
+	    <view sidebar="false" name="ConservDescription" view="ConservDescription" iconname="ConservDescription" tooltip=""/>
 	</std>
 	
 	<misc>
