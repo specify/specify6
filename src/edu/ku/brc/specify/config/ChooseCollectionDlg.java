@@ -36,6 +36,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -81,6 +82,7 @@ public class ChooseCollectionDlg extends CustomDialog
         
         DefaultListModel model = new DefaultListModel();
         list = new JList(model);
+        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         List<Pair<String, ImageIcon>> disciplinesList = IconManager.getListByType("disciplines", IconManager.IconSize.Std16); //$NON-NLS-1$
         Collections.sort(disciplinesList, new Comparator<Pair<String, ImageIcon>>() {
