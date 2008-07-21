@@ -172,7 +172,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfo> columnInfo,
                           final boolean recordIdsIncluded)
     {
-        super(columnInfo, recordIdsIncluded, "Count Amount", null);
+        super(columnInfo, recordIdsIncluded, null, null);
         this.hql = hql;
         this.params = params;
         startDataAcquisition();
