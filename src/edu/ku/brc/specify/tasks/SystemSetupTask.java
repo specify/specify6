@@ -146,7 +146,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             // Temporary
             NavBox sysNavBox = new NavBox(getResourceString("CORE_DATA_OBJECTS"));
             //createSysNavBtn(sysNavBox, DataType.getClassTableId());
-            createSysNavBtn(sysNavBox, Discipline.getClassTableId());
+            //createSysNavBtn(sysNavBox, Discipline.getClassTableId());
             createSysNavBtn(sysNavBox, PrepType.getClassTableId());
             createSysNavBtn(sysNavBox, DeterminationStatus.getClassTableId());
             createSysNavBtn(sysNavBox, edu.ku.brc.specify.datamodel.Collection.getClassTableId());
@@ -394,6 +394,17 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 }
                 log.debug(sb.toString());
                 dataItems = session.getDataList(sb.toString());
+                
+                if (dataItems.get(0) instanceof Object[])
+                {
+                    Vector<Object>dataList = new Vector<Object>();
+                    for (Object row : dataItems)
+                    {
+                        Object[] cols = (Object[])row;
+                        dataList.add(cols[0]);
+                    }
+                    dataItems = dataList;
+                }
                 
             } catch (Exception ex)
             {
