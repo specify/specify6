@@ -172,20 +172,6 @@ public class WebLinkConfigDlg extends CustomDialog
         }
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
-     */
-    @Override
-    protected void okButtonPressed()
-    {
-        //if (hasChanged)
-        //{
-        //    wlMgr.write();
-        //}
-        
-        super.okButtonPressed();
-    }
-
     /**
      * 
      */
@@ -219,7 +205,7 @@ public class WebLinkConfigDlg extends CustomDialog
         {
             if (dlg.hasChanged())
             {
-                if (tableInfo != null)
+                //if (tableInfo != null)
                 {
                     if (isTableMode)
                     {

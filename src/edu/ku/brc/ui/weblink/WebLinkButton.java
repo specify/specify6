@@ -288,7 +288,7 @@ public class WebLinkButton extends JPanel implements UIPluginable,
                         JTextField txtField = createTextField(15);
                         txtField.getDocument().addDocumentListener(dl);
                         textFieldHash.put(arg.getName(), txtField);
-                        pb.add(createLabel(arg.getTitle(), SwingConstants.RIGHT), cc.xy(1, y));
+                        pb.add(createLabel(arg.getTitle()+":", SwingConstants.RIGHT), cc.xy(1, y));
                         pb.add(txtField, cc.xy(3, y));
                         y += 2;
                     }
@@ -326,7 +326,8 @@ public class WebLinkButton extends JPanel implements UIPluginable,
         {
             // Start by getting the data needed to build the URL
             // so first see if we need to prompt for data.
-            
+            valueHash.clear();
+
             Hashtable<String, String> backupPrompt = new Hashtable<String, String>();
             for (WebLinkDefArg arg : webLinkDef.getArgs())
             {
@@ -368,7 +369,6 @@ public class WebLinkButton extends JPanel implements UIPluginable,
                 int promptCnt = webLinkDef.getPromptCount();
                 if (promptCnt > 0 || backupPrompt.size() > 0)
                 {
-                    valueHash.clear();
                     promptDialog = createPromptDlg(backupPrompt);
                     promptDialog.setVisible(true);
                     if (!promptDialog.isCancelled())
@@ -386,11 +386,26 @@ public class WebLinkButton extends JPanel implements UIPluginable,
                 }
             }
             
-            String url = webLinkDef.getBaseURLStr();
+            byte[] chars = webLinkDef.getBaseURLStr().getBytes();
+            int i = 0;
+            for (byte b : webLinkDef.getBaseURLStr().getBytes())
+            {
+                if (b == '[' || b == ']')
+                {
+                    chars[i] = '\'';
+                }
+                i++;
+            }
+            String url = new String(chars);
             for (String key : valueHash.keySet())
             {
                 String val = valueHash.get(key);
-                url = StringUtils.replace(url, "["+key+"]", (val != null ? val : "")); //$NON-NLS-1$ //$NON-NLS-2$
+                if (val.equals("this"))
+                {
+                    val = valueHash.get("this");
+                }
+                url = StringUtils.replace(url, "'"+key+"'", (val != null ? val : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                //System.out.println("|"+key+"|"+url);
             }
             
             url = StringUtils.replace(url, "AMP", "&amp;"); //$NON-NLS-2$

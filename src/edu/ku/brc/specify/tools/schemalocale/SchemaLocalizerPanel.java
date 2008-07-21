@@ -530,7 +530,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
             public void actionPerformed(ActionEvent e)
             {
                 WebLinkConfigDlg dlg = webLinkMgrCache.editWebLinks(tableInfo, true);
-                if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+                if (dlg.getBtnPressed() == CustomDialog.OK_BTN &&
+                    dlg.hasChanged())
                 {
                     setTableInfoChanged(true);
                     setHasChanged(true);

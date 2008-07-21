@@ -2796,8 +2796,26 @@ public final class UIHelper
     
     public static JTextArea createTextArea()
     {
-    	JTextArea text = new JTextArea();
+    	final JTextArea text = new JTextArea();
     	setControlSize(text);
+    	
+    	// Enable being able to TAB out of TextArea
+    	text.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "none");
+    	text.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+                if (event.getKeyCode() == KeyEvent.VK_TAB )
+                {
+                    if (event.isShiftDown())
+                    {
+                        text.transferFocusBackward();
+                    } else
+                    {
+                        text.transferFocus();
+                    }
+                }
+            }
+        });
         return text;
     }
 

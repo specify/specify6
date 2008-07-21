@@ -10,9 +10,14 @@ import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Frame;
 import java.awt.HeadlessException;
+import java.awt.Toolkit;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -24,6 +29,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -36,6 +42,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
@@ -62,19 +69,30 @@ public class WebLinkEditorDlg extends CustomDialog
     protected JTextArea                 descTA;
     protected JTable                    table;
     protected WebLinkArgsTableModel     model;
-
+    protected JTable                    availableFields;
+    protected AvailFieldsTableModel     avModel         = null;
+    protected Vector<String>            avFieldList     = new Vector<String>();
+    
+    protected Vector<String>            availFieldNames = null;
+    
     protected boolean                   isEdit     = false;
     protected WebLinkDef                webLinkDef = null;
     protected Vector<WebLinkDefArg>     args       = new Vector<WebLinkDefArg>();
     protected Hashtable<String, String> fields     = new Hashtable<String, String>();
+    protected Hashtable<String, String> verifyHash = new Hashtable<String, String>();
+    protected Hashtable<String, String> titleHash  = new Hashtable<String, String>();
     
     protected Hashtable<String, DBFieldInfo> fieldInfoHash = new Hashtable<String, DBFieldInfo>();
     
     protected boolean                   hasChanged = false; 
     
     // Type Format 
-    protected String format = ""; //$NON-NLS-1$
-    protected int    curInx = 0;
+    protected String  format  = ""; //$NON-NLS-1$
+    protected int     curInx  = 0;
+    protected boolean isParsingError      = false;
+    protected boolean isParsingIncomplete = false;
+    protected Color   txtFGColor;
+    protected Color   txtBGColor;
     
     /**
      * @param webLinkDef the WebLink to be edited
@@ -83,28 +101,49 @@ public class WebLinkEditorDlg extends CustomDialog
     public WebLinkEditorDlg(final WebLinkDef webLinkDef,
                             final DBTableInfo tableInfo) throws HeadlessException
     {
-        super((Frame)UIRegistry.getTopWindow(), getResourceString("WebLinkArgDlg.WEB_LNK_EDTR"), true, OKCANCELHELP, null); // I18N //$NON-NLS-1$
+        super((Frame)UIRegistry.getTopWindow(), getResourceString("WebLinkArgDlg.WEB_LNK_EDTR"), true, OKCANCELHELP, null); //$NON-NLS-1$
         
         this.webLinkDef = webLinkDef;
         this.tableInfo  = tableInfo;
         
+        availFieldNames = new Vector<String>();
         if (tableInfo != null)
         {
             for (DBFieldInfo fi : tableInfo.getFields())
             {
-                fieldInfoHash.put(fi.getName(), fi);
+                if (fi.getType().equals("java.lang.String"))
+                {
+                    fieldInfoHash.put(fi.getName(), fi);
+                    availFieldNames.add(fi.getName());
+                }
             }
+            
+            List<String> treeFieldNames = DBTableIdMgr.getInstance().getTreeFieldNames(tableInfo);
+            if (treeFieldNames != null)
+            {
+                for (String fName : treeFieldNames)
+                {
+                    availFieldNames.add(fName);
+                }
+            }
+            avModel = new AvailFieldsTableModel();
+            Collections.sort(availFieldNames);
+            availableFields = new JTable(avModel);
         }
         
         for (WebLinkDefArg arg : webLinkDef.getArgs())
         {
             try
             {
-                WebLinkDefArg wlda = (WebLinkDefArg)arg.clone();
-                
+                WebLinkDefArg wlda  = (WebLinkDefArg)arg.clone();
+                String        fName = wlda.getName();
                 if (tableInfo != null)
                 {
-                    wlda.setField(fieldInfoHash.get(wlda.getName()) != null);
+                    wlda.setField(fieldInfoHash.get(fName) != null);
+                }
+                if ( wlda.getTitle() != null)
+                {
+                    titleHash.put(fName, wlda.getTitle());
                 }
                 args.add(wlda);
                 
@@ -113,6 +152,32 @@ public class WebLinkEditorDlg extends CustomDialog
         
         helpContext = "WEBLNK_ARGS_EDITOR";
     }
+    
+    /**
+     * 
+     */
+    protected void adjustAvailableJList()
+    {
+        if (avModel != null)
+        {
+            avFieldList.clear();
+            verifyHash.clear();
+            for (int i=0;i<model.getRowCount();i++)
+            {
+                verifyHash.put((String)model.getValueAt(i, 0), "X");
+            }
+            
+            for (String fName : availFieldNames)
+            {
+                if (verifyHash.get(fName) == null)
+                {
+                    avFieldList.addElement(fName);
+                }
+            }
+            avModel.fire();
+        }
+    }
+    
 
     /**
      * @param isEdit the isEdit to set
@@ -131,8 +196,14 @@ public class WebLinkEditorDlg extends CustomDialog
         super.createUI();
         
         nameTF    = UIHelper.createTextField();
-        baseUrlTF = UIHelper.createTextField();
+        baseUrlTF = UIHelper.createTextField(25);
         descTA    = UIHelper.createTextArea();
+        
+        descTA.setLineWrap(true);
+        descTA.setWrapStyleWord(true);
+        
+        txtFGColor = nameTF.getForeground();
+        txtBGColor = nameTF.getBackground();
         
         if (isEdit)
         {
@@ -145,7 +216,8 @@ public class WebLinkEditorDlg extends CustomDialog
         table = new JTable(model);
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder rightPB = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,2px,p, 4px,p,2px,p, 4px,p,2px,p,4px,p,2px,p")); //$NON-NLS-1$ //$NON-NLS-2$
+        PanelBuilder rightPB = new PanelBuilder(new FormLayout("p,2px,f:p:g",  //$NON-NLS-1$
+                      "p,2px,p, 4px,p,2px,200px" + (tableInfo != null ? ",2px,200px" : ""))); //$NON-NLS-1$
         
         rightPB.add(createLabel(getResourceString("WebLinkArgDlg.NAME")+":", SwingConstants.RIGHT), cc.xy(1, 1)); //$NON-NLS-1$ //$NON-NLS-2$
         rightPB.add(nameTF, cc.xy(3, 1));
@@ -160,6 +232,12 @@ public class WebLinkEditorDlg extends CustomDialog
         rightPB.add(createLabel(getResourceString("WebLinkArgDlg.FIELDS")+":", SwingConstants.CENTER), cc.xy(1, 7)); //$NON-NLS-1$ //$NON-NLS-2$
         sp = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         rightPB.add(sp, cc.xy(3, 7));
+        
+        if (tableInfo != null)
+        {
+            sp = new JScrollPane(availableFields, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            rightPB.add(sp, cc.xy(3, 9));
+        }
         
         rightPB.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         
@@ -198,6 +276,8 @@ public class WebLinkEditorDlg extends CustomDialog
         nameTF.getDocument().addDocumentListener(docLis);
         baseUrlTF.getDocument().addDocumentListener(docLis);
         
+        adjustAvailableJList();
+        
         enableUI();
         
         pack();
@@ -206,76 +286,113 @@ public class WebLinkEditorDlg extends CustomDialog
     /**
      * 
      */
+    protected void setURLToError()
+    {
+        Toolkit.getDefaultToolkit().beep();
+        baseUrlTF.setForeground(txtBGColor);
+        baseUrlTF.setBackground(txtFGColor);
+        isParsingError = true;
+        baseUrlTF.repaint();
+        enableUI();
+    }
+    
+    /**
+     * 
+     */
     protected void parseForFields()
     {
-        String baseStr    = baseUrlTF.getText();
-        int    baseStrLen = baseStr.length();
-        int    fmtLen     = format.length();
-        if (baseStrLen == 0)
+        if (isParsingError)
         {
-            curInx = 0;
-            format = ""; //$NON-NLS-1$
-            
-        } else if (baseStrLen == fmtLen-1)
-        {
-            String s = StringUtils.chomp(baseStr);
-            if (!format.equals(s))
-            {
-                curInx = 0;
-                format = ""; //$NON-NLS-1$
-            }
-        }
+            baseUrlTF.setForeground(txtFGColor);
+            baseUrlTF.setBackground(txtBGColor);
+            isParsingError = false;
+            enableUI();
+        } 
         
-        if (curInx == 0)
-        {
-            fields.clear();
-            args.clear();
-            model.fire();
-        }
+        boolean wasIncomplete = isParsingIncomplete;
         
-        int inx = 0;
-        do
+        
+        fields.clear();
+        args.clear();
+        model.fire();
+        
+        String baseStr = baseUrlTF.getText();
+        
+        StringTokenizer st = new StringTokenizer(baseStr, "[]", true);
+        
+        boolean hasStart  = false;
+        String  prevToken = null;
+        while (st.hasMoreTokens())
         {
-            int nxtInx = baseStr.indexOf('[', inx);
-            if (nxtInx == -1)
+            String s = st.nextToken();
+            if (!hasStart)
             {
-                // error 
-                break;
-            }
-            nxtInx++;
-            int endInx = baseStr.indexOf(']', nxtInx);
-            if (endInx > -1)
-            {
-                //endInx--;
-                String field = baseStr.substring(nxtInx, endInx);
-                if (field.length() > 0)
+                if (s.equals("["))
                 {
-                    if (fields.get(field) == null)
-                    {
-                        fields.put(field, field);
-                        model.addItem(field, StringUtils.capitalize(field), true);
-                        inx = endInx+1;
-                        
-                    } else
-                    {
-                        // error 
-                        break;
-                    }
-                } else
+                    hasStart = true;
+                    isParsingIncomplete = true;
+                    
+                } else if (s.equals("]"))
                 {
-                 // error 
-                    break;
+                    setURLToError();
+                    return;
                 }
                 
             } else
             {
-                // error 
-                break;
+                if (s.equals("]"))
+                {
+                    isParsingIncomplete = false;
+                    
+                    if (StringUtils.isNotEmpty(prevToken) && 
+                        !prevToken.equals("[") && 
+                        !prevToken.equals("]"))
+                    {
+                        hasStart = false;
+                        if (tableInfo == null || fieldInfoHash.get(prevToken) != null)
+                        {
+                            if (tableInfo != null && prevToken.equals("this"))
+                            {
+                                setURLToError();
+                                return;
+                            }
+                            
+                            fields.put(prevToken, prevToken);
+                            String titleStr = titleHash.get(prevToken);
+                            if (StringUtils.isEmpty(titleStr) && fieldInfoHash == null)
+                            {
+                                titleStr = StringUtils.capitalize(prevToken);
+                            }
+                            model.addItem(prevToken, titleStr, !prevToken.equals("this"));
+                            
+                        } else
+                        {
+                            setURLToError();
+                            return;
+                        }
+                    } else
+                    {
+                        setURLToError();
+                        return;
+                    }
+                    
+                } if (s.equals("["))
+                {
+                    setURLToError();
+                    return;
+                }
             }
-        }    
-        while (true);
+            prevToken = s;
+        }
         
+        if (wasIncomplete != isParsingIncomplete)
+        {
+            enableUI();
+        }
+        
+        adjustAvailableJList();
         format = baseStr;
+        
     }
     
     /* (non-Javadoc)
@@ -284,6 +401,7 @@ public class WebLinkEditorDlg extends CustomDialog
     @Override
     protected void cancelButtonPressed()
     {
+        hasChanged = false;
         super.cancelButtonPressed();
     }
 
@@ -306,11 +424,26 @@ public class WebLinkEditorDlg extends CustomDialog
      */
     protected void setDataIntoUI()
     {
+        final String buStr = webLinkDef.getBaseURLStr();
+        
         nameTF.setText(webLinkDef.getName());
-        baseUrlTF.setText(webLinkDef.getBaseURLStr());
+        baseUrlTF.setText(buStr);
         descTA.setText(webLinkDef.getDesc());
         
-        //parseForFields();
+        // Can't get the Field to be unselected on MAc OS X
+        // AND positioned correctly
+        //baseUrlTF.select(buStr.length()-1, buStr.length()-1);
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                baseUrlTF.select(0, 0);
+                if (StringUtils.isNotEmpty(buStr) && buStr.length() > 0)
+                {
+                    baseUrlTF.setCaretPosition(0);
+                }
+            }
+        });
     }
     
     /**
@@ -334,7 +467,7 @@ public class WebLinkEditorDlg extends CustomDialog
             okEnable = false;
         }
         
-        okBtn.setEnabled(okEnable);
+        okBtn.setEnabled(okEnable && !isParsingError && !isParsingIncomplete);
     }
     
 
@@ -476,7 +609,7 @@ public class WebLinkEditorDlg extends CustomDialog
             {
                 case 0 : return false;
                 case 1 : return canPrompt;
-                case 2 : return !arg.isField() && tableInfo == null;
+                case 2 : return !arg.isField() && tableInfo == null && !arg.getName().equals("this");
             }
             throw new RuntimeException("Missing case!");
         }
@@ -494,15 +627,106 @@ public class WebLinkEditorDlg extends CustomDialog
                     break;
                     
                 case 1 : 
+                    titleHash.put(arg.getName(), (String)value);
                     arg.setTitle((String)value);
                     hasChanged = true;
                     break;
-                    
                 case 2 : 
                     arg.setPrompt((Boolean)value);
                     hasChanged = true;
                     break;
             }
+        }
+    }
+    
+    //--------------------------------------------------------
+    //-- Table Model
+    //--------------------------------------------------------
+    class AvailFieldsTableModel extends DefaultTableModel
+    {
+        protected String[] colHeaders = null;
+        
+        /**
+         * 
+         */
+        public AvailFieldsTableModel()
+        {
+            super();
+            colHeaders = new String[] {
+                    getResourceString("WebLinkArgDlg.COLNAME"),  //$NON-NLS-1$
+                    getResourceString("WebLinkArgDlg.COLTITLE")}; //$NON-NLS-1$
+        }
+        
+        public void fire()
+        {
+            fireTableDataChanged();
+        }
+        
+        /* (non-Javadoc)
+         * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
+         */
+        @Override
+        public Class<?> getColumnClass(int columnIndex)
+        {
+            return String.class;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#getColumnCount()
+         */
+        @Override
+        public int getColumnCount()
+        {
+            return colHeaders.length;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#getColumnName(int)
+         */
+        @Override
+        public String getColumnName(int column)
+        {
+            return colHeaders[column];
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#getRowCount()
+         */
+        @Override
+        public int getRowCount()
+        {
+            return avFieldList == null ? 0 : avFieldList.size();
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#getValueAt(int, int)
+         */
+        @Override
+        public Object getValueAt(int row, int column)
+        {
+            switch (column)
+            {
+                case 0 : return avFieldList.get(row);
+                case 1 : return tableInfo.getFieldByName(avFieldList.get(row)).getTitle();
+            }
+            return ""; //$NON-NLS-1$
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#isCellEditable(int, int)
+         */
+        @Override
+        public boolean isCellEditable(int row, int column)
+        {
+            return false;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#setValueAt(java.lang.Object, int, int)
+         */
+        @Override
+        public void setValueAt(Object value, int row, int column)
+        {
         }
     }
 }

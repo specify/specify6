@@ -16,8 +16,10 @@
 package edu.ku.brc.dbsupport;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.io.File;
+import java.security.AccessController;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -49,6 +51,8 @@ import edu.ku.brc.util.DatamodelHelper;
  */
 public class DBTableIdMgr
 {
+    public static final String factoryName = "edu.ku.brc.dbsupport.DBTableIdMgr"; //$NON-NLS-1$
+
     // Static Data Members
 	protected static final Logger log = Logger.getLogger(DBTableIdMgr.class);
     
@@ -73,17 +77,41 @@ public class DBTableIdMgr
      */
     public static DBTableIdMgr getInstance()
     {
-        if (instance == null)
+        if (instance != null)
         {
-            instance = new DBTableIdMgr(true);
-            instance.initialize();
+            return instance;
         }
+        
+        // else
+        String factoryNameStr = AccessController.doPrivileged(new java.security.PrivilegedAction<String>() {
+                public String run() {
+                    return System.getProperty(factoryName);
+                    }
+                });
+            
+        if (isNotEmpty(factoryNameStr)) 
+        {
+            try 
+            {
+                instance = (DBTableIdMgr)Class.forName(factoryNameStr).newInstance();
+                instance.initialize();
+                return instance;
+                
+            } catch (Exception e) 
+            {
+                InternalError error = new InternalError("Can't instantiate WebLink factory " + factoryNameStr); //$NON-NLS-1$
+                error.initCause(e);
+                throw error;
+            }
+        }
+        instance = new DBTableIdMgr(true);
+        instance.initialize();
         return instance;
     }
 
     /**
-     * Reads in datamodel input file and populates the hashtable of teh
-     * DBTableMgr with DBTableInfo
+     * Reads in datamodel input file and populates the hashtable of the
+     * DBTableMgr with DBTableInfo.
      */
     protected void initialize()
     {
@@ -613,4 +641,13 @@ public class DBTableIdMgr
         return null;
     }
 
+    /**
+     * Returns the list of fields that a tree table supports. 
+     * @param tableInfo the main table definition.
+     * @return the list from the highest (root) to the lower (leaf) or null if it isn't a tree.
+     */
+    public List<String> getTreeFieldNames(final DBTableInfo tableInfo)
+    {
+        return null;
+    }
 }
