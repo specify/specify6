@@ -428,11 +428,14 @@ public class FormViewObj implements Viewable,
                     if (switcherUI != null)
                     {
                         comps.add(switcherUI);
-                        if (formValidator != null)
-                        {
-                            formValidator.addEnableItem(switcherUI, FormValidator.EnableType.ValidItems);
-                        }
+                        
                     }
+                }
+                
+                // rods - 07/21/08 for disabling the switcher when the form is invalid 
+                if (formValidator != null && switcherUI != null)
+                {
+                    formValidator.addEnableItem(switcherUI, FormValidator.EnableType.ValidItems);
                 }
             }
             
