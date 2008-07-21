@@ -27,7 +27,7 @@ public class RowRepeaterColumn implements RowRepeater
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.RowRepeater#repeats(java.lang.Object[])
      */
-    @Override
+    //@Override
     public int repeats(Object[] row)
     {
         Object val = row[columnIndex];
