@@ -48,6 +48,8 @@ public class TaskSemaphoreMgr
     private static boolean previouslyLocked = false;
     private static String prevLockedBy = null;
     
+    private static boolean itWorksNow = false;
+    
     /**
      * Check to see if the lock is set on the task semaphore.
      * @param title The human (localized) title of the task 
@@ -102,6 +104,11 @@ public class TaskSemaphoreMgr
                                  final String name, 
                                  final SCOPE  scope)
     {
+        if (!itWorksNow)
+        {
+            return true;
+        }
+        
         DataProviderSessionIFace session = null;
         try
         {
@@ -163,6 +170,10 @@ public class TaskSemaphoreMgr
                                final SCOPE  scope,
                                final boolean allowOverride)
     {
+        if (!itWorksNow)
+        {
+            return true;
+        }
         DataProviderSessionIFace session = null;
         try
         {
@@ -422,6 +433,7 @@ public class TaskSemaphoreMgr
         Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
         
         // Get our own copies of the Global Objects.
+        user       = user != null ? session.getData(SpecifyUser.class, "id", user.getId(), DataProviderSessionIFace.CompareType.Equals) : null;
         discipline = discipline != null ? session.getData(Discipline.class, "id", discipline.getId(), DataProviderSessionIFace.CompareType.Equals) : null;
         collection = collection != null ? session.getData(Collection.class, "id", collection.getId(), DataProviderSessionIFace.CompareType.Equals) : null;
 
@@ -451,7 +463,7 @@ public class TaskSemaphoreMgr
             semaphore.setTaskName(name);
             semaphore.setTimestampCreated(now);
             //user.addReference(semaphore, "taskSemaphores");
-            semaphore.setOwner(user);
+            //semaphore.setOwner(user);
             previouslyLocked = false;
             
         } else
