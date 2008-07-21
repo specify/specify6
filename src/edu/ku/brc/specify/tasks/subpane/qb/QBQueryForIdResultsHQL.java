@@ -323,16 +323,17 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     {
         try
         {
-            CustomQueryIFace qres = (CustomQueryIFace )results;
-            //System.out.println("Results returned: " + qres.getDataObjects().size());
             query.set((CustomQueryIFace)results);
-            if (/*queryTask.get().isCancelled()*/cancelled.get())
+            if (cancelled.get())
             {
-                //System.out.println("query task got cancelled");
                 query.get().cancel();
             }
             queryTask.set(null);
             queryBuilder.queryTaskDone();
+            if (queryBuilder.isCountOnly())
+            {
+                query.get().cancel();
+            }
         }
         catch (Exception e)
         {

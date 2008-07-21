@@ -161,6 +161,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected DropDownButton                                 saveBtn;
     protected JButton                                        searchBtn;
     protected JCheckBox                                      distinctChk;
+    protected JCheckBox                                      countOnlyChk;
+    /**
+     * When countOnly is true, count of matching records is displayed, but the records are not displayed.
+     */
+    protected boolean                                        countOnly = false;
     
     protected Hashtable<String, Boolean>                     fieldsToSkipHash = new Hashtable<String, Boolean>();
     protected QryListRenderer                                qryRenderer      = new QryListRenderer(IconManager.STD_ICON_SIZE);
@@ -185,6 +190,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected final AtomicReference<QBQueryForIdResultsHQL> completedResults = new AtomicReference<QBQueryForIdResultsHQL>();
     protected final AtomicLong doneTime = new AtomicLong(-1);
     protected final AtomicLong startTime = new AtomicLong(-1);
+    
+    
     
     /**
      * Constructor.
@@ -373,8 +380,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         add(mover, BorderLayout.EAST);
         
         searchBtn   = createButton(UIRegistry.getResourceString("QB_SEARCH"));
-        distinctChk = createCheckBox(UIRegistry.getResourceString("QB_DISTINCT"));
-        distinctChk.setSelected(false);
         searchBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -382,12 +387,44 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 doSearch();
             }
         });
+        distinctChk = createCheckBox(UIRegistry.getResourceString("QB_DISTINCT"));
+        distinctChk.setSelected(false);
+        countOnlyChk = createCheckBox(UIRegistry.getResourceString("QB_COUNT_ONLY"));
+        countOnlyChk.setSelected(false);
+        countOnlyChk.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                new SwingWorker() {
+
+                    /* (non-Javadoc)
+                     * @see edu.ku.brc.helpers.SwingWorker#construct()
+                     */
+                    @Override
+                    public Object construct()
+                    {
+                        //Don't allow change while query is running.
+                        if (runningResults.get() == null)
+                        {
+                            countOnly = !countOnly;
+                        }
+                        else
+                        {
+                            //This might be awkward and/or klunky...
+                            countOnlyChk.setSelected(countOnly);
+                        }
+                        return null;
+                    }
+                }.start();
+            }
+        });
         
-        PanelBuilder outer = new PanelBuilder(new FormLayout("p, 2dlu, p, 6dlu, p", "p"));
+        PanelBuilder outer = new PanelBuilder(new FormLayout("p, 2dlu, p, 2dlu, p, 6dlu, p", "p"));
         CellConstraints cc = new CellConstraints();
         outer.add(distinctChk, cc.xy(1, 1));
-        outer.add(searchBtn, cc.xy(3, 1));
-        outer.add(saveBtn, cc.xy(5, 1));
+        outer.add(countOnlyChk, cc.xy(3, 1));
+        outer.add(searchBtn, cc.xy(5, 1));
+        outer.add(saveBtn, cc.xy(7, 1));
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(outer.getPanel(), BorderLayout.EAST);
         JButton helpBtn = createButton(UIRegistry.getResourceString("HELP"));
@@ -1145,6 +1182,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
     
+    /**
+     * called when retrieved results have been displayed.
+     */
     public void resultsComplete()
     {
         completedResults.set(runningResults.get());
@@ -1162,29 +1202,42 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }.start();
     }
     
+    /**
+     * @return countOnly
+     */
+    public boolean isCountOnly()
+    {
+        return countOnly;
+    }
+    
+    /**
+     * Called when the db record retrieval task has completed.
+     */
     public void queryTaskDone()
     {
         doneTime.set(System.nanoTime());
         if (runningResults.get() != null && runningResults.get().getQuery() != null)
         {
-            if (!runningResults.get().getQuery().isCancelled() && !runningResults.get().getQuery().isInError())
+            if (!countOnly && !runningResults.get().getQuery().isCancelled() && !runningResults.get().getQuery().isInError())
             {
                 final int results = runningResults.get().getQuery().getDataObjects().size();
-                new SwingWorker() 
+                new SwingWorker()
                 {
                     @Override
                     public Object construct()
                     {
-                        String msg = String.format(UIRegistry.getResourceString("QB_DISPLAYING_RETRIEVED_RESULTS"), String.valueOf(results), 
-                            String.valueOf((doneTime.get() - startTime.get())/1000000000D));
-                        UIRegistry.getStatusBar().setText(msg); 
+                        String msg = String.format(UIRegistry
+                                .getResourceString("QB_DISPLAYING_RETRIEVED_RESULTS"), String
+                                .valueOf(results), String
+                                .valueOf((doneTime.get() - startTime.get()) / 1000000000D));
+                        UIRegistry.getStatusBar().setText(msg);
                         UIRegistry.getStatusBar().setIndeterminate(query.getName(), true);
                         return null;
                     }
 
                 }.start();
             }
-            else
+            if (countOnly || runningResults.get().getQuery().isCancelled() || runningResults.get().getQuery().isInError())
             {
                 new SwingWorker()
                 {
@@ -1197,6 +1250,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         return null;
                     }
                 }.start();            
+            }
+            if (countOnly && !runningResults.get().getQuery().isCancelled() && !runningResults.get().getQuery().isInError())
+            {
+                UIRegistry.showLocalizedMsg("QB_COUNT_TITLE", "QB_COUNT_MSG", String.valueOf(runningResults.get().getQuery().getDataObjects().size()));
             }
         }
         
