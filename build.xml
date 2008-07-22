@@ -179,6 +179,7 @@
 		
 		<delete dir="${installer.dir}"/>
 		<mkdir dir="${installer.dir}" />
+		<mkdir dir="${installer.dir}/demo_files" />
 		
 		<antcall target="clean-jar"/>
 		<antcall target="dist-jar-mac"/>
@@ -227,6 +228,8 @@
 		<copy file="packaging/specify.icns" todir="${installer.dir}" />
 		<copy file="./packaging/SpecifyBigSplash.png" todir="${installer.dir}" />
 		<copy file="./demo_files/Stratigraphy.csv" todir="${installer.dir}/config" />
+		<copy file="./demo_files/topbrc4.jpg" todir="${installer.dir}/demo_files" />
+		<copy file="./demo_files/topbrc195x68.png" todir="${installer.dir}/demo_files" />
 		
 	</target>
 		
