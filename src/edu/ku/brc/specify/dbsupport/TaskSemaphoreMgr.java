@@ -48,8 +48,6 @@ public class TaskSemaphoreMgr
     private static boolean previouslyLocked = false;
     private static String prevLockedBy = null;
     
-    private static boolean itWorksNow = false;
-    
     /**
      * Check to see if the lock is set on the task semaphore.
      * @param title The human (localized) title of the task 
@@ -104,11 +102,6 @@ public class TaskSemaphoreMgr
                                  final String name, 
                                  final SCOPE  scope)
     {
-        if (!itWorksNow)
-        {
-            return true;
-        }
-        
         DataProviderSessionIFace session = null;
         try
         {
@@ -170,10 +163,6 @@ public class TaskSemaphoreMgr
                                final SCOPE  scope,
                                final boolean allowOverride)
     {
-        if (!itWorksNow)
-        {
-            return true;
-        }
         DataProviderSessionIFace session = null;
         try
         {
@@ -335,9 +324,9 @@ public class TaskSemaphoreMgr
             joins.append("INNER JOIN ts.collection c ");
         }
         
-        where.append(" AND specifyUserId = ");
+        where.append(" AND spu.specifyUserId = ");
         where.append(specifyUser.getId());
-        joins.append("INNER JOIN ts.owner ");
+        joins.append("INNER JOIN ts.owner spu ");
         
         StringBuilder sb = new StringBuilder("FROM SpTaskSemaphore ts ");
         sb.append(joins);
@@ -368,7 +357,7 @@ public class TaskSemaphoreMgr
                                                 final Collection collection) throws Exception
     {
         String sql = buildSQL(name, scope, specifyUser, discipline, collection);
-        //System.err.println(sql);
+        System.err.println(sql);
         Object[] cols = (Object[])session.getData(sql);
         return cols != null && cols.length > 0 ? (SpTaskSemaphore)cols[0] : null;
     }
@@ -463,7 +452,7 @@ public class TaskSemaphoreMgr
             semaphore.setTaskName(name);
             semaphore.setTimestampCreated(now);
             //user.addReference(semaphore, "taskSemaphores");
-            //semaphore.setOwner(user);
+            semaphore.setOwner(user);
             previouslyLocked = false;
             
         } else
