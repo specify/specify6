@@ -1330,6 +1330,10 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                     {
                         String ts      = fi.getType();
                         String typeStr = ts.indexOf('.') > -1 ? StringUtils.substringAfterLast(fi.getType(), ".") : ts;
+                        if (typeStr.equals("Calendar"))
+                        {
+                            typeStr = "Date";
+                        }
                         fieldTypeTxt.setText(typeStr);
                         
                         String lenStr = fi.getLength() != -1 ? Integer.toString(fi.getLength()) : " ";
