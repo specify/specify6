@@ -53,7 +53,7 @@ public class LoanPreparationBusRules extends BaseBusRules
                 quantity.setRange(0, loanPrep.getQuantity(), loanPrep.getQuantity());
                 
                 quantityReturned.setEnabled(!isNewObj);
-                quantityReturned.setRange(0, loanPrep.getQuantityReturned(), loanPrep.getQuantityReturned());
+                quantityReturned.setRange(0, loanPrep.getQuantity(), loanPrep.getQuantity());
                 formViewObj.getLabelFor(quantityReturned).setEnabled(!isNewObj);
                 
                 ValCheckBox isResolved = (ValCheckBox)formViewObj.getControlByName("isResolved");
