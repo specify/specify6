@@ -71,6 +71,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     protected final static String[] pointNames              = {"LatLonPoint", "LatLonLineLeft", "LatLonLineRight", "LatLonRectTopLeft", "LatLonRectBottomRight"};
     protected final static String[] typeNames               = {"LatLonPoint", "LatLonLine", "LatLonRect"};
     protected final static String[] typeNamesKeys           = {"Point", "Line", "Rect"};
+    protected final static String[] typeToolTipKeys         = {"PointTT", "LineTT", "RectTT"};
     protected final static LatLonUIIFace.LatLonType[] types = {LatLonUIIFace.LatLonType.LLPoint, LatLonUIIFace.LatLonType.LLLine, LatLonUIIFace.LatLonType.LLRect};
     protected final static String[] typeStrs                = {"Point",                          "Line",                          "Rectangle"};
     
@@ -78,7 +79,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     
     protected CellConstraints cc       = new CellConstraints();
     
-    protected String[] typeNamesLabels;
+    protected String[]                 typeNamesLabels;
     protected Hashtable<LatLonUIIFace.LatLonType, String> typeMapper = new Hashtable<LatLonUIIFace.LatLonType, String>();
     
     
@@ -128,7 +129,9 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         int i = 0;
         for (String key : typeNamesKeys)
         {
-            typeNamesLabels[i++] = getResourceString(key);
+            typeNamesLabels[i] = getResourceString(key);
+            typeToolTipKeys[i] = getResourceString(typeToolTipKeys[i]);
+            i++;
         }
         
         String[] keys = new String[] {"LatLonUI.POINT_ERR", "LatLonUI.POINT_INCMP", "LatLonUI.FIRST_POINT_ERR", 
@@ -257,6 +260,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         for (int i=0;i<botBtns.length;i++)
         {
             BorderedRadioButton rb = new BorderedRadioButton(IconManager.getIcon(typeNames[i], IconManager.IconSize.Std16));
+            rb.setToolTipText(typeToolTipKeys[i]);
             botBtnBar.add(rb, cc.xy((i*2)+2, 1));
             btnGroup.add(rb);
             botBtns[i] = rb;
