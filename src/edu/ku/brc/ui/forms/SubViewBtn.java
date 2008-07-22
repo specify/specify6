@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -235,6 +236,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     /**
      * 
      */
+    @SuppressWarnings("unchecked")
     protected void showForm()
     {
         //boolean isParentNew = parentObj instanceof FormDataObjIFace ? ((FormDataObjIFace)parentObj).getId() == null : false;
@@ -301,10 +303,12 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             DataProviderSessionIFace sessionLocal = null;
             try
             {
-                sessionLocal = DataProviderFactory.getInstance().createSession();
-                parentObj = sessionLocal.merge(parentObj);
-                
                 DataObjectGettable getter = DataObjectGettableFactory.get(parentObj.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
+                sessionLocal = DataProviderFactory.getInstance().createSession();
+                // rods - 07/22/08 - Apparently Merge just doesn't work the way it seems it should
+                // so instead we will just go get the parent again.
+                parentObj = (FormDataObjIFace)sessionLocal.get(parentObj.getDataClass(), parentObj.getId());
+                
                 Object[] objs = UIHelper.getFieldValues(subviewDef, parentObj, getter);
                 dataObj = objs[0];
                 multiView.setParentDataObj(parentObj);
