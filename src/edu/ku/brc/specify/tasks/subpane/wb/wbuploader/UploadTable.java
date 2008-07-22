@@ -1756,7 +1756,7 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean needToWrite(int recNum)
     {
-        return dataToWrite(recNum) || parentTables.size() > 0;
+        return dataToWrite(recNum) || (parentTables.size() > 0 && hasChildren);
     }
 
     /**

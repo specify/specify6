@@ -83,7 +83,7 @@ public class DBSchema
                 if (fld2 == null)
                 {
                     log.debug("adding foreign key: " + tbl.getName() + "." + fld2Name);
-                    tbl.addField(new Field(fld2Name, tbl.getTableInfo().getIdType()));
+                    tbl.addField(new Field(fld2Name, tbl.getTableInfo().getIdType(), rel.isRequired()));
                 }
             }
         }

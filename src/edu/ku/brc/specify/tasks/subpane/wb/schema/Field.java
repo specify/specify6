@@ -32,6 +32,11 @@ public class Field implements Comparable<Field>
      * (Not currently necessary?)
      */
     protected int                    columnIndex = -1;
+    
+    /**
+     * True if the field must be non-null. (Necessary for foreign keys when DBFieldInfo is null).
+     */
+    protected boolean required = false;
 
     /**
      * @return the columnIndex
@@ -103,6 +108,20 @@ public class Field implements Comparable<Field>
     /**
      * @param name
      * @param type
+     * @param required
+     */
+    public Field(String name, String type, boolean required)
+    {
+        super();
+        this.name = name;
+        this.type = type;
+        this.required = required;
+        this.fieldInfo = null;
+    }
+
+    /**
+     * @param name
+     * @param type
      */
     public Field(String name, String type)
     {
@@ -111,7 +130,11 @@ public class Field implements Comparable<Field>
         this.type = type;
         this.fieldInfo = null;
     }
-
+    
+    
+    /**
+     * @param fieldInfo
+     */
     public Field(final DBFieldInfo fieldInfo)
     {
         super();
@@ -120,6 +143,9 @@ public class Field implements Comparable<Field>
         this.type = fieldInfo.getType();
     }
 
+    /**
+     * @param field
+     */
     public Field(final Field field)
     {
         super();
@@ -150,5 +176,13 @@ public class Field implements Comparable<Field>
     public final DBFieldInfo getFieldInfo()
     {
         return fieldInfo;
+    }
+
+    /**
+     * @return the required
+     */
+    public boolean isRequired()
+    {
+        return required;
     }
 }
