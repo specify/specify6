@@ -3751,7 +3751,7 @@ public class FormViewObj implements Viewable,
      */
     public void setDataIntoUI()
     {
-        setDataIntoUI(true);
+        setDataIntoUI(true, false);
     }
 
     /**
@@ -3759,7 +3759,8 @@ public class FormViewObj implements Viewable,
      * @param doResetAfterFill tells the form to be reset after filling, as if it was new data.
      * 
      */
-    protected void setDataIntoUI(final boolean doResetAfterFill)
+    protected void setDataIntoUI(final boolean doResetAfterFill,
+                                 final boolean forceCreateSession)
     {
         if (businessRules != null)
         {
@@ -3768,7 +3769,7 @@ public class FormViewObj implements Viewable,
         
         if (dataObj != null && dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null)
         {
-            if (mvParent == null || mvParent.isTopLevel())
+            if (mvParent == null || mvParent.isTopLevel() || forceCreateSession)
             {
                 if (session != null)
                 {
@@ -5074,8 +5075,9 @@ public class FormViewObj implements Viewable,
         //log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));
         //log.debug("mvParent Val: "+(mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()));
 
-
-        setDataIntoUI();
+        // rods - 07/22/08 - Trying to force a session to be created.
+        // so child Sets can get lazy loaded.
+        setDataIntoUI(true, true);
         
         //log.debug("After setDataIntoUI");
         //log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));
@@ -5135,7 +5137,7 @@ public class FormViewObj implements Viewable,
     {
         if (pce != null && StringUtils.isNotEmpty(pce.getPropertyName()) && pce.getPropertyName().equals("data"))
         {
-            setDataIntoUI(false);
+            setDataIntoUI(false, false);
         }
     }
 
