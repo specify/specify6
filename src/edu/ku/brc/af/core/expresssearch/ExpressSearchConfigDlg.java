@@ -493,6 +493,35 @@ public class ExpressSearchConfigDlg extends CustomDialog
     }
     
     /**
+     * 
+     */
+    protected void checkForSelectedSearchFields()
+    {
+        boolean fnd = false;
+        for (int i=0;i<searchFieldsTableModel.getRowCount();i++)
+        {
+            SearchFieldConfig sfc = (SearchFieldConfig)searchFieldsTableModel.getFields().get(i);
+            if (sfc.isInUse())
+            {
+                fnd = true;
+                break;
+            }
+        }
+        displayList.setEnabled(fnd);
+        if (!fnd)
+        {
+            for (JToggleButton btn : displayList.getButtons())
+            {
+                DisplayFieldConfig dfc = displayList.getItemForBtn(btn);
+                if (dfc != null)
+                {
+                    System.out.println(btn.getText()+"  "+dfc);
+                    dfc.setInUse(false);
+                }
+            }
+        }
+    }
+    /**
      * @param btn
      */
     protected void itemDisplayChecked(final JToggleButton btn)
@@ -524,6 +553,8 @@ public class ExpressSearchConfigDlg extends CustomDialog
         searchFieldsTableModel.add(stc.getSearchFields());
         searchFieldsTable.getSelectionModel().clearSelection();
         
+        checkForSelectedSearchFields();
+
         for (SearchFieldConfig sfc : stc.getSearchFields())
         {
             if (sfc.isInUse())
@@ -632,6 +663,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
         }
     }
     
+    //------------------------------------------------------------------------------
+    //--
+    //------------------------------------------------------------------------------
     class SearchFieldsTableModel extends AbstractTableModel
     {
         protected Vector<String>             headings  = new Vector<String>();
@@ -639,6 +673,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
         protected Class<?>[]                 classes   = {Boolean.class, String.class, String.class};
         
         
+        /**
+         * 
+         */
         public SearchFieldsTableModel()
         {
             String[] heads = {"ExpressSearchConfigDlg.SEARCH","ExpressSearchConfigDlg.ES_FIELDNAME", "ExpressSearchConfigDlg.ES_SORTING"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -779,6 +816,8 @@ public class ExpressSearchConfigDlg extends CustomDialog
                 {
                     case 0 : 
                         sfc.setInUse((Boolean)value);
+                        checkForSelectedSearchFields();
+                        
                         fireTableRowsUpdated(rowIndex, rowIndex);
                         
                         if (sfc.isInUse())
@@ -842,7 +881,10 @@ public class ExpressSearchConfigDlg extends CustomDialog
             {
                 JToggleButton tb = displayList.getButtons().get(index);
                 tb.setSelected(wasAdded);
-                tb.setEnabled(!wasAdded);
+                if (wasAdded)
+                {
+                    tb.setEnabled(!wasAdded);
+                }
                 dfc.setInUse(wasAdded);
                return; 
             }

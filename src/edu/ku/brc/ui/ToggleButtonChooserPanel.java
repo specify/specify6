@@ -64,6 +64,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
     // Data Members
     protected List<T>               items                = new Vector<T>();
     protected Vector<JToggleButton> buttons              = new Vector<JToggleButton>();
+    protected Vector<JToggleButton> unusedButtons        = new Vector<JToggleButton>();
     protected JButton               selectAllBtn;
     protected JButton               deselectAllBtn;
     protected ButtonGroup           group                = null;
@@ -353,22 +354,25 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         this.items.clear();
         listPanel.removeAll();
         
+        unusedButtons.addAll(buttons);
+        buttons.clear();
+        
         if (items != null)
         {
             this.items.addAll(items);
             
-            if (this.items.size() > buttons.size())
-            {
-                int num = this.items.size() - buttons.size();
-                for (int i=0;i<num;i++)
-                {
-                    buttons.add(createBtn(" "));
-                }
-            }
-            
             for (int i=0;i<items.size();i++)
             {
-                JToggleButton tb = buttons.elementAt(i);
+                JToggleButton tb;
+                if (unusedButtons.size() > 0)
+                {
+                    tb = unusedButtons.get(0);
+                    unusedButtons.remove(0);
+                } else
+                {
+                    tb = createBtn(" ");
+                }
+                buttons.add(tb);
                 tb.setText(items.get(i).toString());
                 tb.setSelected(false);
                 tb.setEnabled(true);
@@ -381,6 +385,20 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         //listPanel.validate();
         //listPanel.invalidate();
         //listPanel.repaint();
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
+    public void setEnabled(final boolean enabled)
+    {
+        super.setEnabled(enabled);
+        
+        for (int i=0;i<items.size();i++)
+        {
+            JToggleButton tb = buttons.elementAt(i);
+            tb.setEnabled(enabled);
+        }
     }
 
     /**
