@@ -336,10 +336,13 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         {
             Agent agent = (Agent)dataObj;
             
-            if (!contains(agent, AppContextMgr.getInstance().getClassObject(Discipline.class)))
+            Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            discipline = session.get(Discipline.class, discipline.getId());
+            
+            if (!contains(agent, discipline))
             {
-                agent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-                AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(agent);
+                agent.getDisciplines().add(discipline);
+                discipline.getAgents().add(agent);
             }
         }
     }
