@@ -34,7 +34,6 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -347,7 +346,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         UIRegistry.registerAction("TreeDefEditing_"+treeDefClass.getSimpleName(), treeDefEditAction);
         subMenu.add(editDefMenuItem);
 
-        /*
+        
         // XXX SECURITY - Check to see if they can edit the tree def
         ActionListener treeDefClearLockAction = new ActionListener()
         {
@@ -366,7 +365,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         JMenuItem treeDefClearLockMI = new JMenuItem(getResourceString("TTV_UNLOCK_MENU_ITEM"));
         treeDefClearLockMI.addActionListener(treeDefClearLockAction);
         subMenu.add(treeDefClearLockMI);
-        */
         
         adjustMenus();
         
