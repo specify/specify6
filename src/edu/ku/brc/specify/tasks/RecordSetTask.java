@@ -817,7 +817,10 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             try
             {
                 RecordSet rs = (RecordSet)((RecordSet)recordSet).clone(); // shallow clone
-                rs.addAll(recordSet.getOrderedItems());
+                for (RecordSetItemIFace rsi : recordSet.getOrderedItems())
+                {
+                    rs.addItem(rsi.getRecordId());
+                }
                 rs.setType(RecordSet.HIDDEN);
                 return rs;
                 

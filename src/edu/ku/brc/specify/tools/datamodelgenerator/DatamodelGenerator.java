@@ -1183,8 +1183,6 @@ public class DatamodelGenerator
             int count = 0;
             for (File file : files)
             {
-                
-                
                 if (showDebug) log.debug("Reading    " + file.getAbsolutePath());
                 List<?> lines = FileUtils.readLines(file);
                 count++;
@@ -1200,13 +1198,21 @@ public class DatamodelGenerator
                     {
                         packageName = line.substring(PACKAGE.length(), line.length()-1);
                     }
-                    
                     if (StringUtils.contains(line, CLASS))
                     {
-                        int eInx = line.substring(CLASS.length()).indexOf(' ') + CLASS.length();
-                        if (eInx > -1)
+                        String str = line.substring(CLASS.length());
+                        while (str.charAt(0) == ' ')
                         {
-                            className = line.substring(CLASS.length(), eInx);
+                            str = str.substring(1);
+                        }
+                        
+                        int eInx = str.indexOf(' ');
+                        if (eInx == -1)
+                        {
+                            className = str;
+                        } else
+                        {
+                            className = str.substring(0, eInx);
                         }
                         break;
                     }
@@ -1232,7 +1238,8 @@ public class DatamodelGenerator
                         !StringUtils.contains(fileName, "Treeable") && 
                         !StringUtils.contains(fileName, "SpLocaleBase") && 
                         !StringUtils.contains(fileName.toLowerCase(), "iface") &&
-                        !StringUtils.contains(fileName, "BaseTreeDef"))
+                        !StringUtils.contains(fileName, "BaseTreeDef") &&
+                        !StringUtils.contains(fileName, "TreeDefItemStandardEntry"))
                     {
                         throw new RuntimeException("Couldn't locate class name for "+file.getAbsolutePath());
                     }
@@ -1354,13 +1361,13 @@ public class DatamodelGenerator
         log.info("Preparing to read in Table and TableID listing from file: " + tableIdListingFilePath);
         try
         {
-            File tableIdFile = new File(tableIdListingFilePath);
-            FileInputStream fileInputStream = new FileInputStream(tableIdFile);
-            SAXReader reader = new SAXReader();
+            File               tableIdFile     = new File(tableIdListingFilePath);
+            FileInputStream    fileInputStream = new FileInputStream(tableIdFile);
+            SAXReader          reader          = new SAXReader();
             reader.setValidation(false);
-            org.dom4j.Document doc = reader.read(fileInputStream);
-            Element root = doc.getRootElement();
-            Element dbNode = (Element) root.selectSingleNode("database");
+            org.dom4j.Document doc             = reader.read(fileInputStream);
+            Element            root            = doc.getRootElement();
+            Element            dbNode          = (Element) root.selectSingleNode("database");
             if (dbNode != null)
             {
                 for (Iterator<?> i = dbNode.elementIterator("table"); i.hasNext();)

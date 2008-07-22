@@ -1848,7 +1848,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="number" uitype="formattedtext" uifieldformatter="InfoRequestNumber" isrequired="true"/>
+                    <cell type="field" id="7" name="infoReqNumber" uitype="formattedtext" uifieldformatter="InfoRequestNumber" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>

@@ -44,6 +44,7 @@ public class UIValidator
     
     protected static boolean ignoreAllValidation = false;
     protected static Object  ignoreOwner         = null;
+    protected static int     ignoreCnt           = 0;
 
     protected JexlContext    jc  = null;
     protected Expression     exp = null;
@@ -329,17 +330,25 @@ public class UIValidator
     {
         if (ignoreAllValidationArg)
         {
+            ignoreCnt++;
+            
             if (ignoreOwner == null)
             {
                 UIValidator.ignoreOwner         = ignoreOwnerArg;
                 UIValidator.ignoreAllValidation = true;
             } 
             
-        } else if (ignoreOwner != null && ignoreOwner == ignoreOwnerArg)
+        } else 
         {
-            UIValidator.ignoreOwner         = null;
-            UIValidator.ignoreAllValidation = false;
+            ignoreCnt--;
+            
+            if (ignoreOwner != null && ignoreOwner == ignoreOwnerArg)
+            {
+                UIValidator.ignoreOwner         = null;
+                UIValidator.ignoreAllValidation = false;
+            }
         }
+        log.debug("ignoreCnt: "+ignoreCnt+" Owner: "+ignoreOwner);
     }
 
     /**

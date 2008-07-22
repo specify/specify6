@@ -55,7 +55,7 @@ public class LithoStratTreeDef extends BaseTreeDef<LithoStrat, LithoStratTreeDef
     protected String                     name;
     protected String                     remarks;
     protected Integer                    fullNameDirection;
-    protected Set<Discipline>        disciplines;
+    protected Set<Discipline>            disciplines;
     protected Set<LithoStrat>            treeEntries;
     protected Set<LithoStratTreeDefItem> treeDefItems;
 

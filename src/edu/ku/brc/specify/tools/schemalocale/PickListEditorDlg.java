@@ -275,7 +275,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 null, // idFieldName,
                 true, // isEdit,
                 MultiView.HIDE_SAVE_BTN);
-        dlg.setHelpLabel("PL_ITEM_EDITOR");
+        dlg.setHelpContext("PL_ITEM_EDITOR");
         dlg.setFormAdjuster(plBusRules);
         dlg.setData(pickList);
         dlg.setModal(true);

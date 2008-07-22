@@ -68,7 +68,7 @@ public class InfoRequest extends CollectionMember implements java.io.Serializabl
     // Fields    
 
      protected Integer   infoRequestID;
-     protected String    number;
+     protected String    infoReqNumber;
      protected String    firstName;
      protected String    lastName;
      protected String    institution;
@@ -98,7 +98,7 @@ public class InfoRequest extends CollectionMember implements java.io.Serializabl
     {
         super.init();
         infoRequestID = null;
-        number        = null;
+        infoReqNumber = null;
         firstName     = null;
         lastName      = null;
         institution   = null;
@@ -122,10 +122,10 @@ public class InfoRequest extends CollectionMember implements java.io.Serializabl
                     String numStr = rs.getString(1);
                     int num = Integer.parseInt(numStr.substring(6,8));
                     num++;
-                    number = String.format("2007-%03d", new Object[] {num});
+                    infoReqNumber = String.format("2007-%03d", new Object[] {num});
                 } else
                 {
-                    number = "2007-001";
+                    infoReqNumber = "2007-001";
                 }
             }
             catch (Exception ex)
@@ -275,15 +275,15 @@ public class InfoRequest extends CollectionMember implements java.io.Serializabl
         this.recordSets = recordSets;
     }
 
-    @Column(name = "Number", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
-    public String getNumber()
+    @Column(name = "InfoReqNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getInfoReqNumber()
     {
-        return number;
+        return infoReqNumber;
     }
 
-    public void setNumber(String requestNumber)
+    public void setInfoReqNumber(String infoReqNumber)
     {
-        this.number = requestNumber;
+        this.infoReqNumber = infoReqNumber;
     }
 
     /**
@@ -314,7 +314,7 @@ public class InfoRequest extends CollectionMember implements java.io.Serializabl
     @Transient
     public String getIdentityTitle()
     {
-        return number != null ? number : super.getIdentityTitle();
+        return infoReqNumber != null ? infoReqNumber : super.getIdentityTitle();
     }
     
     /* (non-Javadoc)

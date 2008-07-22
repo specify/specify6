@@ -49,7 +49,7 @@ public class SpecifyDBTableIdMgr extends DBTableIdMgr implements SQLExecutionLis
     @Override
     public List<String> getTreeFieldNames(DBTableInfo tableInfo)
     {
-        Discipline discipline = (Discipline)AppContextMgr.getInstance().getClassObject(Discipline.class);
+        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
         
         Integer id = null;
         if (tableInfo.getClassObj() == Taxon.class)
