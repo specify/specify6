@@ -157,7 +157,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                                   final boolean isEdit,
                                   final int     options)
     {
-        this(parentDialog, viewSetName, viewName, displayName, title, closeBtnTitle, className, idFieldName, isEdit, true, null, null, options);
+        this(parentDialog, viewSetName, viewName, displayName, title, closeBtnTitle, className, idFieldName, isEdit, isEdit, null, null, options);
     }
     
     /**

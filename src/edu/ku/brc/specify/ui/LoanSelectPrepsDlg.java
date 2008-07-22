@@ -626,12 +626,13 @@ public class LoanSelectPrepsDlg extends CustomDialog
                     view.getViewSetName(),
                     "Loan", //$NON-NLS-1$
                     null,
-                    getResourceString("IAT_LOAN_REVIEW"), //$NON-NLS-1$
+                    getResourceString("LoanSelectPrepsDlg.IAT_LOAN_REVIEW"), //$NON-NLS-1$
                     getResourceString("CLOSE"), //$NON-NLS-1$
                     null, // className,
                     null, // idFieldName,
                     false, // isEdit,
                     MultiView.RESULTSET_CONTROLLER);
+            dlg.setHelpContext("LOAN_REVIEW");
             
             MultiView mv = dlg.getMultiView();
             Viewable currentViewable = mv.getCurrentView();
