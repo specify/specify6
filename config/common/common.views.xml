@@ -65,7 +65,6 @@
         <view name="CollectingTrip"
             class="edu.ku.brc.specify.datamodel.CollectingTrip"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectingTripBusRules"
-            isinternal="false"
             resourelabels="false">
             <desc><![CDATA[CollectingTrip Form]]></desc>
             <altviews>
@@ -73,7 +72,19 @@
                 <altview name="CollectingTrip Edit" viewdef="CollectingTrip" label="Edit" mode="edit"/>
             </altviews>
         </view>
-
+        
+        <view name="CollectingTripForm"
+            class="edu.ku.brc.specify.datamodel.CollectingTrip"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectingTripBusRules"
+            isinternal="false"
+            resourelabels="false">
+            <desc><![CDATA[CollectingTrip Form]]></desc>
+            <altviews>
+                <altview name="CollectingTripForm View" viewdef="CollectingTripForm" label="View" mode="view" default="true"/>
+                <altview name="CollectingTripForm Edit" viewdef="CollectingTripForm" label="Edit" mode="edit"/>
+            </altviews>
+        </view>
+        
         <view name="Collectors"
             class="edu.ku.brc.specify.datamodel.Collector"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectorBusRules"
@@ -731,13 +742,49 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="collectingTripName" uitype="text"/>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="startDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                    <cell type="field" id="7" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="endDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>                  
+                    <cell type="field" id="2" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>                  
                 </row>              
                 <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="remarks" uitype="textarea" colspan="10" cols="40" rows="3"/>
+                </row>
+                
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="CollectingTripForm"
+            class="edu.ku.brc.specify.datamodel.CollectingTrip"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[CollectingTrip Form]]></desc>
+            
+            <columnDef>110px,2px,100px,2px,p,2px,100px,2px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            <rows>
+                <row>
+                    <cell type="label" label="Collecting Trip" icon="CollectingTrip" recordobj="true" colspan="12"/>
+                </row>
+                <row> 
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="collectingTripName" uitype="text"/>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>                  
+                </row>              
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="remarks" uitype="textarea" colspan="10" cols="40" rows="3"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Collecting Events" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" id="3" name="collectingEvents" viewname="CollectingEventSubform" colspan="12"/>
                 </row>
                 
             </rows>
@@ -963,7 +1010,7 @@
                     <cell type="field" id="7" name="description" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Conservation Event" collapse="events" colspan="12"/>
+                    <cell type="separator" label="Conservator Event" collapse="events" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="ConservEvent" id="9"  name="events" colspan="12" rows="5"/>   
