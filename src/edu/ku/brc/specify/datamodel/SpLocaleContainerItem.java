@@ -66,7 +66,8 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     protected Set<SpLocaleItemStr>    descs;
     protected Set<SpExportSchemaItem> spExportSchemaItems;
     protected String                  webLinkName;
-
+    protected Boolean                 isRequired;
+    
     /**
      * 
      */
@@ -103,11 +104,11 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
         super.initialize();
         spLocaleContainerItemId = null;
         
-        names = new HashSet<SpLocaleItemStr>();
-        descs = new HashSet<SpLocaleItemStr>();
+        names               = new HashSet<SpLocaleItemStr>();
+        descs               = new HashSet<SpLocaleItemStr>();
         spExportSchemaItems = new HashSet<SpExportSchemaItem>();
-        
-        container = null;
+        isRequired          = false;
+        container           = null;
 
     }
     
@@ -180,6 +181,23 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     public void setWebLinkName(String webLinkName)
     {
         this.webLinkName = webLinkName;
+    }
+
+    /**
+     * @return the isRequired
+     */
+    @Column(name = "IsRequired", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public Boolean getIsRequired()
+    {
+        return isRequired;
+    }
+
+    /**
+     * @param isRequired the isRequired to set
+     */
+    public void setIsRequired(Boolean isRequired)
+    {
+        this.isRequired = isRequired;
     }
 
     /**

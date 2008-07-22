@@ -2594,10 +2594,10 @@ public class DataBuilder
             File pickListFile = new File(XMLHelper.getConfigDirPath(dirName + "picklist.xml"));
             if (pickListFile.exists())
             {
-                System.out.println(FileUtils.readFileToString(pickListFile));
+                //System.out.println(FileUtils.readFileToString(pickListFile));
                 return (List<BldrPickList>)xstream.fromXML(FileUtils.readFileToString(pickListFile));
             }
-            System.out.println("Couldn't find picklist.xml ["+pickListFile.getCanonicalPath()+"]");
+            //System.out.println("Couldn't find picklist.xml ["+pickListFile.getCanonicalPath()+"]");
             
         } catch (IOException ex)
         {

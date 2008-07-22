@@ -121,7 +121,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
         
         sql = "SELECT splocalecontainer.Name,splocalecontaineritem.Name,splocalecontaineritem.Format, " +
               "splocalecontaineritem.IsUIFormatter, splocalecontaineritem.PickListName, splocaleitemstr.Text, " +
-              "splocalecontaineritem.IsHidden, splocalecontaineritem.WebLinkName  " +
+              "splocalecontaineritem.IsHidden, splocalecontaineritem.WebLinkName , splocalecontaineritem.IsRequired  " +
               "FROM splocalecontainer INNER JOIN splocalecontaineritem ON splocalecontainer.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
               "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemNameID "+
               " where splocaleitemstr.Language = '"+locale.getLanguage()+"' AND " +
@@ -154,12 +154,18 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                 
                 if (tblChild instanceof DBFieldInfo)
                 {
-                    String format   = p.get(2);
-                    boolean isUIFmt = p.get(3) == null ? false : !p.get(3).equals("0");
+                    String  format     = p.get(2);
+                    boolean isUIFmt    = p.get(3) == null ? false : !p.get(3).equals("0");
+                    boolean isRequired = p.get(8) == null ? false : !p.get(8).equals("0");
                     
                     DBFieldInfo fieldInfo = (DBFieldInfo)tblChild;
                     fieldInfo.setPickListName(p.get(4));
                     fieldInfo.setWebLinkName(p.get(7));
+                    
+                    if (!fieldInfo.isRequired() && isRequired)
+                    {
+                        fieldInfo.setRequired(isRequired);
+                    }
                     
                     if (isUIFmt)
                     {

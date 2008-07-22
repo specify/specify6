@@ -243,6 +243,8 @@ public class DBTableIdMgr
                                                                 getAttr(irNode, "updatable", false), //$NON-NLS-1$
                                                                 getAttr(irNode, "unique", false), //$NON-NLS-1$
                                                                 getAttr(irNode, "indexed", false)); //$NON-NLS-1$
+                        // This done to cache the original setting.
+                        fieldInfo.setRequiredInSchema(fieldInfo.isRequired());
                         tblInfo.addField(fieldInfo);
                     }
                     

@@ -266,6 +266,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                             item.initialize();
                             item.setName(fi.getName());
                             item.setWebLinkName(fi.getWebLinkName());
+                            item.setIsRequired(fi.isRequired());
                             
                             nameStr = new SpLocaleItemStr();
                             nameStr.initialize();
@@ -286,6 +287,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                             SpLocaleContainerItem item = new SpLocaleContainerItem();
                             item.initialize();
                             item.setName(ri.getName());
+                            item.setIsRequired(false);
+                            
                             log.info("  Adding Field ["+ri.getName()+"]");
                             changesBuffer.append("<tr><td align=\"center\">Added</td>");
                             changesBuffer.append("<td align=\"center\">&nbsp;</td><td align=\"center\">");
@@ -305,6 +308,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                                 item = new SpLocaleContainerItem();
                                 item.initialize();
                                 item.setName(fi.getName());
+                                item.setIsRequired(fi.isRequired());
+                                
                                 SpLocaleItemStr nameStr = new SpLocaleItemStr();
                                 nameStr.initialize();
                                 nameStr.setText(UIHelper.makeNamePretty(fi.getName()));
@@ -341,6 +346,9 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                                 {
                                     log.error("Data Class is null for field["+fi.getColumn()+"]");
                                 }
+                            } else
+                            {
+                                //item.setIsRequired(fi.isRequired());
                             }
                         }
                         
@@ -596,6 +604,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         xstream.useAttributeFor(SpLocaleItemStr.class, "country");
         xstream.useAttributeFor(SpLocaleItemStr.class, "language");
         xstream.useAttributeFor(SpLocaleItemStr.class, "variant");
+        
+        xstream.useAttributeFor(SpLocaleContainerItem.class, "isRequired");
         
         xstream.omitField(DisciplineBasedContainer.class,      "disciplineHashItems");
         

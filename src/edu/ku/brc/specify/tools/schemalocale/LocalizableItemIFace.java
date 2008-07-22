@@ -102,6 +102,16 @@ public interface LocalizableItemIFace
     public abstract Boolean getIsUIFormatter();
     
     /**
+     * @return
+     */
+    public abstract Boolean getIsRequired();
+    
+    /**
+     * @param required
+     */
+    public abstract void setIsRequired(Boolean required);
+    
+    /**
      * @return the pickListName
      */
     public abstract String getPickListName();

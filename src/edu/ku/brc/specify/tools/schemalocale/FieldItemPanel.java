@@ -132,8 +132,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     protected JLabel           fieldLengthLbl;
     protected JLabel           fieldTypeTxt;
     protected JLabel           fieldLengthTxt;
-    protected JLabel           fieldReqLbl;
-    protected JLabel           fieldReqTxt;
+    protected JCheckBox        fieldReqChk;
+    protected boolean          mustBeRequired;
     
     protected JLabel           formatLbl     = null;
     protected JComboBox        formatSwitcherCombo = null;
@@ -275,19 +275,15 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             pb.add(fieldTypeLbl   = createLabel(getResourceString("SL_TYPE") + ":", SwingConstants.RIGHT), cc.xy(3, y));
             pb.add(fieldTypeTxt,   cc.xy(5, y));  
             
-            pb.add(fieldReqLbl   = createLabel(getResourceString("SL_REQ") + ":", SwingConstants.RIGHT), cc.xy(7, y));
-            pb.add(fieldReqTxt   = createLabel(""),   cc.xy(9, y)); y += 2;
+            pb.add(fieldReqChk   = createCheckBox(getResourceString("SL_REQ")),   cc.xy(9, y)); y += 2;
             
             pb.add(fieldLengthLbl = createLabel(getResourceString("SL_LENGTH") + ":", SwingConstants.RIGHT), cc.xy(3, y));
             pb.add(fieldLengthTxt, cc.xy(5, y));   y += 2;
             
             fieldTypeTxt.setBackground(Color.WHITE);
             fieldLengthTxt.setBackground(Color.WHITE);
-            fieldReqTxt.setBackground(Color.WHITE);
             fieldTypeTxt.setOpaque(true);
             fieldLengthTxt.setOpaque(true);
-            fieldReqTxt.setOpaque(true);
-            
         }
         
         if (includeFormatAndAutoNumUI)
@@ -896,8 +892,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         fieldTypeLbl.setEnabled(enable);
         fieldTypeTxt.setEnabled(enable);
         
-        fieldReqLbl.setEnabled(enable);
-        fieldReqTxt.setEnabled(enable);
+        fieldReqChk.setEnabled(!mustBeRequired && enable);
+        log.debug("mustBeRequired: "+mustBeRequired+" !mustBeRequired && enable: "+(!mustBeRequired && enable));
         
         fieldLengthLbl.setEnabled(enable);
         fieldLengthTxt.setEnabled(enable);
@@ -1051,6 +1047,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             prevField.setWebLinkName(null);
             prevField.setFormat(null);
             prevField.setIsUIFormatter(false);
+            
+            prevField.setIsRequired(fieldReqChk.isSelected());
             
             prevField.setIsHidden(fieldHideChk.isSelected());
             boolean nameChanged = setNameDescStrForCurrLocale(prevField, fieldNameText.getText());
@@ -1215,8 +1213,6 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         LocalizableItemIFace fld = getSelectedFieldItem();
         if (fld != null)
         {
-            enableUIControls(true);
-            
             fieldInfo = fld != null ? tableInfo.getFieldByName(fld.getName()) : null;
             relInfo   = fieldInfo == null ? tableInfo.getRelationshipByName(fld.getName()) : null;
             
@@ -1323,6 +1319,9 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             
             if (isDBSchema)
             {
+                mustBeRequired = true;
+                fieldReqChk.setSelected(false);
+                
                 DBTableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(currContainer.getName());
                 if (ti != null)
                 {
@@ -1342,8 +1341,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                         fieldLengthLbl.setEnabled(StringUtils.isNotEmpty(lenStr));
                         fieldLengthTxt.setEnabled(StringUtils.isNotEmpty(lenStr));
                         
-                        fieldReqTxt.setText(getResourceString(fi.isRequired() ? "SL_YES" : "SL_NO"));
-                        
+                        mustBeRequired = fi.isRequiredInSchema();
+                        fieldReqChk.setSelected(fi.isRequired());
 
                     } else
                     {
@@ -1365,7 +1364,9 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                             fieldLengthTxt.setText(" ");
                             fieldLengthLbl.setEnabled(false);
                             fieldLengthTxt.setEnabled(false);
-                            fieldReqTxt.setText(getResourceString(ri.isRequired() ? "SL_YES" : "SL_NO"));
+                        } else
+                        {
+                            throw new RuntimeException("couldn't find field or relationship.");
                         }
                     }
                 }
@@ -1376,6 +1377,9 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 checker.spellCheck(fieldDescText);
                 checker.spellCheck(fieldNameText);
             }
+            
+            enableUIControls(true);
+            
         } else
         {
             enableUIControls(false);

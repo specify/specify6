@@ -40,6 +40,7 @@ public class DBFieldInfo extends DBInfoBase implements DBTableChildIFace
     protected String      type;
     protected int         length;
     protected boolean     isRequired;
+    protected boolean     isRequiredInSchema;
     protected boolean     isUpdatable;
     protected boolean     isUnique;
     protected boolean     isIndexed;
@@ -109,6 +110,14 @@ public class DBFieldInfo extends DBInfoBase implements DBTableChildIFace
     }
 
     /**
+     * @param isRequired the isRequired to set
+     */
+    public void setRequired(boolean isRequired)
+    {
+        this.isRequired = isRequired;
+    }
+
+    /**
      * @return the isUpdatable
      */
     public boolean isUpdatable()
@@ -131,8 +140,6 @@ public class DBFieldInfo extends DBInfoBase implements DBTableChildIFace
     {
         return isIndexed;
     }
-    
-    
     
     /**
      * @return the formatter
@@ -196,6 +203,22 @@ public class DBFieldInfo extends DBInfoBase implements DBTableChildIFace
     public void setWebLinkName(String webLinkName)
     {
         this.webLinkName = webLinkName;
+    }
+
+    /**
+     * @return the isRequiredInSchema
+     */
+    public boolean isRequiredInSchema()
+    {
+        return isRequiredInSchema;
+    }
+
+    /**
+     * @param isRequiredInSchema the isRequiredInSchema to set
+     */
+    public void setRequiredInSchema(boolean isRequiredInSchema)
+    {
+        this.isRequiredInSchema = isRequiredInSchema;
     }
 
     public Class<?> getDataClass()

@@ -310,6 +310,22 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace#getIsRequired()
+     */
+    @Transient
+    public Boolean getIsRequired()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace#setIsRequired(java.lang.Boolean)
+     */
+    public void setIsRequired(Boolean required)
+    {
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace#removeItem(edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace)
      */
     public void removeItem(LocalizableItemIFace item)
