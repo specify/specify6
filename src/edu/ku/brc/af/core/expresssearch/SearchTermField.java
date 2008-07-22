@@ -41,7 +41,7 @@ public class SearchTermField
     
     public boolean isSingleChar()
     {
-        return term.length() == 1;
+        return term.length() == 1 && term.equals("*");
     }
 
     /**

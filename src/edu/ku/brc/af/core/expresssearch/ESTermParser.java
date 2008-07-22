@@ -97,8 +97,13 @@ public class ESTermParser
             for (String term : terms)
             {
                 SearchTermField stf = new SearchTermField(term);
-                instance.fields.add(stf);
                 
+                if (stf.isSingleChar())
+                {
+                    return false;
+                }
+                instance.fields.add(stf);
+
                 cnt += !stf.isSingleChar() ? 1 : 0;
 
                 //log.debug(term);

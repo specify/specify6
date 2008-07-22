@@ -232,7 +232,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             String searchTerm = searchText.getText();
             if (isNotEmpty(searchTerm))
             {
-                if (searchTerm.length() == 1)
+                if (searchTerm.length() == 2 && (searchTerm.endsWith("*") || searchTerm.startsWith("*")))
                 {
                     UIRegistry.showLocalizedError("ExpressSearchTask.NO_SINGLE_CHAR");
                     
