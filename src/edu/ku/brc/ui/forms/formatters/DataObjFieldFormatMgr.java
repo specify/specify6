@@ -19,6 +19,7 @@ import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.io.File;
 import java.security.AccessController;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -804,14 +805,30 @@ public class DataObjFieldFormatMgr
      * @param aggName the name of the aggregator to use
      * @return a string representing a collection of all the objects 
      */
+    @SuppressWarnings("unchecked")
     protected String aggregateInternal(final Collection<?> items, final DataObjAggregator agg)
     {
         if (agg != null)
         {
             StringBuilder aggStr = new StringBuilder(128);
             
+            Collection<?> itemsAsCol = items;
+            /*if (items != null && items.size() > 0)
+            {
+                if (items.iterator().next() instanceof Comparable<?>)
+                {
+                    List<Comparable<Object>> itemsList = new ArrayList<Comparable<Object>>();
+                    for (Object obj : items)
+                    {
+                        itemsList.add((Comparable<Object>)obj);
+                    }
+                    Collections.sort(itemsList);
+                    itemsAsCol = itemsList;
+                }
+            }*/
+            
             int count = 0;
-            for (Object obj : items)
+            for (Object obj : itemsAsCol)
             {
                 if (obj != null)
                 {

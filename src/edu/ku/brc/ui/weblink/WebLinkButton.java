@@ -139,7 +139,7 @@ public class WebLinkButton extends JPanel implements UIPluginable,
             }
         }
         
-        isTableSpecific = webLinkDef != null ? StringUtils.isNotEmpty(webLinkDef.getTableName()) : null;
+        isTableSpecific = webLinkDef != null ? StringUtils.isNotEmpty(webLinkDef.getTableName()) : false;
         
         PanelBuilder    pb     = new PanelBuilder(new FormLayout("p,"+ (isTableSpecific ? "" : "2px,p,") + "f:p:g", "p"), this); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc     = new CellConstraints();
