@@ -43,8 +43,6 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.util.Orderable;
@@ -170,7 +168,6 @@ public class Collector extends CollectionMember implements java.io.Serializable,
      */
     @ManyToOne
     @JoinColumn(name = "CollectingEventID", nullable = false)
-    @Cascade( { CascadeType.SAVE_UPDATE })
     public CollectingEvent getCollectingEvent()
     {
         return this.collectingEvent;
@@ -186,7 +183,6 @@ public class Collector extends CollectionMember implements java.io.Serializable,
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "AgentID", nullable = false)
-    @Cascade( { CascadeType.SAVE_UPDATE })
     public Agent getAgent()
     {
         return this.agent;

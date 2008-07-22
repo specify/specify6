@@ -413,7 +413,7 @@ public class CollectingEvent extends DisciplineMember implements AttachmentOwner
      * 
      */
     @OneToMany(mappedBy = "collectingEvent")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     @OrderBy("orderNumber ASC")
     public Set<Collector> getCollectors() 
     {
