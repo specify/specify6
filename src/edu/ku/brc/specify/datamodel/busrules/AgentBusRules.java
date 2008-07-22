@@ -428,11 +428,18 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session)
             throws Exception
     {
-        Agent agent = (Agent)dataObj;
-        if (AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
+        Agent      agent      = (Agent)dataObj;
+        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        if (discipline != null)
         {
-            agent.getDisciplines().remove(AppContextMgr.getInstance().getClassObject(Discipline.class));
-            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().remove(agent);
+            for (Discipline dsp : agent.getDisciplines())
+            {
+                if (dsp.getId().equals(discipline.getId()))
+                {
+                    dsp.removeReference(agent, "agents");
+                    break;
+                }
+            }
         }
         
         return super.beforeDeleteCommit(dataObj, session);
