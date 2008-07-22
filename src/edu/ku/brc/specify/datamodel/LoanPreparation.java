@@ -79,7 +79,8 @@ public class LoanPreparation extends CollectionMember implements java.io.Seriali
     // Constructors
 
     /** default constructor */
-    public LoanPreparation() {
+    public LoanPreparation() 
+    {
         //
     }
     
@@ -88,9 +89,6 @@ public class LoanPreparation extends CollectionMember implements java.io.Seriali
     {
         this.loanPreparationId = loanPreparationId;
     }
-   
-    
-    
 
     // Initializer
     @Override

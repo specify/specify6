@@ -100,6 +100,21 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
         }
     }
     
+    /**
+     * Sets a new Model with a new Min,Max range.
+     * @param min the min value 
+     * @param max the max value
+     * @param val the initial value
+     */
+    public void setRange(final int minVal, 
+                         final int maxVal,
+                         final int val)
+    {
+        setModel(new SpinnerNumberModel(val, // initial value
+                minVal, // min
+                maxVal, // max
+                1));
+    }
 
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)
