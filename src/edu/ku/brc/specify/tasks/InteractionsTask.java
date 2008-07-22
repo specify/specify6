@@ -1628,7 +1628,7 @@ public class InteractionsTask extends BaseTask
                 if (cmdAction.isAction(INSERT_CMD_ACT))
                 {
                     InfoRequest infoRequest = (InfoRequest)cmdAction.getData();
-                    NavBoxItemIFace nbi = addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), INTERACTIONS, new CommandAction(INTERACTIONS, DELETE_CMD_ACT, infoRequest), infoRequest);
+                    NavBoxItemIFace nbi = addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), "InfoRequest", new CommandAction(INTERACTIONS, DELETE_CMD_ACT, infoRequest), infoRequest);
                     setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
                 }
             }
