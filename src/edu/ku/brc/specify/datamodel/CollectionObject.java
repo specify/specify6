@@ -754,7 +754,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
      *      * BiologicalObject (Bird, Fish, etc)
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    //@Cascade( { CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CollectingEventID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectingEvent getCollectingEvent() {
         return this.collectingEvent;
@@ -768,7 +768,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
      * @return the appraisal
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    //@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AppraisalID", unique = false, nullable = true, insertable = true, updatable = true)
     public Appraisal getAppraisal()
     {
