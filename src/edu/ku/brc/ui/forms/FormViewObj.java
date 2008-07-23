@@ -4119,7 +4119,7 @@ public class FormViewObj implements Viewable,
         
         updateControllerUI();
         
-        if (session != null && (mvParent == null || mvParent.isTopLevel()))
+        if (session != null && (mvParent == null || mvParent.isTopLevel() || forceCreateSession))
         {
             session.close();
             session = null;
