@@ -755,6 +755,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     //@Cascade( { CascadeType.MERGE, CascadeType.LOCK })
+    @Cascade( { CascadeType.LOCK })
     @JoinColumn(name = "CollectingEventID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectingEvent getCollectingEvent() {
         return this.collectingEvent;
