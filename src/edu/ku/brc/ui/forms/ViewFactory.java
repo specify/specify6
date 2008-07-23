@@ -2030,6 +2030,8 @@ public class ViewFactory
 
             processRows(tableInfo, parentView, formViewDef, validator, formViewObj, altView.getMode(), labelsForHash, currDataObj, formViewDef.getRows());
 
+            formViewObj.addUsageNotes();
+            
             if (validatedPanel != null)
             {
                 validatedPanel.addPanel(formViewObj.getPanel());

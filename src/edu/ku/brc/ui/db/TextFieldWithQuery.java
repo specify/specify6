@@ -189,6 +189,14 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             }
         });
         
+        StringBuilder sb = new StringBuilder();
+        for (String k : keyColumns)
+        {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(k);
+        }
+        textField.setToolTipText(UIRegistry.getFormattedResStr("TFWQ_SEARCHES_FLDS", sb.toString()));
+        
         textField.addFocusListener(new FocusAdapter() {
 
             @Override

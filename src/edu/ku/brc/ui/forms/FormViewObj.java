@@ -4997,6 +4997,47 @@ public class FormViewObj implements Viewable,
         return businessRules;
     }
     
+    /**
+     * This hooks up all the labels so double click bring up the usage notes (the description).
+     */
+    public void addUsageNotes()
+    {
+        if (tableInfo == null)
+        {
+            tableInfo = DBTableIdMgr.getInstance().getByClassName(formViewDef.getClassName());
+        }
+        
+        for (String idStr : controlsById.keySet())
+        {
+            FVOFieldInfo fc  = controlsById.get(idStr);
+            if (StringUtils.isNotEmpty(fc.getName()))
+            {
+                final DBTableChildIFace tci = tableInfo.getItemByName(fc.getName());
+                if (tci != null && StringUtils.isNotEmpty(tci.getDescription()))
+                {
+                    FVOFieldInfo lbl = labels.get(idStr);
+                    if (lbl != null)
+                    {
+                        lbl.getComp().addMouseListener(new MouseAdapter() {
+                            @Override
+                            public void mouseClicked(MouseEvent e)
+                            {
+                                super.mouseClicked(e);
+                                if (e.getClickCount() == 2)
+                                {
+                                    JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(),
+                                            tci.getDescription(), 
+                                            UIRegistry.getResourceString("FormViewObj.UNOTES"), 
+                                            JOptionPane.INFORMATION_MESSAGE);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    }
+    
     //-----------------------------------------------------
     // ValidationListener
     //-----------------------------------------------------
