@@ -756,7 +756,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     fieldsStr.append(fldSpec);
                 }
             }
-            if (keysToRetrieve == null)
+            if (keysToRetrieve == null || qfi.isEnforced())
             {
                 String criteria = qfi.getCriteriaFormula(tableAbbreviator, paramsToSet);
                 boolean isDisplayOnly = StringUtils.isEmpty(criteria);
@@ -777,6 +777,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         if (keysToRetrieve != null)
         {
+            if (!StringUtils.isEmpty(criteriaStr.toString()))
+            {
+                criteriaStr.append(" and ");
+            }
             criteriaStr.append(tableAbbreviator.getAbbreviation(rootTable.getTableTree()) + "." 
                     + rootTable.getTableInfo().getIdFieldName() + " in(");
             boolean comma = false;
@@ -1173,7 +1177,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
                 return;
             }
-            QBJRDataSource src = new QBJRDataSource(sql.getFirst(), sql.getSecond(), getColumnInfo(qfps, true), includeRecordIds);
+            QBJRDataSource src = new QBJRDataSource(sql.getFirst(), sql.getSecond(), getColumnInfo(qfps, true), includeRecordIds, report.getRepeats());
+            
             final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
                     ReportsBaseTask.PRINT_REPORT, src);
             cmd.setProperty("title", title); 

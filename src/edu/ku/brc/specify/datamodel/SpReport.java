@@ -28,7 +28,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Index;
+
+import edu.ku.brc.specify.tools.ireportspecify.ReportRepeatPanel;
 
 /**
  * @author rods
@@ -47,6 +50,9 @@ import org.hibernate.annotations.Index;
     })
 public class SpReport extends DataModelObjBase
 {
+    private static final Logger log = Logger.getLogger(SpReport.class);
+
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
      */
@@ -64,6 +70,9 @@ public class SpReport extends DataModelObjBase
     protected SpAppResource     appResource;
     protected SpecifyUser       specifyUser;
 
+    protected Integer           repeatCount;
+    protected String            repeatField;
+    
  
     /**
      * 
@@ -87,6 +96,8 @@ public class SpReport extends DataModelObjBase
         query            = null;
         appResource      = null;
         specifyUser      = null;
+        repeatCount      = null;
+        repeatField      = null;
     }
     
     @Id
@@ -174,6 +185,71 @@ public class SpReport extends DataModelObjBase
     }
 
     /**
+     * @return the repeatCount;
+     */
+    @Column(name = "RepeatCount", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getRepeatCount()
+    {
+        return repeatCount;
+    }
+    
+    /**
+     * @param repeatCount the repeatCount to set.
+     */
+    public void setRepeatCount(Integer repeatCount)
+    {
+        this.repeatCount = repeatCount;
+    }
+    
+    /**
+     * @return the repeatField.
+     */
+    @Column(name = "RepeatField", unique = false, nullable = true, insertable = true, updatable = true)
+    public String getRepeatField()
+    {
+        return repeatField;
+    }
+    
+    @Transient
+    public Object getRepeats()
+    {
+        return repeatCount != null ? repeatCount : repeatField;
+    }
+    
+    public void setRepeats(Object repeats)
+    {
+        if (repeats == null)
+        {
+            setRepeatCount(null);
+            setRepeatField(null);
+        }
+        else if (repeats instanceof Integer)
+        {
+            setRepeatCount((Integer )repeats);
+            setRepeatField(null);
+        }
+        else if (repeats instanceof String)
+        {
+            setRepeatCount(null);
+            setRepeatField((String )repeats);
+        }
+        else
+        {
+            log.error("invalid repeats parameter: " + repeats);
+            setRepeatCount(null);
+            setRepeatField(null);            
+        }
+    }
+    /**
+     * @param repeatField the repeatField to set.
+     */
+    public void setRepeatField(String repeatField)
+    {
+        this.repeatField = repeatField;
+    }
+
+    
+    /**
      * Assuming object is attached to an open session, loads lazily-loaded members.
      */
     public void forceLoad()
@@ -225,4 +301,5 @@ public class SpReport extends DataModelObjBase
     {
         return 519;
     }
+        
 }

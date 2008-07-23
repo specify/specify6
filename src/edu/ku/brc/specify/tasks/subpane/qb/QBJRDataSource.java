@@ -172,7 +172,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfo> columnInfo,
                           final boolean recordIdsIncluded)
     {
-        super(columnInfo, recordIdsIncluded, null, null);
+        super(columnInfo, recordIdsIncluded, null);
         this.hql = hql;
         this.params = params;
         startDataAcquisition();
@@ -186,30 +186,13 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
      * @param repeatCount - number of repeats for each record
      */
     public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfo> columnInfo,
-                          final boolean recordIdsIncluded, final int repeatCount)
+                          final boolean recordIdsIncluded, final Object repeats)
     {
-        super(columnInfo, recordIdsIncluded, null, repeatCount);
+        super(columnInfo, recordIdsIncluded, repeats);
         this.hql = hql;
         this.params = params;
         startDataAcquisition();
-    }
-
-    /**
-     * @param hql
-     * @param params
-     * @param columnInfo
-     * @param recordIdsIncluded
-     * @param repeatColumnName - name of the column whose value determines number of repeats for it's row.
-     */
-    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfo> columnInfo,
-                          final boolean recordIdsIncluded, final String repeatColumnName)
-    {
-        super(columnInfo, recordIdsIncluded, repeatColumnName, null);
-        this.hql = hql;
-        this.params = params;
-        startDataAcquisition();
-    }
-    
+    }    
     
     /**
      * 

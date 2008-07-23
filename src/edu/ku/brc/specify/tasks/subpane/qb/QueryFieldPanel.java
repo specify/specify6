@@ -105,6 +105,7 @@ public class QueryFieldPanel extends JPanel
     protected MultiStateIconButon sortCheckbox;
     protected JCheckBox        isDisplayedCkbx;
     protected JCheckBox        isPromptCkbx;
+    protected JCheckBox        isEnforcedCkbx; 
     
     protected FieldQRI         fieldQRI;
     protected SpQueryField     queryField = null;
@@ -127,7 +128,7 @@ public class QueryFieldPanel extends JPanel
     {
         if (fieldQRI != null && fieldQRI.getTableInfo() != null && fieldQRI.getFieldInfo() != null) 
         {
-            //XXX unfortunately this doesn't work...
+            //XXX unfortunately this doesn't work because currently picklist defs are only setup via form view defs
             if (StringUtils.isNotEmpty(fieldQRI.getFieldInfo().getPickListName()))
             {
                 pickList = ((edu.ku.brc.specify.ui.db.PickListDBAdapterFactory)PickListDBAdapterFactory.getInstance()).create(fieldQRI.getFieldInfo().getPickListName(), false);
@@ -174,7 +175,7 @@ public class QueryFieldPanel extends JPanel
                     /*UIRegistry.getResourceString("QB_FIELD")*/" ", UIRegistry.getResourceString("QB_NOT"),
                     UIRegistry.getResourceString("QB_OPERATOR"),
                     UIRegistry.getResourceString("QB_CRITERIA"), UIRegistry.getResourceString("QB_SORT"),
-                    UIRegistry.getResourceString("QB_DISPLAY"), getResourceString("QB_PROMPT"), " ", " " };
+                    UIRegistry.getResourceString("QB_DISPLAY"), getResourceString("QB_PROMPT"), getResourceString("QB_ALWAYS_ENFORCE"), " ", " " };
         }
         
         this.fieldQRI      = fieldQRI;
@@ -238,6 +239,7 @@ public class QueryFieldPanel extends JPanel
         {
             qField.setIsDisplay(isDisplayedCkbx.isSelected());
             qField.setIsPrompt(isPromptCkbx.isSelected());
+            qField.setAlwaysFilter(isEnforcedCkbx.isSelected());
             qField.setIsNot(isNotCheckbox.isSelected());
             if (validator.hasChanged() && qField.getSpQueryFieldId() != null)
             {
@@ -323,6 +325,7 @@ public class QueryFieldPanel extends JPanel
                 {
                     isDisplayedCkbx.setSelected(queryField.getIsDisplay());
                     isPromptCkbx.setSelected(queryField.getIsPrompt() == null ? true : queryField.getIsPrompt());
+                    isEnforcedCkbx.setSelected(queryField.getAlwaysFilter() == null ? true : queryField.getAlwaysFilter());
                 }
                 validator.setHasChanged(false);
             } else
@@ -922,18 +925,21 @@ public class QueryFieldPanel extends JPanel
             isDisplayedCkbx.addFocusListener(focusListener);
             isPromptCkbx = createCheckBox("isPromptCkbx");
             isPromptCkbx.addFocusListener(focusListener);
+            isEnforcedCkbx = createCheckBox("isEnforcedCkbx");
+            isEnforcedCkbx.addFocusListener(focusListener);
             closeBtn = new JLabel(IconManager.getIcon("Close"));
         }
         else
         {
             isDisplayedCkbx = null;
             this.isPromptCkbx = null;
+            isEnforcedCkbx = null;
             this.closeBtn = null;
         }
 
-        // 0 1 2 3 4 5 6 7 8
+        // 0 1 2 3 4 5 6 7 8 9
         JComponent[] comps = { iconLabel, fieldLabel, isNotCheckbox, operatorCBX, criteria,
-                sortCheckbox, isDisplayedCkbx, isPromptCkbx, closeBtn, null };
+                sortCheckbox, isDisplayedCkbx, isPromptCkbx, isEnforcedCkbx, closeBtn, null };
 
         StringBuilder sb = new StringBuilder();
         if (columnDefStr == null)
@@ -941,7 +947,7 @@ public class QueryFieldPanel extends JPanel
             for (int i = 0; i < comps.length; i++)
             {
                 sb.append(i == 0 ? "" : ",");
-                if (i == 2 || i == 3 || i == 6 || i == 7)
+                if (i == 2 || i == 3 || i == 6 || i == 7 || i == 8)
                     sb.append("c:");
                 sb.append("p");
                 if (i == 4)
@@ -976,6 +982,7 @@ public class QueryFieldPanel extends JPanel
         {
             isDisplayedCkbx.setSelected(true);
             isPromptCkbx.setSelected(!(fieldQRI instanceof RelQRI));
+            isEnforcedCkbx.setSelected(false);
             closeBtn.addMouseListener(new MouseAdapter()
             {
                 @Override
@@ -997,6 +1004,7 @@ public class QueryFieldPanel extends JPanel
         {
             isDisplayedCkbx.setVisible(!isRel);
             isPromptCkbx.setVisible(!isRel);
+            isEnforcedCkbx.setVisible(!isRel);
         }
         
         validate();
@@ -1240,5 +1248,13 @@ public class QueryFieldPanel extends JPanel
     public void setSelected(boolean selected)
     {
         this.selected = selected;
+    }
+    
+    /**
+     * @return true if this field's criteria should ALWAYS be applied.
+     */
+    public boolean isEnforced()
+    {
+        return false;
     }
 }

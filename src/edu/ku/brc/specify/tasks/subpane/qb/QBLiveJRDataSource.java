@@ -42,24 +42,17 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
     public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfo> columnInfo)
     {
         //XXX setting rowIds to true doesn't guarantee that rowIds will be available if Select Distinct was used
-        super(columnInfo, true, null, 2);
+        super(columnInfo, true, null);
         this.data = data;
     }
 
-    public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfo> columnInfo, final int repeatCount)
+    public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfo> columnInfo, final Object repeats)
     {
         //XXX setting rowIds to true doesn't guarantee that rowIds will be available if Select Distinct was used
-        super(columnInfo, true, null, repeatCount);
+        super(columnInfo, true, repeats);
         this.data = data;
     }
  
-    public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfo> columnInfo, final String repeatColumnName)
-    {
-        //XXX setting rowIds to true doesn't guarantee that rowIds will be available if Select Distinct was used
-        super(columnInfo, true, repeatColumnName, null);
-        this.data = data;
-    }
-
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#getFieldValue(net.sf.jasperreports.engine.JRField)

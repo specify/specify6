@@ -35,18 +35,24 @@ public class QBResultReportServiceInfo extends Pair<String, String>
     protected final Integer resourceId;
     
     /**
+     * repeat setting for the repeat.
+     */
+    protected final Object repeats;
+    
+    /**
      * @param reportName 
      * @param fileName - the file for the report
      * @param liveData - true if the report uses the fields provided by the current QB results
      * @param spReportId - id of SpReport record if another query is required to generate report
      */
     public QBResultReportServiceInfo(final String reportName, final String fileName, final boolean liveData, final Integer spReportId,
-                                     final Integer resourceId)
+                                     final Integer resourceId, final Object repeats)
     {
         super(reportName, fileName);
         this.liveData = liveData;
         this.spReportId = spReportId;
         this.resourceId = resourceId;
+        this.repeats = repeats;
     }   
     
     /**
@@ -104,6 +110,14 @@ public class QBResultReportServiceInfo extends Pair<String, String>
     public Integer getResourceId()
     {
         return resourceId;
+    }
+
+    /**
+     * @return the repeats
+     */
+    public Object getRepeats()
+    {
+        return repeats;
     }
     
 }

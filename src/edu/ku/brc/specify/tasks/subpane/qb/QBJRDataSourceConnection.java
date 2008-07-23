@@ -203,6 +203,17 @@ public class QBJRDataSourceConnection extends IReportConnection
         {
             return fldClass;
         }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return getFldName();
+        }
+        
+        
     }
 
     /* (non-Javadoc)

@@ -17,14 +17,17 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
+
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.util.Pair;
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRField;
 
 /**
  * @author timbo
@@ -36,6 +39,8 @@ import net.sf.jasperreports.engine.JRField;
  */
 public class QBJRDataSourceBase implements JRDataSource
 {
+    private static final Logger log = Logger.getLogger(QBJRDataSourceBase.class);
+    
     protected static DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");    
     protected final List<ERTICaptionInfo> columnInfo;
     protected final boolean recordIdsIncluded;
@@ -119,8 +124,7 @@ public class QBJRDataSourceBase implements JRDataSource
     /**
      * @param columnInfo
      */
-    public QBJRDataSourceBase(final List<ERTICaptionInfo> columnInfo, final boolean recordIdsIncluded, final String repeatColumnName,
-                              final Integer repeatCount)
+    public QBJRDataSourceBase(final List<ERTICaptionInfo> columnInfo, final boolean recordIdsIncluded, final Object repeats)
     {
         this.columnInfo = columnInfo;
         this.recordIdsIncluded = recordIdsIncluded;
@@ -135,19 +139,24 @@ public class QBJRDataSourceBase implements JRDataSource
             colNames.add(new Pair<String, Integer>(QueryBldrPane.fixFldNameForJR(lbl), new Integer(c++)));
         }
         Collections.sort(colNames, colPairComparator);
-        if (repeatColumnName == null && repeatCount == null)
+        if (repeats == null)
         {
             repeater = null;
         }
-        else if (repeatColumnName != null)
+        else if (repeats instanceof String)
         {
             //assuming repeatColumnName does not refer to a formatted or aggregated column-
             //also assuming valid columnName-
-            this.repeater = new RowRepeaterColumn(getFldIdx(QueryBldrPane.fixFldNameForJR(repeatColumnName)));
+            this.repeater = new RowRepeaterColumn(getFldIdx((String )repeats));
         }
-        else
+        else if (repeats instanceof Integer)
         {
-            repeater = new RowRepeaterConst(repeatCount);
+            repeater = new RowRepeaterConst((Integer )repeats);
+        }
+        else 
+        {
+            repeater = null;
+            log.error("invalid repeats parameter: " + repeats);
         }
     }
     

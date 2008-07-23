@@ -226,10 +226,10 @@ public class MainFrameSpecify extends MainFrame
             UIRegistry.getStatusBar().setErrorMessage(e.getLocalizedMessage(), e);
             return false;
         }
-        AppResourceIFace appRes = getAppRes(jasperFile.getName(), null, true);
-        if (appRes != null)
+        AppResAndProps resApp = getAppRes(jasperFile.getName(), null, true);
+        if (resApp != null)
         {
-            String metaData = appRes.getMetaData();
+            String metaData = resApp.getAppRes().getMetaData();
             if (StringUtils.isEmpty(metaData))
             {
                 metaData = "isimport=1";
@@ -238,8 +238,8 @@ public class MainFrameSpecify extends MainFrame
             {
                 metaData += ";isimport=1";
             }
-            appRes.setMetaData(metaData);
-            return saveXML(xml, appRes, null);
+            resApp.getAppRes().setMetaData(metaData);
+            return saveXML(xml, resApp, null);
         }
         return false;
     }
@@ -250,11 +250,12 @@ public class MainFrameSpecify extends MainFrame
      * @param rep - ReportSpecify object associataed with appRes
      * @return true if everything turns out OK. Otherwise return false.
      */
-    protected static boolean saveXML(final ByteArrayOutputStream xml, final AppResourceIFace appRes, final ReportSpecify rep)
+    protected static boolean saveXML(final ByteArrayOutputStream xml, final AppResAndProps apr, final ReportSpecify rep)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         boolean result = false;
         boolean transOpen = false;
+        AppResourceIFace appRes = apr.getAppRes();
         boolean newRep = ((SpAppResource)appRes).getId() == null;
         try
         {
@@ -297,6 +298,7 @@ public class MainFrameSpecify extends MainFrame
                 }
                 spRep.setName(appRes.getName());
                 spRep.setAppResource((SpAppResource) appRes);
+                spRep.setRepeats(apr.getRepeats());
                 SpQuery q = rep.getConnection().getQuery();
                 // getting a fresh copy of the Query might be helpful
                 // in case one of its reports was deleted, but is probably
@@ -355,15 +357,15 @@ public class MainFrameSpecify extends MainFrame
                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
                 false);
 
-        AppResourceIFace appRes = getAppResForFrame(jrf);
-        if (appRes != null)
+        AppResAndProps apr = getAppResAndPropsForFrame(jrf);        
+        if (apr != null)
         {
             ReportSpecify rep = (ReportSpecify)jrf.getReport();
             ByteArrayOutputStream xmlOut = new ByteArrayOutputStream();
             ReportWriter rw = new ReportWriter(rep);
             rw.writeToOutputStream(xmlOut);
             
-            boolean success = saveXML(xmlOut, appRes, rep);
+            boolean success = saveXML(xmlOut, apr, rep);
             if (!success)
             {
                 JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_UNABLE_TO_SAVE_IREPORT"), UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);                        
@@ -382,26 +384,30 @@ public class MainFrameSpecify extends MainFrame
      *            iReport frame interface for a report
      * @return
      */
-    private AppResourceIFace getAppResForFrame(final JReportFrame jrf)
+    private AppResAndProps getAppResAndPropsForFrame(final JReportFrame jrf)
     {
     	//XXX - hard-coded for 'Collection' directory.
-    	AppResourceIFace result = AppContextMgr.getInstance().getResourceFromDir("Collection", jrf.getReport().getName());
-        if (result != null)
+    	AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir("Collection", jrf.getReport().getName());
+        if (appRes != null)
         {
-            if (((ReportSpecify) jrf.getReport()).getSpReport() != null) { return result; }
-            int response = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), String.format(UIRegistry
-                    .getResourceString("REP_CONFIRM_IMP_OVERWRITE"), jrf.getReport().getName()),
-                    UIRegistry.getResourceString("REP_CONFIRM_IMP_OVERWRITE_TITLE"), JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE, null);
-            if (response == JOptionPane.CANCEL_OPTION || response == -1 /*closed with x-box*/) { return null; }
-            if (response == JOptionPane.YES_OPTION) { return result; }
-            result = null;
+            SpReport spRep = ((ReportSpecify) jrf.getReport()).getSpReport();
+            if (spRep != null) 
+            { 
+                return new AppResAndProps(appRes, spRep.getRepeats()); 
+            }
+//            int response = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), String.format(UIRegistry
+//                    .getResourceString("REP_CONFIRM_IMP_OVERWRITE"), jrf.getReport().getName()),
+//                    UIRegistry.getResourceString("REP_CONFIRM_IMP_OVERWRITE_TITLE"), JOptionPane.YES_NO_CANCEL_OPTION,
+//                    JOptionPane.QUESTION_MESSAGE, null);
+//            if (response == JOptionPane.CANCEL_OPTION || response == -1 /*closed with x-box*/) { return null; }
+//            if (response == JOptionPane.YES_OPTION) { return result; }
+//            result = null;
         }
         // else
-        result = createAppRes(jrf.getReport().getName(), -1);
+        AppResAndProps result = createAppResAndProps(jrf.getReport().getName(), -1, (ReportSpecify )jrf.getReport());
         if (result != null)
         {
-            jrf.getReport().setName(result.getName());
+            jrf.getReport().setName(result.getAppRes().getName());
         }
         return result;
     }
@@ -413,45 +419,46 @@ public class MainFrameSpecify extends MainFrame
      * 
      * If a resource named appResName exists it will be returned, else a new resource is created.
      */
-    private static AppResourceIFace getAppRes(final String appResName, final Integer tableid, final boolean confirmOverwrite)
+    private static AppResAndProps getAppRes(final String appResName, final Integer tableid, final boolean confirmOverwrite)
     {
         //XXX - hard-coded for 'Collection' directory.
-        AppResourceIFace result = AppContextMgr.getInstance().getResourceFromDir("Collection", appResName);
-        if (result != null)
+        AppResourceIFace resApp = AppContextMgr.getInstance().getResourceFromDir("Collection", appResName);
+        if (resApp != null)
         {
             if (!confirmOverwrite)
             {
-                return result;
+                return new AppResAndProps(resApp, null);
             }
             //else
             int option = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                    String.format(UIRegistry.getResourceString("REP_CONFIRM_IMP_OVERWRITE"), result.getName()),
+                    String.format(UIRegistry.getResourceString("REP_CONFIRM_IMP_OVERWRITE"), resApp.getName()),
                     UIRegistry.getResourceString("REP_CONFIRM_IMP_OVERWRITE_TITLE"), 
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); 
             
             if (option == JOptionPane.YES_OPTION)
             {
-                return result;
+                return new AppResAndProps(resApp, null);
             }
             //else
             return null;
         }
         //else
-        return createAppRes(appResName, tableid);
+        return createAppResAndProps(appResName, tableid, null);
     }
     
     /**
      * @param jrf
      * @return a new AppResource
      */
-    private static AppResourceIFace createAppRes(final String repResName, final Integer tableid)
+    private static AppResAndProps createAppResAndProps(final String repResName, final Integer tableid, final ReportSpecify rep)
     {
-        RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, "Report", tableid == null);
+        RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, "Report", tableid == null, rep);
         boolean goodProps = false;
         CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
                 UIRegistry.getResourceString("REP_PROPS_DLG_TITLE"),
                 true,
                 propPanel);
+        propPanel.setCanceller(cd.getCancelBtn());
         while (!goodProps)
         {
             UIHelper.centerAndShow(cd);
@@ -477,26 +484,27 @@ public class MainFrameSpecify extends MainFrame
         {
             //XXX - which Dir???
             //XXX - what level???
-            AppResourceIFace result = AppContextMgr.getInstance().createAppResourceForDir("Collection");
-            result.setName(propPanel.getNameTxt().getText().trim());
-            result.setDescription(propPanel.getNameTxt().getText().trim());
-            result.setLevel(Short.valueOf(propPanel.getLevelTxt().getText()));
+            AppResourceIFace resApp = AppContextMgr.getInstance().createAppResourceForDir("Collection");
+            resApp.setName(propPanel.getNameTxt().getText().trim());
+            resApp.setDescription(propPanel.getNameTxt().getText().trim());
+            resApp.setLevel(Short.valueOf(propPanel.getLevelTxt().getText()));
             String metaDataStr = "tableid=" + propPanel.getTableId() + ";";
             if (propPanel.getTypeCombo().getSelectedIndex() == 0)
             {
                 metaDataStr += "reporttype=Report";
-                result.setMimeType("jrxml/report"); 
+                resApp.setMimeType("jrxml/report"); 
             }
             else
             {
                 metaDataStr += "reporttype=Report";
-                result.setMimeType("jrxml/label"); 
+                resApp.setMimeType("jrxml/label"); 
             }
-            if (StringUtils.isNotEmpty(result.getMetaData()))
+            if (StringUtils.isNotEmpty(resApp.getMetaData()))
             {
-                metaDataStr = metaDataStr + ";" + result.getMetaData();
+                metaDataStr = metaDataStr + ";" + resApp.getMetaData();
             }
-            result.setMetaData(metaDataStr);
+            resApp.setMetaData(metaDataStr);
+            AppResAndProps result = new AppResAndProps(resApp, propPanel.getRepeats());
             return result;
         }
         return null;

@@ -197,7 +197,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
             {
                 if (repContextIsActive(rep.getAppResource()))
                 {
-                    reports.add(new QBResultReportServiceInfo(rep.getName(), rep.getName(), true, null, rep.getAppResource().getId()));
+                    reports.add(new QBResultReportServiceInfo(rep.getName(), rep.getName(), true, null, rep.getAppResource().getId(), rep.getRepeats()));
                 }
             }
         }
@@ -215,7 +215,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
                     if (tableId == Integer.valueOf(tblIdStr))
                     {
                         reports.add(new QBResultReportServiceInfo(rep.getDescription() /*'title' seems to be currently stored in description */,
-                            rep.getName() /* and filename in name */, false, null, ((SpAppResource)rep).getId()));
+                            rep.getName() /* and filename in name */, false, null, ((SpAppResource)rep).getId(), null));
                     }
                     else
                     {
@@ -234,7 +234,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
                                                                          * description
                                                                          */,
                                                 rep.getName() /* and filename in name */, false, spRep.getId(),
-                                                ((SpAppResource)rep).getId()));
+                                                ((SpAppResource)rep).getId(), null));
                             }
                         }
                         finally

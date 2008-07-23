@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.tools.ireportspecify;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -53,23 +54,25 @@ public class RepResourcePropsPanel extends JPanel
     protected JComboBox typeCombo;
     protected JTextField resDirTxt;
     protected JComboBox tblCombo;
+    protected ReportRepeatPanel repeatPanel;
+    protected JButton canceller = null;
     
     /**
      * @param report
      * @param resource
      */
-    public RepResourcePropsPanel(final String reportName, final String reportType, final boolean showTableIds)
+    public RepResourcePropsPanel(final String reportName, final String reportType, final boolean showTableIds, final ReportSpecify rep)
     {
         super();
         this.reportName = reportName;
         this.reportType = reportType;
         this.showTableIds = showTableIds;
-        createUI();
+        createUI(rep);
     }
     
-    protected void createUI()
+    protected void createUI(final  ReportSpecify rep)
     {
-        String rowDefStr = showTableIds ? "p,p,p,p,p,p" : "p,p,p,p,p";
+        String rowDefStr = showTableIds ? "p,p,p,p,p,p,p" : "p,p,p,p,p,p";
         PanelBuilder builder = new PanelBuilder(new FormLayout("right:p, 2dlu, fill:p:grow", rowDefStr), this);
         CellConstraints cc = new CellConstraints();
         
@@ -112,6 +115,11 @@ public class RepResourcePropsPanel extends JPanel
             tblCombo.setSelectedIndex(0);
             builder.add(tblCombo, cc.xy(3, 6));
         }
+        
+        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPEAT_LBL")), cc.xy(1, showTableIds ? 7 : 6));
+        repeatPanel = new ReportRepeatPanel(rep.getConnection(), canceller);
+        repeatPanel.createUI(rep.getSpReport() == null ? null : rep.getSpReport().getRepeats());
+        builder.add(repeatPanel, cc.xy(3, showTableIds ? 7 : 6));
     }
 
     public int getTableId()
@@ -175,7 +183,20 @@ public class RepResourcePropsPanel extends JPanel
     public static void main(String args[])
     {
         CustomDialog tcd = new CustomDialog(null, "Testing", false, 
-                new RepResourcePropsPanel(null, null, true));
+                new RepResourcePropsPanel(null, null, true, null));
         UIHelper.centerAndShow(tcd);
+    }
+
+    /**
+     * @param canceller the canceller to set
+     */
+    public void setCanceller(JButton canceller)
+    {
+        this.canceller = canceller;
+    }
+    
+    public Object getRepeats()
+    {
+        return repeatPanel.getRepeats();
     }
 }

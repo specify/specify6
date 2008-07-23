@@ -121,6 +121,8 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
                                       //outside the querybuilder context.
     protected Boolean      isRelFld;  //true if this field represents a relationship 
                                       //(the data object or objects on the 'other' side of the relationship)
+    protected Boolean      alwaysFilter; //true if criteria for this field should be applied in all situations, i.e. even
+                                        //when query content is provided by a list of ids.
     
     protected Byte         operStart;
     protected Byte         operEnd;
@@ -198,6 +200,14 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     public void setIsPrompt(Boolean isPrompt)
     {
         this.isPrompt = isPrompt;
+    }
+
+    /**
+     * @param alwaysFilter the alwaysFilter to set
+     */
+    public void setAlwaysFilter(Boolean alwaysFilter)
+    {
+        this.alwaysFilter = alwaysFilter;
     }
 
     /**
@@ -331,6 +341,15 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     }
 
     /**
+     * @return the alwasyFilter
+     */
+    @Column(name = "AlwaysFilter", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getAlwaysFilter()
+    {
+        return alwaysFilter;
+    }
+
+    /**
      * @return the operStart
      */
     @Column(name = "OperStart", unique = false, nullable = false, insertable = true, updatable = true)
@@ -408,6 +427,8 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         isNot          = null;
         isDisplay      = null;
         isPrompt       = null;
+        alwaysFilter   = null;
+        isRelFld       = null;        
         operStart      = null;
         operEnd        = null;
         startValue     = null;

@@ -1263,7 +1263,7 @@ public class QueryTask extends BaseTask
                Object src;
                if (selectedRep.isLiveData())
                {
-                   src = new QBLiveJRDataSource(rsm, srvData.getInfo().getVisibleCaptionInfo());
+                   src = new QBLiveJRDataSource(rsm, srvData.getInfo().getVisibleCaptionInfo(), selectedRep.getRepeats());
                }
                else
                {
