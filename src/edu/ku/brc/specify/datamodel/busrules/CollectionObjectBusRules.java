@@ -148,6 +148,32 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeMerge(dataObj, session);
+        
+        CollectionObject colObj = (CollectionObject)dataObj;
+        if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
+        {
+            CollectingEvent ce = colObj.getCollectingEvent();
+            if (ce != null)
+            {
+                try
+                {
+                    session.saveOrUpdate(ce);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
      */
     @Override

@@ -1202,6 +1202,10 @@ public class BuildSampleDatabase
         }
         dataObjects.addAll(collObjs);
         
+        for (CollectingEvent ce : colEves)
+        {
+            persist(ce);
+        }
         persist(dataObjects);
         dataObjects.clear();
 
