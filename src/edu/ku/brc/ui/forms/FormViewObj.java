@@ -738,7 +738,7 @@ public class FormViewObj implements Viewable,
         action = UIRegistry.getAction("AutoNumbering");
         if (action != null)
         {
-            //action.setEnabled(isAutoNumberOn());
+            action.setEnabled(isAutoNumberOn() && isEditting);
         }
         
         comp = UIRegistry.get("AutoNumbering");
