@@ -455,13 +455,22 @@ public class DataEntryTask extends BaseTask
             ImageIcon iconImage = IconManager.getIcon(dev.getIconName(), IconManager.STD_ICON_SIZE);
             if (iconImage != null)
             {
-                String iconName = dev.getView();
-                iconForFormClass.put(iconName, iconImage);
+                String iconName;
                 if (isColObj)
                 {
+                    iconName            = AppPreferences.getRemote().get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject");
+                    ImageIcon colIconImage = IconManager.getIcon(iconName, IconManager.STD_ICON_SIZE);
+                    if (colIconImage != null)
+                    {
+                        iconImage = colIconImage;
+                    }
+                    iconName            = "CollectionObject";
                     iconClassLookUpName = iconName;
+                } else
+                {
+                    iconName = dev.getView();
                 }
-                
+                iconForFormClass.put(iconName, iconImage);
             } else
             {
                 log.error("Icon ["+dev.getIconName()+"] could not be found.");
@@ -483,7 +492,7 @@ public class DataEntryTask extends BaseTask
                         //cmdAction.setProperty("viewset", dev.getViewSet());
                         cmdAction.setProperty("view",    dev.getView());
                         
-                        ContextMgr.registerService(dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
+                        ContextMgr.registerService(10, dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
                         
                         if (dev.isSideBar())
                         {
@@ -544,7 +553,7 @@ public class DataEntryTask extends BaseTask
                 CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);
                 cmdAction.setProperty("view", dev.getView());
                 
-                ContextMgr.registerService(dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
+                ContextMgr.registerService(10, dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
 
             } else
             {
@@ -669,11 +678,6 @@ public class DataEntryTask extends BaseTask
             NavBoxButton roc = (NavBoxButton)nbi;
             for (DataEntryView dev : miscList)
             {
-                if (dev.getTableInfo() == null)
-                {
-                    int x = 0;
-                    x++;
-                }
                 roc.addDropDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "RECORD_SET", dev.getTableInfo().getTableId()));
             }
             viewsNavBox.add(nbi);
@@ -925,7 +929,7 @@ public class DataEntryTask extends BaseTask
         if (appPrefs == AppPreferences.getRemote())
         {
             String    iconName  = appPrefs.get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject");
-            ImageIcon iconImage = IconManager.getIcon(iconName, IconManager.IconSize.Std16);
+            ImageIcon iconImage = IconManager.getIcon(iconName, IconManager.STD_ICON_SIZE);
             if (iconImage != null)
             {
                 if (colObjNavBtn != null)
@@ -1109,6 +1113,9 @@ public class DataEntryTask extends BaseTask
         return false;
     }
     
+    /**
+     * @param cmdAction
+     */
     protected void processRecordSetCommand(final CommandAction cmdAction)
     {
         if (!processRecordSetCommand(cmdAction, stdViews))

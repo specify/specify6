@@ -48,11 +48,14 @@ import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxButton;
+import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -63,9 +66,11 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
@@ -112,7 +117,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         //draggableFlavors.add(RecordSetTask.RECORDSET_FLAVOR);
         
         CommandDispatcher.register(RECORD_SET, this);
-        
+        CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
     }
 
 
@@ -129,7 +134,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             // Although some system tables we may not want, they won't be searchable anyway.
             for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
             {
-                ContextMgr.registerService(ti.getTitle(), ti.getTableId(), new CommandAction(RECORD_SET, SAVE_RECORDSET), this, RECORD_SET, getResourceString("CreateRecordSetTT"));    
+                ContextMgr.registerService(1, ti.getTitle(), ti.getTableId(), new CommandAction(RECORD_SET, SAVE_RECORDSET), this, RECORD_SET, getResourceString("CreateRecordSetTT"));    
             }
             
             //navBox = new DroppableNavBox(title, RECORDSET_FLAVOR, RECORD_SET, SAVE_RECORDSET);
@@ -1080,7 +1085,36 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         } 
     }
 
-
+    /**
+     * 
+     */
+    protected void prefsChanged(final AppPreferences appPrefs)
+    {
+        if (appPrefs == AppPreferences.getRemote())
+        {
+            String    iconName  = appPrefs.get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject");
+            ImageIcon iconImage = IconManager.getIcon(iconName, IconManager.STD_ICON_SIZE);
+            if (iconImage != null)
+            {
+                for (NavBoxIFace nb : navBoxes)
+                {
+                    for (NavBoxItemIFace nbi : nb.getItems())
+                    {
+                        Object data = nbi.getData();
+                        if (data instanceof RecordSetIFace)
+                        {
+                           RecordSetIFace rsi = (RecordSetIFace)data;
+                           if (rsi.getDbTableId() == CollectionObject.getClassTableId())
+                           {
+                               nbi.setIcon(iconImage);
+                           }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
      */
@@ -1091,6 +1125,10 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         if (cmdAction.isType(RECORD_SET))
         {
             processRecordSetCommands(cmdAction);
+            
+        } else if (cmdAction.isType(PreferencesDlg.PREFERENCES))
+        {
+            prefsChanged((AppPreferences)cmdAction.getData());
         }
     }
     

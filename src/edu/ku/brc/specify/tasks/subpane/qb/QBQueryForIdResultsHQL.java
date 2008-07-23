@@ -165,7 +165,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         List<ServiceInfo> result = new LinkedList<ServiceInfo>();
         
         
-        result.add(new ServiceInfo("QB_RESULT_REPORT_SERVICE", 
+        result.add(new ServiceInfo(40, "QB_RESULT_REPORT_SERVICE", 
                 QBQIdRHQLTblId, 
                 new CommandAction(QueryTask.QUERY, QueryTask.QUERY_RESULTS_REPORT, 
                         new QBResultReportServiceCmdData(this, data)),

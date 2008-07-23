@@ -66,7 +66,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
      protected Taxon               taxon;
      protected CollectionObject    collectionObject;
      protected Set<DeterminationCitation> determinationCitations;
-     protected Agent determiner;
+     protected Agent               determiner;
 
 
     // Constructors

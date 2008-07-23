@@ -16,6 +16,7 @@ package edu.ku.brc.af.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -53,7 +54,6 @@ public class ContextMgr
     
     /**
      * Protected Constructor of Singleton
-     *
      */
     protected ContextMgr()
     {
@@ -86,10 +86,8 @@ public class ContextMgr
             {
                 NavBoxMgr.register(task);
              }
-
             instance.currentContext = task;
         }
-
     }
 
     /**
@@ -165,6 +163,7 @@ public class ContextMgr
 
     /**
      * Register a service for other UI components to use.
+     * @param priority the priority of the service used for ordering them
      * @param serviceName the name of the service
      * @param tableId the table ID that the service is provided for
      * @param command the command to be sent
@@ -173,18 +172,20 @@ public class ContextMgr
      * @param tooltip the tooltip text for any UI
      * @return a service info object that provide the service
      */
-    public static ServiceInfo registerService(final String        serviceName, 
+    public static ServiceInfo registerService(final Integer       priority,
+                                              final String        serviceName, 
                                               final int           tableId, 
                                               final CommandAction command, 
                                               final Taskable      task, 
                                               final String        iconName, 
                                               final String        tooltip)
     {
-        return registerService(serviceName, tableId, command, task, iconName, tooltip, false);
+        return registerService(priority, serviceName, tableId, command, task, iconName, tooltip, false);
     }
 
     /**
      * Register a service for other UI components to use.
+     * @param priority the priority of the service used for ordering them
      * @param serviceName the name of the service
      * @param tableId the table ID that the service is provided for
      * @param command the command to be sent
@@ -193,7 +194,8 @@ public class ContextMgr
      * @param tooltip the tooltip text for any UI
      * @return a service info object that provide the service
      */
-    public static ServiceInfo registerService(final String        serviceName, 
+    public static ServiceInfo registerService(final Integer       priority,
+                                              final String        serviceName, 
                                               final int           tableId, 
                                               final CommandAction command, 
                                               final Taskable      task, 
@@ -201,7 +203,7 @@ public class ContextMgr
                                               final String        tooltip,
                                               final boolean       isDefault)
     {
-        ServiceInfo serviceInfo = new ServiceInfo(serviceName, tableId, command, task, iconName, tooltip, isDefault);
+        ServiceInfo serviceInfo = new ServiceInfo(priority, serviceName, tableId, command, task, iconName, tooltip, isDefault);
         if (tableId == -1)
         {
             instance.genericService.add(serviceInfo);
@@ -335,6 +337,7 @@ public class ContextMgr
                 serviceList.add(srvInfo);
             }
         }
+        Collections.sort(serviceList);
         return serviceList;
     }
 

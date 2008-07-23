@@ -328,11 +328,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
     
     /**
      * @param sessionArg
-     * @param user
+     * @param userArg
      * @return
      */
     protected Collection getLastUSedCollection(final DataProviderSessionIFace sessionArg, 
-                                               final SpecifyUser user)
+                                               final SpecifyUser userArg)
     {
         try
         {
@@ -340,7 +340,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             // First get the Collections the User has access to.
             Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
-            String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
+            String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+userArg.getSpecifyUserId();
             for (Object obj : sessionArg.getDataList(sqlStr))
             {
                 Collection cs = (Collection)obj; 
@@ -519,13 +519,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
             AppContextMgr.getInstance().setClassObject(Collection.class, collection);
             // XXX Collection.setCurrentCollectionIds(getCollectionIdList(sessionArg));
             
-            String iconName = AppPreferences.getRemote().get(FormattingPrefsPanel.getDisciplineImageName(), "collectionobject"); //$NON-NLS-1$ //$NON-NLS-2$
+            String iconName = AppPreferences.getRemote().get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject"); //$NON-NLS-1$ //$NON-NLS-2$
             IconManager.aliasImages(iconName,             // Source
                                     "collectionobject");  // Dest //$NON-NLS-1$
 
-            //IconManager.aliasImages(iconName,             // Source
-            //                        "CollectionObject");  // Dest //$NON-NLS-1$
-
+            IconManager.aliasImages(iconName,             // Source
+                                    "CollectionObject");  // Dest //$NON-NLS-1$
+            
             if (collection != null)
             {
                 

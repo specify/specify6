@@ -93,7 +93,7 @@ public class LabelsTask extends ReportsBaseTask
             super.initialize();
             
             CommandAction cmdAction = new CommandAction(REPORTS, PRINT_TABLE);
-            ContextMgr.registerService(PRINT_TABLE, -1, cmdAction, this, "Print", getResourceString("PRINT_GRID_TT"));
+            ContextMgr.registerService(20, PRINT_TABLE, -1, cmdAction, this, "Print", getResourceString("PRINT_GRID_TT"));
         }
     }
 

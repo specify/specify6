@@ -187,7 +187,7 @@ public class ToolsTask extends BaseTask
 
             
             CommandAction cmdAction = new CommandAction(TOOLS, EXPORT_JTABLE);
-            ContextMgr.registerService(EXPORT_JTABLE, -1, cmdAction, this, "ExportExcel16", getResourceString("EXPORT_GRID_TT"));
+            ContextMgr.registerService(30, EXPORT_JTABLE, -1, cmdAction, this, "ExportExcel16", getResourceString("EXPORT_GRID_TT"));
             
             readToolRegistry();
 

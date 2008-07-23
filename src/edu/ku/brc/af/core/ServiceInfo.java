@@ -34,10 +34,11 @@ import edu.ku.brc.ui.IconManager;
  * @author rods
  *
  */
-public class ServiceInfo
+public class ServiceInfo implements Comparable<ServiceInfo>
 {
     private static final Logger log = Logger.getLogger(ServiceInfo.class);
             
+    protected Integer        priority;
     protected String         name;
     protected int            tableId;
     protected Taskable       task;
@@ -51,6 +52,7 @@ public class ServiceInfo
     /**
      * Constructs a service info object describing the service for UI components to use; also looks up the iconName in the IconCache
      * and creates icons for sizes 16, 24, and 32.
+     * @param priority the priority of the service used for ordering them
      * @param serviceName the name of the service
      * @param tableId the table ID that the service is provided for
      * @param command the command to be sent
@@ -58,14 +60,15 @@ public class ServiceInfo
      * @param iconName the name of the icon to be used
      * @param tooltip the tooltip text for any UI
      */
-    public ServiceInfo(final String serviceName, 
+    public ServiceInfo(final Integer priority,
+                       final String serviceName, 
                        final int tableId, 
                        final CommandAction command, 
                        final Taskable task, 
                        final String iconName,
                        final String tooltip)
     {
-        this(serviceName, tableId, command, task, iconName, tooltip, false);
+        this(priority, serviceName, tableId, command, task, iconName, tooltip, false);
     }
     
     /**
@@ -79,7 +82,8 @@ public class ServiceInfo
      * @param tooltip the tooltip text for any UI
      * @param isDefault the default service
      */
-    public ServiceInfo(final String serviceName, 
+    public ServiceInfo(final Integer priority,
+                       final String serviceName, 
                        final int tableId, 
                        final CommandAction command, 
                        final Taskable task, 
@@ -87,6 +91,7 @@ public class ServiceInfo
                        final String tooltip,
                        final boolean isDefault)
     {
+        this.priority  = priority;
         this.name      = serviceName;
         this.tableId   = tableId;
         this.command   = command;
@@ -180,6 +185,14 @@ public class ServiceInfo
     //-- Static Methods
     //------------------------------------------
 
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(ServiceInfo si)
+    {
+        return priority.compareTo(si.priority);
+    }
 
     /**
      * Returns the a string that includes the name and the table ID
