@@ -303,7 +303,7 @@
             </actions>
             <formComponents />
           </screen>
-          <screen name="" id="10" beanClass="com.install4j.runtime.beans.screens.FinishedScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="true">
+          <screen name="" id="432" beanClass="com.install4j.runtime.beans.screens.FinishedScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="true">
             <serializedBean>
               <java class="java.beans.XMLDecoder">
                 <object class="com.install4j.runtime.beans.screens.FinishedScreen" />
@@ -314,7 +314,36 @@
             <preActivation />
             <postActivation />
             <actions>
-              <action name="" id="216" beanClass="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction" enabled="true" commentSet="false" comment="" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+              <group name="" id="433" beanClass="com.install4j.runtime.beans.groups.ActionGroup" enabled="true" commentSet="false" comment="">
+                <serializedBean>
+                  <java class="java.beans.XMLDecoder">
+                    <object class="com.install4j.runtime.beans.groups.ActionGroup">
+                      <void property="conditionExpression">
+                        <object class="com.install4j.api.beans.ScriptProperty">
+                          <void property="value">
+                            <string>context.getBooleanVariable("executeBuilder")</string>
+                          </void>
+                        </object>
+                      </void>
+                    </object>
+                  </java>
+                </serializedBean>
+                <beans>
+                  <action name="" id="434" beanClass="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction" enabled="true" commentSet="false" comment="" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
+                    <serializedBean>
+                      <java class="java.beans.XMLDecoder">
+                        <object class="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction">
+                          <void property="launcherId">
+                            <string>22</string>
+                          </void>
+                        </object>
+                      </java>
+                    </serializedBean>
+                    <condition>!context.isUnattended()</condition>
+                  </action>
+                </beans>
+              </group>
+              <action name="" id="435" beanClass="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction" enabled="true" commentSet="false" comment="" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.actions.finish.ExecuteLauncherAction">
@@ -324,11 +353,11 @@
                     </object>
                   </java>
                 </serializedBean>
-                <condition>context.getBooleanVariable("executeLauncherAction") &amp;&amp; (!context.isUnattended())</condition>
+                <condition>context.getBooleanVariable("executeLauncherAction") &amp;&amp; (!context.isUnattended()) &amp;&amp; (!context.getBooleanVariable("executeBuilder"))</condition>
               </action>
             </actions>
             <formComponents>
-              <formComponent name="Execute launcher" id="217" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+              <formComponent name="Execute launcher" id="436" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
                     <object class="com.install4j.runtime.beans.formcomponents.CheckboxComponent">
@@ -340,6 +369,29 @@
                       </void>
                       <void property="variableName">
                         <string>executeLauncherAction</string>
+                      </void>
+                    </object>
+                  </java>
+                </serializedBean>
+                <initScript />
+              </formComponent>
+              <formComponent name="Rebuild Database" id="437" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                <serializedBean>
+                  <java class="java.beans.XMLDecoder">
+                    <object class="com.install4j.runtime.beans.formcomponents.CheckboxComponent">
+                      <void property="checkboxText">
+                        <string>Rebuild Database</string>
+                      </void>
+                      <void property="coupledComponentIds">
+                        <void method="add">
+                          <string>436</string>
+                        </void>
+                      </void>
+                      <void property="inverseCoupling">
+                        <boolean>true</boolean>
+                      </void>
+                      <void property="variableName">
+                        <string>executeBuilder</string>
                       </void>
                     </object>
                   </java>
@@ -481,7 +533,7 @@
                         <boolean>false</boolean>
                       </void>
                       <void property="updateDescriptorUrl">
-                        <string>http://specify6-test.nhm.ku.edu/specifydownloads/specify6/alpha/updates.xml</string>
+                        <string>http://nhm.ku.edu/specifydownloads/specify6/alpha/updates.xml</string>
                       </void>
                       <void property="variable">
                         <string>updateDescriptor</string>
