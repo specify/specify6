@@ -39,6 +39,11 @@ public class Field implements Comparable<Field>
     protected boolean required = false;
 
     /**
+     * True if field represents a foreign key.
+     */
+    protected boolean foreignKey = false;
+    
+    /**
      * @return the columnIndex
      */
     public final int getColumnIndex()
@@ -109,13 +114,15 @@ public class Field implements Comparable<Field>
      * @param name
      * @param type
      * @param required
+     * @param foreignKey
      */
-    public Field(String name, String type, boolean required)
+    public Field(String name, String type, boolean required, boolean foreignKey)
     {
         super();
         this.name = name;
         this.type = type;
         this.required = required;
+        this.foreignKey = foreignKey;
         this.fieldInfo = null;
     }
 
@@ -130,7 +137,16 @@ public class Field implements Comparable<Field>
         this.type = type;
         this.fieldInfo = null;
     }
-    
+
+    public Field(String name, String type, boolean foreignKey)
+    {
+        super();
+        this.name = name;
+        this.type = type;
+        this.foreignKey = foreignKey;
+        this.fieldInfo = null;
+    }
+
     
     /**
      * @param fieldInfo
@@ -184,5 +200,13 @@ public class Field implements Comparable<Field>
     public boolean isRequired()
     {
         return required;
+    }
+
+    /**
+     * @return the foreignKey
+     */
+    public boolean isForeignKey()
+    {
+        return foreignKey;
     }
 }

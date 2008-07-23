@@ -940,6 +940,12 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Handles 'parent-child' relationships between UploadTables
      */
+    /**
+     * @author timbo
+     *
+     * @code_status Alpha
+     *
+     */
     public class ParentTableEntry
     {
         /**
@@ -960,6 +966,11 @@ public class Uploader implements ActionListener, KeyListener
         protected Method       setter;
 
         /**
+         * true if the parent is required.
+         */
+        protected boolean      required = false;
+        
+        /**
          * @param importTable
          * @param parentRel
          */
@@ -968,6 +979,10 @@ public class Uploader implements ActionListener, KeyListener
             super();
             this.importTable = importTable;
             this.parentRel = parentRel;
+            if (parentRel != null)
+            {
+                required = parentRel.getRelatedField().isForeignKey() && parentRel.getRelatedField().isRequired();
+            }
         }
 
         /**
@@ -1022,6 +1037,14 @@ public class Uploader implements ActionListener, KeyListener
         public final String getPropertyName()
         {
             return propertyName;
+        }
+        
+        /**
+         * @return the required
+         */
+        public boolean isRequired()
+        {
+            return required;
         }
     }
 

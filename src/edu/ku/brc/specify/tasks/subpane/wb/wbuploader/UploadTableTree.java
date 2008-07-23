@@ -691,5 +691,16 @@ public class UploadTableTree extends UploadTable
         return rank;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#setParents(edu.ku.brc.specify.datamodel.DataModelObjBase, int)
+     */
+    @Override
+    protected boolean setParents(DataModelObjBase rec, int recNum)
+            throws InvocationTargetException, IllegalArgumentException, IllegalAccessException
+    {
+        super.setParents(rec, recNum);
+        return true; //don't worry. It will be OK in the end.
+    }
+
     
 }

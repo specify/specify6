@@ -183,7 +183,7 @@ public class UploadField
      */
     public boolean isRequired()
     {
-        return required || field.isRequired(); //hmmm???
+        return required; 
     }
 
     /**

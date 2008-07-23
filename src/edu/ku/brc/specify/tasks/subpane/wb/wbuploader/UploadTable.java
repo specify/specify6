@@ -50,6 +50,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.util.GeoRefConverter;
@@ -670,7 +671,13 @@ public class UploadTable implements Comparable<UploadTable>
         int index = uploadFields.size() > 1 ? recNum : 0;
         for (UploadField f : uploadFields.get(index))
         {
-            if ((f.getValue() == null || f.getValue().trim().equals("")) && f.isRequired()) { return false; }
+            if (!f.getField().isForeignKey()) //Foreign Keys get assigned later in process...
+            {
+                if ((f.getValue() == null || f.getValue().trim().equals("")) && f.isRequired()) 
+                { 
+                    return false; 
+                }
+            }
         }
         return true;
     }
@@ -855,9 +862,10 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Sets parent classes for rec.
      */
-    protected void setParents(DataModelObjBase rec, int recNum) throws InvocationTargetException,
+    protected boolean setParents(DataModelObjBase rec, int recNum) throws InvocationTargetException,
             IllegalArgumentException, IllegalAccessException
     {
+        boolean requirementsMet = true;
         for (Vector<ParentTableEntry> ptes : parentTables)
         {
             for (ParentTableEntry pt : ptes)
@@ -873,8 +881,10 @@ public class UploadTable implements Comparable<UploadTable>
                     arg[0] = parentRec;
                 }
                 pt.getSetter().invoke(rec, arg);
+                requirementsMet = requirementsMet && arg[0] != null || !pt.isRequired();
             }
         }
+        return requirementsMet;
     }
 
     /**
@@ -1657,7 +1667,7 @@ public class UploadTable implements Comparable<UploadTable>
             skipRow = false;
         }
     }
-
+    
     /**
      * Searches for matching record in database. If match is found it is set to be the current
      * record. If no match then a record is initialized and populated and written to the database.
@@ -1680,13 +1690,21 @@ public class UploadTable implements Comparable<UploadTable>
                         rec.initialize();
                         setFields(rec, seq);
                         setRequiredFldDefaults(rec);
-                        setParents(rec, recNum);
+                        boolean gotRequiredParents = setParents(rec, recNum);
                         setRelatedDefaults(rec, recNum);
                         finalizeWrite(rec, recNum);
                         if (!doNotWrite)
                         {
-                            doWrite(rec);
-                            uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow, recNum));
+                            if (!gotRequiredParents && hasChildren)
+                            {
+                                throw new UploaderException(UIRegistry.getResourceString("UPLOADER_MISSING_REQUIRED_DATA"), UploaderException.ABORT_ROW);
+                            }
+                            if (gotRequiredParents)
+                            {
+                                doWrite(rec);
+                                uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow,
+                                    recNum));
+                            }
                         }
                         setCurrentRecord(rec, recNum);
                         finishMatching(rec);
@@ -1756,7 +1774,7 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean needToWrite(int recNum)
     {
-        return dataToWrite(recNum) || (parentTables.size() > 0 && hasChildren);
+        return dataToWrite(recNum) || parentTables.size() > 0;
     }
 
     /**
