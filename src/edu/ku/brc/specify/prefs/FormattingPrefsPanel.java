@@ -430,6 +430,9 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                 
                 IconManager.aliasImages(item.first,           // Source
                                         "collectionobject");  // Dest //$NON-NLS-1$
+                IconManager.aliasImages(item.first,           // Source
+                                        "CollectionObject");  // Dest //$NON-NLS-1$
+
             }
             
             if (!UIHelper.isMacOS_10_5_X())

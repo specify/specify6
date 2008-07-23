@@ -161,6 +161,14 @@ public class IconEntry
         this.url = url;
     }
 
+   /**
+     * @param imageIcon the imageIcon to set
+     */
+    public void setIcon(ImageIcon imageIcon)
+    {
+        this.imageIcon = imageIcon;
+    }
+
 /**
     * @return
     */

@@ -709,6 +709,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         if (icon != null)
         {
             imgIcon = icon;
+            repaint();
         }
     }
     

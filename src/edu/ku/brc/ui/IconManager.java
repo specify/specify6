@@ -499,6 +499,7 @@ public class IconManager extends Component
             IconEntry aliasEntry = instance.defaultEntries.get(aliasName);
             if (entry != null)
             {
+                aliasEntry.setIcon(entry.getIcon());
                 aliasEntry.setIcons(entry.getIcons());
                 aliasEntry.setUrl(entry.getUrl());
                 aliasEntry.setSize(entry.getSize());
