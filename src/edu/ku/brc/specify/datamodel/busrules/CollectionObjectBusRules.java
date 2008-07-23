@@ -174,6 +174,39 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeDeleteCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session)
+            throws Exception
+    {
+        boolean ok = super.beforeDeleteCommit(dataObj, session);
+        
+        if (ok)
+        {
+            CollectionObject colObj = (CollectionObject)dataObj;
+            if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
+            {
+                CollectingEvent ce = colObj.getCollectingEvent();
+                if (ce != null)
+                {
+                    try
+                    {
+                        session.delete(ce);
+                        return true;
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                        return false;
+                    }
+                }
+            }
+        }
+        return ok;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
      */
     @Override

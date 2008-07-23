@@ -368,6 +368,33 @@
             </detailView>
         </table>
         
+        <table id="13" tableid="1" indexed="false" name="CEToCO" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="10" primary="true">collectingevent.CollectingEventID</join>
+                <!--  <join tableid="1">collectionobject.CollectionObjectID</join> -->
+            </joins>
+            <detailView icon="ColEvent">
+                <sql>
+                    <![CDATA[SELECT 
+ collectionobject.CollectionObjectID, 
+ collectionobject.CatalogNumber, 
+ collectingevent.StartDate, 
+ collectingevent.EndDate, 
+ %s 
+ From 
+ collectingevent
+ Inner Join collectionobject ON collectingevent.CollectingEventID = collectionobject.CollectingEventID
+ WHERE collectingevent.DisciplineID = DSPLNID AND %s order by StartDate]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                    <caption tableid="10" col="StartDate"/>
+                    <caption tableid="10" col="EndDate"/>
+                </captions>
+            </detailView>
+        </table>
+        
     </express>
     
     <!-- ************************************************* -->
