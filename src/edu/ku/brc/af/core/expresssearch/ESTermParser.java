@@ -149,6 +149,7 @@ public class ESTermParser
                         try
                         {
                             termStr = dbDateFormat.format(searchDate);
+                            stf.setTerm(termStr);
                             stf.setOption(SearchTermField.IS_DATE);
                             
                         } catch (Exception ex)
