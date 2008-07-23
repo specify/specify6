@@ -5007,31 +5007,34 @@ public class FormViewObj implements Viewable,
             tableInfo = DBTableIdMgr.getInstance().getByClassName(formViewDef.getClassName());
         }
         
-        for (String idStr : controlsById.keySet())
+        if (tableInfo != null)
         {
-            FVOFieldInfo fc  = controlsById.get(idStr);
-            if (StringUtils.isNotEmpty(fc.getName()))
+            for (String idStr : controlsById.keySet())
             {
-                final DBTableChildIFace tci = tableInfo.getItemByName(fc.getName());
-                if (tci != null && StringUtils.isNotEmpty(tci.getDescription()))
+                FVOFieldInfo fc  = controlsById.get(idStr);
+                if (StringUtils.isNotEmpty(fc.getName()))
                 {
-                    FVOFieldInfo lbl = labels.get(idStr);
-                    if (lbl != null)
+                    final DBTableChildIFace tci = tableInfo.getItemByName(fc.getName());
+                    if (tci != null && StringUtils.isNotEmpty(tci.getDescription()))
                     {
-                        lbl.getComp().addMouseListener(new MouseAdapter() {
-                            @Override
-                            public void mouseClicked(MouseEvent e)
-                            {
-                                super.mouseClicked(e);
-                                if (e.getClickCount() == 2)
+                        FVOFieldInfo lbl = labels.get(idStr);
+                        if (lbl != null)
+                        {
+                            lbl.getComp().addMouseListener(new MouseAdapter() {
+                                @Override
+                                public void mouseClicked(MouseEvent e)
                                 {
-                                    JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(),
-                                            tci.getDescription(), 
-                                            UIRegistry.getResourceString("FormViewObj.UNOTES"), 
-                                            JOptionPane.INFORMATION_MESSAGE);
+                                    super.mouseClicked(e);
+                                    if (e.getClickCount() == 2)
+                                    {
+                                        JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(),
+                                                tci.getDescription(), 
+                                                UIRegistry.getResourceString("FormViewObj.UNOTES"), 
+                                                JOptionPane.INFORMATION_MESSAGE);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
                 }
             }
