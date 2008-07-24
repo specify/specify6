@@ -73,13 +73,7 @@ public class QBReportInfoPanel extends JPanel
         }
         Collections.sort(sortedReps, new Comparator<SpReport>()
         {
-
-            /*
-             * (non-Javadoc)
-             * 
-             * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-             */
-            @Override
+            //@Override
             public int compare(SpReport o1, SpReport o2)
             {
                 return o1.toString().compareTo(o2.toString());
