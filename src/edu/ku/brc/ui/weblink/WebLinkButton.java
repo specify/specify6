@@ -408,7 +408,7 @@ public class WebLinkButton extends JPanel implements UIPluginable,
                 //System.out.println("|"+key+"|"+url);
             }
             
-            url = StringUtils.replace(url, "AMP", "&amp;"); //$NON-NLS-2$
+            url = StringUtils.replace(url, "AMP", "&"); //$NON-NLS-2$
             
             return url;
         }

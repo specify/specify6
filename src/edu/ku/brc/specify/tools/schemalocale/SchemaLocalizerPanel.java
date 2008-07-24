@@ -266,7 +266,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         JScrollPane tblsp = new JScrollPane(tablesList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
         // LocalizableNameDescIFace
-        fieldPanel = new FieldItemPanel(this, includeHiddenUI, true, isDBSchema, this);
+        fieldPanel = new FieldItemPanel(this, webLinkMgrCache, includeHiddenUI, true, isDBSchema, this);
         fieldPanel.setStatusBar(statusBar);
         fieldPanel.setLocalizableIO(localizableIO);
         
@@ -280,7 +280,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         
         if (useDisciplines)
         {
-            disciplineBasedPanel = new DisciplineBasedPanel(this);
+            disciplineBasedPanel = new DisciplineBasedPanel(this, webLinkMgrCache);
             pb.add(disciplineBasedPanel,    cc.xywh(1, 9, 3, 1));
         }
 

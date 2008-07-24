@@ -139,7 +139,9 @@ public class WebLinkEditorDlg extends CustomDialog
                 String        fName = wlda.getName();
                 if (tableInfo != null)
                 {
-                    wlda.setField(fieldInfoHash.get(fName) != null);
+                    boolean isField = fieldInfoHash.get(fName) != null;
+                    wlda.setField(isField);
+                    wlda.setPrompt(!isField);
                 }
                 if ( wlda.getTitle() != null)
                 {
@@ -512,6 +514,7 @@ public class WebLinkEditorDlg extends CustomDialog
                 if (fi != null)
                 {
                     arg.setField(true);
+                    arg.setPrompt(false);
                     arg.setTitle(fi.getTitle());
                 } else
                 {
@@ -631,6 +634,7 @@ public class WebLinkEditorDlg extends CustomDialog
                     arg.setTitle((String)value);
                     hasChanged = true;
                     break;
+                    
                 case 2 : 
                     arg.setPrompt((Boolean)value);
                     hasChanged = true;

@@ -139,6 +139,7 @@ import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.tools.FormDisplayer;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -384,6 +385,34 @@ public class Specify extends JPanel implements DatabaseLoginListener
             UIRegistry.setJavaDBDir(derbyPath);
             log.debug("JavaDB Path: "+UIRegistry.getJavaDBPath());
         }*/
+        
+        /////////////////////////////////////////////
+        // NOT FOR RELEASE
+        /////////////////////////////////////////////
+        String schemaKey = "schemaSize";
+        int    schemaFileSize = 0;
+        File schemaFile = XMLHelper.getConfigDir("specify_datamodel.xml");
+        if (schemaFile != null)
+        {
+            schemaFileSize = (int)schemaFile.length();
+        }
+        
+        Integer schemaSize = localPrefs.getInt(schemaKey, null);
+        if (schemaSize == null)
+        {
+            localPrefs.putInt(schemaKey, schemaFileSize);
+            
+        } else if (schemaFileSize != schemaSize)
+        {
+            localPrefs.putInt(schemaKey, schemaFileSize);
+            
+            BuildSampleDatabase builder = new BuildSampleDatabase();
+            builder.buildSetup(null);
+            return;
+        }
+        /////////////////////////////////////////////
+        // NOT FOR RELEASE
+        /////////////////////////////////////////////
         
         UsageTracker.incrUsageCount("RunCount"); //$NON-NLS-1$
         

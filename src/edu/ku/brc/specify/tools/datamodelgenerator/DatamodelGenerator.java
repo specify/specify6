@@ -54,7 +54,6 @@ import edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace;
 import edu.ku.brc.specify.tools.schemalocale.LocalizableStrIFace;
 import edu.ku.brc.specify.tools.schemalocale.LocalizerBasePanel;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
-import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.util.DatamodelHelper;
 

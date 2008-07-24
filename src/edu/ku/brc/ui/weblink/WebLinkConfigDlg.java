@@ -199,7 +199,7 @@ public class WebLinkConfigDlg extends CustomDialog
     protected void addWebLink()
     {
         WebLinkDef    wld = new WebLinkDef();
-        WebLinkEditorDlg dlg = new WebLinkEditorDlg(wld, tableInfo);
+        WebLinkEditorDlg dlg = new WebLinkEditorDlg(wld, isTableMode ? tableInfo : null);
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
@@ -255,7 +255,7 @@ public class WebLinkConfigDlg extends CustomDialog
     protected void editWebLink()
     {
         WebLinkDef    wld = (WebLinkDef)list.getSelectedValue();
-        WebLinkEditorDlg dlg = new WebLinkEditorDlg(wld, tableInfo);
+        WebLinkEditorDlg dlg = new WebLinkEditorDlg(wld, isTableMode ? tableInfo : null);
         dlg.setEdit(true);
         dlg.setVisible(true);
         

@@ -250,7 +250,7 @@ public class BuildSampleDatabase
     private static final Logger  log      = Logger.getLogger(BuildSampleDatabase.class);
     
     protected static boolean     debugOn  = false;
-    protected static final int   TIME_THRESHOLD = 20;
+    protected static final int   TIME_THRESHOLD = 30;
     protected static Hashtable<String, Boolean> fieldsToHideHash     = new Hashtable<String, Boolean>();
     protected static String                     catalogNumberFmtName = null;
 
@@ -6156,7 +6156,7 @@ public class BuildSampleDatabase
     /**
      * Creates the dialog to find out what database and what database driver to use. 
      */
-    protected void buildSetup(final String[] args)
+    public void buildSetup(final String[] args)
     {
         boolean doEmptyBuild = false;
         String  derbyPath    = null;
@@ -6198,7 +6198,10 @@ public class BuildSampleDatabase
             }
         }
         
-        UIRegistry.setAppName("Specify");
+        if (StringUtils.isEmpty(UIRegistry.getAppName()))
+        {
+            UIRegistry.setAppName("Specify");
+        }
         
         if (!wasJavaDBSet)
         {
@@ -6272,7 +6275,6 @@ public class BuildSampleDatabase
             };
             worker.start();
         }
-
     }
     
     /** 

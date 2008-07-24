@@ -47,6 +47,7 @@ import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
  * @author rods
@@ -74,13 +75,16 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
     protected SpLocaleContainerItem         currentBaselineItem      = null;
     protected SpLocaleContainerItem         currentItem              = null;
     protected DisciplineType                disciplineType           = null;
+    protected WebLinkMgr                    webLinkMgrCache          = null;
     
     /**
      * 
      */
-    public DisciplineBasedPanel(final SchemaLocalizerPanel schemaPanel)
+    public DisciplineBasedPanel(final SchemaLocalizerPanel schemaPanel,
+                                final WebLinkMgr webLinkMgrCache)
     {
         this.schemaPanel = schemaPanel;
+        this.webLinkMgrCache = webLinkMgrCache;
         
         for (DisciplineType disp : DisciplineType.getDisciplineList())
         {
@@ -155,7 +159,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
             
         });
         
-        fieldPanel = new FieldItemPanel(schemaPanel, true, true, true, null);
+        fieldPanel = new FieldItemPanel(schemaPanel, webLinkMgrCache, true, true, true, null);
         fieldPanel.setLocalizableIO(this);
         fieldPanel.setStatusBar(schemaPanel.getStatusBar());
         

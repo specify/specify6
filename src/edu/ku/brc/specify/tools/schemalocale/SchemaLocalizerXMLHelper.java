@@ -279,6 +279,9 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                             changesBuffer.append("<td align=\"center\">&nbsp;</td><td align=\"center\">");
                             changesBuffer.append(fi.getName());
                             changesBuffer.append("</td></tr>");
+                            
+                            item.setIsRequired(fi.isRequired());
+                            
                             container.addItem(item);
                         }
                         

@@ -109,6 +109,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
 
             
     protected LocalizableIOIFace        localizableIO = null;
+    protected WebLinkMgr                webLinkMgrCache;
+    
     
     protected SchemaLocalizerPanel      schemaPanel;
     
@@ -180,12 +182,14 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
      * 
      */
     public FieldItemPanel(final SchemaLocalizerPanel schemaPanel,
+                          final WebLinkMgr           webLinkMgrCache,
                           final boolean              includeHiddenUI, 
                           final boolean              includeFormatAndAutoNumUI, 
                           final boolean              isDBSchema,
                           final PropertyChangeListener pcl)
     {
         this.schemaPanel     = schemaPanel;
+        this.webLinkMgrCache = webLinkMgrCache;
         this.includeHiddenUI = includeHiddenUI;
         this.includeFormatAndAutoNumUI = includeFormatAndAutoNumUI;
         this.isDBSchema      = isDBSchema;
@@ -368,7 +372,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 public void actionPerformed(ActionEvent e)
                 {
                     WebLinkDef       selectedWL = (WebLinkDef)webLinkCombo.getSelectedItem();
-                    WebLinkConfigDlg dlg        = WebLinkMgr.getInstance().editWebLinks(tableInfo, false);
+                    WebLinkConfigDlg dlg        = webLinkMgrCache.editWebLinks(tableInfo, false);
                     if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                     {
                         formHasChanged();
@@ -498,6 +502,14 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             
         });
         
+        fieldReqChk.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e)
+            {
+                formHasChanged();
+            }
+            
+        });
+        
         DocumentListener dl = new DocumentListener() {
             public void changedUpdate(DocumentEvent e)
             {
@@ -605,7 +617,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         
         int fndInx = 0;
         int index  = 0;
-        for (WebLinkDef wld : WebLinkMgr.getInstance().getWebLinkDefs(null))
+        for (WebLinkDef wld : webLinkMgrCache.getWebLinkDefs(null))
         {
             model.addElement(wld);
             if (webLinkDef == wld)
@@ -646,7 +658,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             //if (wlModel.getSize() == 0)
             {
                 wlModel.addElement(webLinkDefNone);
-                for (WebLinkDef wld : WebLinkMgr.getInstance().getWebLinkDefs(null))
+                for (WebLinkDef wld : webLinkMgrCache.getWebLinkDefs(null))
                 {
                     wlModel.addElement(wld);
                 }
