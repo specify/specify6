@@ -663,13 +663,13 @@ public class ListSlider extends JPanel
     /**
      * @param b
      */
-    private void enableButtons(boolean b)
+    /*private void enableButtons(boolean b)
     {
         addButton.setEnabled(b);
         addAllButton.setEnabled(b);
         removeButton.setEnabled(b);
         removeAllButton.setEnabled(b);
-    }
+    }*/
 
     /**
      * @author megkumin
