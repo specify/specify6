@@ -863,7 +863,7 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="1" name="isPrimary" uitype="checkbox"/>
                 </row>
                 <row>
@@ -1281,7 +1281,7 @@
                 </row>
                  -->
                 <row>
-                	<cell type="label" labelfor="isAccepted"/>
+                	<cell type="label" label=" "/>
                 	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true" colspan="3"/>
                 </row>
                 <row>
@@ -1289,7 +1289,7 @@
                 	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="acceptedParent" colspan="3"/>
                 </row>
                 <row>
-                	<cell type="label" labelfor="isHybrid"/>
+                	<cell type="label" label=" "/>
                 	<cell type="field" id="isHybrid" uitype="checkbox" name="isHybrid" default="false" isrequired="true" colspan="3"/>
                 </row>
                 <row>
@@ -1365,7 +1365,7 @@
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
                 </row>
                 <row>
-                	<cell type="label" labelfor="isAccepted"/>
+                	<cell type="label" label=" "/>
                 	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true"/>
                 </row>
                 <row>
@@ -1418,7 +1418,7 @@
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
                 </row>
                 <!-- AshleyJohn Storeadd --><row>
-                	<cell type="label" labelfor="isAccepted"/>
+                	<cell type="label" label=" "/>
                 	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true"/>
                 </row>
                 <row>
@@ -1685,11 +1685,11 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
                 <!--
@@ -1730,7 +1730,7 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
             </rows>
@@ -1757,11 +1757,11 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
                 <!--
@@ -1802,7 +1802,7 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
             </rows>
@@ -1829,11 +1829,11 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
                 <!--
@@ -1874,7 +1874,7 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
             </rows>
@@ -1901,11 +1901,11 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
                 <!--
@@ -1946,7 +1946,7 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3"/>
+                    <cell type="label"  label=" "/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
             </rows>
@@ -1973,11 +1973,11 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
                 <!--
@@ -2018,7 +2018,7 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3"/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
             </rows>
