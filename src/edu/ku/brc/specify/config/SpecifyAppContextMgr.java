@@ -494,7 +494,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         UIHelper.centerWindow(colDlg);
                         colDlg.setVisible(true);
                         
-                    } while (colDlg.getSelectedObject() == null);
+                    } while (colDlg.getSelectedObject() == null || colDlg.isCancelled());
 
                     
                     collection = colDlg.getSelectedObject();
