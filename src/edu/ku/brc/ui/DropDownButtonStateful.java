@@ -61,6 +61,7 @@ public class DropDownButtonStateful extends DropDownButton
     protected int                      nxtInx        = 0;
     protected Dimension                preferredSize = null;
     protected boolean                  doAdvance     = true;
+    protected boolean                  doShowCurrent = true;
     
     protected List<JButton>            btns          = new Vector<JButton>();
     protected CardLayout               cardLayout    = new CardLayout();
@@ -142,6 +143,15 @@ public class DropDownButtonStateful extends DropDownButton
         }
 
         init(true);
+    }
+
+    /**
+     * Use this to set to false to the Next item instead of the current item.
+     * @param doShowCurrent the doShowCurrent to set
+     */
+    public void setDoShowCurrent(boolean doShowCurrent)
+    {
+        this.doShowCurrent = doShowCurrent;
     }
 
     /**
@@ -279,7 +289,7 @@ public class DropDownButtonStateful extends DropDownButton
     public void setCurrentIndex(final int index)
     {
         currInx = index;
-        nxtInx = doAdvance ? getNextIndex() : index;
+        nxtInx = doAdvance && !doShowCurrent ? getNextIndex() : index;
         cardLayout.show(cardPanel, Integer.toString(nxtInx));
 
     }
