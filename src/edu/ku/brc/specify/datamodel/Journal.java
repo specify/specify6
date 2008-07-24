@@ -64,6 +64,8 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
      protected Integer journalId;
      protected String  journalName;
      protected String  journalAbbreviation;
+     protected String  iSSN;
+     protected String  text1;
      protected String  guid;
      protected String  remarks;
      protected Set<ReferenceWork> referenceWorks;
@@ -72,7 +74,8 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
     // Constructors
 
     /** default constructor */
-    public Journal() {
+    public Journal() 
+    {
         //
     }
     
@@ -89,11 +92,13 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
     public void initialize()
     {
         super.init();
-        journalId = null;
+        journalId   = null;
         journalName = null;
         journalAbbreviation = null;
-        guid = null;
-        remarks = null;
+        guid        = null;
+        iSSN        = null;
+        text1       = null;
+        remarks     = null;
         referenceWorks = new HashSet<ReferenceWork>();
     }
     // End Initializer
@@ -174,6 +179,40 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
     public void setGuid(String guid)
     {
         this.guid = guid;
+    }
+
+    /**
+     * @return the iSSN
+     */
+    @Column(name = "ISSN", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
+    public String getISSN()
+    {
+        return iSSN;
+    }
+
+    /**
+     * @param issn the iSSN to set
+     */
+    public void setISSN(String issn)
+    {
+        iSSN = issn;
+    }
+
+    /**
+     * @return the text1
+     */
+    @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getText1()
+    {
+        return text1;
+    }
+
+    /**
+     * @param text1 the text1 to set
+     */
+    public void setText1(String text1)
+    {
+        this.text1 = text1;
     }
 
     /**

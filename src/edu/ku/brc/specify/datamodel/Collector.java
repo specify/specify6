@@ -68,6 +68,7 @@ public class Collector extends CollectionMember implements java.io.Serializable,
 
      protected Integer         collectorId;
      protected Integer         orderNumber;
+     protected Boolean         isPrimary;
      protected String          remarks;
      protected CollectingEvent collectingEvent;
      protected Agent           agent;
@@ -94,6 +95,7 @@ public class Collector extends CollectionMember implements java.io.Serializable,
         super.init();
         collectorId     = null;
         orderNumber     = null;
+        isPrimary       = true;
         remarks         = null;
         collectingEvent = null;
         agent           = null;
@@ -148,6 +150,23 @@ public class Collector extends CollectionMember implements java.io.Serializable,
     
     public void setOrderNumber(Integer orderNumber) {
         this.orderNumber = orderNumber;
+    }
+
+    /**
+     * @return the isPrimary
+     */
+    @Column(name = "IsPrimary", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsPrimary()
+    {
+        return isPrimary;
+    }
+
+    /**
+     * @param isPrimary the isPrimary to set
+     */
+    public void setIsPrimary(Boolean isPrimary)
+    {
+        this.isPrimary = isPrimary;
     }
 
     /**

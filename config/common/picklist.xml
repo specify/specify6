@@ -62,8 +62,11 @@
   </picklist>
   <picklist name="AgentVariant" issystem="true" type="0" readonly="true" sizelimit="-1">
     <items>
-      <picklistitem title="Vernacular" value="1"/>
       <picklistitem title="Variant" value="0"/>
+      <picklistitem title="Vernacular" value="1"/>
+      <picklistitem title="Author" value="2"/>
+      <picklistitem title="Author Abbrev." value="3"/>
+      <picklistitem title="Label Name" value="4"/>
     </items>
   </picklist>
   <picklist name="AccessionRole" issystem="true" type="0" readonly="true" sizelimit="5">

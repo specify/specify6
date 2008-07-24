@@ -43,8 +43,11 @@ import javax.persistence.Transient;
 @Table(name = "agentvariant")
 public class AgentVariant extends DataModelObjBase implements Serializable
 {
-    public static final Byte VARIANT    = 0;
-    public static final Byte VERNACULAR = 1;
+    public static final Byte VARIANT       = 0;
+    public static final Byte VERNACULAR    = 1;
+    public static final Byte AUTHOR        = 2;
+    public static final Byte AUTHOR_ABBREV = 3;
+    public static final Byte LABLELNAME    = 4;
     
     protected Integer            agentVariantId;
     protected Byte               varType;

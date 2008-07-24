@@ -61,6 +61,8 @@ public class Division extends DataModelObjBase implements java.io.Serializable
      protected String                   discipline;
      protected String                   description;
      protected String                   remarks;
+     protected Boolean                  isAccessionBound;  // Whether the Accession is bound to the Collection
+
      
      protected Address                  address;
      protected Institution              institution;
@@ -103,6 +105,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
         discipline          = null;
         description         = null;
         remarks             = null;
+        isAccessionBound    = true;
         members             = new HashSet<Agent>();
         conservDescriptions = new HashSet<ConservDescription>();
         loans               = new HashSet<Loan>();
@@ -170,6 +173,23 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     public String getName()
     {
         return name;
+    }
+
+    /**
+     * @return the isAccessionBound
+     */
+    @Column(name = "IsAccessionBound", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsAccessionBound()
+    {
+        return isAccessionBound;
+    }
+
+    /**
+     * @param isAccessionBound the isAccessionBound to set
+     */
+    public void setIsAccessionBound(Boolean isAccessionBound)
+    {
+        this.isAccessionBound = isAccessionBound;
     }
 
     /**

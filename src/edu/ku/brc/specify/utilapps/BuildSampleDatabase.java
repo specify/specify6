@@ -1206,6 +1206,7 @@ public class BuildSampleDatabase
         {
             persist(ce);
         }
+        
         persist(dataObjects);
         dataObjects.clear();
 
@@ -2431,6 +2432,10 @@ public class BuildSampleDatabase
             catNo++;
         }
         dataObjects.addAll(collObjs);
+        for (CollectingEvent ce : colEves)
+        {
+            persist(ce);
+        }
         
         persist(dataObjects);
         dataObjects.clear();
@@ -3469,6 +3474,10 @@ public class BuildSampleDatabase
             catNo++;
         }
         dataObjects.addAll(collObjs);
+        for (CollectingEvent ce : colEves)
+        {
+            persist(ce);
+        }
         
         persist(dataObjects);
         dataObjects.clear();

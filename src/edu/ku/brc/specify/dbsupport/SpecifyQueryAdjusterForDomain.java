@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
@@ -82,6 +83,19 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 criterion = COLMEMID;
                 
 
+            } else if (tableInfo.getTableId() == Accession.getClassTableId())
+            {
+                if (prefix.equals(""))
+                {
+                    prefix = "dv.";
+                }
+                else
+                {
+                    prefix = "dv" + prefix;
+                }
+                fld = isHQL ? "divisionId" : "DivisionID";
+                criterion = DIVID;
+                
             } else if (tableInfo.getRelationshipByName("discipline") != null)
             {
                 if (prefix.equals(""))
@@ -227,6 +241,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
         {
             join = "inner join ";
         }
+        
         if (tableInfo.getTableId() == Agent.getClassTableId())
         {
             if (isHQL)
@@ -238,6 +253,18 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
             }
             return join + "agent_discipline ON agent.AgentID = agent_discipline.AgentID";
+            
+        } else if (tableInfo.getTableId() == Accession.getClassTableId())
+        {
+            if (isHQL)
+            {
+                return join + alias + ".division as dv" + (aliasArg == null ? "" : alias);
+            }
+            if (aliasArg != null)
+            {
+                throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
+            }
+            return join;
             
         } else if (tableInfo.getRelationshipByName("discipline") != null)
         {
