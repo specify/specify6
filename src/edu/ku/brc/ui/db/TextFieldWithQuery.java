@@ -64,6 +64,7 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.ui.CustomDialog;
@@ -192,8 +193,14 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         StringBuilder sb = new StringBuilder();
         for (String k : keyColumns)
         {
+            String title = k;
+            DBFieldInfo fi = tableInfo.getFieldByName(k);
+            if (fi != null)
+            {
+                title = fi.getTitle();
+            }
             if (sb.length() > 0) sb.append(", ");
-            sb.append(k);
+            sb.append(title);
         }
         textField.setToolTipText(UIRegistry.getFormattedResStr("TFWQ_SEARCHES_FLDS", sb.toString()));
         

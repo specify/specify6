@@ -5,8 +5,6 @@ package edu.ku.brc.ui;
 
 import java.util.regex.Pattern;
 
-import javax.swing.JTable;
-
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
@@ -18,12 +16,14 @@ import edu.ku.brc.ui.tmanfe.SpreadSheet;
  */
 public class TableSearcher
 {
-    int                           initialRow;//         = -1;
-    int                           initialCol;//         = -1;
-    boolean                       isFirstPassOnTable;// = true;
-    protected static final Logger log                = Logger.getLogger(TableSearcher.class);
-    private SpreadSheet           table;
-    private SearchReplacePanel    findPanel;
+    protected static final Logger   log                = Logger.getLogger(TableSearcher.class);
+    
+    protected int                   initialRow;//         = -1;
+    protected int                   initialCol;//         = -1;
+    protected boolean               isFirstPassOnTable;// = true;
+    protected SpreadSheet           table;
+    protected SearchReplacePanel    findPanel;
+    
     /**
      * Constructor. 
      */
@@ -36,6 +36,13 @@ public class TableSearcher
         this.isFirstPassOnTable = true;
     }
     
+    /**
+     * @param prevRow
+     * @param prevColumn
+     * @param isSearchDown
+     * @param isWrapOn
+     * @return
+     */
     public int getNextRow(final int prevRow, 
                          final int prevColumn,
                          final boolean isSearchDown,
@@ -44,6 +51,13 @@ public class TableSearcher
         return getNewCellValue(prevRow, prevColumn,isSearchDown ,isWrapOn, true);
     }
     
+    /**
+     * @param prevRow
+     * @param prevColumn
+     * @param isSearchDown
+     * @param isWrapOn
+     * @return
+     */
     public int getNextColumn(final int prevRow, 
                             final int prevColumn,
                             final boolean isSearchDown,
@@ -51,6 +65,15 @@ public class TableSearcher
     {
         return getNewCellValue(prevRow, prevColumn,isSearchDown ,isWrapOn, false);
     }
+    
+    /**
+     * @param prevRow
+     * @param prevColumn
+     * @param isSearchDown
+     * @param isWrapOn
+     * @param returnRow
+     * @return
+     */
     private int getNewCellValue(final int prevRow, 
                                 final int prevColumn,
                                 final boolean isSearchDown,
@@ -94,6 +117,15 @@ public class TableSearcher
         return curCol;
     }
     
+    /**
+     * @param searchValue
+     * @param prevRow
+     * @param prevColumn
+     * @param isSearchDown
+     * @param isWrapOn
+     * @param isMatchCaseOn
+     * @return
+     */
     public TableSearcherCell findNext(final String searchValue,
                                       final int prevRow, 
                                       final int prevColumn, 
@@ -242,18 +274,19 @@ public class TableSearcher
     }
     
     /**
-     * @param searchString
+     * @param searchStringArg
      * @param myTable
      * @param row
      * @param col
      * @param isMatchCaseOn
      * @return
      */  
-    public TableSearcherCell checkCellForMatch (String searchString,
+    public TableSearcherCell checkCellForMatch (final String searchStringArg,
                                                 final int row, 
                                                 final int column, 
                                                 final boolean isMatchCaseOn)
     {
+        String searchString = searchStringArg;
         log.debug("checkCellForMatch() - Search value[" + searchString + "] ");
         log.debug("                       Current row[" + row + "] ");
         log.debug("                       Current col[" + column + "] ");
@@ -278,12 +311,21 @@ public class TableSearcher
         return new TableSearcherCell(-1, -1, false, null);
     }
     
-    private TableSearcherCell searchTableForValueBkwds(String searchString,
+    /**
+     * @param searchStringArg
+     * @param row
+     * @param column
+     * @param isMatchCaseOn
+     * @param isWrapOn
+     * @return
+     */
+    private TableSearcherCell searchTableForValueBkwds(final String searchStringArg,
                                                        final int row,
                                                        final int column,
                                                        final boolean isMatchCaseOn,
                                                        final boolean isWrapOn)
     {
+        String searchString = searchStringArg;
         int currentRow = row;
         int currentColumn = column; 
         int numOfCols = table.getColumnCount();
