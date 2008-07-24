@@ -16,6 +16,7 @@ package edu.ku.brc.af.auth.specify.permission;
 
 import java.security.BasicPermission;
 import java.security.Permission;
+import java.util.Arrays;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -39,7 +40,7 @@ import edu.ku.brc.ui.UIRegistry;
  * <ul>
  *   <li>Task.TaxonTreeTask</li>
  *   <li>Task.SecurityAdminTask</li>
- *   <li>Workbench.124</li>
+ *   <li>Obj.Workbench (permission id = record id)</li>
  * </ul>
  */
 
@@ -47,7 +48,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class BasicSpPermission extends BasicPermission
 {
     protected static final Logger log = Logger.getLogger(BasicSpPermission.class);
-    //private Integer id;
+    private Integer id;
     private String actions;
     public static String view   = "view"; //$NON-NLS-1$
     public static String modify = "modify"; //$NON-NLS-1$
@@ -56,6 +57,16 @@ public class BasicSpPermission extends BasicPermission
 
     /**
      * @param id
+     * @param name
+     * @param actions
+     */
+    public BasicSpPermission(final Integer id, final String name, final String actions)
+    {
+        super(name, actions);
+        this.id = id;
+    }
+    
+    /**
      * @param name
      * @param actions
      */
@@ -86,7 +97,23 @@ public class BasicSpPermission extends BasicPermission
     		return false;
     	}
 
-    	// TODO: now check if p implies this according to both permissions actions 
+    	// now check if p implies this according to both permissions actions
+    	String[] thisActions  = actions.split(",");
+    	String[] pActions     = p.getActions().split(",");
+    	for (String pAction : pActions)
+    	{
+    		boolean found = false;
+        	for (String action : thisActions)
+        	{
+        		if (action.equals(pAction))
+        		{
+        			found = true;
+        			break;
+        		}
+        	}
+        	if (!found)
+        		return false;
+    	}
     	return true;
     }
     
@@ -129,10 +156,15 @@ public class BasicSpPermission extends BasicPermission
         return buf.toString();
     }
 
-//    public Integer getId()
-//    {
-//        return id;
-//    }
+    public Integer getId()
+    {
+        return id;
+    }
+    
+    public void setId(Integer id)
+    {
+    	this.id = id;
+    }
 
     /**
      * @return the actions

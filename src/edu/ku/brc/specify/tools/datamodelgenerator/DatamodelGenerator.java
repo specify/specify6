@@ -1234,6 +1234,7 @@ public class DatamodelGenerator
                     if (!StringUtils.contains(fileName, "DataModelObjBase") && 
                         !StringUtils.contains(fileName, "CollectionMember") && 
                         !StringUtils.contains(fileName, "DisciplineMember") && 
+                        !StringUtils.contains(fileName, "UserGroupScope") && 
                         !StringUtils.contains(fileName, "Treeable") && 
                         !StringUtils.contains(fileName, "SpLocaleBase") && 
                         !StringUtils.contains(fileName.toLowerCase(), "iface") &&

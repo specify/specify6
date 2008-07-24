@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.af.auth.specify;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.security.Permission;
 import java.security.Principal;
@@ -34,8 +35,6 @@ import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * 
@@ -46,13 +45,50 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class SpecifySecurityMgr
 {
-    private static final Logger  log = Logger.getLogger(SpecifySecurityMgr.class);
+    private static final Logger log = Logger.getLogger(SpecifySecurityMgr.class);
+
+    public static final String factoryName = "edu.ku.brc.af.auth.specify.SpecifySecurityMgr";
 
     protected static final SpecifySecurityMgr instance = new SpecifySecurityMgr();
+    
+    protected boolean domFound = false;
+
+    protected String                                      localFileName   = null;
+    
+    protected static boolean                              doingLocal      = false;
     
     // XXX TODO SECURITY- make secure Specify Admin user and pwd
     public static final String embeddedSpecifyAppRootUser = "rods"; //$NON-NLS-1$
     public static final String embeddedSpecifyAppRootPwd = "rods"; //$NON-NLS-1$
+
+    public SpecifySecurityMgr()
+    {
+        localFileName = "backstop" + File.separator + "security.xml";
+    }
+    
+    /**
+     * @param localFileName the localFileName to set
+     */
+    public static void setLocalFileName(String localFileName)
+    {
+        getInstance().localFileName = localFileName;
+    }
+
+    /**
+     * @return the localFileName
+     */
+    public static String getLocalFileName()
+    {
+        return getInstance().localFileName;
+    }
+
+    /**
+     * @param doLocal the doLocal to set
+     */
+    public static void setDoingLocal(boolean doLocal)
+    {
+        doingLocal = doLocal;
+    }
 
     /** 
      * 
@@ -248,5 +284,4 @@ public class SpecifySecurityMgr
 
         return false;
     }
-
 }

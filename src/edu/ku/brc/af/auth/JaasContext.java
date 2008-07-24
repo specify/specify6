@@ -78,7 +78,7 @@ public class JaasContext
      */
     public boolean jaasLogin(String user, String pass, String url, String driver)
     {
-    	if (1==1) return true;
+    	//if (1==1) return true;
     	
         JaasContext.url = url;
         JaasContext.driver = driver;

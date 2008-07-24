@@ -21,8 +21,6 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -46,13 +44,12 @@ import edu.ku.brc.af.core.AppContextMgr;
 @org.hibernate.annotations.Table(appliesTo="collection", indexes =
     {   @Index (name="CollectionNameIDX", columnNames={"CollectionName"})
     })
-public class Collection extends DataModelObjBase implements java.io.Serializable, Comparable<Collection>
+public class Collection extends UserGroupScope implements java.io.Serializable, Comparable<Collection>
 {
     protected static Collection    currentCollection    = null;
     protected static List<Integer> currentCollectionIds = null;
     
     // Fields
-    protected Integer                    collectionId;
     protected String                     collectionName;
     protected String                     collectionPrefix; // Collection Acronym
     protected Boolean                    isEmbeddedCollectingEvent;
@@ -97,7 +94,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     /** constructor with id */
     public Collection(Integer collectionId) 
     {
-        this.collectionId = collectionId;
+        super(collectionId);
     }
 
     // Initializer
@@ -105,7 +102,6 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     public void initialize()
     {
         super.init();
-        collectionId           = null;
         collectionName         = null;
         collectionPrefix       = null;
         isEmbeddedCollectingEvent = true;
@@ -138,12 +134,9 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     /**
      *      * Primary key
      */
-    @Id
-    @GeneratedValue
-    @Column(name = "CollectionID", unique = false, nullable = false, insertable = true, updatable = true)
     public Integer getCollectionId() 
     {
-        return this.collectionId;
+        return getUserGroupScopeId();
     }
 
     /**
@@ -154,7 +147,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     @Override
     public Integer getId()
     {
-        return this.collectionId;
+        return getUserGroupScopeId();
     }
 
     /* (non-Javadoc)
@@ -168,7 +161,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     }
 
     public void setCollectionId(Integer collectionId) {
-        this.collectionId = collectionId;
+    	setUserGroupScopeId(collectionId);
     }
 
 //    /**

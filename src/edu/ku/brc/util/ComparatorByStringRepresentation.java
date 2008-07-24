@@ -30,8 +30,28 @@ import java.util.Comparator;
 
 public class ComparatorByStringRepresentation<T> implements Comparator<T>
 {
+	protected boolean ignoreCase;
+	
+	public ComparatorByStringRepresentation()
+	{
+		this(false);
+	}
+	
+	public ComparatorByStringRepresentation(boolean ignoreCase)
+	{
+		this.ignoreCase = ignoreCase;
+	}
+	
     public int compare(T o1, T o2)
     {
-        return o1.toString().compareTo(o2.toString());
+    	int result;
+    	if (ignoreCase)
+    	{
+            result = o1.toString().compareToIgnoreCase(o2.toString());
+            return result;
+    	}
+    	
+    	result = o1.toString().compareTo(o2.toString());
+        return result;
     }
 }

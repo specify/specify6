@@ -42,7 +42,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.security.auth.Subject;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 
 /**
@@ -53,8 +55,11 @@ import org.hibernate.annotations.Cascade;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "specifyuser")
-public class SpecifyUser extends DataModelObjBase implements java.io.Serializable
+public class SpecifyUser extends DataModelObjBase implements java.io.Serializable, Comparable<SpecifyUser>
 {
+    protected static SpecifyUser      currentUser = null;
+    protected static Subject          currentSubject = null;
+
     // Fields
     protected Integer                   specifyUserId;
     protected String                    name;
@@ -527,4 +532,28 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         if (name != null) return name;
         return super.getIdentityTitle();       
     }
+    
+    //----------------------------------------------------------------------
+    //-- Comparable Interface
+    //----------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(SpecifyUser obj)
+    {
+        if (name != null && obj != null && StringUtils.isNotEmpty(obj.name))
+        {
+            return name.compareTo(obj.name);
+        }
+
+        if (this.email != null && obj != null && StringUtils.isNotEmpty(obj.email))
+        {
+            return email.compareTo(obj.email);
+        }
+        
+        // else
+        return timestampCreated.compareTo(obj.timestampCreated);
+    }
+
 }

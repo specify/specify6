@@ -54,7 +54,6 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;

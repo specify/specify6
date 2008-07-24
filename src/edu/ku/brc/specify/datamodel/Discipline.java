@@ -36,8 +36,6 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -64,10 +62,9 @@ import edu.ku.brc.specify.config.DisciplineType;
 @org.hibernate.annotations.Table(appliesTo="discipline", indexes =
     {   @Index (name="DisciplineNameIDX", columnNames={"Name"})
     })
-public class Discipline extends DataModelObjBase implements java.io.Serializable, Comparable<Discipline>
+public class Discipline extends UserGroupScope implements java.io.Serializable, Comparable<Discipline>
 {
     // Fields
-    protected Integer                   disciplineId;
     protected String                    name;
     protected String                    title;
     protected DataType                  dataType;
@@ -99,7 +96,7 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
 
     /** constructor with id */
     public Discipline(Integer disciplineId) {
-        this.disciplineId = disciplineId;
+        super(disciplineId);
     }
 
     /**
@@ -124,7 +121,6 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
     {
         super.init();
         
-        disciplineId          = null;
         name                  = null;
         title                 = null;
         dataType              = null;
@@ -150,11 +146,8 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
     /**
      *
      */
-    @Id
-    @GeneratedValue
-    @Column(name="DisciplineID")
     public Integer getDisciplineId() {
-        return this.disciplineId;
+        return getUserGroupScopeId();
     }
 
     /**
@@ -165,7 +158,7 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
     @Override
     public Integer getId()
     {
-        return this.disciplineId;
+        return getUserGroupScopeId();
     }
 
     /* (non-Javadoc)
@@ -179,7 +172,7 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
     }
 
     public void setDisciplineId(Integer disciplineId) {
-        this.disciplineId = disciplineId;
+    	setUserGroupScopeId(disciplineId);
     }
 
     /**

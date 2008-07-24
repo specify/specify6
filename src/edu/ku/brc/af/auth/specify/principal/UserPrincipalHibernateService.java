@@ -49,6 +49,31 @@ public class UserPrincipalHibernateService
         // TODO Auto-generated constructor stub
     }
 
+    static public SpPrincipal getUserPrincipalBySpecifyUser(SpecifyUser user)
+    {
+        DataProviderSessionIFace session = null;
+        SpPrincipal principal = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            final List<?> lister = session.getDataList("FROM SpPrincipal " +
+            		"WHERE GroupSubClass='" + UserPrincipal.class.getCanonicalName() + "' AND " +
+            		"Name='" + user.getName() + "'");
+            principal = (SpPrincipal)lister.get(0);
+        } catch (final Exception e1)
+        {
+            log.error("Exception caught: " + e1.toString());
+            e1.printStackTrace();
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+        return principal;
+    }
+    
     static public SpecifyUser getUserByName(String name)
     {
         DataProviderSessionIFace session = null;

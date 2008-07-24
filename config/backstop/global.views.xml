@@ -25,7 +25,7 @@
                 <altview name="AgentVariant Table Edit" viewdef="AgentVariant Table"    label="Table Edit" mode="edit"/>
             </altviews>
         </view>
-        
+
         <view name="Determination"
             class="edu.ku.brc.specify.datamodel.Determination"
             busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationBusRules"

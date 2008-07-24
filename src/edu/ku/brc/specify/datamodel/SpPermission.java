@@ -11,6 +11,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
+
 @SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
@@ -22,6 +24,7 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	protected String permissionClass;
 	protected String name;
 	protected String actions;
+	protected Integer targetId;
 	protected Set<SpPrincipal> principals;
 
 	// Constructors
@@ -108,6 +111,17 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 		this.name = name;
 	}
 
+	@Column(name = "TargetId", unique = false, nullable = true, insertable = true, updatable = true)
+	public Integer getTargetId()
+	{
+		return this.targetId;
+	}
+
+	public void setTargetId(Integer targetId)
+	{
+		this.targetId = targetId;
+	}
+
 	/**
 	 *
 	 */
@@ -185,5 +199,76 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	public void setPrincipals(Set<SpPrincipal> principals)
 	{
 		this.principals = principals;
+	}
+
+	public String toString()
+	{
+		return name; 
+	}
+	
+	public boolean equals(SpPermission other)
+	{
+		if (permissionId == null)
+			return super.equals(other);
+		
+		return permissionId.equals(other.permissionId);
+	}
+	
+	// helper methods to parse actions
+	public boolean canView()
+	{
+		return (actions != null) && (actions.indexOf("view") >= 0);
+	}
+
+	public boolean canAdd()
+	{
+		return (actions != null) && (actions.indexOf("add") >= 0);
+	}
+
+	public boolean canModify()
+	{
+		return (actions != null) && (actions.indexOf("modify") >= 0);
+	}
+
+	public boolean canDelete()
+	{
+		return (actions != null) && (actions.indexOf("delete") >= 0);
+	}
+	
+	public boolean hasSameFlags(boolean canView, boolean canAdd, boolean canModify, boolean canDelete)
+	{
+		return 	(canView   == canView())   &&
+				(canAdd    == canAdd())    &&
+				(canModify == canModify()) &&
+				(canDelete == canDelete());
+	}
+	
+	public void setActions(boolean canView, boolean canAdd, boolean canModify, boolean canDelete)
+	{
+		actions = "";
+		String sep = "";
+		if (canView)
+		{
+			actions += "view";
+			sep = ",";
+		}
+		
+		if (canAdd)
+		{
+			actions += sep + "add";
+			sep = ",";
+		}
+
+		if (canModify)
+		{
+			actions += sep + "modify";
+			sep = ",";
+		}
+
+		if (canDelete)
+		{
+			actions += sep + "delete";
+			sep = ",";
+		}
 	}
 }

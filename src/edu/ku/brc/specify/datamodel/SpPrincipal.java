@@ -31,6 +31,7 @@ package edu.ku.brc.specify.datamodel;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,10 +42,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 
 /**
@@ -55,15 +58,16 @@ import org.hibernate.annotations.Cascade;
 @org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "spprincipal")
-public class SpPrincipal implements java.io.Serializable, Principal
+public class SpPrincipal extends DataModelObjBase implements java.io.Serializable, Principal, Comparable<SpPrincipal>
 {
-
 	// Fields
 
 	protected Integer spUserGroupId;
 	protected String name;
+    protected String groupType;
 	protected String remarks;
 	protected String groupSubClass;
+	protected UserGroupScope scope;
 	protected Set<SpecifyUser> specifyUsers;
 	protected Set<RecordSet> recordsets;
 	private   Set<Workbench> workbenches;
@@ -87,11 +91,12 @@ public class SpPrincipal implements java.io.Serializable, Principal
 	//@Override
 	public void initialize()
 	{
-		//super.init();
+		super.init();
 		spUserGroupId = null;
 		name = null;
 		remarks = null;
 		groupSubClass = null;
+		scope = null;
 		specifyUsers = new HashSet<SpecifyUser>();
 		recordsets = new HashSet<RecordSet>();
 		workbenches = new HashSet<Workbench>();
@@ -155,7 +160,7 @@ public class SpPrincipal implements java.io.Serializable, Principal
 	/**
 	 *
 	 */
-	@Column(name = "Name", unique = true, nullable = false, insertable = true, updatable = true, length = 64)
+	@Column(name = "Name", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -259,7 +264,7 @@ public class SpPrincipal implements java.io.Serializable, Principal
 	 */
 	public static int getClassTableId()
 	{
-		return 78;
+		return 522;
 	}
 
 	/* (non-Javadoc)
@@ -346,4 +351,42 @@ public class SpPrincipal implements java.io.Serializable, Principal
 	{
 		this.permissions = permissions;
 	}
+
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "userGroupScopeID", unique = false, nullable = true, insertable = true, updatable = true)
+	public UserGroupScope getScope() {
+		return scope;
+	}
+
+	public void setScope(UserGroupScope scope) {
+		this.scope = scope;
+	}
+
+    @Column(name = "groupType", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+	public String getGroupType() {
+		return groupType;
+	}
+
+	public void setGroupType(String groupType) {
+		this.groupType = groupType;
+	}
+	
+    //----------------------------------------------------------------------
+    //-- Comparable Interface
+    //----------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(SpPrincipal obj)
+    {
+        if (name != null && obj != null && StringUtils.isNotEmpty(obj.name))
+        {
+            return name.compareTo(obj.name);
+        }
+        
+        // else
+        return timestampCreated.compareTo(obj.timestampCreated);
+    }
 }
+

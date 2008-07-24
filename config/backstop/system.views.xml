@@ -76,6 +76,37 @@
             </altviews>
         </view>
         
+        <view name="DisciplineWithoutCollections"
+            class="edu.ku.brc.specify.datamodel.Discipline"
+            busrules="edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules"
+            resourcelabels="false">
+            <desc><![CDATA[The Discipline Object form without collections subform.]]></desc>
+            <altviews>
+                <altview name="Discipline Edit View" viewdef="DisciplineWithoutCollections" label="View" mode="view" validated="false"/>
+                <altview name="Discipline Edit" viewdef="DisciplineWithoutCollections" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+
+        <view name="UserGroup"
+            class="edu.ku.brc.specify.datamodel.SpPrincipal"
+            resourcelabels="false">
+            <desc><![CDATA[User Group form.]]></desc>
+            <altviews defaultmode="view">
+                <altview name="User Group View"        title="User Group"        viewdef="User Group"        label="View" mode="view" validated="false"/>
+                <altview name="User Group Edit"        title="User Group"        viewdef="User Group"        label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+
+        <view name="User"
+            class="edu.ku.brc.specify.datamodel.SpecifyUser"
+            resourcelabels="false">
+            <desc><![CDATA[User form.]]></desc>
+            <altviews defaultmode="view">
+                <altview name="User View"        title="User"        viewdef="User"        label="View" mode="view" validated="false"/>
+                <altview name="User Edit"        title="User"        viewdef="User"        label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+
         <view name="CatalogNumberingScheme"
             class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
             busrules="edu.ku.brc.specify.datamodel.busrules.CatalogNumberingSchemeBusRules"
@@ -98,6 +129,16 @@
             </altviews>
         </view>
         
+        <view name="Institution"
+            class="edu.ku.brc.specify.datamodel.Institution"
+            resourcelabels="false">
+            <desc><![CDATA[The Institution Object form.]]></desc>
+            <altviews>
+                <altview name="Institution View" viewdef="Institution" label="View" mode="view" validated="false"/>
+                <altview name="Institution Edit" viewdef="Institution" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+
         <view name="ViewProps"
             class="edu.ku.brc.specify.datamodel.ViewIFace"
             resourcelabels="false">
@@ -361,6 +402,40 @@
         
         <viewdef
             type="form"
+            name="DisciplineWithoutCollections"
+            class="edu.ku.brc.specify.datamodel.Discipline"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Discipline Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>            
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Discipline" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Data Type"/>
+                    <cell type="field" id="2" name="dataType" uitype="combobox" picklist="DataType" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Title"/>
+                    <cell type="field" id="3" name="title" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="GTP Tree Def"/>
+                    <cell type="field" id="4" name="geologicTimePeriodTreeDef" uitype="combobox" picklist="GeologicTimePeriodTreeDef" isrequired="true"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
             name="Collection"
             class="edu.ku.brc.specify.datamodel.Collection"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
@@ -402,6 +477,116 @@
             </rows>
         </viewdef>
         
+        <viewdef
+            type="form"
+            name="Institution"
+            class="edu.ku.brc.specify.datamodel.Institution"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Institution Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>            
+
+            <rows>
+                <row>
+                    <cell type="separator" label="Institution" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="40" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Title"/>
+                    <cell type="field" id="2" name="title" uitype="text" cols="40" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Abbreviation"/>
+                    <cell type="field" id="3" name="abbrev" uitype="text"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Intellectual Property Rights"/>
+                    <cell type="field" id="4" name="ipr" uitype="textarea" cols="40" rows="5" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Copyright"/>
+                    <cell type="field" id="5" name="copyright" uitype="textarea" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Terms Of Use"/>
+                    <cell type="field" id="6" name="termsOfUse" uitype="textarea" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Disclaimer"/>
+                    <cell type="field" id="7" name="disclaimer" uitype="textarea" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8" label="Remarks"/>
+                    <cell type="field" id="8" name="remarks" uitype="textarea" colspan="2"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="User Group"
+            class="edu.ku.brc.specify.datamodel.SpPrincipal"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[User Group Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>            
+
+            <rows>
+                <row>
+                    <cell type="separator" label="User Group" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="40" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea" cols="40" colspan="2"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="User"
+            class="edu.ku.brc.specify.datamodel.SpecifyUser"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[User Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>            
+
+            <rows>
+                <row>
+                    <cell type="separator" label="User" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="40" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Email"/>
+                    <cell type="field" id="2" name="email" uitype="text" cols="40" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Password"/>
+                    <cell type="field" id="3" name="password" uitype="password" cols="15"/> 
+                </row>
+                <!--row>
+                    <cell type="label" labelfor="4" label="Retype Password"/>
+                    <cell type="field" id="4" name="password" uitype="text" cols="15"/>
+                </row-->
+            </rows>
+        </viewdef>
+
         <viewdef type="form"
             name="CatalogNumberingScheme"
             class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"

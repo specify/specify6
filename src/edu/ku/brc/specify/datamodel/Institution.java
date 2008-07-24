@@ -20,8 +20,6 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -44,7 +42,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="institution", indexes =
     {   @Index (name="InstNameIDX", columnNames={"Name"})
     })
-public class Institution extends DataModelObjBase implements java.io.Serializable 
+public class Institution extends UserGroupScope implements java.io.Serializable 
 {
 
     // Fields    
@@ -79,7 +77,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
     /** constructor with id */
     public Institution(Integer institutionId) 
     {
-        this.institutionId = institutionId;
+        super(institutionId);
     }
    
     // Initializer
@@ -88,7 +86,6 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
     {
         super.init();
         
-        institutionId     = null;
         name              = null;
         title             = null;
         abbrev            = null;
@@ -110,12 +107,9 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
     /**
      * @return the institutionId
      */
-    @Id
-    @GeneratedValue
-    @Column(name = "InstitutionID", unique = false, nullable = false, insertable = true, updatable = true)
     public Integer getInstitutionId()
     {
-        return institutionId;
+        return getUserGroupScopeId();
     }
 
     /* (non-Javadoc)
@@ -125,7 +119,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
     @Transient
     public Integer getId()
     {
-        return institutionId;
+        return getUserGroupScopeId();
     }
     
     /**
@@ -319,7 +313,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
      */
     public void setInstitutionId(Integer institutionId)
     {
-        this.institutionId = institutionId;
+    	setUserGroupScopeId(institutionId);
     }
 
     /**

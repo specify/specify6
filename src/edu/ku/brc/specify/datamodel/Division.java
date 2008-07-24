@@ -20,8 +20,6 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -49,10 +47,9 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="division", indexes =
     {   @Index (name="DivisionNameIDX", columnNames={"Name"})
     })
-public class Division extends DataModelObjBase implements java.io.Serializable 
+public class Division extends UserGroupScope implements java.io.Serializable, Comparable<Division> 
 {
     // Fields    
-     protected Integer                  divisionId;
      protected String                   name;
      protected String                   title;
      protected String                   abbrev;
@@ -87,16 +84,37 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     /** constructor with id */
     public Division(Integer divisionId) 
     {
-        this.divisionId = divisionId;
+        super(divisionId);
     }
    
+    //----------------------------------------------------------------------
+    //-- Comparable Interface
+    //----------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Division obj)
+    {
+        if (title != null && obj != null && StringUtils.isNotEmpty(obj.title))
+        {
+            return title.compareTo(obj.title);
+        }
+        
+        if (name != null && obj != null && StringUtils.isNotEmpty(obj.name))
+        {
+            return name.compareTo(obj.name);
+        }
+        // else
+        return timestampCreated.compareTo(obj.timestampCreated);
+    }
+
     // Initializer
     @Override
     public void initialize()
     {
         super.init();
         
-        divisionId          = null;
         name                = null;
         title               = null;
         abbrev              = null;
@@ -120,12 +138,9 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     /**
      * @return the divisionId
      */
-    @Id
-    @GeneratedValue
-    @Column(name = "DivisionID", unique = false, nullable = false, insertable = true, updatable = true)
     public Integer getDivisionId()
     {
-        return divisionId;
+        return getUserGroupScopeId();
     }
 
     /* (non-Javadoc)
@@ -135,7 +150,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     @Transient
     public Integer getId()
     {
-        return divisionId;
+        return getUserGroupScopeId();
     }
     
     /**
@@ -332,7 +347,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
      */
     public void setDivisionId(Integer divisionId)
     {
-        this.divisionId = divisionId;
+    	setUserGroupScopeId(divisionId);
     }
 
     /**

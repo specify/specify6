@@ -30,7 +30,6 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createDataType;
 import static edu.ku.brc.specify.config.init.DataBuilder.createDetermination;
 import static edu.ku.brc.specify.config.init.DataBuilder.createDeterminationStatus;
 import static edu.ku.brc.specify.config.init.DataBuilder.createDiscipline;
-import static edu.ku.brc.specify.config.init.DataBuilder.createDisciplineGroup;
 import static edu.ku.brc.specify.config.init.DataBuilder.createDivision;
 import static edu.ku.brc.specify.config.init.DataBuilder.createGeography;
 import static edu.ku.brc.specify.config.init.DataBuilder.createGeographyChildren;
@@ -375,15 +374,17 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-
+        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
+        
         Institution    institution    = createInstitution(config.getInstName());
         Division       division       = createDivision(institution, config.getDiscipline().getName(), config.getDivName(), config.getDivAbbrev(), config.getDivTitle());
+
+        DataBuilder.createStandardGroups(groups, institution);
         
         Agent            userAgent        = createAgent(config.getLastName(), config.getFirstName(), "", config.getLastName(), "", config.getEmail());
 
-        SpPrincipal admin = createAdminPrincipal("Administrator");
-        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
-        groups.add(admin);
+        //SpPrincipal admin = createAdminPrincipal("Administrator", institution);
+        //groups.add(admin);
         
         
         institution.setTitle(config.getInstTitle());
@@ -392,7 +393,6 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
 
         startTx();
-        //persist(groups);
         persist(institution);
         persist(division);
         
@@ -432,11 +432,9 @@ public class BuildSampleDatabase
                                                  lithoStratTreeDef);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
-        SpPrincipal disciplineGroup = DataBuilder.createDisciplineGroup(discipline);
-        groups.add(disciplineGroup);
+        DataBuilder.createStandardGroups(groups, discipline);
         
         persist(discipline);
-        persist(groups);
         persist(userAgent);
         
         frame.setDesc("Localizing Schema...");
@@ -459,10 +457,15 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
 
         Collection collection = createCollection(config.getCollectionPrefix(), config.getCollectionName(), cns, discipline);
-        persist(collection);
+
+        DataBuilder.createStandardGroups(groups, collection);
         
+        persist(collection);
+
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
+        persist(groups);
+        
         frame.setDesc("Commiting...");
         frame.setProcess(++createStep);
         commitTx();
@@ -774,8 +777,7 @@ public class BuildSampleDatabase
         List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
         
         
-        SpPrincipal disciplineGroup = createDisciplineGroup(discipline);
-        groups.add(disciplineGroup);
+        DataBuilder.createStandardGroups(groups, discipline);
         
         persist(division);
         persist(discipline);
@@ -808,6 +810,8 @@ public class BuildSampleDatabase
         
         discipline.addReference(userAgent, "agents");
         user.addReference(userAgent, "agents");
+        
+        SpPrincipal disciplineGroup = DataBuilder.findGroup(groups, discipline, "Guest");
         user.addUserToSpPrincipalGroup(disciplineGroup);
         
         persist(userAgent);
@@ -822,8 +826,6 @@ public class BuildSampleDatabase
         SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(botonyUser);
         groups.add(userPrincipal);
         botonyUser.addUserToSpPrincipalGroup(userPrincipal);
-        
-        persist(groups);
         
         persist(discipline);
         persist(botonyUserAgent);
@@ -842,8 +844,12 @@ public class BuildSampleDatabase
         Collection collection = createCollection("KUBOT", "Botany", cns, discipline);
         persist(collection);
         
+        DataBuilder.createStandardGroups(groups, collection);
+
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
+        persist(groups);
+        
         commitTx();
         
         makeFieldVisible(null, discipline);
@@ -1981,12 +1987,12 @@ public class BuildSampleDatabase
                                                              locTreeDef, lithoStratTreeDef);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
-        //List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
-        SpPrincipal disciplineGroup = DataBuilder.createDisciplineGroup(discipline);
-        //groups.add(disciplineGroup);   
-        
         List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
-        groups.add(disciplineGroup);
+
+        //List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
+        DataBuilder.createStandardGroups(groups, discipline);
+        SpPrincipal disciplineGroup = DataBuilder.findGroup(groups, discipline, "CollectionManager");
+        //groups.add(disciplineGroup);   
         
         persist(division);
         persist(discipline);
@@ -2034,7 +2040,6 @@ public class BuildSampleDatabase
         
         persist(invertPaleoUserAgent);
         persist(invertPaleoUser);
-        persist(groups);
         persist(discipline);
         persist(userAgent);
         persist(user);
@@ -2061,8 +2066,12 @@ public class BuildSampleDatabase
         Collection collection = createCollection("KUIVP", disciplineType.getTitle(), cns, discipline);
         persist(collection);
         
+        DataBuilder.createStandardGroups(groups, collection);
+
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
+        persist(groups);
+        
         commitTx();
         
         makeFieldVisible(null, discipline);
@@ -3030,10 +3039,13 @@ public class BuildSampleDatabase
                                                              dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, 
                                                              locTreeDef, lithoStratTreeDef);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
-        SpPrincipal disciplineGroup = DataBuilder.createDisciplineGroup(discipline); 
+
+        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
+        DataBuilder.createStandardGroups(groups, discipline);
+        SpPrincipal disciplineGroup = DataBuilder.findGroup(groups, discipline, "CollectionManager");
+
         persist(division);
         persist(discipline);
-        persist(disciplineGroup);
 
         loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
 
@@ -3081,7 +3093,11 @@ public class BuildSampleDatabase
         Collection collection = createCollection("KU", disciplineType.getTitle(), cns, discipline, disciplineType.isEmbeddedCollecingEvent());
         persist(collection);
         
+        DataBuilder.createStandardGroups(groups, collection);
+
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+
+        persist(groups);
 
         commitTx();
         
@@ -4074,12 +4090,11 @@ public class BuildSampleDatabase
         System.out.println("Email:     "+email);
         System.out.println("UserType:  "+userType);
         
-        SpPrincipal disciplineGroup = DataBuilder.createDisciplineGroup(discipline);
-        //persist(disciplineGroup);
-        
         List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
-        groups.add(disciplineGroup);
 
+        DataBuilder.createStandardGroups(groups, discipline);
+        SpPrincipal disciplineGroup = DataBuilder.findGroup(groups, discipline, "CollectionManager");
+        //persist(disciplineGroup);
         
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
         userAgent.setDivision(division);
@@ -4296,7 +4311,12 @@ public class BuildSampleDatabase
         Collection collection = createCollection(colPrefix, colName, cns, discipline, false);
         persist(collection);
         
+        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
+        DataBuilder.createStandardGroups(groups, collection);
+
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+        
+        persist(groups);
         
         ////////////////////////////////
         // picklists
@@ -5352,7 +5372,7 @@ public class BuildSampleDatabase
 //        SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(user);
 //        groups.add(userPrincipal);
         
-        SpPrincipal admin = createAdminPrincipal("Administrator");
+        SpPrincipal admin = createAdminPrincipal("Administrator", institution);
         groups.add(admin);
         user.addUserToSpPrincipalGroup(admin);
         

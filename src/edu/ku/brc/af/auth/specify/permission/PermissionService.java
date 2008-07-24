@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -25,8 +26,8 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.auth.specify.policy.DatabaseService;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
-import edu.ku.brc.ui.UIRegistry;
 
 public class PermissionService
 {
@@ -108,7 +109,35 @@ public class PermissionService
         return permissions;
     }
     
-
+    static public Hashtable<String, SpPermission> getExistingPermissions(Integer principalId)
+    {
+    	Hashtable<String, SpPermission> hash = new Hashtable<String, SpPermission>();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+        	List<?> perms = session.getDataList("FROM SpPermission as pm " +
+        			"INNER JOIN pm.principals as pc " + 
+        			"WHERE pc.id = " + principalId);
+        	for (Object permObj : perms)
+        	{
+        		Object[] permObjArr = (Object[]) permObj;
+        		SpPermission perm = (SpPermission) permObjArr[0];
+        		hash.put(perm.getName(), perm);
+        	}
+        }
+        catch (Exception e)
+        {
+        	e.printStackTrace();
+        }
+        finally
+        {
+        	session.close();
+        }
+        
+        return hash;
+    }
+    
+    
     /**
      * @param principalId
      * @return

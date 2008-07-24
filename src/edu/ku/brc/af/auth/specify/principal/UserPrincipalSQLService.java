@@ -46,6 +46,50 @@ public class UserPrincipalSQLService
     {
     }
 
+    /**
+     * Retrieves the SpecifyUser ID of a given user principal 
+     */
+    static public int getSpecifyUserId(SpPrincipal principal)
+    {
+    	int result = -1; 
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try
+        {
+            conn = DatabaseService.getInstance().getConnection();
+            if (conn != null)
+            {
+                pstmt = conn.prepareStatement("SELECT specifyuser_spprincipal.SpecifyUserID "
+                                + " FROM specifyuser_spprincipal WHERE SpPrincipalID=?");
+                pstmt.setInt(1, principal.getId());
+                ResultSet rs = pstmt.executeQuery();
+                if (rs.next())
+                {
+                	result = rs.getInt("SpecifyUserID");
+                }
+            } else
+            {
+                log.error("getSpecifyUserId - database connection was null");
+            }
+        } catch (SQLException e)
+        {
+            log.error("Exception caught: " + e);
+            e.printStackTrace();
+        } finally
+        {
+            try
+            {
+                if (conn != null)  conn.close();
+                if(pstmt != null)  pstmt.close(); 
+            } catch (SQLException e)
+            {
+                log.error("Exception caught: " + e.toString());
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+    
     static public ResultSet getUsersPrincipalsByUserId(String userId)
     {
         Connection conn = null;

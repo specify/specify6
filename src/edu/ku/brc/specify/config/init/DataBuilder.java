@@ -9,15 +9,18 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.hibernate.Session;
 
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
@@ -96,6 +99,7 @@ import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.datamodel.SpExportSchema;
 import edu.ku.brc.specify.datamodel.SpExportSchemaItem;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
+import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
@@ -108,6 +112,7 @@ import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.UserGroupScope;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
@@ -2384,21 +2389,37 @@ public class DataBuilder
 //      persist(usergroup);
 //      return usergroup;
 //  }
-    public static SpPrincipal createDisciplineGroup(final Discipline discipline)
+    
+    public static SpPrincipal findGroup(List<SpPrincipal> 		groups,
+    									UserGroupScope 			scope,
+    									String 					groupType)
+    {
+    	for (SpPrincipal group : groups)
+    	{
+    		if (group.getScope() == scope && group.getGroupType().equals(groupType))
+    			return group;
+    	}
+    	return null;
+    }
+    
+    public static SpPrincipal createGroup(final String name, final String type, final UserGroupScope scope)
     {
         SpPrincipal usergroup = new SpPrincipal();
         usergroup.initialize();
-        usergroup.setName(discipline.getName());
+        usergroup.setName(name);
+        usergroup.setGroupType(type);
         usergroup.setGroupSubClass(GroupPrincipal.class.getCanonicalName());
+        usergroup.setScope(scope);
         persist(usergroup);
         return usergroup;    
     }
     
-    public static SpPrincipal createAdminPrincipal(final String name)
+    public static SpPrincipal createAdminPrincipal(final String name, final UserGroupScope scope)
     {
         SpPrincipal groupPrincipal = new SpPrincipal();
         groupPrincipal.initialize();
         groupPrincipal.setName(name);
+        groupPrincipal.setScope(scope);
         groupPrincipal.setGroupSubClass(AdminPrincipal.class.getCanonicalName());
         persist(groupPrincipal);
         return groupPrincipal;
@@ -2426,6 +2447,118 @@ public class DataBuilder
         return cns;
     }
 
+    public static SpPermission createPermission(final String name, 
+    											final String actions, 
+    											final String permClass, 
+    											final Set<SpPrincipal> groupSet)
+    {
+    	SpPermission perm = new SpPermission();
+    	perm.setName(name);
+    	perm.setActions(actions);
+    	perm.setPermissionClass(permClass);
+    	perm.setPrincipals(groupSet);
+    	persist(perm);
+    	return perm;
+    }
+
+    
+    /**
+     * @return the DOM to process
+     */
+    protected static Element getStandardGroupsDOM() throws Exception
+    {
+    	boolean doingLocal = true;
+    	String localFileName = "backstop" + File.separator + "security.xml";
+    	
+    	if (doingLocal)
+        {
+            return XMLHelper.readDOMFromConfigDir(localFileName);
+        }
+        
+        AppContextMgr mgr = AppContextMgr.getInstance();
+        if (mgr != null)
+        {
+            return mgr.getResourceAsDOM("security");
+            
+        }
+        return XMLHelper.readDOMFromConfigDir(localFileName);
+    }
+
+    /**
+     * Loads default groups from configuration file
+     *
+     */
+    public static void createStandardGroups(List<SpPrincipal> groups, final UserGroupScope scope)
+    {
+        try
+        {
+            Element root  = getStandardGroupsDOM();
+            
+            if (root != null)
+            {
+            	String permClass = BasicSpPermission.class.getCanonicalName();
+            	
+                Node defaultUserGroupsNode = root.selectSingleNode("/Security/DefaultUserGroups[@scope='"+scope.getClass().getSimpleName()+"']");
+
+                List<?> userGroups = defaultUserGroupsNode.selectNodes("UserGroup");
+                for ( Object userGroupObj : userGroups)
+                {
+                    Element userGroupElement = (Element) userGroupObj;
+
+                    // create user group
+                    String name       = userGroupElement.attributeValue("name");
+                    String type       = userGroupElement.attributeValue("userType");
+                    String className  = userGroupElement.attributeValue("spPrincipalClass");
+                    
+                    SpPrincipal group = createGroup(name, type, scope); 
+                    groups.add(group);
+                    
+                    Class<?> dataClass = null;
+                    if (StringUtils.isNotEmpty(className))
+                    {
+                        try
+                        {
+                            dataClass = Class.forName(className);
+                        } catch (Exception ex)
+                        {
+                        	System.out.println("Couldn't load class ["+className+"]");
+                        }
+                    } else
+                    {
+                    	System.out.println("Class name ["+className+"] is empty and can't be. Skipping.");
+                        continue;
+                    }
+                    
+                    Set<SpPrincipal> groupSet = new HashSet<SpPrincipal>();
+                    groupSet.add(group);
+                    
+                    // create permissions
+                    Set<SpPermission> permSet = new HashSet<SpPermission>();
+                    List<?> permissionNodes = userGroupElement.selectNodes("Permissions/Permission");
+                    for ( Object permissionObj : permissionNodes)
+                    {
+                        Element permissionElement = (Element) permissionObj;
+                        String permName = permissionElement.attributeValue("name");
+                        String actions  = userGroupElement.attributeValue("actions");
+                        
+                        SpPermission perm = createPermission(permName, actions, permClass, groupSet);
+                        permSet.add(perm);
+                    }
+                    group.setPermissions(permSet);
+                }
+                    
+            } else
+            {
+            	System.out.println("Couldn't get resource [security]");
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            System.out.println(ex);
+        }
+    }
+
+    
     public static Workbench createWorkbench(final SpecifyUser user,
                                             final String name, 
                                             final String remarks, 

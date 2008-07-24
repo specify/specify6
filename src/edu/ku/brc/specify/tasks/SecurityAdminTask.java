@@ -32,7 +32,7 @@ import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.specify.tasks.subpane.SecurityAdminPane;
+import edu.ku.brc.specify.tasks.subpane.security.SecurityAdminPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIHelper;
@@ -86,8 +86,10 @@ public class SecurityAdminTask extends BaseTask
         
         // check whether user can see the security admin panel
         // other permissions will be checked when the panel is created 
-        if (!SpecifySecurityMgr.checkPermission("Task." + SECURITY_ADMIN, BasicSpPermission.view)) //$NON-NLS-1$
+        if (false && !SpecifySecurityMgr.checkPermission("Task." + SECURITY_ADMIN, BasicSpPermission.view)) //$NON-NLS-1$
+        {
         	return list;
+        }
 
         // else
         String title = "SecurityAdminTask.SECURITY_TOOLS_MENU"; //$NON-NLS-1$

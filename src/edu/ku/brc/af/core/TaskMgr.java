@@ -24,6 +24,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.LayoutManager;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -620,5 +621,10 @@ public class TaskMgr
             log.error(ex);
         }
         return list;
+    }
+    
+    public Collection<Taskable> getAllTasks()
+    {
+    	return tasks.values();
     }
 }
