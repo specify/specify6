@@ -1877,6 +1877,18 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     public void removeQueryFieldItem(final QueryFieldPanel qfp)
     {
+        query.forceLoad(true);
+        if (query.getReports().size() > 0)
+        {
+            CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_CONFIRM_DELETE_TITLE"),
+                    true, new QBReportInfoPanel(query, UIRegistry.getResourceString("QB_USED_BY_REP_FLD_DELETE_CONFIRM")));
+            UIHelper.centerAndShow(cd);
+            cd.dispose();
+            if (cd.isCancelled())
+            {
+                return;
+            }
+        }
         qfp.getFieldQRI().setIsInUse(false);
         if (qfp.getQueryField() != null)
         {

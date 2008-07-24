@@ -73,6 +73,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.specify.tasks.subpane.qb.QBLiveJRDataSource;
+import edu.ku.brc.specify.tasks.subpane.qb.QBReportInfoPanel;
 import edu.ku.brc.specify.tasks.subpane.qb.QBResultReportServiceCmdData;
 import edu.ku.brc.specify.tasks.subpane.qb.QBResultReportServiceInfo;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
@@ -80,6 +81,7 @@ import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
@@ -1171,16 +1173,17 @@ public class QueryTask extends BaseTask
             query.forceLoad(true);
             if (query.getReports().size() > 0)
             {
-                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
-                        String.format(UIRegistry.getResourceString("QB_UNDELETABLE.REPS"), query.getName()), 
-                        UIRegistry.getResourceString("QB_UNDELETABLE_TITLE"), 
-                        JOptionPane.INFORMATION_MESSAGE);
+                CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_CONFIRM_DELETE_TITLE"),
+                        true, CustomDialog.OK_BTN, new QBReportInfoPanel(query, UIRegistry.getResourceString("QB_UNDELETABLE_REPS")));
+                UIHelper.centerAndShow(cd);
+                cd.dispose();
                 return false;
             }
             int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
                     String.format(UIRegistry.getResourceString("REP_CONFIRM_DELETE"), query.getName()),
                     UIRegistry.getResourceString("REP_CONFIRM_DELETE_TITLE"), 
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
+            
             
             if (option == JOptionPane.YES_OPTION)
             {

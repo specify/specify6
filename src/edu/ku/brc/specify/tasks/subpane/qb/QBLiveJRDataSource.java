@@ -15,6 +15,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
 
 /**
@@ -67,7 +68,9 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
         }
         int fldIdx = getFldIdx(arg0.getName());
         if (fldIdx < 0)
-            return null;
+        {
+            return String.format(UIRegistry.getResourceString("QBJRDS_UNKNOWN_FIELD"), arg0.getName());
+        }
         return processValue(fldIdx, data.getCacheValueAt(row, fldIdx));
     }
 

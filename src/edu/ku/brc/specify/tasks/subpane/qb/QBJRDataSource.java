@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.JPAQuery;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.util.Pair;
 
@@ -90,6 +91,10 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         if (fldIdx < 0)
             return null;
         int processIdx = recordIdsIncluded ? fldIdx-1 : fldIdx;
+        if (processIdx == -1)
+        {
+           return String.format(UIRegistry.getResourceString("QBJRDS_UNKNOWN_FIELD"), arg0.getName());
+        }
         return processValue(processIdx, columnInfo.get(processIdx).processValue(rowVals[fldIdx]));
     }
     
