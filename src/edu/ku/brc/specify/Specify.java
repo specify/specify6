@@ -411,7 +411,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             return;
         }
         /////////////////////////////////////////////
-        // NOT FOR RELEASE
+        // DONE - NOT FOR RELEASE
         /////////////////////////////////////////////
         
         UsageTracker.incrUsageCount("RunCount"); //$NON-NLS-1$

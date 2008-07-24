@@ -231,6 +231,8 @@ public class DataEntryTask extends BaseTask
                          final FormDataObjIFace data,
                          final boolean          isNewForm)
     {
+        Vector<Object> dataObjList = new Vector<Object>();
+        
         ViewIFace view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName) : 
                                           AppContextMgr.getInstance().getView(viewSetName, viewName);
         Object           dataObj     = data;
@@ -241,7 +243,6 @@ public class DataEntryTask extends BaseTask
             {
                 try
                 {
-                    Vector<Object> dataObjList = new Vector<Object>();
                     String         className   = view.getClassName();
                     if (StringUtils.isNotEmpty(className))
                     {
@@ -273,7 +274,10 @@ public class DataEntryTask extends BaseTask
             
         } else
         {
-            DataProviderFactory.getInstance().evict(data.getClass());    
+            DataProviderFactory.getInstance().evict(data.getClass());
+            
+            dataObjList.add(data);
+            dataObj = dataObjList;
         }
         
         final FormPane formPane = new FormPane(view.getName(), task, view.getViewSetName(), viewName, mode, dataObj, 

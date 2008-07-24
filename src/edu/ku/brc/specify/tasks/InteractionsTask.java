@@ -767,7 +767,7 @@ public class InteractionsTask extends BaseTask
      * Creates a new loan from a InfoRequest.
      * @param infoRequest the infoRequest to use to create the loan
      */
-    protected void createNewLoan(final InfoRequest infoRequest)
+    protected void createLoan(final InfoRequest infoRequest)
     {   
         RecordSetIFace rs = null;
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -791,7 +791,7 @@ public class InteractionsTask extends BaseTask
         
         if (rs != null)
         {
-            createNewLoan(infoRequest, rs);
+            createLoan(infoRequest, rs);
         }
     }
     
@@ -831,7 +831,7 @@ public class InteractionsTask extends BaseTask
      * @param recordSets the recordset to use to create the loan
      */
     @SuppressWarnings("unchecked")
-    protected void createNewLoan(final InfoRequest infoRequest, final RecordSetIFace recordSetArg)
+    protected void createLoan(final InfoRequest infoRequest, final RecordSetIFace recordSetArg)
     {
         RecordSetIFace recordSet = recordSetArg;
         if (infoRequest == null && recordSet == null)
@@ -894,7 +894,7 @@ public class InteractionsTask extends BaseTask
                         InfoRequest infoReq = session.get(InfoRequest.class, item.getRecordId().intValue());
                         if (infoReq != null)
                         {
-                            createNewLoan(infoReq, infoReq.getRecordSets().iterator().next());
+                            createLoan(infoReq, infoReq.getRecordSets().iterator().next());
                             
                         } else
                         {
@@ -1709,7 +1709,7 @@ public class InteractionsTask extends BaseTask
                     {
                         if (cmdAction.isAction(NEW_LOAN))
                         {    
-                            createNewLoan(null, rs);
+                            createLoan(null, rs);
                                 
                         } else if (cmdAction.isAction(InfoRequestName))
                         {
@@ -1722,7 +1722,7 @@ public class InteractionsTask extends BaseTask
                     }
                 } else if (cmdData instanceof InfoRequest)
                 {
-                    createNewLoan((InfoRequest)cmdData);
+                    createLoan((InfoRequest)cmdData);
                     
                 } else if (cmdData instanceof CommandAction)
                 {
@@ -1732,7 +1732,7 @@ public class InteractionsTask extends BaseTask
                         
                     } else if (cmdAction.isAction(NEW_LOAN))
                     {
-                        createNewLoan(null, null);
+                        createLoan(null, null);
                     }
                 }
             }
