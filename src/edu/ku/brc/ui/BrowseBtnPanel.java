@@ -17,8 +17,11 @@ package edu.ku.brc.ui;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
 import java.awt.BorderLayout;
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -39,11 +42,11 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.ui.forms.validation.ValTextField;
 
 /**
- * This is a JPanel that contains a JTextField abd a Button that enables the user to browser for a file
+ * This is a JPanel that contains a JTextField and a Button that enables the user to browser for a file
  * and sets the the file and path into the text field.
- 
+ *
  * @code_status Beta
- **
+ *
  * @author rods
  *
  */
@@ -53,6 +56,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
     protected JTextField textField;
     protected JButton    browseBtn;
     protected boolean    isForInput;
+    protected boolean    useNativeFileDlg = false;
     
     protected boolean    isValidFile      = false;
     protected boolean    isValidatingFile = false;
@@ -61,6 +65,8 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
      * Constructor.
      * @param value the value is set into the text field using "toString"
      * @param cols the number of columns for the text field
+     * @param doDirsOnly only show directories
+     * @param isForInput for input
      */
     public BrowseBtnPanel(final Object  value,
                           final int     cols,
@@ -71,7 +77,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
         
         setOpaque(false);
         
-        this.isForInput = isForInput;
+        this.isForInput       = isForInput;
         
         createUI(value, cols, doDirsOnly, isForInput);
     }
@@ -102,6 +108,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
                             final boolean doDirsOnly, 
                             final boolean isForInputArg)
     {
+        this.useNativeFileDlg = !doDirsOnly && !isForInput;
         
         setControlSize(this);
 
@@ -276,7 +283,8 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
     public class BrowseAction implements ActionListener
     {
         private JTextField   txtField;
-        private JFileChooser chooser = null;
+        private JFileChooser chooser       = null;
+        private FileDialog   fileDlg       = null;    
         private boolean      dirsOnly;
         private boolean      isForInputBA;
 
@@ -298,31 +306,54 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
          */
         public void actionPerformed(ActionEvent e)
         {
-            if (chooser == null)
+            if (useNativeFileDlg)
             {
-                this.chooser    = new JFileChooser();
-                this.chooser.setFileSelectionMode(dirsOnly ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
-            }
-
-            int returnVal;
-            if (isForInputBA)
-            {
-                returnVal = chooser.showOpenDialog(UIRegistry.getTopWindow());
+                
+                fileDlg = new FileDialog((Frame)getTopWindow(), getResourceString("CHOOSE_FILE"), FileDialog.LOAD);
+                fileDlg.setVisible(true);
+                
+                if (StringUtils.isNotEmpty(fileDlg.getFile()))
+                {
+                    String filePath = fileDlg.getDirectory() + fileDlg.getFile();
+                    
+                    if (textField instanceof ValTextField)
+                    {
+                        ((ValTextField)txtField).setValueWithNotification(filePath, "", true);
+                    } else
+                    {
+                        txtField.setText(chooser.getSelectedFile().getAbsolutePath());
+                    }
+                    txtField.repaint();
+                }
+                
             } else
             {
-                returnVal = chooser.showSaveDialog(UIRegistry.getTopWindow());
-            }
-            
-            if (returnVal == JFileChooser.APPROVE_OPTION)
-            {
-                if (textField instanceof ValTextField)
+                if (chooser == null)
                 {
-                    ((ValTextField)txtField).setValueWithNotification(chooser.getSelectedFile().getAbsolutePath(), "", true);
+                    this.chooser    = new JFileChooser();
+                    this.chooser.setFileSelectionMode(dirsOnly ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
+                }
+    
+                int returnVal;
+                if (isForInputBA)
+                {
+                    returnVal = chooser.showOpenDialog(UIRegistry.getTopWindow());
                 } else
                 {
-                    txtField.setText(chooser.getSelectedFile().getAbsolutePath());
+                    returnVal = chooser.showSaveDialog(UIRegistry.getTopWindow());
                 }
-                txtField.repaint();
+                
+                if (returnVal == JFileChooser.APPROVE_OPTION)
+                {
+                    if (textField instanceof ValTextField)
+                    {
+                        ((ValTextField)txtField).setValueWithNotification(chooser.getSelectedFile().getAbsolutePath(), "", true);
+                    } else
+                    {
+                        txtField.setText(chooser.getSelectedFile().getAbsolutePath());
+                    }
+                    txtField.repaint();
+                }
             }
         }
     }
