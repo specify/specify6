@@ -155,6 +155,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void add(final FormValidator val)
     {
+        //log.debug("Add Kid["+val.getName()+"] to "+name);
         kids.add(val);
     }
     
@@ -164,6 +165,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void remove(final FormValidator val)
     {
+        //log.debug("Remove Kid["+val.getName()+"] from "+name);
         kids.remove(val);
     }
     
@@ -172,6 +174,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void clearKids()
     {
+        //log.debug("Parent "+name+" clearing kids:   "+kids.size());
         kids.clear();
     }
     
@@ -1264,7 +1267,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
         {
             if (validator != null && validators.contains(validator))
             {
-                //hasChanged = true;
                 cascadeHasChanged(true);
             }
             checkForValidForm();

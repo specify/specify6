@@ -64,6 +64,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
         
         validator = new FormValidator(null);
         validator.addValidationListener(this);
+        validator.setName(formCell.getType().name());
     }
     
     /**

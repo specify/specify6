@@ -346,7 +346,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         
         if (formVal != null)
         {
-            mvParent.removeCurrentValidator();
+            multiView.removeCurrentValidator();
         }
         
         if (multiView != null)
