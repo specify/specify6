@@ -909,7 +909,9 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                     //System.out.println(++rowNum);
                 }                
             }
-
+            
+            results.setRecIds(ids);
+            
             fireTableDataChanged();
         }
         

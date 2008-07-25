@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Vector;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -47,16 +48,17 @@ import edu.ku.brc.util.Pair;
  */
 public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements ServiceProviderIFace
 {
-    protected static final int QBQIdRHQLTblId = -123;
-    
-    protected final QueryBldrPane queryBuilder;
-    protected final AtomicReference<Future<CustomQueryIFace>> queryTask = new AtomicReference<Future<CustomQueryIFace>>();
-    protected final AtomicReference<CustomQueryIFace> query = new AtomicReference<CustomQueryIFace>();
-    protected final AtomicBoolean cancelled = new AtomicBoolean(false);
-    protected List<Pair<String, Object>> params;
-    protected String title;
-    protected int    tableId;
-    protected String iconName;
+    protected static final int                                QBQIdRHQLTblId = -123;
+
+    protected final QueryBldrPane                             queryBuilder;
+    protected final AtomicReference<Future<CustomQueryIFace>> queryTask      = new AtomicReference<Future<CustomQueryIFace>>();
+    protected final AtomicReference<CustomQueryIFace>         query          = new AtomicReference<CustomQueryIFace>();
+    protected final AtomicBoolean                             cancelled      = new AtomicBoolean(
+                                                                                     false);
+    protected List<Pair<String, Object>>                      params;
+    protected String                                          title;
+    protected int                                             tableId;
+    protected String                                          iconName;
 
     protected final SortedSet<QBResultReportServiceInfo> reports = new TreeSet<QBResultReportServiceInfo>(
                 new Comparator<QBResultReportServiceInfo>()
@@ -366,9 +368,6 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         }
         else if (isDisplaying())
         {
-            /*
-             * Maybe can mess with table filling step to allowing cancel
-             */
             cancelled.set(true);
             query.get().cancel(); 
         }
@@ -381,6 +380,19 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     public boolean getCancelled()
     {
         return cancelled.get();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#setRecIds(java.util.Vector)
+     */
+    @Override
+    public void setRecIds(final Vector<Integer> ids)
+    {
+        //Could also fill recIds in queryTaskDone method, but would entail an extra pass through the CustomQueryIFace results,
+        //and an extra list of ids. 
+        
+        //don't think it is necessary to copy the ids?
+        this.recIds = ids;
     }
 
 }

@@ -157,10 +157,27 @@ public interface QueryForIdResultsIFace
      */
     public abstract void complete();
     
+    /**
+     * @param queryTask: the queryTask process/thread/task.
+     */
     public abstract void setQueryTask(final Future<?> queryTask);
     
+    /**
+     * @return the queryTask.
+     */
     public abstract Future<?> getQueryTask();
     
+    /**
+     * Notification that queryTask is done.
+     * 
+     * @param results the results of the query task. (Probably a CustomQueryIFace)
+     */
     public abstract void queryTaskDone(final Object results);
     
+    /**
+     * Sets the record ids for the results.
+     * 
+     * @param ids
+     */
+    public abstract void setRecIds(final Vector<Integer> ids);
 }

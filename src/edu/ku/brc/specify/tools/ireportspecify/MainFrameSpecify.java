@@ -534,11 +534,12 @@ public class MainFrameSpecify extends MainFrame
                 metaDataStr += "reporttype=Report";
                 modifiedRes.setMimeType("jrxml/label"); 
             }
-            /* Assuming ReportResources only get edited by this class...
             if (StringUtils.isNotEmpty(modifiedRes.getMetaData()))
             {
-                metaDataStr = metaDataStr + ";" + modifiedRes.getMetaData();
-            }*/
+                /* Assuming ReportResources only get edited by this class...
+                metaDataStr = metaDataStr + ";" + modifiedRes.getMetaData();*/
+                log.info("overwriting existing AppResource metadata (" + modifiedRes.getMetaData() + ") with (" + metaDataStr + ")");
+            }
             modifiedRes.setMetaData(metaDataStr);
             AppResAndProps result = new AppResAndProps(modifiedRes, propPanel.getRepeats());
             return result;

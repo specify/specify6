@@ -288,6 +288,16 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
         //nuthin
         
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setRecIds(java.util.Vector)
+     */
+    //@Override
+    public void setRecIds(final Vector<Integer> ids)
+    {
+        // TODO Auto-generated method stub
+        
+    }
     
     
 }

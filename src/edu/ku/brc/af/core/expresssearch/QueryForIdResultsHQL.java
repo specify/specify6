@@ -42,6 +42,7 @@ import edu.ku.brc.util.Pair;
  */
 public class QueryForIdResultsHQL implements QueryForIdResultsIFace
 {
+
     protected SearchTableConfig     searchTableConfig;
     protected Color                 bannerColor;
     protected Vector<Integer>       recIds       = new Vector<Integer>();
@@ -357,6 +358,14 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         
     }
 
-    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setRecIds(java.util.Vector)
+     */
+    //@Override
+    public void setRecIds(Vector<Integer> ids)
+    {
+        // TODO Auto-generated method stub
+        
+    }    
     
 }

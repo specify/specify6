@@ -338,4 +338,14 @@ public class UploadResults implements QueryForIdResultsIFace
     {
         return uploadData;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setRecIds(java.util.Vector)
+     */
+    //@Override
+    public void setRecIds(Vector<Integer> ids)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }
