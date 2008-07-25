@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -57,6 +58,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpAppResourceData;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -261,7 +263,23 @@ public class MainFrameSpecify extends MainFrame
         {
             if (!newRep)
             {
+                //The stuff in this block is necessary to prevent no session and lazy initialization errors
+                //in the "AppContextMgr.getInstance().saveResource(appRes)" call below.
                 session.attach(appRes);
+                for (SpAppResourceData spad : ((SpAppResource )appRes).getSpAppResourceDatas())
+                {
+                    spad.getId();
+                }
+                if (((SpAppResource )appRes).getSpAppResourceDir() != null)
+                {
+                    session.attach(((SpAppResource )appRes).getSpAppResourceDir());
+                    Set<SpAppResource> spapps = ((SpAppResource )appRes).getSpAppResourceDir().getSpPersistedAppResources();
+                    for (SpAppResource spapp : spapps)
+                    {
+                        spapp.getName();
+                    }
+                    session.evict(((SpAppResource )appRes).getSpAppResourceDir());
+                }
             }
             appRes.setDataAsString(xml.toString());
             AppContextMgr.getInstance().saveResource(appRes);
@@ -387,13 +405,17 @@ public class MainFrameSpecify extends MainFrame
     private AppResAndProps getAppResAndPropsForFrame(final JReportFrame jrf)
     {
     	//XXX - hard-coded for 'Collection' directory.
-    	AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir("Collection", jrf.getReport().getName());
+        /* RULE: SpReport.name == SpAppResource.name (== jrf.getReport().name)*/
+        SpReport spRep = ((ReportSpecify) jrf.getReport()).getSpReport();
+    	AppResourceIFace appRes = spRep == null ? 
+    	        AppContextMgr.getInstance().getResourceFromDir("Collection", jrf.getReport().getName()) :
+    	            spRep.getAppResource();
         if (appRes != null)
         {
-            SpReport spRep = ((ReportSpecify) jrf.getReport()).getSpReport();
             if (spRep != null) 
             { 
-                return new AppResAndProps(appRes, spRep.getRepeats()); 
+                //return new AppResAndProps(appRes, spRep.getRepeats());
+                return getProps(jrf.getReport().getName(), -1, (ReportSpecify )jrf.getReport(), appRes);
             }
 //            int response = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), String.format(UIRegistry
 //                    .getResourceString("REP_CONFIRM_IMP_OVERWRITE"), jrf.getReport().getName()),
@@ -446,13 +468,18 @@ public class MainFrameSpecify extends MainFrame
         return createAppResAndProps(appResName, tableid, null);
     }
     
+    
     /**
-     * @param jrf
-     * @return a new AppResource
+     * @param repResName
+     * @param tableId
+     * @param rep
+     * @param appRes
+     * 
+     * Allows editing of SpReport and SpAppResource properties for reports.
      */
-    private static AppResAndProps createAppResAndProps(final String repResName, final Integer tableid, final ReportSpecify rep)
+    protected static AppResAndProps getProps(final String repResName, final Integer tableId, final ReportSpecify rep, final AppResourceIFace appRes)
     {
-        RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, "Report", tableid == null, rep);
+        RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, "Report", tableId == null, rep);
         boolean goodProps = false;
         CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
                 UIRegistry.getResourceString("REP_PROPS_DLG_TITLE"),
@@ -477,37 +504,56 @@ public class MainFrameSpecify extends MainFrame
             }
             else
             {
-                goodProps = true;
+                goodProps = propPanel.validInputs();
             }
         }    
         if (goodProps /*just in case*/)
         {
-            //XXX - which Dir???
-            //XXX - what level???
-            AppResourceIFace resApp = AppContextMgr.getInstance().createAppResourceForDir("Collection");
-            resApp.setName(propPanel.getNameTxt().getText().trim());
-            resApp.setDescription(propPanel.getNameTxt().getText().trim());
-            resApp.setLevel(Short.valueOf(propPanel.getLevelTxt().getText()));
+            AppResourceIFace modifiedRes = null;
+            if (appRes == null)
+            {
+                //XXX - which Dir???
+                //XXX - what level???
+                modifiedRes = AppContextMgr.getInstance().createAppResourceForDir("Collection");
+            }
+            else
+            {
+                modifiedRes = appRes;
+            }
+            modifiedRes.setName(propPanel.getNameTxt().getText().trim());
+            modifiedRes.setDescription(propPanel.getNameTxt().getText().trim());
+            modifiedRes.setLevel(Short.valueOf(propPanel.getLevelTxt().getText()));
             String metaDataStr = "tableid=" + propPanel.getTableId() + ";";
             if (propPanel.getTypeCombo().getSelectedIndex() == 0)
             {
                 metaDataStr += "reporttype=Report";
-                resApp.setMimeType("jrxml/report"); 
+                modifiedRes.setMimeType("jrxml/report"); 
             }
             else
             {
                 metaDataStr += "reporttype=Report";
-                resApp.setMimeType("jrxml/label"); 
+                modifiedRes.setMimeType("jrxml/label"); 
             }
-            if (StringUtils.isNotEmpty(resApp.getMetaData()))
+            /* Assuming ReportResources only get edited by this class...
+            if (StringUtils.isNotEmpty(modifiedRes.getMetaData()))
             {
-                metaDataStr = metaDataStr + ";" + resApp.getMetaData();
-            }
-            resApp.setMetaData(metaDataStr);
-            AppResAndProps result = new AppResAndProps(resApp, propPanel.getRepeats());
+                metaDataStr = metaDataStr + ";" + modifiedRes.getMetaData();
+            }*/
+            modifiedRes.setMetaData(metaDataStr);
+            AppResAndProps result = new AppResAndProps(modifiedRes, propPanel.getRepeats());
             return result;
         }
         return null;
+    }
+    
+    
+    /**
+     * @param jrf
+     * @return a new AppResource
+     */
+    protected static AppResAndProps createAppResAndProps(final String repResName, final Integer tableid, final ReportSpecify rep)
+    {
+        return getProps(repResName, tableid, rep, null);
     }
     
     @Override

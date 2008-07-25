@@ -147,7 +147,7 @@ public class ReportRepeatPanel extends JPanel
         });
         builder.add(typeCombo, cc.xy(1,1));
         
-        constantTxt = UIHelper.createTextField("      ");
+        constantTxt = UIHelper.createTextField("2");
         constantTxt.addFocusListener(new FocusListener()
         {
 
@@ -232,6 +232,24 @@ public class ReportRepeatPanel extends JPanel
         }
         log.error("Unrecognized repeat type: " + typeCombo.getSelectedItem());
         return null;
+    }
+    
+    public boolean validInputs()
+    {
+        if (typeCombo.getSelectedIndex() == CONST)
+        {
+            try
+            {
+                Integer.valueOf(constantTxt.getText().trim());
+                return true;
+            }
+            catch (NumberFormatException nfe)
+            {
+                UIRegistry.showLocalizedMsg("REP_INVALID_COUNT_TITLE", "REP_INVALID_REPEAT_COUNT_MSG");
+                return false;
+            }
+        }
+        return true;
     }
     /**
      * @param args

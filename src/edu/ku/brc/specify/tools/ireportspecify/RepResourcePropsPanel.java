@@ -72,7 +72,10 @@ public class RepResourcePropsPanel extends JPanel
     
     protected void createUI(final  ReportSpecify rep)
     {
-        String rowDefStr = showTableIds ? "p,p,p,p,p,p,p" : "p,p,p,p,p,p";
+        String rowDefStr = showTableIds ? "p,p,p,p,p,p,p,10dlu" : "p,p,p,p,p,p,10dlu"; //adding 10dlu lower padding to try  
+                                                                                       // to try to prevent selection
+                                                                                       // problems in ReportRepeatPanel 
+                                                                                       // typeCombo.
         PanelBuilder builder = new PanelBuilder(new FormLayout("right:p, 2dlu, fill:p:grow", rowDefStr), this);
         CellConstraints cc = new CellConstraints();
         
@@ -198,5 +201,10 @@ public class RepResourcePropsPanel extends JPanel
     public Object getRepeats()
     {
         return repeatPanel.getRepeats();
+    }
+    
+    public boolean validInputs()
+    {
+        return repeatPanel.validInputs();
     }
 }
