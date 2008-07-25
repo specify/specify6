@@ -651,7 +651,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 RelQRI relQRI = (RelQRI)pqri;
                 RelationshipType relType = relQRI.getRelationshipInfo().getType();
-                if (!relType.equals(RelationshipType.ManyToOne)) //Maybe need to consider some types of OneToOne also?????????
+                if (!relType.equals(RelationshipType.ManyToOne) 
+                        && !relType.equals(RelationshipType.ManyToMany)/*treat manytomany as onetomany*/) //Maybe need to consider some types of OneToOne also?????????
                 {
                     //parent will initially point to the related table
                     //and don't need to add related table unless it has children displayed/queried,
