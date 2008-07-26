@@ -517,17 +517,18 @@ public class SpecifyAppContextMgr extends AppContextMgr
             AppContextMgr.getInstance().setClassObject(Collection.class, collection);
             // XXX Collection.setCurrentCollectionIds(getCollectionIdList(sessionArg));
             
-            String iconName = AppPreferences.getRemote().get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject"); //$NON-NLS-1$ //$NON-NLS-2$
-            if (StringUtils.isEmpty(iconName) || iconName.equals("CollectionObject"))
+            String colObjStr = "CollectionObject";
+            String iconName = AppPreferences.getRemote().get(FormattingPrefsPanel.getDisciplineImageName(), colObjStr);
+            if (StringUtils.isEmpty(iconName) || iconName.equals(colObjStr))
             {
                 iconName = "colobj_backstop";
             }
             
-            IconManager.aliasImages(iconName,             // Source
-                                    "collectionobject");  // Dest //$NON-NLS-1$
+            IconManager.aliasImages(iconName,                  // Source
+                                    colObjStr);                // Dest //$NON-NLS-1$
 
-            IconManager.aliasImages(iconName,             // Source
-                                    "CollectionObject");  // Dest //$NON-NLS-1$
+            IconManager.aliasImages(iconName,                  // Source
+                                    colObjStr.toLowerCase());  // Dest //$NON-NLS-1$
             
             if (collection != null)
             {
