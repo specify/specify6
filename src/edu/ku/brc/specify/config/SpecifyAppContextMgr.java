@@ -477,7 +477,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     session = null;
 
                     ChooseCollectionDlg colDlg = null;
-                    JDialog.setDefaultLookAndFeelDecorated(false);
                     do {
                         colDlg = new ChooseCollectionDlg(list);
                         colDlg.setSelectedIndex(selectColInx);
@@ -498,7 +497,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
                     
                     collection = colDlg.getSelectedObject();
-                    JDialog.setDefaultLookAndFeelDecorated(true);
                     
                     session = DataProviderFactory.getInstance().createSession();
                     session.attach(collection);
@@ -520,6 +518,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // XXX Collection.setCurrentCollectionIds(getCollectionIdList(sessionArg));
             
             String iconName = AppPreferences.getRemote().get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject"); //$NON-NLS-1$ //$NON-NLS-2$
+            if (StringUtils.isEmpty(iconName) || iconName.equals("CollectionObject"))
+            {
+                iconName = "colobj_backstop";
+            }
+            
             IconManager.aliasImages(iconName,             // Source
                                     "collectionobject");  // Dest //$NON-NLS-1$
 
