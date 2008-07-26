@@ -266,14 +266,9 @@ public class QueryFieldPanel extends JPanel
                 parent = parent.getTableTree().getParent().getTableQRI();
             }
             
-            StringBuilder tablesIds = new StringBuilder();
-            for (int i=idList.size()-1;i>=0;i--)
-            {
-                if (tablesIds.length() > 0) tablesIds.append(',');
-                tablesIds.append(idList.get(i));
-            }
-            log.debug(tablesIds.toString());
-            qField.setTableList(tablesIds.toString());
+            String tablesIds = bldTablesIds();
+            log.debug(tablesIds);
+            qField.setTableList(tablesIds);
             
         } else
         {
@@ -281,6 +276,23 @@ public class QueryFieldPanel extends JPanel
         }
     }
     
+    protected String bldTablesIds()
+    {
+        Vector<Integer> idList = new Vector<Integer>();
+        TableQRI parent = fieldQRI.getTable();
+        while (parent != null)
+        {
+            idList.add(parent.getTableInfo().getTableId());
+            parent = parent.getTableTree().getParent().getTableQRI();
+        }
+        StringBuilder tablesIds = new StringBuilder();
+        for (int i=idList.size()-1;i>=0;i--)
+        {
+            if (tablesIds.length() > 0) tablesIds.append(',');
+            tablesIds.append(idList.get(i));
+        }
+        return tablesIds.toString();
+    }
     
     /**
      * @return the queryField
@@ -1256,5 +1268,13 @@ public class QueryFieldPanel extends JPanel
     public boolean isEnforced()
     {
         return false;
+    }
+    
+    /**
+     * @return a string identifier unique to this field within the query that is independent of the field's title.
+     */
+    public String getStringId()
+    {
+        return bldTablesIds() + "." + fieldQRI.getTableInfo().getName() + "." + fieldQRI.getFieldName();
     }
 }

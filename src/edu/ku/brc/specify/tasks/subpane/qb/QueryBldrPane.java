@@ -996,9 +996,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param fixLabels
      * @return ERTICaptionInfo for the visible columns returned by a query.
      */
-    protected static List<ERTICaptionInfo> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels)
+    protected static List<ERTICaptionInfoQB> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels)
     {
-        List<ERTICaptionInfo> result = new Vector<ERTICaptionInfo>();
+        List<ERTICaptionInfoQB> result = new Vector<ERTICaptionInfoQB>();
         for (QueryFieldPanel qfp : queryFieldItemsArg)
         {
             DBFieldInfo fi = qfp.getFieldInfo();
@@ -1019,15 +1019,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 {
                     lbl = fixFldNameForJR(lbl);
                 }
-                ERTICaptionInfo erti;
+                ERTICaptionInfoQB erti;
                 if (qfp.getFieldQRI() instanceof RelQRI)
                 {
                     erti = new ERTICaptionInfoRel(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0,
+                            qfp.getStringId(),
                             ((RelQRI)qfp.getFieldQRI()).getRelationshipInfo());
                 }
                 else
                 {
-                    erti = new ERTICaptionInfo(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0);
+                    erti = new ERTICaptionInfoQB(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0, qfp.getStringId());
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
                 result.add(erti);
@@ -1278,7 +1279,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                               final DBTableInfo                rootTable, 
                               final boolean                    distinct)
     {
-        List<ERTICaptionInfo> captions = getColumnInfo(queryFieldItemsArg, false);
+        List<? extends ERTICaptionInfo> captions = getColumnInfo(queryFieldItemsArg, false);
         List<Integer> list = new Vector<Integer>();
         
         String iconName = distinct ? "BlankIcon" : rootTable.getClassObj().getSimpleName();
@@ -1295,7 +1296,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         qri.setSQL(sql);
         qri.setParams(params);
-        qri.setCaptions(captions);
+        //XXX check generics reference book.
+        qri.setCaptions((List<ERTICaptionInfo> )captions);
         qri.setExpanded(true);
         runningResults.set(qri);
         doneTime.set(-1);

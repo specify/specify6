@@ -14,7 +14,6 @@ import java.util.Collection;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
@@ -29,7 +28,7 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
  *property,  are used to obtain objects which are aggregated and formatted.
  *
  */
-public class ERTICaptionInfoRel extends ERTICaptionInfo
+public class ERTICaptionInfoRel extends ERTICaptionInfoQB
 {
     protected final DBRelationshipInfo relationship;
     
@@ -38,9 +37,10 @@ public class ERTICaptionInfoRel extends ERTICaptionInfo
                            boolean isVisible, 
                            UIFieldFormatterIFace uiFieldFormatter,
                            int     posIndex,
+                           String colStringId,
                            DBRelationshipInfo relationship)
     {
-        super(colName, colLabel, isVisible, uiFieldFormatter, posIndex);
+        super(colName, colLabel, isVisible, uiFieldFormatter, posIndex, colStringId);
         this.relationship = relationship;
     }
     

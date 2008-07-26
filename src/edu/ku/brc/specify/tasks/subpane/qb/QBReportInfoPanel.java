@@ -9,7 +9,6 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
-import java.awt.BorderLayout;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
@@ -34,6 +33,12 @@ import edu.ku.brc.ui.UIHelper;
  * @code_status Alpha
  *
  * Just lists a query's reports and displays a message/warning
+ */
+/**
+ * @author timbo
+ *
+ * @code_status Alpha
+ *
  */
 public class QBReportInfoPanel extends JPanel
 {

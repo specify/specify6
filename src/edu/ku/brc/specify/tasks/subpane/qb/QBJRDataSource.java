@@ -24,7 +24,6 @@ import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -93,6 +92,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         int processIdx = recordIdsIncluded ? fldIdx-1 : fldIdx;
         if (processIdx == -1)
         {
+            //XXX This will blow up jasper if arg0 is not a String. right?
            return String.format(UIRegistry.getResourceString("QBJRDS_UNKNOWN_FIELD"), arg0.getName());
         }
         return processValue(processIdx, columnInfo.get(processIdx).processValue(rowVals[fldIdx]));
@@ -174,7 +174,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
      * @param columnInfo
      * @param recordIdsIncluded
      */
-    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfo> columnInfo,
+    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfoQB> columnInfo,
                           final boolean recordIdsIncluded)
     {
         super(columnInfo, recordIdsIncluded, null);
@@ -190,7 +190,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
      * @param recordIdsIncluded
      * @param repeatCount - number of repeats for each record
      */
-    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfo> columnInfo,
+    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfoQB> columnInfo,
                           final boolean recordIdsIncluded, final Object repeats)
     {
         super(columnInfo, recordIdsIncluded, repeats);

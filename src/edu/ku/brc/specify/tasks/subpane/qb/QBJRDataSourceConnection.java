@@ -179,12 +179,14 @@ public class QBJRDataSourceConnection extends IReportConnection
     
     public class QBJRFieldDef
     {
-        protected final String fldName;
+        protected final String   fldTitle;
+        protected final String   fldName;
         protected final Class<?> fldClass;
         
         public QBJRFieldDef(final String fldName, final Class<?> fldClass)
         {
             this.fldName = fldName;
+            this.fldTitle = fldName;
             this.fldClass = fldClass;
         }
 
@@ -210,10 +212,16 @@ public class QBJRDataSourceConnection extends IReportConnection
         @Override
         public String toString()
         {
-            return getFldName();
+            return getFldTitle();
         }
         
-        
+        /**
+         * @return the title
+         */
+        public String getFldTitle()
+        {
+            return fldTitle;
+        }
     }
 
     /* (non-Javadoc)

@@ -13,10 +13,8 @@ import java.util.List;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
-
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.ERTICaptionInfo;
 
 /**
  * @author timbo
@@ -40,14 +38,14 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
      * @param data
      * @param columnInfo
      */
-    public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfo> columnInfo)
+    public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfoQB> columnInfo)
     {
         //XXX setting rowIds to true doesn't guarantee that rowIds will be available if Select Distinct was used
         super(columnInfo, true, null);
         this.data = data;
     }
 
-    public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfo> columnInfo, final Object repeats)
+    public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfoQB> columnInfo, final Object repeats)
     {
         //XXX setting rowIds to true doesn't guarantee that rowIds will be available if Select Distinct was used
         super(columnInfo, true, repeats);
@@ -69,6 +67,7 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
         int fldIdx = getFldIdx(arg0.getName());
         if (fldIdx < 0)
         {
+            //XXX This will blow up jasper if arg0 is not a String. right?
             return String.format(UIRegistry.getResourceString("QBJRDS_UNKNOWN_FIELD"), arg0.getName());
         }
         return processValue(fldIdx, data.getCacheValueAt(row, fldIdx));

@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.util.Pair;
 
@@ -42,7 +41,7 @@ public class QBJRDataSourceBase implements JRDataSource
     private static final Logger log = Logger.getLogger(QBJRDataSourceBase.class);
     
     protected static DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");    
-    protected final List<ERTICaptionInfo> columnInfo;
+    protected final List<ERTICaptionInfoQB> columnInfo;
     protected final boolean recordIdsIncluded;
     protected final ArrayList<Pair<String, Integer>> colNames = new ArrayList<Pair<String, Integer>>();
     /**
@@ -124,12 +123,12 @@ public class QBJRDataSourceBase implements JRDataSource
     /**
      * @param columnInfo
      */
-    public QBJRDataSourceBase(final List<ERTICaptionInfo> columnInfo, final boolean recordIdsIncluded, final Object repeats)
+    public QBJRDataSourceBase(final List<ERTICaptionInfoQB> columnInfo, final boolean recordIdsIncluded, final Object repeats)
     {
         this.columnInfo = columnInfo;
         this.recordIdsIncluded = recordIdsIncluded;
         int c = 0;
-        for (ERTICaptionInfo col : this.columnInfo)
+        for (ERTICaptionInfoQB col : this.columnInfo)
         {
             String lbl = col.getColLabel();
             if (col instanceof ERTICaptionInfoRel) //lame, but avoid having to modify ERTICaptionInfo this way.
