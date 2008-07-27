@@ -72,6 +72,7 @@ import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
+import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
 import edu.ku.brc.specify.tasks.subpane.qb.QBLiveJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.qb.QBReportInfoPanel;
 import edu.ku.brc.specify.tasks.subpane.qb.QBResultReportServiceCmdData;
@@ -90,6 +91,7 @@ import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormHelper;
@@ -1266,7 +1268,9 @@ public class QueryTask extends BaseTask
                Object src;
                if (selectedRep.isLiveData())
                {
-                   src = new QBLiveJRDataSource(rsm, srvData.getInfo().getVisibleCaptionInfo(), selectedRep.getRepeats());
+                   //XXX - probably a smoother way to handle these generic issues.
+                   List<? extends ERTICaptionInfo> captions = srvData.getInfo().getVisibleCaptionInfo();
+                   src = new QBLiveJRDataSource(rsm, (List<ERTICaptionInfoQB> )captions, selectedRep.getRepeats());
                }
                else
                {
