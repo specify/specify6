@@ -690,11 +690,13 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                 try
                 {
                     session = DataProviderFactory.getInstance().createSession();
-                    session.refresh(node);
+                    // rods - 07/28/08 commented out because the node is already deleted
+                    //session.refresh(node);
                     dataServ.updateNodeNumbersAfterNodeDeletion(node,session);
                     
                 } catch (Exception ex)
                 {
+                    ex.printStackTrace();
                     
                 } finally
                 {

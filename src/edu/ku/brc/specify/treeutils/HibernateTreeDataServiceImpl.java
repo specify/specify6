@@ -679,6 +679,12 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             String className = deletedNode.getClass().getName();
             TreeDefIface<T,D,I> def = deletedNode.getDefinition();
 
+            // rods - 07/28/08 
+            // Can't figure out why this never needed beginTranaction/commit
+            // before now, unless reworking some of Josh's code removed this call form the middle
+            // of another transaction.
+            session.beginTransaction();
+            
             String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber-:nodesDeleted WHERE nodeNumber>=:delNodeNN AND definition=:def";
             QueryIFace fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr);
             fixNodeNumQuery.setParameter("nodesDeleted", nodesDeleted);
@@ -692,6 +698,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             fixHighChildQuery.setParameter("delNodeHC", delNodeHC);
             fixHighChildQuery.setParameter("def", def);
             fixHighChildQuery.executeUpdate();
+            
+            session.commit();
         }
 
         return success;
