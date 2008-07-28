@@ -298,6 +298,16 @@
                 <altview name="Locality Edit" viewdef="Locality" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
+        
+        <view name="LocalityCitation"
+            class="edu.ku.brc.specify.datamodel.LocalityCitation"
+            resourcelabels="false">
+            <desc><![CDATA[Locality form.]]></desc>
+            <altviews>
+                <altview name="LocalityCitation View" viewdef="LocalityCitation" label="View" mode="view"/>
+                <altview name="LocalityCitation Edit" viewdef="LocalityCitation" label="Edit" mode="edit" default="true"/>
+            </altviews>
+        </view>
                 
         <view name="LocalitySubForm"
             class="edu.ku.brc.specify.datamodel.Locality"
@@ -1573,11 +1583,53 @@
                     </cell>
                 </row>
                 <row>
+                    <cell type="subview" id="10" viewname="LocalityCitation" name="localityCitations" colspan="12"/>
+                </row>
+                <row>
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12" initialize="btn=true;icon=LocalityAttachment"/>
                 </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="LocalityCitation"
+            class="edu.ku.brc.specify.datamodel.LocalityCitation"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Locality]]></desc>
+            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="separator" label="Locality Citation" colspan="12"/>
+                </row>
+                <!--   
+                    <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
+                    </row> -->      
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="referenceWork" uitype="querycbx" initialize="name=ReferenceWork;title=ReferenceWork" colspan="10"/>
+                </row>            
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="remarks" uitype="textarea" colspan="10"/>
+                </row>
+                <!--    
+                    <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="createdByAgent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+                    </row>
+                    <row>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="modifiedByAgent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+                    </row> -->
             </rows>
         </viewdef>
                 
@@ -2092,7 +2144,7 @@
                     <cell type="field" id="2" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
                     
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="division" uitype="querycbx" initialize="name=Division"/>
+                    <cell type="field" id="3" name="division" uitype="combobox" picklist="Division"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6"/>
@@ -2140,7 +2192,7 @@
                     <cell type="field" id="1" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject;newbtn=false"/>
                     
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="division" uitype="querycbx" initialize="name=Division"/>
+                    <cell type="field" id="3" name="division" uitype="combobox" picklist="Division"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6"/>
@@ -2184,7 +2236,7 @@
                 </row>
                 <row>                    
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="division" uitype="querycbx" initialize="name=Division"/>
+                    <cell type="field" id="3" name="division" uitype="combobox" picklist="Division"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6"/>
