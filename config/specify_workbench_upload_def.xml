@@ -337,11 +337,16 @@
     <field table="Taxon" name="superorder" treename="taxon" maptofield="name" rankid="90"/>
     <field table="Taxon" name="order" treename="taxon" maptofield="name" rankid="100"/>
     <field table="Taxon" name="suborder" treename="taxon" maptofield="name" rankid="110"/>
-    <field table="Taxon" name="infraorder" treename="taxon" maptofield="name" rankid="130"/>
+    <field table="Taxon" name="infraorder" treename="taxon" maptofield="name" rankid="120"/>
     <field table="Taxon" name="superfamily" treename="taxon" maptofield="name" rankid="130"/>
     <field table="Taxon" name="family" treename="taxon" maptofield="name" rankid="140"/>
     <field table="Taxon" name="subfamily" treename="taxon" maptofield="name" rankid="150"/>
+    <field table="Taxon" name="tribe" treename="taxon" maptofield="name" rankid="160"/>
+    <field table="Taxon" name="subtribe" treename="taxon" maptofield="name" rankid="170"/>
     <field table="Taxon" name="genus" treename="taxon" maptofield="name" rankid="180"/>
+    <field table="Taxon" name="subgenus" treename="taxon" maptofield="name" rankid="190"/>
+    <field table="Taxon" name="section" treename="taxon" maptofield="name" rankid="200"/>
+    <field table="Taxon" name="subsection" treename="taxon" maptofield="name" rankid="210"/>
     <field table="Taxon" name="species" treename="taxon" maptofield="name" rankid="220"/>
     <field table="Taxon" name="subspecies" treename="taxon" maptofield="name" rankid="230"/>
     <field table="Taxon" name="variety" treename="taxon" maptofield="name" rankid="240"/>
