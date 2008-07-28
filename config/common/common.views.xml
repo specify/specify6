@@ -1582,9 +1582,10 @@
                         </rows>
                     </cell>
                 </row>
+            <!--    
                 <row>
                     <cell type="subview" id="10" viewname="LocalityCitation" name="localityCitations" colspan="12"/>
-                </row>
+                </row> -->
                 <row>
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
