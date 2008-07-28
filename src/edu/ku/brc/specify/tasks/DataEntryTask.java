@@ -521,7 +521,7 @@ public class DataEntryTask extends BaseTask
                                 nbb.addDragDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "Data_Entry", tableInfo.getTableId()));
                         
                                 // When something is dropped on it
-                                nbb.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", tableInfo.getTableId()));//RecordSetTask.RECORDSET_FLAVOR);
+                                nbb.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RecordSetTask", tableInfo.getTableId()));//RecordSetTask.RECORDSET_FLAVOR);
                             }
         
                             viewsNavBox.add(nbi);
@@ -682,7 +682,7 @@ public class DataEntryTask extends BaseTask
             NavBoxButton roc = (NavBoxButton)nbi;
             for (DataEntryView dev : miscList)
             {
-                roc.addDropDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "RECORD_SET", dev.getTableInfo().getTableId()));
+                roc.addDropDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "RecordSetTask", dev.getTableInfo().getTableId()));
             }
             viewsNavBox.add(nbi);
         }
@@ -1192,10 +1192,23 @@ public class DataEntryTask extends BaseTask
         }
     }
     
+    /**
+     * @param nameArg
+     * @param task
+     * @param desc
+     * @return
+     */
+    public DroppableFormRecordSetAccepter createDroppableFormRecordSetAccepter(final String   nameArg, 
+                                                                               final Taskable task,
+                                                                               final String   desc)
+    {
+        return new DroppableFormRecordSetAccepter(nameArg, task, desc);
+    }
+    
     //-------------------------------------------------------------------------
     // Class for accepting RecordSet Drops
     //-------------------------------------------------------------------------
-    class DroppableFormRecordSetAccepter extends FormPane
+    public class DroppableFormRecordSetAccepter extends FormPane
     {
        
         public DroppableFormRecordSetAccepter(final String   name, 
@@ -1209,6 +1222,14 @@ public class DataEntryTask extends BaseTask
             this.icon = IconManager.getIcon(DATA_ENTRY, IconManager.IconSize.Std16);
         }
 
+        public void addDropFlavor(final DataFlavor df)
+        {
+            dropFlavors.add(df); 
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.af.tasks.subpane.FormPane#doAction(edu.ku.brc.ui.dnd.GhostActionable)
+         */
         @SuppressWarnings("synthetic-access")
         @Override
         public void doAction(GhostActionable src)
@@ -1217,9 +1238,23 @@ public class DataEntryTask extends BaseTask
             if (srcData instanceof RecordSetIFace)
             {
                 addSubPaneToMgr(createFormFor(task, "XXXX", null, null, (RecordSetIFace)srcData));
-            }
+                
+            }/* else if (srcData instanceof CommandActionForDB)
+            {
+                CommandActionForDB cmdAction = (CommandActionForDB)srcData;
+                int tableId = cmdAction.getTableId();
+                int id      = cmdAction.getId();
+                RecordSet rs = new RecordSet();
+                rs.initialize();
+                rs.set("", tableId, RecordSet.GLOBAL);
+                rs.addItem(id);
+                addSubPaneToMgr(createFormFor(task, "XXXX", null, null, (RecordSetIFace)rs));
+            }*/
         }
         
+        /* (non-Javadoc)
+         * @see edu.ku.brc.af.tasks.subpane.FormPane#doCommand(edu.ku.brc.ui.CommandAction)
+         */
         @Override
         public void doCommand(CommandAction cmdAction)
         {

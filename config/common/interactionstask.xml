@@ -1,47 +1,97 @@
 <vector>
   <entry name="accession" table="accession" view="Accession" type="Data_Entry" action="OpenNewView" icon="Accession" isonleft="true" order="0">
-    <tableIds>
-      <int>7</int>
-    </tableIds>
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+        <tableIds>
+          <int>7</int>
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
   </entry>
   <entry name="permit" table="permit" view="Permit" type="Data_Entry" action="OpenNewView" icon="Permit" isonleft="true" order="0">
-    <tableIds>
-      <int>6</int>
-    </tableIds>
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+        <tableIds>
+          <int>6</int>
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
   </entry>
   <entry name="loan" table="loan" view="Loan" type="Interactions" action="NEW_LOAN" icon="Loan" isonleft="true" order="0">
-    <tableIds>
-      <int>52</int>
-      <int>1</int>
-      <int>50</int>
-    </tableIds>
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+        <tableIds>
+          <int>52</int>
+          <int>1</int>
+          <int>50</int>
+        </tableIds>
+      </flavor>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.datamodel.InfoRequest" humanreadable="InfoRequest">
+        <tableIds>
+          <int>50</int>
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
   </entry>
   <entry name="gift" table="gift" view="Gift" type="OPEN_FORM" action="NEW_GIFT" icon="Gift" isonleft="true" order="0">
-    <tableIds>
-      <int>131</int>
-    </tableIds>
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+        <tableIds>
+          <int>131</int>
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
   </entry>
   <entry name="exchangein" table="exchangein" view="ExchangeIn" type="OPEN_FORM" action="NEW_EXCHANGE_IN" icon="ExchangeIn" isonleft="true" order="0">
-    <tableIds>
-      <int>39</int>
-    </tableIds>
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+        <tableIds>
+          <int>39</int>
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
   </entry>
   <entry name="exchangeout" table="exchangeout" view="ExchangeOut" type="OPEN_FORM" action="NEW_EXCHANGE_OUT" icon="ExchangeOut" isonleft="true" order="0">
-    <tableIds>
-      <int>40</int>
-    </tableIds>
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+        <tableIds>
+          <int>40</int>
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
   </entry>
   <entry name="inforequest" table="inforequest" type="Interactions" action="Specify Info Request" icon="InfoRequest" isonleft="true" order="0">
-    <tableIds>
-      <int>39</int>
-      <int>40</int>
-      <int>1</int>
-      <int>50</int>
-    </tableIds>
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+        <tableIds>
+          <int>39</int>
+          <int>40</int>
+          <int>1</int>
+          <int>50</int>
+        </tableIds>
+      </flavor>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.datamodel.InfoRequest" humanreadable="InfoRequest">
+        <tableIds>
+          <int>50</int>
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
   </entry>
   <entry name="printloan" table="loan" label="PRINT_LOANINVOICE" type="Interactions" action="PRINT_LOAN" icon="Reports" isonleft="true" order="0">
-    <tableIds>
-      <int>52</int>
-    </tableIds>
+    <draggableFlavors/>
+    <droppableFlavors>
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+        <tableIds>
+          <int>52</int>
+        </tableIds>
+      </flavor>
+    </droppableFlavors>
   </entry>
 </vector>

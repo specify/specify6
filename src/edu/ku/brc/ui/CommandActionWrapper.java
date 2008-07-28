@@ -32,7 +32,7 @@ public class CommandActionWrapper implements ActionListener
     private CommandAction commandAction;
     
     /**
-     * Constructor with Commandaction.
+     * Constructor with CommandAction.
      * @param commandAction the command action to send
      */
     public CommandActionWrapper(final CommandAction commandAction)
@@ -47,6 +47,7 @@ public class CommandActionWrapper implements ActionListener
     {
         if (e instanceof DataActionEvent)
         {
+            commandAction.setConsumed(false);
             DataActionEvent dataActionEv = (DataActionEvent)e;
             commandAction.setData(dataActionEv.getSourceObj() != null ? dataActionEv.getSourceObj().getData() : null); // Source shouldn't ever be null
         }

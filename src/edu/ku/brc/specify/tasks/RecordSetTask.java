@@ -71,6 +71,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
+import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
@@ -82,7 +83,7 @@ import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 /**
- * Takes care of offering up record sets, updating, deleteing and creating them.
+ * Takes care of offering up record sets, updating, deleting and creating them.
  *
  * @code_status Alpha
  *
@@ -592,15 +593,15 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
 
     /**
      * Returns a list of RecordSets for a given Table Id (never returns null)
-     * @param tableId the matching tableId or -1 if all the recordsets should be returned
-     * @return a list of recordsets (never returns null)
+     * @param tableId the matching tableId or -1 if all the RecordSets should be returned
+     * @return a list of RecordSets (never returns null)
      */
-    public List<RecordSet> getRecordSets(final int tableId)
+    public List<RecordSetIFace> getRecordSets(final int tableId)
     {
-        List<RecordSet> list = new ArrayList<RecordSet>();
+        List<RecordSetIFace> list = new ArrayList<RecordSetIFace>();
         for (NavBoxItemIFace nbi : navBox.getItems())
         {
-            RecordSet rs = (RecordSet)nbi.getData();
+            RecordSetIFace rs = (RecordSetIFace)nbi.getData();
             if (tableId == -1 || tableId == rs.getDbTableId())
             {
                 list.add(rs);
@@ -613,7 +614,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      * Returns all the recordsets (never returns null)
      * @return all the recordsets (never returns null)
      */
-    public List<RecordSet> getRecordSets()
+    public List<RecordSetIFace> getRecordSets()
     {
         return getRecordSets(-1);
     }
@@ -1208,5 +1209,49 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             rst.droppableFlavors.add(df);
         }
     }
-
+    
+    //------------------------------------------------------------------------
+    //-- Static Helper Methods
+    //------------------------------------------------------------------------
+    
+    /**
+     * Displays UI that asks the user to select a predefined label.
+     * @param tableId the table id
+     * @return returns the selected RecordSet or null
+     */
+    public static RecordSetIFace askForRecordSet(final int tableId)
+    {
+        return askForRecordSet(tableId, null);
+    }
+    
+    /**
+     * Displays UI that asks the user to select a predefined label.
+     * @param tableId the table id
+     * @return returns the selected RecordSet or null
+     */
+    public static RecordSetIFace askForRecordSet(final int tableId, 
+                                                 final Vector<RecordSetIFace> additionalRS)
+    {
+        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableId);
+        if (additionalRS != null && additionalRS.size() > 0)
+        {
+            dlg.addAdditionalObjectsAsRecordSets(additionalRS);
+        }
+        
+        if (dlg.hasRecordSets())
+        {
+            if (dlg.getRecordSets().size() == 1)
+            {
+                return dlg.getRecordSets().get(0);
+                
+            }
+            // else
+            dlg.setVisible(true); // modal (waits for answer here)
+            return dlg.getSelectedRecordSet();
+        }
+        
+        // else
+        return null;
+    }
+    
 }

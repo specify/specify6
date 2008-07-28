@@ -730,7 +730,7 @@ public class UIRegistry
     }
     
     /**
-     * Pops Windo off the Stack.
+     * Pops Window off the Stack.
      * @param window the window
      * @return pops window off the window stack
      */

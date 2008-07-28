@@ -1298,7 +1298,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             ttle = "Associate Storage Items";//$NON-NLS-1$ 
             mneu = "A";//$NON-NLS-1$ 
             desc = "";//$NON-NLS-1$ 
-            mi = UIHelper.createLocalizedMenuItem(menu, ttle,mneu , desc, true, null); 
+            mi = UIHelper.createMenuItemWithAction(menu, ttle, mneu , desc, true, null); 
             mi.addActionListener(new ActionListener()
                     {
                         @SuppressWarnings("synthetic-access") //$NON-NLS-1$

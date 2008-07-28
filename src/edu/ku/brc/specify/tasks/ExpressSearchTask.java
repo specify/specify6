@@ -1164,7 +1164,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     } else if (e.getSource() == configMenuItem)
                     {
                         ExpressSearchConfigDlg dlg = new ExpressSearchConfigDlg();
-                        dlg.setVisible(true); // modal
+                        dlg.createUI();
+                        UIHelper.centerAndShow(dlg); // modal
                         dlg.cleanUp();
                         
                     } else

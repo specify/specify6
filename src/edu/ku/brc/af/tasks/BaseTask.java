@@ -56,10 +56,8 @@ import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.RecordSetTask;
-import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandActionWrapper;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -930,46 +928,6 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     public boolean isStarterPane()
     {
         return starterPane != null;
-    }
-    
-    /**
-     * Displays UI that asks the user to select a predefined label.
-     * @param tableId the table id
-     * @return returns the selected RecordSet or null
-     */
-    public static RecordSetIFace askForRecordSet(final int tableId)
-    {
-        return askForRecordSet(tableId, null);
-    }
-    
-    /**
-     * Displays UI that asks the user to select a predefined label.
-     * @param tableId the table id
-     * @return returns the selected RecordSet or null
-     */
-    public static RecordSetIFace askForRecordSet(final int tableId, 
-                                                 final Vector<RecordSet> additionalRS)
-    {
-        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableId);
-        if (additionalRS != null && additionalRS.size() > 0)
-        {
-            dlg.addAdditionalObjectsAsRecordSets(additionalRS);
-        }
-        
-        if (dlg.hasRecordSets())
-        {
-            if (dlg.getRecordSets().size() == 1)
-            {
-                return dlg.getRecordSets().get(0);
-                
-            }
-            // else
-            dlg.setVisible(true); // modal (waits for answer here)
-            return dlg.getSelectedRecordSet();
-        }
-        
-        // else
-        return null;
     }
     
     /**

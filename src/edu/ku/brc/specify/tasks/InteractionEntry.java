@@ -11,6 +11,7 @@ import java.util.Vector;
 import com.thoughtworks.xstream.XStream;
 
 /**
+ * A class for reading and writing the configuration of the sidebar for Interactions.
  * @author rod
  *
  * @code_status Beta
@@ -30,7 +31,8 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     protected boolean isOnLeft;
     protected int     order;
     
-    protected Vector<Integer> tableIds = new Vector<Integer>();
+    protected Vector<EntryFlavor> draggableFlavors = new Vector<EntryFlavor>();
+    protected Vector<EntryFlavor> droppableFlavors = new Vector<EntryFlavor>();
     
     // Transient
     protected String title;
@@ -57,8 +59,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
                             String viewName, 
                             String cmdType,
                             String action,
-                            String iconName,
-                            int[] dropTableIds)
+                            String iconName)
     {
         super();
         this.name = name;
@@ -69,17 +70,18 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         this.action = action;
         this.iconName = iconName;
         this.isOnLeft = true;
-        
-        if (dropTableIds != null)
-        {
-            for (int id : dropTableIds)
-            {
-                tableIds.add(id);
-            }
-        }
     }
 
-
+    public void addDraggable(final Class<?> cls, final String humanReadable, final int[] dndTableIds)
+    {
+        draggableFlavors.add(new EntryFlavor(cls.getName(), humanReadable, true, dndTableIds));
+    }
+    
+    public void addDroppable(final Class<?> cls, final String humanReadable, final int[] dndTableIds)
+    {
+        droppableFlavors.add(new EntryFlavor(cls.getName(), humanReadable, false, dndTableIds));
+    }
+    
     /**
      * @return the name
      */
@@ -202,33 +204,6 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     }
 
     /**
-     * @return the tableIds
-     */
-    public Vector<Integer> getTableIds()
-    {
-        return tableIds;
-    }
-    
-    public int[] getTableIdsAsArray()
-    {
-        int[] ids = new int[tableIds.size()];
-        int i = 0;
-        for (int id : tableIds)
-        {
-            ids[i++] = id;
-        }
-        return ids;
-    }
-
-    /**
-     * @param tableIds the tableIds to set
-     */
-    public void setTableIds(Vector<Integer> tableIds)
-    {
-        this.tableIds = tableIds;
-    }
-
-    /**
      * @return the order
      */
     public int getOrder()
@@ -245,33 +220,35 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     }
 
     /**
-     * @param xstream
+     * @return the draggableFlavors
      */
-    public static void config(final XStream xstream)
+    public Vector<EntryFlavor> getDraggableFlavors()
     {
-        xstream.alias("entry", InteractionEntry.class);
-        
-        xstream.useAttributeFor(InteractionEntry.class, "name");
-        xstream.useAttributeFor(InteractionEntry.class, "tableName");
-        xstream.useAttributeFor(InteractionEntry.class, "labelKey");
-        xstream.useAttributeFor(InteractionEntry.class, "action");
-        xstream.useAttributeFor(InteractionEntry.class, "iconName");
-        xstream.useAttributeFor(InteractionEntry.class, "isOnLeft");
-        xstream.useAttributeFor(InteractionEntry.class, "viewName");
-        xstream.useAttributeFor(InteractionEntry.class, "cmdType");
-        xstream.useAttributeFor(InteractionEntry.class, "order");
-        
-        xstream.aliasAttribute(InteractionEntry.class, "name",      "name");
-        xstream.aliasAttribute(InteractionEntry.class, "tableName", "table");
-        xstream.aliasAttribute(InteractionEntry.class, "labelKey",  "label");
-        xstream.aliasAttribute(InteractionEntry.class, "action",    "action");
-        xstream.aliasAttribute(InteractionEntry.class, "iconName",  "icon");
-        xstream.aliasAttribute(InteractionEntry.class, "isOnLeft",  "isonleft");
-        xstream.aliasAttribute(InteractionEntry.class, "viewName",  "view");
-        xstream.aliasAttribute(InteractionEntry.class, "cmdType",   "type");
-        xstream.aliasAttribute(InteractionEntry.class, "order",     "order");
-        
-        xstream.omitField(InteractionEntry.class, "title");
+        return draggableFlavors;
+    }
+
+    /**
+     * @param draggableFlavors the draggableFlavors to set
+     */
+    public void setDraggableFlavors(Vector<EntryFlavor> draggableFlavors)
+    {
+        this.draggableFlavors = draggableFlavors;
+    }
+
+    /**
+     * @return the droppableFlavors
+     */
+    public Vector<EntryFlavor> getDroppableFlavors()
+    {
+        return droppableFlavors;
+    }
+
+    /**
+     * @param droppableFlavors the droppableFlavors to set
+     */
+    public void setDroppableFlavors(Vector<EntryFlavor> droppableFlavors)
+    {
+        this.droppableFlavors = droppableFlavors;
     }
 
     /* (non-Javadoc)
@@ -295,7 +272,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
      */
     public String getTitle()
     {
-        return title;
+        return title != null ? title : labelKey;
     }
 
     /**
@@ -339,17 +316,56 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     protected Object clone() throws CloneNotSupportedException
     {
         InteractionEntry entry = (InteractionEntry)super.clone();
-        entry.name     = name;
+        entry.name      = name;
         entry.tableName = tableName;
-        entry.labelKey = labelKey;  // Key needed for localization
-        entry.viewName = viewName;
-        entry.cmdType  = cmdType;
-        entry.action   = action;
-        entry.iconName = iconName;
-        entry.isOnLeft = isOnLeft;
-        entry.order    = order;
-        entry.tableIds = new Vector<Integer>(tableIds); // doing this instead of clone
+        entry.labelKey  = labelKey;  // Key needed for localization
+        entry.viewName  = viewName;
+        entry.cmdType   = cmdType;
+        entry.action    = action;
+        entry.iconName  = iconName;
+        entry.isOnLeft  = isOnLeft;
+        entry.order     = order;
+        
+        for (EntryFlavor ef : draggableFlavors)
+        {
+            entry.draggableFlavors.add((EntryFlavor)ef.clone());
+        }
+        for (EntryFlavor ef : droppableFlavors)
+        {
+            entry.droppableFlavors.add((EntryFlavor)ef.clone());
+        }
         return entry;
     }
     
+    /**
+     * @param xstream
+     */
+    public static void config(final XStream xstream)
+    {
+        xstream.alias("entry", InteractionEntry.class);
+        
+        xstream.useAttributeFor(InteractionEntry.class, "name");
+        xstream.useAttributeFor(InteractionEntry.class, "tableName");
+        xstream.useAttributeFor(InteractionEntry.class, "labelKey");
+        xstream.useAttributeFor(InteractionEntry.class, "action");
+        xstream.useAttributeFor(InteractionEntry.class, "iconName");
+        xstream.useAttributeFor(InteractionEntry.class, "isOnLeft");
+        xstream.useAttributeFor(InteractionEntry.class, "viewName");
+        xstream.useAttributeFor(InteractionEntry.class, "cmdType");
+        xstream.useAttributeFor(InteractionEntry.class, "order");
+        
+        xstream.aliasAttribute(InteractionEntry.class, "name",      "name");
+        xstream.aliasAttribute(InteractionEntry.class, "tableName", "table");
+        xstream.aliasAttribute(InteractionEntry.class, "labelKey",  "label");
+        xstream.aliasAttribute(InteractionEntry.class, "action",    "action");
+        xstream.aliasAttribute(InteractionEntry.class, "iconName",  "icon");
+        xstream.aliasAttribute(InteractionEntry.class, "isOnLeft",  "isonleft");
+        xstream.aliasAttribute(InteractionEntry.class, "viewName",  "view");
+        xstream.aliasAttribute(InteractionEntry.class, "cmdType",   "type");
+        xstream.aliasAttribute(InteractionEntry.class, "order",     "order");
+        
+        xstream.omitField(InteractionEntry.class, "title");
+    }
+
+
 }

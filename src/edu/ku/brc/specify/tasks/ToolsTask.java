@@ -225,7 +225,7 @@ public class ToolsTask extends BaseTask
                         
                         for (Integer tableId : tool.getTableIds())
                         {
-                            roc.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", tableId));
+                            roc.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RecordSetTask", tableId));
                         }
                         
                         toolsNavBoxList.add(nbi);

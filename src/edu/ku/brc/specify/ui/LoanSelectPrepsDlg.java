@@ -177,20 +177,6 @@ public class LoanSelectPrepsDlg extends CustomDialog
             i++;
         }
         
-        okBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae)
-            {
-                setVisible(false);
-            }
-        });
-        
-        cancelBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae)
-            {
-                setVisible(false);
-            }
-        });
-        
         applyBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {

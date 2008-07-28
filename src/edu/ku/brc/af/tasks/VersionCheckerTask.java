@@ -2,8 +2,6 @@ package edu.ku.brc.af.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -13,7 +11,6 @@ import java.util.TimerTask;
 import java.util.Vector;
 
 import javax.swing.JFrame;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -116,9 +113,8 @@ public class VersionCheckerTask extends BaseTask
     @Override
     public List<MenuItemDesc> getMenuItems()
     {
-        // create a menu item for "Check for updates now"
         
-        String label    = getResourceString("VersionCheckerTask.CHECK_NOW"); //$NON-NLS-1$
+        /*String label    = getResourceString("VersionCheckerTask.CHECK_NOW"); //$NON-NLS-1$
         
         JMenuItem checkNow = new JMenuItem(label);
         checkNow.addActionListener(new ActionListener()
@@ -136,9 +132,8 @@ public class VersionCheckerTask extends BaseTask
         
         miDesc.setPosition(MenuItemDesc.Position.Before, getResourceString("VersionCheckerTask.ABOUT")); //$NON-NLS-1$
         miDesc.setSepPosition(MenuItemDesc.Position.After);
-        
+        */
         List<MenuItemDesc> menuItems = new Vector<MenuItemDesc>();
-        menuItems.add(miDesc);
 
         return menuItems;
     }

@@ -41,4 +41,16 @@ public class SpecifyRecordSetFactory extends RecordSetFactory
         return rs;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.RecordSetFactory#createRecordSet(java.lang.String, int, java.lang.Byte)
+     */
+    @Override
+    public RecordSetIFace createRecordSet(final String name, final int dbTableId, final Byte type)
+    {
+        RecordSet rs =  new RecordSet();
+        rs.initialize();
+        rs.set(name, dbTableId, type);
+        return rs;
+    }
+
 }

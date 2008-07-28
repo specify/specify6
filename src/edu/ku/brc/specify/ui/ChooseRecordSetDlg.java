@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractListModel;
+import javax.swing.BorderFactory;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 import javax.swing.ScrollPaneConstants;
@@ -35,14 +37,12 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.ui.db.RecordSetListCellRenderer;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Choose a record set from the a list from the database.
- * (TODO Must change over to use CustomDialog)
  *
  * @code_status Beta
  *
@@ -56,8 +56,8 @@ public class ChooseRecordSetDlg extends CustomDialog
     private static final Logger log = Logger.getLogger(ChooseRecordSetDlg.class);
 
     // Data Members
-    protected JList           list       = null;
-    protected List<RecordSet> recordSets = null;
+    protected JList                list       = null;
+    protected List<RecordSetIFace> recordSets = null;
 
     /**
      * @param tableId
@@ -80,13 +80,14 @@ public class ChooseRecordSetDlg extends CustomDialog
         DataProviderSessionIFace session = null;
         try
         {
+            String sql = "FROM recordset in class RecordSet WHERE type = 0";
             session = DataProviderFactory.getInstance().createSession();
             if (tableId == -1)
             {
-                recordSets = session.getDataList(RecordSet.class);
+                recordSets = (List<RecordSetIFace>)session.getDataList(sql);
             } else
             {
-                recordSets = (List<RecordSet>)session.getDataList("from recordset in class RecordSet where recordset.dbTableId = " + tableId);
+                recordSets = (List<RecordSetIFace>)session.getDataList(sql + " AND recordset.dbTableId = " + tableId);
             }
 
         } catch (Exception ex)
@@ -112,6 +113,8 @@ public class ChooseRecordSetDlg extends CustomDialog
     {
         super.createUI();
         
+        okBtn.setEnabled(false);
+        
         ListModel listModel = new AbstractListModel()
         {
             public int getSize() { return recordSets == null ? 0 : recordSets.size(); }
@@ -125,16 +128,23 @@ public class ChooseRecordSetDlg extends CustomDialog
         {
             public void mouseClicked(MouseEvent e) 
             {
+                okBtn.setEnabled(list.getSelectedIndex() > -1);
+                
                 if (e.getClickCount() == 2) 
                 {
                     okBtn.doClick(); //emulate button click
+                    return;
                 }
+                
             }
         });
         
-        JScrollPane listScroller = new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        contentPanel = listScroller;
+        JPanel      panel        = new JPanel(new BorderLayout());
+        JScrollPane listScroller = new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        panel.add(listScroller, BorderLayout.CENTER);
+        panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        
+        contentPanel = panel;
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
         pack();
@@ -158,11 +168,11 @@ public class ChooseRecordSetDlg extends CustomDialog
      * @param additionalTableId
      * @param ids
      */
-    public void addAdditionalObjectsAsRecordSets(final Vector<RecordSet> additionalRS)
+    public void addAdditionalObjectsAsRecordSets(final Vector<RecordSetIFace> additionalRS)
     {
         if (recordSets == null)
         {
-            recordSets = new Vector<RecordSet>();
+            recordSets = new Vector<RecordSetIFace>();
         }
         recordSets.addAll(additionalRS);
     }
@@ -178,7 +188,7 @@ public class ChooseRecordSetDlg extends CustomDialog
     /**
      * @return the List of RecordSets
      */
-    public List<RecordSet> getRecordSets()
+    public List<RecordSetIFace> getRecordSets()
     {
         return recordSets;
     }

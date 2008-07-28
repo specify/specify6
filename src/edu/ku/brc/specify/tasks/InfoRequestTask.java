@@ -151,7 +151,9 @@ public class InfoRequestTask extends BaseTask
     protected void addInfoRequest(final InfoRequest infoRequest)
     {           
         NavBoxItemIFace nbi = addNavBoxItem(navBox, infoRequest.getIdentityTitle(), infoReqIconName, new CommandAction(INFOREQUEST, DELETE_CMD_ACT, infoRequest), infoRequest);
-        setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
+        setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR, InteractionsTask.LOAN_FLAVOR}, new NavBoxAction("Data_Entry", "Edit"));
+        System.err.println(nbi.hashCode());
+        //setUpDraggable(nbi, new DataFlavor[]{InteractionsTask.LOAN_FLAVOR}, null);//new NavBoxAction(InteractionsTask.INTERACTIONS, InteractionsTask.NEW_LOAN));
     }
     
     /**

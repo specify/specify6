@@ -217,6 +217,14 @@ public class CommandAction implements Cloneable
     }
     
     /**
+     * @param srcObj the srcObj to set
+     */
+    public void setSrcObj(Object srcObj)
+    {
+        this.srcObj = srcObj;
+    }
+
+    /**
      * Gets the property as an Object.
      * @param name the prop name
      * @return the value

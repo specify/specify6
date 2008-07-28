@@ -72,6 +72,7 @@ public class RecordSetFactory
     }
     
     /**
+     * Creates a RecordSet object from a factory in the domain of the application.
      * @return a recordset object
      */
     public RecordSetIFace createRecordSet()
@@ -79,5 +80,16 @@ public class RecordSetFactory
         throw new RuntimeException("Must create your own implementation.");
     }
     
+    /**
+     * Creates a RecordSet object from a factory in the domain of the application.
+     * @param name the name (title) of the record set
+     * @param dbTableId the Table Id of the data it represents
+     * @param type the type (Global, etc)
+     * @return a recordset object
+     */
+    public RecordSetIFace createRecordSet(final String name, final int dbTableId, final Byte type)
+    {
+        throw new RuntimeException("Must create your own implementation.");
+    }
 }
 

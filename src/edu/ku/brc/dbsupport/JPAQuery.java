@@ -286,7 +286,10 @@ public class JPAQuery implements CustomQueryIFace
                     for (Object colData : cols)
                     {
                         sb.append('|');
-                        sb.append(colData.getClass().getSimpleName());
+                        if (colData != null && colData.getClass() != null)
+                        {
+                            sb.append(colData.getClass().getSimpleName());
+                        }
                     }
                     sb.append('|');
                     log.debug(" --- " + sb.toString()+" --- ");

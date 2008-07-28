@@ -352,7 +352,7 @@ public class ReportsBaseTask extends BaseTask
             roc.addDragDataFlavor(spReportFlavor);
             if (tblContext != null)
             {
-                roc.addDropDataFlavor(new DataFlavorTableExt(ReportsBaseTask.class, "RECORD_SET", tblContext));
+                roc.addDropDataFlavor(new DataFlavorTableExt(ReportsBaseTask.class, "RecordSetTask", tblContext));
             }
         }
         
@@ -726,7 +726,7 @@ public class ReportsBaseTask extends BaseTask
             String tableIDStr = cmdAction.getPropertyAsString("tableid");
             if (StringUtils.isNotEmpty(tableIDStr) && StringUtils.isNumeric(tableIDStr))
             {
-                RecordSetIFace recordSet = askForRecordSet(Integer.parseInt(tableIDStr));
+                RecordSetIFace recordSet = RecordSetTask.askForRecordSet(Integer.parseInt(tableIDStr));
                 if (recordSet != null)
                 {
                     doLabels(cmdAction.getPropertyAsString("file"), cmdAction.getPropertyAsString("title"), recordSet, params, this, (ImageIcon)cmdAction.getProperty("icon"));

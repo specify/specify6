@@ -493,34 +493,47 @@ public class ExpressSearchConfigDlg extends CustomDialog
     }
     
     /**
-     * 
+     * @return the number of search fields checked on
      */
-    protected void checkForSelectedSearchFields()
+    protected int getCountSelectedSearchFields()
     {
-        boolean fnd = false;
+        int cnt = 0;
         for (int i=0;i<searchFieldsTableModel.getRowCount();i++)
         {
             SearchFieldConfig sfc = (SearchFieldConfig)searchFieldsTableModel.getFields().get(i);
             if (sfc.isInUse())
             {
-                fnd = true;
-                break;
+                cnt++;
             }
         }
-        displayList.setEnabled(fnd);
-        if (!fnd)
+        return cnt;
+    }
+    
+    /**
+     * Sets all the display btns enabled or not.
+     * @param enable true enable, false not
+     * @param doClearCheck true indicates it should uncheck the display field
+     */
+    protected void enableSearchBtns(final boolean enable, final boolean doClearCheck)
+    {
+        for (JToggleButton btn : displayList.getButtons())
         {
-            for (JToggleButton btn : displayList.getButtons())
+            DisplayFieldConfig dfc = displayList.getItemForBtn(btn);
+            if (dfc != null)
             {
-                DisplayFieldConfig dfc = displayList.getItemForBtn(btn);
-                if (dfc != null)
+                if (doClearCheck)
                 {
-                    System.out.println(btn.getText()+"  "+dfc);
                     dfc.setInUse(false);
                 }
+                if (!enable)
+                {
+                    btn.setSelected(false);
+                }
+                btn.setEnabled(enable);
             }
         }
     }
+    
     /**
      * @param btn
      */
@@ -553,8 +566,6 @@ public class ExpressSearchConfigDlg extends CustomDialog
         searchFieldsTableModel.add(stc.getSearchFields());
         searchFieldsTable.getSelectionModel().clearSelection();
         
-        checkForSelectedSearchFields();
-
         for (SearchFieldConfig sfc : stc.getSearchFields())
         {
             if (sfc.isInUse())
@@ -815,8 +826,15 @@ public class ExpressSearchConfigDlg extends CustomDialog
                 switch (columnIndex)
                 {
                     case 0 : 
+                    {
+                        int cnt = getCountSelectedSearchFields();
+                        
                         sfc.setInUse((Boolean)value);
-                        checkForSelectedSearchFields();
+                        
+                        if (cnt == 0 && ((Boolean)value))
+                        {
+                            enableSearchBtns(true, false);
+                        }
                         
                         fireTableRowsUpdated(rowIndex, rowIndex);
                         
@@ -825,17 +843,21 @@ public class ExpressSearchConfigDlg extends CustomDialog
                             toBeSearchedVect.add(sfc);
                             Collections.sort(toBeSearchedVect, toBeSearchedComparator);
                             ((VecModel)toBeSearchedList.getModel()).fireChange(null);
-                            //toBeSearchedList.repaint();
-                            
                             autoSelectDisplayListField(sfc, true);
+                            
                         } else
                         {
                             toBeSearchedVect.remove(sfc);
                             ((VecModel)toBeSearchedList.getModel()).fireChange(null);
-                            //toBeSearchedList.repaint();
                             autoSelectDisplayListField(sfc, false);
                         }
-                        break;
+                        
+                        if (cnt == 1 && !((Boolean)value))
+                        {
+                            enableSearchBtns(false, true);
+                        }
+                    }
+                    break;
                         
                     case 1 : 
                         sfc.setFieldName((String)value);
@@ -884,6 +906,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
                 if (wasAdded)
                 {
                     tb.setEnabled(!wasAdded);
+                } else
+                {
+                    tb.setEnabled(true);
                 }
                 dfc.setInUse(wasAdded);
                return; 

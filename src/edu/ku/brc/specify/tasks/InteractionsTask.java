@@ -38,6 +38,7 @@ import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -56,6 +57,7 @@ import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
+import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
@@ -77,6 +79,7 @@ import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
@@ -84,10 +87,12 @@ import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.ExchangeIn;
 import edu.ku.brc.specify.datamodel.ExchangeOut;
+import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
+import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
@@ -135,14 +140,16 @@ public class InteractionsTask extends BaseTask
     
     public static final String             INTERACTIONS        = "Interactions";
     public static final DataFlavorTableExt INTERACTIONS_FLAVOR = new DataFlavorTableExt(DataEntryTask.class, INTERACTIONS);
-    public static final DataFlavorTableExt INFOREQUEST_FLAVOR  = new DataFlavorTableExt(InfoRequest.class, "InfoRequest");
-    public static final DataFlavorTableExt LOAN_FLAVOR         = new DataFlavorTableExt(Loan.class, "Loan");
+    public static final DataFlavorTableExt INFOREQUEST_FLAVOR  = new DataFlavorTableExt(InfoRequest.class, "InfoRequest", new int[] {50});
+    public static final DataFlavorTableExt LOAN_FLAVOR         = new DataFlavorTableExt(Loan.class, "Loan", new int[] {52});
     public static final DataFlavorTableExt GIFT_FLAVOR         = new DataFlavorTableExt(Loan.class, "Gift");
     public static final DataFlavorTableExt EXCHGIN_FLAVOR      = new DataFlavorTableExt(ExchangeIn.class, "ExchangeIn");
     public static final DataFlavorTableExt EXCHGOUT_FLAVOR     = new DataFlavorTableExt(ExchangeOut.class, "ExchangeOut");
     
     public static final  String   IS_USING_INTERACTIONS_PREFNAME = "Interactions.Using.Interactions.";
 
+    enum ASK_TYPE { Cancel, EnterCats, ChooseRSIR}
+    
     protected static final String InfoRequestName      = "InfoRequest";
     protected static final String NEW_LOAN             = "NEW_LOAN";
     protected static final String NEW_ACCESSION        = "NEW_ACCESSION";
@@ -198,7 +205,6 @@ public class InteractionsTask extends BaseTask
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
         
-        /*
         if (false)
         {
             // temporary
@@ -207,20 +213,47 @@ public class InteractionsTask extends BaseTask
             String D = DataEntryTask.DATA_ENTRY;
             String OPEN_NEW_VIEW = DataEntryTask.OPEN_NEW_VIEW;
             
+            InteractionEntry entry;
             //                                 name          table       lblKey    View         Type    Action      Icon         isOn
-            entries.add(new InteractionEntry("accession",   "accession",   null,  "Accession",   D,   OPEN_NEW_VIEW,    "Accession",   new int[] {Accession.getClassTableId()}));
-            entries.add(new InteractionEntry("permit",      "permit",      null,  "Permit",      D,   OPEN_NEW_VIEW,    "Permit",      new int[] {Permit.getClassTableId()}));
-            entries.add(new InteractionEntry("loan",        "loan",        null,  "Loan",        I,   NEW_LOAN,         "Loan",        new int[] {Loan.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()}));
-            entries.add(new InteractionEntry("gift",        "gift",        null,  "Gift",        F,   NEW_GIFT,         "Gift",        new int[] {Gift.getClassTableId()}));
-            entries.add(new InteractionEntry("exchangein",  "exchangein",  null,  "ExchangeIn",  F,   NEW_EXCHANGE_IN,  "ExchangeIn",  new int[] {ExchangeIn.getClassTableId()}));
-            entries.add(new InteractionEntry("exchangeout", "exchangeout", null,  "ExchangeOut", F,   NEW_EXCHANGE_OUT, "ExchangeOut", new int[] {ExchangeOut.getClassTableId()}));
-            entries.add(new InteractionEntry("inforequest", "inforequest", null,  null,          I,   INFO_REQ_MESSAGE, "InfoRequest", new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()}));
-            entries.add(new InteractionEntry("printloan",   "loan",        "PRINT_LOANINVOICE",  null, I,   PRINT_LOAN, "Reports",     new int[] {Loan.getClassTableId()}));
+            entry = new InteractionEntry("accession",   "accession",   null,  "Accession",   D,   OPEN_NEW_VIEW,    "Accession");
+            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {Accession.getClassTableId()});
+            entries.add(entry);
+            
+            entry = new InteractionEntry("permit",      "permit",      null,  "Permit",      D,   OPEN_NEW_VIEW,    "Permit");
+            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {Permit.getClassTableId()});
+            entries.add(entry);
+            
+            entry = new InteractionEntry("loan",        "loan",        null,  "Loan",        I,   NEW_LOAN,         "Loan");
+            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {Loan.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
+            entries.add(entry);
+            
+            entry = new InteractionEntry("gift",        "gift",        null,  "Gift",        F,   NEW_GIFT,         "Gift");
+            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {Gift.getClassTableId()});
+            entries.add(entry);
+            
+            entry = new InteractionEntry("exchangein",  "exchangein",  null,  "ExchangeIn",  F,   NEW_EXCHANGE_IN,  "ExchangeIn");
+            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {ExchangeIn.getClassTableId()});
+            entries.add(entry);
+            
+            entry = new InteractionEntry("exchangeout", "exchangeout", null,  "ExchangeOut", F,   NEW_EXCHANGE_OUT, "ExchangeOut");
+            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {ExchangeOut.getClassTableId()});
+            entries.add(entry);
+            
+            entry = new InteractionEntry("inforequest", "inforequest", null,  null,          I,   INFO_REQ_MESSAGE, "InfoRequest");
+            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
+            entry.addDroppable(InfoRequest.class, "InfoRequest", new int[] {InfoRequest.getClassTableId()});
+            entries.add(entry);
+            
+            entry = new InteractionEntry("printloan",   "loan",        "PRINT_LOANINVOICE",  null, I,   PRINT_LOAN, "Reports");
+            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {Loan.getClassTableId()});
+            entries.add(entry);
             
             try
             {
                 XStream xstream = new XStream();
                 InteractionEntry.config(xstream);
+                EntryFlavor.config(xstream);
+                
                 FileUtils.writeStringToFile(new File("interactions.xml"), xstream.toXML(entries));
                 
             } catch (Exception ex)
@@ -228,9 +261,9 @@ public class InteractionsTask extends BaseTask
                 ex.printStackTrace();
             }
         } else
-        {*/
+        {
             readEntries();
-        //}
+        }
     }
     
     /**
@@ -244,6 +277,7 @@ public class InteractionsTask extends BaseTask
             XStream xstream = new XStream();
             
             InteractionEntry.config(xstream);
+            EntryFlavor.config(xstream);
             
             String           xmlStr = null;
             AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(SpecifyAppContextMgr.PERSONALDIR, resourceName);
@@ -258,7 +292,7 @@ public class InteractionsTask extends BaseTask
                 if (newAppRes != null)
                 {
                     // Save it in the User Area
-                    AppContextMgr.getInstance().saveResource(newAppRes);
+                    //AppContextMgr.getInstance().saveResource(newAppRes);
                     xmlStr = newAppRes.getDataAsString();
                 } else
                 {
@@ -283,6 +317,7 @@ public class InteractionsTask extends BaseTask
     {
         XStream xstream = new XStream();
         InteractionEntry.config(xstream);
+        EntryFlavor.config(xstream);
         
         AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(SpecifyAppContextMgr.PERSONALDIR, resourceName);
         if (appRes != null)
@@ -361,14 +396,7 @@ public class InteractionsTask extends BaseTask
                 if (entry.isOnLeft())
                 {
                     DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
-                    addCommand(actionsNavBox,
-                              tableInfo,
-                              entry.getTitle(), 
-                              entry.getCmdType(), 
-                              entry.getAction(), 
-                              entry.getViewName(), 
-                              entry.getIconName(), 
-                              entry.getTableIdsAsArray());
+                    addCommand(actionsNavBox, tableInfo, entry);
                 }
             }
             
@@ -442,14 +470,7 @@ public class InteractionsTask extends BaseTask
                 
                 if (entry.isOnLeft())
                 {
-                    addCommand(actionsNavBox,
-                              tableInfo,
-                              label, 
-                              entry.getCmdType(), 
-                              entry.getAction(), 
-                              entry.getViewName(), 
-                              entry.getIconName(), 
-                              entry.getTableIdsAsArray());
+                    addCommand(actionsNavBox, tableInfo, entry);
                 }
             }
             navBoxes.add(actionsNavBox);
@@ -489,34 +510,50 @@ public class InteractionsTask extends BaseTask
                                       final String cmdName, 
                                       final String iconName,
                                       final int[]  tableIds)
-            {
-                CommandAction cmdAction = new CommandAction(INTERACTIONS, action);
-                NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(cmdName), iconName, cmdAction, null, true, false);// true means make it draggable
-                DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
-                                                                RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), tableIds);
-                roc.addDropDataFlavor(dfx);
-                return roc;
-            }
-            
-    protected NavBoxButton addCommand(final NavBox navBox, 
-                                      final DBTableInfo tableInfo,
-                                      final String label,
-                                      final String cmdType, 
-                                      final String action,
-                                      final String viewName,
-                                      final String iconName,
-                                      final int[]  tableIds)
     {
-        CommandAction cmdAction = new CommandAction(cmdType, action, tableInfo.getTableId());
-        if (StringUtils.isNotEmpty(viewName))
-        {
-            cmdAction.setProperty("view", viewName);
-            cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, this);
-        }
-        NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, label, iconName, cmdAction, null, true, false);// true means make it draggable
+        CommandAction cmdAction = new CommandAction(INTERACTIONS, action);
+        NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(cmdName), iconName, cmdAction, null, true, false);// true means make it draggable
         DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
                                                         RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), tableIds);
         roc.addDropDataFlavor(dfx);
+        return roc;
+    }
+            
+    /**
+     * @param navBox
+     * @param tableInfo
+     * @param label
+     * @param cmdType
+     * @param action
+     * @param viewName
+     * @param iconName
+     * @param tableIds
+     * @return
+     */
+    protected NavBoxButton addCommand(final NavBox navBox, 
+                                      final DBTableInfo tableInfo,
+                                      final InteractionEntry entry)
+    {
+        CommandAction cmdAction = new CommandAction(entry.getCmdType(), entry.getAction(), tableInfo.getTableId());
+        if (StringUtils.isNotEmpty(entry.getViewName()))
+        {
+            cmdAction.setProperty("view", entry.getViewName());
+            cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, this);
+        }
+        
+        NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, entry.getTitle(), entry.getIconName(), cmdAction, null, true, false);// true means make it draggable
+        
+        for (EntryFlavor ef : entry.getDraggableFlavors())
+        {
+            DataFlavorTableExt dfx = new DataFlavorTableExt(ef.getDataFlavorClass(), ef.getHumanReadable(), ef.getTableIdsAsArray());
+            roc.addDragDataFlavor(dfx);
+        }
+        
+        for (EntryFlavor ef : entry.getDroppableFlavors())
+        {
+            DataFlavorTableExt dfx = new DataFlavorTableExt(ef.getDataFlavorClass(), ef.getHumanReadable(), ef.getTableIdsAsArray());
+            roc.addDropDataFlavor(dfx);
+        }
         return roc;
     }
             
@@ -542,12 +579,11 @@ public class InteractionsTask extends BaseTask
             {
                 FormDataObjIFace dataObj = (FormDataObjIFace)iter.next();
                 
-                CommandActionForDB   delCmd = new CommandActionForDB(INTERACTIONS, DELETE_CMD_ACT, ti.getTableId(), dataObj.getId());
-                NavBoxItemIFace nbi    = makeDnDNavBtn(navBox, dataObj.getIdentityTitle(), ti.getShortClassName(), 
-                                                       delCmd, null, true, true);
-                RolloverCommand roc = (NavBoxButton)nbi;
-                nbi.setData(new CommandActionForDB(INTERACTIONS, OPEN_FORM_CMD_ACT, ti.getTableId(), dataObj.getId()));
-                roc.addDragDataFlavor(INFOREQUEST_FLAVOR);
+                CommandActionForDB delCmd = new CommandActionForDB(INTERACTIONS, DELETE_CMD_ACT, ti.getTableId(), dataObj.getId());
+                NavBoxItemIFace    nbi    = makeDnDNavBtn(navBox, dataObj.getIdentityTitle(), ti.getShortClassName(), null, delCmd, true, true);
+                RolloverCommand    roc = (NavBoxButton)nbi;
+                nbi.setData(new CommandActionForDB(INTERACTIONS, "InfoRequest", ti.getTableId(), dataObj.getId()));
+                roc.addDragDataFlavor(dragFlav);
                 roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
             }      
             navBoxes.add(navBox);
@@ -616,10 +652,13 @@ public class InteractionsTask extends BaseTask
     {
         if (starterPane != null)
         {
-            //SubPaneMgr.getInstance().showPane(starterPane);
             return starterPane;
-            
         }
+        
+        //DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+        //DroppableFormRecordSetAccepter spDroppable = dataEntryTask.createDroppableFormRecordSetAccepter(title, this, getResourceString("INTERACTIONS_OVERVIEW"));
+        //spDroppable.addDropFlavor(INFOREQUEST_FLAVOR);
+        //return starterPane = spDroppable;
         return starterPane = new SimpleDescPane(title, this, getResourceString("INTERACTIONS_OVERVIEW"));
     }
 
@@ -738,9 +777,9 @@ public class InteractionsTask extends BaseTask
             sb.append(co.getIdentityTitle());
         }
         
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p:g", "p,2px,p"));
-        CellConstraints cc = new CellConstraints();
-        JTextArea       ta = UIHelper.createTextArea(5, 40);
+        PanelBuilder    pb     = new PanelBuilder(new FormLayout("p:g", "p,2px,p"));
+        CellConstraints cc     = new CellConstraints();
+        JTextArea       ta     = UIHelper.createTextArea(5, 40);
         JScrollPane     scroll = new JScrollPane(ta, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         JLabel          lbl    = UIHelper.createLabel(getResourceString("InteractionsTask.MISSING_DET"));
         
@@ -810,12 +849,26 @@ public class InteractionsTask extends BaseTask
     }
     
     /**
-     * @return
+     * Asks where the source of the Loan Preps should come from.
+     * @return the source enum
      */
-    protected boolean askToEnterCatNumbers()
+    protected ASK_TYPE askSourceOfLoanPreps(final boolean hasInfoReqs, final boolean hasColObjRS)
     {
+        String label;
+        if (hasInfoReqs && hasColObjRS)
+        {
+            label = getResourceString("NEW_LOAN_USE_RS_IR");
+            
+        } else if (hasInfoReqs)
+        {
+            label = getResourceString("NEW_LOAN_USE_IR");
+        } else
+        {
+            label = getResourceString("NEW_LOAN_USE_RS");
+        }
+        
         Object[] options = { 
-                getResourceString("NEW_LOAN_USE_RS"), 
+                label, 
                 getResourceString("NEW_LOAN_ENTER_CATNUM") 
               };
         int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
@@ -823,7 +876,15 @@ public class InteractionsTask extends BaseTask
                                                      getResourceString("NEW_LOAN_CHOOSE_RSOPT_TITLE"), 
                                                      JOptionPane.YES_NO_CANCEL_OPTION,
                                                      JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        return userChoice == JOptionPane.NO_OPTION;
+        if (userChoice == JOptionPane.NO_OPTION)
+        {
+            return ASK_TYPE.EnterCats;
+            
+        } else if (userChoice == JOptionPane.YES_OPTION)
+        {
+            return ASK_TYPE.ChooseRSIR;
+        }
+        return ASK_TYPE.Cancel;
     }
     
     /**
@@ -836,38 +897,44 @@ public class InteractionsTask extends BaseTask
         RecordSetIFace recordSet = recordSetArg;
         if (infoRequest == null && recordSet == null)
         {
-            Vector<RecordSet> rsList = new Vector<RecordSet>();
+            // Get a List of InfoRequest RecordSets
+            Vector<RecordSetIFace> rsList = new Vector<RecordSetIFace>();
             for (NavBoxItemIFace nbi : infoRequestNavBox.getItems())
             {
                 Object obj = nbi.getData();
                 if (obj instanceof CommandActionForDB)
                 {
                     CommandActionForDB cmdAction = (CommandActionForDB)obj;
-                    int tableId = cmdAction.getTableId();
-                    int id      = cmdAction.getId();
-                    RecordSet rs = new RecordSet();
-                    rs.initialize();
-                    rs.set(nbi.getTitle(), tableId, RecordSet.GLOBAL);
-                    rs.addItem(id);
+                    RecordSetIFace     rs       = RecordSetFactory.getInstance().createRecordSet(nbi.getTitle(), cmdAction.getTableId(), RecordSet.GLOBAL);
+                    rs.addItem(cmdAction.getId());
                     rsList.add(rs);
                 }
             }
             
-            if (rsList.size() == 0)
+            RecordSetTask        rsTask       = (RecordSetTask)TaskMgr.getTask(RecordSetTask.RECORD_SET);
+            List<RecordSetIFace> colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
+            
+            // If the List is empty then
+            if (rsList.size() == 0 && colObjRSList.size() == 0)
             {
                 recordSet = askForCatNumbersRecordSet();
                 
-            } else if (askToEnterCatNumbers())
+            } else 
             {
+                ASK_TYPE rv = askSourceOfLoanPreps(rsList.size() > 0, colObjRSList.size() > 0);
+                if (rv == ASK_TYPE.ChooseRSIR)
+                {
+                    recordSet = RecordSetTask.askForRecordSet(CollectionObject.getClassTableId(), rsList);
+                    
+                } else if (rv == ASK_TYPE.Cancel)
+                {
+                    return;
+                }
                 
-            } else
-            {
-                recordSet = askForRecordSet(CollectionObject.getClassTableId(), rsList);
-            }
-            
-            if (recordSet == null)
-            {
-                return;
+                if (recordSet == null)
+                {
+                    return;
+                }
             }
         }
         
@@ -1116,7 +1183,7 @@ public class InteractionsTask extends BaseTask
         InfoRequest infoRequest = new InfoRequest();
         infoRequest.initialize();
         
-        RecordSetIFace recordSetFromDB = recordSetArg == null ? askForRecordSet(CollectionObject.getClassTableId()) : recordSetArg;
+        RecordSetIFace recordSetFromDB = recordSetArg == null ? RecordSetTask.askForRecordSet(CollectionObject.getClassTableId()) : recordSetArg;
         RecordSet      recordSet       = null;
         if (recordSetFromDB != null)
         {
@@ -1351,24 +1418,34 @@ public class InteractionsTask extends BaseTask
      * Delete a InfoRequest..
      * @param infoRequest the infoRequest to be deleted
      */
-    protected void deleteInfoRequest(final InfoRequest infoRequest)
+    protected InfoRequest deleteInfoRequest(final int infoReqId)
     {
+        InfoRequest infoRequest = null;
         // delete from database
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            // ???? session.attach(infoRequest);
-            session.beginTransaction();
-            session.delete(infoRequest);
-            session.commit();
+            infoRequest = session.get(InfoRequest.class, infoReqId);
+            if (infoRequest != null)
+            {
+                session.beginTransaction();
+                session.delete(infoRequest);
+                session.commit();
+            }
             
         } catch (Exception ex)
         {
             ex.printStackTrace();
             log.error(ex);
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
-        session.close();
-
+        return infoRequest;
     }
     
     /**
@@ -1629,9 +1706,61 @@ public class InteractionsTask extends BaseTask
                 {
                     InfoRequest infoRequest = (InfoRequest)cmdAction.getData();
                     NavBoxItemIFace nbi = addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), "InfoRequest", new CommandAction(INTERACTIONS, DELETE_CMD_ACT, infoRequest), infoRequest);
-                    setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
+                    setUpDraggable(nbi, new DataFlavor[] {Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction(INTERACTIONS, INFO_REQ_MESSAGE));
                 }
             }
+        }
+    }
+    
+    /**
+     * Loads a InfoRequest into a form
+     * @param cmdAction the command action containing the InfoRequest
+     */
+    private void showInfoReqForm(final CommandActionForDB cmdAction)
+    {
+        // Launch Info Req Form
+        DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+        if (dataEntryTask != null)
+        {
+            InfoRequest              infoReq   = null;
+            DBTableInfo              tableInfo = DBTableIdMgr.getInstance().getInfoById(InfoRequest.getClassTableId());
+            DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                infoReq = session.get(InfoRequest.class, cmdAction.getId());
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                log.error(ex);
+            } finally
+            {
+                session.close();
+            }
+            
+            if (infoReq != null)
+            {
+                dataEntryTask.openView(this, null, tableInfo.getDefaultFormName(), "edit", infoReq, true);
+            }
+        }
+    }
+    
+    /**
+     * Asks if they want to delete and then deletes it
+     * @param cmdActionDB the delete command
+     */
+    private void deleteInfoRequest(final CommandActionForDB cmdActionDB)
+    {
+        NavBoxButton nb = (NavBoxButton)cmdActionDB.getSrcObj();
+        int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+                String.format(UIRegistry.getResourceString("InteractionsTask.CONFIRM_DELETE_IR"), nb.getName()),
+                UIRegistry.getResourceString("InteractionsTask.CONFIRM_DELETE_TITLE_IR"), 
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
+        
+        if (option == JOptionPane.YES_OPTION)
+        {
+            InfoRequest infoRequest = deleteInfoRequest(cmdActionDB.getId());
+            deleteInfoRequestFromUI(null, infoRequest);
         }
     }
     
@@ -1644,7 +1773,7 @@ public class InteractionsTask extends BaseTask
         if (cmdAction.isAction(CREATE_MAILMSG))
         {
             createAndSendEMail();
-                
+            
         } else if (cmdAction.isAction(PRINT_LOAN))
         {
             if (cmdAction.getData() instanceof RecordSetIFace)
@@ -1664,7 +1793,7 @@ public class InteractionsTask extends BaseTask
                 String tableIDStr = cmdAction.getPropertyAsString("tableid");
                 if (StringUtils.isNotEmpty(tableIDStr) && StringUtils.isNumeric(tableIDStr))
                 {
-                    RecordSetIFace recordSet = askForRecordSet(Integer.parseInt(tableIDStr));
+                    RecordSetIFace recordSet = RecordSetTask.askForRecordSet(Integer.parseInt(tableIDStr));
                     if (recordSet != null)
                     {
                         printLoan(cmdAction.getPropertyAsString("file"), recordSet);
@@ -1672,69 +1801,69 @@ public class InteractionsTask extends BaseTask
                 }
             }
             
-        } else if (cmdAction.isAction(INFO_REQ_MESSAGE) && cmdAction.getData() instanceof RecordSetIFace)
+        } else if (cmdAction.isAction(NEW_LOAN))
         {
-            Object data = cmdAction.getData();
-            if (data instanceof RecordSetIFace)
+            if (cmdAction.getData() == cmdAction)
             {
-                createInfoRequest((RecordSetIFace)data);
+                // We get here when a user clicks on a Loan NB action 
+                createLoan(null, null);
+                
+            } else if (cmdAction.getData() instanceof RecordSetIFace)
+            {
+                RecordSetIFace rs = (RecordSetIFace)cmdAction.getData();
+                if (rs.getDbTableId() == colObjTableId || rs.getDbTableId() == infoRequestTableId)
+                {
+                    if (cmdAction.isAction(NEW_LOAN))
+                    {    
+                        createLoan(null, rs);
+                    }
+                } else
+                {
+                    log.error("Dropped wrong table type."); // this shouldn't happen
+                }
+                
+            } else if (cmdAction.getData() instanceof InfoRequest)
+            {
+                createLoan((InfoRequest)cmdAction.getData());
+                
+            }  else if (cmdAction.getData() instanceof CommandActionForDB)
+            {
+                CommandActionForDB cmdActionDB = (CommandActionForDB)cmdAction.getData();
+                RecordSetIFace     rs          = RecordSetFactory.getInstance().createRecordSet("", cmdActionDB.getTableId(), RecordSet.GLOBAL);
+                rs.addItem(cmdActionDB.getId());
+                createLoan(null, rs);
+            }
+            
+        } else if (cmdAction.isAction(INFO_REQ_MESSAGE))
+        {
+            if (cmdAction.getData() == cmdAction)
+            {
+                // We get here when a user clicks on a InfoRequest NB action 
+                createInfoRequest(null);
+                
+            } else if (cmdAction.getData() instanceof RecordSetIFace)
+            {
+                // We get here when a RecordSet is dropped on an InfoRequest
+                Object data = cmdAction.getData();
+                if (data instanceof RecordSetIFace)
+                {
+                    createInfoRequest((RecordSetIFace)data);
+                }
+            } else if (cmdAction.getData() instanceof CommandActionForDB)
+            {
+                // We get here when a InfoRequest is dropped on an InfoRequest NB action
+                showInfoReqForm((CommandActionForDB)cmdAction.getData());
             }
             
         } else if (cmdAction.isAction("ReturnLoan"))
         {
             returnLoan();
             
-        } else if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof InfoRequest)
+        } else if (cmdAction.isAction(DELETE_CMD_ACT))
         {
-            InfoRequest inforRequest = (InfoRequest)cmdAction.getData();
-            deleteInfoRequest(inforRequest);
-            deleteInfoRequestFromUI(null, inforRequest);
-            
-        } else 
-        {
-            Object cmdData = cmdAction.getData();
-            if (cmdData == null)
+            if (cmdAction instanceof CommandActionForDB)
             {
-                //LabelsTask.askForRecordSet(tableId)   
-            }
-            
-            // These all assume there needs to be a recordsset
-            if (cmdData != null)
-            {
-                if (cmdData instanceof RecordSetIFace)
-                {
-                    RecordSetIFace rs = (RecordSetIFace)cmdData;
-                    
-                    if (rs.getDbTableId() == colObjTableId || rs.getDbTableId() == infoRequestTableId)
-                    {
-                        if (cmdAction.isAction(NEW_LOAN))
-                        {    
-                            createLoan(null, rs);
-                                
-                        } else if (cmdAction.isAction(InfoRequestName))
-                        {
-                            createInfoRequest(rs);      
-                        }
-                    } else
-                    {
-                        log.error("Dropped wrong table type.");
-                        // this shouldn't happen
-                    }
-                } else if (cmdData instanceof InfoRequest)
-                {
-                    createLoan((InfoRequest)cmdData);
-                    
-                } else if (cmdData instanceof CommandAction)
-                {
-                    if (cmdAction.isAction(InfoRequestName))
-                    {
-                        createInfoRequest(null);   
-                        
-                    } else if (cmdAction.isAction(NEW_LOAN))
-                    {
-                        createLoan(null, null);
-                    }
-                }
+                deleteInfoRequest((CommandActionForDB)cmdAction);
             }
         }
     }

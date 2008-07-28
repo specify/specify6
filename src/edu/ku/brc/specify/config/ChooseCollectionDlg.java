@@ -30,6 +30,7 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -118,6 +119,7 @@ public class ChooseCollectionDlg extends CustomDialog
         
         JScrollPane sp = new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         pb.add(sp, cc.xy(1, 1));
+        pb.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         
         list.addMouseListener(new MouseAdapter() {
             //@Override
