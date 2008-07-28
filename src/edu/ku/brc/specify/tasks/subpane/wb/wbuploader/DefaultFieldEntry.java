@@ -58,15 +58,6 @@ public class DefaultFieldEntry
 
     /**
      * @param params
-     * @return the defaultValue as an array for use as a parameter for method invocation.
-     */
-//    protected final Object[] getDefaultValueArg(Object... params)
-//    {
-//        return defaultValue;
-//    }
-
-    /**
-     * @param params
      * @return the default value Object
      */
     protected Object getDefaultValue(Object... params)

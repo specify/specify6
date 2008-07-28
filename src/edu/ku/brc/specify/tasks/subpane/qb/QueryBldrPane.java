@@ -803,6 +803,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             //Assuming that this not necessary when keysToRetrieve is non-null because
             //the keys will already been filtered properly. (???)
+            
             // Add extra where's for system fields for each table in the from clause...
             boolean isRootTbl = true;
             for (Pair<DBTableInfo, String> fromTbl : fromTbls)

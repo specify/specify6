@@ -201,7 +201,7 @@
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
     </table>
-    
+        
     <table name="ReferenceWork">
         <table name="Journal"/>
         <table name="Author" field="authors">

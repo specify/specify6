@@ -304,6 +304,9 @@ public class UploadTable implements Comparable<UploadTable>
                         DefaultFieldEntry dfe;
                         if (table.getName().equalsIgnoreCase("collector") && fldName.equalsIgnoreCase("isprimary"))
                         {
+                            //Creating a new DefaultFieldEntry class makes it possible to handle
+                            //the conditional/parameterized default behavior of isPrimary without spreading these
+                            //cheezy field by field conditions to code that is not yet infected.by cheezy fld by fld conditions.
                             dfe = new DefaultIsPrimaryEntry(this, m.getReturnType(),
                                     setter, fldName);
                         }
@@ -1343,14 +1346,6 @@ public class UploadTable implements Comparable<UploadTable>
             }
             for (DefaultFieldEntry dfe : missingRequiredFlds)
             {
-//                if (table.getName().equalsIgnoreCase("collector")
-//                        && dfe.getFldName().equalsIgnoreCase("isprimary"))
-//                {
-//                    // disgusting cheap but easy way to deal with conditional issues for isPrimary
-//                    // too much work at this point to do it nicely
-//                    critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), recNum == 0));
-//                }
-//                else
                 {
                     critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe
                             .getDefaultValue(recNum)));
