@@ -222,7 +222,7 @@ public class WebLinkConfigDlg extends CustomDialog
                 hasChanged = true;
             } else
             {
-                System.err.println("Not changed.");
+                //System.err.println("Not changed.");
             }
         }
     }

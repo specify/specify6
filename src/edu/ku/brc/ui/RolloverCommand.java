@@ -579,7 +579,6 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
      */
     public void addDragDataFlavor(final DataFlavor dataFlavor)
     {
-        System.err.println(hashCode()+"  "+ dataFlavor);
         dragFlavors.add(dataFlavor);
     }
 

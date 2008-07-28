@@ -357,7 +357,7 @@ public class TaskSemaphoreMgr
                                                 final Collection collection) throws Exception
     {
         String sql = buildSQL(name, scope, specifyUser, discipline, collection);
-        System.err.println(sql);
+        //System.err.println(sql);
         Object[] cols = (Object[])session.getData(sql);
         return cols != null && cols.length > 0 ? (SpTaskSemaphore)cols[0] : null;
     }

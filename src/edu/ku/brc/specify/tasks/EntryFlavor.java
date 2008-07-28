@@ -120,7 +120,7 @@ public class EntryFlavor implements Cloneable
             
         } catch (Exception ex)
         {
-            System.err.println(className);
+            //System.err.println(className);
             throw new RuntimeException(ex);
         }
     }

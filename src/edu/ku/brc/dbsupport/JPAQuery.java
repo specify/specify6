@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -169,12 +168,6 @@ public class JPAQuery implements CustomQueryIFace
         {
             try
             {
-                // for testing
-                if (sqlStr.endsWith(" or co0 is null)"))
-                {
-                    sqlStr = StringUtils.replace(sqlStr, " or co0 is null)", ")");
-                    log.debug("isUnique: "+isUnique);
-                }
                 Query qry = query != null ? query : session.createQuery(sqlStr);
                 
                 if (params != null)
