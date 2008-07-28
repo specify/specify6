@@ -58,7 +58,7 @@ public class UploadRetriever //implements CommandListener, SQLExecutionListener,
             /* (non-Javadoc)
              * @see edu.ku.brc.specify.tasks.subpane.ESResultsSubPane#createResultsTable(edu.ku.brc.ui.db.QueryForIdResultsIFace)
              */
-            //@Override
+            @Override
             protected ESResultsTablePanel createResultsTable(QueryForIdResultsIFace results)
             {
                 return new UploadResultsTablePanel(this, results, results.shouldInstallServices(), results.isExpanded()); 

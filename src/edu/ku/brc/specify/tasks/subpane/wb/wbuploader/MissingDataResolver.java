@@ -48,7 +48,6 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionMember;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.PrepType;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.DefaultFieldEntry;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
@@ -72,7 +71,7 @@ public class MissingDataResolver implements ActionListener
     /**
      * Local fields not provided by the upload dataset.
      */
-    protected Vector<UploadTable.DefaultFieldEntry> missingFlds;
+    protected Vector<DefaultFieldEntry> missingFlds;
 
     /**
      * Lists of available values for each missingClass and missingFld.
@@ -188,7 +187,7 @@ public class MissingDataResolver implements ActionListener
      * @param missingClasses
      * @param missingFlds
      */
-    public MissingDataResolver(Vector<RelatedClassSetter> missingClasses, Vector<UploadTable.DefaultFieldEntry> missingFlds)
+    public MissingDataResolver(Vector<RelatedClassSetter> missingClasses, Vector<DefaultFieldEntry> missingFlds)
     {
         super();
         this.missingClasses = missingClasses;
@@ -376,7 +375,7 @@ public class MissingDataResolver implements ActionListener
      * @param dfe
      * @return true if default value can be determined for local field represented by dfe.
      */
-    protected boolean meetFldRequirement(UploadTable.DefaultFieldEntry dfe)
+    protected boolean meetFldRequirement(DefaultFieldEntry dfe)
     {
         if (dfe.getUploadTbl().getTblClass() == edu.ku.brc.specify.datamodel.Agent.class)
         {

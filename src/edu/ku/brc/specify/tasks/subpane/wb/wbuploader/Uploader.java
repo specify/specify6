@@ -65,7 +65,6 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel.ImportMappingRelFld;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.DefaultFieldEntry;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -170,7 +169,7 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * Required fields not present in the dataset.
      */
-    protected Vector<UploadTable.DefaultFieldEntry> missingRequiredFields;
+    protected Vector<DefaultFieldEntry> missingRequiredFields;
 
     /**
      * A list of recordsets containing the keys of all objects uploaded. A separate RecordSet will be
@@ -604,7 +603,7 @@ public class Uploader implements ActionListener, KeyListener
         this.wbSS = wbSS;
         this.uploadFields = new Vector<UploadField>(importData.getCols());
         this.missingRequiredClasses = new Vector<RelatedClassSetter>();
-        this.missingRequiredFields = new Vector<UploadTable.DefaultFieldEntry>();
+        this.missingRequiredFields = new Vector<DefaultFieldEntry>();
         this.skippedRows = new Vector<SkippedRow>();
         this.messages = new Vector<UploadMessage>();
         this.newMessages = new Vector<UploadMessage>();

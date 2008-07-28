@@ -301,8 +301,18 @@ public class UploadTable implements Comparable<UploadTable>
                         {
                             fldName = "collectionMemberId";
                         }
-                        missingRequiredFlds.add(new DefaultFieldEntry(this, m.getReturnType(),
-                                setter, fldName));
+                        DefaultFieldEntry dfe;
+                        if (table.getName().equalsIgnoreCase("collector") && fldName.equalsIgnoreCase("isprimary"))
+                        {
+                            dfe = new DefaultIsPrimaryEntry(this, m.getReturnType(),
+                                    setter, fldName);
+                        }
+                        else
+                        {
+                            dfe = new DefaultFieldEntry(this, m.getReturnType(),
+                                    setter, fldName);
+                        }
+                        missingRequiredFlds.add(dfe);
                     }
                     // Now setRequired for the corresponding UploadField to true. (Very
                     // inefficiently)
@@ -454,116 +464,6 @@ public class UploadTable implements Comparable<UploadTable>
             bldMissingReqRelClasses();
         }
         return relatedClassDefaults.iterator();
-    }
-
-    /**
-     * @author timbo
-     * 
-     * @code_status Alpha
-     * 
-     * Stores default values for (probably only required) fields not in uploading dataset.
-     */
-    public class DefaultFieldEntry
-    {
-        /**
-         * The upload table that created this entry.
-         */
-        protected final UploadTable uploadTbl;
-        /**
-         * The Java class of the field being uploaded to.
-         */
-        protected Class<?>          fldClass;
-        /**
-         * The method in tblClass that is used set values to the field being uploaded to.
-         */
-        protected Method            setter;
-        /**
-         * Default arg for setter member.
-         */
-        protected Object[]          defaultValue;
-        /**
-         * The name of the field being uploaded to.
-         */
-        protected String            fldName;
-
-        /**
-         * @param fldClass
-         * @param setter
-         * @param defaultValue
-         * @param fldName
-         */
-        public DefaultFieldEntry(final UploadTable uploadTbl, Class<?> fldClass, Method setter,
-                String fldName)
-        {
-            super();
-            this.uploadTbl = uploadTbl;
-            this.fldClass = fldClass;
-            this.setter = setter;
-            this.defaultValue = new Object[1];
-            defaultValue[0] = null;
-            this.fldName = fldName;
-        }
-
-        /**
-         * @return the defaultValue as an array for use as a parameter for method invocation.
-         */
-        protected final Object[] getDefaultValueArg()
-        {
-            return defaultValue;
-        }
-
-        /**
-         * @return the default value Object
-         */
-        protected Object getDefaultValue()
-        {
-            return defaultValue[0];
-        }
-
-        /**
-         * @param defaultValue the defaultValue to set
-         */
-        public final void setDefaultValue(Object defaultValue)
-        {
-            this.defaultValue[0] = defaultValue;
-        }
-
-        /**
-         * @return the fldClass
-         */
-        public final Class<?> getFldClass()
-        {
-            return fldClass;
-        }
-
-        /**
-         * @return the fldName
-         */
-        public final String getFldName()
-        {
-            return fldName;
-        }
-
-        /**
-         * @return the setter
-         */
-        public final Method getSetter()
-        {
-            return setter;
-        }
-
-        public boolean isDefined()
-        {
-            return defaultValue[0] != null;
-        }
-
-        /**
-         * @return the uploadTbl
-         */
-        public final UploadTable getUploadTbl()
-        {
-            return uploadTbl;
-        }
     }
 
     /**
@@ -1118,12 +1018,14 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Sets missing required flds in rec.
      */
-    protected void setRequiredFldDefaults(DataModelObjBase rec) throws InvocationTargetException,
+    protected void setRequiredFldDefaults(DataModelObjBase rec, int recNum) throws InvocationTargetException,
             IllegalAccessException
     {
         for (DefaultFieldEntry dfe : missingRequiredFlds)
         {
-            dfe.getSetter().invoke(rec, dfe.getDefaultValueArg());
+            Object[] arg = new Object[1];
+            arg[0] = dfe.getDefaultValue(recNum);
+            dfe.getSetter().invoke(rec, arg);
         }
     }
 
@@ -1391,6 +1293,7 @@ public class UploadTable implements Comparable<UploadTable>
         return pte.getImportTable().getCurrentRecord(recNum);
     }
     
+    
     /**
      * @param recNum
      * @return
@@ -1440,8 +1343,18 @@ public class UploadTable implements Comparable<UploadTable>
             }
             for (DefaultFieldEntry dfe : missingRequiredFlds)
             {
-                critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe
-                        .getDefaultValueArg()[0]));
+//                if (table.getName().equalsIgnoreCase("collector")
+//                        && dfe.getFldName().equalsIgnoreCase("isprimary"))
+//                {
+//                    // disgusting cheap but easy way to deal with conditional issues for isPrimary
+//                    // too much work at this point to do it nicely
+//                    critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), recNum == 0));
+//                }
+//                else
+                {
+                    critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe
+                            .getDefaultValue(recNum)));
+                }
             }
 
             List<DataModelObjBase> matches;
@@ -1689,7 +1602,7 @@ public class UploadTable implements Comparable<UploadTable>
                         DataModelObjBase rec = getCurrentRecordForSave(recNum);
                         rec.initialize();
                         setFields(rec, seq);
-                        setRequiredFldDefaults(rec);
+                        setRequiredFldDefaults(rec, recNum);
                         boolean gotRequiredParents = setParents(rec, recNum);
                         setRelatedDefaults(rec, recNum);
                         finalizeWrite(rec, recNum);
