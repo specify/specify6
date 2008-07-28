@@ -600,7 +600,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         {
             if (cnt > 0) whereSB.append(" OR "); //$NON-NLS-1$
             whereSB.append(" LOWER("); //$NON-NLS-1$
-            whereSB.append(keyCol);
+            whereSB.append(tableInfo.getAbbrev() + "." + keyCol);
             whereSB.append(") LIKE '"); //$NON-NLS-1$
             whereSB.append(newEntryStr.toLowerCase());
             whereSB.append("%' "); //$NON-NLS-1$
@@ -659,14 +659,14 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 if (isForCount)
                 {
                     sb.append("count(");                 //$NON-NLS-1$
-                    sb.append(tableInfo.getIdFieldName());
+                    sb.append(tableInfo.getAbbrev() + "." + tableInfo.getIdFieldName());
                     sb.append(")"); //$NON-NLS-1$
                     
                 } else
                 {
-                    sb.append(displayColumns);
+                    sb.append(tableInfo.getAbbrev() + "." + displayColumns);
                     sb.append(","); //$NON-NLS-1$
-                    sb.append(tableInfo.getIdFieldName());                
+                    sb.append(tableInfo.getAbbrev() + "." + tableInfo.getIdFieldName());                
                 }
     
                 sb.append(" FROM "); //$NON-NLS-1$
@@ -686,7 +686,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 
                 //System.err.println(sb.toString());
                 
-                String specialCols = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
+                String specialCols = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);//, false, isForCount ? null : tableInfo.getAbbrev());
                 if (StringUtils.isNotEmpty(specialCols))
                 {
                     if (whereSB.length() > 0) whereSB.append(" AND "); //$NON-NLS-1$
@@ -924,7 +924,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             list.clear();
             idList.clear();
             
-            JPAQuery jpaQuery = new JPAQuery(buildSQL(((JPAQuery)customQuery).getData().toString(), false), this);
+            String sqlStr = buildSQL(((JPAQuery)customQuery).getData().toString(), false);
+            log.debug(sqlStr);
+            //sqlStr = "SELECT clt.collectingTripName, clt.collectingTripId FROM edu.ku.brc.specify.datamodel.CollectingTrip as clt inner join clt.discipline as dsp  WHERE  LOWER(collectingTripName) LIKE 'a%'  AND dsp.disciplineId = 3 ORDER BY collectingTripName ASC";
+            JPAQuery jpaQuery = new JPAQuery(sqlStr, this);
             isDoingCount = false;
             jpaQuery.start();
             

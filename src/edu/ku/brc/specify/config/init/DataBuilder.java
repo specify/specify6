@@ -471,10 +471,13 @@ public class DataBuilder
         return colEv;
     }
     
-    public static CollectingTrip createCollectingTrip(final String remarks, final CollectingEvent[] events)
+    public static CollectingTrip createCollectingTrip(final String collectingTripName,
+                                                      final String remarks, 
+                                                      final CollectingEvent[] events)
     {
         CollectingTrip trip = new CollectingTrip();
         trip.initialize();
+        trip.setCollectingTripName(collectingTripName);
         trip.setRemarks(remarks);
         Timestamp now = new Timestamp(System.currentTimeMillis());
         trip.setTimestampCreated(now);

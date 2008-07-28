@@ -4571,7 +4571,7 @@ public class BuildSampleDatabase
         ce2.setEndDateVerbatim("20 Mar 1993, 7:31 AM");
         ce2.setMethod(colMethods.getItem(2).getValue());
 
-        CollectingTrip trip = createCollectingTrip("Sample collecting trip", new CollectingEvent[]{ce1,ce2});
+        CollectingTrip trip = createCollectingTrip("My Collecint Trip", "Sample collecting trip", new CollectingEvent[]{ce1,ce2});
 
         
         dataObjects.add(trip);
