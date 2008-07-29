@@ -155,7 +155,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 {
                     PickListEditorDlg dlg = new PickListEditorDlg(null);
                     dlg.createUI();
-                    dlg.setSize(400,400);
+                    dlg.setSize(400,500);
                     dlg.setVisible(true);
                 }
             })); 

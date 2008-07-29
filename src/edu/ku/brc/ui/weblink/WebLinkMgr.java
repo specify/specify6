@@ -244,7 +244,7 @@ public class WebLinkMgr
             if ((tableInfo != null && wld.getTableName() != null && wld.getTableName().equals(tableInfo.getName())) ||
                 (tableInfo == null && wld.getTableName() == null))
             {
-                System.out.println(wld.getName() + "  "+wld.getTableName());
+                //System.out.println(wld.getName() + "  "+wld.getTableName());
                 list.add(wld);
             }
         }

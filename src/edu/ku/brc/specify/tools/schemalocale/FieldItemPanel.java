@@ -439,10 +439,6 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             {
                 PickListEditorDlg dlg = new PickListEditorDlg(localizableIO);
                 dlg.setVisible(true);
-                if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
-                {
-                    
-                }
             }
         });
         
