@@ -634,7 +634,7 @@ public class DataEntryTask extends BaseTask
                     if (newAppRes != null)
                     {
                         // Save it in the User Area
-                        AppContextMgr.getInstance().saveResource(newAppRes);
+                        //AppContextMgr.getInstance().saveResource(newAppRes);
                         xmlStr = newAppRes.getDataAsString();
                     } else
                     {
