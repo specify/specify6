@@ -5344,7 +5344,9 @@ public class BuildSampleDatabase
      * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
-    public void createSingleDiscipline(final DisciplineType disciplineType)
+    public void createSingleDiscipline(final DisciplineType disciplineType,
+                                       final String usernameArg,
+                                       final String passwordArg)
     {
         System.out.println("Creating single disciplineType database: " + disciplineType.getTitle());
         
@@ -5357,10 +5359,10 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        String           username         = initPrefs.getProperty("initializer.username", "rods");
+        String           username         = initPrefs.getProperty("initializer.username", usernameArg);
         String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
-        String           password         = initPrefs.getProperty("useragent.password", "rods");
+        String           password         = initPrefs.getProperty("useragent.password", passwordArg);
         
         System.out.println("----- User Agent -----");
         System.out.println("Userame:   "+username);
@@ -6685,14 +6687,13 @@ public class BuildSampleDatabase
                     // save it all to the DB
                     setSession(HibernateUtil.getCurrentSession());
 
-                    createSingleDiscipline(disciplineType);
+                    createSingleDiscipline(disciplineType, username, password);
 
                     attachMgr.cleanup();
                     
 
                     frame.setDesc("Done Saving data...");
                     frame.setOverall(steps++);
-
 
                     frame.setDesc("Copying Preferences...");
                     frame.setOverall(steps++);
