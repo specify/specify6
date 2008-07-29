@@ -2631,6 +2631,10 @@ public class FormViewObj implements Viewable,
                         formValidator.setNewObj(isNewlyCreatedDataObj);
                     }
 
+                    if (mvParent != null)
+                    {
+                        mvParent.shutdownDisplayFrames();
+                    }
                 }
                 
             } catch (edu.ku.brc.dbsupport.StaleObjectException e)

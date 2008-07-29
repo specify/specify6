@@ -1398,6 +1398,14 @@ public class MultiView extends JPanel
         }
         kids.clear();
 
+        shutdownDisplayFrames();
+    }
+    
+    /**
+     * Tell the MultiView to shutdown and close all child ViewBasedDisplayIFace windows.
+     */
+    public void shutdownDisplayFrames()
+    {
         if (displayFrames != null)
         {
             for (ViewBasedDisplayIFace vbd : displayFrames)
