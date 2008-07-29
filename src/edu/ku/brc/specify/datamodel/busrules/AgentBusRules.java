@@ -15,6 +15,7 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Component;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -34,6 +36,7 @@ import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -231,9 +234,11 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             Agent agent = (Agent)formViewObj.getDataObj();
             if (agent != null)
             {
-                Component addrSubView = formViewObj.getCompById("9");
+                final Component addrSubView = formViewObj.getCompById("9");
                 Component addrSep     = formViewObj.getCompById("99");
 
+                boolean isVisible = addrSubView.isVisible();
+                
                 byte agentType = (byte)cbx.getSelectedIndex();
                 if (agentType != Agent.PERSON)
                 {
@@ -247,6 +252,20 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                     
                 } else
                 {
+                    if (!isVisible)
+                    {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run()
+                            {
+                                Component topComp = UIHelper.getWindow(addrSubView);
+                                Component topMost = UIRegistry.getTopWindow();
+                                if (topComp != topMost)
+                                {
+                                    ((Window)topComp).pack();
+                                }
+                            }
+                        });
+                    }
                     addrSubView.setVisible(true);
                     addrSep.setVisible(true);
                 }
@@ -280,6 +299,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                 ignoreSet = true;
                 typeCBX.getComboBox().setSelectedIndex(agentType == null ? Agent.PERSON : agentType);
                 ignoreSet = false;
+                fixUpTypeCBX(typeCBX.getComboBox());
             }
             
         } else

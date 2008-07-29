@@ -250,6 +250,11 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
         {
             viewBasedPanel.aboutToShow(visible);
         }
+        
+        if (visible)
+        {
+            createUI();
+        }
         super.setVisible(visible);
     }
     
