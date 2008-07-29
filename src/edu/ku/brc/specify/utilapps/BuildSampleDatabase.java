@@ -3132,7 +3132,8 @@ public class BuildSampleDatabase
         createTaxonTreeFromXML(taxa, taxonTreeDef, disciplineType);
         
         boolean isPaleo = disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.paleobotany ||
-                          disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.vertpaleo;
+                          disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.vertpaleo ||
+                          disciplineType.getDisciplineType() == DisciplineType.STD_DISCIPLINES.invertpaleo;
         
         if (isPaleo)
         {
