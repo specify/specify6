@@ -1482,7 +1482,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             session = openSession();
             for (SpAppResourceDir appResDir : spAppResourceList)
             {
-                log.debug(appResDir.getIdentityTitle());
+                //log.debug(appResDir.getIdentityTitle());
                 
                 if (appResDir.getSpAppResourceDirId() != null)
                 {

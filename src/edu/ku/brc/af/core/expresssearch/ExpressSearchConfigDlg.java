@@ -625,6 +625,11 @@ public class ExpressSearchConfigDlg extends CustomDialog
                     config.removeTable(stc);
                 }
                 
+                // They need to be sorted because the UI doesn't do that
+                // the UI only sorts visually an din the UI models
+                Collections.sort(stc.getSearchFields());
+                Collections.sort(stc.getDisplayFields());
+                
             } else
             {
                 config.removeTable(stc);

@@ -213,4 +213,15 @@ public class SearchFieldConfig implements edu.ku.brc.af.core.expresssearch.Table
         return order.compareTo(o.order);
     }
     
+    /**
+     * Dumps contents for Debugging.
+     */
+    public void dump()
+    {
+        System.out.println("  fieldName:   "+fieldName);
+        System.out.println("  isSortable:  "+isSortable);
+        System.out.println("  isAscending: "+isAscending);
+        System.out.println("  order:       "+order);
+    }
+    
 }

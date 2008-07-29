@@ -231,4 +231,16 @@ public class DisplayFieldConfig implements TableNameRendererIFace, Comparable<Di
     {
         return toString();
     }
+    
+    /**
+     * Dumps contents for Debugging.
+     */
+    public void dump()
+    {
+        System.out.println("  fieldName:   "+fieldName);
+        System.out.println("  formatter:   "+formatter);
+        System.out.println("  isWebSrvFld: "+isWebServiceField);
+        System.out.println("  order:       "+order);
+    }
+
 }

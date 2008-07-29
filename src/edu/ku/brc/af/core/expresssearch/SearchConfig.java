@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 import com.thoughtworks.xstream.XStream;
 
 /**
- * This class keeps track of tables that are configured to participate in the ExpressSearch. BNoth for searching
+ * This class keeps track of tables that are configured to participate in the ExpressSearch. Both for searching
  * and display. 
  * 
  * This class and its children objects are created from a persistent store in XML.

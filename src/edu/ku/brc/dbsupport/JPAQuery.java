@@ -17,7 +17,9 @@
  */
 package edu.ku.brc.dbsupport;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -60,14 +62,14 @@ public class JPAQuery implements CustomQueryIFace
     protected Object                    data        = null;
     protected Query                     query       = null;
     
-    protected final AtomicBoolean             cancelled = new AtomicBoolean(false);
+    protected final AtomicBoolean       cancelled   = new AtomicBoolean(false);
     /**
      * Constructor.
      * @param sqlStr the query string
      */
     public JPAQuery(final String sqlStr)
     {
-        this.sqlStr = sqlStr;
+        this(sqlStr, null);
     }
     
     /**
@@ -168,6 +170,7 @@ public class JPAQuery implements CustomQueryIFace
         {
             try
             {
+                //log.debug(sqlStr);
                 Query qry = query != null ? query : session.createQuery(sqlStr);
                 
                 if (params != null)
@@ -288,12 +291,21 @@ public class JPAQuery implements CustomQueryIFace
                     log.debug(" --- " + sb.toString()+" --- ");
                 }
                 
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                
                 sb.setLength(0);
                 Object[] cols = (Object[])row;
                 for (Object colData : cols)
                 {
                     sb.append('|');
-                    sb.append(colData);
+                    if (colData instanceof Calendar)
+                    {
+                        sb.append(sdf.format(((Calendar)colData).getTime()));
+                    } else
+                    {
+                        sb.append(colData);
+                    }
+                    
                 }
                 sb.append('|');
                 log.debug(rowNum+" - " + sb.toString());

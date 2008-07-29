@@ -518,4 +518,24 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         return toString();
     }
     
+    /**
+     * Dumps contents for Debugging.
+     */
+    public void dump()
+    {
+        System.out.println("\n----------- "+tableName+" ------------");
+        System.out.println("Order: "+displayOrder);
+        System.out.println("  --------- Search Fields -__-------");
+        for (SearchFieldConfig sfc : searchFields)
+        {
+            sfc.dump();
+        }
+        
+        System.out.println("  --------- Display Fields --------");
+        for (DisplayFieldConfig dfc : displayFields)
+        {
+            dfc.dump();
+        }
+    }
+    
 }
