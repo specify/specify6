@@ -19,9 +19,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -112,8 +114,10 @@ public class UIRegistry
     
     public static final String LONGTERM_CACHE_MAP = "longterm-cache-map.xml";
 
-    private static final Logger           log      = Logger.getLogger(UIRegistry.class);
-    protected static final UIRegistry instance = new UIRegistry();
+    private static final Logger       log       = Logger.getLogger(UIRegistry.class);
+    protected static final UIRegistry instance  = new UIRegistry();
+    protected static Rectangle        frameRect = null;
+
 
     // Data Members
     protected Hashtable<String, Component> components  = new Hashtable<String, Component>();
@@ -1221,12 +1225,14 @@ public class UIRegistry
         Component mainComp = get(MAINPANE);
         if (mainComp != null && glassPane != null)
         {
+            JFrame frame = (JFrame)get(FRAME);
+            frameRect = frame.getBounds();
+            
             int      y        = 0;
             JMenuBar menuBar  = null;
             Dimension size    = mainComp.getSize();
             if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
             {
-                JFrame frame = (JFrame)get(FRAME);
                 menuBar = frame.getJMenuBar();
                 size.height += menuBar.getSize().height;
                 y += menuBar.getSize().height;
@@ -1280,7 +1286,7 @@ public class UIRegistry
     }
     
     /**
-     * Clears the GlassPane, meaning it sets the mainComp visinle again and sets the GlassPane to be hidden.
+     * Clears the GlassPane, meaning it sets the mainComp visible again and sets the GlassPane to be hidden.
      */
     public static void clearGlassPaneMsg()
     {
@@ -1290,6 +1296,9 @@ public class UIRegistry
             getGlassPane().setVisible(false);
             mainComp.setVisible(true);
             mainComp.repaint();
+            
+            Frame frame = (JFrame)get(FRAME);
+            frame.setBounds(frameRect);
         }  
     }
     

@@ -88,6 +88,8 @@ public class ResourceImportExportDlg extends CustomDialog
 
     protected List<SpAppResource>    resources = new Vector<SpAppResource>();
     protected List<SpAppResourceDir> dirs;
+    
+    protected boolean                hasChanged = false;
 
     /**
      * @throws HeadlessException
@@ -153,7 +155,7 @@ public class ResourceImportExportDlg extends CustomDialog
         pb.add(centerPB.getPanel(), cc.xy(1,1));
         pb.add(tabbedPane,          cc.xy(1,3));
         
-        /*exportBtn = createButton(getResourceString("RIE_EXPORT"));
+        exportBtn = createButton(getResourceString("RIE_EXPORT"));
         importBtn = createButton(getResourceString("RIE_IMPORT"));
         reverBtn  = createButton(getResourceString("RIE_REVERT"));
         PanelBuilder btnPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g,p,f:p:g", "p,10px"));
@@ -162,7 +164,7 @@ public class ResourceImportExportDlg extends CustomDialog
         btnPB.add(reverBtn,  cc.xy(6,1));
         
         pb.add(btnPB.getPanel(), cc.xy(1,5));
-        */
+        
         
         pb.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         contentPanel = pb.getPanel();
@@ -184,7 +186,7 @@ public class ResourceImportExportDlg extends CustomDialog
         
         pack();
         
-        /*exportBtn.addActionListener(new ActionListener() {
+        exportBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 exportResource();
@@ -204,7 +206,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 revertResource();
             }
         });
-        */
+        
         
         viewSetsList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e)
@@ -293,7 +295,10 @@ public class ResourceImportExportDlg extends CustomDialog
                 AppResourceIFace appRes = resources.get(index);
                 
                 AppResourceIFace revertedNewAR = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertResource(virtualDirName, appRes);
-                /*if (revertedNewAR != null)
+                
+                hasChanged = true;
+                
+                if (revertedNewAR != null)
                 {
                     resModel.insertElementAt(revertedNewAR, index);
                     resList.setSelectedIndex(index);
@@ -301,7 +306,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 {
                     resModel.removeElementAt(index);
                     resList.clearSelection();
-                }*/
+                }
                 
                 levelSelected();
                 
@@ -313,12 +318,16 @@ public class ResourceImportExportDlg extends CustomDialog
                     exportedName = vso.getName();
                     
                     index = viewSetsList.getSelectedIndex();
-                    viewSetsModel.remove(index);
-                    SpViewSetObj revertedNewVSO = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertViewSet(virtualDirName, vso.getName());
-                    if (revertedNewVSO != null)
+                    if (index > -1)
                     {
-                        viewSetsModel.insertElementAt(revertedNewVSO, index);
-                        viewSetsList.setSelectedIndex(index);
+                        viewSetsModel.remove(index);
+                        SpViewSetObj revertedNewVSO = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).revertViewSet(virtualDirName, vso.getName());
+                        if (revertedNewVSO != null)
+                        {
+                            viewSetsModel.insertElementAt(revertedNewVSO, index);
+                            viewSetsList.setSelectedIndex(index);
+                            hasChanged = true;
+                        }
                     }
                 }
             }
@@ -332,6 +341,14 @@ public class ResourceImportExportDlg extends CustomDialog
         }
     }
     
+    /**
+     * @return the hasChanged
+     */
+    public boolean hasChanged()
+    {
+        return hasChanged;
+    }
+
     /**
      * 
      */
@@ -444,13 +461,20 @@ public class ResourceImportExportDlg extends CustomDialog
                     index = viewSetsList.getSelectedIndex();
                     if (index > -1)
                     {
+                        boolean      isOK = false;
+                        SpViewSetObj vso  = null;
+                        
                         DataProviderSessionIFace session = null;
                         try
                         {
                             session = DataProviderFactory.getInstance().createSession();
                             session.beginTransaction();
                             
-                            SpViewSetObj     vso       = (SpViewSetObj)viewSetsList.getSelectedValue();
+                            vso = (SpViewSetObj)viewSetsList.getSelectedValue();
+                            if (vso.getId() == null)
+                            {
+                                //vso = (SpViewSetObj)vso.clone();
+                            }
                             SpAppResourceDir appResDir = vso.getSpAppResourceDir();
                             exportedName = vso.getName();
                             
@@ -466,7 +490,8 @@ public class ResourceImportExportDlg extends CustomDialog
                             session.commit();
                             session.flush();
                             
-                            viewSetsList.repaint();
+                            hasChanged = true;
+                            isOK       = true;
                             
                         } catch (Exception ex)
                         {
@@ -484,6 +509,13 @@ public class ResourceImportExportDlg extends CustomDialog
                             {
                                 ex.printStackTrace();
                             }
+                        }
+                        
+                        if (isOK)
+                        {
+                            viewSetsModel.remove(index);
+                            viewSetsModel.insertElementAt(vso, index);
+                            viewSetsList.repaint();
                         }
                     }
                 }
@@ -517,7 +549,7 @@ public class ResourceImportExportDlg extends CustomDialog
             {
                 resModel.addElement(appRes);
             }
-            
+             
             for (SpViewSetObj vso : dir.getSpViewSets())
             {
                 viewSetsModel.addElement(vso);

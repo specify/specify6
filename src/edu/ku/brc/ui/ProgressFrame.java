@@ -183,13 +183,17 @@ public class ProgressFrame extends JFrame
         }
     }
     
+    /**
+     * @param text
+     */
     public synchronized void setDesc(final String text)
     {
-
         desc.setText(text);
-
     }
     
+    /**
+     * 
+     */
     public synchronized void processDone()
     {
 

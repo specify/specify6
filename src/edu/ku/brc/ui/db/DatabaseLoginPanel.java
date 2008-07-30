@@ -803,7 +803,7 @@ public class DatabaseLoginPanel extends JPanel
                     }
                     
                     // Note: this doesn't happen on the GUI thread
-                    DataProviderFactory.getInstance().shutdown();
+                    /*DataProviderFactory.getInstance().shutdown();
 
                     // This restarts the System
                     try
@@ -815,7 +815,7 @@ public class DatabaseLoginPanel extends JPanel
                     {
                         log.warn(ex);
                         finished();
-                    }
+                    }*/
                 }
 
                 return null;

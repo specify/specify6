@@ -107,7 +107,6 @@ import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -133,7 +132,6 @@ import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
-import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.tools.FormDisplayer;
@@ -1590,21 +1588,22 @@ public class Specify extends JPanel implements DatabaseLoginListener
     
     /**
      * CReates a scrollpane with the text fro the log file.
+     * @param path the path to the files
      * @param doError indicates it should display the erro log
      * @return the scrollpane.
      */
-    protected JScrollPane getLogFilePanel(final boolean doError)
+    protected JScrollPane getLogFilePanel(final String path, final boolean doError)
     {
         JTextArea textArea = new JTextArea();
-        
-        File logFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + (doError ? "error.log" : "specify.log")); //$NON-NLS-1$ //$NON-NLS-2$
+        File      logFile  = new File(path + (doError ? "error.log" : "specify.log")); //$NON-NLS-1$ //$NON-NLS-2$
         if (logFile.exists())
         {
             try
             {
                 textArea.setText(FileUtils.readFileToString(logFile));
                 textArea.setEditable(false);
-            } catch (Exception ex) {}
+            } catch (Exception ex) {} // no catch on purpose
+            
         } else
         {
             textArea.setText(doError ? getResourceString("Specify.LOG_NO_ERRORS") : getResourceString("Specify.LOG_EMPTY")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1618,9 +1617,15 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void dumpSpecifyLogFile()
     {
+        String logFilePath = UIRegistry.getDefaultWorkingPath() + File.separator;
+        File logFile = new File(logFilePath + "specify.log"); //$NON-NLS-1$
+        if (logFile != null)
+        {
+            logFilePath = "";  //$NON-NLS-1$
+            logFile     = new File("specify.log"); //$NON-NLS-1$
+        }
         
-        File logFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "specify.log"); //$NON-NLS-1$
-        if (logFile.exists())
+        if (logFile != null && logFile.exists())
         {
             JTextArea textArea = new JTextArea();
             try
@@ -1630,8 +1635,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
             } catch (Exception ex) {}
             
             JTabbedPane tabPane = new JTabbedPane();
-            tabPane.add(getResourceString("Specify.ERROR"), getLogFilePanel(true)); //$NON-NLS-1$
-            tabPane.add("Specify", getLogFilePanel(false)); //$NON-NLS-1$
+            tabPane.add(getResourceString("Specify.ERROR"), getLogFilePanel(logFilePath, true)); //$NON-NLS-1$
+            tabPane.add("Specify", getLogFilePanel(logFilePath, false)); //$NON-NLS-1$
             
             String title = getResourceString("Specify.LOG_FILES_TITLE");//$NON-NLS-1$
             CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), title, true, CustomDialog.OK_BTN, tabPane); 
@@ -1651,6 +1656,29 @@ public class Specify extends JPanel implements DatabaseLoginListener
     {
         ResourceImportExportDlg dlg = new ResourceImportExportDlg();
         dlg.setVisible(true);
+        if (dlg.hasChanged())
+        {
+            UIRegistry.writeGlassPaneMsg(getResourceString("Specify.RESET_ENV"), 24);
+            
+            SwingWorker workerThread = new SwingWorker()
+            {
+                @Override
+                public Object construct()
+                {
+                    restartApp(null, databaseName, userName, false, false);
+                    return null;
+                }
+                
+                @Override
+                public void finished()
+                {
+                    UIRegistry.clearGlassPaneMsg();
+                }
+            };
+            
+            // start the background task
+            workerThread.start();
+        }
     }
 
     /**
@@ -1904,7 +1932,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         if (status == AppContextMgr.CONTEXT_STATUS.OK)
         {
-            if (UIHelper.isMacOS_10_5_X())
+            if (firstTime && UIHelper.isMacOS_10_5_X())
             {
                 setupUIControlSize(AppPreferences.getRemote());
             }
@@ -2054,88 +2082,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         this.databaseName = databaseNameArg;
         this.userName     = userNameArg;
-        
-        /*AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        if (localPrefs.get("startup.lastname", null) != null)
-        {
-            String userNameStr  = AppPreferences.getLocalPrefs().get("startup.username",  null);
-            String passwordStr  = Encryption.decrypt(AppPreferences.getLocalPrefs().get("startup.password",  null));
-            
-            String firstNameStr = AppPreferences.getLocalPrefs().get("startup.firstname", null);
-            String lastNameStr  = AppPreferences.getLocalPrefs().get("startup.lastname",  null);
-            String emailStr     = AppPreferences.getLocalPrefs().get("startup.email",     null);
-            
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            //for (SpecifyUser su : session.getDataList(SpecifyUser.class))
-            //{
-            //    System.out.println("["+su.getName()+"]");
-            //}
-
-            List<SpecifyUser> list = session.getDataList(SpecifyUser.class, "name", "guest");
-            if (list.size() == 1)
-            {
-                SpecifyUser user      = list.get(0);
-                Agent       userAgent = Agent.getUserAgent();
-                if (StringUtils.isNotEmpty(userNameStr))
-                {
-                    user.setName(userNameStr);
-                }
-                userAgent.setFirstName(firstNameStr);
-                userAgent.setLastName(lastNameStr);
-                userAgent.setEmail(emailStr);
-                
-                try
-                {
-                    session.beginTransaction();
-                    session.saveOrUpdate(userAgent);
-                    session.saveOrUpdate(user);
-                    session.commit();
-                    session.flush();
-                    
-                    AppPreferences.getLocalPrefs().remove("startup.username");
-                    AppPreferences.getLocalPrefs().remove("startup.password");
-                    AppPreferences.getLocalPrefs().remove("startup.firstname");
-                    AppPreferences.getLocalPrefs().remove("startup.lastname");
-                    AppPreferences.getLocalPrefs().remove("startup.email");
-                    
-                    if (StringUtils.isNotEmpty(userNameStr))
-                    {
-                        this.userName = userNameStr;
-                        AppPreferences.getLocalPrefs().put("login.username", userNameStr);
-                        AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(passwordStr));
-                    }
-                    
-                    try
-                    {
-                        AppPreferences.getLocalPrefs().flush();
-                        
-                    } catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                    
-                } catch (Exception ex)
-                {
-                    session.rollback();
-                    
-                    log.error(ex);
-                    
-                } finally
-                {
-                    try
-                    {
-                        session.close();
-                    } catch (Exception ex)
-                    {
-                        log.error(ex);
-                    }
-                }
-                
-            } else
-            {
-                throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
-            }
-        }*/
         
         restartApp(window, databaseName, userName, false, firstTime);
         

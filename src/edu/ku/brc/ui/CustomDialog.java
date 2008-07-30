@@ -480,12 +480,12 @@ public class CustomDialog extends JDialog
         if (visible)
         {
             UIRegistry.pushWindow(this);
-            UIHelper.centerWindow(this);
             
             if (okBtn == null && visible)
             {
                 createUI();
             }
+            UIHelper.centerWindow(this);
             
         } else
         {

@@ -6608,7 +6608,9 @@ public class BuildSampleDatabase
         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(driverName);
         if (driverInfo == null)
         {
-            throw new RuntimeException("Couldn't find driver by name ["+driverInfo+"] in driver list.");
+            String msg = "Couldn't find driver by name ["+driverInfo+"] in driver list.";
+            UIRegistry.showError(msg);
+            throw new RuntimeException(msg);
         }
         SpecifySchemaGenerator.generateSchema(driverInfo, databaseHost, dbName, userName, password);
 
@@ -6698,7 +6700,9 @@ public class BuildSampleDatabase
                     }
                     catch(IOException e)
                     {
-                        log.warn("failed to connect to directory location to delete directory: " + attLoc);
+                        String msg = "failed to connect to directory location to delete directory: " + attLoc;
+                        log.warn(msg);
+                        UIRegistry.showError(msg);
                     }
                     AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(attLoc);
                     
@@ -6761,11 +6765,13 @@ public class BuildSampleDatabase
                     {
                         rollbackTx();
                         log.error("Failed to persist DB objects", e);
+                        UIRegistry.showError("Failed to persist DB objects");
                         return;
                     }
                     catch(Exception e2)
                     {
                         log.error("Failed to persist DB objects.  Rollback failed.  DB may be in inconsistent state.", e2);
+                        UIRegistry.showError("Failed to persist DB objects. Rollback failed.");
                         return;
                     }
                 }
@@ -6774,10 +6780,16 @@ public class BuildSampleDatabase
         else
         {
             log.error("Login failed");
+            UIRegistry.showError("Login failed");
             return;
         }
         
         System.out.println("All done");
+        
+        if (frame != null)
+        {
+            frame.processDone();
+        }
         
         JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
                 "The build completed successfully.", 
