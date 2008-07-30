@@ -6780,7 +6780,7 @@ public class BuildSampleDatabase
         System.out.println("All done");
         
         JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
-                "The build complete successfully.", 
+                "The build completed successfully.", 
                 "Complete", JOptionPane.INFORMATION_MESSAGE);
     }
     
