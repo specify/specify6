@@ -18,7 +18,12 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -35,6 +40,8 @@ import edu.ku.brc.ui.UIRegistry;
 @Table(name = "spqueryfield")
 public class SpQueryField extends DataModelObjBase implements Comparable<SpQueryField>
 {
+    protected static final Logger                   log = Logger.getLogger(SpQueryField.class);
+
     public static final Byte SORT_NONE = 0;
     public static final Byte SORT_ASC  = 1;
     public static final Byte SORT_DESC = 2;
@@ -124,6 +131,8 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     protected Boolean      alwaysFilter; //true if criteria for this field should be applied in all situations, i.e. even
                                         //when query content is provided by a list of ids.
     
+    protected String	   stringId; //unique name for the field within it's query
+    
     protected Byte         operStart;
     protected Byte         operEnd;
     protected String       startValue;
@@ -178,6 +187,13 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         this.fieldName = fieldName;
     }
 
+    /**
+     * @param stringId the stringId to set
+     */
+    public void setStringId(String stringId)
+    {
+    	this.stringId = stringId;
+    }
     /**
      * @param isNot the isNot to set
      */
@@ -302,6 +318,15 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     public String getFieldName()
     {
         return fieldName;
+    }
+
+    /**
+     * @return the stringId
+     */
+    @Column(name = "StringId", unique = false, nullable = false, insertable = true, updatable = true, length = 200)
+    public String getStringId()
+    {
+        return stringId;
     }
 
     /**
@@ -587,6 +612,29 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     }
 
     /**
+     * @return the columnAlias with the field's current title substituted for it's name.
+     */
+    @Transient
+    public String getColumnAliasTitle()
+    {
+    	DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(contextTableIdent);
+    	if (tbl != null)
+    	{
+    		DBFieldInfo fld = tbl.getFieldByName(fieldName);
+    		if (fld != null)
+    		{
+    			int nameIdx = columnAlias.lastIndexOf(fld.getName());
+    			if (nameIdx >= 0)
+    			{
+    				int nameEndIdx = nameIdx + fld.getName().length();
+    				return columnAlias.substring(0, nameIdx) + fld.getTitle() + columnAlias.substring(nameEndIdx);
+    			}
+    		}
+    	}
+    	log.error("Returning unprocessed columnAlias because FieldInfo was not found: " + columnAlias);
+    	return columnAlias;
+    }
+    /**
      * @param columnAlias the columnAlias to set
      */
     public void setColumnAlias(String columnAlias)
@@ -594,5 +642,32 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         this.columnAlias = columnAlias;
     }
     
-    
+    /**
+     * @param columnAliasTitle
+     * 
+     * Substitutes the field's name for it's title in columnAliasTitle and sets columnAlias.
+     */
+    public void setColumnAliasTitle(String columnAliasTitle)
+    {
+    	DBTableInfo tbl = DBTableIdMgr.getInstance().getInfoById(contextTableIdent);
+    	if (tbl != null)
+    	{
+    		DBFieldInfo fld = tbl.getFieldByName(fieldName);
+    		if (fld != null)
+    		{
+    			int nameIdx = columnAliasTitle.lastIndexOf(fld.getTitle());
+    			//XXX - if the title for a field is changed while a query is open
+    			//columnAliasTitle might contain the fld's old title???
+    			if (nameIdx >= 0)
+    			{
+    				int nameEndIdx = nameIdx + fld.getTitle().length();
+    				setColumnAlias(columnAliasTitle.substring(0, nameIdx) 
+    						+ fld.getName() + columnAliasTitle.substring(nameEndIdx));
+    				return;
+    			}
+    		}
+    	}
+    	log.error("Setting unprocessed alias because FieldInfo was not found: " + columnAliasTitle);
+    	setColumnAlias(columnAliasTitle);
+    }
 }

@@ -104,7 +104,8 @@ public class QBJRDataSourceConnection extends IReportConnection
             }
             for (ERTICaptionInfo col : cols)
             {
-                fields.add(new QBJRFieldDef(col.getColLabel(), getColClass(col)));
+                fields.add(new QBJRFieldDef(((ERTICaptionInfoQB )col).getColStringId(), 
+                		col.getColLabel(), getColClass(col)));
             }
         }
     }
@@ -145,7 +146,8 @@ public class QBJRDataSourceConnection extends IReportConnection
         HashMap map = new HashMap();
         for (int i=0; i< fields.size(); ++i)
         {
-            map.put("COLUMN_" + i, fields.get(i).getFldName());
+            //map.put("COLUMN_" + i, fields.get(i).getFldName());
+            map.put("COLUMN_" + i, fields.get(i).getFldTitle());
         }
         return map;
     }
@@ -183,21 +185,20 @@ public class QBJRDataSourceConnection extends IReportConnection
         protected final String   fldName;
         protected final Class<?> fldClass;
         
-        public QBJRFieldDef(final String fldName, final Class<?> fldClass)
+        public QBJRFieldDef(final String fldName, final String fldTitle, final Class<?> fldClass)
         {
             this.fldName = fldName;
-            this.fldTitle = fldName;
+            this.fldTitle = fldTitle;
             this.fldClass = fldClass;
         }
 
         /**
-         * @return the fldName
+         * @return
          */
         public String getFldName()
         {
-            return fldName;
+        	return fldName;
         }
-
         /**
          * @return the fldClass
          */
@@ -241,5 +242,27 @@ public class QBJRDataSourceConnection extends IReportConnection
         return query;
     }
     
+    public QBJRFieldDef getFieldByName(final String fldName)
+    {
+    	for (QBJRFieldDef fld : fields)
+    	{
+    		if (fld.fldName.equals(fldName))
+    		{
+    			return fld;
+    		}
+    	}
+    	return null;
+    }
     
+    public QBJRFieldDef getFieldByTitle(final String title)
+    {
+    	for (QBJRFieldDef fld : fields)
+    	{
+    		if (fld.fldTitle.equals(title))
+    		{
+    			return fld;
+    		}
+    	}
+    	return null;
+    }
 }

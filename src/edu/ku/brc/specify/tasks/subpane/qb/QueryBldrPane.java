@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
@@ -90,6 +91,7 @@ import edu.ku.brc.dbsupport.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
@@ -101,6 +103,7 @@ import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -1085,7 +1088,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 String colName = ti.getAbbrev() + '.' + qf.getFieldName();
                 if (qf.getIsDisplay())
                 {
-                    String lbl = qf.getColumnAlias();
+                    String lbl = qf.getColumnAliasTitle();
                     if (fixLabels)
                     {
                         lbl = lbl.replaceAll(" ", "_");
@@ -1094,12 +1097,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     ERTICaptionInfo erti;
                     if (fi != null)
                     {
-                        erti = new ERTICaptionInfo(colName, lbl, true, fi.getFormatter(), 0);
+                        erti = new ERTICaptionInfoQB(colName, lbl, true, fi.getFormatter(), 0, qf.getStringId());
                         erti.setColClass(fi.getDataClass());
                     }
                     else
                     {
-                        erti = new ERTICaptionInfo(colName, lbl, true, null, 0);
+                        erti = new ERTICaptionInfoQB(colName, lbl, true, null, 0, qf.getStringId());
                         erti.setColClass(String.class);
                     }
                     result.add(erti);
@@ -1387,16 +1390,39 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         if (tableQRI != null)
         {
             short position = 0;
+            
+            Set<Integer> queryFldsWithoutPanels = new HashSet<Integer>();
+            for (SpQueryField qf : query.getFields())
+            {
+            	queryFldsWithoutPanels.add(qf.getId());
+            }
+            
             for (QueryFieldPanel qfp : queryFieldItems)
             {
                 SpQueryField qf = qfp.getQueryField();
                 if (qf == null) { throw new RuntimeException("Shouldn't get here!"); }
+                queryFldsWithoutPanels.remove(qf.getId());
                 qf.setPosition(position);
                 qfp.updateQueryField();
 
                 position++;
             }
 
+            //Remove query fields for which panels could be created in order to prevent
+            //repeat of missing fld message in getQueryFieldPanels() whenever this query is loaded.
+            for (Integer qfId : queryFldsWithoutPanels)
+            {
+            	//this is real lame but should hardly ever need to be executed
+            	for (SpQueryField qf : query.getFields())
+            	{
+            		if (qfId.equals(qf.getId()))
+            		{
+            			query.getFields().remove(qf);
+            			break;
+            		}
+            	}
+            }
+            
             if (query.getSpQueryId() == null || saveAs)
             {
                 if (query.getSpQueryId() != null && saveAs)
@@ -2014,10 +2040,18 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 result.add(bldQueryFieldPanel(container, fieldQRI, fld, container.getColumnDefStr(), saveBtn));
                 fieldQRI.setIsInUse(true);
+                if (fieldQRI.isFieldHidden() && !container.isPromptMode())
+                {
+                	UIRegistry.showLocalizedMsg("QB_FIELD_HIDDEN_TITLE", "QB_FIELD_HIDDEN_SHOULD_REMOVE", fieldQRI.getTitle());
+                }
             }
             else
             {
-                log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList()
+            	if (!container.isPromptMode())
+            	{
+            		UIRegistry.showLocalizedMsg("QB_FIELD_MISSING_TITLE", "QB_FIELD_NOT_ADDED", fld.getColumnAlias());
+            	}
+            	log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList()
                         + "]");
             }
         }
@@ -2227,10 +2261,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 try
                 {
-                    TreeDefIface<?, ?, ?> treeDef = AppContextMgr.getInstance().getClassObject(Collection.class)
-                            .getDiscipline().getTreeDef(
-                                    UploadTable.capitalize(tableInfo.getClassObj().getSimpleName())
-                                            + "TreeDef");
+                	TreeDefIface<?, ?, ?> treeDef = null;
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    try
+                    {
+                    	DataModelObjBase tempdef = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Collection.class).getDiscipline().getTreeDef(
+                                UploadTable.capitalize(tableInfo.getClassObj().getSimpleName())
+                                + "TreeDef");
+                        treeDef = (TreeDefIface<?, ?, ?> )session.get(tempdef.getDataClass(), tempdef.getId());
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+                    }
+                    finally
+                    {
+                        session.close();
+                    }
                     SortedSet<TreeDefItemIface<?, ?, ?>> defItems = new TreeSet<TreeDefItemIface<?, ?, ?>>(
                             new Comparator<TreeDefItemIface<?, ?, ?>>()
                             {

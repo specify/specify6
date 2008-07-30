@@ -254,8 +254,8 @@ public class QueryFieldPanel extends JPanel
             {
                 lbl = RelQRI.stripDescriptiveStuff(lbl);    
             }
-            qField.setColumnAlias(lbl);
             qField.setContextTableIdent(fieldQRI.getTableInfo().getTableId());
+            qField.setColumnAliasTitle(lbl);
             qField.setIsRelFld(fieldQRI instanceof RelQRI);
             
             Vector<Integer> idList = new Vector<Integer>();
@@ -269,6 +269,7 @@ public class QueryFieldPanel extends JPanel
             String tablesIds = bldTablesIds();
             log.debug(tablesIds);
             qField.setTableList(tablesIds);
+            qField.setStringId(getStringId());
             
         } else
         {

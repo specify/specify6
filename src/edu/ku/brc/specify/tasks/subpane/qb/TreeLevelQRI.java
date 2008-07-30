@@ -18,9 +18,11 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -46,8 +48,26 @@ public class TreeLevelQRI extends FieldQRI
         this.rankId = rankId;
         String treeDefName = parent.getTableTree().getTableInfo().getShortClassName()
                 + "TreeDef";
-        TreeDefIface<?, ?, ?> treeDef = AppContextMgr.getInstance().getClassObject(Collection.class).getDiscipline().getTreeDef(treeDefName);
-        TreeDefItemIface<?, ?, ?> treeDefItem = treeDef.getDefItemByRank(rankId);
+        TreeDefIface<?, ?, ?> treeDef = null;
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            DataModelObjBase tempdef = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Collection.class).getDiscipline().getTreeDef(treeDefName);
+            treeDef = (TreeDefIface<?, ?, ?> )session.get(tempdef.getDataClass(), tempdef.getId());
+        }
+        catch (Exception ex)
+        {
+            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+        }
+        finally
+        {
+            session.close();
+        }
+        TreeDefItemIface<?, ?, ?> treeDefItem = null;
+        if (treeDef != null)
+        {
+        	treeDefItem = treeDef.getDefItemByRank(rankId);
+        }
         if (treeDefItem != null)
         {
             title = treeDefItem.getName();

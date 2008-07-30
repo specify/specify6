@@ -281,7 +281,12 @@ public class MainFrameSpecify extends MainFrame
                     session.evict(((SpAppResource )appRes).getSpAppResourceDir());
                 }
             }
-            appRes.setDataAsString(xml.toString());
+            String xmlString = xml.toString();
+            if (rep != null)
+            {
+            	xmlString = modifyXMLForSaving(xmlString, rep);
+            }
+            appRes.setDataAsString(xmlString);
             AppContextMgr.getInstance().saveResource(appRes);
             
             if (rep == null)
@@ -380,9 +385,16 @@ public class MainFrameSpecify extends MainFrame
         {
             ReportSpecify rep = (ReportSpecify)jrf.getReport();
             ByteArrayOutputStream xmlOut = new ByteArrayOutputStream();
-            ReportWriter rw = new ReportWriter(rep);
-            rw.writeToOutputStream(xmlOut);
-            
+            try
+            {
+            	modifyFieldsForSaving(rep);
+            	ReportWriter rw = new ReportWriter(rep);
+            	rw.writeToOutputStream(xmlOut);
+            }
+            finally
+            {
+            	modifyFieldsForEditing(rep);
+            }
             boolean success = saveXML(xmlOut, apr, rep);
             if (!success)
             {
@@ -477,7 +489,8 @@ public class MainFrameSpecify extends MainFrame
      * 
      * Allows editing of SpReport and SpAppResource properties for reports.
      */
-    protected static AppResAndProps getProps(final String repResName, final Integer tableId, final ReportSpecify rep, final AppResourceIFace appRes)
+    protected static AppResAndProps getProps(final String repResName, final Integer tableId, final ReportSpecify rep, 
+    		final AppResourceIFace appRes)
     {
         RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, "Report", tableId == null, rep);
         boolean goodProps = false;
@@ -498,13 +511,34 @@ public class MainFrameSpecify extends MainFrame
                 JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_NAME_MUST_NOT_BE_BLANK"), propPanel.getNameTxt().getText()));
             }
             //XXX - more 'Collection' dir hard-coding
-            else if (AppContextMgr.getInstance().getResourceFromDir("Collection", propPanel.getNameTxt().getText()) != null)
+            else 
             {
-                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_NAME_ALREADY_EXISTS"), propPanel.getNameTxt().getText()));
-            }
-            else
-            {
-                goodProps = propPanel.validInputs();
+            	SpAppResource match = (SpAppResource )AppContextMgr.getInstance().getResourceFromDir("Collection", propPanel.getNameTxt().getText());
+            	if (match != null)
+            	{
+            		if (appRes == null || !((SpAppResource )appRes).getId().equals(match.getId()))
+            		{
+                        int chc = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), String.format(UIRegistry.getResourceString("REP_NAME_ALREADY_EXISTS_OVERWRITE_CONFIRM"), propPanel.getNameTxt().getText()));
+                        if (chc == JOptionPane.OK_OPTION)
+                        {
+                        	goodProps = true;
+                        }
+                        else if (chc != JOptionPane.NO_OPTION)
+                        {
+                        	return null;
+                        }
+            		} 
+            		else
+            		{
+            			goodProps = true;
+            		}
+            	}	 
+            	else
+            	{
+            		goodProps = true;
+            	}
+ 
+                goodProps = goodProps && propPanel.validInputs();
             }
         }    
         if (goodProps /*just in case*/)
@@ -681,6 +715,84 @@ public class MainFrameSpecify extends MainFrame
     }
 
     /**
+     * @param xml
+     * @param spRep
+     * @return a copy of xml with all field expressions modified to use user-friendly 'titles'.
+     */
+    protected String modifyXMLForEditing(String xml, final SpReport spRep)
+    {
+    	String result = new String(xml);
+    	if (spRep != null)
+    	{
+    		QBJRDataSourceConnection c = getConnectionByQuery(spRep.getQuery());
+    		if (c != null)
+    		{
+    			for (int f = 0; f < c.getFields(); f++)
+    			{
+    				QBJRDataSourceConnection.QBJRFieldDef fld = c.getField(f);
+    				result = result.replace("$F{" + fld.getFldName() + "}", "$F{" + fld.getFldTitle() + "}");
+    			}
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
+     * @param xml
+     * @param rep
+     * @return a copy of xml with all field expressions modified to use localization-independent identifiers.
+     */
+    protected static String modifyXMLForSaving(String xml, final ReportSpecify rep) 
+    {
+		String result = new String(xml);
+    	QBJRDataSourceConnection c = rep.getConnection();
+		if (c != null) 
+		{
+			for (int f = 0; f < c.getFields(); f++) {
+				QBJRDataSourceConnection.QBJRFieldDef fld = c.getField(f);
+ 				result = result.replace("$F{" + fld.getFldTitle() + "}", "$F{" + fld.getFldName() + "}");
+			}
+		}
+		return result;
+	}
+    
+    /**
+     * @param report
+     * 
+     * Sets field names to user-friendly 'titles'.
+     */
+    protected void modifyFieldsForEditing(ReportSpecify report)
+    {
+    	for (Object jrfObj : report.getFields())
+    	{
+    		JRField jrf = (JRField )jrfObj;
+    		QBJRDataSourceConnection.QBJRFieldDef qbjrf = report.getConnection().getFieldByName(jrf.getName());
+    		if (qbjrf != null)
+    		{
+    			jrf.setName(qbjrf.getFldTitle());
+    		}
+    	}
+    }
+
+    /**
+     * @param report
+     * 
+     * Sets field names to localization-independent identifiers.
+     */
+    protected void modifyFieldsForSaving(ReportSpecify report)
+    {
+    	for (Object jrfObj : report.getFields())
+    	{
+    		JRField jrf = (JRField )jrfObj;
+    		QBJRDataSourceConnection.QBJRFieldDef qbjrf = report.getConnection().getFieldByTitle(jrf.getName());
+    		if (qbjrf != null)
+    		{
+    			jrf.setName(qbjrf.getFldName());
+    		}
+    	}
+    }
+
+    /**
      * @param rep -
      *            a specify report resource
      * @return - a iReport designer frame for rep
@@ -694,6 +806,8 @@ public class MainFrameSpecify extends MainFrame
             {
                 ReportSpecify report = makeReport(rep);
                 report.setConnection(getConnectionByQuery(report.getSpReport().getQuery()));
+                modifyFieldsForEditing(report);
+                updateReportFields(report);
                 report.setUsingMultiLineExpressions(false); // this.isUsingMultiLineExpressions());
                 reportFrame = openNewReportWindow(report);
                 report.addReportDocumentStatusChangedListener(this);
@@ -738,12 +852,12 @@ public class MainFrameSpecify extends MainFrame
      */
     private ReportSpecify makeReport(final AppResourceIFace rep)
     {
-        java.io.InputStream xmlStream = getXML(rep);
         ReportSpecify report = null;
+        SpReport spRep = null;
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            SpReport spRep = session.getData(SpReport.class, "appResource", 
+            spRep = session.getData(SpReport.class, "appResource", 
                   rep, DataProviderSessionIFace.CompareType.Equals);
             if (spRep != null)
             {
@@ -759,6 +873,7 @@ public class MainFrameSpecify extends MainFrame
             session.close();
         }
         
+        java.io.InputStream xmlStream = getXML(rep, spRep != null ? spRep : null);
         
         // Remove default style...
         while (report.getStyles().size() > 0)
@@ -783,14 +898,64 @@ public class MainFrameSpecify extends MainFrame
         for (int f=0; f < connection.getFields(); f++)
         {
             QBJRDataSourceConnection.QBJRFieldDef fDef = connection.getField(f);
-            report.addField(new JRField(fDef.getFldName(), fDef.getFldClass().getName()));
+            report.addField(new JRField(fDef.getFldTitle(), fDef.getFldClass().getName()));
         }
         return report;
     }
     
-    private InputStream getXML(final AppResourceIFace rep)
+    /**
+     * @param report
+     * 
+     * Removes fields from report that are no longer present in it's specify query.
+     * Adds fields to report that are in the query but not report.
+     * Assumes that report's connection has been set and that modifyFieldsForEditing has been called for report.
+     */
+    protected void updateReportFields(final ReportSpecify report)
     {
-        return new ByteArrayInputStream(rep.getDataAsString().getBytes());
+    	QBJRDataSourceConnection c = report.getConnection();
+    	if (c != null)
+    	{
+    		//first remove fields that are not in the connection.
+    		for (int f = report.getFields().size()-1; f >= 0; f--)
+    		{
+    			JRField jrf = (JRField )report.getFields().get(f);
+    			if (c.getFieldByTitle(jrf.getName()) == null)
+    			{
+    				report.getFields().remove(f);
+    			}
+    		}
+    		//now add new fields
+    		for (int f = 0; f < c.getFields(); f++) 
+    		{
+				boolean isNew = true;
+				for (Object jrfObj : report.getFields()) 
+				{
+					JRField jrf = (JRField) jrfObj;
+					if (jrf.getName().equals(c.getField(f).getFldTitle())) 
+					{
+						isNew = false;
+						break;
+					}
+				}
+				if (isNew) 
+				{
+					report.addField(new JRField(
+							c.getField(f).getFldTitle(), c.getField(f)
+									.getFldClass().getName()));
+				}
+			}
+		}
+    	else
+    	{
+    		log.info("Skipping fields update for '" + report.getName() + "' because connection is null.");
+    	}
+    }
+    
+    private InputStream getXML(final AppResourceIFace rep, final SpReport spRep)
+    {
+        String xml = modifyXMLForEditing(rep.getDataAsString(), spRep);
+       
+    	return new ByteArrayInputStream(xml.getBytes());
     }
 
     /* (non-Javadoc)
