@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.JaasContext;
 import edu.ku.brc.af.auth.specify.SpecifySecurityMgr;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author michaelcote

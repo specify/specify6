@@ -92,10 +92,10 @@ public class SecurityAdminTask extends BaseTask
         }
 
         // else
-        String title = "SecurityAdminTask.SECURITY_TOOLS_MENU"; //$NON-NLS-1$
-        String mneu = "SecurityAdminTask.SECURITY_TOOLS_MNEU"; //$NON-NLS-1$
-        String desc = "SecurityAdminTask.SECURITY_TOOLS_DESC"; //$NON-NLS-1$
-        JMenuItem mi = UIHelper.createLocalizedMenuItem(title, mneu, desc, true, null); // I18N
+        String menuTitle = "SecurityAdminTask.SECURITY_TOOLS_MENU"; //$NON-NLS-1$
+        String mneu      = "SecurityAdminTask.SECURITY_TOOLS_MNEU"; //$NON-NLS-1$
+        String desc      = "SecurityAdminTask.SECURITY_TOOLS_DESC"; //$NON-NLS-1$
+        JMenuItem mi     = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null); // I18N
         mi.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)

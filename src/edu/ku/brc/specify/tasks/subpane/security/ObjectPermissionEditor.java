@@ -1,7 +1,5 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
-import java.util.Set;
-
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -9,13 +7,16 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.SpPermission;
 
 public class ObjectPermissionEditor extends PermissionEditor {
 
     private static final Logger log = Logger.getLogger(ObjectPermissionEditor.class);
 
-	public ObjectPermissionEditor(JTable permissionTable, ObjectPermissionEnumerator enumerator)
+	/**
+	 * @param permissionTable
+	 * @param enumerator
+	 */
+	public ObjectPermissionEditor(final JTable permissionTable, final ObjectPermissionEnumerator enumerator)
 	{
 		// we can only create instances of this class providing the right enumerator class
 		super(permissionTable, enumerator);

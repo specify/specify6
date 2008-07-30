@@ -14,18 +14,13 @@
 
 package edu.ku.brc.specify.tasks.subpane.security;
 
-import java.awt.Component;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.AbstractCellEditor;
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
@@ -55,7 +50,11 @@ public class PermissionEditor
 	protected PermissionEnumerator 	enumerator;
 	protected SpPrincipal 			principal;
 	
-	public PermissionEditor(JTable permissionTable, PermissionEnumerator enumerator)
+	/**
+	 * @param permissionTable
+	 * @param enumerator
+	 */
+	public PermissionEditor(final JTable permissionTable, final PermissionEnumerator enumerator)
 	{
 		this.permissionTable 	= permissionTable;
 		this.enumerator 		= enumerator;
@@ -67,10 +66,10 @@ public class PermissionEditor
 	/**
 	 * Updates the table that will be used to display and edit the permissions 
 	 */
-	public void updateTable(SpPrincipal principal, SpPrincipal overrulingPrincipal)
+	public void updateTable(final SpPrincipal principalArg, final SpPrincipal overrulingPrincipal)
 	{
 		// save principal used when saving permissions later
-		this.principal = principal;
+		this.principal = principalArg;
 		
 		@SuppressWarnings("serial")
 		DefaultTableModel model = new DefaultTableModel()
@@ -96,7 +95,7 @@ public class PermissionEditor
 		
 		ImageIcon sysIcon = IconManager.getIcon("SystemSetup", IconManager.IconSize.Std16);
 
-		List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principal, overrulingPrincipal);
+		List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, overrulingPrincipal);
 		Collections.sort(perms, new ComparatorByStringRepresentation<PermissionEditorRowIFace>(true));
 		for (PermissionEditorRowIFace permWrapper : perms) 
 		{
@@ -128,7 +127,7 @@ public class PermissionEditor
 		*/
 	}
 	
-	protected void addColumnHeaders(DefaultTableModel model)
+	protected void addColumnHeaders(final DefaultTableModel model)
 	{
 		model.addColumn("");
 		model.addColumn("Task");
@@ -142,7 +141,9 @@ public class PermissionEditor
 	{
 		// nothing to save if we didn't specify a principal yet
 		if (principal == null)
+		{
 			return;
+		}
 		
         DataProviderSessionIFace session = null;
         try

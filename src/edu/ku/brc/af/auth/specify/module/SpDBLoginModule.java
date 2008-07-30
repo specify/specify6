@@ -85,7 +85,10 @@ public class SpDBLoginModule implements LoginModule
      * (non-Javadoc)
      * @see javax.security.auth.spi.LoginModule#initialize(javax.security.auth.Subject, javax.security.auth.callback.CallbackHandler, java.util.Map, java.util.Map)
      */
-    public void initialize(Subject subjectArg, CallbackHandler callbackHandlerArg, Map<String, ?> sharedState, Map<String, ?> options)
+    public void initialize(final Subject subjectArg, 
+                           final CallbackHandler callbackHandlerArg, 
+                           final Map<String, ?> sharedState, 
+                           final Map<String, ?> options)
     {
         log.debug("initialize");
         this.callbackHandler = callbackHandlerArg;

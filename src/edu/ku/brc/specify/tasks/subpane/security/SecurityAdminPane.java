@@ -16,7 +16,9 @@ package edu.ku.brc.specify.tasks.subpane.security;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,6 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -43,6 +46,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -78,6 +82,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.SearchBox;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.VerticalSeparator;
 import edu.ku.brc.ui.db.JAutoCompTextField;
 import edu.ku.brc.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.ui.forms.FormViewObj;
@@ -93,6 +98,7 @@ import edu.ku.brc.util.ComparatorByStringRepresentation;
 @SuppressWarnings("serial")
 public class SecurityAdminPane extends BaseSubPane
 {
+    @SuppressWarnings("unused")
     private static final Logger log = Logger.getLogger(SecurityAdminPane.class);
 
 	private JTree  tree;
@@ -137,17 +143,18 @@ public class SecurityAdminPane extends BaseSubPane
         //JPanel securityAdminPanel = new FormDebugPanel();
 		
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout(
-        		"3dlu,p,3dlu,3dlu,3dlu,f:p:g,3dlu",
+        		"3dlu,p,4px,3dlu,4px,f:p:g,3dlu",
         		"3dlu,f:p:g,3dlu,p,3dlu,p,3dlu"), 
         		securityAdminPanel);
 		final CellConstraints cc = new CellConstraints();
         
-		mainPB.add(createNavigationPanel(),  cc.xy(2, 2));
+        mainPB.add(createNavigationPanel(),  cc.xy(2, 2));
+        mainPB.add(new VerticalSeparator(new Color(224, 224, 224), new Color(124, 124, 124)),  cc.xy(4, 2));
 		mainPB.add(createInformationPanel(), cc.xy(6, 2));
 		
 		updateUIEnabled(null);
 		
-		this.add(securityAdminPanel);
+		this.add(securityAdminPanel, BorderLayout.CENTER);
 		return securityAdminPanel;
 	}
 	
@@ -160,7 +167,7 @@ public class SecurityAdminPane extends BaseSubPane
 		JPanel navigationPanel = new JPanel();
 		//JPanel navToolbarPanel = new FormDebugPanel();
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout(
-        		"l:p:g", "p,3dlu,p,3dlu,f:p:g,3dlu,p,3dlu,p,3dlu,p,3dlu,p"), navigationPanel);
+        		"f:p:g", "p,3dlu,p,3dlu,f:p:g,3dlu,p,3dlu,p,3dlu,p,3dlu,p"), navigationPanel);
 		final CellConstraints cc = new CellConstraints();
 
 		JPanel navTreePanel = createFullTreeNavPanel(); // navigation jTree gets created here 
@@ -180,7 +187,7 @@ public class SecurityAdminPane extends BaseSubPane
 			}
 		};
 		
-		searchText = new JAutoCompTextField(22);
+		searchText = new JAutoCompTextField(UIHelper.isMacOS() ? 15 : 22);
 		searchText.getDocument().addDocumentListener(searchDL);
 		SearchBox searchBox = new SearchBox(searchText, null);
 		
@@ -193,6 +200,9 @@ public class SecurityAdminPane extends BaseSubPane
 		return navigationPanel;
 	}
 
+	/**
+	 * @return
+	 */
 	private JPanel createAddDeleteNavToolbarPanel()
 	{
         final PanelBuilder toolbarPB = new PanelBuilder(new FormLayout(UIHelper.createDuplicateJGoodiesDef("p", "2px", 5), "p"));
@@ -463,7 +473,7 @@ public class SecurityAdminPane extends BaseSubPane
 	private DefaultTreeModel createNavigationTreeModel()
 	{
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode("Specify 6");
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(UIRegistry.getAppName());
 
         try
         {
@@ -574,6 +584,9 @@ public class SecurityAdminPane extends BaseSubPane
 	}
 
 	
+	/**
+	 * @return
+	 */
 	private JPanel createFullTreeNavPanel()
 	{
     	createNavigationTree();
@@ -583,17 +596,20 @@ public class SecurityAdminPane extends BaseSubPane
 		
 		String helpStr = "<html>To add an existing user to a group, just " +
 				"drag the user from this list and drop it into the appropriate " +
-				"group on the list above.</html>";
+				"group on the list above.</html>"; // I18N
 		JLabel userDnDHelp = UIHelper.createLabel(helpStr);
 		
-		final PanelBuilder mainPB = new PanelBuilder(new FormLayout("210px", "f:p:g,p,15px,p,p,p")/*, new FormDebugPanel()*/);
+		final PanelBuilder mainPB = new PanelBuilder(new FormLayout("min(210px;p):g", "f:min(100px;p):g,p,15px,p,p,p")/*, new FormDebugPanel()*/);
 		final CellConstraints cc = new CellConstraints();
         
-    	mainPB.add(new JScrollPane(tree), cc.xy(1, 1));
-		mainPB.add(addDeleteNavToolbarPanel, cc.xy(1, 2));
-    	mainPB.addSeparator("Users", cc.xy(1, 4));
-    	mainPB.add(new JScrollPane(userList), cc.xy(1, 5));
-    	mainPB.add(userDnDHelp, cc.xy(1, 6));
+		JScrollPane sp = new JScrollPane(tree, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    	mainPB.add(sp,                        cc.xy(1, 1));
+		mainPB.add(addDeleteNavToolbarPanel,  cc.xy(1, 2));
+    	mainPB.addSeparator("Users",          cc.xy(1, 4)); // I18N
+    	
+    	sp = new JScrollPane(userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    	mainPB.add(sp,                        cc.xy(1, 5));
+    	mainPB.add(userDnDHelp,               cc.xy(1, 6));
 
     	return mainPB.getPanel();
 	}
@@ -722,13 +738,12 @@ public class SecurityAdminPane extends BaseSubPane
 		private Pattern p;
 		private Matcher m;
 		
-		public Filter(String patternStr)
+		public Filter(final String patternStr)
 		{
-			patternStr = patternStr.replaceAll("\\*", ".*");
-			this.patternStr = patternStr;
+			this.patternStr = patternStr.replaceAll("\\*", ".*");
 			try 
 			{
-				p = Pattern.compile(patternStr);
+				p = Pattern.compile(this.patternStr);
 			}
 			catch (PatternSyntaxException pse)
 			{
@@ -736,13 +751,17 @@ public class SecurityAdminPane extends BaseSubPane
 			}
 		}
 		
-		public boolean accepts(String subject)
+		public boolean accepts(final String subject)
 		{
 			if (StringUtils.isEmpty(patternStr))
+			{
 				return true;
+			}
 			
 			if (p == null)
+			{
 				return false;
+			}
 			
 			m = p.matcher(subject);
 			return m.matches();
@@ -755,7 +774,7 @@ public class SecurityAdminPane extends BaseSubPane
 		JPanel infoPanel = new JPanel();
 		//JPanel infoPanel = new FormDebugPanel();
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout(
-        		"l:p:g", "p,3dlu,p,3dlu,t:p:g,3dlu,p,3dlu,p,3dlu,p"), infoPanel);
+        		"f:p:g", "p,3dlu,p,3dlu,t:p:g,3dlu,p,3dlu,p,3dlu,p"), infoPanel);
 		final CellConstraints cc = new CellConstraints();
 
 		infoCards = new JPanel();
@@ -766,7 +785,7 @@ public class SecurityAdminPane extends BaseSubPane
 		return infoPanel;
 	}
 	
-	private void showInfoPanel(DataModelObjBaseWrapper objWrapper, DataModelObjBaseWrapper secondObjWrapper)
+	private void showInfoPanel(final DataModelObjBaseWrapper objWrapper, final DataModelObjBaseWrapper secondObjWrapper)
 	{
 		// show info panel that corresponds to the type of object selected
 		String className = objWrapper.getType();
@@ -802,20 +821,20 @@ public class SecurityAdminPane extends BaseSubPane
 	 * @param clazz
 	 * @param idFieldName
 	 * @param editing
-	 * @param formOptions
+	 * @param formOptionsArg
 	 */
-	private void createInfoSubPanel(String formViewSet, 
-									  String formView, 
-									  String displayName, 
-									  Class<?> clazz, 
-									  String idFieldName, 
-									  boolean editing,
-									  int formOptions)
+	private void createInfoSubPanel(final String formViewSet, 
+	                                final String formView, 
+	                                final String displayName, 
+	                                final Class<?> clazz, 
+	                                final String idFieldName, 
+	                                final boolean editing,
+	                                final int formOptionsArg)
 	{
 		String className = clazz.getCanonicalName();
 		
 		ViewBasedDisplayPanel panel = new ViewBasedDisplayPanel(null, formViewSet, formView, displayName,
-				className, idFieldName, editing, formOptions);
+				className, idFieldName, editing, formOptionsArg);
 
 		AdminInfoSubPanelWrapper panelWrapper = new AdminInfoSubPanelWrapper(panel);
 		
@@ -834,6 +853,7 @@ public class SecurityAdminPane extends BaseSubPane
 		// create general permission table
 		JPanel generalPermissionsPanel = new JPanel();
 		JTable generalPermissionsTable = new JTable();
+		UIHelper.makeTableHeadersCentered(generalPermissionsTable, false);
 		generalPermissionsPanel.add(new JScrollPane(generalPermissionsTable));
 		PermissionEditor generalPermissionsEditor = createGeneralPermissionsEditor(generalPermissionsTable);
 
@@ -848,17 +868,17 @@ public class SecurityAdminPane extends BaseSubPane
 		
 		// create tabbed panel for different kinds of permission editing tables
 		JTabbedPane tabbedPane = new JTabbedPane();
-		tabbedPane.addTab("General", generalPermissionsPanel);
-		tabbedPane.addTab("Objects", objectPermissionsPanel);
+		tabbedPane.addTab("General", generalPermissionsPanel); // I18N
+		tabbedPane.addTab("Objects", objectPermissionsPanel);  // I18N
 		
 		// lay out controls on panel
 		int y = 1;
 		mainPB.add(panel, cc.xy(1, y)); y += 2;
 		
-		mainPB.addSeparator("Permissions", cc.xy(1, y)); y += 2;
+		mainPB.addSeparator("Permissions", cc.xy(1, y)); y += 2; // I18N
 		mainPB.add(tabbedPane, cc.xy(1, y)); y += 2;
 
-		JButton saveBtn = UIHelper.createButton("Save");
+		JButton saveBtn = UIHelper.createButton("Save"); // I18N
         PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("r:p", "p")/*, new FormDebugPanel()*/);
         saveBtnPB.add(saveBtn);
         mainPB.add(saveBtnPB.getPanel(), cc.xy(1, y)); y += 2;
@@ -882,16 +902,17 @@ public class SecurityAdminPane extends BaseSubPane
 		final CellConstraints cc = new CellConstraints();
 
 		JTable table = new JTable();
+		UIHelper.makeTableHeadersCentered(table, false);
 		PermissionEditor editor = createGeneralPermissionsEditor(table);
 		ViewBasedDisplayPanel panel = createViewBasedDisplayPanelForGroup();
 		
 		int y = 1;
 		mainPB.add(panel, cc.xy(1, y)); y += 2;
 		
-		mainPB.addSeparator("Permissions", cc.xy(1, y)); y += 2;
+		mainPB.addSeparator("Permissions", cc.xy(1, y)); y += 2; // I18N
 		mainPB.add(new JScrollPane(table), cc.xy(1, y)); y += 2;
 
-		JButton saveBtn = UIHelper.createButton("Save");
+		JButton saveBtn = UIHelper.createButton("Save"); // I18N
         PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("r:p", "p")/*, new FormDebugPanel()*/);
         saveBtnPB.add(saveBtn);
         mainPB.add(saveBtnPB.getPanel(), cc.xy(1, y)); y += 2;
@@ -921,7 +942,11 @@ public class SecurityAdminPane extends BaseSubPane
 		);
 	}
 	
-	private PermissionEditor createGeneralPermissionsEditor(JTable table)
+	/**
+	 * @param table
+	 * @return
+	 */
+	private PermissionEditor createGeneralPermissionsEditor(final JTable table)
 	{
 		PermissionEnumerator e1 = new FormPermissionEnumerator();
 		PermissionEnumerator e2 = new TaskPermissionEnumerator();
@@ -931,6 +956,10 @@ public class SecurityAdminPane extends BaseSubPane
 		return new PermissionEditor(table, enumerator);
 	}
 
+	/**
+	 * @param table
+	 * @return
+	 */
 	private PermissionEditor createObjectPermissionsEditor(JTable table)
 	{
 		return new ObjectPermissionEditor(table, new ObjectPermissionEnumerator());
@@ -1034,18 +1063,18 @@ public class SecurityAdminPane extends BaseSubPane
          */
         @Override
         public Component getTreeCellRendererComponent(
-        		JTree tree, 
+        		JTree rnTree, 
         		Object value,
         		boolean sel,
                 boolean expanded,
                 boolean leaf,
                 int row,
-                boolean hasFocus)
+                boolean rnHasFocus)
         {
         	super.getTreeCellRendererComponent(
-                    tree, value, sel,
+                    rnTree, value, sel,
                     expanded, leaf, row,
-                    hasFocus);
+                    rnHasFocus);
         	
         	DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
         	Object obj = node.getUserObject();

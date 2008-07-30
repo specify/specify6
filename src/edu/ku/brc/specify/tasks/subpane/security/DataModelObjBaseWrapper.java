@@ -6,6 +6,7 @@ import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -23,8 +24,9 @@ import edu.ku.brc.ui.IconManager;
  */
 public class DataModelObjBaseWrapper 
 {
-	private DataModelObjBase dataObj;
-	private ImageIcon icon;
+    private String           title = null;
+    private DataModelObjBase dataObj;
+	private ImageIcon        icon;
 	
 	/**
 	 * Constructor
@@ -50,23 +52,12 @@ public class DataModelObjBaseWrapper
 			// try and get the discipline icon
 			String iconName = "";
 			Discipline discipline = (Discipline) dataObj;
-			if      (discipline.getName().equals("fish"))			iconName = "Fish";
-			else if (discipline.getName().equals("amphibian")) 		iconName = "Frogs";
-			else if (discipline.getName().equals("reptile")) 		iconName = "Snake";
-			else if (discipline.getName().equals("paleobotany")) 	iconName = "PaleoBotany";
-			else if (discipline.getName().equals("invertpaleo")) 	iconName = "InvertPaleo";
-			else if (discipline.getName().equals("vertpaleo")) 		iconName = "VertPaleo";
-			else if (discipline.getName().equals("bird")) 			iconName = "Bird";
-			else if (discipline.getName().equals("mammal")) 		iconName = "Mammal";
-			else if (discipline.getName().equals("insect")) 		iconName = "Bug";
-			else if (discipline.getName().equals("botany")) 		iconName = "Plants";
-			else if (discipline.getName().equals("invertebrate")) 	iconName = "Spider";
-			//else if (discipline.getName().equals("minerals")) 		iconName = "";
-			//else if (discipline.getName().equals("fungi"))			iconName = "";
-			//else if (discipline.getName().equals("anthropology"))	iconName = "";
-			else iconName = "Discipline";
-
-			icon = IconManager.getIcon(iconName, IconManager.IconSize.Std16);
+			
+			icon = IconManager.getIcon(discipline.getName(), IconManager.IconSize.Std16);
+			if (icon == null)
+			{
+			    icon = IconManager.getIcon(iconName, IconManager.IconSize.Std16);
+			}
 		}
 		else 
 		{
@@ -75,9 +66,7 @@ public class DataModelObjBaseWrapper
 				// FIXME: SpPrincipal table isn't registered with DBTableIdMgr
 				return;
 			}
-		
-			String iconName = tableInfo.getClassObj().getSimpleName();
-			icon = IconManager.getIcon(iconName, IconManager.IconSize.Std16);
+			icon = tableInfo.getIcon(IconManager.IconSize.Std16);
 		}
 	}
 	
@@ -184,6 +173,17 @@ public class DataModelObjBaseWrapper
 	 */
 	public String toString()
 	{
-		return dataObj.getIdentityTitle();
+	    if (title == null)
+	    {
+	        if (dataObj instanceof Discipline)
+	        {
+	            DisciplineType dispType = DisciplineType.getDiscipline(((Discipline)dataObj).getName());
+	            title = dispType.getTitle();
+	        } else
+	        {
+	            title = dataObj.getIdentityTitle();
+	        }
+	    }
+		return title;
 	}
 }
