@@ -111,7 +111,10 @@ public class SpecifySecurityMgr
         try
         {
             Class.forName(driverClass);
-            conn = DriverManager.getConnection(url, embeddedSpecifyAppRootUser, embeddedSpecifyAppRootPwd);
+            // XXX THIS IS TEMPORARY
+            //conn = DriverManager.getConnection(url, embeddedSpecifyAppRootUser, embeddedSpecifyAppRootPwd);
+            conn = DriverManager.getConnection(url, user, pass); 
+            
             String query = "SELECT * FROM specifyuser where name='" + user + "'"; //$NON-NLS-1$ //$NON-NLS-2$
             stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(query);
