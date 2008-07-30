@@ -108,6 +108,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -6037,7 +6038,17 @@ public class BuildSampleDatabase
     {
         if (session != null)
         {
-            session.saveOrUpdate(o);
+            try
+            {
+                
+                session.saveOrUpdate(o);
+                
+            } catch (Exception ex)
+            {
+                UIRegistry.showError(ex.toString());
+                ex.printStackTrace();
+                throw new RuntimeException(ex);
+            }
         }
     }
 
@@ -6075,7 +6086,17 @@ public class BuildSampleDatabase
 
     public void commitTx()
     {
-        HibernateUtil.commitTransaction();
+        try
+        {
+            
+            HibernateUtil.commitTransaction();
+            
+        } catch (Exception ex)
+        {
+            UIRegistry.showError(ex.toString());
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
+        }
     }
     
 
@@ -6757,6 +6778,10 @@ public class BuildSampleDatabase
         }
         
         System.out.println("All done");
+        
+        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                "The build complete successfully.", 
+                "Complete", JOptionPane.INFORMATION_MESSAGE);
     }
     
     public static void assignPermssions()
