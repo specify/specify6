@@ -58,8 +58,8 @@ public class SpecifySecurityMgr
     protected static boolean                              doingLocal      = false;
     
     // XXX TODO SECURITY- make secure Specify Admin user and pwd
-    public static final String embeddedSpecifyAppRootUser = "rods"; //$NON-NLS-1$
-    public static final String embeddedSpecifyAppRootPwd = "rods"; //$NON-NLS-1$
+    public static final String embeddedSpecifyAppRootUser = "Specify"; //$NON-NLS-1$
+    public static final String embeddedSpecifyAppRootPwd  = "Specify"; //$NON-NLS-1$
 
     public SpecifySecurityMgr()
     {
