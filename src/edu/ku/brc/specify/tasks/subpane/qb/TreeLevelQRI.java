@@ -22,7 +22,6 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -57,7 +56,7 @@ public class TreeLevelQRI extends FieldQRI
         }
         catch (Exception ex)
         {
-            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+            throw new RuntimeException(ex);
         }
         finally
         {
@@ -194,15 +193,18 @@ public class TreeLevelQRI extends FieldQRI
         .createSession();
         try
         {
-            TreeDefIface<?,?,?> treeDef;
+            TreeDefIface<?, ?, ?> treeDef = null;
             try
             {
-                treeDef = AppContextMgr.getInstance().getClassObject(Collection.class).getDiscipline().getTreeDef(capitalize(getTableInfo().getClassObj().getSimpleName()) + "TreeDef");
+                DataModelObjBase tempdef = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Collection.class).getDiscipline().getTreeDef(capitalize(getTableInfo().getClassObj().getSimpleName()) + "TreeDef");
+                treeDef = (TreeDefIface<?, ?, ?> )session.get(tempdef.getDataClass(), tempdef.getId());
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new RuntimeException(e);
+                throw new RuntimeException(ex);
             }
+
+            
             String className = getTableInfo().getClassObj().getSimpleName();
             List<?> matches = session.getDataList("from " + className + " where name " + operStr + " " +  criteria + " and " + className + "TreeDefId = " + treeDef.getTreeDefId()
                     + " and rankId =" + String.valueOf(rankId));

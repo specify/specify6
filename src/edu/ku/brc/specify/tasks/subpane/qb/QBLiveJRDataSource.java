@@ -11,6 +11,8 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
@@ -25,6 +27,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class QBLiveJRDataSource extends QBJRDataSourceBase
 {
+    protected static final Logger log = Logger.getLogger(QBLiveJRDataSource.class);
     /**
      * pre-computed 'live' data.
      */
@@ -67,8 +70,12 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
         int fldIdx = getFldIdx(arg0.getName());
         if (fldIdx < 0)
         {
-            //XXX This will blow up jasper if arg0 is not a String. right?
-            return String.format(UIRegistry.getResourceString("QBJRDS_UNKNOWN_FIELD"), arg0.getName());
+            if (arg0.getClass().equals(String.class))
+            {
+         	   return String.format(UIRegistry.getResourceString("QBJRDS_UNKNOWN_FIELD"), arg0.getName());
+            }
+            log.error("field not found: " + arg0.getName());
+            return null;
         }
         return processValue(fldIdx, data.getCacheValueAt(row, fldIdx));
     }

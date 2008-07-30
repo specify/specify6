@@ -92,8 +92,12 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         int processIdx = recordIdsIncluded ? fldIdx-1 : fldIdx;
         if (processIdx == -1)
         {
-            //XXX This will blow up jasper if arg0 is not a String. right?
-           return String.format(UIRegistry.getResourceString("QBJRDS_UNKNOWN_FIELD"), arg0.getName());
+           if (arg0.getClass().equals(String.class))
+           {
+        	   return String.format(UIRegistry.getResourceString("QBJRDS_UNKNOWN_FIELD"), arg0.getName());
+           }
+           log.error("field not found: " + arg0.getName());
+           return null;
         }
         return processValue(processIdx, columnInfo.get(processIdx).processValue(rowVals[fldIdx]));
     }

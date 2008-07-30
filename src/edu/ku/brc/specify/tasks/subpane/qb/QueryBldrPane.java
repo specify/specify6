@@ -103,7 +103,6 @@ import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -2272,7 +2271,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     }
                     catch (Exception ex)
                     {
-                        throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+                        throw new RuntimeException(ex);
                     }
                     finally
                     {
