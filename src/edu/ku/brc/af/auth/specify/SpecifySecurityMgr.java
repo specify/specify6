@@ -58,8 +58,13 @@ public class SpecifySecurityMgr
     protected static boolean                              doingLocal      = false;
     
     // XXX TODO SECURITY- make secure Specify Admin user and pwd
-    public static final String embeddedSpecifyAppRootUser = "Specify"; //$NON-NLS-1$
-    public static final String embeddedSpecifyAppRootPwd  = "Specify"; //$NON-NLS-1$
+    
+    // XXX THESE NEXT TWO LINES TEMPORARY (needed to remove the 'final'
+    //public static final String embeddedSpecifyAppRootUser = "Specify"; //$NON-NLS-1$
+    //public static final String embeddedSpecifyAppRootPwd  = "Specify"; //$NON-NLS-1$
+    
+    public static String embeddedSpecifyAppRootUser = "Specify"; //$NON-NLS-1$
+    public static String embeddedSpecifyAppRootPwd  = "Specify"; //$NON-NLS-1$
 
     public SpecifySecurityMgr()
     {
@@ -111,9 +116,12 @@ public class SpecifySecurityMgr
         try
         {
             Class.forName(driverClass);
+            
             // XXX THIS IS TEMPORARY
-            //conn = DriverManager.getConnection(url, embeddedSpecifyAppRootUser, embeddedSpecifyAppRootPwd);
-            conn = DriverManager.getConnection(url, user, pass); 
+            embeddedSpecifyAppRootUser = user;
+            embeddedSpecifyAppRootPwd  = pass;
+            
+            conn = DriverManager.getConnection(url, embeddedSpecifyAppRootUser, embeddedSpecifyAppRootPwd);
             
             String query = "SELECT * FROM specifyuser where name='" + user + "'"; //$NON-NLS-1$ //$NON-NLS-2$
             stmt = conn.createStatement();
