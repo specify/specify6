@@ -828,7 +828,7 @@ public class UIRegistry
     {
         JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
                 msg, 
-                getResourceString("UNRECOVERABLE_ERROR_TITLE"), JOptionPane.ERROR_MESSAGE);
+                getResourceString("UIRegistry.UNRECOVERABLE_ERROR_TITLE"), JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -1425,7 +1425,7 @@ public class UIRegistry
                                      null,
                                      "Cut",
                                      null,
-                                     "Cut selection to clipboard",
+                                     "Cut selection to clipboard", // I18N ????
                                      new Integer(KeyEvent.VK_X),
                                      KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
        register(CUT, menu.add(cutAction));

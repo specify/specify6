@@ -1650,7 +1650,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     }
     
     /**
-     * 
+     * Launches dialog for Importing and Exporting Forms and Resources.
      */
     protected void doResourceImportExport()
     {

@@ -15,6 +15,10 @@
 package edu.ku.brc.specify.config;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getViewbasedFactory;
+import static edu.ku.brc.ui.UIRegistry.showLocalizedError;
 
 import java.awt.Dimension;
 import java.io.File;
@@ -72,7 +76,6 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UnhandledExceptionDialog;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
@@ -114,12 +117,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
     private static final Logger  log = Logger.getLogger(SpecifyAppContextMgr.class);
     
     // Virtual Directory Levels
-    public static final String PERSONALDIR   = "Personal";
-    public static final String USERTYPEDIR   = "UserType";
-    public static final String COLLECTIONDIR = "Collection";
-    public static final String DISCPLINEDIR  = "Discipline";
-    public static final String COMMONDIR     = "Common";
-    public static final String BACKSTOPDIR   = "BackStop";
+    public static final String PERSONALDIR   = "Personal"; //$NON-NLS-1$
+    public static final String USERTYPEDIR   = "UserType"; //$NON-NLS-1$
+    public static final String COLLECTIONDIR = "Collection"; //$NON-NLS-1$
+    public static final String DISCPLINEDIR  = "Discipline"; //$NON-NLS-1$
+    public static final String COMMONDIR     = "Common"; //$NON-NLS-1$
+    public static final String BACKSTOPDIR   = "BackStop"; //$NON-NLS-1$
 
     protected List<SpAppResourceDir>                spAppResourceList = new ArrayList<SpAppResourceDir>();
     protected Hashtable<String, SpAppResourceDir>   spAppResourceHash = new Hashtable<String, SpAppResourceDir>();
@@ -196,7 +199,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 return i;
             }
         }
-        throw new RuntimeException("Virtual Directory name ["+virtualDirName+"] isn't found.");
+        throw new RuntimeException("Virtual Directory name ["+virtualDirName+"] isn't found."); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -261,12 +264,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } else if (openSessionCount < 0)
             {
-                log.error("Open Session Count just went negitive!");
+                log.error("Open Session Count just went negitive!"); //$NON-NLS-1$
                 
             }
         } else
         {
-            log.error("There is no existing open session.");
+            log.error("There is no existing open session."); //$NON-NLS-1$
         }
     }
     
@@ -276,7 +279,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public int getNumOfCollectionsForUser()
     {
-        String sqlStr = "select count(cos) From Agent as spua Inner Join spua.specifyUser spu Inner Join spua.disciplines as dsp Inner Join dsp.collections as cos where spu.specifyUserId = "+user.getSpecifyUserId();
+        String sqlStr = "select count(cos) From Agent as spua Inner Join spua.specifyUser spu Inner Join spua.disciplines as dsp Inner Join dsp.collections as cos where spu.specifyUserId = "+user.getSpecifyUserId(); //$NON-NLS-1$
         
         DataProviderSessionIFace session = null;
         try
@@ -319,7 +322,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         } else
         {
-            log.error("SpecifyUser was null!");
+            log.error("SpecifyUser was null!"); //$NON-NLS-1$
         }
         return list;
     }
@@ -334,11 +337,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         try
         {
-            final String prefName = mkUserDBPrefName("recent_collection_id");
+            final String prefName = mkUserDBPrefName("recent_collection_id"); //$NON-NLS-1$
             
             // First get the Collections the User has access to.
             Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
-            String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+userArg.getSpecifyUserId();
+            String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+userArg.getSpecifyUserId(); //$NON-NLS-1$
             for (Object obj : sessionArg.getDataList(sqlStr))
             {
                 Collection cs = (Collection)obj; 
@@ -352,7 +355,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             String         recentIds = appPrefs.get(prefName, null);
             if (StringUtils.isNotEmpty(recentIds))
             {
-                List<?> list = sessionArg.getDataList("FROM Collection WHERE collectionId = " + recentIds);
+                List<?> list = sessionArg.getDataList("FROM Collection WHERE collectionId = " + recentIds); //$NON-NLS-1$
                 if (list.size() == 1)
                 {
 
@@ -361,7 +364,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
                 else
                 {
-                    log.debug("could NOT find recent ids");
+                    log.debug("could NOT find recent ids"); //$NON-NLS-1$
                 }
             }
             
@@ -375,7 +378,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         } catch (Exception ex)
         {
             ex.printStackTrace();
-            UIRegistry.showLocalizedError(ex.toString()); // Yes, I know it isn't localized.
+            showLocalizedError(ex.toString()); // Yes, I know it isn't localized.
         }
         return null;
     }
@@ -388,7 +391,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param alwaysAsk indicates the User should always be asked which Collection to use
      * @return the current Collection or null
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     protected Collection setupCurrentCollection(final SpecifyUser userArg,
                                                 final boolean startingOver)
     {
@@ -397,13 +400,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             session = DataProviderFactory.getInstance().createSession();
             
-            SpecifyUser spUser = session.getData(SpecifyUser.class, "id", userArg.getId(), DataProviderSessionIFace.CompareType.Equals);
+            SpecifyUser spUser = session.getData(SpecifyUser.class, "id", userArg.getId(), DataProviderSessionIFace.CompareType.Equals); //$NON-NLS-1$
             
-            final String prefName = mkUserDBPrefName("recent_collection_id");
+            final String prefName = mkUserDBPrefName("recent_collection_id"); //$NON-NLS-1$
             
             // First get the Collections the User has access to.
             Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
-            String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+spUser.getSpecifyUserId();
+            String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+spUser.getSpecifyUserId(); //$NON-NLS-1$
             for (Object obj : session.getDataList(sqlStr))
             {
                 Collection cs = (Collection)obj; 
@@ -418,7 +421,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             String         recentIds = appPrefs.get(prefName, null);
             if (StringUtils.isNotEmpty(recentIds))
             {
-                List<?> list = session.getDataList("FROM Collection WHERE collectionId = " + recentIds);
+                List<?> list = session.getDataList("FROM Collection WHERE collectionId = " + recentIds); //$NON-NLS-1$
                 if (list.size() == 1)
                 {
 
@@ -427,7 +430,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
                 else
                 {
-                    log.debug("could NOT find recent ids");
+                    log.debug("could NOT find recent ids"); //$NON-NLS-1$
                 }
             }
             
@@ -467,7 +470,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         }
                     } else
                     {
-                        log.error("Collection was null!");
+                        log.error("Collection was null!"); //$NON-NLS-1$
                     }
     
                     
@@ -515,11 +518,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
             AppContextMgr.getInstance().setClassObject(Collection.class, collection);
             // XXX Collection.setCurrentCollectionIds(getCollectionIdList(sessionArg));
             
-            String colObjStr = "CollectionObject";
+            String colObjStr = "CollectionObject"; //$NON-NLS-1$
             String iconName = AppPreferences.getRemote().get(FormattingPrefsPanel.getDisciplineImageName(), colObjStr);
             if (StringUtils.isEmpty(iconName) || iconName.equals(colObjStr))
             {
-                iconName = "colobj_backstop";
+                iconName = "colobj_backstop"; //$NON-NLS-1$
             }
             
             IconManager.aliasImages(iconName,                  // Source
@@ -547,7 +550,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             } else
             {
-                UIRegistry.showLocalizedError("COLLECTION_WAS_NULL");
+                showLocalizedError("SpecifyAppContextMgr.COL_WAS_NULL"); //$NON-NLS-1$
             }
             
             return collection;
@@ -555,7 +558,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         } catch (Exception ex)
         {
             ex.printStackTrace();
-            UIRegistry.showLocalizedError(ex.toString()); // Yes, I know it isn't localized.
+            showLocalizedError(ex.toString()); // Yes, I know it isn't localized.
             
         } finally
         {
@@ -577,7 +580,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     protected String mkUserDBPrefName(final String prefName)
     {
-        return prefName + "." + userName+ "." + databaseName;
+        return prefName + "." + userName+ "." + databaseName; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -593,7 +596,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                     final Collection     collection,
                                     final Discipline     discipline)
     {
-        if (debug) log.debug("finding AppResourceDefault");
+        if (debug) log.debug("finding AppResourceDefault"); //$NON-NLS-1$
         
         for (Object obj : appResDefList)
         {
@@ -630,39 +633,40 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                             final Collection     collection,
                                             final String         userType,
                                             final boolean        isPersonal,
+                                            final String         localizedTitle,
                                             final boolean        createWhenNotFound)
     {
-        StringBuilder sb = new StringBuilder("FROM SpAppResourceDir WHERE specifyUserId = ");
+        StringBuilder sb = new StringBuilder("FROM SpAppResourceDir WHERE specifyUserId = "); //$NON-NLS-1$
         sb.append(specifyUser.getSpecifyUserId());
         if (discipline != null)
         {
-            sb.append(" AND disciplineId = ");
+            sb.append(" AND disciplineId = "); //$NON-NLS-1$
             sb.append(discipline.getId());
         } else
         {
-            sb.append(" AND disciplineId is null");
+            sb.append(" AND disciplineId is null"); //$NON-NLS-1$
         }
         
         if (collection != null)
         {
-            sb.append(" AND collectionId = ");
+            sb.append(" AND collectionId = "); //$NON-NLS-1$
             sb.append(collection.getId());
         } else
         {
-            sb.append(" AND collectionId is null");
+            sb.append(" AND collectionId is null"); //$NON-NLS-1$
         }
         
         if (userType != null)
         {
-            sb.append(" AND userType = '");
+            sb.append(" AND userType = '"); //$NON-NLS-1$
             sb.append(userType);
-            sb.append("'");
+            sb.append("'"); //$NON-NLS-1$
         } else
         {
-            sb.append(" AND userType is null");
+            sb.append(" AND userType is null"); //$NON-NLS-1$
         }
         
-        sb.append(" AND isPersonal = ");
+        sb.append(" AND isPersonal = "); //$NON-NLS-1$
         sb.append(isPersonal);
         
         log.debug(sb.toString());
@@ -683,6 +687,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     log.debug(appRes.getName());
                 }
             }
+            appResDir.setTitle(localizedTitle);
             return appResDir;
         }
         
@@ -695,6 +700,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             appResDir.setSpecifyUser(specifyUser);
             appResDir.setDiscipline(discipline);
             appResDir.setIsPersonal(isPersonal);
+            appResDir.setTitle(localizedTitle);
             return appResDir;
         }
         
@@ -733,7 +739,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         if (fndAppRes == null)
         {
-            throw new RuntimeException("Couldn't find resource with name["+appResource.getName()+"]");
+            throw new RuntimeException("Couldn't find resource with name["+appResource.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
         if (fndAppRes.getSpAppResourceId() == null)
@@ -754,7 +760,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             for (SpAppResourceData data : fndAppRes.getSpAppResourceDatas())
             {
                 SpAppResourceData newData = (SpAppResourceData)data.clone();
-                newAppRes.addReference(newData, "spAppResourceDatas");
+                newAppRes.addReference(newData, "spAppResourceDatas"); //$NON-NLS-1$
             }
             removeAppResource(virtualDirName, appResource);
             saveResource(newAppRes);
@@ -842,7 +848,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                                  final String           viewSetMgrName, 
                                                  final File             dir)
     {
-        if (debug) log.debug("loadViewSetMgrFromDir ["+spAppResourceDir.getIdentityTitle()+"]");
+        if (debug) log.debug("loadViewSetMgrFromDir ["+spAppResourceDir.getIdentityTitle()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         
         SpViewSetObj vso = null;
         ViewSetMgr viewSetMgr = new ViewSetMgr(viewSetMgrName, dir);
@@ -878,8 +884,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         if (debug) 
         {
-            log.debug("Creating AppResourceDef from Dir ["+virtualDirName+"]");
-            log.debug("mergeAppResourceDirFromDiskDir AppResourceDef from Dir ["+dir.getAbsolutePath()+"]");
+            log.debug("Creating AppResourceDef from Dir ["+virtualDirName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            log.debug("mergeAppResourceDirFromDiskDir AppResourceDef from Dir ["+dir.getAbsolutePath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
         viewSetMgrHash.put(virtualDirName, new Pair<String, File>(viewSetMgrName, dir));
@@ -888,12 +894,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // loaded from the database. If not, then load then from the Directory (file system)
         if (spAppResourceDir.getSpViewSets().size() == 0)
         {
-            if (debug) log.debug("Loading ViewSets from Dir ["+dir.getAbsolutePath()+"]");
+            if (debug) log.debug("Loading ViewSets from Dir ["+dir.getAbsolutePath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             loadViewSetMgrFromDir(spAppResourceDir, viewSetMgrName, dir);
             
         } else
         {
-            if (debug) log.debug("ViewSets came from the database ["+dir.getAbsolutePath()+"]");
+            if (debug) log.debug("ViewSets came from the database ["+dir.getAbsolutePath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         // Now load all the other generic XML resources 
@@ -932,7 +938,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     protected SpAppResourceDir createAppResourceDefFromDir(final String viewSetMgrName, final File dir)
     {
-        if (debug) log.debug("Creating AppResourceDef from Dir ["+dir.getAbsolutePath()+"]");
+        if (debug) log.debug("Creating AppResourceDef from Dir ["+dir.getAbsolutePath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         
         SpAppResourceDir spAppResourceDir = new SpAppResourceDir();
         spAppResourceDir.initialize();
@@ -960,13 +966,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
         Discipline  discipline  = appResDef.getDiscipline();
 
         StringBuilder strBuf = new StringBuilder();
-        strBuf.append("CS["+(collection != null ? collection.getCollectionName() : "null") + "]");
-        strBuf.append(" SU["+(spUser != null ? spUser.getName() : "null") + "]");
-        strBuf.append(" COD["+(discipline != null ? discipline.getTitle() : "null") + "]");
-        strBuf.append(" DSP["+appResDef.getDisciplineType() + "]");
-        strBuf.append(" UTYP["+appResDef.getUserType() + "]");
+        strBuf.append("CS["+(collection != null ? collection.getCollectionName() : "null") + "]"); //$NON-NLS-1$ //$NON-NLS-3$
+        strBuf.append(" SU["+(spUser != null ? spUser.getName() : "null") + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        strBuf.append(" COD["+(discipline != null ? discipline.getTitle() : "null") + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        strBuf.append(" DSP["+appResDef.getDisciplineType() + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+        strBuf.append(" UTYP["+appResDef.getUserType() + "]"); //$NON-NLS-1$ //$NON-NLS-2$
         
-        if (debug) log.debug("AppResDefAsString - "  + strBuf.toString());
+        if (debug) log.debug("AppResDefAsString - "  + strBuf.toString()); //$NON-NLS-1$
         
         return strBuf.toString();
     }
@@ -979,7 +985,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                      final String  userName,
                                      final boolean startingOver)
     {
-        if (debug)  log.debug("setting context - databaseName: [" + databaseName + "] userName: [" + userName + "]");
+        if (debug)  log.debug("setting context - databaseName: [" + databaseName + "] userName: [" + userName + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
         this.databaseName = databaseName;
         this.userName     = userName;
@@ -999,13 +1005,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } catch (org.hibernate.exception.SQLGrammarException ex)
         {
-            UIRegistry.showLocalizedError("SCHEMA_OUTOF_SYNC");
+            showLocalizedError("SpecifyAppContextMgr.SCHEMA_OUTOF_SYNC"); //$NON-NLS-1$
             System.exit(0);
         }
 
         try
         {
-            List<?> list = session.getDataList(SpecifyUser.class, "name", userName);
+            List<?> list = session.getDataList(SpecifyUser.class, "name", userName); //$NON-NLS-1$
             if (list.size() == 1)
             {       
                 user = (SpecifyUser)list.get(0);
@@ -1042,11 +1048,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             String userType = user.getUserType();
             
-            if (debug) log.debug("User["+user.getName()+"] Type["+userType+"]");
+            if (debug) log.debug("User["+user.getName()+"] Type["+userType+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     
-            userType = StringUtils.replace(userType, " ", "").toLowerCase();
+            userType = StringUtils.replace(userType, " ", "").toLowerCase(); //$NON-NLS-1$ //$NON-NLS-2$
             
-            if (debug) log.debug("Def Type["+userType+"]");
+            if (debug) log.debug("Def Type["+userType+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             
             spAppResourceList.clear();
             viewSetHash.clear();
@@ -1054,7 +1060,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             Discipline curDis = AppContextMgr.getInstance().getClassObject(Discipline.class);
             int prevDisciplineId = curDis != null ? curDis.getDisciplineId() : -1;
     
-            Discipline discipline = session.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ;
+            Discipline discipline = session.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ; //$NON-NLS-1$
             discipline.getDeterminationStatuss().size(); // make sure they are loaded
             AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
             
@@ -1064,7 +1070,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // This is the Full Path User / Discipline / Collection / UserType / isPersonal
             // For example: rods/fish/fish/collectionmanager / true (meaning the usr's personal space)
             //---------------------------------------------------------
-            SpAppResourceDir appResDir = getAppResDir(session, user, discipline, collection, userType, true, true);
+            String           title     = getResourceString("SpecifyAppContextMgr."+PERSONALDIR);
+            SpAppResourceDir appResDir = getAppResDir(session, user, discipline, collection, userType, true, title, true);
             spAppResourceList.add(appResDir);
             spAppResourceHash.put(PERSONALDIR, appResDir);
             viewSetMgrHash.put(PERSONALDIR, new Pair<String, File>(null, null));
@@ -1073,11 +1080,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // This is the Full Path User / Discipline / Collection / UserType
             // For example: rods/fish/fish/collectionmanager
             //---------------------------------------------------------
-            appResDir = getAppResDir(session, user, discipline, collection, userType, false, true);
-            File dir = XMLHelper.getConfigDir(disciplineStr + File.separator + userType);
+            title     = getResourceString("SpecifyAppContextMgr."+USERTYPEDIR);
+            appResDir = getAppResDir(session, user, discipline, collection, userType, false, title, true);
+            File dir  = XMLHelper.getConfigDir(disciplineStr + File.separator + userType);
             if (dir.exists())
             {
-                mergeAppResourceDirFromDiskDir(USERTYPEDIR, appResDir, disciplineStr+" "+userType, dir);
+                mergeAppResourceDirFromDiskDir(USERTYPEDIR, appResDir, disciplineStr+" "+userType, dir); //$NON-NLS-1$
             }
             spAppResourceList.add(appResDir);
             spAppResourceHash.put(USERTYPEDIR, appResDir);
@@ -1086,7 +1094,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // This is the Full Path User / Discipline / Collection
             // For example: rods/fish/fish
             //---------------------------------------------------------
-            appResDir = getAppResDir(session, user, discipline, collection, null, false, true);
+            title     = getResourceString("SpecifyAppContextMgr."+COLLECTIONDIR);
+            appResDir = getAppResDir(session, user, discipline, collection, null, false, title, true);
             spAppResourceList.add(appResDir);
             spAppResourceHash.put(COLLECTIONDIR, appResDir);
             viewSetMgrHash.put(COLLECTIONDIR, new Pair<String, File>(null, null));
@@ -1095,8 +1104,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // This is the Full Path User / Discipline
             // For example: rods/fish
             //---------------------------------------------------------
-            appResDir = getAppResDir(session, user, discipline, null, null, false, true);
-            dir = XMLHelper.getConfigDir(disciplineStr);
+            title     = getResourceString("SpecifyAppContextMgr."+DISCPLINEDIR);
+            appResDir = getAppResDir(session, user, discipline, null, null, false, title, true);
+            dir       = XMLHelper.getConfigDir(disciplineStr);
             if (dir.exists())
             {
                 mergeAppResourceDirFromDiskDir(DISCPLINEDIR, appResDir, disciplineStr, dir);
@@ -1109,13 +1119,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
             //---------------------------------------------------------
             if (true)
             {
-                appResDir = getAppResDir(session, user, null, null, null, false, true);
-                dir = XMLHelper.getConfigDir("common");
+                title     = getResourceString("SpecifyAppContextMgr."+COMMONDIR);
+                appResDir = getAppResDir(session, user, null, null, null, false, title, true);
+                dir = XMLHelper.getConfigDir("common"); //$NON-NLS-1$
                 if (dir.exists())
                 {
-                    String commonName = "Common";
-                    mergeAppResourceDirFromDiskDir(COMMONDIR, appResDir, commonName, dir);
-                    appResDir.setTitle(commonName);
+                    mergeAppResourceDirFromDiskDir(COMMONDIR, appResDir, COMMONDIR, dir);
                     appResDir.setUserType(COMMONDIR);
                 }
                 spAppResourceList.add(appResDir);
@@ -1125,14 +1134,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
             //---------------------------------------------------------
             // BackStop
             //---------------------------------------------------------
+            String backStopStr = "backstop";
             if (true)
             {
-                dir = XMLHelper.getConfigDir("backstop");
+                dir = XMLHelper.getConfigDir(backStopStr); //$NON-NLS-1$
                 if (dir.exists())
                 {
-                    appResDir = createAppResourceDefFromDir("BackStop", dir);
-                    appResDir.setUserType("BackStop");
-                    appResDir.setTitle("Common");
+                    appResDir = createAppResourceDefFromDir(BACKSTOPDIR, dir); //$NON-NLS-1$
+                    appResDir.setUserType(BACKSTOPDIR); //$NON-NLS-1$
+                    appResDir.setTitle(getResourceString("SpecifyAppContextMgr."+BACKSTOPDIR)); //$NON-NLS-1$
                     
                     spAppResourceList.add(appResDir);
                     spAppResourceHash.put(BACKSTOPDIR, appResDir);
@@ -1140,11 +1150,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
             } else
             {   // this is the old way
                 // I don't think we want to merge 
-                appResDir = getAppResDir(session, user, discipline, null, "BackStop", false, true);
-                dir = XMLHelper.getConfigDir("backstop");
+                title = getResourceString("SpecifyAppContextMgr."+BACKSTOPDIR);
+                appResDir = getAppResDir(session, user, discipline, null, BACKSTOPDIR, false, title, true); //$NON-NLS-1$
+                dir = XMLHelper.getConfigDir(backStopStr); //$NON-NLS-1$
                 if (dir.exists())
                 {
-                    mergeAppResourceDirFromDiskDir(BACKSTOPDIR, appResDir, "backstop", dir);
+                    mergeAppResourceDirFromDiskDir(BACKSTOPDIR, appResDir, backStopStr, dir); //$NON-NLS-1$
                 }
                 spAppResourceList.add(appResDir);
                 spAppResourceHash.put(BACKSTOPDIR, appResDir);
@@ -1152,12 +1163,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             if (prevDisciplineId != -1)
             {
-                CommandDispatcher.dispatch(new CommandAction("Discipline", "Changed"));
+                CommandDispatcher.dispatch(new CommandAction("Discipline", "Changed")); //$NON-NLS-1$ //$NON-NLS-2$
             }
             
             if (prevCollectionId != -1)
             {
-                CommandDispatcher.dispatch(new CommandAction("Collection", "Changed"));
+                CommandDispatcher.dispatch(new CommandAction("Collection", "Changed")); //$NON-NLS-1$ //$NON-NLS-2$
             }
             
             int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
@@ -1201,7 +1212,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
         
-        UIRegistry.showLocalizedError("CRITICAL_LOGIN_ERROR");
+        showLocalizedError("SpecifyAppContextMgr.CRITICAL_LOGIN_ERR"); //$NON-NLS-1$
         System.exit(0);
         return null;
     }
@@ -1213,9 +1224,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public List<ViewSetIFace> getViewSetList(final SpAppResourceDir dir)
     {
-        if (debug) log.debug("Looking up["+dir.getUniqueIdentifer()+"]["+dir.getVerboseUniqueIdentifer()+"]");
+        if (debug) log.debug("Looking up["+dir.getUniqueIdentifer()+"]["+dir.getVerboseUniqueIdentifer()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
-        Boolean reloadViews = AppPreferences.getLocalPrefs().getBoolean("reload_views", false);
+        Boolean reloadViews = AppPreferences.getLocalPrefs().getBoolean("reload_views", false); //$NON-NLS-1$
         if (reloadViews)
         {
             long rightNow = (Calendar.getInstance().getTimeInMillis()/1000);
@@ -1275,7 +1286,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                 //UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(ex);
                                 //dlg.setVisible(true);
                                 String str = ex.toString();
-                                JOptionPane.showConfirmDialog((Frame)UIRegistry.getTopWindow(), "Error parsing Form", ex.toString(), JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showConfirmDialog((Frame)getTopWindow(), "Error parsing Form", ex.toString(), JOptionPane.ERROR_MESSAGE);
                             }
                             
                         });*/
@@ -1393,7 +1404,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         if (StringUtils.isEmpty(viewName))
         {
-            throw new RuntimeException("Sorry the View Name cannot be empty.");
+            throw new RuntimeException("Sorry the View Name cannot be empty."); //$NON-NLS-1$
         }
 
         // We now allow "null" viewset names so it can find the first one it runs into.
@@ -1408,7 +1419,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             for (ViewSetIFace vs : getViewSetList(dir))
             {
-                if (debug) log.debug("VS  ["+vs.getName()+"]["+viewSetName+"]");
+                if (debug) log.debug("VS  ["+vs.getName()+"]["+viewSetName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 
                 if (StringUtils.isEmpty(viewSetName) || vs.getName().equals(viewSetName))
                 {
@@ -1466,7 +1477,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         } else
         {
-            log.error("AppResource was not of class SpAppResource!");
+            log.error("AppResource was not of class SpAppResource!"); //$NON-NLS-1$
         }
         return false;
     }
@@ -1528,7 +1539,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         } else
         {
-            log.error("Couldn't find AppResDir with name["+appResDirName+"]");
+            log.error("Couldn't find AppResDir with name["+appResDirName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return null;
     }
@@ -1598,7 +1609,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     session.attach(appRes);
                 }
                 
-                if (appRes.getMimeType() != null && appRes.getMimeType().equals("text/xml"))
+                if (appRes.getMimeType() != null && appRes.getMimeType().equals("text/xml")) //$NON-NLS-1$
                 {
                     try
                     {
@@ -1611,7 +1622,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     }
                 }
                 // else
-                throw new RuntimeException("MimeType was not 'text/xml'");
+                throw new RuntimeException("MimeType was not 'text/xml'"); //$NON-NLS-1$
                 
             } catch (Exception ex)
             {
@@ -1623,7 +1634,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         } else
         {
-            log.debug("AppResourceIFace was null");
+            log.debug("AppResourceIFace was null"); //$NON-NLS-1$
         }
         return null;
     }
@@ -1663,7 +1674,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 session.attach(appRes);
             }
             
-            if (appRes.getMimeType() != null && appRes.getMimeType().equals("text/xml"))
+            if (appRes.getMimeType() != null && appRes.getMimeType().equals("text/xml")) //$NON-NLS-1$
             {
                 try
                 {
@@ -1713,7 +1724,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } else
         {
-            log.error("Couldn't find respource ["+appRes+"]");
+            log.error("Couldn't find respource ["+appRes+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
     }
@@ -1755,7 +1766,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             return appRes;
                 
         }
-        log.error("Couldn't find AppResDir with name["+appResDirName+"]");
+        log.error("Couldn't find AppResDir with name["+appResDirName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         return null;
     }
 
@@ -1786,7 +1797,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 if (!appResDir.removeResource(appRes))
                 {
                     session.rollback();
-                    log.error("Unable to remove AppResource '" + appResource + "' from directory '" + appResDirName + "'");
+                    log.error("Unable to remove AppResource '" + appResource + "' from directory '" + appResDirName + "'"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     return false;
                 }
                 session.delete(appRes);
@@ -1807,7 +1818,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             }
         }   
-        log.error("Couldn't find AppResDir with name["+appResDirName+"]");
+        log.error("Couldn't find AppResDir with name["+appResDirName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         return false;
     }
 
@@ -1895,40 +1906,40 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 try
                 {
-                    Element root = XMLHelper.readFileToDOM4J(new FileInputStream(new File(file.getAbsoluteFile() + File.separator + "app_resources.xml")));
+                    Element root = XMLHelper.readFileToDOM4J(new FileInputStream(new File(file.getAbsoluteFile() + File.separator + "app_resources.xml"))); //$NON-NLS-1$
                     if (root != null)
                     {
-                        for ( Iterator<?> i = root.elementIterator( "file" ); i.hasNext(); )
+                        for ( Iterator<?> i = root.elementIterator( "file" ); i.hasNext(); ) //$NON-NLS-1$
                         {
                             Element fileElement = (Element) i.next();
-                            String  name        = getAttr(fileElement, "name", null);
+                            String  name        = getAttr(fileElement, "name", null); //$NON-NLS-1$
                             if (appResources.get(name) == null && (resName == null || name.equals(resName)))
                             {
-                                Integer level    = getAttr(fileElement, "level", 0);
-                                String mimeType  = getAttr(fileElement, "mimetype", null);
-                                String desc      = getAttr(fileElement, "description", null);
-                                String fileName  = getAttr(fileElement, "file", null);
-                                String metaData  = getAttr(fileElement, "metadata", null);
+                                Integer level    = getAttr(fileElement, "level", 0); //$NON-NLS-1$
+                                String mimeType  = getAttr(fileElement, "mimetype", null); //$NON-NLS-1$
+                                String desc      = getAttr(fileElement, "description", null); //$NON-NLS-1$
+                                String fileName  = getAttr(fileElement, "file", null); //$NON-NLS-1$
+                                String metaData  = getAttr(fileElement, "metadata", null); //$NON-NLS-1$
 
                                 // these can go away once we validate the XML
                                 if (level == null)
                                 {
-                                    throw new RuntimeException("AppResource level cannot be null!");
+                                    throw new RuntimeException("AppResource level cannot be null!"); //$NON-NLS-1$
                                 }
                                 if (StringUtils.isEmpty(mimeType))
                                 {
-                                    throw new RuntimeException("AppResource mimeType cannot be null!");
+                                    throw new RuntimeException("AppResource mimeType cannot be null!"); //$NON-NLS-1$
                                 }
                                 if (StringUtils.isEmpty(fileName))
                                 {
-                                    throw new RuntimeException("AppResource file cannot be null!");
+                                    throw new RuntimeException("AppResource file cannot be null!"); //$NON-NLS-1$
                                 }
 
                                 File resFile = new File(file.getAbsoluteFile() + File.separator + fileName);
                                 if (!resFile.exists())
                                 {
                                     //throw new RuntimeException("AppResource file cannot be found at["+resFile.getAbsolutePath()+"]");
-                                    log.error("AppResource file cannot be found at["+resFile.getAbsolutePath()+"]");
+                                    log.error("AppResource file cannot be found at["+resFile.getAbsolutePath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                                 }
 
                                 SpAppResource appRes = new SpAppResource();
@@ -1944,18 +1955,18 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
                                 appRes.setFileName(resFile.getAbsolutePath());
 
-                                if (debug) log.debug("Adding ["+name+"] ["+resFile.getAbsolutePath()+"]");
+                                if (debug) log.debug("Adding ["+name+"] ["+resFile.getAbsolutePath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                                 
                                 appResources.put(name, appRes);
 
                             } else if (name == null)
                             {
-                                log.error("AppResource Name["+name+"] is in use.");
+                                log.error("AppResource Name["+name+"] is in use."); //$NON-NLS-1$ //$NON-NLS-2$
                             }
                         }
                     } else
                     {
-                        String msg = "The root element for the document was null!";
+                        String msg = "The root element for the document was null!"; //$NON-NLS-1$
                         log.error(msg);
                         throw new ConfigurationException(msg);
                     }
@@ -1967,7 +1978,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             } else
             {
-                log.error("Directory ["+file.getAbsolutePath()+"] doesn't exist!");
+                log.error("Directory ["+file.getAbsolutePath()+"] doesn't exist!"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
 
@@ -1987,12 +1998,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * Returns a Default Object from Prefs if there is one.
      */
-    @SuppressWarnings("cast")
+    @SuppressWarnings("cast") //$NON-NLS-1$
     public PickListItemIFace getDefaultPickListItem(final String pickListName, final String title)
     {
         PickListItemIFace dObj        = null;
         Collection        collection  = AppContextMgr.getInstance().getClassObject(Collection.class);
-        String            prefName    = (collection != null ? collection.getIdentityTitle() : "") + pickListName + "_DefaultId";
+        String            prefName    = (collection != null ? collection.getIdentityTitle() : "") + pickListName + "_DefaultId"; //$NON-NLS-1$ //$NON-NLS-2$
         AppPreferences    appPrefs    = AppPreferences.getRemote();
         String            idStr       = appPrefs.get(prefName, null);
         
@@ -2024,7 +2035,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            PickList pickList = (PickList)session.getData(PickList.class, "name", pickListName, DataProviderSessionIFace.CompareType.Equals);
+            PickList pickList = (PickList)session.getData(PickList.class, "name", pickListName, DataProviderSessionIFace.CompareType.Equals); //$NON-NLS-1$
             if (pickList != null)
             {
                 Vector<PickListItemIFace> list = new Vector<PickListItemIFace>();
@@ -2034,7 +2045,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
                 list.addAll(pickList.getItems());
                 ChooseFromListDlg<PickListItemIFace> plDlg = new ChooseFromListDlg<PickListItemIFace>(null, 
-                        UIRegistry.getLocalizedMessage("CHOOSE_DEFAULT_OBJECT", title), list);
+                        getLocalizedMessage("SpecifyAppContextMgr.CHS_DEF_OBJ", title), list); //$NON-NLS-1$
                 plDlg.setModal(true);
                 plDlg.setVisible(true);
                 if (!plDlg.isCancelled())
@@ -2046,7 +2057,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
             // error dialog "Unable load the PickList and it's items."
             
-            throw new RuntimeException("PickList name["+pickListName+"] doesn't exist.");
+            throw new RuntimeException("PickList name["+pickListName+"] doesn't exist."); //$NON-NLS-1$ //$NON-NLS-2$
             
         } catch (Exception ex)
         {
@@ -2065,7 +2076,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * Returns a Default Object from Prefs if there is one.
      */
-    @SuppressWarnings("cast")
+    @SuppressWarnings("cast") //$NON-NLS-1$
     public FormDataObjIFace getDefaultObject(final Class<?> classObj, 
                                              final String prefPrefix,
                                              final String title,
@@ -2074,7 +2085,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         Collection       collection  = AppContextMgr.getInstance().getClassObject(Collection.class);
         FormDataObjIFace dObj        = null;
-        String           prefName    = (collection != null ? collection.getIdentityTitle() : "") + prefPrefix + "_DefaultId";
+        String           prefName    = (collection != null ? collection.getIdentityTitle() : "") + prefPrefix + "_DefaultId"; //$NON-NLS-1$ //$NON-NLS-2$
         AppPreferences   appPrefs    = AppPreferences.getRemote();
         String           idStr       = appPrefs.get(prefName, null);
         if (StringUtils.isEmpty(idStr) && ask)
@@ -2131,7 +2142,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 try
                 {
-                    ViewBasedSearchDialogIFace srchDlg = UIRegistry.getViewbasedFactory().createSearchDialog(null, classObj.getSimpleName()+"Search");
+                    ViewBasedSearchDialogIFace srchDlg = getViewbasedFactory().createSearchDialog(null, classObj.getSimpleName()+"Search"); //$NON-NLS-1$
                     if (srchDlg != null)
                     {
                         srchDlg.setTitle(title);
@@ -2190,23 +2201,23 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         StringBuilder sb = new StringBuilder();
         
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy hh:mm:ss zzz");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy hh:mm:ss zzz"); //$NON-NLS-1$
         
-        sb.append(sdf.format(Calendar.getInstance().getTime())+"\n");
-        sb.append(Specify.getSpecify().getAppBuildVersion()+"\n");
+        sb.append(sdf.format(Calendar.getInstance().getTime())+"\n"); //$NON-NLS-1$
+        sb.append(Specify.getSpecify().getAppBuildVersion()+"\n"); //$NON-NLS-1$
         
         SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
         if (spUser != null)
         {
-            sb.append(spUser.toString() + "\n");
+            sb.append(spUser.toString() + "\n"); //$NON-NLS-1$
         }
         Agent uAgent = Agent.getUserAgent();
         if (uAgent != null)
         {
-            sb.append(uAgent.toString() + "\n");
+            sb.append(uAgent.toString() + "\n"); //$NON-NLS-1$
             if (StringUtils.isNotEmpty(uAgent.getEmail()))
             {
-                sb.append(uAgent.getEmail() + "\n");
+                sb.append(uAgent.getEmail() + "\n"); //$NON-NLS-1$
             }
             
             //if (uAgent.getAddresses())
@@ -2217,17 +2228,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 Institution inst = div.getInstitution();
                 if (inst != null)
                 {
-                    sb.append(inst.toString() + "\n");
+                    sb.append(inst.toString() + "\n"); //$NON-NLS-1$
                 }
-                sb.append(div.toString() + "\n");
-                sb.append(uAgent.toString() + "\n");
+                sb.append(div.toString() + "\n"); //$NON-NLS-1$
+                sb.append(uAgent.toString() + "\n"); //$NON-NLS-1$
             }
         }
 
         Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
         if (collection != null)
         {
-            sb.append(collection.toString() + "\n");
+            sb.append(collection.toString() + "\n"); //$NON-NLS-1$
         }
         
         return sb.toString();
@@ -2245,17 +2256,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public static boolean isNewJavaVersion()
     {
-        String javaVersionPropName = "java.version";
+        String javaVersionPropName = "java.version"; //$NON-NLS-1$
 
         String prefsJavaVersion  = AppPreferences.getLocalPrefs().get(javaVersionPropName, null);
-        String systemJavaVersion = System.getProperty("java.version");
+        String systemJavaVersion = System.getProperty("java.version"); //$NON-NLS-1$
         
         boolean isNewVersion = StringUtils.isEmpty(prefsJavaVersion) || 
                                StringUtils.isEmpty(systemJavaVersion) ||
                                !prefsJavaVersion.equals(systemJavaVersion);
         if (isNewVersion)
         {
-            AppPreferences.getLocalPrefs().put(javaVersionPropName, System.getProperty("java.version"));
+            AppPreferences.getLocalPrefs().put(javaVersionPropName, System.getProperty("java.version")); //$NON-NLS-1$
         }
         
         if (isNewJavaVersion == null)

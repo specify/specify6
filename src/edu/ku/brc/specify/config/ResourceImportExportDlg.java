@@ -49,8 +49,12 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
@@ -103,6 +107,44 @@ public class ResourceImportExportDlg extends CustomDialog
                 null);
         okLabel = getResourceString("CLOSE");
     }
+    
+    /**
+     * @param dir the directory
+     * @return a title that describes the hierarchy.
+     */
+    protected String getHierarchicalTitle(final SpAppResourceDir dir)
+    {
+        DBTableInfo collectionTI = DBTableIdMgr.getInstance().getByClassName(Collection.class.getName());
+        DBTableInfo disciplineTI = DBTableIdMgr.getInstance().getByClassName(Discipline.class.getName());
+        
+        String hierTitle = "XXX";
+        if (dir.getIsPersonal())
+        {
+            hierTitle = dir.getTitle();
+            
+        } else if (dir.getUserType() != null)
+        {
+            if (dir.getUserType().equals("Common") || dir.getUserType().equals("BackStop"))
+            {
+                hierTitle = dir.getTitle();
+            } else
+            {
+                hierTitle = getResourceString("RIE_"+dir.getUserType()) + " ("+ dir.getTitle() + ")";
+            }
+            
+        } else if (dir.getCollection() != null)
+        {
+            hierTitle = dir.getCollection().getCollectionName() + " ("+collectionTI.getTitle()+")";
+            
+        } else if (dir.getDiscipline() != null)
+        {
+            hierTitle = dir.getDiscipline().getTitle() + " ("+disciplineTI.getTitle()+")";
+        } else
+        {
+            hierTitle = dir.getIdentityTitle();
+        }
+        return hierTitle;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()
@@ -120,7 +162,7 @@ public class ResourceImportExportDlg extends CustomDialog
         dirs = context.getSpAppResourceList();
         for (SpAppResourceDir dir : dirs)
         {
-            levelCBX.addItem(dir.getIdentityTitle());
+            levelCBX.addItem(getHierarchicalTitle(dir));
         }
         
         PanelBuilder  centerPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));

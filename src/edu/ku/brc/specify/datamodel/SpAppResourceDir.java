@@ -28,8 +28,6 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -47,8 +45,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
 
 /**
 
@@ -75,7 +71,7 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
      protected String             disciplineType;
      protected Boolean            isPersonal;
      
-     // Transient Data Member
+     // Transient Data Members
      protected Set<SpAppResource> spAppResources     = null;
      protected Set<SpViewSetObj>  spViewSets         = null;
      protected boolean            shouldInitialViews = true;
@@ -347,6 +343,15 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     }
 
     /**
+     * @return the title
+     */
+    @Transient
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
      * @return a very descriptive unique identifier
      */
     @Transient
@@ -398,33 +403,7 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     @Transient
     public String getIdentityTitle()
     {
-        if (title == null)
-        {
-            DBTableInfo collectionTI = DBTableIdMgr.getInstance().getByClassName(Collection.class.getName());
-            DBTableInfo disciplineTI = DBTableIdMgr.getInstance().getByClassName(Discipline.class.getName());
-            
-            if (getIsPersonal())
-            {
-                title = getResourceString("RIE_PERSONAL");
-                
-            } else if (getUserType() != null)
-            {
-                title = getUserType();
-                
-            } else if (getCollection() != null)
-            {
-                title = getCollection().getCollectionName() + " ("+collectionTI.getTitle()+")";
-                
-            } else if (getDiscipline() != null)
-            {
-                title = getDiscipline().getTitle() + " ("+disciplineTI.getTitle()+")";
-                
-            } else
-            {
-                title = getIdentityTitle();
-            }
-        }
-        return title;
+        return title == null ? super.getIdentityTitle() : title;
     }
 
     /* (non-Javadoc)

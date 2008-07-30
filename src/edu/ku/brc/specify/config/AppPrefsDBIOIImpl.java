@@ -122,7 +122,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                     SpecifyAppContextMgr specifyAppContext = (SpecifyAppContextMgr)AppContextMgr.getInstance();
                     
                     SpAppResourceData appData = null;
-                    spAppResourceDir = specifyAppContext.getAppResDir(session, AppContextMgr.getInstance().getClassObject(SpecifyUser.class), null, null, "Prefs", false, true);
+                    spAppResourceDir = specifyAppContext.getAppResDir(session, AppContextMgr.getInstance().getClassObject(SpecifyUser.class), null, null, "Prefs", false, "Prefs", true);
                     if (spAppResourceDir.getSpAppResourceDirId() == null)
                     {
                         spAppResource = new SpAppResource();
