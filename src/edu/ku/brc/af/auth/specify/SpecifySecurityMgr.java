@@ -31,9 +31,10 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.JaasContext;
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 
 /**
@@ -41,21 +42,17 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
  * @code_status Unknown
  * 
  * @author megkumin
+ * @author ricardo
+ * @author rods
  *
  */
-public class SpecifySecurityMgr
+public class SpecifySecurityMgr extends SecurityMgr
 {
     private static final Logger log = Logger.getLogger(SpecifySecurityMgr.class);
-
-    public static final String factoryName = "edu.ku.brc.af.auth.specify.SpecifySecurityMgr";
-
-    protected static final SpecifySecurityMgr instance = new SpecifySecurityMgr();
     
-    protected boolean domFound = false;
-
-    protected String                                      localFileName   = null;
-    
-    protected static boolean                              doingLocal      = false;
+    protected boolean        domFound       = false;
+    protected String         localFileName  = null;
+    protected static boolean doingLocal     = false;
     
     // XXX TODO SECURITY- make secure Specify Admin user and pwd
     
@@ -66,6 +63,9 @@ public class SpecifySecurityMgr
     public static String embeddedSpecifyAppRootUser = "Specify"; //$NON-NLS-1$
     public static String embeddedSpecifyAppRootPwd  = "Specify"; //$NON-NLS-1$
 
+    /**
+     * 
+     */
     public SpecifySecurityMgr()
     {
         localFileName = "backstop" + File.separator + "security.xml";
@@ -76,7 +76,7 @@ public class SpecifySecurityMgr
      */
     public static void setLocalFileName(String localFileName)
     {
-        getInstance().localFileName = localFileName;
+        ((SpecifySecurityMgr)getInstance()).localFileName = localFileName;
     }
 
     /**
@@ -84,7 +84,7 @@ public class SpecifySecurityMgr
      */
     public static String getLocalFileName()
     {
-        return getInstance().localFileName;
+        return ((SpecifySecurityMgr)getInstance()).localFileName;
     }
 
     /**
@@ -107,11 +107,11 @@ public class SpecifySecurityMgr
      * @param url - the url of the jdbc datasource.
      * @exception Exception - if the validation fails.
      */
-    public static boolean authenticateDB(String user, String pass, String driverClass, String url) throws Exception
+    public boolean authenticateDB(final String user, final String pass, final String driverClass, final String url) throws Exception
     {
-        Connection conn = null;        
-        Statement stmt = null;
-        boolean passwordMatch = false;
+        Connection conn          = null;        
+        Statement  stmt          = null;
+        boolean    passwordMatch = false;
         
         try
         {
@@ -176,16 +176,11 @@ public class SpecifySecurityMgr
         return passwordMatch;
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.auth.specify.AppContextMgr#getInstance()
-     */
-    public static SpecifySecurityMgr getInstance()
-    {
-        return instance;
-    }
-    
     // XXX should be moved to PermissionService class
-    public static void grantPermission(Subject currentSubject, Principal principalToMatchTo, Permission perm)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityMgr#grantPermission(javax.security.auth.Subject, java.security.Principal, java.security.Permission)
+     */
+    public void grantPermission(Subject currentSubject, Principal principalToMatchTo, Permission perm)
     {
         log.debug("grantPermission"); //$NON-NLS-1$
         if (currentSubject == null)
@@ -228,18 +223,22 @@ public class SpecifySecurityMgr
         }
     }
     
-    /**
-     * Checks whether current user has the permission defined by BasicSpPermission 
-     * and the name and actions provided.
-     *  
-     * @param name Type and target of permission 
-     * @param actions Actions (any combination of view, add, modify, delete actions) 
-     * @return Whether the user has the permission or not
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityMgr#checkPermission(java.lang.String, java.lang.String)
      */
-    public static boolean checkPermission(String name, String actions)
+    public boolean checkPermission(String name, String actions)
     {
-    	final Class<?> permissionClass = BasicSpPermission.class;
-    	return checkPermission(permissionClass, name, actions);
+        final Class<?> permissionClass = BasicSpPermission.class;
+        return checkPermission(permissionClass, name, actions);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityMgr#getPermissionOptions(java.lang.String)
+     */
+    public int getPermissionOptions(String name)
+    {
+        final Class<?> permissionClass = BasicSpPermission.class;
+        return getPermissionOptions(permissionClass, name);
     }
 
     /**
@@ -253,25 +252,63 @@ public class SpecifySecurityMgr
      * @param actions Actions (any combination of view, add, modify, delete actions) 
      * @return Whether the user has the permission or not
      */
-    protected static boolean checkPermission(final Class<?> permissionClass, String name, String actions)
+    protected boolean checkPermission(final Class<?> permissionClass, final String name, final String actions)
     {
-    	if (!(BasicSpPermission.class.isAssignableFrom(permissionClass)))
-    		throw new SecurityException(permissionClass.getName() + " class is not part of Specify permission hierarchy."); //$NON-NLS-1$
+        if (!(BasicSpPermission.class.isAssignableFrom(permissionClass)))
+        {
+            throw new SecurityException(permissionClass.getName() + " class is not part of Specify permission hierarchy."); //$NON-NLS-1$
+        }
 
-    	Constructor<?> constructor = null;
-    	BasicSpPermission perm = null;
-    	try
-    	{
-    		constructor = permissionClass.getConstructor(String.class, String.class);
-        	perm = (BasicSpPermission) constructor.newInstance(name, actions);
-    	}
-    	catch (Exception e)
-    	{
-    		throw new RuntimeException(e);
-    	}
-    	
-    	
+        Constructor<?> constructor = null;
+        BasicSpPermission perm = null;
+        try
+        {
+            constructor = permissionClass.getConstructor(String.class, String.class);
+            perm        = (BasicSpPermission) constructor.newInstance(name, actions);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+        
         return checkPermission(perm);
+    }
+    
+    /**
+     * @param permissionClass
+     * @param name
+     * @return
+     */
+    protected int getPermissionOptions(final Class<?> permissionClass, final String name)
+    {
+        if (!(BasicSpPermission.class.isAssignableFrom(permissionClass)))
+        {
+            throw new SecurityException(permissionClass.getName() + " class is not part of Specify permission hierarchy."); //$NON-NLS-1$
+        }
+
+        int options = NO_PERM;
+        
+        Constructor<?> constructor = null;
+        try
+        {
+            constructor = permissionClass.getConstructor(String.class, String.class);
+            
+            log.debug("******************* Can View: "+name+" - "+ checkPermission((BasicSpPermission)constructor.newInstance(name, VIEW_PERM)));
+            log.debug("******************* Can Mod : "+name+" - "+ checkPermission((BasicSpPermission)constructor.newInstance(name, MODIFY_PERM)));
+            log.debug("******************* Can Del : "+name+" - "+ checkPermission((BasicSpPermission)constructor.newInstance(name, DELETE_PERM)));
+            log.debug("******************* Can Add : "+name+" - "+ checkPermission((BasicSpPermission)constructor.newInstance(name, ADD_PERM)));
+            
+            options |= checkPermission((BasicSpPermission)constructor.newInstance(name, MODIFY_PERM)) ? CAN_MODIFY : 0;
+            options |= checkPermission((BasicSpPermission)constructor.newInstance(name, VIEW_PERM)) ?   CAN_VIEW : 0;
+            options |= checkPermission((BasicSpPermission)constructor.newInstance(name, ADD_PERM)) ?    CAN_ADD : 0;
+            options |= checkPermission((BasicSpPermission)constructor.newInstance(name, DELETE_PERM)) ? CAN_DELETE : 0;
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+        
+        return options;
     }
     
     /**
@@ -280,9 +317,9 @@ public class SpecifySecurityMgr
      * @param myPerm Permission being tested 
      * @return Whether the user has the permission or not
      */
-    public static boolean checkPermission(final BasicSpPermission myPerm)
+    public boolean checkPermission(final BasicSpPermission myPerm)
     {
-        Subject currentSubject = AppContextMgr.getInstance().getClassObject(Subject.class);
+        Subject currentSubject = JaasContext.getGlobalSubject();
         
         if ((currentSubject != null) && (myPerm != null))
         {
@@ -295,4 +332,5 @@ public class SpecifySecurityMgr
 
         return false;
     }
+    
 }

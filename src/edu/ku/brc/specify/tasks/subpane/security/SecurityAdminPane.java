@@ -33,7 +33,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -65,7 +64,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.auth.specify.SpecifySecurityMgr;
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
@@ -132,9 +131,9 @@ public class SecurityAdminPane extends BaseSubPane
 		// check some admin permissions
 		
 		// check for permission to delete objects (users, collections, etc) on the security admin panel 
-		hasPermissionToAdd    = SpecifySecurityMgr.checkPermission("Task.SecurityAdmin", "add");
-		hasPermissionToModify = SpecifySecurityMgr.checkPermission("Task.SecurityAdmin", "modify");
-		hasPermissionToDelete = SpecifySecurityMgr.checkPermission("Task.SecurityAdmin", "delete");
+		hasPermissionToAdd    = SecurityMgr.getInstance().checkPermission("Task.SecurityAdmin", "add");
+		hasPermissionToModify = SecurityMgr.getInstance().checkPermission("Task.SecurityAdmin", "modify");
+		hasPermissionToDelete = SecurityMgr.getInstance().checkPermission("Task.SecurityAdmin", "delete");
 	}
 	
 	public JPanel createMainControlUI()

@@ -24,9 +24,7 @@ import javax.security.auth.Subject;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.af.auth.JaasContext;
 
 /**
  * @author megkumin
@@ -48,7 +46,7 @@ public class PermissionHelper
 
     public static void invokeSubjectPermCall(final Permission myPerm)
     {
-        Subject subject = AppContextMgr.getInstance().getClassObject(Subject.class);
+        Subject subject = JaasContext.getGlobalSubject();
 
         boolean allowed = true;
         try

@@ -31,7 +31,7 @@ import javax.security.auth.spi.LoginModule;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.auth.specify.SpecifySecurityMgr;
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.specify.credential.UsernameCredential;
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
@@ -127,7 +127,7 @@ public class SpDBLoginModule implements LoginModule
             url         = new String (((TextInputCallback) callbacks[2]).getText());
             driverClass = new String (((TextInputCallback) callbacks[3]).getText());
 
-            authenticated = SpecifySecurityMgr.authenticateDB(username, password, driverClass, url);
+            authenticated = SecurityMgr.getInstance().authenticateDB(username, password, driverClass, url);
             
             for (int i = 0; i < callbacks.length; i++)
             {

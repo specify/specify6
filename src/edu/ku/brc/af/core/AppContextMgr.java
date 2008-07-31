@@ -53,6 +53,8 @@ public abstract class AppContextMgr
     
     protected CONTEXT_STATUS              currentStatus = CONTEXT_STATUS.Initial;
     protected Hashtable<Class<?>, Object> classObjHash  = new Hashtable<Class<?>, Object>();
+    protected boolean                     hasContext    = false;
+
     
     /**
      * Returns a View by name, meaning a ViewSet name and a View name inside the ViewSet.
@@ -190,6 +192,22 @@ public abstract class AppContextMgr
     public abstract UIFieldFormatterIFace getFormatter(String shortClassName, String fieldName);
     
     /**
+     * @return the hasContext
+     */
+    public boolean hasContext()
+    {
+        return hasContext;
+    }
+
+    /**
+     * @param hasContext the hasContext to set
+     */
+    public void setHasContext(boolean hasContext)
+    {
+        this.hasContext = hasContext;
+    }
+
+    /**
      * Copies all the fields except the data.
      * @param fromAppRes the from app res
      * @param toAppRes the to app res
@@ -229,6 +247,11 @@ public abstract class AppContextMgr
      */
     public void setClassObject(final Class<?> clazz, final Object object)
     {
+        if (!hasContext)
+        {
+            throw new RuntimeException("No context has been set.");
+        }
+        
         if (object == null)
         {
             if (classObjHash.get(clazz) != null)
@@ -242,13 +265,17 @@ public abstract class AppContextMgr
     }
     
     /**
-     * Gets the registered single obhject for a class.
+     * Gets the registered single object for a class.
      * @param clazz the class
      * @return the object
      */
     @SuppressWarnings("unchecked")
     public <T> T getClassObject(final Class<T> clazz)
     {
+        if (!hasContext)
+        {
+            throw new RuntimeException("No context has been set.");
+        }
         return (T)classObjHash.get(clazz);
     }
     /**

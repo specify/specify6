@@ -32,8 +32,6 @@ import edu.ku.brc.af.auth.specify.module.DbLoginCallbackHandler;
 import edu.ku.brc.af.auth.specify.module.SpDBConfiguration;
 import edu.ku.brc.af.auth.specify.policy.CompositePolicy;
 import edu.ku.brc.af.auth.specify.policy.DatabasePolicy;
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 
 /**
  * @author megkumin
@@ -48,6 +46,8 @@ public class JaasContext
     private static final Logger log    = Logger.getLogger(JaasContext.class);
     public static String        url    = ""; //$NON-NLS-1$
     public static String        driver = ""; //$NON-NLS-1$
+    
+    public static Subject       globalSubject = null;
 
     /**
      * Composite policy will allow us to piggy back our own policy definition onto of the 
@@ -73,34 +73,43 @@ public class JaasContext
      * Methods
      * @param user - the username credential supplied by the user
      * @param pass - the password credential supplied by the user
-     * @param url - the url of the database
-     * @param driver -  the driver for the database
+     * @param urlArg - the url of the database
+     * @param driverArg -  the driver for the database
      */
-    public boolean jaasLogin(String user, String pass, String url, String driver)
+    public boolean jaasLogin(String user, String pass, String urlArg, String driverArg)
     {
-    	//if (1==1) return true;
-    	
-        JaasContext.url = url;
-        JaasContext.driver = driver;
+        globalSubject        = null;
+        
+        JaasContext.url      = urlArg;
+        JaasContext.driver   = driverArg;
         boolean loginSuccess = false;
         try
         {
         	Configuration.setConfiguration(SpDBConfiguration.getInstance());
             createDatabaseBackedPolicyDefinition();
-            DbLoginCallbackHandler spcbh = new DbLoginCallbackHandler(user, pass, url, driver);
+            DbLoginCallbackHandler spcbh = new DbLoginCallbackHandler(user, pass, urlArg, driverArg);
             LoginContext lc = new LoginContext("SpLogin", spcbh); //$NON-NLS-1$
             lc.login();
-            loginSuccess = true;
-            AppContextMgr.getInstance().setClassObject(Subject.class, lc.getSubject());
+            loginSuccess  = true;
+            globalSubject = lc.getSubject();
             
         } catch (LoginException lex)
         {
             log.error("jaasLogin() - " + lex.getClass().getName() + ": " + lex.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
             log.error("jaasLogin() - user failed to login using through jaas framework"); //$NON-NLS-1$
+            
         } catch (Exception ex)
         {
             log.error("jaasLogin() - " + ex.getClass().getName() + ": " + ex.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return loginSuccess;
+    }
+
+    /**
+     * @return the globalSubject
+     */
+    public static Subject getGlobalSubject()
+    {
+        return globalSubject;
     }
 }

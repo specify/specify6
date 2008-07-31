@@ -28,8 +28,6 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.ui.UIRegistry;
-
 /**
  * 
  * DbLoginCallbackHandler has constructor that takes 

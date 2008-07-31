@@ -30,6 +30,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -85,6 +86,8 @@ public class MultiView extends JPanel
     protected Viewable                     currentViewable      = null;
     protected FormValidator                currentValidator     = null;
     protected Class<?>                     classToCreate        = null;
+    
+    protected int                          permissions;
     
     protected boolean                      editable             = false;
     protected AltViewIFace.CreationMode    createWithMode       = AltViewIFace.CreationMode.NONE;
@@ -202,6 +205,11 @@ public class MultiView extends JPanel
             ViewLoader.clearFieldVerInfo();
         }
         
+        permissions = SecurityMgr.getInstance().getPermissionOptions("Form."+view.getName()); 
+        log.debug("View: "+view.getName() + " - " + permissions+"  - "+SecurityMgr.getInstance().checkPermission("Form."+view.getName(), "view"));
+        
+        boolean hasPermissionToModify = SecurityMgr.getInstance().checkPermission("Form."+view.getName(), "modify"); 
+
         AltViewIFace defaultAltView = createDefaultViewable(defaultAltViewType);
         
         if (isUsingSwitcher)
@@ -281,10 +289,20 @@ public class MultiView extends JPanel
         this.createWithMode = createWithMode;
         this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.EDIT ? IS_EDITTING : NO_OPTIONS);
         
+        this.permissions    = SecurityMgr.getInstance().getPermissionOptions("Form."+view.getName()); 
+        
         createViewable(altView != null ? altView : createDefaultViewable(null));
         showView(altView.getName());
     }
     
+    /**
+     * @return the permissions
+     */
+    public int getPermissions()
+    {
+        return permissions;
+    }
+
     /**
      * Sometimes the caller may wish to have the form validated after being initialized. 
      */
@@ -1425,7 +1443,6 @@ public class MultiView extends JPanel
      */
     public static boolean isOptionOn(final int options, final int opt)
     {
-
         return (options & opt) == opt;
     }
     

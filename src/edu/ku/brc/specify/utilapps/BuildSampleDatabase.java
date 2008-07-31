@@ -4068,6 +4068,7 @@ public class BuildSampleDatabase
                                                  gtpTreeDef, 
                                                  locTreeDef, 
                                                  lithoStratTreeDef);
+        
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);        
         persist(discipline);
         commitTx();
@@ -6343,6 +6344,8 @@ public class BuildSampleDatabase
                               final String     password,
                               final List<CollectionChoice> selectedChoicesArg)
     {
+        AppContextMgr.getInstance().setHasContext(true); // Fake that there is a Context
+        
         this.selectedChoices = selectedChoicesArg;
         final SwingWorker worker = new SwingWorker()
         {

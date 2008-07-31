@@ -26,7 +26,7 @@ public class RecordSetFactory
 {
     public static final String factoryName = "RecordSetFactory"; //$NON-NLS-1$
     
-    //private static final Logger log = Logger.getLogger(WebLinkMgr.class);
+    //private static final Logger log = Logger.getLogger(RecordSetFactory.class);
     
     protected static RecordSetFactory instance = null;
     

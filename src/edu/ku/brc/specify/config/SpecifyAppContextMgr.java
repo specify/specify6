@@ -989,6 +989,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         this.databaseName = databaseName;
         this.userName     = userName;
+        this.hasContext   = true;
         
         classObjHash.clear();
         

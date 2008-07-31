@@ -123,7 +123,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
         sizeLimit  = 50;
         isSystem   = false;
         
-        collection = AppContextMgr.getInstance() == null? null : AppContextMgr.getInstance().getClassObject(Collection.class);
+        collection = AppContextMgr.getInstance() == null || !AppContextMgr.getInstance().hasContext() ? null : AppContextMgr.getInstance().getClassObject(Collection.class);
         
         pickListItems = new HashSet<PickListItem>();
     }
