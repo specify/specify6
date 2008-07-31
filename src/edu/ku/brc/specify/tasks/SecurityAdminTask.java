@@ -27,7 +27,6 @@ import javax.swing.JMenuItem;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.SecurityMgr;
-import edu.ku.brc.af.auth.SecurityMgrIFace;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -48,7 +47,6 @@ public class SecurityAdminTask extends BaseTask
     private static final Logger log            = Logger.getLogger(SecurityAdminTask.class);
     public static final  String SECURITY_ADMIN = "SecurityAdmin"; //$NON-NLS-1$
     protected SubPaneIFace      starterPane    = null;
-    protected SecurityMgrIFace  securityMgr    = null;
 
     public SecurityAdminTask()
     {
