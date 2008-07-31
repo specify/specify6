@@ -25,9 +25,11 @@ import org.hibernate.NonUniqueResultException;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
-import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -126,8 +128,9 @@ public class UploadTableTree extends UploadTable
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                DataModelObjBase tempdef = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Collection.class).getDiscipline().getTreeDef(capitalize(tblClass.getSimpleName()) + "TreeDef");
-                treeDef = (TreeDefIface )session.get(tempdef.getDataClass(), tempdef.getId());
+                DataModelObjBase tempdisc = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Discipline.class);
+                Discipline disc = (Discipline )session.get(tempdisc.getDataClass(), tempdisc.getId());
+                treeDef = disc.getTreeDef(capitalize(tblClass.getSimpleName()) + "TreeDef");
             }
             catch (Exception ex)
             {
@@ -701,6 +704,15 @@ public class UploadTableTree extends UploadTable
         super.setParents(rec, recNum);
         return true; //don't worry. It will be OK in the end.
     }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#addDomainCriteria(edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace, int)
+	 */
+	@Override
+	protected void addDomainCriteria(CriteriaIFace criteria, int recNum)
+			throws UploaderException {
+		// all already taken care of.
+	}
 
     
 }

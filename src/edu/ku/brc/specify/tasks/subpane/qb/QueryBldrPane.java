@@ -90,8 +90,8 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.dbsupport.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
@@ -806,7 +806,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             //Assuming that this not necessary when keysToRetrieve is non-null because
             //the keys will already been filtered properly. (???)
             
-            // Add extra where's for system fields for each table in the from clause...
+        	// Add extra where's for system fields for each table in the from clause...
             boolean isRootTbl = true;
             for (Pair<DBTableInfo, String> fromTbl : fromTbls)
             {
@@ -822,6 +822,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     }
                     criteriaStr.append(specialColumnWhere);
                 }
+                //Actually, assuming data is valid, it should only be necessary to add the Adjustments for the root table?
+                //XXX if this works, fix this loop. Also, join parameter code in getSpecialColumns will probably be irrelevant.
+                break;
             }
             //...done adding system whereses
         }
@@ -2264,10 +2267,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                     try
                     {
-                    	DataModelObjBase tempdef = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Collection.class).getDiscipline().getTreeDef(
-                                UploadTable.capitalize(tableInfo.getClassObj().getSimpleName())
+                        DataModelObjBase tempdisc = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Discipline.class);
+                        Discipline disc = (Discipline )session.get(tempdisc.getDataClass(), tempdisc.getId());
+                        treeDef = disc.getTreeDef(UploadTable.capitalize(tableInfo.getClassObj().getSimpleName())
                                 + "TreeDef");
-                        treeDef = (TreeDefIface<?, ?, ?> )session.get(tempdef.getDataClass(), tempdef.getId());
                     }
                     catch (Exception ex)
                     {

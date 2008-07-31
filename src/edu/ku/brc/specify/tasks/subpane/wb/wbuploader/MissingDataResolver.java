@@ -50,6 +50,7 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -62,7 +63,7 @@ import edu.ku.brc.util.Pair;
 public class MissingDataResolver implements ActionListener
 {
     protected static final Logger log = Logger.getLogger(MissingDataResolver.class);
-
+    
     /**
      * Foreign keys not provided by the upload dataset.
      */
@@ -118,7 +119,14 @@ public class MissingDataResolver implements ActionListener
     {
         if (a.getActionCommand().equals("DEFAULTS"))
         {
-            setDefaults();
+            try
+            {
+            	setDefaults();
+            }
+            catch (UploaderException ex)
+            {
+            	UIRegistry.showError(ex.getLocalizedMessage());
+            }
             uiTbl.setModel(bldModel(false));
         }
         else if (a.getSource().getClass().equals(JComboBox.class))
@@ -150,7 +158,7 @@ public class MissingDataResolver implements ActionListener
     /**
      * Sets defaults for all foreign keys and local fields.
      */
-    protected void setDefaults()
+    protected void setDefaults() throws UploaderException
     {
         setDefaultFlds();
         setDefaultClasses();
@@ -170,7 +178,7 @@ public class MissingDataResolver implements ActionListener
     /**
      * Sets defaults for all foreign keys.
      */
-    protected void setDefaultClasses()
+    protected void setDefaultClasses() throws UploaderException
     {
         for (RelatedClassSetter rce : missingClasses)
         {
@@ -187,7 +195,7 @@ public class MissingDataResolver implements ActionListener
      * @param missingClasses
      * @param missingFlds
      */
-    public MissingDataResolver(Vector<RelatedClassSetter> missingClasses, Vector<DefaultFieldEntry> missingFlds)
+    public MissingDataResolver(Vector<RelatedClassSetter> missingClasses, Vector<DefaultFieldEntry> missingFlds) throws UploaderException
     {
         super();
         this.missingClasses = missingClasses;

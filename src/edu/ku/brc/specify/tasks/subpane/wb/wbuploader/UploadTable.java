@@ -38,11 +38,13 @@ import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorization;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -172,6 +174,9 @@ public class UploadTable implements Comparable<UploadTable>
             getResourceString("WB_YES"), getResourceString("WB_NO"),
             getResourceString("WB_YES_ABBR"), getResourceString("WB_NO_ABBR"), "1", "0" };
 
+    protected Collection collection = null;
+    protected Discipline discipline = null;
+    
     /**
      * @param table
      * @param relationship
@@ -1296,6 +1301,53 @@ public class UploadTable implements Comparable<UploadTable>
         return pte.getImportTable().getCurrentRecord(recNum);
     }
     
+    protected Discipline getDiscipline() throws UploaderException
+    {
+    	if (discipline == null)
+    	{
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                DataModelObjBase temp = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Discipline.class);
+                discipline = (Discipline )session.get(temp.getDataClass(), temp.getId());
+            }
+            catch (Exception ex)
+            {
+                throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+            }
+            finally
+            {
+                session.close();
+            }
+    	}
+    	return discipline;
+    }
+    
+    protected void addDomainCriteria(CriteriaIFace criteria, int recNum) throws UploaderException
+    {
+        //XXX might be better to add getSpecialColumnCriteria() method to QueryAdjusterForDomain??
+    	//but it would only be used here. 
+    	//but this code will need to be checked whenever QueryAdjusterForDomain.getSpecialColumns is updated...
+    	        
+        /* CollectionMember and Discipline (and Division?) gets done by MissingClassResolver.
+    	if (CollectionMember.class.isAssignableFrom(tblClass))
+        {
+        	criteria.add(Restrictions.eq("collectionMemberId", getCollection().getId()));
+        	return;
+        }
+        if (DisciplineMember.class.isAssignableFrom(tblClass))
+        {
+        	criteria.add(Restrictions.eq("discipline", getDiscipline()));
+        	return;
+        }*/
+        if (Agent.class.isAssignableFrom(tblClass))
+        {
+        	//there is probably an nicer way to to do this
+        	criteria.addSubCriterion("disciplines", Restrictions.eq("userGroupScopeId", getDiscipline().getUserGroupScopeId()));
+        	return;
+        }
+    }
+    
     
     /**
      * @param recNum
@@ -1352,6 +1404,8 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
 
+            addDomainCriteria(critter, recNum);
+            
             List<DataModelObjBase> matches;
             List<DataModelObjBase> matchList = (List<DataModelObjBase>) critter.list();
             if (matchList.size() > 1)

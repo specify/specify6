@@ -19,6 +19,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
@@ -33,6 +34,7 @@ import edu.ku.brc.specify.datamodel.Division;
 public class RelatedClassSetter
 {
     protected static final Logger log = Logger.getLogger(RelatedClassSetter.class);
+    
     /**
      * the UploadTable that defined this entry
      */
@@ -258,46 +260,71 @@ public class RelatedClassSetter
         return uploadTbl;
     }
 
+    protected Discipline getDiscipline() throws UploaderException
+    {
+    	Discipline discipline;
+		DataProviderSessionIFace session = DataProviderFactory.getInstance()
+				.createSession();
+		try 
+		{
+			DataModelObjBase temp = (DataModelObjBase) AppContextMgr
+					.getInstance().getClassObject(Discipline.class);
+			discipline = (Discipline) session.get(temp.getDataClass(), temp
+					.getId());
+		} catch (Exception ex) 
+		{
+			throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+		} finally 
+		{
+			session.close();
+		}
+		return discipline;
+    }
+
+    protected Collection getCollection() throws UploaderException
+    {
+    	Collection collection;
+		DataProviderSessionIFace session = DataProviderFactory.getInstance()
+				.createSession();
+		try 
+		{
+			DataModelObjBase temp = (DataModelObjBase) AppContextMgr
+					.getInstance().getClassObject(Collection.class);
+			collection = (Collection) session.get(temp.getDataClass(), temp
+					.getId());
+		} catch (Exception ex) 
+		{
+			throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+		} finally 
+		{
+			session.close();
+		}
+		return collection;
+    }
+
     /**
-     * @return true if default value can be set for foreign key represented by this Setter.
-     */
-    public boolean defaultSetting() 
+	 * @return true if default value can be set for foreign key represented by
+	 *         this Setter.
+	 */
+    public boolean defaultSetting() throws UploaderException
     {
         if (relatedClass.equals(Discipline.class))
         {
-            setDefaultId(AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId());
+            setDefaultId(getDiscipline().getDisciplineId());
             return true;
         }
         
         if (relatedClass.equals(Collection.class))
         {
-            setDefaultId(AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId());
+            setDefaultId(getCollection().getCollectionId());
             return true;
         }
 
         if (relatedClass.equals(Division.class))
         {
-            setDefaultId(AppContextMgr.getInstance().getClassObject(Discipline.class).getDivision().getId());
+            setDefaultId(getDiscipline().getDivision().getId());
             return true;
         }
-
-//        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-//        try
-//        {
-//            List<?> data = session.getDataList(getRelatedClass());
-//            //if (data.size() > 0)
-//            if (data.size() == 1)
-//            {
-//                Object id = ((DataModelObjBase) data.get(0)).getId();
-//                log.debug("setting " + getRelatedClass().getSimpleName() + " to " + id);
-//                setDefaultId(id, 0);
-//                return true;
-//            }
-//        }
-//        finally
-//        {
-//            session.close();
-//        }
         
         log.debug("unable to meet requirement: " + getUploadTbl().getTblClass().getSimpleName() + "<->"
                 + getRelatedClass().getSimpleName());

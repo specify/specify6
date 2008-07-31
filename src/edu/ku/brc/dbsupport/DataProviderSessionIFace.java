@@ -121,5 +121,6 @@ public interface DataProviderSessionIFace
         public void add(Object criterion);
         public Object uniqueResult();
         public List<?> list();
+        public void addSubCriterion(String name, Object criterion);
     }
 }

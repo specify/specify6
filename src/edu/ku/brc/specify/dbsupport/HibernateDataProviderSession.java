@@ -717,5 +717,10 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         {
             return criteriaDelegate.list();
         }
+        
+        public void addSubCriterion(String name, Object criterion)
+        {
+        	criteriaDelegate.createCriteria(name).add((Criterion )criterion);
+        }
     }
 }

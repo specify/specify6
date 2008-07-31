@@ -19,6 +19,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -51,8 +52,9 @@ public class TreeLevelQRI extends FieldQRI
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            DataModelObjBase tempdef = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Collection.class).getDiscipline().getTreeDef(treeDefName);
-            treeDef = (TreeDefIface<?, ?, ?> )session.get(tempdef.getDataClass(), tempdef.getId());
+            DataModelObjBase tempdisc = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Discipline.class);
+            Discipline disc = (Discipline )session.get(tempdisc.getDataClass(), tempdisc.getId());
+            treeDef = disc.getTreeDef(treeDefName);
         }
         catch (Exception ex)
         {
