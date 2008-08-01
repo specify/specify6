@@ -1207,6 +1207,7 @@ public class QueryFieldPanel extends JPanel
     {
         TableTree reParent = parent;
         if (checkParent && reParent.getTableInfo().getClassObj().equals(Agent.class)
+                && (StringUtils.isEmpty(reParent.getField()) || reParent.getName().equalsIgnoreCase(reParent.getField())) 
                 && reParent.getParent().getTableQRI() != null)
         // agent (and what others??) generally offers no informative distinguishing info
         {
