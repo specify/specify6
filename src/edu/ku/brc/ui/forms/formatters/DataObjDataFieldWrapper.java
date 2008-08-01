@@ -19,11 +19,16 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
-import edu.ku.brc.dbsupport.DBTableInfo;
 
 /**
  * Wrapper for data object formatters.
- * Created to modify toString() method and display item nicely on JList. 
+ * Created to modify toString() method and display item nicely on JList.
+ *  
+ * @author ricardo
+ *
+ * @code_status Alpha
+ *
+ *
  */
 public class DataObjDataFieldWrapper
 {
@@ -44,6 +49,9 @@ public class DataObjDataFieldWrapper
 		return fmtField.isPureField();
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString()
 	{
 		if (StringUtils.isNotEmpty(fmtField.getDataObjFormatterName()))
@@ -60,9 +68,9 @@ public class DataObjDataFieldWrapper
 		}
 		
 		// field
-		DBTableInfo tableInfo = fmtField.getTableInfo();
-		DBFieldInfo fieldInfo = fmtField.getFieldInfo();
-		DBRelationshipInfo relInfo = fmtField.getRelInfo();
+		DBFieldInfo        fieldInfo = fmtField.getFieldInfo();
+		DBRelationshipInfo relInfo   = fmtField.getRelInfo();
+		
 		String result = (relInfo != null)? relInfo.getTitle() + "." : "";
 		String pattern = (fmtField.getUiFieldFormatter() != null)? " (" + fmtField.getUiFieldFormatter().toPattern() + ")" : "";
 		return (fieldInfo != null)? result + fieldInfo.getTitle() + pattern : result + pattern;

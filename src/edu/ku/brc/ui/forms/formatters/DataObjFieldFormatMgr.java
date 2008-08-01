@@ -19,7 +19,6 @@ import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.io.File;
 import java.security.AccessController;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -443,7 +442,7 @@ public class DataObjFieldFormatMgr
     }
     
     /**
-     * Copies the internal data structures from the soutve to this object. But oinly if they have changed.
+     * Copies the internal data structures from the source to this object. But only if they have changed.
      * @param source the source of the changes
      */
     public void applyChanges(final DataObjFieldFormatMgr source)
@@ -557,8 +556,11 @@ public class DataObjFieldFormatMgr
         getFormatterUniqueName(formatter);
         Object previousObj = formatHash.put(formatter.getName(), formatter);
         if (previousObj != null)
+        {
             log.debug("Formatter in formatHash replaced by new value. That's ok.");
+        }
         formatClassHash.put(formatter.getDataClass(), formatter);
+        hasChanged = true;
     }
     
     /**
@@ -568,6 +570,7 @@ public class DataObjFieldFormatMgr
     {
         formatHash.remove(formatter.getName());
         formatClassHash.remove(formatter.getName());
+        hasChanged = true;
     }
     
     /**
@@ -1066,6 +1069,7 @@ public class DataObjFieldFormatMgr
         getAggregatorUniqueName(aggregator);
         aggHash.put(aggregator.getName(), aggregator);
         aggClassHash.put(aggregator.getDataClass(), aggregator);
+        hasChanged = true;
     }
     
     /**
@@ -1076,6 +1080,7 @@ public class DataObjFieldFormatMgr
     {
         aggHash.remove(aggregator.getName());
         aggClassHash.remove(aggregator.getName());
+        hasChanged = true;
     }
     
     /**

@@ -137,14 +137,14 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 			{
 				int row = e.getFirstRow();
 		        int column = e.getColumn();
-		        DefaultTableModel model = (DefaultTableModel) e.getSource();
-		        String columnName = model.getColumnName(column);
+		        DefaultTableModel localModel = (DefaultTableModel) e.getSource();
+		        String columnName = localModel.getColumnName(column);
 		        
 		        if (columnName.equals(FIELD_VALUE_COL))
 		        {
 			        int formatColumn = formatSwitchTbl.getColumnModel().getColumnIndex(DISPLAY_FORMAT_COL);
-			        DataObjDataFieldFormat format = (DataObjDataFieldFormat) model.getValueAt(row, formatColumn);
-			        String value = (String) model.getValueAt(row, column);
+			        DataObjDataFieldFormat format = (DataObjDataFieldFormat) localModel.getValueAt(row, formatColumn);
+			        String value = (String) localModel.getValueAt(row, column);
 		        	format.setValue(value);
 		        	enableUIControls();
 		        }
@@ -340,24 +340,26 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 			});
 		}
 
-		public Component getTableCellEditorComponent(JTable table,
-													 Object value, boolean isSelected, 
-													 int row, int column) 
+		public Component getTableCellEditorComponent(JTable tableArg,
+													 Object value, 
+													 boolean isSelected, 
+													 int rowArg, 
+													 int column) 
 		{
 			if (isSelected) 
 			{
-				button.setForeground(table.getSelectionForeground());
-				button.setBackground(table.getSelectionBackground());
+				button.setForeground(tableArg.getSelectionForeground());
+				button.setBackground(tableArg.getSelectionBackground());
 			} else 
 			{
-				button.setForeground(table.getForeground());
-				button.setBackground(table.getBackground());
+				button.setForeground(tableArg.getForeground());
+				button.setBackground(tableArg.getBackground());
 			}
 			button.setText(ellipsisButtonLabel);
 			isPushed = true;
 
-			this.table = table;
-			this.row = row;
+			this.table = tableArg;
+			this.row = rowArg;
 
 			return button;
 		}

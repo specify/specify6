@@ -32,28 +32,29 @@ import edu.ku.brc.ui.CustomDialog;
  */
 public class DataObjFieldFormatSingleDlg extends CustomDialog 
 {
-	protected DBTableInfo 							tableInfo;
-	protected AvailableFieldsComponent 				availableFieldsComp;
-	protected DataObjSwitchFormatter 				formatter;
-	protected DataObjFieldFormatSinglePanelBuilder 	fmtSingleEditingPB;
-	
-	protected UIFieldFormatterMgr 					uiFieldFormatterMgrCache;
+    protected DBTableInfo                             tableInfo;
+    protected AvailableFieldsComponent                 availableFieldsComp;
+    protected DataObjSwitchFormatter                 formatter;
+    protected DataObjFieldFormatSinglePanelBuilder     fmtSingleEditingPB;
+    
+    protected UIFieldFormatterMgr                     uiFieldFormatterMgrCache;
 
-	/**
+    /**
      * @throws HeadlessException
      */
-    public DataObjFieldFormatSingleDlg(Frame 						frame, 
-    								   DBTableInfo 					tableInfo,
-    								   AvailableFieldsComponent 	availableFieldsComp,
-    								   DataObjDataFieldFormatIFace 	singleFormatter,
-    								   UIFieldFormatterMgr 			uiFieldFormatterMgrCache)
-    	throws HeadlessException
+    public DataObjFieldFormatSingleDlg(final Frame                         frame, 
+                                       final DBTableInfo                     tableInfo,
+                                       final AvailableFieldsComponent     availableFieldsComp,
+                                       final DataObjDataFieldFormatIFace     singleFormatter,
+                                       final UIFieldFormatterMgr             uiFieldFormatterMgrCache)
+        throws HeadlessException
     {
         super(frame, getResourceString("DOF_DLG_TITLE"), true, OKCANCELHELP, null); //I18N
-        this.tableInfo = tableInfo;
-        this.availableFieldsComp = availableFieldsComp;
-        this.formatter = new DataObjSwitchFormatter("", "", true, false, tableInfo.getClassObj(), "");
+        this.tableInfo                = tableInfo;
+        this.availableFieldsComp      = availableFieldsComp;
+        this.formatter                = new DataObjSwitchFormatter("", "", true, false, tableInfo.getClassObj(), "");
         this.uiFieldFormatterMgrCache = uiFieldFormatterMgrCache;
+        
         formatter.setSingle(singleFormatter);
     }
 
@@ -69,9 +70,8 @@ public class DataObjFieldFormatSingleDlg extends CustomDialog
         PanelBuilder    pb = new PanelBuilder(new FormLayout("p", "p")/*, new FormDebugPanel()*/);
         
         // format editing panel (single format only)
-		DataObjSwitchFormatterContainerIface fmtContainer = new DataObjSwitchFormatterSingleContainer(formatter);
-        fmtSingleEditingPB = new DataObjFieldFormatSinglePanelBuilder(tableInfo, availableFieldsComp, 
-        		fmtContainer, getOkBtn(), uiFieldFormatterMgrCache);
+        DataObjSwitchFormatterContainerIface fmtContainer = new DataObjSwitchFormatterSingleContainer(formatter);
+        fmtSingleEditingPB = new DataObjFieldFormatSinglePanelBuilder(tableInfo, availableFieldsComp, fmtContainer, getOkBtn(), uiFieldFormatterMgrCache);
         pb.add(fmtSingleEditingPB.getPanel());
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
@@ -81,6 +81,6 @@ public class DataObjFieldFormatSingleDlg extends CustomDialog
     
     public DataObjDataFieldFormatIFace getSingleFormatter()
     {
-    	return formatter.getSingle();
+        return formatter.getSingle();
     }
 }

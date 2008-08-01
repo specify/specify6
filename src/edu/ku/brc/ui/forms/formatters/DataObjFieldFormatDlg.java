@@ -55,8 +55,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -67,6 +65,13 @@ import edu.ku.brc.ui.AddRemoveEditPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
+/**
+ * @author ricardo
+ *
+ * @code_status Alpha
+ *
+ *
+ */
 public class DataObjFieldFormatDlg extends CustomDialog
 {
 	protected DBTableInfo								tableInfo;
@@ -96,12 +101,11 @@ public class DataObjFieldFormatDlg extends CustomDialog
 								 DataObjFieldFormatMgr dataObjFieldFormatMgrCache,
 								 UIFieldFormatterMgr   uiFieldFormatterMgrCache) throws HeadlessException
 	{
-		super(frame, getResourceString("DOF_DLG_TITLE"), true, OKCANCELHELP,
-				null); // I18N
-		this.tableInfo = tableInfo;
+		super(frame, getResourceString("DOF_DLG_TITLE"), true, OKCANCELHELP, null);
+		this.tableInfo                   = tableInfo;
 		this.initialFormatSelectionIndex = initialFormatSelectionIndex;
-		this.dataObjFieldFormatMgrCache = dataObjFieldFormatMgrCache;
-		this.uiFieldFormatterMgrCache = uiFieldFormatterMgrCache;
+		this.dataObjFieldFormatMgrCache  = dataObjFieldFormatMgrCache;
+		this.uiFieldFormatterMgrCache    = uiFieldFormatterMgrCache;
 	}
 
 	/*
@@ -459,7 +463,8 @@ public class DataObjFieldFormatDlg extends CustomDialog
 
 	protected void addNewFormatter()
 	{
-		String newTitle = dataObjFieldFormatMgrCache.getUniqueName(tableInfo.getTitle(), " ", uniqueTitles);
+		String newTitle = DataObjFieldFormatMgr.getUniqueName(tableInfo.getTitle(), " ", uniqueTitles);
+		
 		// formatter name will be set when inserted into hash of formatters by fmt manager
 		DataObjSwitchFormatter fmt = new DataObjSwitchFormatter("", newTitle,
 				singleDisplayBtn.isSelected(), true, tableInfo.getClassObj(), "");
