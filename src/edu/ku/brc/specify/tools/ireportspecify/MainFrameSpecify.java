@@ -205,10 +205,23 @@ public class MainFrameSpecify extends MainFrame
         return map;
     }
 
+    /* (non-Javadoc)
+     * @see it.businesslogic.ireport.gui.MainFrame#saveAll(javax.swing.JInternalFrame[])
+     */
     @Override
     public void saveAll(javax.swing.JInternalFrame[] frames)
     {
-        System.out.println("saveAll() is not implemented.");
+        for (int f = 0; f < frames.length; f++)
+        {
+            if (frames[f]  instanceof JReportFrame) 
+            {
+                JReportFrame jrf = (JReportFrame )frames[f];
+                if (jrf.getReport() instanceof ReportSpecify && jrf.getReport().isModified())
+                {
+                    save(jrf);
+                }
+            }
+        }
     }
 
     /**
@@ -401,12 +414,10 @@ public class MainFrameSpecify extends MainFrame
                 JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_UNABLE_TO_SAVE_IREPORT"), UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);                        
             }
         }
-//        else
-//        {
-//            super.save(jrf);
-//        }
     }
 
+    
+    
     /**
      * Finds the specify AppResourceIFace associated with an iReport report designer frame.
      * 
