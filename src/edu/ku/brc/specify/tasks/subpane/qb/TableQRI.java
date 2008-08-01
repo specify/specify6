@@ -28,10 +28,15 @@ import edu.ku.brc.dbsupport.DBRelationshipInfo;
  */
 public class TableQRI extends ExpandableQRI
 {
-    protected DBRelationshipInfo relationship = null;
-    protected boolean relChecked = false;
     protected static final Logger log = Logger.getLogger(TableQRI.class);
+    
+    protected DBRelationshipInfo relationship = null;
+    protected boolean            relChecked = false;
 
+
+    /**
+     * @param tableTree
+     */
     public TableQRI(final TableTree tableTree)
     {
         super(tableTree);
@@ -54,21 +59,6 @@ public class TableQRI extends ExpandableQRI
         FieldQRI newField = (FieldQRI)fieldQRI.clone();
         newField.setTable(this);
         fields.add(newField);
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.qb.BaseQRI#clone()
-     */
-    @Override
-    protected Object clone() throws CloneNotSupportedException
-    {
-        TableQRI result = (TableQRI)super.clone();
-        result.fields = new Vector<FieldQRI>(fields.size());
-        for (FieldQRI f : fields)
-        {
-            result.addFieldClone(f);
-        }
-        return result;
     }
     
     /**
@@ -173,6 +163,30 @@ public class TableQRI extends ExpandableQRI
         determineRel();
     }
 
-    
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.BaseQRI#hasMultiChildren()
+     */
+    @Override
+    public boolean hasMultiChildren()
+    {
+        return relationship != null && 
+               (relationship.getType() == DBRelationshipInfo.RelationshipType.OneToMany ||
+                relationship.getType() == DBRelationshipInfo.RelationshipType.ManyToMany);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.BaseQRI#clone()
+     */
+    @Override
+    protected Object clone() throws CloneNotSupportedException
+    {
+        TableQRI result = (TableQRI)super.clone();
+        result.fields = new Vector<FieldQRI>(fields.size());
+        for (FieldQRI f : fields)
+        {
+            result.addFieldClone(f);
+        }
+        return result;
+    }
 }

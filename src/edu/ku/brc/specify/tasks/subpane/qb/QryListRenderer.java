@@ -98,13 +98,24 @@ public class QryListRenderer implements ListCellRenderer
         }
         else
         {
-            icon = qri.getIsInUse() == null ? IconManager
-                .getIcon(qri.getIconName(), iconSize) : (qri.getIsInUse() ? IconManager.getIcon(
-                "Checkmark", IconManager.IconSize.Std16) : blankIcon);
+            icon = qri.getIsInUse() == null ? IconManager.getIcon(qri.getIconName(), iconSize) :
+                   (qri.getIsInUse() ? IconManager.getIcon("Checkmark", IconManager.IconSize.Std16) : blankIcon);
         }
         iconLabel.setIcon(icon != null ? icon : blankIcon);
-        kidLabel.setIcon(displayKidIndicator ? qri != null && qri.hasChildren() ? IconManager.getIcon("Forward",
-                iconSize) : blankIcon : blankIcon);
+        
+        ImageIcon childIcon = blankIcon;
+        if (displayKidIndicator)
+        {
+            if (qri != null)
+            {
+                if (qri.hasChildren())
+                {
+                    childIcon = IconManager.getIcon(qri.hasMultiChildren() ? "MultiKid" : "SingleKid", iconSize);
+                }
+            }
+        }
+        kidLabel.setIcon(childIcon);
+        
         if (iss)
         {
             // setOpaque(true);

@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
@@ -26,24 +23,29 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class ExpandableQRI extends BaseQRI
 {
-    protected DBTableInfo ti;
+    protected DBTableInfo      ti;
     protected Vector<FieldQRI> fields = new Vector<FieldQRI>();
 
     /**
      * @param tableTree
      */
-    public ExpandableQRI(TableTree tableTree)
+    public ExpandableQRI(final TableTree tableTree)
     {
         super(tableTree);
-        this.ti  = tableTree.getTableInfo();
-        iconName = ti.getClassObj().getSimpleName();
-        title    = ti.getTitle();
+        
+        this.ti       = tableTree.getTableInfo();
+        this.iconName = ti.getClassObj().getSimpleName();
+        this.title    = ti.getTitle();
+        
         if (StringUtils.isEmpty(title))
         {
             title    = UIHelper.makeNamePretty(iconName);
         }
     }
 
+    /**
+     * @return
+     */
     public DBTableInfo getTableInfo()
     {
         return ti;
@@ -57,8 +59,21 @@ public class ExpandableQRI extends BaseQRI
         return fields.size();
     }
     
+    /**
+     * @param f
+     * @return
+     */
     public FieldQRI getField(int f)
     {
         return fields.get(f);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.BaseQRI#hasChildren()
+     */
+    @Override
+    public boolean hasChildren()
+    {
+        return true;
     }
 }

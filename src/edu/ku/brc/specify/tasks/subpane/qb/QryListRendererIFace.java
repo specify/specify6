@@ -10,6 +10,8 @@
 package edu.ku.brc.specify.tasks.subpane.qb;
 
 /**
+ * An interface for rendering Query items in a list.
+ * 
  * @author rod
  *
  * @code_status Alpha
@@ -20,24 +22,35 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 public interface QryListRendererIFace
 {
     /**
-     * @return
+     * @return the icon name
      */
     public String getIconName();
+    
     /**
-     * @return
+     * @return the textual title
      */
     public String getTitle();
+    
     /**
-     * @return
+     * @return whether it has children
      */
     public boolean hasChildren();
     
     /**
-     * @return
+     * This should only be called if hasChildren is true.
+     * 
+     * @return false means it has only a single child (OneToOne or ManyToOne),
+     * true means there are many children (ManyToMany, OneToMany)
+     */
+    public boolean hasMultiChildren();
+    
+    /**
+     * @return whether it is in use
      */
     public Boolean getIsInUse();
+    
     /**
-     * @param isInUse
+     * @param isInUse set whether it is in use
      */
     public void setIsInUse(Boolean isInUse);
     

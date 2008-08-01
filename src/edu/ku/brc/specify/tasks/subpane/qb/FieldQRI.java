@@ -23,9 +23,9 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
  */
 public class FieldQRI extends BaseQRI
 {
-    protected TableQRI table = null;
+    protected TableQRI    table = null;
     protected DBFieldInfo fi;
-    protected String[] values = null;
+    protected String[]    values = null;
     
     /**
      * @param table
@@ -34,8 +34,10 @@ public class FieldQRI extends BaseQRI
     public FieldQRI(final TableQRI table, final DBFieldInfo fi)
     {
         super(null);
+        
         this.table = table;
-        this.fi  = fi;
+        this.fi    = fi;
+        
         if (fi != null)
         {
             title    = fi.getTitle();
@@ -52,15 +54,6 @@ public class FieldQRI extends BaseQRI
         return fi;
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.qb.BaseQRI#hasChildren()
-     */
-    @Override
-    public boolean hasChildren()
-    {
-        return false;
-    }
-
     /**
      * @return the name of the field.
      */

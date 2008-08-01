@@ -136,6 +136,9 @@
     <icon name="Down"             file="Down16x16.png" sizes="16"/>
     <icon name="Forward"          file="Forward16x16.png" sizes="16"/>
     
+    <icon name="MultiKid"         file="MultiKid.png" sizes="16"/>
+    <icon name="SingleKid"        file="SingleKid.png" sizes="16"/>
+    
     <icon name="Minimize"         file="minimize.gif" sizes="16"/>
     <icon name="Maximize"         file="maximize.gif" sizes="16"/>
     <icon name="Map"              file="Map16x16.png" sizes="16"/>

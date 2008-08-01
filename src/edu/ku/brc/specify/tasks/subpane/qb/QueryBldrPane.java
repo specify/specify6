@@ -359,7 +359,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         });
 
         contextPanel = new JPanel(new BorderLayout());
-        contextPanel.add(createLabel("Search Context", SwingConstants.CENTER), BorderLayout.NORTH);
+        contextPanel.add(createLabel("Search Context", SwingConstants.CENTER), BorderLayout.NORTH); // I18N
         contextPanel.add(spt, BorderLayout.CENTER);
         contextPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
@@ -1279,6 +1279,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param rootTable
      * @param distinct
      */
+    @SuppressWarnings("unchecked")
     protected void processSQL(final Vector<QueryFieldPanel>    queryFieldItemsArg, 
                               final String                     sql, 
                               final List<Pair<String, Object>> params, 
@@ -1302,7 +1303,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         qri.setSQL(sql);
         qri.setParams(params);
-        //XXX check generics reference book.
+        // XXX check generics reference book. (unchecked conversion here)
         qri.setCaptions((List<ERTICaptionInfo> )captions);
         qri.setExpanded(true);
         runningResults.set(qri);
@@ -1583,11 +1584,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         model.clear();
         if (tblQRI != null)
         {
+            Vector<BaseQRI> sortList = new Vector<BaseQRI>();
+            
             for (int f = 0; f < tblQRI.getFields(); f++)
             {
                 if (!tblQRI.getField(f).isFieldHidden())
                 {
-                    model.addElement(tblQRI.getField(f));
+                    sortList.add(tblQRI.getField(f));
                 }
             }
             for (int k = 0; k < tblQRI.getTableTree().getKids(); k++)
@@ -1613,9 +1616,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 {
                     if (kidK.getTableQRI().getRelationship() == null || !kidK.getTableQRI().getRelationship().isHidden())
                     {
-                        model.addElement(tblQRI.getTableTree().getKid(k).getTableQRI());
+                        sortList.add(tblQRI.getTableTree().getKid(k).getTableQRI());
                     }
                 }
+            }
+            
+            Collections.sort(sortList);
+            for (QryListRendererIFace qri : sortList)
+            {
+                model.addElement(qri);
             }
         }
     }
@@ -1780,6 +1789,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 JLabel colHeader = UIHelper.createLabel(colHeaderText);
                 colHeader.setHorizontalAlignment(SwingConstants.CENTER);
+                colHeader.setBackground(listBoxPanel.getBackground());
+                colHeader.setOpaque(true);
+                
                 sp.setColumnHeaderView(colHeader);
                 
                 spList.add(sp);
