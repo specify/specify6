@@ -988,7 +988,7 @@ public class QueryFieldPanel extends JPanel
 
         if (fieldQRI != null)
         {
-            icon = IconManager.getIcon(fieldQRI.getTableInfo().getTitle(), iconSize);
+            icon = IconManager.getIcon(fieldQRI.getTableInfo().getName(), iconSize);
             setIcon(icon);
         }
         if (!ownerQuery.isPromptMode())
