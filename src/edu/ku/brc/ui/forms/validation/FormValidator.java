@@ -1322,6 +1322,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
         // But if the DataChangeNotifier didn't have a UIValidator then we need to re-validate the
         // form because "wasValidated" wouldn't have been called
 
+        // rods - 08/01/2008 - Moved here before valifing the root 
+        // instead of below and afterward
+        cascadeHasChanged(true);
+        
         UIValidator uiv = dcn != null ? dcn.getUIV() : null;
         if (uiv == null)
         {
@@ -1333,11 +1337,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
             //log.debug("About validateForm: ["+name+"] "+enabled);
             //validateForm();
         }
-
-        // Notify anyone else who is listening to the form for changes
-
-        cascadeHasChanged(true);
         
+        //cascadeHasChanged(true);
+        
+        // Notify anyone else who is listening to the form for changes
         for (DataChangeListener dcl : dcListeners)
         {
             dcl.dataChanged(dcName, comp, dcn);
