@@ -21,12 +21,15 @@ import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.ref.WeakReference;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -65,11 +68,17 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.specify.tasks.subpane.qb.ERTICaptionInfoQB;
@@ -78,6 +87,9 @@ import edu.ku.brc.specify.tasks.subpane.qb.QBReportInfoPanel;
 import edu.ku.brc.specify.tasks.subpane.qb.QBResultReportServiceCmdData;
 import edu.ku.brc.specify.tasks.subpane.qb.QBResultReportServiceInfo;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
+import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
+import edu.ku.brc.specify.tasks.subpane.qb.TreeLevelQRI;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -116,8 +128,11 @@ public class QueryTask extends BaseTask
     
     public static final DataFlavor QUERY_FLAVOR = new DataFlavor(QueryTask.class, QUERY);
     
-    protected QueryBldrPane              queryBldrPane    = null;
-
+    protected QueryBldrPane                               queryBldrPane             = null;
+    protected WeakReference<TableTree>                    tableTree                 = null;
+    protected WeakReference<Hashtable<String, TableTree>> tableTreeHash             = null;
+    protected boolean                                     localizationOrTreeDefEdit = false;
+    
     protected Vector<ToolBarDropDownBtn> tbList           = new Vector<ToolBarDropDownBtn>();
     protected Vector<JComponent>         menus            = new Vector<JComponent>();
     protected Vector<NavBoxIFace>        extendedNavBoxes = new Vector<NavBoxIFace>();
@@ -775,8 +790,28 @@ public class QueryTask extends BaseTask
         
         if (rows.size() == 1)
         {
-            Object[] row = (Object[])rows.iterator().next();
-            editQuery(((SpQuery)row[0]).getId().intValue());
+            final Object[] row = (Object[])rows.iterator().next();
+            new SwingWorker()
+            {
+                @Override
+                public Object construct()
+                {
+                    UIRegistry.displayStatusBarText(UIRegistry.getResourceString("QB_LOADING"));
+                    UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", true);
+                    getTableTree();
+                    UIRegistry.displayStatusBarText("");
+                    UIRegistry.getStatusBar().setProgressDone("QUERYTASK");
+                    UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", false);
+                    return null;
+                }
+                
+                @Override
+                public void finished()
+                {
+                    super.finished();
+                    editQuery(((SpQuery)row[0]).getId().intValue());
+                }
+            }.start();
             
         } else
         {
@@ -793,7 +828,28 @@ public class QueryTask extends BaseTask
             dlg.setVisible(true);
             if (!dlg.isCancelled())
             {
-                editQuery(dlg.getSelectedObject().getId().intValue());
+                final int qid = dlg.getSelectedObject().getId().intValue();
+                new SwingWorker()
+                {
+                    @Override
+                    public Object construct()
+                    {
+                        UIRegistry.displayStatusBarText(UIRegistry.getResourceString("QB_LOADING"));
+                        UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", true);
+                        getTableTree();
+                        UIRegistry.displayStatusBarText("");
+                        UIRegistry.getStatusBar().setProgressDone("QUERYTASK");
+                        UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", false);
+                        return null;
+                    }
+                    
+                    @Override
+                    public void finished()
+                    {
+                        super.finished();
+                        editQuery(qid);
+                    }
+                }.start();
             }
         }
     }
@@ -827,7 +883,27 @@ public class QueryTask extends BaseTask
         {
             public void actionPerformed(ActionEvent e)
             {
-                createNewQuery(tableInfo);
+                new SwingWorker()
+                {
+                    @Override
+                    public Object construct()
+                    {
+                        UIRegistry.displayStatusBarText(UIRegistry.getResourceString("QB_LOADING"));
+                        UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", true);
+                        getTableTree();
+                        UIRegistry.displayStatusBarText("");
+                        UIRegistry.getStatusBar().setProgressDone("QUERYTASK");
+                        UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", false);
+                        return null;
+                    }
+                    
+                    @Override
+                    public void finished()
+                    {
+                        super.finished();
+                        createNewQuery(tableInfo);
+                    }
+                }.start();
             }
         }
         ));
@@ -910,15 +986,35 @@ public class QueryTask extends BaseTask
                                                                    true, true);// true means make it draggable
         roc.setData(recordSet);
         roc.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
+            public void actionPerformed(final ActionEvent e)
             {
-                RolloverCommand queryNavBtn = (RolloverCommand)e.getSource();
-                if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
+                new SwingWorker()
                 {
-                    editQuery(recordSet.getOnlyItem().getRecordId());
-                    queryNavBtn.setEnabled(false);
-                    queryBldrPane.setQueryNavBtn(queryNavBtn);
-                }
+                    @Override
+                    public Object construct()
+                    {
+                        UIRegistry.displayStatusBarText(UIRegistry.getResourceString("QB_LOADING"));
+                        UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", true);
+                        getTableTree();
+                        UIRegistry.displayStatusBarText("");
+                        UIRegistry.getStatusBar().setProgressDone("QUERYTASK");
+                        UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", false);
+                        return null;
+                    }
+                    
+                    @Override
+                    public void finished()
+                    {
+                        super.finished();
+                        RolloverCommand queryNavBtn = (RolloverCommand)e.getSource();
+                        if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
+                        {
+                            editQuery(recordSet.getOnlyItem().getRecordId());
+                            queryNavBtn.setEnabled(false);
+                            queryBldrPane.setQueryNavBtn(queryNavBtn);
+                        }
+                    }
+                }.start();
             }
             
         });
@@ -1027,6 +1123,7 @@ public class QueryTask extends BaseTask
     protected void editQuery(final SpQuery query)
     {
         QueryBldrPane newPane = new QueryBldrPane(query.getName(), this, query);
+        
         if (starterPane != null)
         {
             SubPaneMgr.getInstance().replacePane(starterPane, newPane);
@@ -1230,6 +1327,7 @@ public class QueryTask extends BaseTask
      * Processes all Commands of type QUERY.
      * @param cmdAction the command to be processed
      */
+    @SuppressWarnings("unchecked")
     protected void processQueryCommands(final CommandAction cmdAction)
     {
         if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSetIFace)
@@ -1268,7 +1366,7 @@ public class QueryTask extends BaseTask
                Object src;
                if (selectedRep.isLiveData())
                {
-                   //XXX - probably a smoother way to handle these generic issues.
+                   //XXX - probably a smoother way to handle these generic issues. (type safety warning)
                    List<? extends ERTICaptionInfo> captions = srvData.getInfo().getVisibleCaptionInfo();
                    src = new QBLiveJRDataSource(rsm, (List<ERTICaptionInfoQB> )captions, selectedRep.getRepeats());
                }
@@ -1372,5 +1470,224 @@ public class QueryTask extends BaseTask
         }
     }
 
+    /**
+     * Constructs tableTree and tableTreeHash members.
+     */
+    protected void bldTableTrees()
+    {
+        if (tableTree != null)
+        {
+            tableTree.clear(); //maybe this will aid in gc??
+            tableTree = null;
+        }
+        if (tableTreeHash != null)
+        {
+            tableTreeHash.clear(); //maybe this will aid in gc??
+            tableTree = null;
+        }
+        
+        tableTree = new WeakReference<TableTree>(readTables());
+        tableTreeHash = new WeakReference<Hashtable<String, TableTree>>(
+                buildTableTreeHash(tableTree.get()));
+   }
+    
+    /**
+     * @return the tableTree object.
+     * 
+     * (Re)builds if necessary.
+     */
+    public TableTree getTableTree()
+    {
+        if (tableTree == null || needToRebuildTableTree())
+        {
+            bldTableTrees();
+        }
+        return tableTree.get();
+    }
+    
+    /**
+     * @return the tableTreeHash object.
+     * 
+     * (Re)builds if necessary.
+     */
+    public Hashtable<String, TableTree> getTableTreeHash()
+    {
+        if (tableTree == null || needToRebuildTableTree())
+        {
+            bldTableTrees();
+        }
+        return tableTreeHash.get();
+    }
+    
+    /**
+     * @return true if the table tree objects need to be rebuilt.
+     */
+    protected boolean needToRebuildTableTree()
+    {
+        return localizationOrTreeDefEdit;
+    }
+    
+    /**
+     * @return TableTree defined by "querybuilder.xml" schema.
+     */
+    protected TableTree readTables()
+    {
+        TableTree treeRoot = new TableTree("root", "root", "root", null);
+        try
+        {
+            Element root = XMLHelper.readDOMFromConfigDir("querybuilder.xml");
+            List<?> tableNodes = root.selectNodes("/database/table");
+            for (Object obj : tableNodes)
+            {
+                Element tableElement = (Element) obj;
+                processForTables(tableElement, treeRoot);
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return treeRoot;
+    }
 
+    /**
+     * @param parent
+     * @param parentTT
+     * 
+     * Recursively constructs tableTree defined by "querybuilder.xml" schema.
+     */
+    protected void processForTables(final Element parent, final TableTree parentTT)
+    {
+        String tableName = XMLHelper.getAttr(parent, "name", null);
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(tableName);
+        if (!tableInfo.isHidden())
+        {
+            String fieldName = XMLHelper.getAttr(parent, "field", null);
+            if (StringUtils.isEmpty(fieldName))
+            {
+                fieldName = tableName.substring(0, 1).toLowerCase() + tableName.substring(1);
+            }
+
+            String abbrev = XMLHelper.getAttr(parent, "abbrev", null);
+            TableTree newTreeNode = parentTT.addKid(new TableTree(tableName, fieldName, abbrev,
+                    tableInfo));
+            if (Treeable.class.isAssignableFrom(tableInfo.getClassObj()))
+            {
+                try
+                {
+                    TreeDefIface<?, ?, ?> treeDef = null;
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance()
+                            .createSession();
+                    try
+                    {
+                        DataModelObjBase tempdisc = AppContextMgr.getInstance().getClassObject(
+                                Discipline.class);
+                        Discipline disc = (Discipline) session.get(tempdisc.getDataClass(),
+                                tempdisc.getId());
+                        treeDef = disc.getTreeDef(UploadTable.capitalize(tableInfo.getClassObj()
+                                .getSimpleName())
+                                + "TreeDef");
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new RuntimeException(ex);
+                    }
+                    finally
+                    {
+                        session.close();
+                    }
+                    SortedSet<TreeDefItemIface<?, ?, ?>> defItems = new TreeSet<TreeDefItemIface<?, ?, ?>>(
+                            new Comparator<TreeDefItemIface<?, ?, ?>>()
+                            {
+                                public int compare(TreeDefItemIface<?, ?, ?> o1,
+                                                   TreeDefItemIface<?, ?, ?> o2)
+                                {
+                                    Integer r1 = o1.getRankId();
+                                    Integer r2 = o2.getRankId();
+                                    return r1.compareTo(r2);
+                                }
+
+                            });
+                    defItems.addAll(treeDef.getTreeDefItems());
+                    for (TreeDefItemIface<?, ?, ?> defItem : defItems)
+                    {
+                        if (defItem.getRankId() > 0)//skip root, just because.
+                        {
+                            try
+                            {
+                                newTreeNode.getTableQRI().addField(
+                                        new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
+                                                .getRankId()));
+                            }
+                            catch (Exception ex)
+                            {
+                                // if there is no TreeDefItem for the rank then just skip it.
+                                if (ex instanceof TreeLevelQRI.NoTreeDefItemException)
+                                {
+                                    log.error(ex);
+                                }
+                                // else something is really messed up
+                                else
+                                {
+                                    throw new RuntimeException(ex);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    throw new RuntimeException(ex);
+                }
+            }
+
+            for (Object kidObj : parent.selectNodes("table"))
+            {
+                Element kidElement = (Element) kidObj;
+                processForTables(kidElement, newTreeNode);
+            }
+
+            for (Object obj : parent.selectNodes("alias"))
+            {
+                Element kidElement = (Element) obj;
+                String kidClassName = XMLHelper.getAttr(kidElement, "name", null);
+                tableInfo = DBTableIdMgr.getInstance().getByShortClassName(kidClassName);
+                if (!tableInfo.isHidden())
+                {
+                    tableName = XMLHelper.getAttr(kidElement, "name", null);
+                    fieldName = XMLHelper.getAttr(kidElement, "field", null);
+                    if (StringUtils.isEmpty(fieldName))
+                    {
+                        fieldName = tableName.substring(0, 1).toLowerCase()
+                                + tableName.substring(1);
+                    }
+                    newTreeNode.addKid(new TableTree(kidClassName, fieldName, true));
+                }
+            }
+        }
+    }
+
+    /**
+     * @param treeRoot
+     * @return a Hashtable of top-level tables in tableTree.
+     */
+    protected static Hashtable<String, TableTree> buildTableTreeHash(final TableTree treeRoot)
+    {
+        Hashtable<String, TableTree> result = new Hashtable<String, TableTree>();
+        try
+        {
+            for (int t = 0; t < treeRoot.getKids(); t++)
+            {
+                TableTree tt = treeRoot.getKid(t);
+                result.put(tt.getName(), tt);
+                log.debug("Adding[" + tt.getName() + "] to hash");
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return result;
+    }
 }

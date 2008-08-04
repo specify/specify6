@@ -29,7 +29,6 @@ import java.awt.event.MouseEvent;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -37,8 +36,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -66,7 +63,6 @@ import javax.swing.event.MouseInputAdapter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.dom4j.Element;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -89,20 +85,14 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.dbsupport.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -174,8 +164,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     
     protected int                                            listCellHeight;
 
-    protected TableTree                                      tableTree;
-    protected Hashtable<String, TableTree>                   tableTreeHash;    
+    protected static TableTree                               tableTree;
+    protected static Hashtable<String, TableTree>            tableTreeHash;    
     protected boolean                                        processingLists  = false;
 
     protected RolloverCommand                                queryNavBtn      = null;
@@ -228,9 +218,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             fieldsToSkipHash.put(nameStr, true);
         }
         
-        tableTree = readTables();
-        tableTreeHash = buildTableTreeHash(tableTree);
-
+        QueryTask qt = (QueryTask )task;
+        tableTree = qt.getTableTree();
+        tableTreeHash = qt.getTableTreeHash();
+ 
         createUI();
 
         setQueryIntoUI();
@@ -1140,8 +1131,20 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     public static void runReport(final SpReport report, final String title, final RecordSetIFace rs)
     {
-        final TableTree tblTree = readTables();
-        final Hashtable<String, TableTree> ttHash = QueryBldrPane.buildTableTreeHash(tblTree);
+        QueryTask qt = (QueryTask )ContextMgr.getTaskByClass(QueryTask.class);
+        final TableTree tblTree;
+        final Hashtable<String, TableTree> ttHash;
+        if (qt != null)
+        {
+            tblTree = qt.getTableTree();
+            ttHash = qt.getTableTreeHash();
+        }
+        else
+        {
+            log.error("Cound not find the Query task when running report " + report.getName());
+            //blow up
+            throw new RuntimeException("Cound not find the Query task when running report " + report.getName());
+        }
         boolean go = true;
         QueryParameterPanel qpp = new QueryParameterPanel();
         qpp.setQuery(report.getQuery(), tblTree, ttHash);
@@ -1209,6 +1212,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 QueryBldrPane.this.searchBtn.setText(UIRegistry.getResourceString("QB_SEARCH")); 
                 UIRegistry.getStatusBar().setText("");
+                UIRegistry.getStatusBar().setProgressDone(query.getName());
                 UIRegistry.getStatusBar().setIndeterminate(query.getName(), false);
                 return null;
             }
@@ -1259,6 +1263,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     {
                         QueryBldrPane.this.searchBtn.setText(UIRegistry.getResourceString("QB_SEARCH")); 
                         UIRegistry.getStatusBar().setText("");
+                        UIRegistry.getStatusBar().setProgressDone(query.getName());
                         UIRegistry.getStatusBar().setIndeterminate(query.getName(), false);
                         return null;
                     }
@@ -1315,7 +1320,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 if (runningResults.get() != null && !runningResults.get().getCancelled())
                 {
                     searchBtn.setText(UIRegistry.getResourceString("QB_CANCEL")); 
-                    UIRegistry.getStatusBar().setText("Searching..."); //XXX i18n
+                    UIRegistry.getStatusBar().setText(UIRegistry.getResourceString("QB_SEARCHING"));
                     UIRegistry.getStatusBar().setIndeterminate(query.getName(), true);
                 }
                 //else the query got cancelled or crashed before this thread was executed
@@ -1581,11 +1586,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected void createNewList(final TableQRI tblQRI, final DefaultListModel model)
     {
+
         model.clear();
         if (tblQRI != null)
         {
             Vector<BaseQRI> sortList = new Vector<BaseQRI>();
-            
+
             for (int f = 0; f < tblQRI.getFields(); f++)
             {
                 if (!tblQRI.getField(f).isFieldHidden())
@@ -1605,22 +1611,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     }
                     else
                     {
-                        addIt = tblIsDisplayable(kidK, tableTreeHash.get(kidK.getName()).getTableInfo());
+                        addIt = tblIsDisplayable(kidK, tableTreeHash.get(kidK.getName())
+                                .getTableInfo());
                     }
                 }
                 else
                 {
-                    addIt = !kidK.getTableInfo().isHidden() && tblIsDisplayable(kidK, kidK.getTableInfo());
+                    addIt = !kidK.getTableInfo().isHidden()
+                            && tblIsDisplayable(kidK, kidK.getTableInfo());
                 }
                 if (addIt)
                 {
-                    if (kidK.getTableQRI().getRelationship() == null || !kidK.getTableQRI().getRelationship().isHidden())
+                    if (kidK.getTableQRI().getRelationship() == null
+                            || !kidK.getTableQRI().getRelationship().isHidden())
                     {
                         sortList.add(tblQRI.getTableTree().getKid(k).getTableQRI());
                     }
                 }
             }
-            
+
             Collections.sort(sortList);
             for (QryListRendererIFace qri : sortList)
             {
@@ -1723,7 +1732,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
 
         QryListRendererIFace item = (QryListRendererIFace) parentList.getSelectedValue();
-        if (!(item instanceof FieldQRI))
+        if (item instanceof ExpandableQRI)
         {
             JList newList;
             DefaultListModel model;
@@ -1782,12 +1791,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 listBoxList.add(newList);
                 sp = new JScrollPane(newList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                         ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-                String colHeaderText = "Query Fields";
-                if (item instanceof TableQRI)
-                {
-                    colHeaderText = ((TableQRI)item).getTitle();
-                }
-                JLabel colHeader = UIHelper.createLabel(colHeaderText);
+                JLabel colHeader = UIHelper.createLabel(item.getTitle());
                 colHeader.setHorizontalAlignment(SwingConstants.CENTER);
                 colHeader.setBackground(listBoxPanel.getBackground());
                 colHeader.setOpaque(true);
@@ -1824,7 +1828,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
             }
 
-            if (item instanceof TableQRI)
+            if (item instanceof ExpandableQRI)
             {
                 createNewList((TableQRI)item, model);
 
@@ -2250,118 +2254,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
 
-    /**
-     * @param parent
-     * @param parentTT
-     * @param ttKids
-     * @param parentQRI
-     */
-    protected static void processForTables(final Element parent,
-                                    final TableTree parentTT)
-    {
-        String tableName = XMLHelper.getAttr(parent, "name", null);
-        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(tableName);
-        if (!tableInfo.isHidden())
-        {
-            String fieldName = XMLHelper.getAttr(parent, "field", null);
-            if (StringUtils.isEmpty(fieldName))
-            {
-                fieldName = tableName.substring(0, 1).toLowerCase() + tableName.substring(1);
-            }
-
-            String abbrev = XMLHelper.getAttr(parent, "abbrev", null);
-            TableTree newTreeNode = parentTT.addKid(new TableTree(tableName, fieldName, abbrev, tableInfo));
-            if (Treeable.class.isAssignableFrom(tableInfo.getClassObj()))
-            {
-                try
-                {
-                	TreeDefIface<?, ?, ?> treeDef = null;
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                    try
-                    {
-                        DataModelObjBase tempdisc = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Discipline.class);
-                        Discipline disc = (Discipline )session.get(tempdisc.getDataClass(), tempdisc.getId());
-                        treeDef = disc.getTreeDef(UploadTable.capitalize(tableInfo.getClassObj().getSimpleName())
-                                + "TreeDef");
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new RuntimeException(ex);
-                    }
-                    finally
-                    {
-                        session.close();
-                    }
-                    SortedSet<TreeDefItemIface<?, ?, ?>> defItems = new TreeSet<TreeDefItemIface<?, ?, ?>>(
-                            new Comparator<TreeDefItemIface<?, ?, ?>>()
-                            {
-                                public int compare(TreeDefItemIface<?, ?, ?> o1,
-                                                   TreeDefItemIface<?, ?, ?> o2)
-                                {
-                                    Integer r1 = o1.getRankId();
-                                    Integer r2 = o2.getRankId();
-                                    return r1.compareTo(r2);
-                                }
-
-                            });
-                    defItems.addAll(treeDef.getTreeDefItems());
-                    for (TreeDefItemIface<?, ?, ?> defItem : defItems)
-                    {
-                        if (defItem.getRankId() > 0)//skip root, just because.
-                        {
-                            try
-                            {
-                                newTreeNode.getTableQRI().addField(
-                                        new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
-                                                .getRankId()));
-                            }
-                            catch (Exception ex)
-                            {
-                                // if there is no TreeDefItem for the rank then just skip it.
-                                if (ex instanceof TreeLevelQRI.NoTreeDefItemException)
-                                {
-                                    log.error(ex);
-                                }
-                                // else something is really messed up
-                                else
-                                {
-                                    throw new RuntimeException(ex);
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                    throw new RuntimeException(ex);
-                }
-            }
-            
-            for (Object kidObj : parent.selectNodes("table"))
-            {
-                Element kidElement = (Element) kidObj;
-                processForTables(kidElement, newTreeNode);
-            }
-
-            for (Object obj : parent.selectNodes("alias"))
-            {
-                Element kidElement = (Element) obj;
-                String kidClassName = XMLHelper.getAttr(kidElement, "name", null);
-                tableInfo = DBTableIdMgr.getInstance().getByShortClassName(kidClassName);
-                if (!tableInfo.isHidden())
-                {
-                    tableName = XMLHelper.getAttr(kidElement, "name", null);
-                    fieldName = XMLHelper.getAttr(kidElement, "field", null);
-                    if (StringUtils.isEmpty(fieldName))
-                    {
-                        fieldName = tableName.substring(0, 1).toLowerCase() + tableName.substring(1);
-                    }
-                    newTreeNode.addKid(new TableTree(kidClassName, fieldName, true));
-                }
-            }
-        }
-    }
 
     /**
      * @param tbl
@@ -2403,44 +2295,44 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * @return
      */
-    protected static TableTree readTables()
-    {
-        TableTree treeRoot = new TableTree("root", "root", "root", null);
-        try
-        {
-            Element root = XMLHelper.readDOMFromConfigDir("querybuilder.xml");
-            List<?> tableNodes = root.selectNodes("/database/table");
-            for (Object obj : tableNodes)
-            {
-                Element tableElement = (Element) obj;
-                processForTables(tableElement, treeRoot);
-            }
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        return treeRoot;
-    }
+//    protected static TableTree readTables()
+//    {
+//        TableTree treeRoot = new TableTree("root", "root", "root", null);
+//        try
+//        {
+//            Element root = XMLHelper.readDOMFromConfigDir("querybuilder.xml");
+//            List<?> tableNodes = root.selectNodes("/database/table");
+//            for (Object obj : tableNodes)
+//            {
+//                Element tableElement = (Element) obj;
+//                processForTables(tableElement, treeRoot);
+//            }
+//        }
+//        catch (Exception ex)
+//        {
+//            ex.printStackTrace();
+//        }
+//        return treeRoot;
+//    }
 
-    protected static Hashtable<String, TableTree> buildTableTreeHash(final TableTree treeRoot)
-    {
-        Hashtable<String, TableTree> result = new Hashtable<String, TableTree>();
-        try
-        {
-            for (int t = 0; t < treeRoot.getKids(); t++)
-            {
-                TableTree tt = treeRoot.getKid(t);
-                result.put(tt.getName(), tt);
-                log.debug("Adding[" + tt.getName() + "] to hash");
-            }
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        return result;
-    }
+//    protected static Hashtable<String, TableTree> buildTableTreeHash(final TableTree treeRoot)
+//    {
+//        Hashtable<String, TableTree> result = new Hashtable<String, TableTree>();
+//        try
+//        {
+//            for (int t = 0; t < treeRoot.getKids(); t++)
+//            {
+//                TableTree tt = treeRoot.getKid(t);
+//                result.put(tt.getName(), tt);
+//                log.debug("Adding[" + tt.getName() + "] to hash");
+//            }
+//        }
+//        catch (Exception ex)
+//        {
+//            ex.printStackTrace();
+//        }
+//        return result;
+//    }
     
     /**
      * @param columnDefStr the columnDefStr to set
