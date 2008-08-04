@@ -62,7 +62,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                                final DBTableIdMgr mgr, 
                                final Locale       locale)
     {
-        // First do Just Hidden in case a table is missing a itle or desc
+        // First do Just Hidden in case a table is missing a title or desc
         String sql = "SELECT Name, IsHidden FROM  splocalecontainer WHERE " +
                      "SchemaType = " + schemaType +" AND DisciplineID = " + disciplineId;
 
@@ -81,9 +81,9 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             }
         }
         
-        sql = "SELECT splocalecontainer.Name, Text FROM splocalecontainer INNER JOIN splocaleitemstr ON " +
-              "splocalecontainer.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerNameID where Language = '"+locale.getLanguage()+"' AND " +
-              "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.DisciplineID = " + disciplineId;
+        sql = "SELECT cn.Name, Text, cn.Aggregator, cn.IsUIFormatter, cn.Format FROM splocalecontainer cn INNER JOIN splocaleitemstr ON " +
+              "cn.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerNameID where Language = '"+locale.getLanguage()+"' AND " +
+              "cn.SchemaType = " + schemaType +" AND cn.DisciplineID = " + disciplineId;
 
         retrieveString(sql);
         
@@ -93,16 +93,27 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             if (ti != null)
             {
                 ti.setTitle(p.get(1));
+                ti.setAggregatorName(p.get(2));
                 
+                if (p.get(3) != null && p.get(4) != null)
+                {
+                    if (!p.get(3).equals("0"))
+                    {
+                        ti.setUiFormatter(p.get(4));
+                    } else
+                    {
+                        ti.setDataObjFormatter(p.get(4));
+                    }
+                }
             } else
             {
                 log.error("Couldn't find table ["+p.get(0)+"]");
             }
         }
         
-        sql = "SELECT splocalecontainer.Name,Text FROM splocalecontainer INNER JOIN splocaleitemstr ON " +
-              "splocalecontainer.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerDescID where Language = '"+locale.getLanguage()+"' AND " +
-              "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.DisciplineID = " + disciplineId;
+        sql = "SELECT cn.Name,Text FROM splocalecontainer cn INNER JOIN splocaleitemstr ON " +
+              "cn.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerDescID where Language = '"+locale.getLanguage()+"' AND " +
+              "cn.SchemaType = " + schemaType +" AND cn.DisciplineID = " + disciplineId;
         
         retrieveString(sql);
         
@@ -119,13 +130,13 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             }
         }
         
-        sql = "SELECT splocalecontainer.Name,splocalecontaineritem.Name,splocalecontaineritem.Format, " +
+        sql = "SELECT cn.Name,splocalecontaineritem.Name,splocalecontaineritem.Format, " +
               "splocalecontaineritem.IsUIFormatter, splocalecontaineritem.PickListName, splocaleitemstr.Text, " +
               "splocalecontaineritem.IsHidden, splocalecontaineritem.WebLinkName , splocalecontaineritem.IsRequired  " +
-              "FROM splocalecontainer INNER JOIN splocalecontaineritem ON splocalecontainer.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
+              "FROM splocalecontainer cn INNER JOIN splocalecontaineritem ON cn.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
               "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemNameID "+
               " where splocaleitemstr.Language = '"+locale.getLanguage()+"' AND " +
-              "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.DisciplineID = " + disciplineId + " order by splocalecontainer.Name";
+              "cn.SchemaType = " + schemaType +" AND cn.DisciplineID = " + disciplineId + " order by cn.Name";
         log.debug(sql);
         retrieveString(sql);
         
@@ -191,11 +202,11 @@ public class SpecifySchemaI18NService extends SchemaI18NService
         }
 
         
-        sql = "SELECT splocalecontainer.Name, splocalecontaineritem.Name, splocaleitemstr.Text, splocalecontaineritem.IsHidden "+
-              "FROM splocalecontainer INNER JOIN splocalecontaineritem ON splocalecontainer.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
+        sql = "SELECT cn.Name, splocalecontaineritem.Name, splocaleitemstr.Text, splocalecontaineritem.IsHidden "+
+              "FROM splocalecontainer cn INNER JOIN splocalecontaineritem ON cn.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
               "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemDescID "+
               " where splocaleitemstr.Language = '"+locale.getLanguage()+"' AND " +
-              "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.DisciplineID = " + disciplineId + " order by splocalecontainer.Name";
+              "cn.SchemaType = " + schemaType +" AND cn.DisciplineID = " + disciplineId + " order by cn.Name";
         
         retrieveString(sql);
         

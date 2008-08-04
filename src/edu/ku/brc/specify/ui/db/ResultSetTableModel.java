@@ -54,7 +54,6 @@ import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.forms.DataObjectSettableFactory;
 import edu.ku.brc.ui.forms.FormHelper;
-import edu.ku.brc.ui.forms.formatters.DataObjAggregator;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
@@ -753,8 +752,8 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                 Object aggSubObj = aggCaption.getSubClass() != null ? aggCaption.getSubClass().newInstance() : null;
                                 aggList.add(aggObj);
 
-                                @SuppressWarnings("unused")
-                                DataObjAggregator aggregator = DataObjFieldFormatMgr.getInstance().getAggregator(aggCaption.getAggregatorName());
+                                //@SuppressWarnings("unused")
+                                //DataObjAggregator aggregator = DataObjFieldFormatMgr.getInstance().getAggregator(aggCaption.getAggregatorName());
                                 //log.debug(" aggCaption.getOrderColIndex() "+ aggCaption.getOrderColIndex());
                                 
                                 //aggSetter.setFieldValue(aggObj, aggregator.getOrderFieldName(), resultSet.getObject(aggCaption.getOrderColIndex() + 1));
@@ -795,7 +794,15 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 {
                     int aggInx = captions.indexOf(aggCaption);
                     row.remove(aggInx);
-                    String colStr = DataObjFieldFormatMgr.getInstance().aggregate(aggList, aggCaption.getAggClass());
+                    String colStr;
+                    if (StringUtils.isNotEmpty(aggCaption.getAggregatorName()))
+                    {
+                        colStr = DataObjFieldFormatMgr.getInstance().aggregate(aggList, aggCaption.getAggregatorName());
+                        
+                    } else
+                    {
+                        colStr = DataObjFieldFormatMgr.getInstance().aggregate(aggList, aggCaption.getAggClass());
+                    }
                     row.insertElementAt(colStr, aggInx);
                     aggList.clear();
                     aggListRecycler.clear();

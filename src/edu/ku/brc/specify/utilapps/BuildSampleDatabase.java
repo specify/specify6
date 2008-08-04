@@ -6794,6 +6794,16 @@ public class BuildSampleDatabase
             frame.processDone();
         }
         
+        // Set the Schema Size into Locale Prefs
+        String schemaKey = "schemaSize";
+        int    schemaFileSize = 0;
+        File schemaFile = XMLHelper.getConfigDir("specify_datamodel.xml");
+        if (schemaFile != null)
+        {
+            schemaFileSize = (int)schemaFile.length();
+            AppPreferences.getLocalPrefs().putInt(schemaKey, schemaFileSize);
+        }
+        
         JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
                 "The build completed successfully.", 
                 "Complete", JOptionPane.INFORMATION_MESSAGE);

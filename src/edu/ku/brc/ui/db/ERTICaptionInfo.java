@@ -29,6 +29,8 @@ import org.dom4j.Element;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.ui.forms.formatters.DataObjAggregator;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
@@ -159,12 +161,32 @@ public class ERTICaptionInfo
             String aggClassName = getAttr(aggElement, "class", null); //$NON-NLS-1$
             if (StringUtils.isNotEmpty(aggClassName))
             {
+ 
                 aggTableClassName = aggClassName;
                 try
                 {
-                    aggClass       = Class.forName(aggClassName);
-                    aggregatorName = getAttr(aggElement, "aggregator", null); //$NON-NLS-1$
-                    orderCol       = getAttr(aggElement, "ordercol", null); //$NON-NLS-1$
+                    aggClass = Class.forName(aggClassName);
+                    if (aggClass == Collector.class)
+                    {
+                        int x = 0;
+                        x++;
+                    }
+                    boolean aggOK = false;
+                    DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(aggClass.getSimpleName());
+                    if (tableInfo != null && StringUtils.isNotEmpty(tableInfo.getAggregatorName()))
+                    {
+                        DataObjAggregator agg = DataObjFieldFormatMgr.getInstance().getAggregator(tableInfo.getAggregatorName());
+                        if (agg != null)
+                        {
+                            aggregatorName = tableInfo.getAggregatorName();
+                            aggOK = true;
+                        }
+                    }
+                    if (!aggOK)
+                    {
+                        aggregatorName = getAttr(aggElement, "aggregator", null); //$NON-NLS-1$
+                    }
+                    orderCol = getAttr(aggElement, "ordercol", null); //$NON-NLS-1$
                     
                 } catch (ClassNotFoundException ex)
                 {

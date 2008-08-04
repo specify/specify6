@@ -62,6 +62,7 @@ public class DBTableInfo extends DBInfoBase
     protected String dataObjFormatter;
     protected String searchDialog;
     protected String newObjDialog;
+    protected String aggregatorName;
     
     protected List<DBRelationshipInfo>  relationships;
     protected List<DBFieldInfo>         fields;
@@ -183,6 +184,22 @@ public class DBTableInfo extends DBInfoBase
     public void setUiFormatter(String uiFormatter)
     {
         this.uiFormatter = uiFormatter;
+    }
+
+    /**
+     * @return the aggregatorName
+     */
+    public String getAggregatorName()
+    {
+        return aggregatorName;
+    }
+
+    /**
+     * @param aggregatorName the aggregatorName to set
+     */
+    public void setAggregatorName(String aggregatorName)
+    {
+        this.aggregatorName = aggregatorName;
     }
 
     public String getNewObjDialog()

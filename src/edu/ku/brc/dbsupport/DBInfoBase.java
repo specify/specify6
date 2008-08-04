@@ -104,7 +104,7 @@ public class DBInfoBase implements Comparable<DBInfoBase>
     }
 
     /**
-     * @param devName the name to set
+     * @param title the name to set
      */
     public void setTitle(final String title)
     {
