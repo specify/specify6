@@ -1,35 +1,49 @@
+/* This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package edu.ku.brc.af.auth.specify.credential;
 
-import edu.ku.brc.ui.UIRegistry;
-
-
-
+/**
+ * @author megkumin
+ *
+ * @code_status Alpha
+ *
+ * Created Date: Aug 26, 2007
+ *
+ */
 @SuppressWarnings("serial") //$NON-NLS-1$
 public class UsernameCredential extends Credential
 {
     private String name;
 
-    public UsernameCredential(String name)
+    /**
+     * @param name
+     */
+    public UsernameCredential(final String name)
     {
         if (name == null)
         {
             throw new NullPointerException("name and/or id may not be null."); //$NON-NLS-1$
-        } 
-        else
-        {
-            this.name = name;
         }
+        // else
+        this.name = name;
     }
 
     public String getName()
     {
         return name;
     }
-
-//    public int hashCode()
-//    {
-//        return getName().hashCode() * 13 + getId().hashCode() * 13;
-//    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -41,11 +55,10 @@ public class UsernameCredential extends Credential
         if (!(obj instanceof UsernameCredential))
         {
             return false;
-        } else
-        {
-            UsernameCredential other = (UsernameCredential)obj;
-            return getName().equals(other.getName());
         }
+        // else
+        UsernameCredential other = (UsernameCredential)obj;
+        return getName().equals(other.getName());
     }
 
     /* (non-Javadoc)
