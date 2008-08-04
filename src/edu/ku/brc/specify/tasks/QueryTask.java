@@ -1474,21 +1474,16 @@ public class QueryTask extends BaseTask
      * Constructs tableTree and tableTreeHash members.
      */
     protected void bldTableTrees()
-    {
-        if (tableTree != null)
+    {        
+        if (tableTree == null || tableTreeHash.get() == null || needToRebuildTableTree())
         {
-            tableTree.clear(); //maybe this will aid in gc??
-            tableTree = null;
+            tableTreeHash = null;
+            tableTree = new WeakReference<TableTree>(readTables());
         }
-        if (tableTreeHash != null)
+        if (tableTreeHash == null || tableTreeHash.get() == null || needToRebuildTableTree())
         {
-            tableTreeHash.clear(); //maybe this will aid in gc??
-            tableTree = null;
+            tableTreeHash = new WeakReference<Hashtable<String, TableTree>>(buildTableTreeHash(tableTree.get()));
         }
-        
-        tableTree = new WeakReference<TableTree>(readTables());
-        tableTreeHash = new WeakReference<Hashtable<String, TableTree>>(
-                buildTableTreeHash(tableTree.get()));
    }
     
     /**
@@ -1498,10 +1493,7 @@ public class QueryTask extends BaseTask
      */
     public TableTree getTableTree()
     {
-        if (tableTree == null || needToRebuildTableTree())
-        {
-            bldTableTrees();
-        }
+        bldTableTrees();
         return tableTree.get();
     }
     
@@ -1512,10 +1504,7 @@ public class QueryTask extends BaseTask
      */
     public Hashtable<String, TableTree> getTableTreeHash()
     {
-        if (tableTree == null || needToRebuildTableTree())
-        {
-            bldTableTrees();
-        }
+        bldTableTrees();
         return tableTreeHash.get();
     }
     
