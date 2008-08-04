@@ -43,7 +43,7 @@ public class PermissionService
      * @param id
      * @throws SQLException
      */
-    static public void removePermission(Integer id) throws SQLException
+    static public void removePermission(Integer id)
     {
         removePrincipalPermissions(Collections.singleton(id));
     }
@@ -52,7 +52,7 @@ public class PermissionService
      * @param ids
      * @throws SQLException
      */
-    static public void removePrincipalPermissions(Set<?> ids) throws SQLException
+    static public void removePrincipalPermissions(Set<?> ids)
     {
         Connection conn = null;
         PreparedStatement tiePstmt = null;
@@ -83,6 +83,7 @@ public class PermissionService
                 if (conn != null)  conn.close();
                 if (tiePstmt != null)  tiePstmt.close(); 
                 if (permPstmt != null)  permPstmt.close(); 
+                
             } catch (SQLException e)
             {
                 log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
@@ -102,7 +103,7 @@ public class PermissionService
         List<Permission> permissions = new ArrayList<Permission>();
         for (Iterator<Integer> itr = principalIds.iterator(); itr.hasNext();)
         {
-            Integer principalId = (Integer)itr.next();
+            Integer principalId = itr.next();
             if(debug)log.debug("findPrincipalPermissions - principalID" + principalId); //$NON-NLS-1$
             permissions.addAll(findPrincipalBasedPermissions(principalId));
         }
@@ -212,7 +213,7 @@ public class PermissionService
      */
     private static Permission createPrincipalBasedPermission(Integer id, String clazzStr, String name, String actions)
     {
-        if (debug) log.debug("createPrincipalBasedPermission - [" + clazzStr + "] [" + name + "] [" + actions + "]");; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        if (debug) log.debug("createPrincipalBasedPermission - [" + clazzStr + "] [" + name + "] [" + actions + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         Permission perm = null;
         Class<?> clazz = null;
         try
@@ -289,12 +290,17 @@ public class PermissionService
     static private boolean joinSpPrincipalPermission(SpPrincipal sp, Permission permission)
     {
         log.debug("joinSpPrincipalPermission"); //$NON-NLS-1$
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        Integer principalId = sp.getId();
-        Integer permissionId = getPermissionsId(permission);
+        
+        Connection        conn         = null;
+        PreparedStatement pstmt        = null;
+        Integer           principalId  = sp.getId();
+        Integer           permissionId = getPermissionsId(permission);
+        
         if (principalId == null || permissionId == null)
+        {
             return false;
+        }
+        
         if (!doesSpPrincipalHavePermission(sp, permission))
         {
             try
@@ -368,6 +374,7 @@ public class PermissionService
             {
                 if (conn != null)  conn.close();
                 if (pstmt != null)  pstmt.close(); 
+                
             } catch (SQLException e)
             {
                 log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
@@ -377,6 +384,10 @@ public class PermissionService
         return isPermissionGranted;  
     }
     
+    /**
+     * @param permission
+     * @return
+     */
     private static Integer getPermissionsId(Permission permission)
     {
         log.debug("getPermissionsId"); //$NON-NLS-1$
@@ -419,11 +430,10 @@ public class PermissionService
         }
         return null;
     }
+    
     /**
-     * @param principalId
-     * @param spPermissionId
+     * @param sp
      * @param permission
-     * @throws SQLException
      */
     static public void giveSpPrincipalPermission(SpPrincipal sp, Permission permission)
     {
@@ -431,6 +441,9 @@ public class PermissionService
         joinSpPrincipalPermission(sp, permission);
     }
     
+    /**
+     * @param permission
+     */
     private static void createPermission(Permission permission) 
     {
         Connection conn = null;
@@ -465,9 +478,10 @@ public class PermissionService
     }
     
     /**
-     * 
+     * @param name
+     * @return
      */
-    public static SpPrincipal getSpPrincipalByName(String name)
+    public static SpPrincipal getSpPrincipalByName(final String name)
     {
         // log.debug("getSpPrincipalByName: " + name);
         final DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -477,10 +491,12 @@ public class PermissionService
             final List<?> lister = session.getDataList(SpPrincipal.class, "name", name); //$NON-NLS-1$
             if (lister.size() == 0)  return null;
             principal = (SpPrincipal)lister.get(0);
+            
         } catch (final Exception e1)
         {
             log.error(e1);
             e1.printStackTrace();
+            
         } finally
         {
             if (session != null)
@@ -492,6 +508,11 @@ public class PermissionService
         return null;
     }  
     
+    /**
+     * @param s
+     * @param perm
+     * @return
+     */
     public static boolean runCheckPermssion(Subject s, final Permission perm)
     {
         log.debug("runCheckPermssion - calling doAsPrivileged to check if subject has permission"); //$NON-NLS-1$

@@ -16,11 +16,12 @@ package edu.ku.brc.specify.tests;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * 
@@ -75,8 +76,8 @@ public class AppPreferenceHelper
                                    "org.hibernate.dialect.MySQLDialect", 
                                    databaseName, 
                                    "jdbc:mysql://"+hostName+"/"+databaseName, 
-                                   "rods", 
-                                   "rods"))
+                                   SecurityMgr.getInstance().getEmbeddedUserName(), 
+                                   SecurityMgr.getInstance().getEmbeddedPwd()))
             {
                 throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
             }

@@ -30,6 +30,7 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
@@ -423,8 +424,8 @@ public class SpecifyDBConverter
                 driverInfoDest.getDialectClassName(), 
                 databaseNameDest, 
                 destConnectionString,
-                userNameDest, 
-                passwordDest))
+                SecurityMgr.getInstance().getEmbeddedUserName(), 
+                SecurityMgr.getInstance().getEmbeddedPwd()))
         {
             log.error("Failed connection string: "  +driverInfoSource.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostDest, databaseNameDest, userNameDest, passwordDest, driverNameDest) );
             throw new RuntimeException("Couldn't login into ["+databaseNameDest+"] "+DBConnection.getInstance().getErrorMsg());
@@ -452,8 +453,8 @@ public class SpecifyDBConverter
                 driverInfoDest.getDialectClassName(), 
                 databaseNameDest, 
                 driverInfoDest.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostDest, databaseNameDest, userNameDest, passwordDest, driverNameDest),                 
-                userNameDest, 
-                passwordDest))
+                SecurityMgr.getInstance().getEmbeddedUserName(), 
+                SecurityMgr.getInstance().getEmbeddedPwd()))
         {
             throw new RuntimeException("Couldn't login into ["+databaseNameDest+"] "+DBConnection.getInstance().getErrorMsg());
         }

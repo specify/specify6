@@ -184,7 +184,7 @@ public class SpDBLoginModule implements LoginModule
             Set<SpPrincipal> groups = UserPrincipalSQLService.getUsersGroupsByUsername(username);
             for (Iterator<SpPrincipal> itr = groups.iterator(); itr.hasNext();)
             {
-                SpPrincipal ug = (SpPrincipal)itr.next();
+                SpPrincipal ug = itr.next();
                 String s = "class " + ug.getGroupSubClass();
 
                 // I'm not adding the SpPrincipal anymore, 

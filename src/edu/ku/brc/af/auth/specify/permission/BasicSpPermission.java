@@ -16,13 +16,10 @@ package edu.ku.brc.af.auth.specify.permission;
 
 import java.security.BasicPermission;
 import java.security.Permission;
-import java.util.Arrays;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
-
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * The BasicSpPermission (Specify Permission) extends BasicPermission to implement
@@ -88,7 +85,7 @@ public class BasicSpPermission extends BasicPermission
     /**
      * Checks if permission passed as parameter is implied by this permission
      */
-    public boolean implies(Permission p)
+    public boolean implies(final Permission p)
     {
 		// check implication of name according to BasicPermission rules
     	if (!super.implies(p) || !(p instanceof BasicSpPermission))

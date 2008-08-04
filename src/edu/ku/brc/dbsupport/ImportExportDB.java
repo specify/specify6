@@ -26,6 +26,8 @@ import org.dom4j.io.XMLWriter;
 import org.hibernate.EntityMode;
 import org.hibernate.Session;
 
+import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.specify.SpecifySecurityMgr;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -45,7 +47,9 @@ public class ImportExportDB
     public static void main(String[] args)
     {
         UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", //$NON-NLS-1$ //$NON-NLS-2$
-                "testfish", "jdbc:mysql://localhost/testfish", "rods", "rods"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                "testfish", "jdbc:mysql://localhost/testfish", //$NON-NLS-1$ //$NON-NLS-2$
+                SecurityMgr.getInstance().getEmbeddedUserName(), 
+                SecurityMgr.getInstance().getEmbeddedPwd()); 
 
         Session testSession = HibernateUtil.getCurrentSession();
         String workingFolder = "Specify6ImportExport"; //$NON-NLS-1$
@@ -54,7 +58,7 @@ public class ImportExportDB
         {
             wf.mkdirs();
         }
-        String dbTable = "Division"; //$NON-NLS-1$
+        //String dbTable = "Division"; //$NON-NLS-1$
 
         ImportExportDB impexp = new ImportExportDB(testSession, workingFolder + File.separator);
 

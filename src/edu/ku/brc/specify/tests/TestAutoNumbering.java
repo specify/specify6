@@ -29,6 +29,7 @@ import org.hibernate.Session;
 import org.junit.After;
 import org.junit.Before;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
@@ -158,8 +159,8 @@ public class TestAutoNumbering extends TestCase
                 driverInfo.getDialectClassName(), 
                 dbName, 
                 connStr, 
-                username, 
-                password))
+                SecurityMgr.getInstance().getEmbeddedUserName(), 
+                SecurityMgr.getInstance().getEmbeddedPwd()))
         {
             log.info("Login Failed!");
             return false;

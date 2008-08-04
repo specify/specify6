@@ -1306,9 +1306,6 @@ public final class UIHelper
             try
             {
                 connection.close();
-                
-                // This is used to fill who editted the object
-                FormHelper.setCurrentUserEditStr(dbUsername);
                 return true;
                 
             } catch (SQLException ex)
@@ -1402,24 +1399,30 @@ public final class UIHelper
     /**
      * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
      * and if the login fails then it will display the dialog
+     * @param userName single signon username (for application)
+     * @param password single signon password (for application)
      * @param doAutoLogin whether to try to automatically log the user in
      * @param doAutoClose whether it should automatically close the window when it is logged in successfully
      * @param useDialog use a Dialog or a Frame
      * @param listener a listener for when it is logged in or fails
      * @param iconName name of icon to use
      */
-    public static DatabaseLoginPanel doLogin(final boolean doAutoLogin,
+    public static DatabaseLoginPanel doLogin(final String userName,
+                                             final String password,
+                                             final boolean doAutoLogin,
                                              final boolean doAutoClose,
                                              final boolean useDialog,
                                              final DatabaseLoginListener listener,
                                              final String iconName)
     {     
-        return doLogin(doAutoLogin, doAutoClose, useDialog, listener, iconName, null, null);
+        return doLogin(userName, password, doAutoLogin, doAutoClose, useDialog, listener, iconName, null, null);
     }
     
     /**
      * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
      * and if the login fails then it will display the dialog
+     * @param userName single signon username (for application)
+     * @param password single signon password (for application)
      * @param doAutoLogin whether to try to automatically log the user in
      * @param doAutoClose whether it should automatically close the window when it is logged in successfully
      * @param useDialog use a Dialog or a Frame
@@ -1428,20 +1431,22 @@ public final class UIHelper
      * @param title name
      * @param appName name
      */
-    public static DatabaseLoginPanel doLogin(final boolean doAutoLogin,
+    public static DatabaseLoginPanel doLogin(final String  userName,
+                                             final String  password,
+                                             final boolean doAutoLogin,
                                              final boolean doAutoClose,
                                              final boolean useDialog,
                                              final DatabaseLoginListener listener,
-                                             final String iconName,
-                                             final String title,
-                                             final String appName)
+                                             final String  iconName,
+                                             final String  title,
+                                             final String  appName)
     {     
         boolean doAutoLoginNow = doAutoLogin && AppPreferences.getLocalPrefs().getBoolean("login.autologin", false);
         
         if (useDialog)
         {
             JDialog.setDefaultLookAndFeelDecorated(false); 
-            DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UIRegistry.getTopWindow(), listener, iconName);
+            DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UIRegistry.getTopWindow(), userName, password, listener, iconName);
             JDialog.setDefaultLookAndFeelDecorated(true); 
             dlg.setDoAutoLogin(doAutoLoginNow);
             dlg.setDoAutoClose(doAutoClose);
@@ -1468,14 +1473,14 @@ public final class UIHelper
                 this.doAutoCloseOfListener = doAutoCloseOfListener;
             }
             
-            public void loggedIn(final Window window, final String databaseName, final String userName)
+            public void loggedIn(final Window window, final String databaseName, final String userNameArg)
             {
                 log.debug("UIHelper.doLogin[DBListener]");
                 if (doAutoCloseOfListener)
                 {
                     frame.setVisible(false);
                 }
-                frameDBListener.loggedIn(window, databaseName, userName);
+                frameDBListener.loggedIn(window, databaseName, userNameArg);
             }
 
             public void cancelled()
@@ -1490,11 +1495,11 @@ public final class UIHelper
         DatabaseLoginPanel panel;
         if (StringUtils.isNotEmpty(title))
         {
-            panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false, title, appName, iconName);
+            panel = new DatabaseLoginPanel(userName, password, new DBListener(frame, listener, doAutoClose), false, title, appName, iconName);
         }
         else
         {
-            panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false, iconName);
+            panel = new DatabaseLoginPanel(userName, password, new DBListener(frame, listener, doAutoClose), false, iconName);
         }
         
         panel.setAutoClose(doAutoClose);

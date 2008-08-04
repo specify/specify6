@@ -36,7 +36,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
 {
-    private static final Logger          log            = Logger.getLogger(DatabaseLoginDlg.class);
+     private static final Logger          log            = Logger.getLogger(DatabaseLoginDlg.class);
      protected DatabaseLoginPanel    dbPanel;
      protected DatabaseLoginListener listener;
      protected boolean               doAutoLogin = false;
@@ -45,11 +45,15 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
 
     /**
      * Constructor that has the form created from the view system.
+     * @param userName single signon username (for application)
+     * @param password single signon password (for application)
      * @param frame the parent frame
      * @param listener the listener usually the parent like the Dialog
      * @param iconName name of icon to use
      */
     public DatabaseLoginDlg(final Frame frame, 
+                            final String userName,
+                            final String password,
                             final DatabaseLoginListener listener,
                             final String iconName)
     {
@@ -59,7 +63,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
 
         //setTitle(getResourceString("LOGINTITLE")); //$NON-NLS-1$
 
-        dbPanel = new DatabaseLoginPanel(this, true, iconName);
+        dbPanel = new DatabaseLoginPanel(userName, password, this, true, iconName);
         setContentPane(dbPanel);
 
         setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));

@@ -133,6 +133,7 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -247,6 +248,10 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  */
 public class BuildSampleDatabase
 {
+    // XXX TODO SECURITY- make secure Specify Admin user and pwd
+    public String embeddedSpecifyAppRootUser;
+    public String embeddedSpecifyAppRootPwd;
+
     private static final Logger  log      = Logger.getLogger(BuildSampleDatabase.class);
     
     protected static boolean     debugOn  = false;
@@ -333,6 +338,9 @@ public class BuildSampleDatabase
         }
     }
     
+    /**
+     * 
+     */
     protected void adjustLocaleFromPrefs()
     {
         String language = AppPreferences.getLocalPrefs().get("locale.lang", null); //$NON-NLS-1$
@@ -6267,8 +6275,15 @@ public class BuildSampleDatabase
             System.out.println("Derby Path [ "+UIRegistry.getJavaDBPath()+" ]");
         }
         
-        System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
+        System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences
         System.setProperty("edu.ku.brc.dbsupport.DataProvider", "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
+        System.setProperty(SecurityMgr.factoryName,             "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");       // Needed for Tree Field Names //$NON-NLS-1$
+
+        embeddedSpecifyAppRootUser = SecurityMgr.getInstance().getEmbeddedUserName();
+        embeddedSpecifyAppRootPwd  = SecurityMgr.getInstance().getEmbeddedPwd();
+        
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.setDirPath(UIRegistry.getAppDataDir());
 
         backstopPrefs = getInitializePrefs(null);
         
@@ -6403,9 +6418,6 @@ public class BuildSampleDatabase
      */
     public boolean buildEmptyDatabase(final DBConfigInfo config)
     {
-        System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
-        System.setProperty("edu.ku.brc.dbsupport.DataProvider", "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
-        
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setSize(new Dimension(500,125));
         frame.setTitle("Building Specify Database");
@@ -6463,8 +6475,8 @@ public class BuildSampleDatabase
                     driverInfo.getDialectClassName(), 
                     config.getDbName(), 
                     connStr, 
-                    config.getUsername(), 
-                    config.getPassword()))
+                    embeddedSpecifyAppRootUser, 
+                    embeddedSpecifyAppRootPwd))
             {
                 if (hideFrame) System.out.println("Login Failed!");
                 return false;
@@ -6578,9 +6590,6 @@ public class BuildSampleDatabase
         frame.setOverall(0, 9+(doingDerby ? 1 : 0));
         frame.getCloseBtn().setVisible(false);
 
-        System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
-        System.setProperty("edu.ku.brc.dbsupport.DataProvider", "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
-
         Properties props = getInitializePrefs(dbName);
         if (props.size() > 0)
         {
@@ -6669,8 +6678,8 @@ public class BuildSampleDatabase
                               driverInfo.getDialectClassName(), 
                               dbName, 
                               driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHost, dbName), 
-                              userName, 
-                              password))
+                              embeddedSpecifyAppRootUser, 
+                              embeddedSpecifyAppRootPwd))
         {
             
             boolean single = true;

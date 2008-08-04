@@ -15,6 +15,7 @@
 package edu.ku.brc.specify.tests;
 
 import junit.framework.TestCase;
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.ui.UIHelper;
@@ -55,7 +56,9 @@ public class AppResourceTest extends TestCase
 
             String hostName = "localhost";
             if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", 
-                    databaseName, "jdbc:mysql://"+hostName+"/"+databaseName, userName, password))
+                    databaseName, "jdbc:mysql://"+hostName+"/"+databaseName, 
+                    SecurityMgr.getInstance().getEmbeddedUserName(), 
+                    SecurityMgr.getInstance().getEmbeddedPwd()))
             {
                 throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
             }

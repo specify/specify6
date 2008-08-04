@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.hibernate.Session;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
@@ -47,10 +48,10 @@ import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Journal;
 import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
@@ -174,8 +175,8 @@ public class SiteGen
                 driverInfo.getDialectClassName(), 
                 dbName, 
                 connStr, 
-                username, 
-                password))
+                SecurityMgr.getInstance().getEmbeddedUserName(), 
+                SecurityMgr.getInstance().getEmbeddedPwd()))
         {
             log.info("Login Failed!");
             return false;

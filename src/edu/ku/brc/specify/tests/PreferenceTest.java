@@ -10,13 +10,14 @@ import junit.framework.TestCase;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.ui.ColorWrapper;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Tests the AppPreferences and AppPreferences cache
@@ -62,8 +63,8 @@ public class PreferenceTest extends TestCase
                                    "org.hibernate.dialect.MySQLDialect", 
                                    databaseName, 
                                    "jdbc:mysql://"+hostName+"/"+databaseName, 
-                                   "rods", 
-                                   "rods"))
+                                   SecurityMgr.getInstance().getEmbeddedUserName(), 
+                                   SecurityMgr.getInstance().getEmbeddedPwd()))
             {
                 throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
             }

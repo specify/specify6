@@ -56,6 +56,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
@@ -487,8 +488,8 @@ public class SpecifyExplorer extends HttpServlet
                 driverInfo.getDialectClassName(), 
                 dbName, 
                 connStr, 
-                username, 
-                password))
+                SecurityMgr.getInstance().getEmbeddedUserName(), 
+                SecurityMgr.getInstance().getEmbeddedPwd()))
         {
             log.info("Login Failed!");
             return false;

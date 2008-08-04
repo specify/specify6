@@ -55,14 +55,9 @@ public class SpecifySecurityMgr extends SecurityMgr
     protected static boolean doingLocal     = false;
     
     // XXX TODO SECURITY- make secure Specify Admin user and pwd
+    public static final String embeddedSpecifyAppRootUser = "Specify"; //$NON-NLS-1$
+    public static final String embeddedSpecifyAppRootPwd  = "Specify"; //$NON-NLS-1$
     
-    // XXX THESE NEXT TWO LINES TEMPORARY (needed to remove the 'final'
-    //public static final String embeddedSpecifyAppRootUser = "Specify"; //$NON-NLS-1$
-    //public static final String embeddedSpecifyAppRootPwd  = "Specify"; //$NON-NLS-1$
-    
-    public static String embeddedSpecifyAppRootUser = "Specify"; //$NON-NLS-1$
-    public static String embeddedSpecifyAppRootPwd  = "Specify"; //$NON-NLS-1$
-
     /**
      * 
      */
@@ -95,6 +90,22 @@ public class SpecifySecurityMgr extends SecurityMgr
         doingLocal = doLocal;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityMgr#getEmbeddedUserName()
+     */
+    public String getEmbeddedUserName()
+    {
+        return embeddedSpecifyAppRootUser;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityMgr#getEmbeddedPwd()
+     */
+    public String getEmbeddedPwd()
+    {
+        return embeddedSpecifyAppRootPwd;
+    }
+
     /** 
      * 
      * Validates the given user and password against the JDBC datasource (using JDBC directly, not hibernate).
@@ -116,10 +127,6 @@ public class SpecifySecurityMgr extends SecurityMgr
         try
         {
             Class.forName(driverClass);
-            
-            // XXX THIS IS TEMPORARY
-            embeddedSpecifyAppRootUser = user;
-            embeddedSpecifyAppRootPwd  = pass;
             
             conn = DriverManager.getConnection(url, embeddedSpecifyAppRootUser, embeddedSpecifyAppRootPwd);
             
@@ -204,7 +211,7 @@ public class SpecifySecurityMgr extends SecurityMgr
         Iterator<Principal> it = p.iterator();
         while (it.hasNext())
         {
-            Principal principal = (Principal)it.next();
+            Principal principal = it.next();
             String principalClassName = principal.getClass().getCanonicalName();
             if (principalClassName.equals(SpPrincipal.class.getCanonicalName()))
             {
@@ -325,10 +332,8 @@ public class SpecifySecurityMgr extends SecurityMgr
         {
             return PermissionService.runCheckPermssion(currentSubject, myPerm);
         }
-        else
-        {
-            log.error("doesCurrentUserHavePermission - either current subject or permission passed is null, should not happen"); //$NON-NLS-1$
-        }
+        // else
+        log.error("doesCurrentUserHavePermission - either current subject or permission passed is null, should not happen"); //$NON-NLS-1$
 
         return false;
     }

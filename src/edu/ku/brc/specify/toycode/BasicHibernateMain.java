@@ -12,14 +12,15 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 
 /**
@@ -84,6 +85,6 @@ public class BasicHibernateMain implements DatabaseLoginListener
         localPrefs.load();
 
         BasicHibernateMain tester = new BasicHibernateMain();
-		UIHelper.doLogin(false, true, false, tester, null);
+		UIHelper.doLogin(SecurityMgr.getInstance().getEmbeddedUserName(), SecurityMgr.getInstance().getEmbeddedPwd(), false, true, false, tester, null);
 	}
 }

@@ -143,38 +143,46 @@ public class DatabaseLoginPanel extends JPanel
     protected String                     title;
     protected String                     appName;
     
+    protected String                     ssUserName     = null;
+    protected String                     ssPassword     = null;
+    
     /**
      * Constructor that has the form created from the view system
+     * @param userName single signon username (for application)
+     * @param password single signon password (for application)
      * @param dbListener listener to the panel (usually the frame or dialog)
      * @param isDlg whether the parent is a dialog (false mean JFrame)
      * @param iconName name of icon to use
      */
-    public DatabaseLoginPanel(final DatabaseLoginListener dbListener,  
+    public DatabaseLoginPanel(final String userName,
+                              final String password,
+                              final DatabaseLoginListener dbListener,  
                               final boolean isDlg,
                               final String iconName)
     {
-        log.debug("constructor with jaas"); //$NON-NLS-1$
-        this.dbListener = dbListener;
-        this.jaasContext = new JaasContext(); 
-        createUI(isDlg, iconName);
-
+        this(userName, password, dbListener, isDlg, null, null, iconName);
     }
     
     /**
      * Constructor that has the form created from the view system
+     * @param userName single signon username (for application)
+     * @param password single signon password (for application)
      * @param dbListener listener to the panel (usually the frame or dialog)
      * @param isDlg whether the parent is a dialog (false mean JFrame)
      * @param title the title for the title bar
      * @param appName the name of the app
      * @param iconName name of icon to use
      */
-    public DatabaseLoginPanel(final DatabaseLoginListener dbListener,  
+    public DatabaseLoginPanel(final String userName,
+                              final String password,
+                              final DatabaseLoginListener dbListener,  
                               final boolean isDlg, 
                               final String title,
                               final String appName,
                               final String iconName)
     {
-        log.debug("constructor with jaas"); //$NON-NLS-1$
+        this.ssUserName  = userName;
+        this.ssPassword  = password;
         this.dbListener  = dbListener;
         this.jaasContext = new JaasContext(); 
         this.title       = title;
@@ -771,8 +779,8 @@ public class DatabaseLoginPanel extends JPanel
                                                getDialectClassName(),
                                                getDatabaseName(), 
                                                getConnectionStr(), 
-                                               getUserName(), 
-                                               getPassword());
+                                               StringUtils.isNotEmpty(ssUserName) ? ssUserName : getUserName(), 
+                                               StringUtils.isNotEmpty(ssPassword) ? ssPassword : getPassword());
                 
                 isLoggedIn &= jaasLogin();
 

@@ -155,6 +155,7 @@ import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
+import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ResultSetController;
@@ -469,7 +470,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
             //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
         }
         adjustLocaleFromPrefs();
-        dbLoginPanel = UIHelper.doLogin(true, false, false, this, "SpecifyLargeIcon", getTitle(), null); // true means do auto login if it can, second bool means use dialog instead of frame
+        dbLoginPanel = UIHelper.doLogin(SecurityMgr.getInstance().getEmbeddedUserName(), 
+                                        SecurityMgr.getInstance().getEmbeddedPwd(), 
+                                        true, false, false, this, "SpecifyLargeIcon", getTitle(), null); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
     
@@ -744,7 +747,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             AppPreferences.setConnectedToDB(false);
                             adjustLocaleFromPrefs();
                             //JaasContext jassEm = new JaasContext();
-                            UIHelper.doLogin(false, true, true, new DBListener(), "SpecifyLargeIcon"); // true means do auto login if it can, second bool means use dialog instead of frame
+                            UIHelper.doLogin(SecurityMgr.getInstance().getEmbeddedUserName(), 
+                                             SecurityMgr.getInstance().getEmbeddedPwd(), 
+                                             false, true, true, new DBListener(), "SpecifyLargeIcon"); // true means do auto login if it can, second bool means use dialog instead of frame
                             //dbLoginPanel = UIHelper.doLogin(true, false, false, new DBListener(), jassEm); // true means do auto login if it can, second bool means use dialog instead of frame
                         }
                     }
@@ -2084,6 +2089,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         this.databaseName = databaseNameArg;
         this.userName     = userNameArg;
+        
+        // This is used to fill who editted the object
+        FormHelper.setCurrentUserEditStr(userNameArg);
         
         restartApp(window, databaseName, userName, false, firstTime);
         

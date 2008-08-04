@@ -45,6 +45,7 @@ import org.apache.log4j.Logger;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.SchemaI18NService;
@@ -1198,7 +1199,9 @@ public class MainFrameSpecify extends MainFrame
                     log.error("Can't change L&F: ", e); //$NON-NLS-1$
                 }
                 String nameAndTitle = "Specify iReport";
-                UIHelper.doLogin(true, false, false, new IReportLauncher(), null, nameAndTitle, nameAndTitle); // true means do auto login if it can, second bool means use dialog instead of frame
+                UIHelper.doLogin(SecurityMgr.getInstance().getEmbeddedUserName(), 
+                                 SecurityMgr.getInstance().getEmbeddedPwd(), 
+                                 true, false, false, new IReportLauncher(), null, nameAndTitle, nameAndTitle); // true means do auto login if it can, second bool means use dialog instead of frame
                 
                 localPrefs.load();
                 

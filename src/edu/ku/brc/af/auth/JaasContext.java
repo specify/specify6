@@ -50,6 +50,14 @@ public class JaasContext
     public static Subject       globalSubject = null;
 
     /**
+     * 
+     */
+    public JaasContext()
+    {
+        
+    }
+    
+    /**
      * Composite policy will allow us to piggy back our own policy definition onto of the 
      * default system policy.
      * 
@@ -58,15 +66,18 @@ public class JaasContext
      */
     public void createDatabaseBackedPolicyDefinition()
     {
-        Policy defaultPolicy = Policy.getPolicy();
+        Policy         defaultPolicy = Policy.getPolicy();
         DatabasePolicy dbPolicy = new DatabasePolicy();
-        List<Policy> policies = new ArrayList<Policy>(2);
+        List<Policy>   policies = new ArrayList<Policy>(2);
+        
         policies.add(defaultPolicy);
         policies.add(dbPolicy);
-        CompositePolicy p = new CompositePolicy(policies);
-        Policy.setPolicy(p);
-        SecurityManager sm = new SecurityManager();
-        System.setSecurityManager(sm);
+        
+        CompositePolicy compPolicy = new CompositePolicy(policies);
+        Policy.setPolicy(compPolicy);
+        
+        SecurityManager securityMgr = new SecurityManager();
+        System.setSecurityManager(securityMgr);
     }
     
     /**
