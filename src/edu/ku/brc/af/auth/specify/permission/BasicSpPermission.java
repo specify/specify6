@@ -39,8 +39,14 @@ import org.apache.log4j.Logger;
  *   <li>Task.SecurityAdminTask</li>
  *   <li>Obj.Workbench (permission id = record id)</li>
  * </ul>
+ * 
+ * @author megkumin
+ *
+ * @code_status Alpha
+ *
+ * Created Date: nov 15, 2007
+ * 
  */
-
 @SuppressWarnings("serial") //$NON-NLS-1$
 public class BasicSpPermission extends BasicPermission
 {

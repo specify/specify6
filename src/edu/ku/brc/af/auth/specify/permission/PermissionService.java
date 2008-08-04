@@ -29,6 +29,14 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 
+/**
+ * @author megkumin
+ *
+ * @code_status Alpha
+ *
+ * Created Date: Aug 16, 2007
+ *
+ */
 public class PermissionService
 {
     protected static final Logger      log             = Logger.getLogger(PermissionService.class);

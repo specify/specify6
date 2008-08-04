@@ -13,6 +13,14 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author megkumin
+ *
+ * @code_status Alpha
+ *
+ * Created Date: Aug 16, 2007
+ *
+ */
 public class CompositePolicy extends Policy
 {
     protected static final Logger log = Logger.getLogger(CompositePolicy.class);
@@ -21,7 +29,7 @@ public class CompositePolicy extends Policy
     /**
      * @param policies
      */
-    public CompositePolicy(List<Policy> policies)
+    public CompositePolicy(final List<Policy> policies)
     {
         this.policies = policies;
     }
@@ -29,17 +37,16 @@ public class CompositePolicy extends Policy
     /* (non-Javadoc)
      * @see java.security.Policy#getPermissions(java.security.ProtectionDomain)
      */
-    public PermissionCollection getPermissions(ProtectionDomain domain)
+    public PermissionCollection getPermissions(final ProtectionDomain domain)
     {
         Permissions perms = new Permissions();
         for (Iterator<Policy> itr = policies.iterator(); itr.hasNext();)
         {
-            Policy p = (Policy)itr.next();
-            PermissionCollection permCol = p.getPermissions(domain);
+            Policy               policy  = itr.next();
+            PermissionCollection permCol = policy.getPermissions(domain);
             for (Enumeration<Permission> en = permCol.elements(); en.hasMoreElements();)
             {
-                Permission p1 = (Permission)en.nextElement();
-                perms.add(p1);
+                perms.add(en.nextElement());
             }
         }
         return perms;
@@ -55,7 +62,7 @@ public class CompositePolicy extends Policy
        //log.debug("Permission=" + permission);
         for (Iterator<Policy> itr = policies.iterator(); itr.hasNext();)
         {
-            Policy p = (Policy)itr.next();
+            Policy p = itr.next();
             if (p.implies(domain, permission)) { return true; }
         }
 
@@ -70,12 +77,11 @@ public class CompositePolicy extends Policy
         Permissions perms = new Permissions();
         for (Iterator<Policy> itr = policies.iterator(); itr.hasNext();)
         {
-            Policy p = (Policy)itr.next();
+            Policy p = itr.next();
             PermissionCollection permsCol = p.getPermissions(codesource);
             for (Enumeration<Permission> en = permsCol.elements(); en.hasMoreElements();)
             {
-                Permission p1 = (Permission)en.nextElement();
-                perms.add(p1);
+                perms.add(en.nextElement());
             }
         }
         return perms;
@@ -88,7 +94,7 @@ public class CompositePolicy extends Policy
     {
         for (Iterator<Policy> itr = policies.iterator(); itr.hasNext();)
         {
-            Policy p = (Policy)itr.next();
+            Policy p = itr.next();
             p.refresh();
         }
     }
