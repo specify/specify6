@@ -118,6 +118,10 @@ public class PermissionService
         return permissions;
     }
     
+    /**
+     * @param principalId
+     * @return
+     */
     static public Hashtable<String, SpPermission> getExistingPermissions(Integer principalId)
     {
     	Hashtable<String, SpPermission> hash = new Hashtable<String, SpPermission>();
@@ -163,19 +167,19 @@ public class PermissionService
             //XXX convert to hibernate
             conn = DatabaseService.getInstance().getConnection();
             String sql = "SELECT sppermission.SpPermissionID SpPermissionID, " //$NON-NLS-1$
-                    + "sppermission.PermissionClass PermissionClass, SpPermission.Name Name, " //$NON-NLS-1$
-                    + "sppermission.Actions Actions " + "FROM spprincipal_sppermission, SpPermission " //$NON-NLS-1$ //$NON-NLS-2$
-                    + "WHERE spprincipal_sppermission.SpPrincipalID="+principalId+" " //$NON-NLS-1$ //$NON-NLS-2$
-                    + "AND sppermission.SpPermissionID=spprincipal_sppermission.SpPermissionID "; //$NON-NLS-1$
+                    + "sppermission.PermissionClass PermissionClass, sppermission.Name Name, "         //$NON-NLS-1$
+                    + "sppermission.Actions Actions " + "FROM spprincipal_sppermission, sppermission " //$NON-NLS-1$ //$NON-NLS-2$
+                    + "WHERE spprincipal_sppermission.SpPrincipalID="+principalId+" "                  //$NON-NLS-1$ //$NON-NLS-2$
+                    + "AND sppermission.SpPermissionID=spprincipal_sppermission.SpPermissionID ";      //$NON-NLS-1$
             log.debug("sql: " + sql); //$NON-NLS-1$
             pstmt = conn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next())
             {
-                Integer id = rs.getInt("SpPermissionID"); //$NON-NLS-1$
+                Integer id      = rs.getInt("SpPermissionID");     //$NON-NLS-1$
                 String clazzStr = rs.getString("PermissionClass"); //$NON-NLS-1$
-                String name = rs.getString("Name"); //$NON-NLS-1$
-                String actions = rs.getString("Actions"); //$NON-NLS-1$
+                String name     = rs.getString("Name");            //$NON-NLS-1$
+                String actions  = rs.getString("Actions");         //$NON-NLS-1$
 
                 log.debug("findPermissions()Permission found:  id={" //$NON-NLS-1$
                         +id+"}, class={" //$NON-NLS-1$
@@ -342,6 +346,11 @@ public class PermissionService
         return false;
     }
     
+    /**
+     * @param sp
+     * @param permission
+     * @return
+     */
     private static boolean doesSpPrincipalHavePermission(SpPrincipal sp, Permission permission)
     {
         log.debug("doesSpPrincipalHavePermission"); //$NON-NLS-1$

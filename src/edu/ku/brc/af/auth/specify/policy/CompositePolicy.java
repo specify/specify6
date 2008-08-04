@@ -58,8 +58,8 @@ public class CompositePolicy extends Policy
     public boolean implies(final ProtectionDomain domain, final Permission permission)
     {
         
-       //log.debug("ProtectionDomain=" + JaasStringHelper.principalsToString(domain));
-       //log.debug("Permission=" + permission);
+       //log.debug("ProtectionDomain=" + domain.toString());//JaasStringHelper.principalsToString(domain));
+       log.debug("Permission=" + permission);
         for (Iterator<Policy> itr = policies.iterator(); itr.hasNext();)
         {
             Policy p = itr.next();
@@ -72,7 +72,7 @@ public class CompositePolicy extends Policy
     /* (non-Javadoc)
      * @see java.security.Policy#getPermissions(java.security.CodeSource)
      */
-    public PermissionCollection getPermissions(CodeSource codesource)
+    public PermissionCollection getPermissions(final CodeSource codesource)
     {
         Permissions perms = new Permissions();
         for (Iterator<Policy> itr = policies.iterator(); itr.hasNext();)

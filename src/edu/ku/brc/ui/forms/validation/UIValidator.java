@@ -348,7 +348,7 @@ public class UIValidator
                 UIValidator.ignoreAllValidation = false;
             }
         }
-        log.debug("ignoreCnt: "+ignoreCnt+" Owner: "+ignoreOwner);
+        //log.debug("ignoreCnt: "+ignoreCnt+" Owner: "+ignoreOwner);
     }
 
     /**

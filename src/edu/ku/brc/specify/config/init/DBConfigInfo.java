@@ -43,19 +43,20 @@ public class DBConfigInfo
     protected String collectionPrefix = null;
     protected String collectionName   = null;
     
-    public DBConfigInfo(DatabaseDriverInfo driverInfo, 
-                        String hostName, 
-                        String dbName,
-                        String username, 
-                        String password, 
-                        String firstName, 
-                        String lastName, 
-                        String email,
-                        DisciplineType disciplineType, 
-                        String instName, 
-                        String divName)
+    public DBConfigInfo(final DatabaseDriverInfo driverInfo, 
+                        final String hostName, 
+                        final String dbName,
+                        final String username, 
+                        final String password, 
+                        final String firstName, 
+                        final String lastName, 
+                        final String email,
+                        final DisciplineType disciplineType, 
+                        final String instName, 
+                        final String divName)
     {
         super();
+        
         this.driverInfo = driverInfo;
         this.hostName = hostName;
         this.dbName = dbName;

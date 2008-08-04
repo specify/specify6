@@ -76,8 +76,9 @@ public class JaasContext
         CompositePolicy compPolicy = new CompositePolicy(policies);
         Policy.setPolicy(compPolicy);
         
-        SecurityManager securityMgr = new SecurityManager();
-        System.setSecurityManager(securityMgr);
+        // XXX Temporary fix for Speeding up the app 
+        //SecurityManager securityMgr = new SecurityManager();
+        //System.setSecurityManager(securityMgr);
     }
     
     /**
