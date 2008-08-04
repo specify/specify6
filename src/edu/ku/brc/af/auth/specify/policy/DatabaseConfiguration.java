@@ -32,8 +32,6 @@ import javax.security.auth.login.AppConfigurationEntry.LoginModuleControlFlag;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.ui.UIRegistry;
-
 
 
 /**
@@ -44,10 +42,12 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class DatabaseConfiguration extends Configuration
 {
-    static private DatabaseConfiguration spDbConfig;
-    protected static final Logger log = Logger.getLogger(DatabaseConfiguration.class);
-    static private String url = ""; //$NON-NLS-1$
-    static private String driver = ""; //$NON-NLS-1$
+    private static final Logger log = Logger.getLogger(DatabaseConfiguration.class);
+    
+    private static DatabaseConfiguration spDbConfig;
+    private static String                url = ""; //$NON-NLS-1$
+    private static String                driver = ""; //$NON-NLS-1$
+    
 //    /**
 //     * 
 //     */
@@ -62,29 +62,32 @@ public class DatabaseConfiguration extends Configuration
     /**
      * 
      */
-    static void init(String url, String driver)
+    static void init(String urlArg, String driverArg)
     {
         log.debug("init"); //$NON-NLS-1$
-        spDbConfig = new DatabaseConfiguration(url, driver);
+        spDbConfig = new DatabaseConfiguration(urlArg, driverArg);
         Configuration.setConfiguration(spDbConfig);
     }
     
     /**
      * @param appName
      * @param loginModuleName
-     * @param url
-     * @param driver
+     * @param urlArg
+     * @param driverArg
      * @return
      * @throws SQLException
      */
-    public boolean deleteAppConfigurationEntry(String appName, String loginModuleName, String url, String driver)
+    public boolean deleteAppConfigurationEntry(final String appName, 
+                                               final String loginModuleName, 
+                                               final String urlArg, 
+                                               final String driverArg)
             throws SQLException
     {
-        log.debug("deleteAppConfigurationEntry: appName[" + appName + "] loginModuleName[" +loginModuleName + "] url[" + url +"] driver[" + driver + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        log.debug("deleteAppConfigurationEntry: appName[" + appName + "] loginModuleName[" +loginModuleName + "] url[" + urlArg +"] driver[" + driverArg + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         Connection conn = null;
         try
         {
-            conn = DatabaseService.getAdminLevelConnection(url, driver);//.getInstance().getConnection();;
+            conn = DatabaseService.getAdminLevelConnection(urlArg, driverArg);//.getInstance().getConnection();;
             String sql = "DELETE FROM sp_app_configuration " //$NON-NLS-1$
                     + "WHERE appName=\""+appName+"\" AND loginModuleClass=\""+loginModuleName+"\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             log.debug("executing SQL: " + sql); //$NON-NLS-1$
@@ -96,6 +99,7 @@ public class DatabaseConfiguration extends Configuration
             //pstmt.setString(1, appName);
             //pstmt.setString(2, loginModuleName);
             return pstmt.executeUpdate() > 0;
+            
         } finally
         {
             if (conn != null)
@@ -108,21 +112,24 @@ public class DatabaseConfiguration extends Configuration
     /**
      * @param appName
      * @param entry
-     * @param url
-     * @param driver
+     * @param urlArg
+     * @param driverArg
      * @throws SQLException
      */
-    public void addAppConfigurationEntry(String appName, AppConfigurationEntry entry, String url, String driver)
+    public void addAppConfigurationEntry(final String appName, 
+                                         final AppConfigurationEntry entry, 
+                                         final String urlArg, 
+                                         final String driverArg)
     //{
             throws SQLException
     {
-        log.debug("addAppConfigurationEntry: appName[" + appName + "] entry.getLoginModuleName()[" +entry.getLoginModuleName() + "] url[" + url +"] driver[" + driver + "]");//" + appName + " " +entry.getLoginModuleName() + " " + url +" " + driver); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        log.debug("addAppConfigurationEntry: appName[" + appName + "] entry.getLoginModuleName()[" +entry.getLoginModuleName() + "] url[" + urlArg +"] driver[" + driverArg + "]");//" + appName + " " +entry.getLoginModuleName() + " " + url +" " + driver); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         // insert an entry into the database for the LoginModule
         // indicated by the passed in AppConfigurationEntry
         Connection conn = null;
         try
         {
-            conn = DatabaseService.getAdminLevelConnection(url, driver);//.getInstance().getConnection();;
+            conn = DatabaseService.getAdminLevelConnection(urlArg, driverArg);//.getInstance().getConnection();;
             String sql = "INSERT INTO sp_app_configuration VALUES (\""+appName+"\", \""+entry.getLoginModuleName()+"\", \""+controlFlagString(entry.getControlFlag())+"\")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             log.debug("executing SQL: " + sql); //$NON-NLS-1$
             //String sql = "INSERT INTO app_configuration VALUES (?, ?, ?)";
@@ -145,7 +152,7 @@ public class DatabaseConfiguration extends Configuration
      * @param flag
      * @return
      */
-    public String controlFlagString(LoginModuleControlFlag flag)
+    public String controlFlagString(final LoginModuleControlFlag flag)
     {
         if (LoginModuleControlFlag.REQUIRED.equals(flag))
         {
@@ -182,7 +189,7 @@ public class DatabaseConfiguration extends Configuration
      * @see javax.security.auth.login.Configuration#getAppConfigurationEntry(java.lang.String)
      */
     @Override
-    public AppConfigurationEntry[] getAppConfigurationEntry(String applicationName)
+    public AppConfigurationEntry[] getAppConfigurationEntry(final String applicationName)
     {
         log.debug("getAppConfigurationEntry: appName[" +applicationName + "]"); //$NON-NLS-1$ //$NON-NLS-2$
         log.debug("getAppConfigurationEntry: url[" +url + "]"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -217,7 +224,7 @@ public class DatabaseConfiguration extends Configuration
             {
                 log.debug("getAppConfigurationEntry()  No AppConfigurationEntrys found for applicationName: " + applicationName); //$NON-NLS-1$
             }
-            return (AppConfigurationEntry[])entries.toArray(new AppConfigurationEntry[entries.size()]);
+            return entries.toArray(new AppConfigurationEntry[entries.size()]);
         } 
         catch (SQLException e)
         {
