@@ -2437,6 +2437,7 @@ public class DataBuilder
         persist(userPrincipal);
         return userPrincipal;   
     }
+    
     public static CatalogNumberingScheme createCatalogNumberingScheme(final String schemeName,
                                                                       final String schemeClassName,
                                                                       final boolean isNumericOnly)

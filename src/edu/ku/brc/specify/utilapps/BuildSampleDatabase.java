@@ -816,29 +816,27 @@ public class BuildSampleDatabase
         System.out.println("UserType:  "+userType);
         
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);        
-        
         discipline.addReference(userAgent, "agents");
         user.addReference(userAgent, "agents");
-        
         SpPrincipal disciplineGroup = DataBuilder.findGroup(groups, discipline, "Guest");
         user.addUserToSpPrincipalGroup(disciplineGroup);
         
         persist(userAgent);
         persist(user);
 
-        Agent botonyUserAgent = createAgent("Mr.", "Bob", "", "Botony", "", "botanyuser@ku.edu");
-        SpecifyUser      botonyUser             = createSpecifyUser("botanyuser", "botanyuser@ku.edu", /*(short) 0,*/ "botanyuser", disciplineGroup, "Guest");        
-        
-        discipline.addReference(botonyUserAgent, "agents");
-        botonyUser.addReference(botonyUserAgent, "agents");
-        
-        SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(botonyUser);
-        groups.add(userPrincipal);
-        botonyUser.addUserToSpPrincipalGroup(userPrincipal);
+        // Tester
+        Agent testerAgent = createAgent("Mr.", "Bob", "", "Botony", "", "botanyuser@ku.edu");
+        testerAgent.setDivision(division);
+        SpecifyUser testerUser          = createSpecifyUser("botanyuser", "botanyuser@ku.edu", /*(short) 0,*/ "botanyuser", disciplineGroup, "Guest");
+        SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
+        groups.add(testerUserPrincipal);
+        testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
+        discipline.addReference(testerAgent, "agents");
+        testerUser.addReference(testerAgent, "agents");
         
         persist(discipline);
-        persist(botonyUserAgent);
-        persist(botonyUser);
+        persist(testerAgent);
+        persist(testerUser);
         
         frame.setProcess(++createStep);
         
@@ -2034,21 +2032,18 @@ public class BuildSampleDatabase
         user.addReference(userAgent, "agents");
         user.addUserToSpPrincipalGroup(disciplineGroup);
         
+        // Tester
+        Agent testerAgent = createAgent("Mr.", "Joe", "", "InvertPaleo", "", "InvertPaleo@ku.edu");
+        testerAgent.setDivision(division);
+        SpecifyUser testerUser          = createSpecifyUser("ivpuser", "InvertPaleo@ku.edu", /*(short) 0,*/ "ivpuser", disciplineGroup, "Guest");
+        SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
+        groups.add(testerUserPrincipal);
+        testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
+        discipline.addReference(testerAgent, "agents");
+        testerUser.addReference(testerAgent, "agents");
         
-        Agent invertPaleoUserAgent = createAgent("Mr.", "Joe", "", "InvertPaleo", "", "InvertPaleo@ku.edu");
-        SpecifyUser      invertPaleoUser             = createSpecifyUser("ivpuser", "InvertPaleo@ku.edu", /*(short) 0,*/ "ivpuser", disciplineGroup, "Guest");        
-        invertPaleoUser.addReference(invertPaleoUserAgent, "agents");
-        discipline.addReference(invertPaleoUserAgent, "agents");
-        
-        SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(invertPaleoUser);
-        groups.add(userPrincipal);
-        invertPaleoUser.addUserToSpPrincipalGroup(userPrincipal);
-        
-//        SpPrincipal     userPrincipal2 = DataBuilder.createUserPrincipal(user);
-//        groups.add(userPrincipal2);
-        
-        persist(invertPaleoUserAgent);
-        persist(invertPaleoUser);
+        persist(testerAgent);
+        persist(testerUser);
         persist(discipline);
         persist(userAgent);
         persist(user);
@@ -3084,9 +3079,24 @@ public class BuildSampleDatabase
         user.addReference(userAgent, "agents");
         user.addUserToSpPrincipalGroup(disciplineGroup);
         
+        // Tester
+        String dspAbbrev = disciplineType.getAbbrev();
+        Agent testerAgent = createAgent("", dspAbbrev, "", "Tester", "", dspAbbrev+"tester@brc.ku.edu");
+        testerAgent.setDivision(division);
+        SpecifyUser testerUser          = createSpecifyUser(dspAbbrev+"Tester", dspAbbrev+"tester@brc.ku.edu", dspAbbrev+"Tester", disciplineGroup, user.getUserType());
+        SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
+        groups.add(testerUserPrincipal);
+        testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
+        discipline.addReference(testerAgent, "agents");
+        testerUser.addReference(testerAgent, "agents");
+
+        
         persist(discipline);
         persist(userAgent);
         persist(user);
+        
+        persist(testerAgent);
+        persist(testerUser);
         
         frame.setProcess(++createStep);
         
@@ -4109,26 +4119,18 @@ public class BuildSampleDatabase
         
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
         userAgent.setDivision(division);
-        
-        Agent testerAgent = createAgent("Tester", "Test", "", "Tester", "", "tester@brc.ku.edu");
-        testerAgent.setDivision(division);
-    
-        SpecifyUser testerUser = createSpecifyUser("tester", "tester@brc.ku.edu","tester", disciplineGroup, user.getUserType());
-        SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(testerUser);
-        groups.add(userPrincipal);
-        testerUser.addUserToSpPrincipalGroup(userPrincipal);
-        
-        SpPrincipal     userPrincipal2 = DataBuilder.createUserPrincipal(user);
-        //groups.add(userPrincipal2);
-        groups.add(userPrincipal2);
-        user.addUserToSpPrincipalGroup(userPrincipal2);
-        
         discipline.addReference(userAgent, "agents");
-        discipline.addReference(testerAgent, "agents");
-        
         user.addReference(userAgent, "agents");
         user.addUserToSpPrincipalGroup(disciplineGroup);
         
+        // Tester
+        Agent testerAgent = createAgent("", "Fish", "", "Tester", "", "fishtester@brc.ku.edu");
+        testerAgent.setDivision(division);
+        SpecifyUser testerUser          = createSpecifyUser("FishTester", "fishtester@brc.ku.edu", "FishTester", disciplineGroup, user.getUserType());
+        SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
+        groups.add(testerUserPrincipal);
+        testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
+        discipline.addReference(testerAgent, "agents");
         testerUser.addReference(testerAgent, "agents");
         
         startTx();
