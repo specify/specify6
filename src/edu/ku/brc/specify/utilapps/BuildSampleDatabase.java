@@ -4126,7 +4126,7 @@ public class BuildSampleDatabase
         // Tester
         Agent testerAgent = createAgent("", "Fish", "", "Tester", "", "fishtester@brc.ku.edu");
         testerAgent.setDivision(division);
-        SpecifyUser testerUser          = createSpecifyUser("FishTester", "fishtester@brc.ku.edu", "FishTester", disciplineGroup, user.getUserType());
+        SpecifyUser testerUser          = createSpecifyUser("FishTester", "fishtester@brc.ku.edu", "FishTester", disciplineGroup, "Guest");
         SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
         groups.add(testerUserPrincipal);
         testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
