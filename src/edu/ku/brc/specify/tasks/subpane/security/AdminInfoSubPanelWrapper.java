@@ -26,7 +26,7 @@ import edu.ku.brc.ui.forms.MultiView;
  */
 public class AdminInfoSubPanelWrapper
 {
-	private JPanel displayPanel;
+	private JPanel                 displayPanel;
 	private List<PermissionEditor> permissionEditors; 
 	
 	/**

@@ -158,7 +158,12 @@ public class PermissionService
      */
     static public List<Permission> findPrincipalBasedPermissions(Integer principalId)
     {
-        if(debug)log.debug("findPrincipalBasedPermissions"); //$NON-NLS-1$
+        if(debug)log.debug("findPrincipalBasedPermissions - principalId: "+ principalId); //$NON-NLS-1$
+        if (principalId == 3)
+        {
+            int x = 0;
+            x++;
+        }
         List<Permission> perms = new ArrayList<Permission>();
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -223,7 +228,7 @@ public class PermissionService
      * @param actions
      * @return
      */
-    private static Permission createPrincipalBasedPermission(Integer id, String clazzStr, String name, String actions)
+    private static Permission createPrincipalBasedPermission(final Integer id, final String clazzStr, final String name, final String actions)
     {
         if (debug) log.debug("createPrincipalBasedPermission - [" + clazzStr + "] [" + name + "] [" + actions + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         Permission perm = null;
@@ -535,11 +540,11 @@ public class PermissionService
         log.debug("runCheckPermssion - calling doAsPrivileged to check if subject has permission"); //$NON-NLS-1$
         try
         {
-            log.debug("runCheckPermssion: calling doAsPrivileged"); //$NON-NLS-1$
+            //log.debug("runCheckPermssion: calling doAsPrivileged"); //$NON-NLS-1$
             Subject.doAsPrivileged(s, new PrivilegedAction<Object>() {
                 public Object run()
                 {
-                    log.debug("runCheckPermssion: checking permission"); //$NON-NLS-1$
+                    //log.debug("runCheckPermssion: checking permission"); //$NON-NLS-1$
                     AccessController.checkPermission(perm);
                     log.debug("runCheckPermssion - permission found, returning true"); //$NON-NLS-1$
                     return true;

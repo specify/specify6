@@ -205,10 +205,20 @@ public class MultiView extends JPanel
             ViewLoader.clearFieldVerInfo();
         }
         
-        permissions = SecurityMgr.getInstance().getPermissionOptions("Form."+view.getName()); 
-        log.debug("View: "+view.getName() + " - " + permissions+"  - "+SecurityMgr.getInstance().checkPermission("Form."+view.getName(), "view"));
-        
-        boolean hasPermissionToModify = SecurityMgr.getInstance().checkPermission("Form."+view.getName(), "modify"); 
+        if (view.getName().equals("CollectionObject"))
+        {
+            //boolean x = SecurityMgr.getInstance().checkPermission("Form."+view.getName(), "view");
+            //if (x) x = !x;
+            
+            permissions = SecurityMgr.getInstance().getPermissionOptions("Form."+view.getName()); 
+            log.debug("*** View: "+view.getName() + " - " + permissions);
+            
+            SecurityMgr.dumpPermissions("Form."+view.getName(), permissions);
+            
+            //log.debug("View: "+view.getName() + " - " + permissions+"  - "+SecurityMgr.getInstance().checkPermission("Form."+view.getName(), "view"));
+            //log.debug("View: "+view.getName() + " - " + permissions+"  - "+SecurityMgr.getInstance().checkPermission("Form."+view.getName(), "modify"));
+            //boolean hasPermissionToModify = SecurityMgr.getInstance().checkPermission("Form."+view.getName(), "modify"); 
+        }
 
         AltViewIFace defaultAltView = createDefaultViewable(defaultAltViewType);
         

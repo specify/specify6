@@ -29,7 +29,6 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author megkumin
@@ -56,10 +55,11 @@ public class UserPrincipalHibernateService
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            final List<?> lister = session.getDataList("FROM SpPrincipal " +
-            		"WHERE GroupSubClass='" + UserPrincipal.class.getCanonicalName() + "' AND " +
-            		"Name='" + user.getName() + "'");
+            String sql = "FROM SpPrincipal WHERE GroupSubClass='" + UserPrincipal.class.getCanonicalName() + "' AND Name='" + user.getName() + "'";
+            log.debug(sql);
+            final List<?> lister = session.getDataList(sql);
             principal = (SpPrincipal)lister.get(0);
+            
         } catch (final Exception e1)
         {
             log.error("Exception caught: " + e1.toString());

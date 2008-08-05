@@ -12,6 +12,9 @@ import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -42,14 +45,14 @@ public class PermissionEditor
 	protected JTable				permissionTable;
 	protected PermissionEnumerator 	enumerator;
 	protected SpPrincipal 			principal;
-	protected TableModelListener    listener;
+	protected ChangeListener        listener;
 	
 	/**
 	 * @param permissionTable
 	 * @param enumerator
 	 */
 	public PermissionEditor(final JTable               permissionTable,
-                            final TableModelListener   listener, 
+                            final ChangeListener       listener, 
 	                        final PermissionEnumerator enumerator)
 	{
 		this.permissionTable 	= permissionTable;
@@ -86,7 +89,6 @@ public class PermissionEditor
 				return (column >= 2);
 			}
 		};
-		model.addTableModelListener(listener);
 		
 		addColumnHeaders(model);
 		
@@ -111,7 +113,16 @@ public class PermissionEditor
 		column.setMaxWidth(400);
 		column.setPreferredWidth(200);
 		
-
+        model.addTableModelListener(new TableModelListener() {
+            public void tableChanged(TableModelEvent e)
+            {
+                if (listener != null)
+                {
+                    listener.stateChanged(new ChangeEvent(this));
+                }
+            }
+        });
+        
 		/*		
 		TristateRenderer renderer = new TristateRenderer();
 		TristateEditor editor = new TristateEditor();

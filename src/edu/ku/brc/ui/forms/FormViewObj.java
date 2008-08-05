@@ -3459,7 +3459,7 @@ public class FormViewObj implements Viewable,
                 //enableNewBtn = mvParent.isTopLevel() || !mvParent.isTopLevel() ? mvParent.getMultiViewParent().getData() != null : false;
             }
             
-            log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
+            //log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
             
             // 03/27/08 - rods - Add isSingle check for SubForms that hold a single Object
             boolean isSingle = rsController == null && origDataSet == null;

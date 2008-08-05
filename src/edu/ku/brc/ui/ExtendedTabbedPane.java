@@ -135,7 +135,7 @@ public class ExtendedTabbedPane extends JTabbedPane
          * the current code to handle iReport lookandfeel vs. Specify lookandfeel conflicts is changed.)
          */
         
-        
+        /*
         
         final JLabel closeBtn = new JLabel(IconManager.getIcon("Close"));
         closeBtn.setBorder(null);
@@ -181,6 +181,7 @@ public class ExtendedTabbedPane extends JTabbedPane
         tabPanel.add(closeBtn, BorderLayout.EAST);
         
         setTabComponentAt(index, tabPanel);
+        */
         
         
     }

@@ -1,7 +1,7 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import javax.swing.JTable;
-import javax.swing.event.TableModelListener;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
@@ -23,16 +23,20 @@ public class ObjectPermissionEditor extends PermissionEditor
 
 	/**
 	 * @param permissionTable
+	 * @param listener
 	 * @param enumerator
 	 */
-	public ObjectPermissionEditor(final JTable permissionTable, 
-	                              final TableModelListener listener, 
+	public ObjectPermissionEditor(final JTable                     permissionTable, 
+	                              final ChangeListener             listener, 
 	                              final ObjectPermissionEnumerator enumerator)
 	{
 		// we can only create instances of this class providing the right enumerator class
 		super(permissionTable, listener, enumerator);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditor#addColumnHeaders(javax.swing.table.DefaultTableModel)
+	 */
 	protected void addColumnHeaders(DefaultTableModel model)
 	{
 		model.addColumn("");

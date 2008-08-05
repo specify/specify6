@@ -9,13 +9,19 @@
  */
 package edu.ku.brc.specify.tasks.subpane.security;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.forms.validation.DataChangeListener;
+import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
+import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
  * @author rod
@@ -25,10 +31,12 @@ import edu.ku.brc.ui.UIHelper;
  * Aug 5, 2008
  *
  */
-public class EditorPanel extends JPanel
+public class EditorPanel extends JPanel implements ChangeListener, 
+                                                   DataChangeListener
 {
-    private JButton           saveBtn;
-    private boolean           hasChanged            = false;
+    private JButton                saveBtn;
+    private boolean                hasChanged            = false;
+    private FormValidator          formValidator         = null;
     
     /**
      * @param sap
@@ -44,6 +52,14 @@ public class EditorPanel extends JPanel
                 sap.doSave();
             }
         });
+    }
+
+    /**
+     * @param formValidator the formValidator to set
+     */
+    public void setFormValidator(FormValidator formValidator)
+    {
+        this.formValidator = formValidator;
     }
 
     /**
@@ -77,4 +93,21 @@ public class EditorPanel extends JPanel
         }
         hasChanged = changed;
     }
+
+    /* (non-Javadoc)
+     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+     */
+    public void stateChanged(ChangeEvent e)
+    {
+        setHasChanged(true);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.forms.validation.DataChangeNotifier)
+     */
+    public void dataChanged(String name, Component comp, DataChangeNotifier dcn)
+    {
+        setHasChanged(formValidator.isFormValid());
+    }
+    
 }

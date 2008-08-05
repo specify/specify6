@@ -38,10 +38,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -97,8 +96,11 @@ public class SecurityAdminPane extends BaseSubPane
     private JTree  tree;
     private JPanel infoCards;
     private Hashtable<String, AdminInfoSubPanelWrapper> infoSubPanels;
-    private AdminInfoSubPanelWrapper currentDisplayPanel;
-    private JAutoCompTextField searchText; 
+    private Hashtable<String, EditorPanel>              editorPanels        = new Hashtable<String, EditorPanel>();
+    private AdminInfoSubPanelWrapper                    currentDisplayPanel = null;
+    private EditorPanel                                 currentEditorPanel  = null;
+    private String                                      currentTitle        = null;
+    private JAutoCompTextField                          searchText; 
 
     private JButton[] navToolbarBtns;
     private JButton delBtn;
@@ -436,7 +438,7 @@ public class SecurityAdminPane extends BaseSubPane
                     secondObjWrp = (DataModelObjBaseWrapper) parent.getUserObject();
                 }
 
-                showInfoPanel(dataWrp, secondObjWrp);
+                showInfoPanel(dataWrp, secondObjWrp, node.toString());
                 updateUIEnabled(dataWrp);
             }
         };
@@ -789,16 +791,48 @@ public class SecurityAdminPane extends BaseSubPane
     }
     
     private void showInfoPanel(final DataModelObjBaseWrapper objWrapper, 
-                               final DataModelObjBaseWrapper secondObjWrapper)
+                               final DataModelObjBaseWrapper secondObjWrapper,
+                               final String selectedObjTitle)
     {
-        // show info panel that corresponds to the type of object selected
         String className = objWrapper.getType();
-        CardLayout cl = (CardLayout)(infoCards.getLayout());
+        
+        if (currentEditorPanel != null && currentEditorPanel.hasChanged())
+        {
+            String[] optionLabels = new String[] {getResourceString("SaveChangesBtn"), 
+                                                  getResourceString("DiscardChangesBtn"), 
+                                                  getResourceString("CANCEL")};
+            int rv = JOptionPane.showOptionDialog(null,
+                        UIRegistry.getLocalizedMessage("SaveChanges", currentTitle),
+                        getResourceString("SaveChangesTitle"),
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        optionLabels,
+                        optionLabels[0]);
+        
+            if (rv == JOptionPane.YES_OPTION)
+            {
+                doSave();
+                currentEditorPanel.setHasChanged(false);
+            }
+        }
+        
+        currentTitle = selectedObjTitle;
+        
+        // show info panel that corresponds to the type of object selected
+        CardLayout               cardLayout   = (CardLayout)(infoCards.getLayout());
         AdminInfoSubPanelWrapper panelWrapper = infoSubPanels.get(className);
+        
+        currentEditorPanel  = editorPanels.get(className);
+        if (currentEditorPanel != null)
+        {
+            currentEditorPanel.setHasChanged(false);
+        }
+        
         // fill form with object data
         currentDisplayPanel = panelWrapper;
         currentDisplayPanel.setData(objWrapper.getDataObj(), secondObjWrapper != null? secondObjWrapper.getDataObj() : null);
-        cl.show(infoCards, className);
+        cardLayout.show(infoCards, className);
     }
     
     /**
@@ -838,7 +872,7 @@ public class SecurityAdminPane extends BaseSubPane
         String className = clazz.getCanonicalName();
         
         ViewBasedDisplayPanel panel = new ViewBasedDisplayPanel(null, formViewSet, formView, displayName,
-                className, idFieldName, editing, formOptionsArg);
+                                                                className, idFieldName, editing, formOptionsArg);
 
         AdminInfoSubPanelWrapper panelWrapper = new AdminInfoSubPanelWrapper(panel);
         
@@ -852,50 +886,45 @@ public class SecurityAdminPane extends BaseSubPane
     private void createUserPanel()
     {
         final EditorPanel infoPanel = new EditorPanel(this);
-        
-        //JPanel infoPanel = new FormDebugPanel();
-        final PanelBuilder mainPB = new PanelBuilder(new FormLayout(
-                "f:p:g", "t:80dlu,5dlu,p,2dlu,p,2dlu,p,2dlu,p"), infoPanel);
-        final CellConstraints cc = new CellConstraints();
-        
-        TableModelListener tblL = new TableModelListener()
-        {
-            public void tableChanged(TableModelEvent e) 
-            {
-                infoPanel.setHasChanged(true);
-            }
-        };
+
         // create general permission table
         JPanel generalPermissionsPanel = new JPanel(new BorderLayout());
         JTable generalPermissionsTable = new JTable();
         UIHelper.makeTableHeadersCentered(generalPermissionsTable, false);
         generalPermissionsPanel.add(new JScrollPane(generalPermissionsTable), BorderLayout.CENTER);
-        PermissionEditor generalPermissionsEditor = createGeneralPermissionsEditor(generalPermissionsTable, tblL);
+        PermissionEditor generalPermissionsEditor = createGeneralPermissionsEditor(generalPermissionsTable, infoPanel);
 
         // create object permission table
         JPanel objectPermissionsPanel = new JPanel(new BorderLayout());
         JTable objectPermissionsTable = new JTable();
         UIHelper.makeTableHeadersCentered(objectPermissionsTable, false);
         objectPermissionsPanel.add(new JScrollPane(objectPermissionsTable), BorderLayout.CENTER);
-        PermissionEditor objectsPermissionEditor = createObjectPermissionsEditor(objectPermissionsTable, tblL);
+        PermissionEditor objectsPermissionEditor = createObjectPermissionsEditor(objectPermissionsTable, infoPanel);
 
         // create user form
-        ViewBasedDisplayPanel panel = createViewBasedDisplayPanelForUser();
+        ViewBasedDisplayPanel panel = createViewBasedDisplayPanelForUser(infoPanel);
         
         // create tabbed panel for different kinds of permission editing tables
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("General", generalPermissionsPanel); // I18N
         tabbedPane.addTab("Objects", objectPermissionsPanel);  // I18N
         
+        final PanelBuilder mainPB = new PanelBuilder(new FormLayout(
+                "f:p:g", "t:p:g,4px,p,2px,f:p:g,2dlu,p"), infoPanel);
+        final CellConstraints cc = new CellConstraints();
+        
         // lay out controls on panel
         int y = 1;
-        mainPB.add(panel, cc.xy(1, y)); y += 2;
-        
+        mainPB.add(panel,                  cc.xy(1, y)); y += 2;
         mainPB.addSeparator("Permissions", cc.xy(1, y)); y += 2; // I18N
-        mainPB.add(tabbedPane, cc.xy(1, y)); y += 2;
+        mainPB.add(tabbedPane,             cc.xy(1, y)); y += 2;
 
-        PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("r:p", "p")/*, new FormDebugPanel()*/);
-        saveBtnPB.add(infoPanel.getSaveBtn());
+        PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("f:p:g,p,2px,p", "p")/*, new FormDebugPanel()*/);
+        saveBtnPB.add(infoPanel.getSaveBtn(), cc.xy(4, 1));
+        JButton valBtn = FormViewObj.createValidationIndicator(panel.getMultiView().getCurrentView());
+        panel.getMultiView().getCurrentValidator().setValidationBtn(valBtn);
+        saveBtnPB.add(valBtn, cc.xy(2, 1)); 
+        
         mainPB.add(saveBtnPB.getPanel(), cc.xy(1, y)); y += 2;
         
         String className = SpecifyUser.class.getCanonicalName();
@@ -905,6 +934,7 @@ public class SecurityAdminPane extends BaseSubPane
         subPanel.addPermissionEditor(generalPermissionsEditor);
         subPanel.addPermissionEditor(objectsPermissionEditor);
         infoSubPanels.put(className, subPanel);
+        editorPanels.put(className, infoPanel);
     }
     
     /**
@@ -914,32 +944,27 @@ public class SecurityAdminPane extends BaseSubPane
     {
         final EditorPanel infoPanel = new EditorPanel(this);
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout(
-                "f:p:g", "t:80dlu,5dlu,p,2dlu,p,2dlu,p,2dlu,p"), infoPanel);
+                "f:p:g", "t:p:g,4px,p,15px,f:p:g,2dlu,p"), infoPanel);
         final CellConstraints cc = new CellConstraints();
-        
-        TableModelListener tblL = new TableModelListener()
-        {
-            public void tableChanged(TableModelEvent e) 
-            {
-                infoPanel.setHasChanged(true);
-            }
-        };
         
         JTable table = new JTable();
         UIHelper.makeTableHeadersCentered(table, false);
-        PermissionEditor      editor = createGeneralPermissionsEditor(table, tblL);
-        ViewBasedDisplayPanel panel = createViewBasedDisplayPanelForGroup();
-        
-        
+        PermissionEditor      editor = createGeneralPermissionsEditor(table, infoPanel);
+        ViewBasedDisplayPanel panel = createViewBasedDisplayPanelForGroup(infoPanel);
+
         int y = 1;
-        mainPB.add(panel, cc.xy(1, y)); y += 2;
-        
+        mainPB.add(panel,                  cc.xy(1, y)); y += 2;
         mainPB.addSeparator("Permissions", cc.xy(1, y)); y += 2; // I18N
         mainPB.add(new JScrollPane(table), cc.xy(1, y)); y += 2;
 
-        PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("r:p", "p")/*, new FormDebugPanel()*/);
-        saveBtnPB.add(infoPanel.getSaveBtn());
+        PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("f:p:g,p,2px,p", "p")/*, new FormDebugPanel()*/);
+        saveBtnPB.add(infoPanel.getSaveBtn(), cc.xy(4, 1));
+        JButton valBtn = FormViewObj.createValidationIndicator(panel.getMultiView().getCurrentView());
+        panel.getMultiView().getCurrentValidator().setValidationBtn(valBtn);
+        saveBtnPB.add(valBtn, cc.xy(2, 1)); 
+        
         mainPB.add(saveBtnPB.getPanel(), cc.xy(1, y)); y += 2;
+       
         
         String className = SpPrincipal.class.getCanonicalName();
         infoCards.add(infoPanel, className);
@@ -947,6 +972,7 @@ public class SecurityAdminPane extends BaseSubPane
         AdminInfoSubPanelWrapper subPanel = new AdminInfoSubPanelWrapper(panel);
         subPanel.addPermissionEditor(editor);
         infoSubPanels.put(className, subPanel);
+        editorPanels.put(className, infoPanel);
     }
 
     protected void doSave()
@@ -964,7 +990,7 @@ public class SecurityAdminPane extends BaseSubPane
      * @return
      */
     protected static PermissionEditor createGeneralPermissionsEditor(final JTable table,
-                                                                     final TableModelListener listener)
+                                                                     final ChangeListener listener)
     {
         PermissionEnumerator e1 = new FormPermissionEnumerator();
         PermissionEnumerator e2 = new TaskPermissionEnumerator();
@@ -980,7 +1006,7 @@ public class SecurityAdminPane extends BaseSubPane
      * @return
      */
     protected static PermissionEditor createObjectPermissionsEditor(final JTable table,
-                                                                    final TableModelListener listener)
+                                                                    final ChangeListener listener)
     {
         return new ObjectPermissionEditor(table, listener, new ObjectPermissionEnumerator());
     }
@@ -988,27 +1014,41 @@ public class SecurityAdminPane extends BaseSubPane
     /**
      * @return
      */
-    protected static ViewBasedDisplayPanel createViewBasedDisplayPanelForUser()
+    protected static ViewBasedDisplayPanel createViewBasedDisplayPanelForUser(final EditorPanel edtPanel)
     {
-        return new ViewBasedDisplayPanel(null, "SystemSetup", "User", "User", 
-                SpecifyUser.class.getCanonicalName(), "specifyUserId", true, MultiView.HIDE_SAVE_BTN);
+        ViewBasedDisplayPanel vbp = new ViewBasedDisplayPanel(null, "SystemSetup", 
+                                                             "User", 
+                                                             "User", 
+                                                             SpecifyUser.class.getCanonicalName(), 
+                                                             "specifyUserId", 
+                                                             true, 
+                                                             MultiView.HIDE_SAVE_BTN);
+        vbp.getMultiView().getCurrentValidator().addDataChangeListener(edtPanel);
+        edtPanel.setFormValidator(vbp.getMultiView().getCurrentValidator());
+        return vbp;
     }
     
     /**
      * @return
      */
-    protected static ViewBasedDisplayPanel createViewBasedDisplayPanelForGroup()
+    protected static ViewBasedDisplayPanel createViewBasedDisplayPanelForGroup(final EditorPanel edtPanel)
     {
-        return new ViewBasedDisplayPanel(null, 
-                                        "SystemSetup", 
-                                        "UserGroup", 
-                                        "User Group", 
-                                        SpPrincipal.class.getCanonicalName(), 
-                                        "spUserGroupId", 
-                                        true, 
-                                        MultiView.HIDE_SAVE_BTN);
+        ViewBasedDisplayPanel vbp = new ViewBasedDisplayPanel(null, 
+                                                            "SystemSetup", 
+                                                            "UserGroup", 
+                                                            "User Group", 
+                                                            SpPrincipal.class.getCanonicalName(), 
+                                                            "spUserGroupId", 
+                                                            true, 
+                                                            MultiView.HIDE_SAVE_BTN);
+        vbp.getMultiView().getCurrentValidator().addDataChangeListener(edtPanel);
+        edtPanel.setFormValidator(vbp.getMultiView().getCurrentValidator());
+        return vbp;
     }
     
+    /**
+     * @param objWrapper
+     */
     private void updateUIEnabled(DataModelObjBaseWrapper objWrapper)
     {
         boolean isInstitution = (objWrapper != null)? objWrapper.isInstitution() : false;

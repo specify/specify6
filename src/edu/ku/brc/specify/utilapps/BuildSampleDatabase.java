@@ -4115,7 +4115,6 @@ public class BuildSampleDatabase
 
         DataBuilder.createStandardGroups(groups, discipline);
         SpPrincipal disciplineGroup = DataBuilder.findGroup(groups, discipline, "CollectionManager");
-        //persist(disciplineGroup);
         
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
         userAgent.setDivision(division);
@@ -4123,12 +4122,18 @@ public class BuildSampleDatabase
         user.addReference(userAgent, "agents");
         user.addUserToSpPrincipalGroup(disciplineGroup);
         
+        SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(user);
+        groups.add(userPrincipal);
+        user.addUserToSpPrincipalGroup(userPrincipal);
+        
         // Tester
-        Agent testerAgent = createAgent("", "Fish", "", "Tester", "", "fishtester@brc.ku.edu");
+        SpPrincipal guestGroup  = DataBuilder.findGroup(groups, discipline, "Guest");
+        Agent       testerAgent = createAgent("", "Fish", "", "Tester", "", "fishtester@brc.ku.edu");
         testerAgent.setDivision(division);
-        SpecifyUser testerUser          = createSpecifyUser("FishTester", "fishtester@brc.ku.edu", "FishTester", disciplineGroup, "Guest");
+        SpecifyUser testerUser          = createSpecifyUser("FishTester", "fishtester@brc.ku.edu", "FishTester", disciplineGroup, guestGroup.getGroupType());
         SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
         groups.add(testerUserPrincipal);
+        testerUser.addUserToSpPrincipalGroup(guestGroup);
         testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
         discipline.addReference(testerAgent, "agents");
         testerUser.addReference(testerAgent, "agents");

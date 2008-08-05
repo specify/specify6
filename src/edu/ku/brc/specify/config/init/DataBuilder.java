@@ -2400,7 +2400,9 @@ public class DataBuilder
     	for (SpPrincipal group : groups)
     	{
     		if (group.getScope() == scope && group.getGroupType().equals(groupType))
+    		{
     			return group;
+    		}
     	}
     	return null;
     }

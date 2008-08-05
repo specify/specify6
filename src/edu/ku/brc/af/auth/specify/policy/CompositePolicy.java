@@ -63,7 +63,10 @@ public class CompositePolicy extends Policy
         for (Iterator<Policy> itr = policies.iterator(); itr.hasNext();)
         {
             Policy p = itr.next();
-            if (p.implies(domain, permission)) { return true; }
+            if (p.implies(domain, permission)) 
+            { 
+                return true; 
+            }
         }
 
         return false;
