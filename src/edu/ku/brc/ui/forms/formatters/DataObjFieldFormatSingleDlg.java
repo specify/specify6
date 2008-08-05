@@ -27,35 +27,43 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.CustomDialog;
 
-/*
- * XXX
+/**
+ * 
+ * @author Ricardo
+ * @author rods
+ *
+ * @code_status Alpha
+ *
+ * Created Date: Aug 5, 2008
+ *
  */
 public class DataObjFieldFormatSingleDlg extends CustomDialog 
 {
-    protected DBTableInfo                             tableInfo;
-    protected AvailableFieldsComponent                 availableFieldsComp;
-    protected DataObjSwitchFormatter                 formatter;
-    protected DataObjFieldFormatSinglePanelBuilder     fmtSingleEditingPB;
+    protected DBTableInfo                          tableInfo;
+    protected AvailableFieldsComponent             availableFieldsComp;
+    protected DataObjSwitchFormatter               formatter;
+    protected DataObjFieldFormatSinglePanelBuilder fmtSingleEditingPB;
     
-    protected UIFieldFormatterMgr                     uiFieldFormatterMgrCache;
+    protected UIFieldFormatterMgr                  uiFieldFormatterMgrCache;
 
     /**
      * @throws HeadlessException
      */
-    public DataObjFieldFormatSingleDlg(final Frame                         frame, 
-                                       final DBTableInfo                     tableInfo,
-                                       final AvailableFieldsComponent     availableFieldsComp,
-                                       final DataObjDataFieldFormatIFace     singleFormatter,
-                                       final UIFieldFormatterMgr             uiFieldFormatterMgrCache)
+    public DataObjFieldFormatSingleDlg(final Frame                       frame, 
+                                       final DBTableInfo                 tableInfo,
+                                       final AvailableFieldsComponent    availableFieldsComp,
+                                       final DataObjDataFieldFormatIFace singleFormatter,
+                                       final UIFieldFormatterMgr         uiFieldFormatterMgrCache)
         throws HeadlessException
     {
-        super(frame, getResourceString("DOF_DLG_TITLE"), true, OKCANCELHELP, null); //I18N
+        super(frame, getResourceString("DOF_DLG_TITLE"), true, OKCANCELHELP, null);
+        
         this.tableInfo                = tableInfo;
         this.availableFieldsComp      = availableFieldsComp;
         this.formatter                = new DataObjSwitchFormatter("", "", true, false, tableInfo.getClassObj(), "");
         this.uiFieldFormatterMgrCache = uiFieldFormatterMgrCache;
-        
-        formatter.setSingle(singleFormatter);
+        this.helpContext              = "DOF_SINGLE_FF";
+        this.formatter.setSingle(singleFormatter);
     }
 
     /* (non-Javadoc)

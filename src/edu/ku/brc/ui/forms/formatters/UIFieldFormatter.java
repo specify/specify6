@@ -767,6 +767,9 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
                                         return false;
                                     }
                                     break;
+                                    
+                                default:
+                                    break;
                             }
                         }
                     } else

@@ -38,6 +38,7 @@ import org.dom4j.Element;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectGettableFactory;
@@ -243,6 +244,11 @@ public class DataObjFieldFormatMgr
                         {
                             log.error("Couldn't load class ["+className+"]");
                         }
+                        if (dataClass == Accession.class)
+                        {
+                            int x = 0;
+                            x++;
+                        }
                     } else
                     {
                         log.error("Class name ["+className+"] is empty and can't be. Skipping.");
@@ -319,7 +325,7 @@ public class DataObjFieldFormatMgr
                             for (Object fieldsObj : fieldsElements)
                             {
                                 Element fieldsElement = (Element)fieldsObj;
-                                String   valueStr  = getAttr(fieldsElement, "value", null);
+                                String  valueStr      = getAttr(fieldsElement, "value", null);
                                 
                                 List<?> fldList = fieldsElement.selectNodes("field");
                                 DataObjDataField[] fields = new DataObjDataField[fldList.size()];

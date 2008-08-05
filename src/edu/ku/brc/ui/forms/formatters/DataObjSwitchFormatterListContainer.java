@@ -17,23 +17,41 @@ package edu.ku.brc.ui.forms.formatters;
 
 import javax.swing.JList;
 
+/**
+ * @author Ricardo
+ *
+ * @code_status Alpha
+ *
+ * Created Date: Aug 5, 2008
+ *
+ */
 public class DataObjSwitchFormatterListContainer implements DataObjSwitchFormatterContainerIface
 {
 	protected JList formatList;
 	
+	/**
+	 * @param formatList
+	 */
 	public DataObjSwitchFormatterListContainer(JList formatList)
 	{
 		this.formatList = formatList;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatterContainerIface#getSelectedFormatter()
+	 */
 	public DataObjSwitchFormatter getSelectedFormatter()
 	{
 		if (formatList.getSelectedIndex() == -1)
+		{
 			return null;
+		}
 		
 		Object value = formatList.getSelectedValue(); 
 		if (!(value instanceof DataObjSwitchFormatter))
+		{
 			return null;
+		}
 		
 		return (DataObjSwitchFormatter) value;
 	}

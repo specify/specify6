@@ -44,8 +44,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -180,11 +178,15 @@ public class DataObjAggregatorDlg extends CustomDialog {
         {
         	public void actionPerformed(ActionEvent e)
         	{
+        	    /*
         		// subtract 1 from selected index to account for empty entry at the beginning
         		// if selected index is zero, then select "new" entry in the dialog, which is the last one
         		int correctIndex = (displayCbo.getSelectedIndex() == 0)? displayCbo.getModel().getSize() - 1 : displayCbo.getSelectedIndex() - 1; 
-        		DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(aggDlgFrame, tableInfo, correctIndex, 
-        				dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache);
+        		DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(aggDlgFrame, 
+        		                                                      tableInfo, 
+        		                                                      //correctIndex, 
+        				                                              dataObjFieldFormatMgrCache, 
+        				                                              uiFieldFormatterMgrCache);
         		dlg.setVisible(true);
         		
         		// set combo selection to formatter selected in dialog
@@ -194,6 +196,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
 	        		selectedAggregator.setFormatName(format.getName());
 	        		updateDisplayCombo();
         		}
+        		*/
         	}
         };
         displayDlgBtn.addActionListener(displayDlgBtnAL);

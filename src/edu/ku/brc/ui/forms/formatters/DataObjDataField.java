@@ -37,18 +37,19 @@ import edu.ku.brc.dbsupport.DBTableInfo;
  * Created Date: Jan 17, 2007
  * 
  */
-public class DataObjDataField {
-	protected String name;
-	protected Class<?> type;
-	protected String format;
-	protected String sep;
-	protected String uiFieldFormatterName;
-	protected String dataObjFormatterName;
-	protected DBTableInfo tableInfo;
-	protected DBFieldInfo fieldInfo;
-	protected DBRelationshipInfo relInfo;
+public class DataObjDataField implements Cloneable
+{
+	protected String                 name;
+	protected Class<?>               type;
+	protected String                 format;
+	protected String                 sep;
+	protected String                 uiFieldFormatterName;
+	protected String                 dataObjFormatterName;
+	protected DBTableInfo            tableInfo;
+	protected DBFieldInfo            fieldInfo;
+	protected DBRelationshipInfo     relInfo;
 	protected DataObjSwitchFormatter objFormatter;
-	protected UIFieldFormatterIFace uiFieldFormatter;
+	protected UIFieldFormatterIFace  uiFieldFormatter;
 	
 
 	public DataObjDataField(final String name, 
@@ -76,7 +77,12 @@ public class DataObjDataField {
 		this.relInfo   = relInfo;
 	}
 
-	public UIFieldFormatterIFace getUiFieldFormatter()
+	public void setObjFormatter(DataObjSwitchFormatter objFormatter)
+    {
+        this.objFormatter = objFormatter;
+    }
+
+    public UIFieldFormatterIFace getUiFieldFormatter()
 	{
 		return uiFieldFormatter;
 	}
@@ -131,7 +137,6 @@ public class DataObjDataField {
 		
 		if (tableInfo == null || fieldInfo == null)
 		{
-			//System.err.println("Table or field info is null");
 			return "null";
 		}
 		
@@ -234,4 +239,14 @@ public class DataObjDataField {
 		// else
 		setFieldInfo(tableInfo.getFieldByName(name));
 	}
+	
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        DataObjDataField ddf = (DataObjDataField)super.clone();
+        return ddf;
+    }
 }

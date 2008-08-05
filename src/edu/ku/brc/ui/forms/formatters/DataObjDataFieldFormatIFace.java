@@ -36,7 +36,6 @@ import java.util.Properties;
  */
 public interface DataObjDataFieldFormatIFace
 {
-
     /**
      * Initialization parameters.
      * @param name the name of the formatter
@@ -106,5 +105,19 @@ public interface DataObjDataFieldFormatIFace
     /**
      * Tells it to set up the Table and Field Info.
      */
-    public void setTableAndFieldInfo(); 
+    public void setTableAndFieldInfo();
+    
+    /**
+     * After cloning make sure setDataObjSwitchFormatter is called.
+     * @return a deep cloned object
+     */
+    public Object clone() throws CloneNotSupportedException;
+    
+    /**
+     * This needs to be called after clone. For most DataObjDataFieldFormat implementations this is a "no op"
+     * and nothing needs to be done. For some, they may need the parent DataObjSwitchFormatter.
+     * @param objFormatter the parent DataObjSwitchFormatter
+     */
+    public void setDataObjSwitchFormatter(DataObjSwitchFormatter objFormatter);
+
 }

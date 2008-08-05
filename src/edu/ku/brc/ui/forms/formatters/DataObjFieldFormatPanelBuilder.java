@@ -22,66 +22,102 @@ import com.jgoodies.forms.builder.PanelBuilder;
 
 import edu.ku.brc.dbsupport.DBTableInfo;
 
-public abstract class DataObjFieldFormatPanelBuilder {
+/**
+ * @author Ricardo
+ *
+ * @code_status Alpha
+ *
+ */
+public abstract class DataObjFieldFormatPanelBuilder
+{
 
-	protected AvailableFieldsComponent 				availableFieldsComp;
-	protected DataObjSwitchFormatterContainerIface 	formatContainer;
-	protected PanelBuilder 							mainPanelBuilder;
-	protected DBTableInfo  							tableInfo;
-	protected JButton								okButton;
-	protected boolean 								newFormat;
+    protected AvailableFieldsComponent             availableFieldsComp;
+    protected DataObjSwitchFormatterContainerIface formatContainer;
+    protected PanelBuilder                         mainPanelBuilder;
+    protected DBTableInfo                          tableInfo;
+    protected JButton                              okButton;
+    protected boolean                              newFormat;
 
-	protected UIFieldFormatterMgr 					uiFieldFormatterMgrCache;
+    protected UIFieldFormatterMgr                  uiFieldFormatterMgrCache;
+    
+    protected boolean                              hasChanged = false;
 
-	public abstract void fillWithObjFormatter(DataObjSwitchFormatter fmt);
-	
-	public DataObjFieldFormatPanelBuilder(DBTableInfo 							tableInfo,
-										  AvailableFieldsComponent 				availableFieldsComp,
-										  DataObjSwitchFormatterContainerIface 	formatContainer,
-										  JButton 								okButton,
-										  UIFieldFormatterMgr 					uiFieldFormatterMgrCache) 
-	{
-		super();
+    /**
+     * Fills the editor with the DataObjSwitchFormatter
+     * @param fmt DataObjSwitchFormatter
+     */
+    public abstract void fillWithObjFormatter(DataObjSwitchFormatter fmt);
+    
+    /**
+     * @param tableInfo
+     * @param availableFieldsComp
+     * @param formatContainer
+     * @param okButton
+     * @param uiFieldFormatterMgrCache
+     */
+    public DataObjFieldFormatPanelBuilder(final DBTableInfo                             tableInfo,
+                                          final AvailableFieldsComponent                 availableFieldsComp,
+                                          final DataObjSwitchFormatterContainerIface     formatContainer,
+                                          final JButton                                 okButton,
+                                          final UIFieldFormatterMgr                     uiFieldFormatterMgrCache) 
+    {
+        super();
 
-		if (formatContainer == null)
-			throw new RuntimeException("Cannot instantiate data obj format panel builder with null format container.");
-		
-		this.uiFieldFormatterMgrCache 	= uiFieldFormatterMgrCache;
-		this.tableInfo           		= tableInfo;
-		this.availableFieldsComp 		= availableFieldsComp;
-		this.formatContainer     		= formatContainer;
-		this.okButton            		= okButton;
-		this.newFormat           		= false;
-		
+        if (formatContainer == null)
+        {
+            throw new RuntimeException("Cannot instantiate data obj format panel builder with null format container.");
+        }
+        
+        this.uiFieldFormatterMgrCache     = uiFieldFormatterMgrCache;
+        this.tableInfo                   = tableInfo;
+        this.availableFieldsComp         = availableFieldsComp;
+        this.formatContainer             = formatContainer;
+        this.okButton                    = okButton;
+        this.newFormat                   = false;
+        
         init();
         buildUI();
-	}
+    }
 
-	protected void buildUI()
-	{
-	}
+    protected void buildUI()
+    {
+    }
 
-	protected void init() 
-	{
-	}
+    protected void init() 
+    {
+    }
 
-	public void enableUIControls() 
-	{
-		okButton.setEnabled(true);
-	}
+    public void enableUIControls() 
+    {
+        if (okButton != null)
+        {
+            okButton.setEnabled(hasChanged);
+        }
+    }
 
-	public boolean isNewFormat()
-	{
-		return newFormat;
-	}
-	
-	public JPanel getPanel() 
-	{
-		return mainPanelBuilder.getPanel();
-	}
+    public boolean hasChanged()
+    {
+        return hasChanged;
+    }
 
-	public PanelBuilder getMainPanelBuilder() 
-	{
-		return mainPanelBuilder;
-	}
+    public void setHasChanged(boolean hasChanged)
+    {
+        this.hasChanged = hasChanged;
+        enableUIControls();
+    }
+
+    public boolean isNewFormat()
+    {
+        return newFormat;
+    }
+    
+    public JPanel getPanel() 
+    {
+        return mainPanelBuilder.getPanel();
+    }
+
+    public PanelBuilder getMainPanelBuilder() 
+    {
+        return mainPanelBuilder;
+    }
 }

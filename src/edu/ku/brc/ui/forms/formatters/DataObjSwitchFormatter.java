@@ -41,7 +41,7 @@ import edu.ku.brc.ui.forms.FormHelper;
  * Created Date: Jan 17, 2007
  *
  */
-public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter>
+public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter>, Cloneable
 {
     protected static final Logger log = Logger.getLogger(DataObjSwitchFormatter.class);
     
@@ -55,9 +55,7 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     protected DataObjDataFieldFormatIFace single     = null;
     
     protected Vector<DataObjDataFieldFormatIFace> formatsVector = new Vector<DataObjDataFieldFormatIFace>();
-    //protected Hashtable<String, DataObjDataFieldFormatIFace> formatsHashtable= null;
-    // removed hash so that we can change values (which are the hash keys) as needed
-
+    
     /**
      * A formatter that can have one or more formatters that depend on an external value, typically from the database.
      * @param name the name of the formatter
@@ -66,12 +64,12 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
      * @param dataClass the class name of objects it will be formatting fields from
      * @param fieldName the name of the field to be formatted
      */
-    public DataObjSwitchFormatter(final String  name, 
+    public DataObjSwitchFormatter(final String   name, 
     							  final String   title,
-                                  final boolean isSingle, 
-                                  final boolean isDefault, 
-                                  final Class<?>  dataClass, 
-                                  final String  fieldName)
+                                  final boolean  isSingle, 
+                                  final boolean  isDefault, 
+                                  final Class<?> dataClass, 
+                                  final String   fieldName)
     {
         this.name      = name;
         this.title     = title;
@@ -110,7 +108,6 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
 	{
 		single = null;
 		formatsVector.clear();
-		//formatsHashtable.clear();
 	}
 
 	/**
@@ -137,7 +134,13 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
      */
     public void set(int index, final DataObjDataFieldFormatIFace dff)
     {
-       	formatsVector.set(index, dff);
+        if (formatsVector.size() == 0 || index > formatsVector.size())
+        {
+            formatsVector.add(dff);
+        } else
+        {
+            formatsVector.set(index, dff);
+        }
     }
     
     /**
@@ -182,6 +185,14 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     }
     
     /**
+     * @return whether there are any formatters thus indicating one aspect of being valid.
+     */
+    public boolean hasFormatters()
+    {
+        return (isSingle && single != null) || (formatsVector != null && formatsVector.size() > 0);
+    }
+    
+    /**
      * @return
      */
     public Collection<DataObjDataFieldFormatIFace> getFormatters()
@@ -190,7 +201,10 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     	{
     		// code below is used to return single as part of a Collection
     		Vector<DataObjDataFieldFormatIFace> vector = new Vector<DataObjDataFieldFormatIFace>();
-    		vector.add(single);
+    		if (single != null)
+    		{
+    		    vector.add(single);    
+    		}
     		return vector;
     	}
     	
@@ -394,9 +408,31 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
         sb.append("  </format>\n\n");
     }
     
+    
     //-----------------------------------------------------------------------
     //-- Comparable Interface
     //-----------------------------------------------------------------------
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException
+    {
+        DataObjSwitchFormatter dfo = (DataObjSwitchFormatter)super.clone();
+        
+        dfo.formatsVector = new Vector<DataObjDataFieldFormatIFace>();
+        for (DataObjDataFieldFormatIFace dodf : formatsVector)
+        {
+            DataObjDataFieldFormatIFace ddf = (DataObjDataFieldFormatIFace)dodf.clone();
+            ddf.setDataObjSwitchFormatter(dfo);
+            dfo.formatsVector.add(ddf);
+        }
+        
+        if (dfo.single != null)
+        {
+            dfo.single = (DataObjDataFieldFormatIFace)single.clone();
+            dfo.single.setDataObjSwitchFormatter(dfo);
+        }
+        return dfo;
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)

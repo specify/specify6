@@ -10,5 +10,8 @@ package edu.ku.brc.ui.forms.formatters;
  */
 public interface DataObjSwitchFormatterContainerIface
 {
+	/**
+	 * @return
+	 */
 	public DataObjSwitchFormatter getSelectedFormatter();
 }

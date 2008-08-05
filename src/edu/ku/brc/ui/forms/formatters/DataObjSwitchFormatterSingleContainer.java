@@ -15,15 +15,27 @@
 
 package edu.ku.brc.ui.forms.formatters;
 
+/**
+ * @author Ricardo
+ *
+ * @code_status Alpha
+ *
+ */
 public class DataObjSwitchFormatterSingleContainer implements DataObjSwitchFormatterContainerIface
 {
 	protected DataObjSwitchFormatter formatter;
 
+	/**
+	 * @param formatter
+	 */
 	public DataObjSwitchFormatterSingleContainer(DataObjSwitchFormatter formatter)
 	{
 		this.formatter = formatter;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatterContainerIface#getSelectedFormatter()
+	 */
 	public DataObjSwitchFormatter getSelectedFormatter()
 	{
 		return formatter;

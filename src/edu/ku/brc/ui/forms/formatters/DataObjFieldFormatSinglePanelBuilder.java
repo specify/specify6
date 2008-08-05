@@ -56,6 +56,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -110,9 +111,9 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
                 "p,f:p:g,"    +   // Label & format text editor
                 "10px,p,"     +   // separator & label
                 "f:250px:g,"  +   // list box for available fields 
-                "10px,21px,15px"  // empty space where the delete button goes for the multiple value panel
+                "10px"  // empty space where the delete button goes for the multiple value panel
                 
-                )/*, new FormDebugPanel()*/);
+                ));
         
         JLabel currentFieldsLbl = createLabel(getResourceString("DOF_DISPLAY_FORMAT")+":");
         formatEditor = new JTextPane();
@@ -133,7 +134,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
         pb.add(new JScrollPane(formatEditor), cc.xy(1, y)); y += 2;
     
         pb.add(addFieldPB.getPanel(), cc.xy(1, y)); y += 1;
-        pb.add(new JScrollPane(availableFieldsComp.getTree()), cc.xy(1, y)); y += 2;
+        pb.add(UIHelper.createScrollBar(availableFieldsComp.getTree()), cc.xy(1, y)); y += 2;
         
         this.mainPanelBuilder = pb;
 
@@ -193,7 +194,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
                 public void insertUpdate (DocumentEvent e) { changed(e); }
                 public void changedUpdate(DocumentEvent e) { changed(e); }
 
-                private void changed(DocumentEvent e)
+                private void changed(@SuppressWarnings("unused") DocumentEvent e)
                 { 
                     formatChanged(); 
                 }
@@ -228,6 +229,8 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
         {
             DataObjDataFieldWrapper wrapper = (DataObjDataFieldWrapper) obj;
             insertFieldIntoTextEditor(wrapper);
+            hasChanged = true;
+            enableUIControls();
         }
     }
 
@@ -253,12 +256,16 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
     {
         formatEditor.setText("");
         if (singleFormatter == null)
+        {
             return;
+        }
         
         Document doc = formatEditor.getDocument();
         DataObjDataField[] fields = singleFormatter.getFields();
         if (fields == null)
+        {
             return;
+        }
         
         for (DataObjDataField field : fields)
         {
@@ -448,6 +455,17 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
             dataObjFieldWrapper.getFormatterField().setUiFieldFormatter(fmt);
         }
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.DataObjFieldFormatPanelBuilder#enableUIControls()
+     */
+    public void enableUIControls() 
+    {
+        if (okButton != null)
+        {
+            okButton.setEnabled(hasChanged && formatContainer.getSelectedFormatter().hasFormatters());
+        }
+    }
 
     /**
      * @param formatter
@@ -471,7 +489,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
             {
                 // found button at the current position
                 // create corresponding field
-                String sepStr = (lastFieldPos < i - 1)? text.substring(lastFieldPos, i - 1) : "";
+                String sepStr = (lastFieldPos < i - 1)? text.substring(lastFieldPos, i) : "";
 
                 FieldDefinitionButton fieldDefBtn = (FieldDefinitionButton) obj;
                 DataObjDataField fmtField = fieldDefBtn.getValue();
@@ -488,7 +506,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
         DataObjDataField[] fieldsArray = new DataObjDataField[fields.size()];
         for (int i = 0; i < fields.size(); ++i)
         {
-            fieldsArray[i] = (DataObjDataField) fields.elementAt(i); 
+            fieldsArray[i] = fields.elementAt(i); 
         }
         
         DataObjDataFieldFormat singleFormatter = new DataObjDataFieldFormat("", tableInfo.getClassObj(), false, "", "", fieldsArray);

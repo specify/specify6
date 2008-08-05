@@ -38,7 +38,7 @@ import edu.ku.brc.dbsupport.DBTableInfo;
  * Created Date: Jan 17, 2007
  *
  */
-public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
+public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace, Cloneable
 {
     protected String             name;
     protected Class<?>           dataClass;
@@ -79,7 +79,9 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
         this.fields     = fields;
         
         if (this.value == null)
+        {
         	this.value = "";
+        }
     }
 
     /* (non-Javadoc)
@@ -206,4 +208,34 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
         }
         sb.append("      </fields>\n");
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#setDataObjSwitchFormatter(edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter)
+	 */
+	public void setDataObjSwitchFormatter(DataObjSwitchFormatter objFormatter)
+	{
+	    for (DataObjDataField fld : fields)
+        {
+            fld.setObjFormatter(objFormatter);
+        }
+	}
+	
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        DataObjDataFieldFormat dodff = (DataObjDataFieldFormat)super.clone();
+        if (fields != null)
+        {
+            int i = 0;
+            dodff.fields = new DataObjDataField[fields.length];
+            for (DataObjDataField fld : fields)
+            {
+                dodff.fields[i++] = (DataObjDataField)fld.clone();
+            }
+        }
+        return dodff;
+    }
 }
