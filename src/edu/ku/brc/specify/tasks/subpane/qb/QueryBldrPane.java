@@ -545,6 +545,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 queryFieldsPanel.add(qfp);
             }
         }
+        qualifyFieldLabels();
         
         if (!isHeadless)
         {
