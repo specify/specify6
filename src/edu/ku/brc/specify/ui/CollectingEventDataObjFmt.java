@@ -24,6 +24,7 @@ import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.forms.formatters.DataObjDataField;
 import edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace;
+import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 
 /**
  * @author rod
@@ -279,7 +280,27 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
         }
         
         sb.append("      </external>\n");
-
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#setDataObjSwitchFormatter(edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter)
+     */
+    public void setDataObjSwitchFormatter(DataObjSwitchFormatter objFormatter)
+    {
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        CollectingEventDataObjFmt cedof = (CollectingEventDataObjFmt)super.clone();
+        cedof.values = new Hashtable<String, String>();
+        for (String key : values.keySet())
+        {
+            cedof.values.put(key, values.get(key));
+        }
+        return cedof;
+    }
 }

@@ -892,7 +892,7 @@ public class DataBuilder
         pickList.setSizeLimit(sizeLimit);
         pickList.setIsSystem(isSystem);
         
-        Collection collection = AppContextMgr.getInstance() == null? null : AppContextMgr.getInstance().getClassObject(Collection.class);
+        Collection collection = AppContextMgr.getInstance().hasContext() ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
         if (collection != null)
         {
             pickList.setCollection(collection);

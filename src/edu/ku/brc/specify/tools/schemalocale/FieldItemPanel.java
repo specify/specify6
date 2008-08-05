@@ -333,11 +333,10 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             formatMoreBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                	UIFormatterDlg dlg = new UIFormatterDlg(
-                			(Frame)UIRegistry.getTopWindow(), 
-                			fieldInfo, 
-                			formatCombo.getSelectedIndex(),
-                			schemaPanel.getUiFieldFormatterMgrCache()); // MUST BE MODAL!
+                	UIFormatterDlg dlg = new UIFormatterDlg((Frame)UIRegistry.getTopWindow(), 
+                                                			fieldInfo, 
+                                                			formatCombo.getSelectedIndex(),
+                                                			schemaPanel.getUiFieldFormatterMgrCache()); // MUST BE MODAL!
                 	dlg.setVisible(true);
             		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
             		{
@@ -1237,7 +1236,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             fieldHideChk.setSelected(fld.getIsHidden());
             
             String dspName = disciplineType != null ? disciplineType.getName() : null;
-            if (AppContextMgr.getInstance() != null && AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
+            if (AppContextMgr.getInstance().hasContext() && AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
             {
                 dspName = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
             }

@@ -52,6 +52,10 @@
 	<mapID target="PL_ITEM_EDITOR"          url="SpecifyHelp/System/PickListItemEditor.html"/>
 	<mapID target="PL_HELP_CONTEXT"         url="SpecifyHelp/System/PickListEditor.html"/>
 	
+	<mapID target="DOF_LIST_EDITOR"         url="SpecifyHelp/System/DataObjFmtListEditor.html"/>
+	<mapID target="DOF_EDITOR"              url="SpecifyHelp/System/DataObjFmtEditor.html"/>
+	<mapID target="DOF_SINGLE_FF"           url="SpecifyHelp/System/DataObjFmtSingleEditor.html"/>
+	
 	
 	<!-- Workbench -->
 	

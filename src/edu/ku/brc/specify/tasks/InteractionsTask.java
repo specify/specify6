@@ -590,6 +590,7 @@ public class InteractionsTask extends BaseTask
             
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             
         } finally
         {

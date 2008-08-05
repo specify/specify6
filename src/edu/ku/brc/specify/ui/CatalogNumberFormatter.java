@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.ui.forms.formatters.DataObjDataField;
 import edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace;
+import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 
 /**
  * Formats a single Latitude or Longitude field from a locality object.
@@ -135,4 +136,21 @@ public class CatalogNumberFormatter implements DataObjDataFieldFormatIFace
     {
     	return;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#setDataObjSwitchFormatter(edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter)
+     */
+    public void setDataObjSwitchFormatter(DataObjSwitchFormatter objFormatter)
+    {
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        return super.clone();
+    }
+    
 }

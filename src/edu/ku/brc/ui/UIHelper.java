@@ -82,11 +82,13 @@ import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -1954,6 +1956,17 @@ public final class UIHelper
         return btn;
     }
 
+    /**
+     * Creates a JScrollPane with the Vertical SrcollBar hint to be platform specific.
+     * @param content the component inside the ScrollPane
+     * @return the ScrollPane
+     */
+    public static JScrollPane createScrollBar(final JComponent content)
+    {
+        return new JScrollPane(content, 
+                               isMacOS() ? ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS : ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, 
+                              ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    }
     
     /**
      * Creates an icon button with tooltip and action listener.

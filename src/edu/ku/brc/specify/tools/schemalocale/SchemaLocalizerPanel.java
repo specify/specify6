@@ -72,7 +72,7 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.formatters.DataObjAggregator;
 import edu.ku.brc.ui.forms.formatters.DataObjAggregatorDlg;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatDlg;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatEditorDlg;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
@@ -383,6 +383,9 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
      */
     private void fillFormatterCombo()
     {
+        
+        DataObjSwitchFormatter curSelDOF =  (DataObjSwitchFormatter)dataObjFmtCbo.getSelectedItem();
+        
         List<DataObjSwitchFormatter> fList;
     	if (tableInfo != null)
     	{
@@ -399,9 +402,11 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     	model.removeAllElements();
 
     	if (currContainer == null)
+    	{
     		return;
+    	}
     	
-    	String fmtName = currContainer.getFormat();
+    	String fmtName = curSelDOF != null ? curSelDOF.getName() : currContainer.getFormat();
 
     	int selectedInx = -1;
         for (DataObjSwitchFormatter format : fList)
@@ -467,20 +472,15 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         	public void actionPerformed(ActionEvent e)
         	{
     			Frame frame = (Frame)UIRegistry.getTopWindow(); 
-        		DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(frame, 
-        				tableInfo, dataObjFmtCbo.getSelectedIndex(), 
-        				dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache);
+    			DataObjFieldFormatEditorDlg dlg = new DataObjFieldFormatEditorDlg(frame, 
+                                                                				  tableInfo, 
+                                                                				  dataObjFieldFormatMgrCache, 
+                                                                				  uiFieldFormatterMgrCache);
         		dlg.setVisible(true);
         		
         		// set combo selection to formatter selected in dialog
         		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
         		{
-        			DataObjSwitchFormatter format = dlg.getSelectedFormatter();
-        			
-        			// assign selected obj formatter as the default for current table
-        			currContainer.setFormat(format.getName());
-        			currContainer.setIsUIFormatter(false);
-        			
 	        		// fill combo again, adding new formatter if it was new and selecting the appropriate one
         			fillFormatterCombo();
         		}
