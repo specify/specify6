@@ -1631,6 +1631,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
 
             Collections.sort(sortList);
+            checkFldUsage(tblQRI.getTableTree(), sortList);
             for (QryListRendererIFace qri : sortList)
             {
                 model.addElement(qri);
@@ -1638,6 +1639,70 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
 
+    /**
+     * @param tblTree
+     * @return a comma-separated list of the TableIds in path from the root of the tree containing
+     * tblTree down to tblTreee. 
+     * 
+     */
+    protected String getTreeStr(final TableTree tblTree)
+    {
+        String treeStr = String.valueOf(tblTree.getTableInfo().getTableId());
+        TableTree parent = tblTree.getParent();
+        while (parent != null && parent.getTableInfo() != null)
+        {
+            treeStr = String.valueOf(parent.getTableInfo().getTableId()) + "," + treeStr;
+            parent = parent.getParent();
+        }
+        return treeStr;
+    }
+    /**
+     * @param tblTree
+     * @param flds
+     * 
+     * Checks and updates isInUse status for fields in a newly created list of search fields.
+     */
+    protected void checkFldUsage(final TableTree tblTree, final Vector<BaseQRI> flds)
+    {
+        String treeStr = getTreeStr(tblTree);
+        
+        for (QueryFieldPanel qfp : this.queryFieldItems)
+        {
+            FieldQRI qri = qfp.getFieldQRI();
+            if (qri instanceof RelQRI)
+            {
+                //if (qri.getTable().getTableTree().getParent() == tblTree)
+                if (getTreeStr(qri.getTable().getTableTree().getParent()).equals(treeStr))
+                {
+                    for (BaseQRI fld : flds)
+                    {
+                        if (fld instanceof TableQRI)
+                        {
+                            if (((TableQRI )fld).getRelationship() == ((RelQRI )qri).getRelationshipInfo())
+                            {
+                                fld.setIsInUse(true);
+                            }
+                        }
+                    }
+                }
+            }
+            else if (getTreeStr(qri.getTableTree()).equals(treeStr))
+            {
+                for (BaseQRI fld : flds)
+                {
+                    if (fld instanceof FieldQRI)
+                    {
+                        FieldQRI qri2 = (FieldQRI )fld;
+                        if (qri2.getFieldName().equals(qri.getFieldName()))
+                        {
+                            qri2.setIsInUse(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     /**
      * @param aliasTbl
      * @param tblInfo
@@ -2571,6 +2636,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         //assuming query.forceLoad() has been called
         return query.getReports();
     }
+    
 }
 
 

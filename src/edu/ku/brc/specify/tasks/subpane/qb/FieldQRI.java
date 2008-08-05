@@ -25,7 +25,6 @@ public class FieldQRI extends BaseQRI
 {
     protected TableQRI    table = null;
     protected DBFieldInfo fi;
-    protected String[]    values = null;
     
     /**
      * @param table
