@@ -1389,7 +1389,8 @@ public class QueryTask extends BaseTask
      */
     protected void bldTableTrees()
     {        
-        if (tableTree == null || tableTree.get() == null || needToRebuildTableTree())
+        boolean rebuild = tableTree != null && (tableTree.get() == null || needToRebuildTableTree());
+        if (tableTree == null || rebuild)
         {
             tableTreeHash = null;
             tableTree = new WeakReference<TableTree>(readTables());
@@ -1398,7 +1399,31 @@ public class QueryTask extends BaseTask
         {
             tableTreeHash = new WeakReference<Hashtable<String, TableTree>>(buildTableTreeHash(tableTree.get()));
         }
-   }
+        if (!rebuild)
+        {
+            clearTableTree(tableTree.get());
+        }
+    }
+    
+    /**
+     * @param tree
+     * 
+     * Clears tree of changes resulting from previous use.
+     */
+    protected void clearTableTree(final TableTree tree)
+    {
+        if (tree.getTableQRI() != null)
+        {
+            for (int f = 0; f < tree.getTableQRI().getFields(); f++)
+            {
+                tree.getTableQRI().getField(f).setIsInUse(false);
+            }
+        }
+        for (int k = 0; k < tree.getKids(); k++)
+        {
+            clearTableTree(tree.getKid(k));
+        }
+    }
     
     /**
      * @return the tableTree object.
