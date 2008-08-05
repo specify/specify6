@@ -258,7 +258,7 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#setDataObjSwitchFormatter(edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter)
      */
-    @Override
+    //@Override
     public void setDataObjSwitchFormatter(DataObjSwitchFormatter objFormatter)
     {
     }
