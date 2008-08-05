@@ -136,6 +136,17 @@ public class RelQRI extends FieldQRI
         return relationshipInfo;
     }
     
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#isFieldHidden()
+     */
+    @Override
+    public boolean isFieldHidden()
+    {
+        return relationshipInfo.isHidden();
+    }
+
+
     //XXX - handling of the extra relationship text seems pretty scattered around. Should be re-worked. 
     /**
      * @param lbl
