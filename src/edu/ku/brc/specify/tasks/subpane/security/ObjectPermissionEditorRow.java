@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
+ */
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.util.List;
@@ -10,6 +16,14 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 
+/**
+ * @author Ricardo
+ *
+ * @code_status Alpha
+ *
+ * Jul 20, 2008
+ *
+ */
 public class ObjectPermissionEditorRow implements PermissionEditorRowIFace 
 {
 	private String title;

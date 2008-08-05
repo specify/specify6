@@ -1,17 +1,9 @@
 /*
- * This library is free software; you can redistribute it and/or modify it under the terms of the
- * GNU Lesser General Public License as published by the Free Software Foundation; either version
- * 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along with this library;
- * if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307 USA
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
-
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.util.Collections;
@@ -20,6 +12,7 @@ import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -49,16 +42,20 @@ public class PermissionEditor
 	protected JTable				permissionTable;
 	protected PermissionEnumerator 	enumerator;
 	protected SpPrincipal 			principal;
+	protected TableModelListener    listener;
 	
 	/**
 	 * @param permissionTable
 	 * @param enumerator
 	 */
-	public PermissionEditor(final JTable permissionTable, final PermissionEnumerator enumerator)
+	public PermissionEditor(final JTable               permissionTable,
+                            final TableModelListener   listener, 
+	                        final PermissionEnumerator enumerator)
 	{
 		this.permissionTable 	= permissionTable;
 		this.enumerator 		= enumerator;
 		this.principal 			= null;
+		this.listener           = listener;
 	}
 	
 	// TODO: overruling principal (nor the three-state checkbox) feature have been implemented yet
@@ -88,8 +85,8 @@ public class PermissionEditor
 			{
 				return (column >= 2);
 			}
-			
 		};
+		model.addTableModelListener(listener);
 		
 		addColumnHeaders(model);
 		

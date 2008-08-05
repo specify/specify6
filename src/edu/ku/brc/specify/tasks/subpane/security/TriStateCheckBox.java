@@ -41,8 +41,6 @@
 
 package edu.ku.brc.specify.tasks.subpane.security;
 
-import javax.swing.JCheckBox;
-
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;

@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
+ */
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.lang.reflect.Method;
@@ -9,7 +15,6 @@ import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipalSQLService;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
@@ -17,8 +22,11 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Workbench;
 
 /**
- * 
  * @author Ricardo
+ *
+ * @code_status Alpha
+ *
+ * Jul 20, 2008
  *
  */
 public class ObjectPermissionEnumerator extends PermissionEnumerator {

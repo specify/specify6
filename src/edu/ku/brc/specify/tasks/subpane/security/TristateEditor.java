@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
+ */
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.awt.Component;
@@ -7,6 +13,14 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
+/**
+ * @author Ricardo
+ *
+ * @code_status Alpha
+ *
+ * Jul 20, 2008
+ *
+ */
 @SuppressWarnings("serial")
 public class TristateEditor extends AbstractCellEditor implements TableCellEditor 
 {
@@ -14,31 +28,31 @@ public class TristateEditor extends AbstractCellEditor implements TableCellEdito
 	int col;
 	TriStateCheckBox check;
 	
-	TristateEditor()
+	public TristateEditor()
 	{
 		check = new TriStateCheckBox();
 		check.setHorizontalAlignment(JLabel.CENTER);
 	}
 
-	public Object getCellEditorValue() {
+	public Object getCellEditorValue() 
+	{
 		return check.getState();
 	}
 
 	public Component getTableCellEditorComponent(JTable table, Object value, 
-			boolean isSelected, int row, int column) 
+			boolean isSelected, int rowArg, int column) 
 	{
-		if(isSelected)
+		if (isSelected)
 		{
 			check.setForeground(table.getSelectionForeground());
 			check.setBackground(table.getSelectionBackground());
-		}
-		else
+		} else
 		{
 			check.setForeground(table.getForeground());
 			check.setBackground(table.getBackground());
 		}
 		this.col = column;
-		this.row = row;
+		this.row = rowArg;
 		return check;
 	}
 }
