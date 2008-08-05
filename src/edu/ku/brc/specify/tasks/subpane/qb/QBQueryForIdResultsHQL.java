@@ -395,4 +395,13 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         this.recIds = ids;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#showProgress()
+     */
+    //@Override
+    public boolean showProgress()
+    {
+        //QueryBuilder sets up progress bar and status messages for itself.
+        return false;
+    }
 }

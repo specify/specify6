@@ -1206,18 +1206,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         completedResults.set(runningResults.get());
         runningResults.set(null);
-        new SwingWorker()
-        {
-            @Override
-            public Object construct()
+       
+        UIRegistry.displayStatusBarText("");
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
             {
                 QueryBldrPane.this.searchBtn.setText(UIRegistry.getResourceString("QB_SEARCH")); 
-                UIRegistry.getStatusBar().setText("");
                 UIRegistry.getStatusBar().setProgressDone(query.getName());
-                UIRegistry.getStatusBar().setIndeterminate(query.getName(), false);
-                return null;
             }
-        }.start();
+        });
     }
     
     /**
@@ -1239,36 +1236,32 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             if (!countOnly && !runningResults.get().getQuery().isCancelled() && !runningResults.get().getQuery().isInError())
             {
                 final int results = runningResults.get().getQuery().getDataObjects().size();
-                new SwingWorker()
-                {
-                    @Override
-                    public Object construct()
+                
+                String msg = String.format(UIRegistry
+                        .getResourceString("QB_DISPLAYING_RETRIEVED_RESULTS"), String
+                        .valueOf(results), String
+                        .valueOf((doneTime.get() - startTime.get()) / 1000000000D));
+                UIRegistry.displayStatusBarText(msg);
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
                     {
-                        String msg = String.format(UIRegistry
-                                .getResourceString("QB_DISPLAYING_RETRIEVED_RESULTS"), String
-                                .valueOf(results), String
-                                .valueOf((doneTime.get() - startTime.get()) / 1000000000D));
-                        UIRegistry.getStatusBar().setText(msg);
                         UIRegistry.getStatusBar().setIndeterminate(query.getName(), true);
-                        return null;
                     }
-
-                }.start();
+                });
+                
             }
             if (countOnly || runningResults.get().getQuery().isCancelled() || runningResults.get().getQuery().isInError())
             {
-                new SwingWorker()
-                {
-                    @Override
-                    public Object construct()
+                
+                UIRegistry.displayStatusBarText("");
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
                     {
                         QueryBldrPane.this.searchBtn.setText(UIRegistry.getResourceString("QB_SEARCH")); 
-                        UIRegistry.getStatusBar().setText("");
                         UIRegistry.getStatusBar().setProgressDone(query.getName());
-                        UIRegistry.getStatusBar().setIndeterminate(query.getName(), false);
-                        return null;
+                        
                     }
-                }.start();            
+                });
             }
             if (countOnly && !runningResults.get().getQuery().isCancelled() && !runningResults.get().getQuery().isInError())
             {
@@ -1297,7 +1290,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         String iconName = distinct ? "BlankIcon" : rootTable.getClassObj().getSimpleName();
         int tblId = distinct ? -1 : rootTable.getTableId();
-        QBQueryForIdResultsHQL qri = new QBQueryForIdResultsHQL(new Color(144, 30, 255),
+        final QBQueryForIdResultsHQL qri = new QBQueryForIdResultsHQL(new Color(144, 30, 255),
                 getResourceString("QB_SEARCH_RESULTS"),
                 //rootTable.getTableInfo().getClassObj().getSimpleName(), // Icon Name
                 iconName,
@@ -1314,31 +1307,37 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         qri.setExpanded(true);
         runningResults.set(qri);
         doneTime.set(-1);
-        new SwingWorker(){
-            @Override
-            public Object construct()
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
             {
                 if (runningResults.get() != null && !runningResults.get().getCancelled())
                 {
-                    searchBtn.setText(UIRegistry.getResourceString("QB_CANCEL")); 
                     UIRegistry.getStatusBar().setText(UIRegistry.getResourceString("QB_SEARCHING"));
+                    searchBtn.setText(UIRegistry.getResourceString("QB_CANCEL")); 
                     UIRegistry.getStatusBar().setIndeterminate(query.getName(), true);
                 }
-                //else the query got cancelled or crashed before this thread was executed
+              //else the query got cancelled or crashed before this thread was executed
+            }
+        });
+        
+        new SwingWorker()
+        {
+            @Override
+            public Object construct()
+            {
+                if (esrp == null)
+                {
+                    CommandAction cmdAction = new CommandAction("Express_Search", "HQL", qri);
+                    cmdAction.setProperty("reuse_panel", true); 
+                    CommandDispatcher.dispatch(cmdAction);
+                } else
+                {
+                    esrp.addSearchResults(qri);
+                }
                 return null;
             }
         }.start();
-        
-        if (esrp == null)
-        {
-            CommandAction cmdAction = new CommandAction("Express_Search", "HQL", qri);
-            cmdAction.setProperty("reuse_panel", true); 
-            CommandDispatcher.dispatch(cmdAction);
-        } else
-        {
-            esrp.addSearchResults(qri);
-        }
-        //cancelSearch();
         startTime.set(System.nanoTime());
     }
 

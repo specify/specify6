@@ -348,4 +348,15 @@ public class UploadResults implements QueryForIdResultsIFace
         // TODO Auto-generated method stub
         
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#showProgress()
+     */
+    //@Override
+    public boolean showProgress()
+    {
+        return false;
+    }
+    
+    
 }

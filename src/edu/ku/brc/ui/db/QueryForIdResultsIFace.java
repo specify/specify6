@@ -180,4 +180,9 @@ public interface QueryForIdResultsIFace
      * @param ids
      */
     public abstract void setRecIds(final Vector<Integer> ids);
+    
+    /**
+     * @return true if progress bar should be displayed by default.
+     */
+    public abstract boolean showProgress();
 }

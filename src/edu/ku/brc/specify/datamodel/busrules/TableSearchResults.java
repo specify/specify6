@@ -252,6 +252,13 @@ public class TableSearchResults implements QueryForIdResultsIFace
         
     }
 
-    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#showProgress()
+     */
+    //@Override
+    public boolean showProgress()
+    {
+        return true;
+    }
     
 }

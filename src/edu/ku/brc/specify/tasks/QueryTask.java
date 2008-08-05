@@ -1645,7 +1645,6 @@ public class QueryTask extends BaseTask
                 public void run()
                 {
                     UIRegistry.getStatusBar().setProgressDone("QUERYTASK");
-                    UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", false);
                 }
             });
             return null;

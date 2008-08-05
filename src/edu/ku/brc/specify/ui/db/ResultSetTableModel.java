@@ -123,6 +123,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         
         captionInfo = results.getVisibleCaptionInfo();
         
+        if (!results.showProgress())
+        {
+            statusBar = null;
+        }
         startDataAquisition(doSequentially);
     }
     
