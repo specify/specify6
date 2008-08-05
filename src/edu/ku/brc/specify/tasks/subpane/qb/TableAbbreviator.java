@@ -27,12 +27,12 @@ class TableAbbreviator
     /**
      * Maps table trees with their assigned abbreviations.
      */
-    protected Map<Integer, String> ttAbbrevMap;
+    protected Map<TableTree, String> ttAbbrevMap;
     
     public TableAbbreviator()
     {
         idCountMap = new HashMap<Integer, Integer>();
-        ttAbbrevMap = new HashMap<Integer, String>();
+        ttAbbrevMap = new HashMap<TableTree, String>();
     }
     
     /**
@@ -42,9 +42,9 @@ class TableAbbreviator
      */
     public String getAbbreviation(final TableTree tt)
     {
-        if (ttAbbrevMap.containsKey(tt.getTableInfo().getTableId()))
+        if (ttAbbrevMap.containsKey(tt))
         {
-            return ttAbbrevMap.get(tt.getTableInfo().getTableId());
+            return ttAbbrevMap.get(tt);
         }
         //else
         if (idCountMap.containsKey(tt.getTableInfo().getTableId()))
@@ -59,7 +59,7 @@ class TableAbbreviator
     {
         idCountMap.put(tt.getTableInfo().getTableId(), count);
         String result = tt.getAbbrev() + count;
-        ttAbbrevMap.put(tt.getTableInfo().getTableId(), result);
+        ttAbbrevMap.put(tt, result);
         return result;
     }
     
