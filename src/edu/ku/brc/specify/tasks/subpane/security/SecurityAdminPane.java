@@ -93,8 +93,8 @@ public class SecurityAdminPane extends BaseSubPane
     @SuppressWarnings("unused")
     private static final Logger log = Logger.getLogger(SecurityAdminPane.class);
 
-    private JTree  tree;
-    private JPanel infoCards;
+    private JTree                                       tree;
+    private JPanel                                      infoCards;
     private Hashtable<String, AdminInfoSubPanelWrapper> infoSubPanels;
     private Hashtable<String, EditorPanel>              editorPanels        = new Hashtable<String, EditorPanel>();
     private AdminInfoSubPanelWrapper                    currentDisplayPanel = null;
@@ -113,14 +113,14 @@ public class SecurityAdminPane extends BaseSubPane
     private boolean hasPermissionToModify = false;
     private boolean hasPermissionToDelete = false;
     
-    private final int formOptions = MultiView.IS_SINGLE_OBJ | MultiView.VIEW_SWITCHER;
+    private final int formOptions = MultiView.IS_EDITTING | MultiView.IS_NEW_OBJECT;
     
     /**
      * Constructor
      * @param name
      * @param task
      */
-    public SecurityAdminPane(String name, final Taskable task)
+    public SecurityAdminPane(final String name, final Taskable task)
     {
         super(name, task);
         
@@ -597,7 +597,8 @@ public class SecurityAdminPane extends BaseSubPane
                 "group on the list above.</html>"; // I18N
         JLabel userDnDHelp = UIHelper.createLabel(helpStr);
         
-        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("min(210px;p):g", "f:min(100px;p):g,p,15px,p,p,p")/*, new FormDebugPanel()*/);
+        // adding the tree as f:p:g makes it grow too large
+        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("min(210px;p):g", "min(310px;p),p,15px,p,p,p")/*, new FormDebugPanel()*/);
         final CellConstraints cc = new CellConstraints();
         
         JScrollPane sp = new JScrollPane(tree, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -844,9 +845,9 @@ public class SecurityAdminPane extends BaseSubPane
 
         infoSubPanels = new Hashtable<String, AdminInfoSubPanelWrapper>();
         
-        createInfoSubPanel("SystemSetup", "Institution", "Institution", Institution.class, "institutionId", editing, formOptions | MultiView.IS_NEW_OBJECT);
-        createInfoSubPanel("SystemSetup", "DisciplineWithoutCollections", "Discipline", Discipline.class, "disciplineId", editing, formOptions | MultiView.IS_NEW_OBJECT);
-        createInfoSubPanel("SystemSetup", "Collection", "Collection", Collection.class, "collectionId", editing, formOptions | MultiView.IS_NEW_OBJECT);
+        createInfoSubPanel("SystemSetup", "Institution", "Institution", Institution.class, "institutionId", editing, formOptions);
+        createInfoSubPanel("SystemSetup", "DisciplineWithoutCollections", "Discipline", Discipline.class, "disciplineId", editing, formOptions);
+        createInfoSubPanel("SystemSetup", "Collection", "Collection", Collection.class, "collectionId", editing, formOptions);
         createUserPanel();
         createGroupPanel();
     }
@@ -910,7 +911,7 @@ public class SecurityAdminPane extends BaseSubPane
         tabbedPane.addTab("Objects", objectPermissionsPanel);  // I18N
         
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout(
-                "f:p:g", "t:p:g,4px,p,2px,f:p:g,2dlu,p"), infoPanel);
+                "f:p:g", "t:p,4px,p,2px,min(350px;p),2dlu,p"), infoPanel);
         final CellConstraints cc = new CellConstraints();
         
         // lay out controls on panel
@@ -944,7 +945,7 @@ public class SecurityAdminPane extends BaseSubPane
     {
         final EditorPanel infoPanel = new EditorPanel(this);
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout(
-                "f:p:g", "t:p:g,4px,p,15px,f:p:g,2dlu,p"), infoPanel);
+                "f:p:g", "t:p,4px,p,15px,f:min(350px;p):g,2dlu,p"), infoPanel);
         final CellConstraints cc = new CellConstraints();
         
         JTable table = new JTable();
