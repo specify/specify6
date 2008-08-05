@@ -39,6 +39,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -791,27 +792,7 @@ public class QueryTask extends BaseTask
         if (rows.size() == 1)
         {
             final Object[] row = (Object[])rows.iterator().next();
-            new SwingWorker()
-            {
-                @Override
-                public Object construct()
-                {
-                    UIRegistry.displayStatusBarText(UIRegistry.getResourceString("QB_LOADING"));
-                    UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", true);
-                    getTableTree();
-                    UIRegistry.displayStatusBarText("");
-                    UIRegistry.getStatusBar().setProgressDone("QUERYTASK");
-                    UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", false);
-                    return null;
-                }
-                
-                @Override
-                public void finished()
-                {
-                    super.finished();
-                    editQuery(((SpQuery)row[0]).getId().intValue());
-                }
-            }.start();
+            new EditOtherQueryWorker(((SpQuery)row[0]).getId()).start();
             
         } else
         {
@@ -828,28 +809,7 @@ public class QueryTask extends BaseTask
             dlg.setVisible(true);
             if (!dlg.isCancelled())
             {
-                final int qid = dlg.getSelectedObject().getId().intValue();
-                new SwingWorker()
-                {
-                    @Override
-                    public Object construct()
-                    {
-                        UIRegistry.displayStatusBarText(UIRegistry.getResourceString("QB_LOADING"));
-                        UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", true);
-                        getTableTree();
-                        UIRegistry.displayStatusBarText("");
-                        UIRegistry.getStatusBar().setProgressDone("QUERYTASK");
-                        UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", false);
-                        return null;
-                    }
-                    
-                    @Override
-                    public void finished()
-                    {
-                        super.finished();
-                        editQuery(qid);
-                    }
-                }.start();
+                new EditOtherQueryWorker(dlg.getSelectedObject().getId()).start();
             }
         }
     }
@@ -883,27 +843,7 @@ public class QueryTask extends BaseTask
         {
             public void actionPerformed(ActionEvent e)
             {
-                new SwingWorker()
-                {
-                    @Override
-                    public Object construct()
-                    {
-                        UIRegistry.displayStatusBarText(UIRegistry.getResourceString("QB_LOADING"));
-                        UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", true);
-                        getTableTree();
-                        UIRegistry.displayStatusBarText("");
-                        UIRegistry.getStatusBar().setProgressDone("QUERYTASK");
-                        UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", false);
-                        return null;
-                    }
-                    
-                    @Override
-                    public void finished()
-                    {
-                        super.finished();
-                        createNewQuery(tableInfo);
-                    }
-                }.start();
+                new NewQueryWorker(tableInfo).start();
             }
         }
         ));
@@ -988,33 +928,7 @@ public class QueryTask extends BaseTask
         roc.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e)
             {
-                new SwingWorker()
-                {
-                    @Override
-                    public Object construct()
-                    {
-                        UIRegistry.displayStatusBarText(UIRegistry.getResourceString("QB_LOADING"));
-                        UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", true);
-                        getTableTree();
-                        UIRegistry.displayStatusBarText("");
-                        UIRegistry.getStatusBar().setProgressDone("QUERYTASK");
-                        UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", false);
-                        return null;
-                    }
-                    
-                    @Override
-                    public void finished()
-                    {
-                        super.finished();
-                        RolloverCommand queryNavBtn = (RolloverCommand)e.getSource();
-                        if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
-                        {
-                            editQuery(recordSet.getOnlyItem().getRecordId());
-                            queryNavBtn.setEnabled(false);
-                            queryBldrPane.setQueryNavBtn(queryNavBtn);
-                        }
-                    }
-                }.start();
+                new EditQueryWorker(recordSet, e).start();
             }
             
         });
@@ -1475,7 +1389,7 @@ public class QueryTask extends BaseTask
      */
     protected void bldTableTrees()
     {        
-        if (tableTree == null || tableTreeHash.get() == null || needToRebuildTableTree())
+        if (tableTree == null || tableTree.get() == null || needToRebuildTableTree())
         {
             tableTreeHash = null;
             tableTree = new WeakReference<TableTree>(readTables());
@@ -1678,5 +1592,102 @@ public class QueryTask extends BaseTask
             ex.printStackTrace();
         }
         return result;
+    }
+    
+    /**
+     * @author timbo
+     *
+     * @code_status Alpha
+     *
+     *  Launches TableTree build with status message and progress bar then opens a Query
+     *  in the finished() method. 
+     */
+    protected class OpenQueryWorker extends SwingWorker
+    {
+        @Override
+        public Object construct()
+        {
+            UIRegistry.displayStatusBarText(UIRegistry.getResourceString("QB_LOADING"));
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", true);
+                }
+            });
+            getTableTree();
+            UIRegistry.displayStatusBarText("");
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    UIRegistry.getStatusBar().setProgressDone("QUERYTASK");
+                    UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", false);
+                }
+            });
+            return null;
+        }
+    }
+    
+    protected class NewQueryWorker extends OpenQueryWorker
+    {
+        protected final DBTableInfo tableInfo;
+        
+        public NewQueryWorker(final DBTableInfo tableInfo)
+        {
+            super();
+            this.tableInfo = tableInfo;
+        }
+
+        @Override
+        public void finished()
+        {
+            super.finished();
+            createNewQuery(tableInfo);
+        }
+    }
+    
+    protected class EditQueryWorker extends OpenQueryWorker
+    {
+        protected final RecordSet recordSet;
+        protected final ActionEvent e;
+        
+        public EditQueryWorker(final RecordSet recordSet, final ActionEvent e)
+        {
+            super();
+            this.recordSet = recordSet;
+            this.e = e;
+        }
+        
+        @Override
+        public void finished()
+        {
+            super.finished();
+            RolloverCommand queryNavBtn = (RolloverCommand)e.getSource();
+            if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
+            {
+                editQuery(recordSet.getOnlyItem().getRecordId());
+                queryNavBtn.setEnabled(false);
+                queryBldrPane.setQueryNavBtn(queryNavBtn);
+            }
+        }
+        
+    }
+    
+    protected class EditOtherQueryWorker extends OpenQueryWorker
+    {
+        protected final Integer queryId;
+        
+        public EditOtherQueryWorker(final Integer queryId)
+        {
+            super();
+            this.queryId = queryId;
+        }
+        
+        @Override
+        public void finished()
+        {
+            super.finished();
+            editQuery(queryId);
+        }
+
     }
 }
