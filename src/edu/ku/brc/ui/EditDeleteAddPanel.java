@@ -19,6 +19,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
+ * Panel with Edit, Delete and Add buttons (optionally).
+ * 
  * @author rod
  *
  * @code_status Alpha
@@ -26,20 +28,25 @@ import com.jgoodies.forms.layout.FormLayout;
  * Oct 27, 2007
  *
  */
-public class AddRemoveEditPanel extends JPanel
+public class EditDeleteAddPanel extends JPanel
 {
     protected JButton addBtn;
     protected JButton delBtn;
     protected JButton editBtn;
     
-    public AddRemoveEditPanel(final ActionListener addAL,
+    protected EditDeleteAddPanel()
+    {
+        
+    }
+    
+    public EditDeleteAddPanel(final ActionListener addAL,
                               final ActionListener delAL,
                               final ActionListener editAL)
     {
         createUI(addAL, delAL, editAL, "", "", "");
     }
     
-    public AddRemoveEditPanel(final ActionListener addAL,
+    public EditDeleteAddPanel(final ActionListener addAL,
                               final ActionListener delAL,
                               final ActionListener editAL,
                               final String addTTKey,
@@ -49,13 +56,14 @@ public class AddRemoveEditPanel extends JPanel
         createUI(addAL, delAL, editAL, addTTKey, delTTKey, editTTKey);
     }
     
-    protected void createUI(final ActionListener addAL,
-                            final ActionListener delAL,
-                            final ActionListener editAL,
-                            final String addTTKey,
-                            final String delTTKey,
-                            final String editTTKey)
+    protected PanelBuilder createUI(final ActionListener addAL,
+                                    final ActionListener delAL,
+                                    final ActionListener editAL,
+                                    final String addTTKey,
+                                    final String delTTKey,
+                                    final String editTTKey)
     {
+        
         if (editAL != null)
         {
             editBtn = UIHelper.createIconBtn("EditIcon", editTTKey, editAL);
@@ -75,8 +83,8 @@ public class AddRemoveEditPanel extends JPanel
         
         CellConstraints cc = new CellConstraints();
         
-        PanelBuilder btnPb = new PanelBuilder(new FormLayout("f:p:g," + UIHelper.createDuplicateJGoodiesDef("P", "2px", numBtns), "p"), this);
-        int x = 2;
+        PanelBuilder btnPb = new PanelBuilder(createFormLayout(numBtns), this);
+        int x = getStartingIndex();
         if (editAL != null)
         {
             btnPb.add(editBtn, cc.xy(x,1));
@@ -92,6 +100,24 @@ public class AddRemoveEditPanel extends JPanel
             btnPb.add(addBtn, cc.xy(x,1));
             x += 2;
         }
+        return btnPb;
+    }
+    
+    /**
+     * @param numBtns the number of btns in the row
+     * @return the FormLayout to use to build the button row
+     */
+    protected FormLayout createFormLayout(final int numBtns)
+    {
+        return new FormLayout("f:p:g," + UIHelper.createDuplicateJGoodiesDef("P", "2px", numBtns), "p");
+    }
+    
+    /**
+     * @return  the start of index of where the btuttons are layed out
+     */
+    protected int getStartingIndex()
+    {
+        return 2;
     }
 
     /* (non-Javadoc)

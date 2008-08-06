@@ -1961,11 +1961,11 @@ public final class UIHelper
      * @param content the component inside the ScrollPane
      * @return the ScrollPane
      */
-    public static JScrollPane createScrollBar(final JComponent content)
+    public static JScrollPane createScrollPane(final JComponent content)
     {
         return new JScrollPane(content, 
                                isMacOS() ? ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS : ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, 
-                              ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                               ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     }
     
     /**
@@ -2715,6 +2715,18 @@ public final class UIHelper
     public static JLabel createLabel(final String text, final int horzAlignment)
     {
         JLabel lbl = new JLabel(text, horzAlignment);
+        setControlSize(lbl);
+        return lbl;
+    }
+    
+    public static JLabel createI18NFormLabel(final String key)
+    {
+        return createI18NFormLabel(key, SwingConstants.RIGHT);
+    }
+    
+    public static JLabel createI18NFormLabel(final String key, final int horzAlignment)
+    {
+        JLabel lbl = new JLabel(getResourceString(key)+":", horzAlignment);
         setControlSize(lbl);
         return lbl;
     }

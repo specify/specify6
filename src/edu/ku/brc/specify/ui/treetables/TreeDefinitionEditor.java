@@ -60,7 +60,7 @@ import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
-import edu.ku.brc.ui.AddRemoveEditPanel;
+import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.JStatusBar;
@@ -98,7 +98,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	
 	// panels
 	protected JPanel             titlePanel;
-	protected AddRemoveEditPanel editPanel = null;
+	protected EditDeleteAddPanel edaPanel = null;
 
 	// main user interaction widget
 	protected JTable defItemsTable;
@@ -265,7 +265,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 }
             };
 		
-            editPanel = new AddRemoveEditPanel(newItemAction, deleteAction, editItemAction,
+            edaPanel = new EditDeleteAddPanel(newItemAction, deleteAction, editItemAction,
                                                "TTV_NEW_TDI", "TTV_DEL_TDI", "TTV_EDIT_TDI"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
 	}
@@ -314,10 +314,10 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		this.add(titlePanel,BorderLayout.NORTH);
 		
 		// Only add selection listener if the botton panel is there for editing
-		if (editPanel != null)
+		if (edaPanel != null)
 		{
 		    PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p,10px", "p")); //$NON-NLS-1$ //$NON-NLS-2$
-		    pb.add(editPanel, new CellConstraints().xy(2, 1));
+		    pb.add(edaPanel, new CellConstraints().xy(2, 1));
 		    add(pb.getPanel(), BorderLayout.SOUTH);
 	        addSelectionListener();
 		}
@@ -352,23 +352,23 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
             
             if (selectionIndex ==- 1)
             {
-                editPanel.getDelBtn().setEnabled(false);
-                editPanel.getAddBtn().setEnabled(false);
-                editPanel.getEditBtn().setEnabled(false);
+                edaPanel.getDelBtn().setEnabled(false);
+                edaPanel.getAddBtn().setEnabled(false);
+                edaPanel.getEditBtn().setEnabled(false);
             }
             else
             {
                 // if there are no business rules associated with this item, we assume it is open for deletion
                 if (businessRules == null || businessRules.okToEnableDelete(tableModel.get(selectionIndex)))
                 {
-                    editPanel.getDelBtn().setEnabled(true);
+                    edaPanel.getDelBtn().setEnabled(true);
                 }
                 else
                 {
-                    editPanel.getDelBtn().setEnabled(false);
+                    edaPanel.getDelBtn().setEnabled(false);
                 }
-                editPanel.getAddBtn().setEnabled(true);
-                editPanel.getEditBtn().setEnabled(true);
+                edaPanel.getAddBtn().setEnabled(true);
+                edaPanel.getEditBtn().setEnabled(true);
             }
         }
     }

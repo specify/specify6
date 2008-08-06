@@ -18,7 +18,7 @@
   </format>
   
   <format system="true" name="AccessionNumberByYear" class="edu.ku.brc.specify.datamodel.Accession" fieldname="accessionNumber" default="true">
-  <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
+    <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
     <field type="year" size="4" value="YEAR" byyear="true"/>
     <field type="separator" size="1" value="-"/>
     <field type="alphanumeric" size="2" value="AA"/>
@@ -26,22 +26,22 @@
     <field type="alphanumeric" size="3" value="AAA"/>
   </format>
 
-  <format system="true" name="CatalogNumber" class="edu.ku.brc.specify.datamodel.CollectionObject" fieldname="catalogNumber" default="true">
-  <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
+  <format system="false" name="CatalogNumber" class="edu.ku.brc.specify.datamodel.CollectionObject" fieldname="catalogNumber" default="true">
+    <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
     <field type="year" size="4" value="YEAR"/>
     <field type="separator" size="1" value="-"/>
     <field type="numeric" size="6" inc="true"/>
   </format>
 
-  <format system="true" name="CatalogNumberAlphaNumByYear" class="edu.ku.brc.specify.datamodel.CollectionObject" fieldname="catalogNumber">
-  <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
+  <format system="false" name="CatalogNumberAlphaNumByYear" class="edu.ku.brc.specify.datamodel.CollectionObject" fieldname="catalogNumber">
+    <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
     <field type="year" size="4" value="YEAR" byyear="true"/>
     <field type="separator" size="1" value="-"/>
     <field type="numeric" size="6" inc="true"/>
   </format>
 
   <format system="true" name="CatalogNumberNumeric" class="edu.ku.brc.specify.datamodel.CollectionObject" fieldname="catalogNumber" default="false">
-  <autonumber>edu.ku.brc.specify.dbsupport.CollectionAutoNumber</autonumber>
+    <autonumber>edu.ku.brc.specify.dbsupport.CollectionAutoNumber</autonumber>
     <external>edu.ku.brc.specify.ui.CatalogNumberUIFieldFormatter</external>
   </format>
 
@@ -53,21 +53,21 @@
   </format>
 
   <format system="true" name="GiftNumber" class="edu.ku.brc.specify.datamodel.Gift" fieldname="giftNumber" default="true">
-  <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
+    <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
     <field type="year" size="4" value="YEAR" byyear="true"/>
     <field type="separator" size="1" value="-"/>
     <field type="numeric" size="3" inc="true"/>
   </format>
 
   <format system="true" name="InfoRequestNumber" class="edu.ku.brc.specify.datamodel.InfoRequest" fieldname="infoReqNumber" default="true">
-  <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
+    <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
     <field type="year" size="4" value="YEAR" byyear="true"/>
     <field type="separator" size="1" value="-"/>
     <field type="numeric" size="3" inc="true"/>
   </format>
 
   <format system="true" name="LoanNumber" class="edu.ku.brc.specify.datamodel.Loan" fieldname="loanNumber" default="true">
-  <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
+    <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
     <field type="year" size="4" value="YEAR" byyear="true"/>
     <field type="separator" size="1" value="-"/>
     <field type="numeric" size="3" inc="true"/>

@@ -69,6 +69,7 @@ import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.tools.schemalocale.LocalizerApp.PackageTracker;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.formatters.DataObjAggregator;
 import edu.ku.brc.ui.forms.formatters.DataObjAggregatorDlg;
@@ -263,7 +264,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         topInner.add(webLinkLbl,    cc.xy(1, y)); 
         topInner.add(wlPanel.getPanel(), cc.xy(3, y)); y += 2;
         
-        JScrollPane tblsp = new JScrollPane(tablesList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane tblsp = UIHelper.createScrollPane(tablesList);
         
         // LocalizableNameDescIFace
         fieldPanel = new FieldItemPanel(this, webLinkMgrCache, includeHiddenUI, true, isDBSchema, this);
@@ -284,7 +285,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
             pb.add(disciplineBasedPanel,    cc.xywh(1, 9, 3, 1));
         }
 
-        pb.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        pb.getPanel().setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         
         tblSpellChkBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)

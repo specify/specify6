@@ -30,15 +30,30 @@ import java.util.regex.Pattern;
  *
  * TODO: RSP: We should consider turning this class into a class hierarchy to remove all the type checks and switches 
  */
-public class UIFieldFormatterField
+public class UIFieldFormatterField implements Cloneable
 {
     public enum FieldType {numeric, alphanumeric, alpha, separator, year, anychar, constant}
+                                                  
+    private static final String ALPHA_NUM_SAMPLE = "Abc123abcdefg123456wxyz7890";
+    private static final String ALPHA_SAMPLE     = "Abcdefghijklmnopqrstuvwxyz";
+    private static final String NUMERIC_SAMPLE   = "1234567890";
+    
+    private static String alphaSample        = null;
+    private static String numericSample      = null;
+    private static String alphaNumericSample = null;
+    
     
     protected FieldType type;
     protected int       size;
     protected String    value;
     protected boolean   incrementer;
     protected boolean   byYear;
+    
+    static {
+        alphaSample        = buildSample(ALPHA_SAMPLE);
+        numericSample      = buildSample(NUMERIC_SAMPLE);
+        alphaNumericSample = buildSample(ALPHA_NUM_SAMPLE);
+    }
     
     /**
      * Default constructor
@@ -66,12 +81,6 @@ public class UIFieldFormatterField
         this.incrementer = incrementer;
         this.byYear      = byYear;
         
-        if (size == 316)
-        {
-            int x = 0;
-            x++;
-        }
-        
         if (incrementer)
         {
             this.value = UIFieldFormatterMgr.getFormatterPattern(incrementer, null, size);
@@ -90,6 +99,21 @@ public class UIFieldFormatterField
                                  final boolean   incrementer)
     {
         this(type, size, value, incrementer, false);
+    }
+    
+    /**
+     * Builds the maximum sample size string
+     * @param sampText the sample text to build it form
+     * @return the full max string
+     */
+    private static String buildSample(final String sampText)
+    {
+        StringBuilder sb = new StringBuilder(sampText);
+        while (sb.length() < 255)
+        {
+            sb.append(sampText);
+        }
+        return sb.toString();
     }
 
     /**
@@ -175,30 +199,44 @@ public class UIFieldFormatterField
     	String sample = "";
 
 		if (type == FieldType.separator)
+		{
 			return value;
+		}
 
 		if (type == FieldType.alphanumeric)
-			sample = new String("Abc123abcdefg123456wxyz7890");
+		{
+			sample = alphaNumericSample;
+		}
 
 		if (type == FieldType.alpha)
-			sample = new String("Abcdefghijklmnopqrstuvwxyz");
+		{
+			sample = alphaSample;
+		}
 
 		if (type == FieldType.numeric)
 		{
-			sample = new String("123456789012345678901234567890");
+			sample = numericSample;
 			int dot = value.indexOf(".");
 			if (dot > 0)
+			{
 				sample = sample.substring(0, dot) + "." + sample.substring(dot, sample.length());
+			}
 		}
 
 		if (type == FieldType.year)
+		{
 			sample = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
+		}
 		
 		if (type == FieldType.constant)
+		{
 			return value.substring(1, value.length() - 1);
+		}
 		
 		if (sample.length() == 0)
+		{
 			return "";
+		}
 		
 		return sample.substring(0, value.length()); 
     }
@@ -287,5 +325,13 @@ public class UIFieldFormatterField
     {
         return ((type == FieldType.year) && (value.equals("YEAR")));
     }
-    
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        return super.clone();
+    }
 }

@@ -48,7 +48,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.ui.HelpMgr;
-import edu.ku.brc.ui.AddRemoveEditPanel;
+import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UIHelper;
@@ -320,7 +320,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
         protected JButton                   orderUpBtn;
         protected JButton                   orderDwnBtn;
         
-        protected AddRemoveEditPanel        arePanel;
+        protected EditDeleteAddPanel        edaPanel;
         
         
         /**
@@ -382,7 +382,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
                 }
             });
             
-            arePanel = new AddRemoveEditPanel(new ActionListener() {
+            edaPanel = new EditDeleteAddPanel(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     addItem(orderList);
@@ -402,13 +402,13 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
             outer.add(createLabel(getResourceString(titleKey), SwingConstants.CENTER), cc.xy(col, 1));
             JScrollPane sp = new JScrollPane(orderList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             outer.add(sp,                     cc.xy(col, 3));
-            outer.add(arePanel,               cc.xy(col, 5));
+            outer.add(edaPanel,               cc.xy(col, 5));
             
             outer.add(upDownPanel.getPanel(), cc.xy(orderOnLeft ? 1 : 3, 3));
             
             outer.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             
-            arePanel.getAddBtn().setEnabled(true);
+            edaPanel.getAddBtn().setEnabled(true);
         }
         
         
@@ -420,8 +420,8 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
             int inx = orderList.getSelectedIndex();
             orderUpBtn.setEnabled(inx > 0);
             orderDwnBtn.setEnabled(inx > -1 && inx < orderModel.size()-1);
-            arePanel.setEnabled(inx > -1);
-            arePanel.getAddBtn().setEnabled(true);
+            edaPanel.setEnabled(inx > -1);
+            edaPanel.getAddBtn().setEnabled(true);
         }
 
 

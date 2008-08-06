@@ -53,8 +53,9 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.ui.AddRemoveEditPanel;
+import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -75,7 +76,7 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
     protected final String       ellipsisButtonLabel = "...";
 
     protected JTable             formatSwitchTbl;
-    protected AddRemoveEditPanel controlPanel;
+    protected EditDeleteAddPanel controlPanel;
     
     static 
     {
@@ -116,7 +117,7 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
         createToolbar();
 
         // lay out components on main panel
-        JScrollPane sp = new JScrollPane(formatSwitchTbl);
+        JScrollPane sp = UIHelper.createScrollPane(formatSwitchTbl);
         // set minimum and preferred sizes so that table shrinks with the dialog
         sp.setMinimumSize(new Dimension(50, 5));
         sp.setPreferredSize(new Dimension(50, 5));
@@ -269,7 +270,7 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
             }
         };
 
-        controlPanel = new AddRemoveEditPanel(addAL, delAL, null);
+        controlPanel = new EditDeleteAddPanel(addAL, delAL, null);
         controlPanel.getAddBtn().setEnabled(true);
     }
 

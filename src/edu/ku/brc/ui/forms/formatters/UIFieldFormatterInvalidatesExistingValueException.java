@@ -41,10 +41,14 @@ public class UIFieldFormatterInvalidatesExistingValueException extends Exception
 		this.invalidatedValue = invalidatedValue;
 	}
 
-	public String getFaultyFormat() {
-		return faultyFormat;
+	public String getFaultyFormat() 
+	{
+	    return faultyFormat;
 	}
 
+	/**
+	 * @return
+	 */
 	public Object getInvalidatedValue()
 	{
 		return invalidatedValue;

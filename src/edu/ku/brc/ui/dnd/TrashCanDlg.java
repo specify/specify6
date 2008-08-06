@@ -46,6 +46,7 @@ import org.apache.log4j.Logger;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
 import edu.ku.brc.ui.DndDeletableListCellRenderer;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -121,8 +122,7 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
             });
             list.addListSelectionListener(this);
             
-            JScrollPane listScroller = new JScrollPane(list);
-            panel.add(listScroller, BorderLayout.CENTER);
+            panel.add(UIHelper.createScrollPane(list), BorderLayout.CENTER);
             
             // Bottom Button UI
             restoreBtn         = createButton(getResourceString("Restore"));

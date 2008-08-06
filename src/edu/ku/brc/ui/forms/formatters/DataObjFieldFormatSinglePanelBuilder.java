@@ -22,7 +22,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,7 +35,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -53,11 +51,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author ricardo
@@ -131,10 +126,10 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
         // lay out components on main panel        
         int y = 2; // leave first row blank 
         pb.add(currentFieldsLbl, cc.xy(1, y)); y += 1;
-        pb.add(new JScrollPane(formatEditor), cc.xy(1, y)); y += 2;
+        pb.add(UIHelper.createScrollPane(formatEditor), cc.xy(1, y)); y += 2;
     
         pb.add(addFieldPB.getPanel(), cc.xy(1, y)); y += 1;
-        pb.add(UIHelper.createScrollBar(availableFieldsComp.getTree()), cc.xy(1, y)); y += 2;
+        pb.add(UIHelper.createScrollPane(availableFieldsComp.getTree()), cc.xy(1, y)); y += 2;
         
         this.mainPanelBuilder = pb;
 
@@ -430,15 +425,17 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
             {
                 public void actionPerformed(ActionEvent e)
                 {
+                    throw new RuntimeException("FIX ME!");
+                    
                     // open UI field formatter dialog to format this field 
-                    DBFieldInfo fi = dataObjFieldWrapper.getFormatterField().getFieldInfo();
+                    /*DBFieldInfo    fi  = dataObjFieldWrapper.getFormatterField().getFieldInfo();
                     UIFormatterDlg dlg = new UIFormatterDlg((Frame) UIRegistry.getTopWindow(), fi, 0, uiFieldFormatterMgrCache);
                     dlg.setVisible(true);
                     
                     if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                     {
                         setFormatter(dlg.getSelectedFormat());
-                    }
+                    }*/
                 }
             };
             

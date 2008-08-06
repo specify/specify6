@@ -55,11 +55,11 @@ public abstract class DataObjFieldFormatPanelBuilder
      * @param okButton
      * @param uiFieldFormatterMgrCache
      */
-    public DataObjFieldFormatPanelBuilder(final DBTableInfo                             tableInfo,
-                                          final AvailableFieldsComponent                 availableFieldsComp,
-                                          final DataObjSwitchFormatterContainerIface     formatContainer,
-                                          final JButton                                 okButton,
-                                          final UIFieldFormatterMgr                     uiFieldFormatterMgrCache) 
+    public DataObjFieldFormatPanelBuilder(final DBTableInfo                          tableInfo,
+                                          final AvailableFieldsComponent             availableFieldsComp,
+                                          final DataObjSwitchFormatterContainerIface formatContainer,
+                                          final JButton                              okButton,
+                                          final UIFieldFormatterMgr                  uiFieldFormatterMgrCache) 
     {
         super();
 
@@ -68,25 +68,34 @@ public abstract class DataObjFieldFormatPanelBuilder
             throw new RuntimeException("Cannot instantiate data obj format panel builder with null format container.");
         }
         
-        this.uiFieldFormatterMgrCache     = uiFieldFormatterMgrCache;
-        this.tableInfo                   = tableInfo;
-        this.availableFieldsComp         = availableFieldsComp;
-        this.formatContainer             = formatContainer;
-        this.okButton                    = okButton;
-        this.newFormat                   = false;
+        this.uiFieldFormatterMgrCache = uiFieldFormatterMgrCache;
+        this.tableInfo                = tableInfo;
+        this.availableFieldsComp      = availableFieldsComp;
+        this.formatContainer          = formatContainer;
+        this.okButton                 = okButton;
+        this.newFormat                = false;
         
         init();
         buildUI();
     }
 
+    /**
+     * 
+     */
     protected void buildUI()
     {
     }
 
+    /**
+     * 
+     */
     protected void init() 
     {
     }
 
+    /**
+     * 
+     */
     public void enableUIControls() 
     {
         if (okButton != null)
@@ -95,27 +104,42 @@ public abstract class DataObjFieldFormatPanelBuilder
         }
     }
 
+    /**
+     * @return
+     */
     public boolean hasChanged()
     {
         return hasChanged;
     }
 
+    /**
+     * @param hasChanged
+     */
     public void setHasChanged(boolean hasChanged)
     {
         this.hasChanged = hasChanged;
         enableUIControls();
     }
 
+    /**
+     * @return
+     */
     public boolean isNewFormat()
     {
         return newFormat;
     }
     
+    /**
+     * @return
+     */
     public JPanel getPanel() 
     {
         return mainPanelBuilder.getPanel();
     }
 
+    /**
+     * @return
+     */
     public PanelBuilder getMainPanelBuilder() 
     {
         return mainPanelBuilder;

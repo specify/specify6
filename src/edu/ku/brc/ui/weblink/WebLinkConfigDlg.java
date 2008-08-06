@@ -14,11 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -28,8 +25,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.ui.AddRemoveEditPanel;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -44,7 +41,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class WebLinkConfigDlg extends CustomDialog
 {
     protected JList              list;
-    protected AddRemoveEditPanel itemsPanelADE;
+    protected EditDeleteAddPanel itemsPanelEDA;
     protected WebLinkMgr         wlMgr;
     protected boolean            hasChanged = false;
     protected boolean            isTableMode;
@@ -109,11 +106,10 @@ public class WebLinkConfigDlg extends CustomDialog
         pb.add(UIHelper.createLabel(UIRegistry.getResourceString("WebLinkConfigDlg.WEB_LINKS"), SwingConstants.CENTER), cc.xy(1, 1)); //$NON-NLS-1$
         
         list = new JList(new DefaultListModel());
-        JScrollPane sp = new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        pb.add(sp, cc.xy(1, 3));
+        pb.add(UIHelper.createScrollPane(list), cc.xy(1, 3));
         
-        itemsPanelADE = new AddRemoveEditPanel(addItemAL, delItemAL, editItemAL);
-        pb.add(itemsPanelADE, cc.xy(1, 5));
+        itemsPanelEDA = new EditDeleteAddPanel(addItemAL, delItemAL, editItemAL);
+        pb.add(itemsPanelEDA, cc.xy(1, 5));
         
         for (WebLinkDef wld : wlMgr.getWebLinkDefs(isTableMode ? tableInfo : null))
         {
@@ -142,7 +138,7 @@ public class WebLinkConfigDlg extends CustomDialog
             
         });
         
-        pb.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        pb.setDefaultDialogBorder();
         
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
@@ -181,15 +177,15 @@ public class WebLinkConfigDlg extends CustomDialog
         boolean enabled = wld != null;
         if (enabled)
         {
-            itemsPanelADE.getAddBtn().setEnabled(true);
-            itemsPanelADE.getDelBtn().setEnabled(true);
-            itemsPanelADE.getEditBtn().setEnabled(true);
+            itemsPanelEDA.getAddBtn().setEnabled(true);
+            itemsPanelEDA.getDelBtn().setEnabled(true);
+            itemsPanelEDA.getEditBtn().setEnabled(true);
             
         } else
         {
-            itemsPanelADE.getAddBtn().setEnabled(true);
-            itemsPanelADE.getDelBtn().setEnabled(false);
-            itemsPanelADE.getEditBtn().setEnabled(false);
+            itemsPanelEDA.getAddBtn().setEnabled(true);
+            itemsPanelEDA.getDelBtn().setEnabled(false);
+            itemsPanelEDA.getEditBtn().setEnabled(false);
         }
     }
     
@@ -254,7 +250,7 @@ public class WebLinkConfigDlg extends CustomDialog
      */
     protected void editWebLink()
     {
-        WebLinkDef    wld = (WebLinkDef)list.getSelectedValue();
+        WebLinkDef       wld = (WebLinkDef)list.getSelectedValue();
         WebLinkEditorDlg dlg = new WebLinkEditorDlg(wld, isTableMode ? tableInfo : null);
         dlg.setEdit(true);
         dlg.setVisible(true);

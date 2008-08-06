@@ -45,7 +45,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.ui.HelpMgr;
-import edu.ku.brc.ui.AddRemoveEditPanel;
+import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.CustomDialog;
 
 /**
@@ -311,7 +311,7 @@ public class TaskConfigureDlg extends CustomDialog
         protected JButton                               orderUpBtn;
         protected JButton                               orderDwnBtn;
         
-        protected AddRemoveEditPanel                    arePanel = null;
+        protected EditDeleteAddPanel                    edaPanel = null;
         protected Vector<TaskConfigItemIFace>           items;
         protected Vector<TaskConfigItemIFace>           hiddenItems = new Vector<TaskConfigItemIFace>();
         
@@ -384,7 +384,7 @@ public class TaskConfigureDlg extends CustomDialog
             
             if (includeAREPanel)
             {
-                arePanel = new AddRemoveEditPanel(new ActionListener() {
+                edaPanel = new EditDeleteAddPanel(new ActionListener() {
                     public void actionPerformed(ActionEvent e)
                     {
                         addItem(orderList, items);
@@ -395,7 +395,7 @@ public class TaskConfigureDlg extends CustomDialog
                         removeItem(orderList);
                     }
                 }, null);
-                arePanel.getAddBtn().setEnabled(true);
+                edaPanel.getAddBtn().setEnabled(true);
             }
             
             PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
@@ -407,9 +407,9 @@ public class TaskConfigureDlg extends CustomDialog
             JScrollPane sp = new JScrollPane(orderList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             outer.add(sp,                     cc.xy(col, 3));
             
-            if (arePanel != null)
+            if (edaPanel != null)
             {
-                outer.add(arePanel, cc.xy(col, 5));
+                outer.add(edaPanel, cc.xy(col, 5));
             }
             
             outer.add(upDownPanel.getPanel(), cc.xy(orderOnLeft ? 1 : 3, 3));
@@ -426,10 +426,10 @@ public class TaskConfigureDlg extends CustomDialog
             int inx = orderList.getSelectedIndex();
             orderUpBtn.setEnabled(inx > 0);
             orderDwnBtn.setEnabled(inx > -1 && inx < orderModel.size()-1);
-            if (arePanel != null)
+            if (edaPanel != null)
             {
-                arePanel.setEnabled(inx > -1);
-                arePanel.getAddBtn().setEnabled(true);
+                edaPanel.setEnabled(inx > -1);
+                edaPanel.getAddBtn().setEnabled(true);
             }
         }
         

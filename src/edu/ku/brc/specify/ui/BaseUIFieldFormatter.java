@@ -12,6 +12,7 @@ package edu.ku.brc.specify.ui;
 import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -34,7 +35,7 @@ import edu.ku.brc.util.Pair;
  * Jun 29, 2007
  *
  */
-public class BaseUIFieldFormatter implements UIFieldFormatterIFace
+public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
 {
     protected String                name;
     protected String                title;
@@ -441,6 +442,21 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace
         }
         sb.append("    <external>" + getClass().getName() + "</external>\n"); //$NON-NLS-1$ //$NON-NLS-2$
         sb.append("  </format>\n\n"); //$NON-NLS-1$
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        BaseUIFieldFormatter uif = (BaseUIFieldFormatter)super.clone();
+        uif.fields = new Vector<UIFieldFormatterField>();
+        for (UIFieldFormatterField fld : fields)
+        {
+            uif.fields.add((UIFieldFormatterField)fld.clone());
+        }
+        return uif;
     }
 
 }

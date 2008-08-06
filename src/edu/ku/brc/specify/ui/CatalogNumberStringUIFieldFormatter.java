@@ -67,5 +67,13 @@ public class CatalogNumberStringUIFieldFormatter extends BaseUIFieldFormatter im
     {
         return lengthOfData < length;
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.BaseUIFieldFormatter#getDataClass()
+     */
+    @Override
+    public Class<?> getDataClass()
+    {
+        return CollectionObject.class;
+    }
 }

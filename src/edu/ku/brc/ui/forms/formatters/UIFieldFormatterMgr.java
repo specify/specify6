@@ -48,15 +48,16 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class UIFieldFormatterMgr
 {
-    public static final String                            factoryName    = "edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr";
+    public static final String                                 factoryName    = "edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr";
 
-    private static final Logger                            log            = Logger.getLogger(UIFieldFormatterMgr.class);
+    private static final Logger                                log            = Logger.getLogger(UIFieldFormatterMgr.class);
 
-    protected static UIFieldFormatterMgr                instance    = null;
-    protected static boolean                            doingLocal    = false;
+    protected static UIFieldFormatterMgr                       instance    = null;
+    protected static boolean                                   doingLocal    = false;
 
-    protected boolean                                   hasChanged  = false;
-    protected Hashtable<String, UIFieldFormatterIFace>    hash        = new Hashtable<String, UIFieldFormatterIFace>();
+    protected boolean                                          hasChanged  = false;
+    protected Hashtable<String, UIFieldFormatterIFace>         hash        = new Hashtable<String, UIFieldFormatterIFace>();
+    protected Hashtable<Class<?>, Vector<UIFieldFormatterIFace>> classToListHash = new Hashtable<Class<?>, Vector<UIFieldFormatterIFace>>();
 
     /**
      * Protected Constructor
@@ -116,22 +117,17 @@ public class UIFieldFormatterMgr
         {
             try
             {
-                return instance = (UIFieldFormatterMgr) Class.forName(
-                        factoryNameStr).newInstance();
+                return instance = (UIFieldFormatterMgr) Class.forName(factoryNameStr).newInstance();
 
             } catch (Exception e)
             {
-                InternalError error = new InternalError(
-                        "Can't instantiate UIFieldFormatterMgr factory "
-                                + factoryNameStr);
+                InternalError error = new InternalError("Can't instantiate UIFieldFormatterMgr factory " + factoryNameStr);
                 error.initCause(e);
                 throw error;
             }
         }
         // should not happen
-        throw new RuntimeException(
-                "Can't instantiate UIFieldFormatterMgr factory ["
-                        + factoryNameStr + "]");
+        throw new RuntimeException("Can't instantiate UIFieldFormatterMgr factory ["+ factoryNameStr + "]");
     }
 
     /**
@@ -151,8 +147,7 @@ public class UIFieldFormatterMgr
         for (UIFieldFormatterIFace fmt : hash.values())
         {
             boolean isUIF = fmt instanceof UIFieldFormatter;
-            if (!isUIF
-                    || ((UIFieldFormatter) fmt).getType() == UIFieldFormatter.FormatterType.generic)
+            if (!isUIF || ((UIFieldFormatter) fmt).getType() == UIFieldFormatter.FormatterType.generic)
             {
                 list.add(fmt);
             }
@@ -192,8 +187,7 @@ public class UIFieldFormatterMgr
     public UIFieldFormatterIFace getFormatterInternal(final Class<?> clazz)
     {
         UIFieldFormatterIFace formatter = null;
-        for (Enumeration<UIFieldFormatterIFace> e = hash.elements(); e
-                .hasMoreElements();)
+        for (Enumeration<UIFieldFormatterIFace> e = hash.elements(); e.hasMoreElements();)
         {
             UIFieldFormatterIFace f = e.nextElement();
             if (clazz == f.getDataClass())
@@ -229,16 +223,16 @@ public class UIFieldFormatterMgr
      * @param type the type of Partial Date formatter.
      * @return the formatter
      */
-    public UIFieldFormatterIFace getDateFormmater(
-            UIFieldFormatter.PartialDateEnum type)
+    public UIFieldFormatterIFace getDateFormmater(final UIFieldFormatter.PartialDateEnum type)
     {
         for (Enumeration<UIFieldFormatterIFace> e = hash.elements(); e.hasMoreElements();)
         {
             UIFieldFormatterIFace f = e.nextElement();
             // System.out.println("["+Date.class+"]["+f.getDataClass()+"]
             // "+f.getPartialDateType());
-            if ((Date.class == f.getDataClass() || Date.class == f.getDataClass()) &&
-                    f.getPartialDateType() == type)
+            if ((Date.class == f.getDataClass() || 
+                 Date.class == f.getDataClass()) &&
+                 f.getPartialDateType() == type)
             {
                 return f;
             }
@@ -253,19 +247,17 @@ public class UIFieldFormatterMgr
      * @param isForPartial indicates to get Partial Date formatters
      * @return return a list of formatters that match the class
      */
-    public List<UIFieldFormatterIFace> getDateFormatterList(
-            final boolean isForPartial)
+    public List<UIFieldFormatterIFace> getDateFormatterList(final boolean isForPartial)
     {
         Vector<UIFieldFormatterIFace> list = new Vector<UIFieldFormatterIFace>();
-        for (Enumeration<UIFieldFormatterIFace> e = hash.elements(); e
-                .hasMoreElements();)
+        for (Enumeration<UIFieldFormatterIFace> e = hash.elements(); e.hasMoreElements();)
         {
             UIFieldFormatterIFace f = e.nextElement();
             if (f.isDate())
             {
                 boolean isPartial = f.getName().indexOf("Partial") > -1;
-                if ((isForPartial && isPartial)
-                        || (!isForPartial && !isPartial))
+                if ((isForPartial && isPartial) ||
+                    (!isForPartial && !isPartial))
                 {
                     list.add(f);
                 }
@@ -296,30 +288,53 @@ public class UIFieldFormatterMgr
     public List<UIFieldFormatterIFace> getFormatterList(final Class<?> clazz,
                                                         final String fieldName)
     {
-        Vector<UIFieldFormatterIFace> list = new Vector<UIFieldFormatterIFace>();
-        UIFieldFormatterIFace defFormatter = null;
-        for (Enumeration<UIFieldFormatterIFace> e = hash.elements(); e
-                .hasMoreElements();)
+        Vector<UIFieldFormatterIFace> list = classToListHash.get(clazz);
+        if (list != null)
         {
-            UIFieldFormatterIFace f = e.nextElement();
-            if (clazz == f.getDataClass()
-                    && (fieldName == null || (fieldName
-                            .equals(f.getFieldName()) || fieldName.equals("*"))))
+            return list;
+        }
+        
+        list = new Vector<UIFieldFormatterIFace>();
+        
+        UIFieldFormatterIFace defFormatter = null;
+        for (Enumeration<UIFieldFormatterIFace> e = hash.elements(); e.hasMoreElements();)
+        {
+            UIFieldFormatterIFace fmt = e.nextElement();
+            //log.debug(fmt.getTitle()+" -  "+fmt.getDataClass().getSimpleName());
+            if (clazz == fmt.getDataClass() && (fieldName == null || 
+                (fieldName.equals(fmt.getFieldName()) || fieldName.equals("*"))))
             {
-                if (f.isDefault() && defFormatter == null)
+                if (fmt.isDefault() && defFormatter == null)
                 {
-                    defFormatter = f;
+                    defFormatter = fmt;
                 } else
                 {
-                    list.add(f);
+                    list.add(fmt);
                 }
             }
         }
+        
         if (defFormatter != null)
         {
             list.insertElementAt(defFormatter, 0);
         }
+        
+        classToListHash.put(clazz, list);
+        
         return list;
+    }
+    
+    /**
+     * Clear the vectors from the class hash.
+     */
+    protected void cleanClassToListHash()
+    {
+        for (Class<?> key : classToListHash.keySet())
+        {
+            Vector<UIFieldFormatterIFace> list = classToListHash.get(key);
+            list.clear();
+        }
+        classToListHash.clear();
     }
 
     /**
@@ -329,13 +344,14 @@ public class UIFieldFormatterMgr
     {
         String name = formatter.getName();
 
-        if (name == null || name.equals(""))
+        if (StringUtils.isEmpty(name))
         {
             // find a formatter name that doesn't yet exist in the hash
             // name formation patter is <field name>.i where i is a counter
-            int i = 1;
-            Set<String> names = hash.keySet();
-            String prefix = formatter.getFieldName();
+            int         i      = 1;
+            Set<String> names  = hash.keySet();
+            String      prefix = formatter.getFieldName();
+            
             name = prefix + "." + Integer.toString(i);
             while (names.contains(name))
             {
@@ -380,12 +396,14 @@ public class UIFieldFormatterMgr
     public void load()
     {
         hash.clear();
-
+        cleanClassToListHash();
+        
         try
         {
             Element root = getDOM();
             if (root != null)
             {
+                boolean hasDefault = false;
                 List<?> formats = root.selectNodes("/formats/format");
                 for (Object fObj : formats)
                 {
@@ -400,20 +418,28 @@ public class UIFieldFormatterMgr
                     boolean isDefault = XMLHelper.getAttr(formatElement, "default", false);
                     boolean isSystem  = XMLHelper.getAttr(formatElement, "system", false);
 
+                    // Make sure we only have one default.
+                    if (isDefault)
+                    {
+                        if (!hasDefault)
+                        {
+                            hasDefault = true;
+                        } else
+                        {
+                            isDefault = false;
+                        }
+                    }
+                    
                     AutoNumberIFace autoNumberObj = null;
-                    Element autoNumberElement = (Element) formatElement
-                            .selectSingleNode("autonumber");
+                    Element autoNumberElement = (Element) formatElement.selectSingleNode("autonumber");
                     if (autoNumberElement != null)
                     {
-                        String autoNumberClassName = autoNumberElement
-                                .getTextTrim();
-                        if (StringUtils.isNotEmpty(autoNumberClassName)
-                                && StringUtils.isNotEmpty(dataClassName)
-                                && StringUtils.isNotEmpty(fieldName))
+                        String autoNumberClassName = autoNumberElement.getTextTrim();
+                        if (StringUtils.isNotEmpty(autoNumberClassName) &&
+                            StringUtils.isNotEmpty(dataClassName) &&
+                            StringUtils.isNotEmpty(fieldName))
                         {
-                            autoNumberObj = createAutoNumber(
-                                    autoNumberClassName, dataClassName,
-                                    fieldName);
+                            autoNumberObj = createAutoNumber(autoNumberClassName, dataClassName,fieldName);
 
                         } else
                         {
@@ -427,8 +453,7 @@ public class UIFieldFormatterMgr
                         }
                     }
 
-                    Element external = (Element) formatElement
-                            .selectSingleNode("external");
+                    Element external = (Element) formatElement.selectSingleNode("external");
                     if (external != null)
                     {
                         String externalClassName = external.getTextTrim();
@@ -453,35 +478,29 @@ public class UIFieldFormatterMgr
                             }
                         } else
                         {
-                            throw new RuntimeException(
-                                    "The value cannot be empty for an external formatter! ["
-                                            + name + "]");
+                            throw new RuntimeException("The value cannot be empty for an external formatter! ["+ name + "]");
                         }
 
                     } else
                     {
-                        List<?> fieldsList = formatElement.selectNodes("field");
-                        List<UIFieldFormatterField> fields = new ArrayList<UIFieldFormatterField>();
-                        boolean isInc = false;
-                        String partialDateTypeStr = formatElement
-                                .attributeValue("partialdate");
-
+                        List<?>                     fieldsList = formatElement.selectNodes("field");
+                        List<UIFieldFormatterField> fields     = new ArrayList<UIFieldFormatterField>();
+                        boolean                     isInc      = false;
+                        String                      partialDateTypeStr = formatElement.attributeValue("partialdate");
                         for (Object fldObj : fieldsList)
                         {
                             Element fldElement = (Element) fldObj;
 
-                            int size = XMLHelper.getAttr(fldElement, "size", 1);
-                            String value = fldElement.attributeValue("value");
-                            String typeStr = fldElement.attributeValue("type");
-                            boolean increm = XMLHelper.getAttr(fldElement,
-                                    "inc", false);
-                            boolean byYear = false;
+                            int     size    = XMLHelper.getAttr(fldElement, "size", 1);
+                            String  value   = fldElement.attributeValue("value");
+                            String  typeStr = fldElement.attributeValue("type");
+                            boolean increm  = XMLHelper.getAttr(fldElement, "inc", false);
+                            boolean byYear  = false;
 
                             UIFieldFormatterField.FieldType type = null;
                             try
                             {
-                                type = UIFieldFormatterField.FieldType
-                                        .valueOf(typeStr);
+                                type = UIFieldFormatterField.FieldType.valueOf(typeStr);
 
                             } catch (Exception ex)
                             {
@@ -491,12 +510,10 @@ public class UIFieldFormatterMgr
                             if (type == UIFieldFormatterField.FieldType.year)
                             {
                                 size = 4;
-                                byYear = XMLHelper.getAttr(fldElement,
-                                        "byyear", false);
+                                byYear = XMLHelper.getAttr(fldElement, "byyear", false);
                             }
 
-                            fields.add(new UIFieldFormatterField(type, size,
-                                    value, increm, byYear));
+                            fields.add(new UIFieldFormatterField(type, size, value, increm, byYear));
                             if (increm)
                             {
                                 isInc = true;
@@ -506,18 +523,16 @@ public class UIFieldFormatterMgr
                         // set field type
                         UIFieldFormatter.FormatterType type = UIFieldFormatter.FormatterType.generic;
                         UIFieldFormatter.PartialDateEnum partialDateType = UIFieldFormatter.PartialDateEnum.None;
-                        if (StringUtils.isNotEmpty(fType)
-                                && fType.equals("numeric"))
+                        if (StringUtils.isNotEmpty(fType) && fType.equals("numeric"))
                         {
                             type = UIFieldFormatter.FormatterType.numeric;
-                        } else if (StringUtils.isNotEmpty(fType)
-                                && fType.equals("date"))
+                            
+                        } else if (StringUtils.isNotEmpty(fType) && fType.equals("date"))
                         {
                             type = UIFieldFormatter.FormatterType.date;
                             if (StringUtils.isNotEmpty(partialDateTypeStr))
                             {
-                                partialDateType = UIFieldFormatter.PartialDateEnum
-                                        .valueOf(partialDateTypeStr);
+                                partialDateType = UIFieldFormatter.PartialDateEnum.valueOf(partialDateTypeStr);
                             } else
                             {
                                 partialDateType = UIFieldFormatter.PartialDateEnum.Full;
@@ -532,13 +547,10 @@ public class UIFieldFormatterMgr
                                 dataClass = Class.forName(dataClassName);
                             } catch (Exception ex)
                             {
-                                log.error("Couldn't load class ["
-                                        + dataClassName + "] for [" + name
-                                        + "]");
+                                log.error("Couldn't load class [" + dataClassName + "] for [" + name + "]");
                             }
 
-                        } else if (StringUtils.isNotEmpty(fType)
-                                && fType.equals("date"))
+                        } else if (StringUtils.isNotEmpty(fType) && fType.equals("date"))
                         {
                             dataClass = Date.class;
                         }
@@ -546,8 +558,7 @@ public class UIFieldFormatterMgr
                         UIFieldFormatter formatter = new UIFieldFormatter(name,
                                 isSystem, fieldName, type, partialDateType,
                                 dataClass, isDefault, isInc, fields);
-                        if (type == UIFieldFormatter.FormatterType.date
-                                && fields.size() == 0)
+                        if (type == UIFieldFormatter.FormatterType.date && fields.size() == 0)
                         {
                             addFieldsForDate(formatter);
 
@@ -604,12 +615,12 @@ public class UIFieldFormatterMgr
         Vector<UIFieldFormatterIFace> formatVector = new Vector<UIFieldFormatterIFace>(instance.hash.values());
         Collections.sort(formatVector, new Comparator<UIFieldFormatterIFace>()
         {
-            public int compare(UIFieldFormatterIFace o1,
-                    UIFieldFormatterIFace o2)
+            public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
             {
                 return o1.getName().compareTo(o2.getName());
             }
         });
+        
         for (UIFieldFormatterIFace format : formatVector)
         {
             format.toXML(sb);
@@ -673,8 +684,7 @@ public class UIFieldFormatterMgr
         AutoNumberIFace autoNumberObj = null;
         try
         {
-            autoNumberObj = Class.forName(autoNumberClassName).asSubclass(
-                    AutoNumberIFace.class).newInstance();
+            autoNumberObj = Class.forName(autoNumberClassName).asSubclass(AutoNumberIFace.class).newInstance();
             Properties props = new Properties();
             props.put("class", dataClassName);
             props.put("field", fieldName);

@@ -23,11 +23,13 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.AutoNumberIFace;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 
@@ -42,13 +44,14 @@ import edu.ku.brc.util.Pair;
  * Created Date: Jan 17, 2007
  *
  */
-public class UIFieldFormatter implements UIFieldFormatterIFace
+public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
 {
     public enum PartialDateEnum {None, Full, Month, Year}
     public enum FormatterType   {generic, date, numeric} // all lower case to follow convention in uiformatters.xml
     //private static final Logger log = Logger.getLogger(UIFieldFormatter.class);
 
     public static int[]            daysInMon = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}; 
+    protected static final String  deftitle = UIRegistry.getResourceString("FFE_DEFAULT");     
 
     protected String               fieldName;
     protected String               name;
@@ -68,11 +71,16 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     
     protected Number               minValue = null;
     protected Number               maxValue = null;
+    
+    // Transient
 
     /**
      * Default constructor
      */
-    public UIFieldFormatter() {}
+    public UIFieldFormatter() 
+    {
+        fields = new Vector<UIFieldFormatterField>();
+    }
     
     /**
      * Constructor.
@@ -545,7 +553,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
      */
     public String toString()
     {
-    	return toPattern();
+    	return toPattern() + (isDefault ? (' ' + deftitle) : "");
     }
 
     /* (non-Javadoc)
@@ -857,6 +865,23 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
 	public void setType(FormatterType type) {
 		this.type = type;
 	}
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        UIFieldFormatter uif = (UIFieldFormatter)super.clone();
+        uif.fields = new Vector<UIFieldFormatterField>();
+        for (UIFieldFormatterField fld : fields)
+        {
+            uif.fields.add((UIFieldFormatterField)fld.clone());
+        }
+        return uif;
+    }
+	
+	
 }
 
 

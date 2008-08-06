@@ -54,11 +54,19 @@ public class UITextFieldFormatterFactory extends UIFieldFormatterFactory
 	public UIFieldFormatter createFormat(final String formattingString) throws UIFieldFormatterParsingException
 	{
 		Class<?> clazz = fieldInfo.getTableInfo().getClassObj();
-		UIFieldFormatter fmt = new UIFieldFormatter(null, false, fieldInfo.getName(), 
-				FormatterType.generic, PartialDateEnum.None, clazz, false, false, null);
+		UIFieldFormatter fmt = new UIFieldFormatter(null, 
+		                                            false, 
+		                                            fieldInfo.getName(), 
+				                                    FormatterType.generic, 
+				                                    PartialDateEnum.None, 
+				                                    clazz, 
+				                                    false, 
+				                                    false, 
+				                                    null);
 
 		AutoNumberIFace autoNumber = UIFieldFormatterMgr.createAutoNumber("edu.ku.brc.dbsupport.AutoNumberGeneric", 
-				clazz.getName(), fieldInfo.getName());
+				                                                          clazz.getName(), 
+				                                                          fieldInfo.getName());
 		fmt.setAutoNumber(autoNumber);
 
 		// separators and split pattern strings

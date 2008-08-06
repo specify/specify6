@@ -158,13 +158,12 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         
         okBtn.setEnabled(false);
         schemaLocPanel.setSaveBtn(okBtn);
-
         
         schemaLocPanel.setStatusBar(UIRegistry.getStatusBar());
         schemaLocPanel.buildUI();
         schemaLocPanel.setHasChanged(localizableIOIFace.didModelChangeDuringLoad());
         
-        contentPanel   = schemaLocPanel;
+        contentPanel = schemaLocPanel;
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         
         setTitle();

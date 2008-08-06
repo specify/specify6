@@ -30,7 +30,6 @@ import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -64,13 +63,12 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.ui.AddRemoveEditPanel;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
@@ -137,9 +135,9 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
     
     protected BasicFormPreviewPanel              previewPanel;
     
-    protected AddRemoveEditPanel                 viewControlPanel;
-    protected AddRemoveEditPanel                 altViewControlPanel;
-    protected AddRemoveEditPanel                 viewDefControlPanel;
+    protected EditDeleteAddPanel                 viewControlPanel;
+    protected EditDeleteAddPanel                 altViewControlPanel;
+    protected EditDeleteAddPanel                 viewDefControlPanel;
      
     /**
      * 
@@ -195,7 +193,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             }
         };
         
-        viewControlPanel = new AddRemoveEditPanel(addViewAL, delViewAL, null);
+        viewControlPanel = new EditDeleteAddPanel(addViewAL, delViewAL, null);
         
         ActionListener addAltViewAL = new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -211,7 +209,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             }
         };
         
-        altViewControlPanel = new AddRemoveEditPanel(addAltViewAL, delAltViewAL, null);
+        altViewControlPanel = new EditDeleteAddPanel(addAltViewAL, delAltViewAL, null);
         
         ActionListener addDefViewAL = new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -227,7 +225,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             }
         };
         
-        viewDefControlPanel = new AddRemoveEditPanel(addDefViewAL, delDefViewAL, null);
+        viewDefControlPanel = new EditDeleteAddPanel(addDefViewAL, delDefViewAL, null);
         
         ActionListener saveAL = new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -235,7 +233,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
                 save();
             }
         };
-        AddRemoveEditPanel saveControlPanel = new AddRemoveEditPanel(saveAL, null, null);
+        EditDeleteAddPanel saveControlPanel = new EditDeleteAddPanel(saveAL, null, null);
         saveControlPanel.getAddBtn().setIcon(IconManager.getIcon("Save", IconManager.IconSize.Std16)); //$NON-NLS-1$
         saveControlPanel.getAddBtn().setEnabled(true);
         

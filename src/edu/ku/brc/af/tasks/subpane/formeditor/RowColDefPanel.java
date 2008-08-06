@@ -30,7 +30,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.tasks.subpane.formeditor.JGoodiesDefItem.ALIGN_TYPE;
 import edu.ku.brc.af.tasks.subpane.formeditor.JGoodiesDefItem.MINMAX_TYPE;
-import edu.ku.brc.ui.AddRemoveEditPanel;
+import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 
@@ -57,7 +57,7 @@ public class RowColDefPanel extends JPanel
     protected JGoodiesDefItem currentItem = null;
     
     protected DefItemPropPanel   propsPanel;
-    protected AddRemoveEditPanel controlPanel;
+    protected EditDeleteAddPanel controlPanel;
     
     
     /**
@@ -110,7 +110,7 @@ public class RowColDefPanel extends JPanel
             }
         };
         
-        controlPanel = new AddRemoveEditPanel(addAL, delAL, null);
+        controlPanel = new EditDeleteAddPanel(addAL, delAL, null);
         controlPanel.getAddBtn().setEnabled(true);
         
         itemList = new JList(new DefaultListModel());

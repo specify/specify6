@@ -17,6 +17,13 @@ package edu.ku.brc.ui.forms.formatters;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
 
+/**
+ * @author Ricardo
+ *
+ * @code_status Alpha
+ *
+ *
+ */
 public abstract class UIFieldFormatterFactory
 {
 	protected DBFieldInfo fieldInfo;

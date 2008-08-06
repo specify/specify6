@@ -333,15 +333,21 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             formatMoreBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                	UIFormatterDlg dlg = new UIFormatterDlg((Frame)UIRegistry.getTopWindow(), 
+                    UIFormatterDlg dlg = new UIFormatterDlg((Frame)UIRegistry.getTopWindow(), 
+                                                            fieldInfo,
+                                                            schemaPanel.getUiFieldFormatterMgrCache());
+                    dlg.setVisible(true);
+                    
+                	/*UIFormatterEditorDlg dlg = new UIFormatterEditorDlg((Frame)UIRegistry.getTopWindow(), 
                                                 			fieldInfo, 
-                                                			formatCombo.getSelectedIndex(),
+                                                			(UIFieldFormatter)formatCombo.getSelectedItem(),
                                                 			schemaPanel.getUiFieldFormatterMgrCache()); // MUST BE MODAL!
                 	dlg.setVisible(true);
             		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
             		{
-            			setSelectedFieldFormatter(dlg.getSelectedFormat());
+            			//setSelectedFieldFormatter(dlg.getSelectedFormat());
             		}
+            		*/
                 }
             });
             

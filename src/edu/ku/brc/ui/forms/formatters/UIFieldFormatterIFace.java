@@ -257,5 +257,10 @@ public interface UIFieldFormatterIFace
      * @return the type of Part date formatter it is.
      */
     public abstract PartialDateEnum getPartialDateType();
+    
+    /**
+     * @return
+     */
+    public abstract Object clone() throws CloneNotSupportedException;
 
 }

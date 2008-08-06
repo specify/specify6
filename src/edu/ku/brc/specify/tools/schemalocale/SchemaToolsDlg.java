@@ -107,6 +107,8 @@ public class SchemaToolsDlg extends CustomDialog
         builder.add(exportSchemaLocBtn, cc.xy(1,9));
         builder.add(importSchemaLocBtn, cc.xy(3,9));
         
+        builder.setDefaultDialogBorder();
+        
         contentPanel = builder.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         

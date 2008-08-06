@@ -11,6 +11,7 @@ package edu.ku.brc.specify.ui;
 
 import java.util.Vector;
 
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
@@ -53,4 +54,15 @@ public class CatalogNumberUIFieldFormatter extends BaseUIFieldFormatter implemen
             incPos     = new Pair<Integer, Integer>(0, length);
         }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.BaseUIFieldFormatter#getDataClass()
+     */
+    @Override
+    public Class<?> getDataClass()
+    {
+        return CollectionObject.class;
+    }
+    
+    
 }

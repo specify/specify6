@@ -28,7 +28,6 @@ import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
@@ -45,8 +44,8 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.ui.AddRemoveEditPanel;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
@@ -75,7 +74,7 @@ public class DataObjFieldFormatDlg extends CustomDialog
     protected JRadioButton                              singleDisplayBtn;
     protected JRadioButton                              multipleDisplayBtn;
     protected JTextField                                titleText;
-    protected AddRemoveEditPanel                        controlPanel;
+    protected EditDeleteAddPanel                        controlPanel;
 
     /**
      * @throws HeadlessException
@@ -170,7 +169,7 @@ public class DataObjFieldFormatDlg extends CustomDialog
         pb.add(fmtSingleEditingPB.getPanel(),   cc.xyw(1, y, 3));
         pb.add(fmtMultipleEditingPB.getPanel(), cc.xyw(1, y, 3));
 
-        pb.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        pb.setDefaultDialogBorder();
         
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);

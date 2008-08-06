@@ -32,7 +32,6 @@ import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -45,8 +44,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.ui.AddRemoveEditPanel;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
@@ -68,7 +67,7 @@ public class DataObjFieldFormatEditorDlg extends CustomDialog
     // UI
     protected JList                                     formatList;
     protected DefaultListModel                          listModel;
-    protected AddRemoveEditPanel                        arePanel;
+    protected EditDeleteAddPanel                        edaPanel;
         
     /**
      * @param parentDlg
@@ -130,8 +129,8 @@ public class DataObjFieldFormatEditorDlg extends CustomDialog
         };
 
         // control panel
-        arePanel = new AddRemoveEditPanel(addAL, delAL, editAL);
-        arePanel.getAddBtn().setEnabled(true);
+        edaPanel = new EditDeleteAddPanel(addAL, delAL, editAL);
+        edaPanel.getAddBtn().setEnabled(true);
         
         JLabel tableTitleLbl = createLabel(getResourceString("FFE_TABLE") + ": ");
         JLabel tableTitleValueLbl = createLabel(tableInfo.getTitle());
@@ -146,10 +145,10 @@ public class DataObjFieldFormatEditorDlg extends CustomDialog
         
         PanelBuilder pb = new PanelBuilder(new FormLayout("f:max(200px;p):g", "p,2px,f:max(200px;p):g,5px,p"));
         pb.add(tblInfoPB.getPanel(), cc.xy(1, 1));
-        pb.add(UIHelper.createScrollBar(formatList), cc.xy(1, 3));
-        pb.add(arePanel, cc.xy(1, 5));
+        pb.add(UIHelper.createScrollPane(formatList), cc.xy(1, 3));
+        pb.add(edaPanel, cc.xy(1, 5));
         
-        pb.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        pb.setDefaultDialogBorder();
         
         contentPanel   = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
@@ -312,7 +311,7 @@ public class DataObjFieldFormatEditorDlg extends CustomDialog
      */
     protected void updateUIEnabled()
     {
-        arePanel.getDelBtn().setEnabled(formatList.getSelectedIndex() != -1);
-        arePanel.getEditBtn().setEnabled(formatList.getSelectedIndex() != -1);
+        edaPanel.getDelBtn().setEnabled(formatList.getSelectedIndex() != -1);
+        edaPanel.getEditBtn().setEnabled(formatList.getSelectedIndex() != -1);
     }
 }

@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.ui.weblink;
 
-import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -20,15 +20,11 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -221,27 +217,24 @@ public class WebLinkEditorDlg extends CustomDialog
         PanelBuilder rightPB = new PanelBuilder(new FormLayout("p,2px,f:p:g",  //$NON-NLS-1$
                       "p,2px,p, 4px,p,2px,200px" + (tableInfo != null ? ",2px,200px" : ""))); //$NON-NLS-1$
         
-        rightPB.add(createLabel(getResourceString("WebLinkArgDlg.NAME")+":", SwingConstants.RIGHT), cc.xy(1, 1)); //$NON-NLS-1$ //$NON-NLS-2$
+        rightPB.add(createI18NFormLabel("WebLinkArgDlg.NAME"), cc.xy(1, 1)); //$NON-NLS-1$ //$NON-NLS-2$
         rightPB.add(nameTF, cc.xy(3, 1));
         
-        rightPB.add(createLabel(getResourceString("WebLinkArgDlg.URL")+":", SwingConstants.RIGHT), cc.xy(1, 3)); //$NON-NLS-1$ //$NON-NLS-2$
+        rightPB.add(createI18NFormLabel("WebLinkArgDlg.URL"), cc.xy(1, 3)); //$NON-NLS-1$ //$NON-NLS-2$
         rightPB.add(baseUrlTF, cc.xy(3, 3));
         
-        rightPB.add(createLabel(getResourceString("WebLinkArgDlg.DESC")+":", SwingConstants.RIGHT), cc.xy(1, 5)); //$NON-NLS-1$ //$NON-NLS-2$
-        JScrollPane sp = new JScrollPane(descTA, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        rightPB.add(sp, cc.xy(3, 5));
+        rightPB.add(createI18NFormLabel("WebLinkArgDlg.DESC"), cc.xy(1, 5)); //$NON-NLS-1$ //$NON-NLS-2$
+        rightPB.add(UIHelper.createScrollPane(descTA), cc.xy(3, 5));
         
-        rightPB.add(createLabel(getResourceString("WebLinkArgDlg.FIELDS")+":", SwingConstants.CENTER), cc.xy(1, 7)); //$NON-NLS-1$ //$NON-NLS-2$
-        sp = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        rightPB.add(sp, cc.xy(3, 7));
+        rightPB.add(createI18NFormLabel("WebLinkArgDlg.FIELDS"), cc.xy(1, 7)); //$NON-NLS-1$ //$NON-NLS-2$
+        rightPB.add(UIHelper.createScrollPane(table), cc.xy(3, 7));
         
         if (tableInfo != null)
         {
-            sp = new JScrollPane(availableFields, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            rightPB.add(sp, cc.xy(3, 9));
+            rightPB.add(UIHelper.createScrollPane(availableFields), cc.xy(3, 9));
         }
         
-        rightPB.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        rightPB.setDefaultDialogBorder();
         
         TableColumn promptCol = table.getColumnModel().getColumn(2);
         promptCol.setCellEditor(new DefaultCellEditor(new JCheckBox()));

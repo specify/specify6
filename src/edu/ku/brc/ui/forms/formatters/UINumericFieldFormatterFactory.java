@@ -23,6 +23,12 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatter.FormatterType;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter.PartialDateEnum;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField.FieldType;
 
+/**
+ * @author Ricardo
+ *
+ * @code_status Alpha
+ *
+ */
 public abstract class UINumericFieldFormatterFactory extends UIFieldFormatterFactory
 {
 	/**
@@ -33,13 +39,22 @@ public abstract class UINumericFieldFormatterFactory extends UIFieldFormatterFac
 		super(fieldInfo);
 	}
 
-	//@Override
-	public UIFieldFormatter createFormat(String formattingString)
-			throws UIFieldFormatterParsingException
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterFactory#createFormat(java.lang.String)
+	 */
+    //@Override
+	public UIFieldFormatter createFormat(String formattingString) throws UIFieldFormatterParsingException
 	{
 		Class<?> clazz = fieldInfo.getTableInfo().getClassObj();
-		UIFieldFormatter fmt = new UIFieldFormatter(null, false, fieldInfo.getName(), 
-				FormatterType.numeric, PartialDateEnum.None, clazz, false, false, null);
+		UIFieldFormatter fmt = new UIFieldFormatter(null, 
+		                                            false, 
+		                                            fieldInfo.getName(), 
+				                                    FormatterType.numeric, 
+				                                    PartialDateEnum.None, 
+				                                    clazz, 
+				                                    false, 
+				                                    false, 
+				                                    null);
 
 		// separators and split pattern strings
 		Pattern splitPattern = Pattern.compile(getRegEx());

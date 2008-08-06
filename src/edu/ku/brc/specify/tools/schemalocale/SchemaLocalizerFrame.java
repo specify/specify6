@@ -19,6 +19,7 @@ import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -43,18 +44,21 @@ import com.jgoodies.looks.plastic.theme.SkyKrupp;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyWebLinkMgr;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.ui.SpecifyDataObjFieldFormatMgr;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.weblink.WebLinkMgr;
@@ -226,6 +230,12 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         
         schemaLocPanel.getContainerList().setEnabled(true);
         
+        ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16); //$NON-NLS-1$
+        HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
+
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.setDirPath(UIRegistry.getAppDataDir());
+        
         if (localizableIO.didModelChangeDuringLoad())
         {
             saveMenuItem.setEnabled(true);
@@ -247,7 +257,6 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                     frame.setSize(400,500);
                     frame.setVisible(true); 
                 }
-                
             });
         }
     }
@@ -267,13 +276,12 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         }
         
         //helper.dumpAsNew(panel.getTables());
-        
         setVisible(false);
         System.exit(0);
     }
     
     /**
-     * @return
+     * 
      */
     protected void write()
     {

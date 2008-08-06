@@ -819,8 +819,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         final JList listBox = new JList(model);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(createLabel(UIRegistry.getResourceString("TFWQ_CHOOSE_LABEL"), SwingConstants.CENTER), BorderLayout.NORTH); //$NON-NLS-1$
-        JScrollPane sp = new JScrollPane(listBox, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        panel.add(sp, BorderLayout.CENTER);
+        panel.add(UIHelper.createScrollPane(listBox), BorderLayout.CENTER);
         panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         
         // Had to do inner class in order to get it to select an item

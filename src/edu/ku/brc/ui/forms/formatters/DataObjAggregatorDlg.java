@@ -3,6 +3,7 @@ package edu.ku.brc.ui.forms.formatters;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createList;
 import static edu.ku.brc.ui.UIHelper.createTextField;
@@ -35,7 +36,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -50,12 +50,19 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.ui.AddRemoveEditPanel;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
-public class DataObjAggregatorDlg extends CustomDialog {
+/**
+ * @author Ricardo
+ *
+ * @code_status Alpha
+ *
+ */
+public class DataObjAggregatorDlg extends CustomDialog 
+{
 	protected Frame 					aggDlgFrame; 
 	protected DBTableInfo 				tableInfo;
 	protected DataObjAggregator 		selectedAggregator;
@@ -67,32 +74,30 @@ public class DataObjAggregatorDlg extends CustomDialog {
     protected UIFieldFormatterMgr		uiFieldFormatterMgrCache;
 	
 	// UI controls
-	protected JList aggregatorList;
-	protected JComboBox displayCbo;
-	protected JComboBox fieldOrderCbo;
-	protected JTextField titleText;
-	protected JTextField sepText;
-	protected JTextField countText; 
-	protected JTextField endingText;
-	protected JCheckBox defaultCheck;
-	protected AddRemoveEditPanel controlPanel;
-
+	protected JList                     aggregatorList;
+	protected JComboBox                 displayCbo;
+	protected JComboBox                 fieldOrderCbo;
+	protected JTextField                titleText;
+	protected JTextField                sepText;
+	protected JTextField                countText; 
+	protected JTextField                endingText;
+	protected JCheckBox                 defaultCheck;
+	protected EditDeleteAddPanel        controlPanel;
 	
 	// listeners
-	protected DocumentListener[] textChangedDL = new DocumentListener[5];
-	protected ListSelectionListener aggregatorListSL = null;
-	protected ItemListener checkBoxListener = null;
-	protected ActionListener cboAL = null;
-
+	protected DocumentListener[]        textChangedDL    = new DocumentListener[5];
+	protected ListSelectionListener     aggregatorListSL = null;
+	protected ItemListener              checkBoxListener = null;
+	protected ActionListener            cboAL            = null;
 
     /**
      * @throws HeadlessException
      */
-    public DataObjAggregatorDlg(Frame                 frame, 
-    					  		DBTableInfo           tableInfo, 
-    					  		int                   initialFormatSelectionIndex,
-    					  		DataObjFieldFormatMgr dataObjFieldFormatMgrCache,
-    					  		UIFieldFormatterMgr   uiFieldFormatterMgrCache) 
+    public DataObjAggregatorDlg(final Frame                 frame, 
+                                final DBTableInfo           tableInfo, 
+                                final int                   initialFormatSelectionIndex,
+                                final DataObjFieldFormatMgr dataObjFieldFormatMgrCache,
+                                final UIFieldFormatterMgr   uiFieldFormatterMgrCache) 
     	throws HeadlessException
     {
         super(frame, getResourceString("DOA_DLG_TITLE"), true, OKCANCELHELP, null); //I18N 
@@ -126,9 +131,9 @@ public class DataObjAggregatorDlg extends CustomDialog {
         		)/*, new FormDebugPanel()*/);
         
         // table info
-        PanelBuilder tblInfoPB = new PanelBuilder(new FormLayout("p,p", "p")/*, new FormDebugPanel()*/);
-        JLabel tableTitleLbl      = createLabel(getResourceString("FFE_TABLE") + ": ");
-        JLabel tableTitleValueLbl = createLabel(getResourceString(tableInfo.getTitle()));
+        PanelBuilder tblInfoPB          = new PanelBuilder(new FormLayout("p,p", "p")/*, new FormDebugPanel()*/);
+        JLabel       tableTitleLbl      = createI18NFormLabel("FFE_TABLE");
+        JLabel       tableTitleValueLbl = createLabel(getResourceString(tableInfo.getTitle()));
         tableTitleValueLbl.setBackground(Color.WHITE);
         tableTitleValueLbl.setOpaque(true);
         
@@ -157,7 +162,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
         };
         
         // delete button
-        controlPanel = new AddRemoveEditPanel(addAL, delAL, null);
+        controlPanel = new EditDeleteAddPanel(addAL, delAL, null);
         controlPanel.getAddBtn().setEnabled(true);
         
         // panel for aggregator editing controls
@@ -212,27 +217,27 @@ public class DataObjAggregatorDlg extends CustomDialog {
         addEditorListeners();
         
         int yr = 2; // leave blank on top
-        rightPB.add(createLabel(getResourceString("DOA_TITLE")+":"), cc.xy(2, yr)); 
+        rightPB.add(createI18NFormLabel("DOA_TITLE"), cc.xy(2, yr)); 
         rightPB.add(titleText, cc.xy(4, yr)); 
         yr += 2;
 
-        rightPB.add(createLabel(getResourceString("DOA_DISPLAY")+":"), cc.xy(2, yr)); 
+        rightPB.add(createI18NFormLabel("DOA_DISPLAY"), cc.xy(2, yr)); 
         rightPB.add(displayPB.getPanel(), cc.xy(4, yr)); 
         yr += 2;
 
-        rightPB.add(createLabel(getResourceString("DOA_SEP")+":"), cc.xy(2, yr)); 
+        rightPB.add(createI18NFormLabel("DOA_SEP"), cc.xy(2, yr)); 
         rightPB.add(sepText, cc.xy(4, yr)); 
         yr += 2;
 
-        rightPB.add(createLabel(getResourceString("DOA_COUNT")+":"), cc.xy(2, yr)); 
+        rightPB.add(createI18NFormLabel("DOA_COUNT"), cc.xy(2, yr)); 
         rightPB.add(countText, cc.xy(4, yr)); 
         yr += 2;
 
-        rightPB.add(createLabel(getResourceString("DOA_ENDING")+":"), cc.xy(2, yr));
+        rightPB.add(createI18NFormLabel("DOA_ENDING"), cc.xy(2, yr));
         rightPB.add(endingText, cc.xy(4, yr)); 
         yr += 2;
 
-        rightPB.add(createLabel(getResourceString("DOA_SORT_BY")+":"), cc.xy(2, yr)); 
+        rightPB.add(createI18NFormLabel("DOA_SORT_BY"), cc.xy(2, yr)); 
         rightPB.add(fieldOrderCbo, cc.xy(4, yr)); 
         yr += 2;
 
@@ -251,9 +256,9 @@ public class DataObjAggregatorDlg extends CustomDialog {
         pb.add(tblInfoPB.getPanel(), cc.xyw(2, y, 3)); y += 2;
         pb.add(helpLbl,              cc.xyw(2, y, 3)); y += 2;
         
-        pb.add(createLabel(getResourceString("DOA_DISPLAY_FORMATS")+":", SwingConstants.LEFT), cc.xy(2, y)); y += 1; 
+        pb.add(createI18NFormLabel("DOA_DISPLAY_FORMATS", SwingConstants.LEFT), cc.xy(2, y)); y += 1; 
         int y2 = y; // align 3rd column with this row 
-        pb.add(new JScrollPane(aggregatorList), cc.xy(2,y)); y += 2;
+        pb.add(UIHelper.createScrollPane(aggregatorList), cc.xy(2,y)); y += 2;
 
         pb.add(controlPanel, cc.xy(2,y)); y += 2;
         
@@ -281,6 +286,9 @@ public class DataObjAggregatorDlg extends CustomDialog {
         pack();
     }
 
+    /**
+     * @return
+     */
     protected List<DataObjAggregator> populateAggregatorList() 
     {
         DefaultListModel listModel = new DefaultListModel();
@@ -301,6 +309,9 @@ public class DataObjAggregatorDlg extends CustomDialog {
     	return aggs;
     }
     
+    /**
+     * 
+     */
     private void addEditorListeners()
     {
     	addComboBoxActionListeners();
@@ -308,9 +319,12 @@ public class DataObjAggregatorDlg extends CustomDialog {
         addCheckBoxListener();
     }
 
+    /**
+     * 
+     */
     private void removeEditorListeners()
     {
-        displayCbo   .removeActionListener(cboAL);
+        displayCbo.removeActionListener(cboAL);
         fieldOrderCbo.removeActionListener(cboAL);
     	
         titleText .getDocument().removeDocumentListener(textChangedDL[4]);
@@ -322,6 +336,9 @@ public class DataObjAggregatorDlg extends CustomDialog {
     	defaultCheck.removeItemListener(checkBoxListener);
     }
 
+    /**
+     * 
+     */
     private void addTextFieldChangeListeners()
     {
     	if (textChangedDL[4] == null)
@@ -363,6 +380,9 @@ public class DataObjAggregatorDlg extends CustomDialog {
     	endingText.getDocument().addDocumentListener(textChangedDL[3]);
     }
     
+    /**
+     * 
+     */
     private void addComboBoxActionListeners()
     {
     	if (cboAL == null)
@@ -399,6 +419,9 @@ public class DataObjAggregatorDlg extends CustomDialog {
         fieldOrderCbo.addActionListener(cboAL);
     }
     
+    /**
+     * 
+     */
     private void addCheckBoxListener()
     {
     	if (checkBoxListener == null)
@@ -511,6 +534,9 @@ public class DataObjAggregatorDlg extends CustomDialog {
     	updateUIEnabled();
     }
     
+    /**
+     * 
+     */
     protected void deleteSelectedAggregator()
     {
     	if (selectedAggregator == null)
@@ -535,6 +561,9 @@ public class DataObjAggregatorDlg extends CustomDialog {
 		aggregatorList.setSelectedIndex(index);
     }
     
+    /**
+     * 
+     */
     protected void addNewAggregator()
     {
 		newAggregator = true;

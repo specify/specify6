@@ -38,7 +38,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
-import edu.ku.brc.ui.AddRemoveEditPanel;
+import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -60,10 +60,10 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
 
     protected LocalizableIOIFace localizableIO;
     protected JList              sysPLList;
-    protected AddRemoveEditPanel sysAREPanel;
+    protected EditDeleteAddPanel sysEDAPanel;
     
     protected JList              plList;
-    protected AddRemoveEditPanel arePanel;
+    protected EditDeleteAddPanel edaPanel;
     
     protected PickListBusRules   plBusRules = new PickListBusRules();
     protected Collection         collection = null;
@@ -97,10 +97,10 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         CellConstraints cc = new CellConstraints();
         
         plList   = new JList();
-        arePanel = configureList(plList, false);
+        edaPanel = configureList(plList, false);
         
         sysPLList   = new JList();
-        sysAREPanel = configureList(sysPLList, true);
+        sysEDAPanel = configureList(sysPLList, true);
         
         JScrollPane sp;
         
@@ -108,12 +108,12 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         pb.add(UIHelper.createI18NLabel("PL_PICKLISTS_SYS", SwingConstants.CENTER), cc.xy(1, y)); y+= 2;
         sp = new JScrollPane(sysPLList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         pb.add(sp, cc.xy(1, y)); y+= 2;
-        pb.add(sysAREPanel, cc.xy(1, y)); y+= 2;
+        pb.add(sysEDAPanel, cc.xy(1, y)); y+= 2;
         
         pb.add(UIHelper.createI18NLabel("PL_PICKLISTS_USR", SwingConstants.CENTER), cc.xy(1, y)); y+= 2;
         sp = new JScrollPane(plList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         pb.add(sp, cc.xy(1, y)); y+= 2;
-        pb.add(arePanel, cc.xy(1, y)); y+= 2;
+        pb.add(edaPanel, cc.xy(1, y)); y+= 2;
         
         pb.setDefaultDialogBorder();
         
@@ -128,7 +128,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
      * @param isSystemPL
      * @return
      */
-    protected AddRemoveEditPanel configureList(final JList list, final boolean isSystemPL)
+    protected EditDeleteAddPanel configureList(final JList list, final boolean isSystemPL)
     {
         
         ActionListener addAL = new ActionListener()
@@ -159,7 +159,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             }
         };
         
-        final AddRemoveEditPanel arePnl = new AddRemoveEditPanel(addAL, delAL, edtAL);
+        final EditDeleteAddPanel arePnl = new EditDeleteAddPanel(addAL, delAL, edtAL);
         arePnl.getAddBtn().setEnabled(true);
         
         List<PickList> items = null;
