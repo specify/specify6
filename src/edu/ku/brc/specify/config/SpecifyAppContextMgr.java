@@ -28,11 +28,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.io.FilenameUtils;
@@ -70,6 +72,8 @@ import edu.ku.brc.specify.datamodel.SpViewSetObj;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -2292,6 +2296,28 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return isNewJavaVersion;
     }
 
-
+    /**
+     * @param treeableClass
+     * @return the TreeDefinition for the argument.
+     * 
+     * Finds the first TreeDefIface object in the classObjHash that maps nodes of treeableClass.
+     */
+    public TreeDefIface<?,?,?> getTreeDefForClass(Class<? extends Treeable<?,?,?>> treeableClass)
+    {
+        Enumeration<Object> objects = classObjHash.elements();
+        while (objects.hasMoreElements())
+        {
+            Object object = objects.nextElement();
+            if (object instanceof TreeDefIface<?,?,?>)
+            {
+                TreeDefIface<?,?,?> td = (TreeDefIface<?,?,?> )object;
+                if (td.getNodeClass().equals(treeableClass))
+                {
+                    return td;
+                }
+            }
+        }
+       return null; 
+    }
     
 }

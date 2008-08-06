@@ -71,8 +71,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
@@ -90,8 +89,8 @@ import edu.ku.brc.specify.tasks.subpane.qb.QBResultReportServiceInfo;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
 import edu.ku.brc.specify.tasks.subpane.qb.TreeLevelQRI;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
+import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -156,7 +155,8 @@ public class QueryTask extends BaseTask
     {
         super(QUERY, getResourceString(QUERY));
         
-        CommandDispatcher.register(QUERY, this);        
+        CommandDispatcher.register(QUERY, this);   
+        CommandDispatcher.register(TreeDefinitionEditor.TREE_DEF_EDITOR, this);
     }
     
     
@@ -1339,6 +1339,11 @@ public class QueryTask extends BaseTask
             processQueryCommands(cmdAction);
             
         }
+        else if (cmdAction.isType(TreeDefinitionEditor.TREE_DEF_EDITOR))
+        {
+            //all we care to know is that a treeDefintion got changed somehow 
+            this.localizationOrTreeDefEdit = true;
+        }
     }
 
 
@@ -1389,7 +1394,7 @@ public class QueryTask extends BaseTask
      */
     protected void bldTableTrees()
     {        
-        boolean rebuild = tableTree != null && (tableTree.get() == null || needToRebuildTableTree());
+        boolean rebuild = tableTree != null;
         if (tableTree == null || rebuild)
         {
             tableTreeHash = null;
@@ -1403,7 +1408,9 @@ public class QueryTask extends BaseTask
         {
             clearTableTree(tableTree.get());
         }
+        localizationOrTreeDefEdit = false;
     }
+    
     
     /**
      * @param tree
@@ -1432,7 +1439,10 @@ public class QueryTask extends BaseTask
      */
     public TableTree getTableTree()
     {
-        bldTableTrees();
+        if (needToRebuildTableTree())
+        {
+            bldTableTrees();
+        }
         return tableTree.get();
     }
     
@@ -1443,7 +1453,10 @@ public class QueryTask extends BaseTask
      */
     public Hashtable<String, TableTree> getTableTreeHash()
     {
-        bldTableTrees();
+        if (needToRebuildTableTree())
+        {
+            bldTableTrees();
+        }
         return tableTreeHash.get();
     }
     
@@ -1452,7 +1465,8 @@ public class QueryTask extends BaseTask
      */
     protected boolean needToRebuildTableTree()
     {
-        return localizationOrTreeDefEdit;
+        return tableTree == null || tableTree.get() == null || tableTreeHash == null || tableTreeHash.get() == null
+            || localizationOrTreeDefEdit;
     }
     
     /**
@@ -1484,6 +1498,7 @@ public class QueryTask extends BaseTask
      * 
      * Recursively constructs tableTree defined by "querybuilder.xml" schema.
      */
+    @SuppressWarnings("unchecked")
     protected void processForTables(final Element parent, final TableTree parentTT)
     {
         String tableName = XMLHelper.getAttr(parent, "name", null);
@@ -1503,28 +1518,9 @@ public class QueryTask extends BaseTask
             {
                 try
                 {
-                    TreeDefIface<?, ?, ?> treeDef = null;
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance()
-                            .createSession();
-                    try
-                    {
-                        DataModelObjBase tempdisc = AppContextMgr.getInstance().getClassObject(
-                                Discipline.class);
-                        Discipline disc = (Discipline) session.get(tempdisc.getDataClass(),
-                                tempdisc.getId());
-                        treeDef = disc.getTreeDef(UploadTable.capitalize(tableInfo.getClassObj()
-                                .getSimpleName())
-                                + "TreeDef");
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new RuntimeException(ex);
-                    }
-                    finally
-                    {
-                        session.close();
-                    }
-                    SortedSet<TreeDefItemIface<?, ?, ?>> defItems = new TreeSet<TreeDefItemIface<?, ?, ?>>(
+                   SpecifyAppContextMgr mgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
+                   TreeDefIface<?, ?, ?> treeDef = mgr.getTreeDefForClass((Class<? extends Treeable<?,?,?>>) tableInfo.getClassObj());
+                   SortedSet<TreeDefItemIface<?, ?, ?>> defItems = new TreeSet<TreeDefItemIface<?, ?, ?>>(
                             new Comparator<TreeDefItemIface<?, ?, ?>>()
                             {
                                 public int compare(TreeDefItemIface<?, ?, ?> o1,

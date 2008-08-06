@@ -153,7 +153,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         long2text = null;
         visibility = null;
         
-        discipline          = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        //discipline          = AppContextMgr.getInstance().getClassObject(Discipline.class);
         geography           = null;
         localityCitations   = new HashSet<LocalityCitation>();
         collectingEvents    = new HashSet<CollectingEvent>();

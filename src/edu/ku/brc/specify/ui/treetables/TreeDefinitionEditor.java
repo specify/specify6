@@ -42,6 +42,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
@@ -52,16 +53,20 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemStandardEntry;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
+import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
@@ -83,6 +88,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 									extends BaseSubPane
 {
 	private static final Logger log  = Logger.getLogger(TreeDefinitionEditor.class);
+	
 
 	//////////////////
 	// Non-GUI members
@@ -92,6 +98,15 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
     
     protected BusinessRulesIFace businessRules;
 
+    public static final String TREE_DEF_EDIT = "treedefedit";
+    public static final String TREE_DEF_EDITOR = "treedefeditor";
+    public static final String TREE_DEF_EDIT_TYPE = "treedefedittype";
+        
+    public static final int NEW_ITEM = 0;
+    public static final int DELETED_ITEM = 1;
+    public static final int EDITED_ITEM = 2;
+    public static final int EDITED_DEF = 3;
+    
 	//////////////
 	// GUI widgets
 	//////////////
@@ -551,8 +566,11 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                             }
                         }
                         session.commit();
-                        log.info("Successfully saved changes to " + mergedItem.getName()); //$NON-NLS-1$
                         
+                        //Make sure AppContextMgr has updated class object for the tree definition:
+                        //AppContextMgr.getInstance().setClassObject(displayedDef.getClass(), displayedDef);
+                        notifyApplication(mergedItem, EDITED_ITEM);
+                        log.info("Successfully saved changes to " + mergedItem.getName()); //$NON-NLS-1$
                     }
                     catch (Exception e)
                     {
@@ -596,6 +614,22 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         {
             // the user didn't save any edits (if there were any)
         }
+    }
+    
+    /**
+     * @param editItem
+     * 
+     * 
+     */
+    protected void notifyApplication(Object editItem, int action)
+    {
+        //Make sure AppContextMgr has updated class object for the tree definition (could also make SpecifyAppContextMgr a CommandListener????)
+        AppContextMgr.getInstance().setClassObject(displayedDef.getClass(), displayedDef);
+        
+        //notify command listeners that tree was edited.
+        final CommandAction cmd = new CommandAction(TREE_DEF_EDITOR, TREE_DEF_EDIT, editItem);
+        cmd.setProperty(TREE_DEF_EDIT_TYPE, action);
+        CommandDispatcher.dispatch(cmd);        
     }
     
     /**
@@ -869,6 +903,10 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                         session.commit();
                         //Rank-checking requires displayedDef to up-to-date wrt inserts and deletes:
                         displayedDef.getTreeDefItems().add(newItem);
+
+                        //Make sure AppContextMgr has updated class object for the tree definition:
+                        //AppContextMgr.getInstance().setClassObject(displayedDef.getClass(), displayedDef);
+                        notifyApplication(newItem, NEW_ITEM);
                         
                         log.info("Successfully saved changes to " + newItem.getName()); //$NON-NLS-1$
                         
@@ -1085,7 +1123,25 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     session.commit();
                     
                     //Rank-checking requires displayedDef to up-to-date wrt inserts and deletes:
-                    displayedDef.getTreeDefItems().remove(itemToDelete);
+                    //itemToDelete may not actually be the same Object as the TreeDefItem in getTreeDefItems so next line
+                    //doesn't work:
+                    //displayedDef.getTreeDefItems().remove(itemToDelete);
+                    //so...
+                    for (I item : displayedDef.getTreeDefItems())
+                    {
+                        //This equality check should be more than sufficient. (Rank should be enough but...)
+                        if (item.getRankId().equals(itemToDelete.getRankId()) 
+                                && item.getName().equals(itemToDelete.getName()))
+                        {
+                            displayedDef.getTreeDefItems().remove(item);
+                            break;
+                        }
+                        
+                    }
+                    
+                    //Make sure AppContextMgr has updated class object for the tree definition:
+                    //AppContextMgr.getInstance().setClassObject(displayedDef.getClass(),  displayedDef);
+                    notifyApplication(itemToDelete, DELETED_ITEM);
                     
                     log.info("Successfully deleted " + mergedItem.getName()); //$NON-NLS-1$
                     
@@ -1243,6 +1299,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                             }
                         }
                         session.commit();
+
+                        notifyApplication(displayedDef, EDITED_DEF);
                         log.info("Successfully saved changes to " + mergedDef.getName()); //$NON-NLS-1$
                         
                     }

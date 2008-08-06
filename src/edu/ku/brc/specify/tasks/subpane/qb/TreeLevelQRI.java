@@ -17,9 +17,7 @@ import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -41,29 +39,14 @@ public class TreeLevelQRI extends FieldQRI
      * @param rankId
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     public TreeLevelQRI(final TableQRI parent, final DBFieldInfo fi, final int rankId)
             throws Exception
     {
         super(parent, fi);
         this.rankId = rankId;
-        String treeDefName = parent.getTableTree().getTableInfo().getShortClassName()
-                + "TreeDef";
-        TreeDefIface<?, ?, ?> treeDef = null;
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            DataModelObjBase tempdisc = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Discipline.class);
-            Discipline disc = (Discipline )session.get(tempdisc.getDataClass(), tempdisc.getId());
-            treeDef = disc.getTreeDef(treeDefName);
-        }
-        catch (Exception ex)
-        {
-            throw new RuntimeException(ex);
-        }
-        finally
-        {
-            session.close();
-        }
+        SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
+        TreeDefIface<?, ?, ?> treeDef = spMgr.getTreeDefForClass((Class<? extends Treeable<?,?,?>> )getTableInfo().getClassObj());
         TreeDefItemIface<?, ?, ?> treeDefItem = null;
         if (treeDef != null)
         {
@@ -188,6 +171,7 @@ public class TreeLevelQRI extends FieldQRI
         return toCap.substring(0, 1).toUpperCase().concat(toCap.substring(1));
     }
     
+    @SuppressWarnings("unchecked")
     public String getNodeNumberCriteria(final String criteria, final TableAbbreviator ta, 
                                         final String operStr, final boolean negate)
     {
@@ -195,18 +179,9 @@ public class TreeLevelQRI extends FieldQRI
         .createSession();
         try
         {
-            TreeDefIface<?, ?, ?> treeDef = null;
-            try
-            {
-                DataModelObjBase tempdef = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Collection.class).getDiscipline().getTreeDef(capitalize(getTableInfo().getClassObj().getSimpleName()) + "TreeDef");
-                treeDef = (TreeDefIface<?, ?, ?> )session.get(tempdef.getDataClass(), tempdef.getId());
-            }
-            catch (Exception ex)
-            {
-                throw new RuntimeException(ex);
-            }
+            SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
+            TreeDefIface<?, ?, ?> treeDef = spMgr.getTreeDefForClass((Class<? extends Treeable<?,?,?>> )getTableInfo().getClassObj());
 
-            
             String className = getTableInfo().getClassObj().getSimpleName();
             List<?> matches = session.getDataList("from " + className + " where name " + operStr + " " +  criteria + " and " + className + "TreeDefId = " + treeDef.getTreeDefId()
                     + " and rankId =" + String.valueOf(rankId));

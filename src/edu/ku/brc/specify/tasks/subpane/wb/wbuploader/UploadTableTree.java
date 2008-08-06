@@ -27,9 +27,8 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -125,21 +124,7 @@ public class UploadTableTree extends UploadTable
     {
         if (treeDef == null)
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            try
-            {
-                DataModelObjBase tempdisc = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Discipline.class);
-                Discipline disc = (Discipline )session.get(tempdisc.getDataClass(), tempdisc.getId());
-                treeDef = disc.getTreeDef(capitalize(tblClass.getSimpleName()) + "TreeDef");
-            }
-            catch (Exception ex)
-            {
-                throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
-            }
-            finally
-            {
-                session.close();
-            }
+            treeDef = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).getTreeDefForClass((Class<? extends Treeable<?,?,?>> )tblClass);
         }
         if (treeDef != null)
         {
