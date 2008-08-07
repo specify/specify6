@@ -21,6 +21,9 @@ import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -37,15 +40,15 @@ import edu.ku.brc.ui.CustomDialog;
  * Created Date: Aug 5, 2008
  *
  */
-public class DataObjFieldFormatSingleDlg extends CustomDialog 
+public class DataObjFieldFormatSingleDlg extends CustomDialog implements ChangeListener
 {
     protected DBTableInfo                          tableInfo;
     protected AvailableFieldsComponent             availableFieldsComp;
     protected DataObjSwitchFormatter               formatter;
-    protected DataObjFieldFormatSinglePanelBuilder fmtSingleEditingPB;
+    protected DataObjFieldFormatSinglePanel        fmtSingleEditingPanel;
     
     protected UIFieldFormatterMgr                  uiFieldFormatterMgrCache;
-
+    
     /**
      * @throws HeadlessException
      */
@@ -79,16 +82,30 @@ public class DataObjFieldFormatSingleDlg extends CustomDialog
         
         // format editing panel (single format only)
         DataObjSwitchFormatterContainerIface fmtContainer = new DataObjSwitchFormatterSingleContainer(formatter);
-        fmtSingleEditingPB = new DataObjFieldFormatSinglePanelBuilder(tableInfo, availableFieldsComp, fmtContainer, getOkBtn(), uiFieldFormatterMgrCache);
-        pb.add(fmtSingleEditingPB.getPanel());
+        fmtSingleEditingPanel = new DataObjFieldFormatSinglePanel(tableInfo, availableFieldsComp, fmtContainer, uiFieldFormatterMgrCache, this);
+        pb.add(fmtSingleEditingPanel);
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
+        
+        okBtn.setEnabled(false);
         
         pack();
     }
     
+    /**
+     * @return
+     */
     public DataObjDataFieldFormatIFace getSingleFormatter()
     {
         return formatter.getSingle();
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+     */
+    @Override
+    public void stateChanged(ChangeEvent e)
+    {
+        okBtn.setEnabled(!fmtSingleEditingPanel.isInError());
     }
 }

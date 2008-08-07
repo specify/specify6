@@ -31,11 +31,12 @@ import java.util.Vector;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -53,8 +54,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -66,7 +67,7 @@ import edu.ku.brc.ui.UIRegistry;
  * @code_status Alpha
  *
  */
-public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPanelBuilder 
+public class DataObjFieldFormatMultiplePanel extends DataObjFieldFormatPanel implements ChangeListener
 {
 
     protected static final String FIELD_VALUE_COL;
@@ -91,13 +92,13 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
      * @param okButton
      * @param uiFieldFormatterMgrCache
      */
-    public DataObjFieldFormatMultiplePanelBuilder(final DBTableInfo                          tableInfo,
-                                                  final AvailableFieldsComponent             availableFieldsComp,
-                                                  final DataObjSwitchFormatterContainerIface formatContainer,    
-                                                  final JButton                              okButton,
-                                                  final UIFieldFormatterMgr                  uiFieldFormatterMgrCache)
+    public DataObjFieldFormatMultiplePanel(final DBTableInfo                          tableInfo,
+                                           final AvailableFieldsComponent             availableFieldsComp,
+                                           final DataObjSwitchFormatterContainerIface formatContainer,
+                                           final UIFieldFormatterMgr                  uiFieldFormatterMgrCache,    
+                                           final ChangeListener                       listener)
     {
-        super(tableInfo, availableFieldsComp, formatContainer, okButton, uiFieldFormatterMgrCache);
+        super(tableInfo, availableFieldsComp, formatContainer, uiFieldFormatterMgrCache, listener);
     }
 
     /* (non-Javadoc)
@@ -106,7 +107,7 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
     protected void buildUI() 
     {
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "10px,f:130px:g,10px,p,15px"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "10px,f:130px:g,10px,p,15px"), this);
 
         formatSwitchTbl = new JTable(new DefaultTableModel());
         formatSwitchTbl.getSelectionModel().addListSelectionListener(new RowListener());
@@ -133,18 +134,15 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
     public void enableUIControls() 
     {
         controlPanel.getDelBtn().setEnabled(formatSwitchTbl.getSelectedRowCount() > 0);
-        if (okButton != null)
-        {
-            okButton.setEnabled(isValidFormatter());
-        }
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.formatters.DataObjFieldFormatPanelBuilder#getPanel()
+     * @see edu.ku.brc.ui.forms.formatters.DataObjFieldFormatPanelBuilder#isInError()
      */
-    public JPanel getPanel() 
+    @Override
+    public boolean isInError()
     {
-        return mainPanelBuilder.getPanel();
+        return super.isInError() || !isValidFormatter();
     }
 
     /* (non-Javadoc)
@@ -240,6 +238,7 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
                 DataObjDataFieldFormat fld   = new DataObjDataFieldFormat();
                 fmt.add(fld);
                 model.addRow(new Object[] {fld.getValue(), fld, ellipsisButtonLabel});
+                setHasChanged(true);
                 enableUIControls();
             }
         };
@@ -266,6 +265,7 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
                     model.removeRow(currentRow);
                 }
                 formatSwitchTbl.clearSelection();
+                setHasChanged(true);
                 enableUIControls();
             }
         };
@@ -423,18 +423,16 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
                     DataObjDataFieldFormatIFace formatter = (DataObjDataFieldFormatIFace) fieldObj;
 
                     // open dialog to edit format
-                    DataObjFieldFormatSingleDlg dlg;
-                    dlg = new DataObjFieldFormatSingleDlg((Frame) UIRegistry.getTopWindow(), 
-                                                           tableInfo, 
-                                                           availableFieldsComp, 
-                                                           formatter, 
-                                                           uiFieldFormatterMgrCache);
+                    DataObjFieldFormatSingleDlg dlg = new DataObjFieldFormatSingleDlg((Frame) UIRegistry.getTopWindow(), 
+                                                                                       tableInfo, 
+                                                                                       availableFieldsComp, 
+                                                                                       formatter, 
+                                                                                       uiFieldFormatterMgrCache);
                     dlg.setVisible(true);
 
                     // save format back to table row data object
                     if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                     {
-                        hasChanged = true;
                         
                         DataObjSwitchFormatter fmt = formatContainer.getSelectedFormatter();
                         DataObjDataFieldFormatIFace field = dlg.getSingleFormatter();
@@ -445,6 +443,8 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
                         int    valueCol = table.getColumn(FIELD_VALUE_COL).getModelIndex();
                         String value    = (String) table.getValueAt(row, valueCol);
                         field.setValue(value);
+                        
+                        setHasChanged(true);
                         // update ok button based on results
                         enableUIControls();
                     }
@@ -465,4 +465,15 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
             super.fireEditingStopped();
         }
     }
+
+    /* (non-Javadoc)
+     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+     */
+    @Override
+    public void stateChanged(ChangeEvent e)
+    {
+        listener.stateChanged(e);
+    }
+    
+    
 }

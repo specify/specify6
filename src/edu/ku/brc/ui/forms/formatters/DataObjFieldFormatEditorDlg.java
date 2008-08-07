@@ -50,6 +50,8 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 /**
+ * Displays a list of DataObjFormatters to choose from.
+ * 
  * @author rods
  *
  * @code_status Alpha
@@ -214,7 +216,7 @@ public class DataObjFieldFormatEditorDlg extends CustomDialog
     }
     
     /**
-     * 
+     * Adds a new Formatter.
      */
     protected void addNewFormatter()
     {

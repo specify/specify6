@@ -17,6 +17,7 @@ package edu.ku.brc.ui.forms.formatters;
 
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
+import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Cursor;
@@ -36,6 +37,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextPane;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AttributeSet;
@@ -61,9 +63,8 @@ import edu.ku.brc.ui.UIHelper;
  *
  *
  */
-public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPanelBuilder 
+public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel 
 {
-    
     // ui controls
     protected JTextPane          formatEditor;
     protected JButton            addFieldBtn;
@@ -77,6 +78,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
     protected SimpleAttributeSet normalAttr;
     protected SimpleAttributeSet fieldDefAttr;
     
+    
     /**
      * @param tableInfo
      * @param availableFieldsComp
@@ -84,15 +86,14 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
      * @param okButton
      * @param uiFieldFormatterMgrCache
      */
-    public DataObjFieldFormatSinglePanelBuilder(final DBTableInfo                          tableInfo,
-                                                final AvailableFieldsComponent             availableFieldsComp,
-                                                final DataObjSwitchFormatterContainerIface formatContainer,    
-                                                final JButton                              okButton,
-                                                final UIFieldFormatterMgr                  uiFieldFormatterMgrCache)
+    public DataObjFieldFormatSinglePanel(final DBTableInfo                          tableInfo,
+                                         final AvailableFieldsComponent             availableFieldsComp,
+                                         final DataObjSwitchFormatterContainerIface formatContainer,
+                                         final UIFieldFormatterMgr                  uiFieldFormatterMgrCache,    
+                                         final ChangeListener                       listener)
     {
-        super(tableInfo, availableFieldsComp, formatContainer, okButton, uiFieldFormatterMgrCache);
+        super(tableInfo, availableFieldsComp, formatContainer, uiFieldFormatterMgrCache, listener);
         
-        fillWithObjFormatter(formatContainer.getSelectedFormatter());
     }
     
     /* (non-Javadoc)
@@ -108,9 +109,9 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
                 "f:250px:g,"  +   // list box for available fields 
                 "10px"  // empty space where the delete button goes for the multiple value panel
                 
-                ));
+                ), this);
         
-        JLabel currentFieldsLbl = createI18NFormLabel("DOF_DISPLAY_FORMAT");
+        JLabel currentFieldsLbl = createI18NLabel("DOF_DISPLAY_FORMAT");
         formatEditor = new JTextPane();
         // to make sure the component shrinks with the dialog
         formatEditor.setMinimumSize(new Dimension(200, 50));
@@ -132,12 +133,30 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
         pb.add(UIHelper.createScrollPane(availableFieldsComp.getTree()), cc.xy(1, y)); y += 2;
         
         this.mainPanelBuilder = pb;
+        
+        fillWithObjFormatter(formatContainer.getSelectedFormatter());
+
 
         addFormatTextListeners();
         // must be called after list of available fields has been created
         addFieldListeners();
     }
     
+    
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setVisible(boolean)
+     */
+    @Override
+    public void setVisible(boolean flag)
+    {
+        super.setVisible(flag);
+        if (!flag)
+        {
+            formatContainer.getSelectedFormatter().setSingle(null);
+        }
+    }
+
     /**
      * 
      */
@@ -205,6 +224,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
     {
         // for now, just create formatter from scratch, but later we can just detect changes and act accordingly
         setFormatterFromTextPane(formatContainer.getSelectedFormatter());
+        setHasChanged(true);
     }
     
     /*
@@ -224,15 +244,14 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
         {
             DataObjDataFieldWrapper wrapper = (DataObjDataFieldWrapper) obj;
             insertFieldIntoTextEditor(wrapper);
-            hasChanged = true;
-            enableUIControls();
+            setHasChanged(true);
         }
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjFieldFormatPanelBuilder#fillWithObjFormatter(edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter)
      */
-    public void fillWithObjFormatter(DataObjSwitchFormatter switchFormatter)
+    public void fillWithObjFormatter(final DataObjSwitchFormatter switchFormatter)
     {
         if (switchFormatter != null)
         {
@@ -247,7 +266,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
     /**
      * @param singleFormatter
      */
-    protected void fillWithObjFormatter(DataObjDataFieldFormatIFace singleFormatter)
+    protected void fillWithObjFormatter(final DataObjDataFieldFormatIFace singleFormatter)
     {
         formatEditor.setText("");
         if (singleFormatter == null)
@@ -354,6 +373,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
                         // find position of the field definition button in question
                         int pos = findFieldButtonPosition();
                         formatEditor.getDocument().remove(pos, 1);
+                        formatChanged();
                     }
                     catch (BadLocationException ble) {}
                 }
@@ -454,20 +474,19 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.formatters.DataObjFieldFormatPanelBuilder#enableUIControls()
+     * @see edu.ku.brc.ui.forms.formatters.DataObjFieldFormatPanelBuilder#isInError()
      */
-    public void enableUIControls() 
+    @Override
+    public boolean isInError()
     {
-        if (okButton != null)
-        {
-            okButton.setEnabled(hasChanged && formatContainer.getSelectedFormatter().hasFormatters());
-        }
+        //System.err.println("Has: "+formatContainer.getSelectedFormatter().hasFormatters());
+        return super.isInError() || !formatContainer.getSelectedFormatter().hasFormatters();
     }
 
     /**
      * @param formatter
      */
-    protected void setFormatterFromTextPane(DataObjSwitchFormatter formatter)
+    protected void setFormatterFromTextPane(final DataObjSwitchFormatter formatter)
     {
         // visit every character in the document text looking for fields
         // store characters not associated with components (jbutton) to make up the separator text
@@ -506,7 +525,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
             fieldsArray[i] = fields.elementAt(i); 
         }
         
-        DataObjDataFieldFormat singleFormatter = new DataObjDataFieldFormat("", tableInfo.getClassObj(), false, "", "", fieldsArray);
+        DataObjDataFieldFormat singleFormatter = fieldsArray.length == 0 ? null : new DataObjDataFieldFormat("", tableInfo.getClassObj(), false, "", "", fieldsArray);
         formatter.setSingle(singleFormatter);
     }
 }

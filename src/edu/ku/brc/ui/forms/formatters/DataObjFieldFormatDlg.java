@@ -35,8 +35,12 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -58,7 +62,7 @@ import edu.ku.brc.util.ComparatorByStringRepresentation;
  *
  *
  */
-public class DataObjFieldFormatDlg extends CustomDialog
+public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListener
 {
     protected DBTableInfo                               tableInfo;
     protected DataObjFieldFormatMgr                     dataObjFieldFormatMgrCache;
@@ -68,13 +72,17 @@ public class DataObjFieldFormatDlg extends CustomDialog
 
     // UI controls
     protected AvailableFieldsComponent                  availableFieldComp;
-    protected DataObjFieldFormatPanelBuilder            fmtSingleEditingPB;
-    protected DataObjFieldFormatMultiplePanelBuilder    fmtMultipleEditingPB;
+    protected DataObjFieldFormatSinglePanel             fmtSingleEditingPanel;
+    protected DataObjFieldFormatMultiplePanel           fmtMultipleEditingPanel;
     protected JComboBox                                 valueFieldCbo;
     protected JRadioButton                              singleDisplayBtn;
     protected JRadioButton                              multipleDisplayBtn;
     protected JTextField                                titleText;
+    protected JTextField                                nameText;
     protected EditDeleteAddPanel                        controlPanel;
+    
+    protected boolean                                   hasChanged = false;
+    protected boolean                                   isInError  = false;
 
     /**
      * @throws HeadlessException
@@ -104,22 +112,11 @@ public class DataObjFieldFormatDlg extends CustomDialog
     {
         super.createUI();
 
-        // title text field
-        DocumentListener titleChangedDL = new DocumentListener()
-        {
-            public void removeUpdate(DocumentEvent e)  { changed(e); }
-            public void insertUpdate(DocumentEvent e)  { changed(e); }
-            public void changedUpdate(DocumentEvent e) { changed(e); }
-
-            protected void changed(@SuppressWarnings("unused") DocumentEvent ev)
-            {
-                dataObjFormatter.setTitle(titleText.getText());
-            }
-        };
-
-        JLabel titleLbl = createLabel(getResourceString("DOF_TITLE") + ":");
+         JLabel titleLbl = createLabel(getResourceString("DOF_TITLE") + ":");
         titleText = createTextField(32);
-        titleText.getDocument().addDocumentListener(titleChangedDL);
+
+        JLabel nameLbl = createLabel(getResourceString("DOF_NAME") + ":");
+        nameText = createTextField(32);
 
         // radio buttons (single/multiple/external object display formats
         JLabel typeLbl     = createLabel(getResourceString("DOF_TYPE") + ":");
@@ -151,13 +148,16 @@ public class DataObjFieldFormatDlg extends CustomDialog
         
         // format editing panels (dependent on the type for format: single/multiple)
         DataObjSwitchFormatterContainerIface formatterContainer = new DataObjSwitchFormatterSingleContainer(dataObjFormatter);
-        fmtSingleEditingPB   = new DataObjFieldFormatSinglePanelBuilder(tableInfo,   availableFieldComp, formatterContainer, getOkBtn(), uiFieldFormatterMgrCache);
-        fmtMultipleEditingPB = new DataObjFieldFormatMultiplePanelBuilder(tableInfo, availableFieldComp, formatterContainer, getOkBtn(), uiFieldFormatterMgrCache);
+        fmtSingleEditingPanel   = new DataObjFieldFormatSinglePanel(tableInfo,   availableFieldComp, formatterContainer, uiFieldFormatterMgrCache, this);
+        fmtMultipleEditingPanel = new DataObjFieldFormatMultiplePanel(tableInfo, availableFieldComp, formatterContainer, uiFieldFormatterMgrCache, this);
 
         // Panel for radio buttons and display formatting editing panel
-        PanelBuilder pb = new PanelBuilder(new FormLayout("r:p,4px,f:p:g", "p,10px,p,p,10px,f:p:g"));
+        PanelBuilder pb = new PanelBuilder(new FormLayout("r:p,4px,f:p:g", "p,2px,p,10px,p,p,10px,f:p:g"));
 
         int y = 1;
+        pb.add(nameLbl,   cc.xy(1, y));
+        pb.add(nameText,  cc.xy(3, y)); y += 2;
+
         pb.add(titleLbl,  cc.xy(1, y));
         pb.add(titleText, cc.xy(3, y)); y += 2;
 
@@ -166,8 +166,8 @@ public class DataObjFieldFormatDlg extends CustomDialog
         pb.add(multipleDisplayPB.getPanel(), cc.xy(3, y)); y += 2;
         
         // both panels occupy the same space
-        pb.add(fmtSingleEditingPB.getPanel(),   cc.xyw(1, y, 3));
-        pb.add(fmtMultipleEditingPB.getPanel(), cc.xyw(1, y, 3));
+        pb.add(fmtSingleEditingPanel,   cc.xyw(1, y, 3));
+        pb.add(fmtMultipleEditingPanel, cc.xyw(1, y, 3));
 
         pb.setDefaultDialogBorder();
         
@@ -176,10 +176,50 @@ public class DataObjFieldFormatDlg extends CustomDialog
 
         // after all is created, set initial selection on format list
         fillWithObjFormatter(dataObjFormatter);
+        
+        // title text field
+        DocumentListener titleChangedDL = new DocumentListener()
+        {
+            public void removeUpdate(DocumentEvent e)  { changed(e); }
+            public void insertUpdate(DocumentEvent e)  { changed(e); }
+            public void changedUpdate(DocumentEvent e) { changed(e); }
+
+            protected void changed(@SuppressWarnings("unused") DocumentEvent ev)
+            {
+                String name = nameText.getText();
+                
+                if (StringUtils.isEmpty(name) || dataObjFieldFormatMgrCache.getDataFormatter(name) != null)
+                {
+                    isInError = true;
+                } else
+                {
+                    isInError = false;
+                }
+                
+                dataObjFormatter.setTitle(titleText.getText());
+                dataObjFormatter.setName(name);
+                
+                setHasChanged(true);
+            }
+        };
+
+        titleText.getDocument().addDocumentListener(titleChangedDL);
+        nameText.getDocument().addDocumentListener(titleChangedDL);
 
         updateUIEnabled();
 
         packWithLargestPanel();
+        
+        okBtn.setEnabled(false);
+    }
+
+    /**
+     * @param hasChanged
+     */
+    public void setHasChanged(boolean hasChanged)
+    {
+        this.hasChanged = hasChanged;
+        updateUIEnabled();
     }
 
     /**
@@ -205,8 +245,8 @@ public class DataObjFieldFormatDlg extends CustomDialog
 
     protected void packWithLargestPanel()
     {
-        fmtSingleEditingPB.getPanel().setVisible(true);
-        fmtMultipleEditingPB.getPanel().setVisible(true);
+        fmtSingleEditingPanel.setVisible(true);
+        fmtMultipleEditingPanel.setVisible(true);
 
         pack();
 
@@ -227,14 +267,14 @@ public class DataObjFieldFormatDlg extends CustomDialog
                     dataObjFormatter.setSingle(btn == singleDisplayBtn);
                     dataObjFormatter.clearFields();
                     
-                    fmtSingleEditingPB.fillWithObjFormatter(dataObjFormatter);
-                    fmtMultipleEditingPB.fillWithObjFormatter(dataObjFormatter);
+                    fmtSingleEditingPanel.fillWithObjFormatter(dataObjFormatter);
+                    fmtMultipleEditingPanel.fillWithObjFormatter(dataObjFormatter);
                     
                     setVisibleFormatPanel(btn);
                     fillWithObjFormatter(dataObjFormatter);
                     
-                    fmtSingleEditingPB.setHasChanged(true);
-                    fmtMultipleEditingPB.setHasChanged(true);
+                    fmtSingleEditingPanel.setHasChanged(true);
+                    fmtMultipleEditingPanel.setHasChanged(true);
                     
                     updateUIEnabled();
                 }
@@ -245,6 +285,9 @@ public class DataObjFieldFormatDlg extends CustomDialog
         multipleDisplayBtn.addActionListener(displayTypeRadioBtnL);
     }
     
+    /**
+     * 
+     */
     public void addValueFieldCboAL()
     {
         ActionListener valueFieldCboAL = new ActionListener()
@@ -264,22 +307,23 @@ public class DataObjFieldFormatDlg extends CustomDialog
     {
         if (fmt.getTitle() != null)
         {
-            ViewFactory.changeTextFieldUIForDisplay(titleText, false);
+            ViewFactory.changeTextFieldUIForDisplay(nameText, false);
         }
         titleText.setText(fmt.getTitle());
+        nameText.setText(fmt.getName());
 
         boolean isSingle = fmt.isSingle();
         if (isSingle)
         {
             singleDisplayBtn.setSelected(true);
             setVisibleFormatPanel(singleDisplayBtn);
-            fmtSingleEditingPB.fillWithObjFormatter(fmt);
+            fmtSingleEditingPanel.fillWithObjFormatter(fmt);
             
         } else
         {
             multipleDisplayBtn.setSelected(true);
             setVisibleFormatPanel(multipleDisplayBtn);
-            fmtMultipleEditingPB.fillWithObjFormatter(fmt);
+            fmtMultipleEditingPanel.fillWithObjFormatter(fmt);
         }
 
         // update combo even if formatter is single (in this case the combo will
@@ -333,6 +377,9 @@ public class DataObjFieldFormatDlg extends CustomDialog
     }
 
 
+    /**
+     * 
+     */
     public void valueFieldChanged()
     {
         Object obj = valueFieldCbo.getSelectedItem();
@@ -347,6 +394,7 @@ public class DataObjFieldFormatDlg extends CustomDialog
         if (dataObjFormatter != null)
         {
             dataObjFormatter.setFieldName(fieldValueName);
+            setHasChanged(true);
         }
     }
 
@@ -355,8 +403,10 @@ public class DataObjFieldFormatDlg extends CustomDialog
      */
     protected void setVisibleFormatPanel(JRadioButton btn)
     {
-        fmtSingleEditingPB.getPanel().setVisible(btn == singleDisplayBtn);
-        fmtMultipleEditingPB.getPanel().setVisible(btn == multipleDisplayBtn);
+        fmtSingleEditingPanel.setVisible(btn == singleDisplayBtn);
+        fmtMultipleEditingPanel.setVisible(btn == multipleDisplayBtn);
+        setHasChanged(true);
+        updateUIEnabled();
     }
 
     /**
@@ -365,13 +415,17 @@ public class DataObjFieldFormatDlg extends CustomDialog
     protected void updateUIEnabled()
     {
         valueFieldCbo.setEnabled(multipleDisplayBtn.isSelected());
+        
+        boolean subPanelInError = false;
         if (singleDisplayBtn.isSelected())
         {
-            fmtSingleEditingPB.enableUIControls();
+            subPanelInError = fmtSingleEditingPanel.isInError();
         } else
         {
-            fmtMultipleEditingPB.enableUIControls();
+            subPanelInError = fmtMultipleEditingPanel.isInError();
+            fmtMultipleEditingPanel.enableUIControls();
         }
+        okBtn.setEnabled(hasChanged && !isInError && !subPanelInError);
     }
 
     /*
@@ -384,4 +438,12 @@ public class DataObjFieldFormatDlg extends CustomDialog
     {
         super.cleanUp();
     }
+
+    @Override
+    public void stateChanged(ChangeEvent e)
+    {
+        hasChanged = true;
+        updateUIEnabled();
+    }
+    
 }

@@ -604,7 +604,7 @@ public class DataObjFieldFormatMgr
      * @param formatName the name of the formatter to use
      * @return the string result of the format
      */
-    protected DataObjDataFieldFormatIFace getDataFormatter(final Object dataObj, final String formatName)
+    private DataObjDataFieldFormatIFace getDataFormatter(final Object dataObj, final String formatName)
     {
         DataObjSwitchFormatter switcherFormatter = formatHash.get(formatName);
         if (switcherFormatter != null)
@@ -612,12 +612,19 @@ public class DataObjFieldFormatMgr
             return switcherFormatter.getDataFormatter(dataObj);
             
         }
-        // else
-        log.error("Couldn't find a switchable name ["+formatName+"]");
-
         return null;
     }
-
+    
+    /**
+     * Format a data object using a named formatter.
+     * @param formatName the name of the formatter to use
+     * @return the string result of the format
+     */
+    public DataObjSwitchFormatter getDataFormatter(final String formatName)
+    {
+        return formatHash.get(formatName);
+    }
+    
     /**
      * Returns a list of formatters that match the class, the default (if there is one) is at the beginning of the list.
      * @param clazz the class of the data that the formatter is used for.

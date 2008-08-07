@@ -15,8 +15,9 @@
 
 package edu.ku.brc.ui.forms.formatters;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 
@@ -28,19 +29,21 @@ import edu.ku.brc.dbsupport.DBTableInfo;
  * @code_status Alpha
  *
  */
-public abstract class DataObjFieldFormatPanelBuilder
+public abstract class DataObjFieldFormatPanel extends JPanel
 {
 
     protected AvailableFieldsComponent             availableFieldsComp;
     protected DataObjSwitchFormatterContainerIface formatContainer;
     protected PanelBuilder                         mainPanelBuilder;
     protected DBTableInfo                          tableInfo;
-    protected JButton                              okButton;
     protected boolean                              newFormat;
 
     protected UIFieldFormatterMgr                  uiFieldFormatterMgrCache;
     
-    protected boolean                              hasChanged = false;
+    protected boolean                              isInError   = false;
+    private   boolean                              hasChanged  = false;
+    protected ChangeListener                       listener;
+    protected ChangeEvent                          changeEvent = new ChangeEvent(this);
 
     /**
      * Fills the editor with the DataObjSwitchFormatter
@@ -55,11 +58,11 @@ public abstract class DataObjFieldFormatPanelBuilder
      * @param okButton
      * @param uiFieldFormatterMgrCache
      */
-    public DataObjFieldFormatPanelBuilder(final DBTableInfo                          tableInfo,
+    public DataObjFieldFormatPanel(final DBTableInfo                          tableInfo,
                                           final AvailableFieldsComponent             availableFieldsComp,
                                           final DataObjSwitchFormatterContainerIface formatContainer,
-                                          final JButton                              okButton,
-                                          final UIFieldFormatterMgr                  uiFieldFormatterMgrCache) 
+                                          final UIFieldFormatterMgr                  uiFieldFormatterMgrCache,
+                                          final ChangeListener                       listener) 
     {
         super();
 
@@ -68,11 +71,16 @@ public abstract class DataObjFieldFormatPanelBuilder
             throw new RuntimeException("Cannot instantiate data obj format panel builder with null format container.");
         }
         
+        if (listener == null)
+        {
+            throw new RuntimeException("listener cannot be null!");
+        }
+        
         this.uiFieldFormatterMgrCache = uiFieldFormatterMgrCache;
         this.tableInfo                = tableInfo;
         this.availableFieldsComp      = availableFieldsComp;
         this.formatContainer          = formatContainer;
-        this.okButton                 = okButton;
+        this.listener                 = listener;
         this.newFormat                = false;
         
         init();
@@ -94,17 +102,6 @@ public abstract class DataObjFieldFormatPanelBuilder
     }
 
     /**
-     * 
-     */
-    public void enableUIControls() 
-    {
-        if (okButton != null)
-        {
-            okButton.setEnabled(hasChanged);
-        }
-    }
-
-    /**
      * @return
      */
     public boolean hasChanged()
@@ -118,7 +115,7 @@ public abstract class DataObjFieldFormatPanelBuilder
     public void setHasChanged(boolean hasChanged)
     {
         this.hasChanged = hasChanged;
-        enableUIControls();
+        listener.stateChanged(changeEvent);
     }
 
     /**
@@ -132,16 +129,13 @@ public abstract class DataObjFieldFormatPanelBuilder
     /**
      * @return
      */
-    public JPanel getPanel() 
-    {
-        return mainPanelBuilder.getPanel();
-    }
-
-    /**
-     * @return
-     */
     public PanelBuilder getMainPanelBuilder() 
     {
         return mainPanelBuilder;
+    }
+
+    public boolean isInError()
+    {
+        return isInError;
     }
 }
