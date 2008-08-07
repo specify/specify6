@@ -567,8 +567,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                         }
                         session.commit();
                         
-                        //Make sure AppContextMgr has updated class object for the tree definition:
-                        //AppContextMgr.getInstance().setClassObject(displayedDef.getClass(), displayedDef);
                         notifyApplication(mergedItem, EDITED_ITEM);
                         log.info("Successfully saved changes to " + mergedItem.getName()); //$NON-NLS-1$
                     }
@@ -904,8 +902,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                         //Rank-checking requires displayedDef to up-to-date wrt inserts and deletes:
                         displayedDef.getTreeDefItems().add(newItem);
 
-                        //Make sure AppContextMgr has updated class object for the tree definition:
-                        //AppContextMgr.getInstance().setClassObject(displayedDef.getClass(), displayedDef);
                         notifyApplication(newItem, NEW_ITEM);
                         
                         log.info("Successfully saved changes to " + newItem.getName()); //$NON-NLS-1$
@@ -1123,15 +1119,15 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     session.commit();
                     
                     //Rank-checking requires displayedDef to up-to-date wrt inserts and deletes:
+                    //
                     //itemToDelete may not actually be the same Object as the TreeDefItem in getTreeDefItems so next line
-                    //doesn't work:
+                    //doesn't work (but maybe mergedItem would work instead of itemToDelete?) --
                     //displayedDef.getTreeDefItems().remove(itemToDelete);
                     //so...
+                    DataModelObjBase deletedObj = (DataModelObjBase )itemToDelete;
                     for (I item : displayedDef.getTreeDefItems())
                     {
-                        //This equality check should be more than sufficient. (Rank should be enough but...)
-                        if (item.getRankId().equals(itemToDelete.getRankId()) 
-                                && item.getName().equals(itemToDelete.getName()))
+                        if (((DataModelObjBase )item).getId().equals(deletedObj.getId()))
                         {
                             displayedDef.getTreeDefItems().remove(item);
                             break;
@@ -1139,8 +1135,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                         
                     }
                     
-                    //Make sure AppContextMgr has updated class object for the tree definition:
-                    //AppContextMgr.getInstance().setClassObject(displayedDef.getClass(),  displayedDef);
                     notifyApplication(itemToDelete, DELETED_ITEM);
                     
                     log.info("Successfully deleted " + mergedItem.getName()); //$NON-NLS-1$
