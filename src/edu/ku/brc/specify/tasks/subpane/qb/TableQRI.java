@@ -68,7 +68,7 @@ public class TableQRI extends ExpandableQRI
     {
         Class<?> classObj = this.getTableTree().getTableInfo().getClassObj();
         List<DBRelationshipInfo> rels = new LinkedList<DBRelationshipInfo>();
-        if (this.getTableTree().getParent() != null)
+        if (getTableTree().getParent() != null && getTableTree().getParent().getTableInfo() != null)
         {
             for (DBRelationshipInfo rel : this.getTableTree().getParent().getTableInfo()
                     .getRelationships())
