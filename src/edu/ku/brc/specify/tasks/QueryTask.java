@@ -196,87 +196,6 @@ public class QueryTask extends BaseTask
         return !editorDlg.isCancelled();
     }
     
-    
-//    /**
-//     * (Could be refactored with WorkBench Task)
-//     * @param workbench
-//     * @param title
-//     * @return
-//     */
-//    protected boolean fillInQueryNameAndAttrs(final SpQuery query, 
-//                                              final String  queryName, 
-//                                              final boolean skipFirstCheck,
-//                                              final DBTableInfo tableInfo)
-//    {
-//        boolean skip = skipFirstCheck;
-//        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-//        
-//        try
-//        {
-//            String newQueryName = queryName;
-//            
-//            boolean   alwaysAsk   = false;
-//            SpQuery   fndQuery    = null;
-//            boolean   shouldCheck = false;
-//            do
-//            {
-//                if (StringUtils.isEmpty(newQueryName))
-//                {
-//                    alwaysAsk = true;
-//                    
-//                } else
-//                {
-//                    fndQuery = session.getData(SpQuery.class, "name", newQueryName, DataProviderSessionIFace.CompareType.Equals);
-//                    if (fndQuery != null && !skip)
-//                    {
-//                        UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("QB_QUERY_EXISTS"), newQueryName));
-//                        query.setName("");
-//                    }
-//                    skip = false;
-//                }
-//                
-//                String oldName = query.getName();
-//                if ((fndQuery != null || (StringUtils.isNotEmpty(newQueryName) && newQueryName.length() > 64) && query.isNamed()) || alwaysAsk)
-//                {
-//                    alwaysAsk = false;
-//                    
-//                    // We found the same name and it must be unique
-//                    if (QueryTask.askUserForInfo("Query", getResourceString("QB_DATASET_INFO"), query))
-//                    {
-//                        newQueryName = query.getName();
-//                        // This Part here needs to be moved into an <enablerule/>
-//                        if (StringUtils.isNotEmpty(newQueryName) && newQueryName.length() > 64)
-//                        {
-//                            UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_NAME_TOO_LONG"));
-//                        }
-//                        fndQuery = query;
-//                    } else
-//                    {
-//                        UIRegistry.getStatusBar().setText("");
-//                        return false;
-//                    }
-//                }
-//                
-//                shouldCheck = oldName == null || !oldName.equals(newQueryName);
-//                
-//            } while (shouldCheck);
-//            
-//        } catch (Exception ex)
-//        {
-//            log.error(ex);
-//            
-//        } finally
-//        {
-//            session.close();    
-//        }
-//        UIRegistry.getStatusBar().setText("");
-//        
-//        query.setContextTableId((short)tableInfo.getTableId());
-//        
-//        return true;
-//    }
-
-    
     /**
      * Creates a new Query Data Object.
      * @param wbName
@@ -928,7 +847,7 @@ public class QueryTask extends BaseTask
         roc.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e)
             {
-                new EditQueryWorker(recordSet, e).start();
+                new EditQueryWorker(recordSet.getOnlyItem().getRecordId(), (RolloverCommand )e.getSource()).start();
             }
             
         });
@@ -1394,8 +1313,7 @@ public class QueryTask extends BaseTask
      */
     protected void bldTableTrees()
     {        
-        boolean rebuild = tableTree != null;
-        if (tableTree == null || rebuild)
+        if (tableTree == null)
         {
             tableTreeHash = null;
             tableTree = new WeakReference<TableTree>(readTables());
@@ -1403,10 +1321,6 @@ public class QueryTask extends BaseTask
         if (tableTreeHash == null || tableTreeHash.get() == null || needToRebuildTableTree())
         {
             tableTreeHash = new WeakReference<Hashtable<String, TableTree>>(buildTableTreeHash(tableTree.get()));
-        }
-        if (!rebuild)
-        {
-            clearTableTree(tableTree.get());
         }
         localizationOrTreeDefEdit = false;
     }
@@ -1443,6 +1357,10 @@ public class QueryTask extends BaseTask
         {
             bldTableTrees();
         }
+        else
+        {
+            clearTableTree(tableTree.get());
+        }
         return tableTree.get();
     }
     
@@ -1463,7 +1381,7 @@ public class QueryTask extends BaseTask
     /**
      * @return true if the table tree objects need to be rebuilt.
      */
-    protected boolean needToRebuildTableTree()
+    public boolean needToRebuildTableTree()
     {
         return tableTree == null || tableTree.get() == null || tableTreeHash == null || tableTreeHash.get() == null
             || localizationOrTreeDefEdit;
@@ -1647,6 +1565,23 @@ public class QueryTask extends BaseTask
         }
     }
     
+    /**
+     * Reload the current query.
+     * 
+     * This method is not currently used.
+     * 
+     * With adjusments for saving and navBtn updating and for case of not-yet-saved current query it
+     * could be used to automatically refresh query after Localization or TreeDef edits.
+     */
+    public void reloadQuery()
+    {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                new EditQueryWorker(queryBldrPane.getQuery().getId(), queryBldrPane.getQueryNavBtn()).start();
+            }
+        });
+    }
     protected class NewQueryWorker extends OpenQueryWorker
     {
         protected final DBTableInfo tableInfo;
@@ -1667,24 +1602,23 @@ public class QueryTask extends BaseTask
     
     protected class EditQueryWorker extends OpenQueryWorker
     {
-        protected final RecordSet recordSet;
-        protected final ActionEvent e;
+        protected final Integer queryId;
+        protected final RolloverCommand queryNavBtn;
         
-        public EditQueryWorker(final RecordSet recordSet, final ActionEvent e)
+        public EditQueryWorker(final Integer queryId, final RolloverCommand queryNavBtn)
         {
             super();
-            this.recordSet = recordSet;
-            this.e = e;
+            this.queryId = queryId;
+            this.queryNavBtn = queryNavBtn;
         }
-        
+
         @Override
         public void finished()
         {
             super.finished();
-            RolloverCommand queryNavBtn = (RolloverCommand)e.getSource();
             if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
             {
-                editQuery(recordSet.getOnlyItem().getRecordId());
+                editQuery(queryId);
                 queryNavBtn.setEnabled(false);
                 queryBldrPane.setQueryNavBtn(queryNavBtn);
             }
