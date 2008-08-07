@@ -35,7 +35,6 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -45,8 +44,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.ui.HelpMgr;
-import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.UIHelper;
 
 /**

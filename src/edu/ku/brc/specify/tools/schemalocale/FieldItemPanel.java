@@ -906,7 +906,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         fieldTypeTxt.setEnabled(enable);
         
         fieldReqChk.setEnabled(!mustBeRequired && enable);
-        log.debug("mustBeRequired: "+mustBeRequired+" !mustBeRequired && enable: "+(!mustBeRequired && enable));
+        //log.debug("mustBeRequired: "+mustBeRequired+" !mustBeRequired && enable: "+(!mustBeRequired && enable));
         
         fieldLengthLbl.setEnabled(enable);
         fieldLengthTxt.setEnabled(enable);

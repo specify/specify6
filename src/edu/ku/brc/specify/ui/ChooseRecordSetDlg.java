@@ -28,9 +28,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.ListModel;
-import javax.swing.ScrollPaneConstants;
 
 import org.apache.log4j.Logger;
 

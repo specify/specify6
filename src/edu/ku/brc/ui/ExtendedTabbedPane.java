@@ -16,10 +16,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.MouseInputAdapter;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
-
-import org.apache.log4j.Logger;
 
 /**
  * Adds a close "X" in the bottom right of the TabbedPane for closing tabs and adds a Close btn to each tab.
