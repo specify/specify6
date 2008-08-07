@@ -149,7 +149,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected JScrollPane                                    scrollPane;
     protected Vector<JScrollPane>                            spList           = new Vector<JScrollPane>();
     protected JPanel                                         contextPanel;
-//    protected JButton                                        saveBtn;
     protected DropDownButton                                 saveBtn;
     protected JButton                                        searchBtn;
     protected JCheckBox                                      distinctChk;
@@ -475,9 +474,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected static Vector<QueryFieldPanel> getQueryFieldPanels(final SpQuery q,
                                                                final QueryFieldPanelContainerIFace container,
                                                                final TableTree tblTree,
-                                                               final Hashtable<String, TableTree> ttHash)
+                                                               final Hashtable<String, TableTree> ttHash) 
     {
-        return getQueryFieldPanels(container, q.getFields(), tblTree, ttHash, null);
+        return getQueryFieldPanels(container, q.getFields(), tblTree, ttHash, null, null);
     }
     
     /**
@@ -515,11 +514,36 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         
         Vector<QueryFieldPanel> qfps = null;
+        boolean dirty = false;
+        List<String> missingFlds = new LinkedList<String>();
         if (query != null)
         {
             TableQRI qri = (TableQRI) tableList.getSelectedValue();
             if (qri == null) { throw new RuntimeException("Invalid context for query."); }
-            qfps = getQueryFieldPanels(this, query.getFields(), tableTree, tableTreeHash, saveBtn);
+                
+            qfps = getQueryFieldPanels(this, query.getFields(), tableTree, tableTreeHash, saveBtn, missingFlds);
+            
+            if (missingFlds.size() > 0)
+            {
+                dirty = true;
+                String fldStr = new String();
+                for (String fld : missingFlds)
+                {
+                    if (!StringUtils.isEmpty(fldStr))
+                    {
+                        fldStr += ", ";
+                    }
+                    fldStr += fld;
+                }
+                if (missingFlds.size() == 1)
+                {
+                    UIRegistry.showLocalizedMsg("QB_FIELD_MISSING_TITLE", "QB_FIELD_NOT_ADDED", fldStr);
+                }
+                else
+                {
+                    UIRegistry.showLocalizedMsg("QB_FIELD_MISSING_TITLE", "QB_FIELDS_NOT_ADDED", fldStr);
+                }
+            }
         }
 
         boolean header = true;
@@ -547,25 +571,26 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         qualifyFieldLabels();
         
+        final boolean saveBtnEnabled = dirty;
         if (!isHeadless)
         {
             SwingUtilities.invokeLater(new Runnable()
             {
                 public void run()
                 {
-                    adjustPanelUI();
+                    adjustPanelUI(saveBtnEnabled);
                 }
             });
         } else
         {
-            adjustPanelUI();
+            adjustPanelUI(saveBtnEnabled);
         }
     }
     
     /**
      * 
      */
-    protected void adjustPanelUI()
+    protected void adjustPanelUI(boolean saveBtnEnabled)
     {
         //Sorry, but a new context can't be selected if any fields are selected from the current context.
         tableList.setEnabled(queryFieldItems.size() == 0);
@@ -577,7 +602,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             list.repaint();
         }
-        saveBtn.setEnabled(false);
+        saveBtn.setEnabled(saveBtnEnabled);
         updateSearchBtn();
         QueryBldrPane.this.validate();
     }
@@ -2110,7 +2135,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected static Vector<QueryFieldPanel> getQueryFieldPanels(final QueryFieldPanelContainerIFace container, 
             final Set<SpQueryField> fields, final TableTree tblTree, 
             final Hashtable<String,TableTree> ttHash,
-            final Component saveBtn)
+            final Component saveBtn, List<String> missingFlds) 
     {
         Vector<QueryFieldPanel> result = new Vector<QueryFieldPanel>();
         List<SpQueryField> orderedFlds = new ArrayList<SpQueryField>(fields);
@@ -2130,12 +2155,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
             else
             {
-            	if (!container.isPromptMode())
-            	{
-            		UIRegistry.showLocalizedMsg("QB_FIELD_MISSING_TITLE", "QB_FIELD_NOT_ADDED", fld.getColumnAlias());
-            	}
-            	log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList()
+                log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList()
                         + "]");
+                if (missingFlds != null)
+                {
+                    missingFlds.add(fld.getColumnAlias());
+                }
             }
         }
         return result;
@@ -2357,47 +2382,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return true;
     }
 
-    /**
-     * @return
-     */
-//    protected static TableTree readTables()
-//    {
-//        TableTree treeRoot = new TableTree("root", "root", "root", null);
-//        try
-//        {
-//            Element root = XMLHelper.readDOMFromConfigDir("querybuilder.xml");
-//            List<?> tableNodes = root.selectNodes("/database/table");
-//            for (Object obj : tableNodes)
-//            {
-//                Element tableElement = (Element) obj;
-//                processForTables(tableElement, treeRoot);
-//            }
-//        }
-//        catch (Exception ex)
-//        {
-//            ex.printStackTrace();
-//        }
-//        return treeRoot;
-//    }
-
-//    protected static Hashtable<String, TableTree> buildTableTreeHash(final TableTree treeRoot)
-//    {
-//        Hashtable<String, TableTree> result = new Hashtable<String, TableTree>();
-//        try
-//        {
-//            for (int t = 0; t < treeRoot.getKids(); t++)
-//            {
-//                TableTree tt = treeRoot.getKid(t);
-//                result.put(tt.getName(), tt);
-//                log.debug("Adding[" + tt.getName() + "] to hash");
-//            }
-//        }
-//        catch (Exception ex)
-//        {
-//            ex.printStackTrace();
-//        }
-//        return result;
-//    }
     
     /**
      * @param columnDefStr the columnDefStr to set
@@ -2613,6 +2597,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
     
+    /**
+     * Get latest persisted version of this query.
+     */
     protected void refreshQuery()
     {
         if (query != null && query.getId() != null)
@@ -2631,6 +2618,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
     
+    /**
+     * @return Set of reports that are based on this query.
+     */
     public Set<SpReport> getReportsForQuery()
     {
         //assuming query.forceLoad() has been called
