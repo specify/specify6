@@ -2633,8 +2633,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     @Override
     public void showingPane(boolean show)
     {
-        // TODO Auto-generated method stub
-        System.out.println("Showing QueryBldrPane " + show);
         if (show && ((QueryTask )task).needToRebuildTableTree())
         {
             //It seems that no serious problems will occur so for now just show a message:
