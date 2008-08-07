@@ -153,6 +153,17 @@
             </altviews>
         </view>
         
+        <view name="ConservDescriptionSub"
+            class="edu.ku.brc.specify.datamodel.ConservDescription"
+            busrules="edu.ku.brc.specify.datamodel.busrules.ConservDescriptionBusRules"
+            resourcelabels="false">
+            <desc><![CDATA[Conservation Description.]]></desc>
+            <altviews>
+                <altview name="ConservDescriptionSub View" viewdef="ConservDescriptionSub" label="View" mode="view" default="true"/>
+                <altview name="ConservDescriptionSub Edit" viewdef="ConservDescriptionSub" label="Edit" mode="edit" />
+            </altviews>
+        </view>
+        
         <view name="Deaccession"
               class="edu.ku.brc.specify.datamodel.Deaccession"
               isinternal="false"
@@ -1030,6 +1041,43 @@
                 </row>
                 <row>
                     <cell type="subview" id="13" name="conservDescriptionAttachments" viewname="ObjectAttachment" initialize="btn=true;icon=ConservDescriptionAttachment;addsearch=true"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="ConservDescriptionSub"
+            class="edu.ku.brc.specify.datamodel.ConservDescription"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Conservation Description]]></desc>
+            <enableRules/>
+            
+            <columnDef>125px,2px,p,2px,100px,2px,p,2px,100px,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            <rows>
+                
+                <row> 
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="shortDesc" uitype="text" colspan="9"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="objLength" uitype="text"/>                   
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="height" uitype="text"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="width" uitype="text"/>                  
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="backgroundInfo" uitype="textarea" colspan="10" rows="2"/>
+                </row>          
+                <row> 
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="description" uitype="textarea" colspan="10"/>
                 </row>
             </rows>
         </viewdef>
