@@ -10,6 +10,7 @@
 package edu.ku.brc.af.tasks.subpane;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createScrollPane;
 
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
@@ -22,7 +23,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -130,9 +130,9 @@ public class ViewViewSetEditorPanel extends JPanel
         JPanel altViewBtnBar = createAltViewListBtnBar();
         JPanel viewDefBtnBar = createAltViewListBtnBar();
         
-        JScrollPane vsp  = new JScrollPane(viewList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        JScrollPane asp  = new JScrollPane(altViewList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        JScrollPane vdsp = new JScrollPane(viewDefList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane vsp  = createScrollPane(viewList);
+        JScrollPane asp  = createScrollPane(altViewList);
+        JScrollPane vdsp = createScrollPane(viewDefList);
         
         pb.add(createLabel("Views"),     cc.xy(2, 1));
         pb.add(vsp,                     cc.xy(2, 3));

@@ -400,7 +400,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
             
             int col = orderOnLeft ? 3 : 1;
             outer.add(createLabel(getResourceString(titleKey), SwingConstants.CENTER), cc.xy(col, 1));
-            JScrollPane sp = new JScrollPane(orderList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            JScrollPane sp = UIHelper.createScrollPane(orderList);
             outer.add(sp,                     cc.xy(col, 3));
             outer.add(edaPanel,               cc.xy(col, 5));
             

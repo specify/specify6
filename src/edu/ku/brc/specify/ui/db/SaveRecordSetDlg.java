@@ -83,7 +83,7 @@ public class SaveRecordSetDlg extends JDialog
         JPanel namePanel = new JPanel(new BorderLayout());
         namePanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         
-        namePanel.add(createLabel(getResourceString("RecordSet_Name")+":", JLabel.RIGHT), BorderLayout.WEST); // I18N
+        namePanel.add(createI18NFormLabel("RecordSet_Name"), BorderLayout.WEST); // I18N
         JTextField nameTxtFld = createTextField("");
         namePanel.add(nameTxtFld, BorderLayout.CENTER);
 

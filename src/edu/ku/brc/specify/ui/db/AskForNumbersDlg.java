@@ -99,9 +99,8 @@ public class AskForNumbersDlg extends CustomDialog
         status   = UIHelper.createTextArea(3, 30);
         status.setEditable(false);
         
-        JScrollPane sb = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         pb.add(UIHelper.createI18NLabel(labelKey, SwingConstants.RIGHT), cc.xy(1,1));
-        pb.add(sb, cc.xy(3,1));
+        pb.add(UIHelper.createScrollPane(textArea), cc.xy(3,1));
         
         statusSP = new JScrollPane(status, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         pb.add(statusSP, cc.xy(3,3));

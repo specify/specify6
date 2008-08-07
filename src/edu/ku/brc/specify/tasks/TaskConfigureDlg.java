@@ -47,6 +47,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rods
@@ -404,7 +405,7 @@ public class TaskConfigureDlg extends CustomDialog
             
             int col = orderOnLeft ? 3 : 1;
             outer.add(createLabel(getResourceString(titleKey), SwingConstants.CENTER), cc.xy(col, 1));
-            JScrollPane sp = new JScrollPane(orderList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            JScrollPane sp = UIHelper.createScrollPane(orderList);
             outer.add(sp,                     cc.xy(col, 3));
             
             if (edaPanel != null)

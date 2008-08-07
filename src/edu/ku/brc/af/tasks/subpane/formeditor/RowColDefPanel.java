@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2007  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.af.tasks.subpane.formeditor;
 
@@ -32,6 +29,7 @@ import edu.ku.brc.af.tasks.subpane.formeditor.JGoodiesDefItem.ALIGN_TYPE;
 import edu.ku.brc.af.tasks.subpane.formeditor.JGoodiesDefItem.MINMAX_TYPE;
 import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 
 /**
@@ -115,7 +113,7 @@ public class RowColDefPanel extends JPanel
         
         itemList = new JList(new DefaultListModel());
         itemList.setCellRenderer(new DefItemRenderer(IconManager.IconSize.Std16));
-        JScrollPane sp = new JScrollPane(itemList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane sp = UIHelper.createScrollPane(itemList);
         pb.addSeparator((isRow ? "Row" : "Column") + " Items", cc.xy(1, 1)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         pb.add(sp, cc.xy(1,3));
         pb.add(controlPanel, cc.xy(1,5));

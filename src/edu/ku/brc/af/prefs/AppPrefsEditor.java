@@ -86,7 +86,7 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         table = new JTable(model);
         table.getSelectionModel().addListSelectionListener(this);
        
-        add(new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
+        add(UIHelper.createScrollPane(table), BorderLayout.CENTER);
         
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);

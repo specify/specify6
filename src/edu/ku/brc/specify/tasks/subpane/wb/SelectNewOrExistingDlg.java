@@ -32,6 +32,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -94,7 +95,7 @@ public class SelectNewOrExistingDlg<T> extends CustomDialog
         CellConstraints cc = new CellConstraints();
         panel.add(createNewRB,   cc.xy(1,1));
         panel.add(useExistingRB,  cc.xy(1,3));
-        panel.add(new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1,5));
+        panel.add(UIHelper.createScrollPane(list), cc.xy(1,5));
         
         createNewRB.setSelected(true);
         list.setEnabled(false);

@@ -15,6 +15,7 @@
 package edu.ku.brc.helpers;
 
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createPasswordField;
 import static edu.ku.brc.ui.UIHelper.createTextField;
@@ -286,7 +287,7 @@ public class EMailHelper
     {
         PanelBuilder    builder   = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,p")); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc        = new CellConstraints();
-        JLabel          label     = createLabel(getResourceString("EMailHelper.PASSWORD")+":", SwingConstants.RIGHT); //$NON-NLS-1$ //$NON-NLS-2$
+        JLabel          label     = createI18NFormLabel("EMailHelper.PASSWORD"); //$NON-NLS-1$ //$NON-NLS-2$
         JPasswordField  passField = createPasswordField(25);
         JCheckBox       savePassword = createCheckBox(getResourceString("EMailHelper.SAVE_PASSWORD")); //$NON-NLS-1$
 
@@ -325,8 +326,8 @@ public class EMailHelper
         
         PanelBuilder    builder   = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,p,2px,p")); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc        = new CellConstraints();
-        JLabel          plabel    = createLabel(getResourceString("EMailHelper.PASSWORD")+":", SwingConstants.RIGHT); //$NON-NLS-1$ //$NON-NLS-2$
-        JLabel          ulabel    = createLabel(getResourceString("EMailHelper.USERNAME")+":", SwingConstants.RIGHT); //$NON-NLS-1$ //$NON-NLS-2$
+        JLabel          plabel    = createI18NFormLabel("EMailHelper.PASSWORD"); //$NON-NLS-1$ //$NON-NLS-2$
+        JLabel          ulabel    = createI18NFormLabel("EMailHelper.USERNAME"); //$NON-NLS-1$ //$NON-NLS-2$
         JPasswordField  passField = createPasswordField(25);
         JTextField      userField = createTextField(remoteUsername, 25);
         JCheckBox       savePassword = createCheckBox(getResourceString("EMailHelper.SAVE_PASSWORD")); //$NON-NLS-1$

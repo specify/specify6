@@ -16,7 +16,7 @@
 package edu.ku.brc.ui.forms.formatters;
 
 import static edu.ku.brc.ui.UIHelper.createButton;
-import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Cursor;
@@ -110,14 +110,14 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
                 
                 ));
         
-        JLabel currentFieldsLbl = createLabel(getResourceString("DOF_DISPLAY_FORMAT")+":");
+        JLabel currentFieldsLbl = createI18NFormLabel("DOF_DISPLAY_FORMAT");
         formatEditor = new JTextPane();
         // to make sure the component shrinks with the dialog
         formatEditor.setMinimumSize(new Dimension(200, 50));
         formatEditor.setPreferredSize(new Dimension(350, 100));
 
         PanelBuilder addFieldPB = new PanelBuilder(new FormLayout("l:m:g,r:m", "p"));  
-        JLabel availableFieldsLbl = createLabel(getResourceString("DOF_AVAILABLE_FIELDS")+":");
+        JLabel availableFieldsLbl = createI18NFormLabel("DOF_AVAILABLE_FIELDS");
         addFieldBtn = createButton(getResourceString("DOF_ADD_FIELD")); 
         addFieldBtn.setEnabled(true);
         addFieldPB.add(availableFieldsLbl, cc.xy(1,1));

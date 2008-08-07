@@ -16,6 +16,7 @@
 package edu.ku.brc.ui.forms.formatters;
 
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -134,22 +135,22 @@ public class UIFormatterEditorDlg extends CustomDialog
         String typeStr = fieldInfo.getType();
         typeStr = typeStr.indexOf('.') > -1 ? StringUtils.substringAfterLast(fieldInfo.getType(), ".") : typeStr;
 
-        JLabel tableTitleLbl      = createLabel(getResourceString("FFE_TABLE") + ":");
+        JLabel tableTitleLbl      = createI18NFormLabel("FFE_TABLE");
         JLabel tableTitleValueLbl = createLabel(fieldInfo.getTableInfo().getTitle());
         tableTitleValueLbl.setBackground(Color.WHITE);
         tableTitleValueLbl.setOpaque(true);
 
-        JLabel fieldTitleLbl      = createLabel(getResourceString("FFE_FIELD") + ":");
+        JLabel fieldTitleLbl      = createI18NFormLabel("FFE_FIELD");
         JLabel fieldTitleValueLbl = createLabel(fieldInfo.getTitle());
         fieldTitleValueLbl.setBackground(Color.WHITE);
         fieldTitleValueLbl.setOpaque(true);
 
-        //JLabel fieldTypeLbl = createLabel(getResourceString("FFE_TYPE") + ":");
+        //JLabel fieldTypeLbl = createI18NFormLabel("FFE_TYPE");
         //JLabel fieldTypeValueLbl = createLabel(typeStr);
         //fieldTypeValueLbl.setBackground(Color.WHITE);
         //fieldTypeValueLbl.setOpaque(true);
         
-        JLabel fieldLengthLbl = createLabel(getResourceString("FFE_LENGTH") + ":");
+        JLabel fieldLengthLbl = createI18NFormLabel("FFE_LENGTH");
         JLabel fieldLengthValueLbl = createLabel(Integer.toString(fieldInfo.getLength()));
         fieldLengthValueLbl.setBackground(Color.WHITE);
         fieldLengthValueLbl.setOpaque(true);
@@ -196,13 +197,13 @@ public class UIFormatterEditorDlg extends CustomDialog
         y = 1;
         PanelBuilder subPB = new PanelBuilder(new FormLayout("r:p,2px,p", "p,4px, p,4px, p,4px, p,4px"));
         
-        subPB.add(createLabel(getResourceString("FFE_NAME")+":"), cc.xy(1,y));
+        subPB.add(createI18NFormLabel("FFE_NAME"), cc.xy(1,y));
         subPB.add(nameTF, cc.xy(3, y)); y += 2;
         
-        subPB.add(createLabel(getResourceString("FFE_TITLE")+":"), cc.xy(1,y));
+        subPB.add(createI18NFormLabel("FFE_TITLE"), cc.xy(1,y));
         subPB.add(titleTF, cc.xy(3, y)); y += 2;
         
-        subPB.add(createLabel(getResourceString("FFE_PATTERN")+":"), cc.xy(1,y));
+        subPB.add(createI18NFormLabel("FFE_PATTERN"), cc.xy(1,y));
         subPB.add(formatTF, cc.xy(3, y)); y += 2;
         
         subPB.add(byYearCB, cc.xyw(1,y,3)); y += 2;

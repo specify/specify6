@@ -10,6 +10,7 @@ import static edu.ku.brc.ui.UIHelper.adjustButtonArray;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createList;
 import static edu.ku.brc.ui.UIHelper.createTextArea;
@@ -200,21 +201,21 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         tblNameText.addKeyListener(new LengthWatcher(64));
         
         // data obj formatter control
-        dataObjFmtLbl = createLabel(getResourceString("DOF_DISPLAY_FORMAT")+":", SwingConstants.RIGHT);
+        dataObjFmtLbl = createI18NFormLabel("DOF_DISPLAY_FORMAT");
         dataObjFmtCbo = createComboBox();
         dataObjFmtBtn = createButton("...");
         fillFormatterCombo();
         addFormatterActionListener();
 
         // aggregator controls
-        aggregatorLbl = createLabel(getResourceString("DOA_AGGREGATION")+":", SwingConstants.RIGHT);
+        aggregatorLbl = createI18NFormLabel("DOA_AGGREGATION");
         aggregatorCbo = createComboBox();
         aggregatorBtn = createButton("...");
         fillAggregatorCombo();
         addAggregatorActionListener();
         
         // WebLinks controls
-        webLinkLbl = createLabel(getResourceString("SL_WEBLINKS")+":", SwingConstants.RIGHT);
+        webLinkLbl = createI18NFormLabel("SL_WEBLINKS");
         webLinkBtn = createButton("...");
         addWebLinkActionListener();
         

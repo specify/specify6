@@ -49,6 +49,7 @@ import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * A dialog used for Configuring the 'create' or new Queries.
@@ -322,7 +323,7 @@ public class QueryConfigureDlg extends CustomDialog
             
             int col = orderOnLeft ? 3 : 1;
             outer.add(createLabel(getResourceString(titleKey), SwingConstants.CENTER), cc.xy(col, 1));
-            JScrollPane sp = new JScrollPane(orderList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            JScrollPane sp = UIHelper.createScrollPane(orderList);
             outer.add(sp,                     cc.xy(col, 3));
 
             if (hideOrdering)

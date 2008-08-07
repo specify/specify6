@@ -14,7 +14,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -112,7 +113,7 @@ public class InputPanel extends JPanel implements GhostActionable
             this.label = createLabel("   ", SwingConstants.RIGHT);
         } else
         {
-            this.label = createLabel(label+":", SwingConstants.RIGHT);
+            this.label = createI18NFormLabel(label);
         }
 
         this.label.setCursor(handCursor);

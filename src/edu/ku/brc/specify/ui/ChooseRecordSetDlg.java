@@ -39,6 +39,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.ui.db.RecordSetListCellRenderer;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -139,9 +140,8 @@ public class ChooseRecordSetDlg extends CustomDialog
             }
         });
         
-        JPanel      panel        = new JPanel(new BorderLayout());
-        JScrollPane listScroller = new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        panel.add(listScroller, BorderLayout.CENTER);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(UIHelper.createScrollPane(list), BorderLayout.CENTER);
         panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         
         contentPanel = panel;

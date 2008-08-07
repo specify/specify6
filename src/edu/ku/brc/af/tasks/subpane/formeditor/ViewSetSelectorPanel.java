@@ -7,6 +7,7 @@
 package edu.ku.brc.af.tasks.subpane.formeditor;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createScrollPane;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -260,12 +261,12 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         Dimension ps = new Dimension(200, 150);
         
         x = 1;
-        JScrollPane sp = new JScrollPane(levelsList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane sp = createScrollPane(levelsList);
         pb.add(sp, cc.xy(x, 3));
         x += 2;
         
         viewSetsList = new JList(new DefaultListModel());
-        sp = new JScrollPane(viewSetsList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        sp = createScrollPane(viewSetsList);
         sp.setPreferredSize(ps);
         pb.add(sp, cc.xy(x, 3));
         x += 2;
@@ -280,7 +281,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         x += 2;
         
         altViewsList = new JList(new DefaultListModel());
-        sp = new JScrollPane(altViewsList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        sp = createScrollPane(altViewsList);
         sp.setPreferredSize(ps);
         pb.add(sp, cc.xy(x, 3));
         x += 2;
@@ -289,7 +290,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         x += 2;
         
         viewDefsList = new JList(new DefaultListModel());
-        sp = new JScrollPane(viewDefsList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        sp = createScrollPane(viewDefsList);
         sp.setPreferredSize(ps);
         pb.add(sp, cc.xy(x, 3));
         x += 2;
@@ -311,7 +312,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         PanelBuilder inner = new PanelBuilder(new FormLayout("max(250px;p)", "t:p,2px,t:p")); //$NON-NLS-1$ //$NON-NLS-2$
         tree = new JTree();
         ((DefaultTreeModel)tree.getModel()).setRoot(null);
-        sp   = new JScrollPane(tree);
+        sp   = createScrollPane(tree);
         inner.add(sp, cc.xy(1, 1));
         
         PanelBuilder btnPb = new PanelBuilder(new FormLayout("f:p:g,p,2px,p", "p")); //$NON-NLS-1$ //$NON-NLS-2$

@@ -246,7 +246,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
 
         int y = 1;
         
-        JScrollPane fldsp = new JScrollPane(fieldsList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane fldsp = UIHelper.createScrollPane(fieldsList);
         
         // LocalizableNameDescIFace
         PanelBuilder pb = new PanelBuilder(new FormLayout("max(200px;p),4px,p,2px,p,10px,p,2px,p,f:p:g", 

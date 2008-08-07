@@ -6914,6 +6914,17 @@ public class BuildSampleDatabase
             catNumFmtList = (Vector<UIFieldFormatterIFace>)UIFieldFormatterMgr.getInstance().getFormatterList(CollectionObject.class, "catalogNumber");
             catNumFmts = createComboBox(catNumFmtList);
             
+            int i = 0;
+            for (UIFieldFormatterIFace fmt : catNumFmtList)
+            {
+                System.out.println(fmt.getName());
+                if (fmt.getName().equals("CatalogNumberNumeric"))
+                {
+                    catNumFmts.setSelectedIndex(i);
+                }
+                i++;
+            }
+            
             //Vector<DisciplineType> disciplinesList = DisciplineType.getDisciplineList();
             disciplines     = createComboBox(DisciplineType.getDisciplineList());
             disciplines.setSelectedItem(DisciplineType.getDiscipline("fish"));

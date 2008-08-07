@@ -18,6 +18,7 @@
 package edu.ku.brc.specify.plugins;
 
 import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -226,7 +227,7 @@ public class TaxonLabelFormatting extends UIPluginBase
             
             PanelBuilder rwPanel = new PanelBuilder(new FormLayout("p, 2px, f:p:g", "p"));
             refWorkLabel = createLabel(getResourceString("NONE"));
-            rwPanel.add(createLabel(getResourceString("REFERENCEWORK")+":"), cc.xy(1, 1));
+            rwPanel.add(createI18NFormLabel("REFERENCEWORK"), cc.xy(1, 1));
             rwPanel.add(refWorkLabel, cc.xy(3, 1));
             
             int y = 1;

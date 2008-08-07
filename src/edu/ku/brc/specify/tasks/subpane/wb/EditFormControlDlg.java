@@ -17,7 +17,10 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
+import static edu.ku.brc.ui.UIHelper.createTextField;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -34,7 +37,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -138,31 +140,31 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
             Dimension canvasSize  = formPane.getSize();
             Dimension controlSize = inputPanel.getSize();
             
-            panelBlder.add(createLabel(getResourceString("WB_X")+":", SwingConstants.RIGHT), cc.xy(1, y));
+            panelBlder.add(createI18NFormLabel("WB_X"), cc.xy(1, y));
             panelBlder.add(xCoord = new ValSpinner(0, canvasSize.width-controlSize.width, false, false), cc.xy(3, y));
             y += 2;
             
-            panelBlder.add(createLabel(getResourceString("WB_Y")+":", SwingConstants.RIGHT), cc.xy(1, y));
+            panelBlder.add(createI18NFormLabel("WB_Y"), cc.xy(1, y));
             panelBlder.add(yCoord = new ValSpinner(0, canvasSize.height-controlSize.height, false, false), cc.xy(3, y));
             y += 2;
             
-            panelBlder.add(createLabel(getResourceString("WB_LABEL")+":", SwingConstants.RIGHT), cc.xy(1, y));
+            panelBlder.add(createI18NFormLabel("WB_LABEL"), cc.xy(1, y));
             panelBlder.add(labelTF = createTextField(25), cc.xywh(3, y, 2, 1));
             y += 2;
             
             if (isTextField)
             {
-                panelBlder.add(createLabel(getResourceString("WB_FIELD_LEN")+":", SwingConstants.RIGHT), cc.xy(1, y));
+                panelBlder.add(createI18NFormLabel("WB_FIELD_LEN"), cc.xy(1, y));
                 panelBlder.add(fieldWidth = new ValSpinner(0, 100, false, false), cc.xy(3, y));
                 y += 2;
  
                 if (!isFormattedText)
                 {
-                    panelBlder.add(rowsLabels = createLabel(getResourceString("WB_NUM_ROWS")+":", SwingConstants.RIGHT), cc.xy(1, y));
+                    panelBlder.add(rowsLabels = createI18NFormLabel("WB_NUM_ROWS"), cc.xy(1, y));
                     panelBlder.add(numRows = new ValSpinner(1, 25, false, false), cc.xy(3, y));
                     y += 2;
      
-                    panelBlder.add(typeLabel = createLabel(getResourceString("WB_FIELD_TYPE")+":", SwingConstants.RIGHT), cc.xy(1, y));
+                    panelBlder.add(typeLabel = createI18NFormLabel("WB_FIELD_TYPE"), cc.xy(1, y));
                     panelBlder.add(textFieldType = createComboBox(new Object[] { getResourceString("WB_TEXTFIELD"), getResourceString("WB_TEXTAREA")}), cc.xy(3, y));
                     setControlSize(textFieldType);
                     y += 2;

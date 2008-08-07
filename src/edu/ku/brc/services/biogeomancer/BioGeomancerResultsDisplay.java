@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.services.biogeomancer;
 
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -21,7 +22,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionListener;
 
 import com.jgoodies.forms.layout.CellConstraints;
@@ -132,7 +132,7 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
                                 final int column,
                                 final int row)
     {
-        add(createLabel(labelStr+":", SwingConstants.RIGHT), cc.xy(column,row)); //$NON-NLS-1$
+        add(createI18NFormLabel(labelStr), cc.xy(column,row)); //$NON-NLS-1$
         JTextField tf = createTextField();
         tf.setEditable(false);
         add(tf, cc.xy(column+2,row));

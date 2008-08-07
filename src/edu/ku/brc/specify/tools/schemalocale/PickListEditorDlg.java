@@ -102,17 +102,13 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         sysPLList   = new JList();
         sysEDAPanel = configureList(sysPLList, true);
         
-        JScrollPane sp;
-        
         int y = 1;
         pb.add(UIHelper.createI18NLabel("PL_PICKLISTS_SYS", SwingConstants.CENTER), cc.xy(1, y)); y+= 2;
-        sp = new JScrollPane(sysPLList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        pb.add(sp, cc.xy(1, y)); y+= 2;
+        pb.add(UIHelper.createScrollPane(sysPLList), cc.xy(1, y)); y+= 2;
         pb.add(sysEDAPanel, cc.xy(1, y)); y+= 2;
         
         pb.add(UIHelper.createI18NLabel("PL_PICKLISTS_USR", SwingConstants.CENTER), cc.xy(1, y)); y+= 2;
-        sp = new JScrollPane(plList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        pb.add(sp, cc.xy(1, y)); y+= 2;
+        pb.add(UIHelper.createScrollPane(plList), cc.xy(1, y)); y+= 2;
         pb.add(edaPanel, cc.xy(1, y)); y+= 2;
         
         pb.setDefaultDialogBorder();
