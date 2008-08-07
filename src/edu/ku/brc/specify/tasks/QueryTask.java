@@ -89,6 +89,7 @@ import edu.ku.brc.specify.tasks.subpane.qb.QBResultReportServiceInfo;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
 import edu.ku.brc.specify.tasks.subpane.qb.TreeLevelQRI;
+import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerDlg;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -157,6 +158,7 @@ public class QueryTask extends BaseTask
         
         CommandDispatcher.register(QUERY, this);   
         CommandDispatcher.register(TreeDefinitionEditor.TREE_DEF_EDITOR, this);
+        CommandDispatcher.register(SchemaLocalizerDlg.SCHEMA_LOCALIZER, this);
     }
     
     
@@ -1263,6 +1265,24 @@ public class QueryTask extends BaseTask
             //all we care to know is that a treeDefintion got changed somehow 
             this.localizationOrTreeDefEdit = true;
         }
+        else if (cmdAction.isType(SchemaLocalizerDlg.SCHEMA_LOCALIZER))
+        {
+            //XXX should check whether changed schema actually is the schema in use? 
+            // e.g. If German schema was saved when English is in use then ignore??
+            this.localizationOrTreeDefEdit = true;
+            SwingUtilities.invokeLater(new Runnable(){
+                public void run()
+                {
+                    if (SubPaneMgr.getInstance().getCurrentSubPane() == queryBldrPane)
+                    {
+                        if (queryBldrPane != null)
+                        {
+                            queryBldrPane.showingPane(true);
+                        }
+                    }                    
+                }
+            });
+        }
     }
 
 
@@ -1313,12 +1333,12 @@ public class QueryTask extends BaseTask
      */
     protected void bldTableTrees()
     {        
-        if (tableTree == null)
+        if (tableTree == null || tableTree.get() == null)
         {
             tableTreeHash = null;
             tableTree = new WeakReference<TableTree>(readTables());
         }
-        if (tableTreeHash == null || tableTreeHash.get() == null || needToRebuildTableTree())
+        if (tableTreeHash == null || tableTreeHash.get() == null)
         {
             tableTreeHash = new WeakReference<Hashtable<String, TableTree>>(buildTableTreeHash(tableTree.get()));
         }

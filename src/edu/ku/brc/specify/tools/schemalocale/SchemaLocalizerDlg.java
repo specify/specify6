@@ -54,6 +54,8 @@ import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
@@ -73,6 +75,10 @@ import edu.ku.brc.ui.weblink.WebLinkMgr;
 public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFace, PropertyChangeListener
 {
     private static final Logger log = Logger.getLogger(SchemaLocalizerDlg.class);
+
+    //CommandAction stuff
+    public final static String      SCHEMA_LOCALIZER = "SCHEMA_LOCALIZER";
+
     private static String SCHEMALOCDLG = "SchemaLocalizerDlg";
     
     protected Byte                                         schemaType;
@@ -550,6 +556,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                     session.close();
                 }
             }
+            //notify app of localizer changes
+            CommandAction cmd = new CommandAction(SCHEMA_LOCALIZER, SCHEMA_LOCALIZER, null);
+            CommandDispatcher.dispatch(cmd);        
         } else
         {
             log.warn("No Changes were saved!");

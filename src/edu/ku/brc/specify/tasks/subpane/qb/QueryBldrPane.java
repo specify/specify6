@@ -226,7 +226,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         setQueryIntoUI();
         
         CommandDispatcher.register(ReportsBaseTask.REPORTS, this);
-        
+            
     }
 
     /**
@@ -2626,7 +2626,39 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         //assuming query.forceLoad() has been called
         return query.getReports();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#showingPane(boolean)
+     */
+    @Override
+    public void showingPane(boolean show)
+    {
+        // TODO Auto-generated method stub
+        System.out.println("Showing QueryBldrPane " + show);
+        if (show && ((QueryTask )task).needToRebuildTableTree())
+        {
+            //It seems that no serious problems will occur so for now just show a message:
+            UIRegistry.showLocalizedMsg("QB_TREEDEF_LOCALIZ_CHANGES_TITLE", "QB_TREEDEF_LOCALIZ_CHANGES_WARN", (Object[] )null);
+            //Could also automatically reload but this should be a rare occurrence and several changes 
+            //to normal saving/loading process would be necessary 
+//            new SwingWorker() {
+//                @Override
+//                public Object construct()
+//                {
+//                    ((QueryTask )task).reloadQuery();
+//                    return null;
+//                }
+//            }.start();
+        }
+    }
     
+    /**
+     * @return the query
+     */
+    public SpQuery getQuery()
+    {
+        return query;
+    }
 }
 
 
