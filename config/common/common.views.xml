@@ -595,9 +595,15 @@
                 <row> 
                     <cell type="subview" viewname="CollectionObjectSub" id="25" desc="Collection Object" name="collectionObjects" colspan="12"/>
                 </row>
+             <!--   <row>
+                    <cell type="separator" label="Appraisal" collapse="appraisals" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Appraisal" id="15" name="appraisals" colspan="12"/>
+                </row>
                 <row>
                     <cell type="subview" viewname="TreatmentEventForAccession" id="13" name="treatmentEvents" colspan="12" initialize="btn=true"/>
-                </row>
+                </row> -->
                 <row>
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
