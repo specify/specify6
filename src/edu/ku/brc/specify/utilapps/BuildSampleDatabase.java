@@ -90,6 +90,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -6912,6 +6913,13 @@ public class BuildSampleDatabase
             drivers.setSelectedIndex(inx);
             
             catNumFmtList = (Vector<UIFieldFormatterIFace>)UIFieldFormatterMgr.getInstance().getFormatterList(CollectionObject.class, "catalogNumber");
+            Collections.sort(catNumFmtList, new Comparator<UIFieldFormatterIFace>() {
+                @Override
+                public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
+                {
+                    return o1.getTitle().compareTo(o2.getTitle());
+                }
+            });
             catNumFmts = createComboBox(catNumFmtList);
             
             int i = 0;

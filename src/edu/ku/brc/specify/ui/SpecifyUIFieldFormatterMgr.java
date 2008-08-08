@@ -186,7 +186,8 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
                 }
             } else 
             {
-                CatalogNumberingScheme cns = AppContextMgr.getInstance().getClassObject(Collection.class) != null ? AppContextMgr.getInstance().getClassObject(Collection.class).getCatalogNumberingScheme() : null;
+                Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+                CatalogNumberingScheme cns = collection != null ? collection.getCatalogNumberingScheme() : null;
                 if (cns != null)
                 {
                     if (name.equals("CatalogNumberNumeric") || (name.equals("CatalogNumber") && cns.getIsNumericOnly())) //$NON-NLS-1$ //$NON-NLS-2$
@@ -219,11 +220,11 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
     public List<UIFieldFormatterIFace> getFormatterList(Class<?> clazz, String fieldName)
     {
         List<UIFieldFormatterIFace> list =  super.getFormatterList(clazz, fieldName);
-        if (clazz == CollectionObject.class && (fieldName != null && fieldName.equals("catalogNumber")))
+        /*if (clazz == CollectionObject.class && (fieldName != null && fieldName.equals("catalogNumber")))
         {
             list.add(catalogNumberNumeric);
             list.add(catalogNumberString);
-        }
+        }*/
         return list;
     }
 

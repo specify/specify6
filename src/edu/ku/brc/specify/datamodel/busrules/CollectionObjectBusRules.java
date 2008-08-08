@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -36,6 +37,7 @@ import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * @author rods
@@ -150,10 +152,37 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
+     */
     @Override
-    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    public STATUS processBusinessRules(final Object dataObj)
+    {
+        STATUS status =  super.processBusinessRules(dataObj);
+        
+        CollectionObject colObj = (CollectionObject)dataObj;
+        if (status == STATUS.OK && colObj.getId() == null)
+        {
+            DBTableInfo tblInfo   = DBTableIdMgr.getInstance().getInfoById(1); // don't need to check for null
+            DBFieldInfo fieldInfo = tblInfo.getFieldByName("catalogNumber");
+            UIFieldFormatterIFace fmt = fieldInfo.getFormatter();
+            if (fmt.getAutoNumber() == null)
+            {
+                status = processBusinessRules(null, dataObj, true);
+            }
+        }
+        return status;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeMerge(final Object dataObj, 
+                            final DataProviderSessionIFace session)
     {
         super.beforeMerge(dataObj, session);
+        
         
         CollectionObject colObj = (CollectionObject)dataObj;
         if (AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent())
@@ -177,8 +206,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeDeleteCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
-    public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session)
-            throws Exception
+    public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
         boolean ok = super.beforeDeleteCommit(dataObj, session);
         
@@ -295,7 +323,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
      * @see edu.ku.brc.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object, java.lang.Object, boolean)
      */
     @Override
-    public STATUS processBusinessRules(Object parentDataObj, Object dataObj, boolean isEdit)
+    public STATUS processBusinessRules(final Object parentDataObj, final Object dataObj, final boolean isEdit)
     {
         reasonList.clear();
         
@@ -306,7 +334,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         
         STATUS duplicateNumberStatus = isCheckDuplicateNumberOK("catalogNumber", 
                                                                 (FormDataObjIFace)dataObj, 
-                                                                Accession.class, 
+                                                                CollectionObject.class, 
                                                                 "collectionObjectId");
         
         return duplicateNumberStatus;
