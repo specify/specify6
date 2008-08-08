@@ -3847,6 +3847,11 @@ public class FormViewObj implements Viewable,
             formValidator.setDataChangeNotification(false);
             formValidator.setEnabled(dataObj != null);
             
+            if (dataObj == null)
+            {
+                formValidator.setState(UIValidatable.ErrorType.Valid);
+            }
+            
             // I have always wanted to avoid doing this globally
             // but it is the best approach
            

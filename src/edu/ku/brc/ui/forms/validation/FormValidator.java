@@ -280,6 +280,15 @@ public class FormValidator implements ValidationListener, DataChangeListener
     }
 
     /**
+     * @param state
+     */
+    public void setState(final UIValidatable.ErrorType state)
+    {
+        formValidationState = state;
+        updateValidationBtnUIState();
+    }
+    
+    /**
      * Returns whether the form has been changed
      * @return Returns whether the form has been changed
      */
@@ -411,6 +420,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
             {
                 hasChanged          = false;
                 formValidationState = UIValidatable.ErrorType.Valid;
+                kidsValState        = UIValidatable.ErrorType.Valid;
                 resetFields();
             }
             
