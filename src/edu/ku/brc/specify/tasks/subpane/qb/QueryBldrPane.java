@@ -1666,30 +1666,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
     /**
      * @param tblTree
-     * @return a comma-separated list of the TableIds in path from the root of the tree containing
-     * tblTree down to tblTreee. 
-     * 
-     */
-    protected String getTreeStr(final TableTree tblTree)
-    {
-        String treeStr = String.valueOf(tblTree.getTableInfo().getTableId());
-        TableTree parent = tblTree.getParent();
-        while (parent != null && parent.getTableInfo() != null)
-        {
-            treeStr = String.valueOf(parent.getTableInfo().getTableId()) + "," + treeStr;
-            parent = parent.getParent();
-        }
-        return treeStr;
-    }
-    /**
-     * @param tblTree
      * @param flds
      * 
      * Checks and updates isInUse status for fields in a newly created list of search fields.
      */
     protected void checkFldUsage(final TableTree tblTree, final Vector<BaseQRI> flds)
     {
-        String treeStr = getTreeStr(tblTree);
+        String treeStr = tblTree.getPathFromRoot();
         
         for (QueryFieldPanel qfp : this.queryFieldItems)
         {
@@ -1697,7 +1680,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             if (qri instanceof RelQRI)
             {
                 //if (qri.getTable().getTableTree().getParent() == tblTree)
-                if (getTreeStr(qri.getTable().getTableTree().getParent()).equals(treeStr))
+                if (qri.getTable().getTableTree().getParent().getPathFromRoot().equals(treeStr))
                 {
                     for (BaseQRI fld : flds)
                     {
@@ -1711,7 +1694,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     }
                 }
             }
-            else if (getTreeStr(qri.getTableTree()).equals(treeStr))
+            else if (qri.getTableTree().getPathFromRoot().equals(treeStr))
             {
                 for (BaseQRI fld : flds)
                 {

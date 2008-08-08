@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -109,6 +110,7 @@ import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.util.Pair;
 
 /**
  * This task will enable the user to create queries, save them and execute them.
@@ -132,7 +134,7 @@ public class QueryTask extends BaseTask
     protected QueryBldrPane                               queryBldrPane             = null;
     protected WeakReference<TableTree>                    tableTree                 = null;
     protected WeakReference<Hashtable<String, TableTree>> tableTreeHash             = null;
-    protected boolean                                     localizationOrTreeDefEdit = false;
+    protected final AtomicBoolean                         localizationOrTreeDefEdit = new AtomicBoolean(false);
     
     protected Vector<ToolBarDropDownBtn> tbList           = new Vector<ToolBarDropDownBtn>();
     protected Vector<JComponent>         menus            = new Vector<JComponent>();
@@ -1263,13 +1265,13 @@ public class QueryTask extends BaseTask
         else if (cmdAction.isType(TreeDefinitionEditor.TREE_DEF_EDITOR))
         {
             //all we care to know is that a treeDefintion got changed somehow 
-            this.localizationOrTreeDefEdit = true;
+            this.localizationOrTreeDefEdit.set(true);
         }
         else if (cmdAction.isType(SchemaLocalizerDlg.SCHEMA_LOCALIZER))
         {
             //XXX should check whether changed schema actually is the schema in use? 
             // e.g. If German schema was saved when English is in use then ignore??
-            this.localizationOrTreeDefEdit = true;
+            this.localizationOrTreeDefEdit.set(true);
             SwingUtilities.invokeLater(new Runnable(){
                 public void run()
                 {
@@ -1342,7 +1344,7 @@ public class QueryTask extends BaseTask
         {
             tableTreeHash = new WeakReference<Hashtable<String, TableTree>>(buildTableTreeHash(tableTree.get()));
         }
-        localizationOrTreeDefEdit = false;
+        localizationOrTreeDefEdit.set(false);
     }
     
     
@@ -1366,6 +1368,19 @@ public class QueryTask extends BaseTask
         }
     }
     
+    public synchronized Pair<TableTree, Hashtable<String, TableTree>> getTableTrees()
+    {
+        if (needToRebuildTableTree())
+        {
+            bldTableTrees();
+        }
+        else
+        {
+            clearTableTree(tableTree.get());
+        }
+        return new Pair<TableTree, Hashtable<String, TableTree>>(tableTree.get(), tableTreeHash.get());
+        
+    }
     /**
      * @return the tableTree object.
      * 
@@ -1401,10 +1416,10 @@ public class QueryTask extends BaseTask
     /**
      * @return true if the table tree objects need to be rebuilt.
      */
-    public boolean needToRebuildTableTree()
+    public synchronized boolean needToRebuildTableTree()
     {
         return tableTree == null || tableTree.get() == null || tableTreeHash == null || tableTreeHash.get() == null
-            || localizationOrTreeDefEdit;
+            || localizationOrTreeDefEdit.get();
     }
     
     /**

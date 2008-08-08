@@ -266,7 +266,7 @@ public class QueryFieldPanel extends JPanel
                 parent = parent.getTableTree().getParent().getTableQRI();
             }
             
-            String tablesIds = bldTablesIds();
+            String tablesIds = fieldQRI.getTableTree().getPathFromRoot();
             log.debug(tablesIds);
             qField.setTableList(tablesIds);
             qField.setStringId(getStringId());
@@ -275,24 +275,6 @@ public class QueryFieldPanel extends JPanel
         {
             log.error("QueryField is null or ownerQuery is prompt only. Unable to update database object.");
         }
-    }
-    
-    protected String bldTablesIds()
-    {
-        Vector<Integer> idList = new Vector<Integer>();
-        TableQRI parent = fieldQRI.getTable();
-        while (parent != null)
-        {
-            idList.add(parent.getTableInfo().getTableId());
-            parent = parent.getTableTree().getParent().getTableQRI();
-        }
-        StringBuilder tablesIds = new StringBuilder();
-        for (int i=idList.size()-1;i>=0;i--)
-        {
-            if (tablesIds.length() > 0) tablesIds.append(',');
-            tablesIds.append(idList.get(i));
-        }
-        return tablesIds.toString();
     }
     
     /**
@@ -1277,6 +1259,6 @@ public class QueryFieldPanel extends JPanel
      */
     public String getStringId()
     {
-        return bldTablesIds() + "." + fieldQRI.getTableInfo().getName() + "." + fieldQRI.getFieldName();
+        return fieldQRI.getTableTree().getPathFromRoot() + "." + fieldQRI.getTableInfo().getName() + "." + fieldQRI.getFieldName();
     }
 }

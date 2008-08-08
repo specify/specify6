@@ -262,5 +262,20 @@ public class TableTree implements Cloneable, Comparable<TableTree>
             tableInfo.getTableId() == ((TableTree)obj).getTableInfo().getTableId();
     }
     
-    
+    /**
+     * @return a comma-separated list of the TableIds in path from the root to this. 
+     * 
+     */
+    public String getPathFromRoot()
+    {
+        String treeStr = String.valueOf(getTableInfo().getTableId());
+        TableTree p = getParent();
+        while (p != null && p.getTableInfo() != null)
+        {
+            treeStr = String.valueOf(p.getTableInfo().getTableId()) + "," + treeStr;
+            p = p.getParent();
+        }
+        return treeStr;
+    }
+
 }
