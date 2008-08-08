@@ -174,6 +174,7 @@ public class ExtendedTabbedPane extends JTabbedPane
         // XXX Java 6.0
         
         JPanel tabPanel = new JPanel(new BorderLayout());
+        tabPanel.setOpaque(false);
         tabPanel.add(new JLabel(title, icon, SwingConstants.RIGHT), BorderLayout.WEST);
         tabPanel.add(new JLabel(" "), BorderLayout.CENTER);
         tabPanel.add(closeBtn, BorderLayout.EAST);
