@@ -218,8 +218,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         
         QueryTask qt = (QueryTask )task;
-        tableTree = qt.getTableTree();
-        tableTreeHash = qt.getTableTreeHash();
+        Pair<TableTree, Hashtable<String, TableTree>> trees = qt.getTableTrees();
+        tableTree = trees.getFirst();
+        tableTreeHash = trees.getSecond();
  
         createUI();
 
@@ -1162,8 +1163,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         final Hashtable<String, TableTree> ttHash;
         if (qt != null)
         {
-            tblTree = qt.getTableTree();
-            ttHash = qt.getTableTreeHash();
+            Pair<TableTree, Hashtable<String, TableTree>> trees = qt.getTableTrees();
+            tblTree = trees.getFirst();
+            ttHash = trees.getSecond();
         }
         else
         {

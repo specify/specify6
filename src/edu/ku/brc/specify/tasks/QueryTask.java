@@ -1368,6 +1368,9 @@ public class QueryTask extends BaseTask
         }
     }
     
+    /**
+     * @return tableTree paired with tableTreeHash
+     */
     public synchronized Pair<TableTree, Hashtable<String, TableTree>> getTableTrees()
     {
         if (needToRebuildTableTree())
@@ -1381,38 +1384,7 @@ public class QueryTask extends BaseTask
         return new Pair<TableTree, Hashtable<String, TableTree>>(tableTree.get(), tableTreeHash.get());
         
     }
-    /**
-     * @return the tableTree object.
-     * 
-     * (Re)builds if necessary.
-     */
-    public TableTree getTableTree()
-    {
-        if (needToRebuildTableTree())
-        {
-            bldTableTrees();
-        }
-        else
-        {
-            clearTableTree(tableTree.get());
-        }
-        return tableTree.get();
-    }
-    
-    /**
-     * @return the tableTreeHash object.
-     * 
-     * (Re)builds if necessary.
-     */
-    public Hashtable<String, TableTree> getTableTreeHash()
-    {
-        if (needToRebuildTableTree())
-        {
-            bldTableTrees();
-        }
-        return tableTreeHash.get();
-    }
-    
+        
     /**
      * @return true if the table tree objects need to be rebuilt.
      */
@@ -1588,7 +1560,7 @@ public class QueryTask extends BaseTask
                     UIRegistry.getStatusBar().setIndeterminate("QUERYTASK", true);
                 }
             });
-            getTableTree();
+            getTableTrees();
             UIRegistry.displayStatusBarText("");
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
