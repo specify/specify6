@@ -34,34 +34,59 @@ public class EditDeleteAddPanel extends JPanel
     protected JButton delBtn;
     protected JButton editBtn;
     
+    /**
+     * 
+     */
     protected EditDeleteAddPanel()
     {
         
     }
     
-    public EditDeleteAddPanel(final ActionListener addAL,
+    /**
+     * @param editAL
+     * @param delAL
+     * @param addAL
+     */
+    public EditDeleteAddPanel(final ActionListener editAL,
                               final ActionListener delAL,
-                              final ActionListener editAL)
+                              final ActionListener addAL)
     {
-        createUI(addAL, delAL, editAL, "", "", "");
+        createUI(editAL, delAL, addAL, "", "", "");
     }
     
-    public EditDeleteAddPanel(final ActionListener addAL,
+    /**
+     * @param editAL
+     * @param delAL
+     * @param addAL
+     * @param editTTKey
+     * @param delTTKey
+     * @param addTTKey
+     */
+    public EditDeleteAddPanel(final ActionListener editAL,
                               final ActionListener delAL,
-                              final ActionListener editAL,
-                              final String addTTKey,
+                              final ActionListener addAL,
+                              final String editTTKey,
                               final String delTTKey,
-                              final String editTTKey)
+                              final String addTTKey)
     {
-        createUI(addAL, delAL, editAL, addTTKey, delTTKey, editTTKey);
+        createUI(editAL, delAL, addAL, editTTKey, delTTKey, addTTKey);
     }
     
-    protected PanelBuilder createUI(final ActionListener addAL,
+    /**
+     * @param delAL
+     * @param editAL
+     * @param addAL
+     * @param delTTKey
+     * @param editTTKey
+     * @param addTTKey
+     * @return
+     */
+    protected PanelBuilder createUI(final ActionListener editAL,
                                     final ActionListener delAL,
-                                    final ActionListener editAL,
-                                    final String addTTKey,
+                                    final ActionListener addAL,
+                                    final String editTTKey,
                                     final String delTTKey,
-                                    final String editTTKey)
+                                    final String addTTKey)
     {
         
         if (editAL != null)
