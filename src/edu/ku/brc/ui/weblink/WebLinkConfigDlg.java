@@ -108,7 +108,7 @@ public class WebLinkConfigDlg extends CustomDialog
         list = new JList(new DefaultListModel());
         pb.add(UIHelper.createScrollPane(list), cc.xy(1, 3));
         
-        itemsPanelEDA = new EditDeleteAddPanel(addItemAL, delItemAL, editItemAL);
+        itemsPanelEDA = new EditDeleteAddPanel(editItemAL, delItemAL, addItemAL);
         pb.add(itemsPanelEDA, cc.xy(1, 5));
         
         for (WebLinkDef wld : wlMgr.getWebLinkDefs(isTableMode ? tableInfo : null))

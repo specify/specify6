@@ -381,17 +381,18 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
                 }
             });
             
-            edaPanel = new EditDeleteAddPanel(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    addItem(orderList);
-                }
-            }, new ActionListener() {
+            edaPanel = new EditDeleteAddPanel(null, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     removeItem(orderList);
                 }
-            }, null);
+                }, 
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        addItem(orderList);
+                    }
+                });
             
             PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
             upDownPanel.add(orderUpBtn,       cc.xy(1, 2));

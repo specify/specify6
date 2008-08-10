@@ -131,7 +131,7 @@ public class DataObjFieldFormatEditorDlg extends CustomDialog
         };
 
         // control panel
-        edaPanel = new EditDeleteAddPanel(addAL, delAL, editAL);
+        edaPanel = new EditDeleteAddPanel(editAL, delAL, addAL);
         edaPanel.getAddBtn().setEnabled(true);
         
         JLabel tableTitleLbl = createLabel(getResourceString("FFE_TABLE") + ": ");

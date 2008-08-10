@@ -155,7 +155,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             }
         };
         
-        final EditDeleteAddPanel arePnl = new EditDeleteAddPanel(addAL, delAL, edtAL);
+        final EditDeleteAddPanel arePnl = new EditDeleteAddPanel(edtAL, delAL, addAL);
         arePnl.getAddBtn().setEnabled(true);
         
         List<PickList> items = null;

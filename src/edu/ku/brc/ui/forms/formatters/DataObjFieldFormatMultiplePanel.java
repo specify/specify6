@@ -270,7 +270,7 @@ public class DataObjFieldFormatMultiplePanel extends DataObjFieldFormatPanel imp
             }
         };
 
-        controlPanel = new EditDeleteAddPanel(addAL, delAL, null);
+        controlPanel = new EditDeleteAddPanel(null, delAL, addAL);
         controlPanel.getAddBtn().setEnabled(true);
     }
 

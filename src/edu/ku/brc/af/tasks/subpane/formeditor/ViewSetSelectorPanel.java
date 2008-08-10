@@ -194,7 +194,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             }
         };
         
-        viewControlPanel = new EditDeleteAddPanel(addViewAL, delViewAL, null);
+        viewControlPanel = new EditDeleteAddPanel(null, delViewAL, addViewAL);
         
         ActionListener addAltViewAL = new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -210,7 +210,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             }
         };
         
-        altViewControlPanel = new EditDeleteAddPanel(addAltViewAL, delAltViewAL, null);
+        altViewControlPanel = new EditDeleteAddPanel(null, delAltViewAL, addAltViewAL);
         
         ActionListener addDefViewAL = new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -226,7 +226,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             }
         };
         
-        viewDefControlPanel = new EditDeleteAddPanel(addDefViewAL, delDefViewAL, null);
+        viewDefControlPanel = new EditDeleteAddPanel(null, delDefViewAL, addDefViewAL);
         
         ActionListener saveAL = new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -234,7 +234,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
                 save();
             }
         };
-        EditDeleteAddPanel saveControlPanel = new EditDeleteAddPanel(saveAL, null, null);
+        EditDeleteAddPanel saveControlPanel = new EditDeleteAddPanel(null, null, saveAL);
         saveControlPanel.getAddBtn().setIcon(IconManager.getIcon("Save", IconManager.IconSize.Std16)); //$NON-NLS-1$
         saveControlPanel.getAddBtn().setEnabled(true);
         

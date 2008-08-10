@@ -384,17 +384,18 @@ public class TaskConfigureDlg extends CustomDialog
             
             if (includeAREPanel)
             {
-                edaPanel = new EditDeleteAddPanel(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        addItem(orderList, items);
-                    }
-                }, new ActionListener() {
+                edaPanel = new EditDeleteAddPanel(null, new ActionListener() {
                     public void actionPerformed(ActionEvent e)
                     {
                         removeItem(orderList);
                     }
-                }, null);
+                }, 
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        addItem(orderList, items);
+                    }
+                });
                 edaPanel.getAddBtn().setEnabled(true);
             }
             

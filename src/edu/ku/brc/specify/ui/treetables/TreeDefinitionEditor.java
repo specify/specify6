@@ -278,8 +278,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 }
             };
 		
-            edaPanel = new EditDeleteAddPanel(newItemAction, deleteAction, editItemAction,
-                                               "TTV_NEW_TDI", "TTV_DEL_TDI", "TTV_EDIT_TDI"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            edaPanel = new EditDeleteAddPanel(editItemAction, deleteAction, newItemAction,
+                                             "TTV_EDIT_TDI", "TTV_NEW_TDI", "TTV_DEL_TDI"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
 	}
     

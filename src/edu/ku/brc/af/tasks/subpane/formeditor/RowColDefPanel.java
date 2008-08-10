@@ -108,7 +108,7 @@ public class RowColDefPanel extends JPanel
             }
         };
         
-        controlPanel = new EditDeleteAddPanel(addAL, delAL, null);
+        controlPanel = new EditDeleteAddPanel(null, delAL, addAL);
         controlPanel.getAddBtn().setEnabled(true);
         
         itemList = new JList(new DefaultListModel());

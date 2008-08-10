@@ -162,7 +162,7 @@ public class DataObjAggregatorDlg extends CustomDialog
         };
         
         // delete button
-        controlPanel = new EditDeleteAddPanel(addAL, delAL, null);
+        controlPanel = new EditDeleteAddPanel(null, delAL, addAL);
         controlPanel.getAddBtn().setEnabled(true);
         
         // panel for aggregator editing controls
