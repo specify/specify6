@@ -36,7 +36,6 @@ import javax.swing.undo.UndoManager;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
@@ -71,8 +70,8 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     protected Color   bgColor;
     protected int     limit     = Integer.MAX_VALUE;
 
-    protected static ColorWrapper valtextcolor       = null;
-    protected static ColorWrapper requiredfieldcolor = null;
+    protected static ColorWrapper valTextColor       = null;
+    protected static ColorWrapper requiredFieldColor = null;
 
     protected boolean              doSetText         = false; 
     protected ValPlainTextDocument document;
@@ -143,12 +142,13 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         setDocument(new ValPlainTextDocument());
 
         bgColor = getBackground();
-        if (valtextcolor == null || requiredfieldcolor == null)
+        if (valTextColor == null || requiredFieldColor == null)
         {
-            valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
-            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+            valTextColor       = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
+            requiredFieldColor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
+        
+        AppPrefsCache.addChangeListener("ui.formatting.requiredfieldcolor", this);
 
         addFocusListener(new FocusAdapter() {
             @Override
@@ -182,7 +182,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             Graphics2D g2d = (Graphics2D)g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             Dimension dim = getSize();
-            g.setColor(valtextcolor.getColor());
+            g.setColor(valTextColor.getColor());
             g.drawRect(1, 1, dim.width-2, dim.height-2);
         }
     }
@@ -195,7 +195,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     {
         super.setEnabled(enabled);
 
-        setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : bgColor);
     }
 
 
@@ -272,7 +272,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     {
         if (isRequired && isEnabled())
         {
-            setBackground(requiredfieldcolor.getColor());
+            setBackground(requiredFieldColor.getColor());
             
         } else if (bgColor != null)
         {
@@ -348,7 +348,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             }
         }
         document = null;
-        AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPrefsCache.removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
 
     /* (non-Javadoc)
@@ -478,7 +478,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     {
         if (evt.getKey().equals("requiredfieldcolor"))
         {
-            setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+            setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : bgColor);
         }
     }
     

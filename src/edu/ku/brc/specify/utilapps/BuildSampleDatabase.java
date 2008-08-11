@@ -17,7 +17,7 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAgentVariant;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAttachment;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAttributeDef;
-import static edu.ku.brc.specify.config.init.DataBuilder.createCatalogNumberingScheme;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAutoNumberingScheme;
 import static edu.ku.brc.specify.config.init.DataBuilder.createCollectingEvent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createCollectingEventAttr;
 import static edu.ku.brc.specify.config.init.DataBuilder.createCollectingTrip;
@@ -163,7 +163,7 @@ import edu.ku.brc.specify.datamodel.AgentVariant;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttachmentMetadata;
 import edu.ku.brc.specify.datamodel.AttributeDef;
-import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
 import edu.ku.brc.specify.datamodel.CollectingTrip;
@@ -257,8 +257,9 @@ public class BuildSampleDatabase
     
     protected static boolean     debugOn  = false;
     protected static final int   TIME_THRESHOLD = 30;
-    protected static Hashtable<String, Boolean> fieldsToHideHash     = new Hashtable<String, Boolean>();
-    protected static String                     catalogNumberFmtName = null;
+    protected static Hashtable<String, Boolean> fieldsToHideHash       = new Hashtable<String, Boolean>();
+    protected static String                     catalogNumberFmtName   = null;
+    protected static String                     accessionNumberFmtName = "AccessionNumberString";
 
     protected Calendar           calendar = Calendar.getInstance();
     protected Session            session;
@@ -455,9 +456,11 @@ public class BuildSampleDatabase
         frame.setDesc("Creating CatalogNumberingScheme...");
         frame.setProcess(++createStep);
 
-        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber For "+config.getCollectionName(), "", true);
+        AutoNumberingScheme cns = createAutoNumberingScheme("CatalogNumber For "+config.getCollectionName(), "", true, CollectionObject.getClassTableId());
+        AutoNumberingScheme accessionNS = createAutoNumberingScheme("AccessionNumber For " + config.getCollectionName(), "", false, Accession.getClassTableId());
         
         persist(cns);
+        persist(accessionNS);
         
         ////////////////////////////////
         // Create Collection
@@ -467,10 +470,13 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
 
         Collection collection = createCollection(config.getCollectionPrefix(), config.getCollectionName(), cns, discipline);
-
+        
         DataBuilder.createStandardGroups(groups, collection);
         
         persist(collection);
+        
+        division.addReference(accessionNS, "numberingSchemes");
+        persist(division);
 
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
@@ -841,9 +847,12 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber For Plants", "", true);
+        AutoNumberingScheme cns = createAutoNumberingScheme("CatalogNumber For Plants", "", true, CollectionObject.getClassTableId());
+        AutoNumberingScheme accessionNS = createAutoNumberingScheme("AccessionNumber For Plans", "", false, Accession.getClassTableId());
         
         persist(cns);
+        persist(accessionNS);
+
         
         ////////////////////////////////
         // Create Collection
@@ -858,6 +867,9 @@ public class BuildSampleDatabase
 
         persist(groups);
         
+        division.addReference(accessionNS, "numberingSchemes");
+        persist(division);
+
         commitTx();
         
         makeFieldVisible(null, discipline);
@@ -1610,9 +1622,12 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber For Plants", "", true);
+        AutoNumberingScheme cns = createAutoNumberingScheme("CatalogNumber For Plants", "", true, CollectionObject.getClassTableId());
+        AutoNumberingScheme accessionNS = createAutoNumberingScheme("AccessionNumber For Plants", "", false, Accession.getClassTableId());
         
         persist(cns);
+        persist(accessionNS);
+
         
         ////////////////////////////////
         // Create Collection
@@ -1622,6 +1637,9 @@ public class BuildSampleDatabase
         persist(collection);
         
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+        
+        division.addReference(accessionNS, "numberingSchemes");
+        persist(division);
 
         commitTx();
         
@@ -2059,9 +2077,11 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatNo "+disciplineType.getTitle(), "", true);
+        AutoNumberingScheme cns = createAutoNumberingScheme("CatNo "+disciplineType.getTitle(), "", true, CollectionObject.getClassTableId());
+        AutoNumberingScheme accessionNS = createAutoNumberingScheme("AccessionNumber For " + disciplineType.getTitle(), "", false, Accession.getClassTableId());
         
         persist(cns);
+        persist(accessionNS);
         persist(earth);
         
         ////////////////////////////////
@@ -2076,7 +2096,9 @@ public class BuildSampleDatabase
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
         persist(groups);
-        
+        division.addReference(accessionNS, "numberingSchemes");
+        persist(division);
+
         commitTx();
         
         makeFieldVisible(null, discipline);
@@ -3101,9 +3123,11 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatNo "+disciplineType.getTitle(), "", true);
+        AutoNumberingScheme cns = createAutoNumberingScheme("CatNo "+disciplineType.getTitle(), "", true, CollectionObject.getClassTableId());
+        AutoNumberingScheme accessionNS = createAutoNumberingScheme("AccessionNumber For " + disciplineType.getTitle(), "", false, Accession.getClassTableId());
         
         persist(cns);
+        persist(accessionNS);
         
         ////////////////////////////////
         // Create Collection
@@ -3118,6 +3142,9 @@ public class BuildSampleDatabase
         AppContextMgr.getInstance().setClassObject(Collection.class, collection);
 
         persist(groups);
+        
+        division.addReference(accessionNS, "numberingSchemes");
+        persist(division);
 
         commitTx();
         
@@ -4319,9 +4346,11 @@ public class BuildSampleDatabase
         frame.setDesc("Creating Collection "+  colName);
         
         startTx();
-        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber For " + colName, "", true);
+        AutoNumberingScheme cns = createAutoNumberingScheme("CatalogNumber For " + colName, "", true, CollectionObject.getClassTableId());
+        AutoNumberingScheme accessionNS = createAutoNumberingScheme("AccessionNumber For " + colName, "", false, Accession.getClassTableId());
         
         persist(cns);
+        persist(accessionNS);
         
         ////////////////////////////////
         // Create Collection
@@ -4337,6 +4366,9 @@ public class BuildSampleDatabase
         
         persist(groups);
         
+        division.addReference(accessionNS, "numberingSchemes");
+        persist(division);
+
         ////////////////////////////////
         // picklists
         ////////////////////////////////
@@ -7306,6 +7338,11 @@ public class BuildSampleDatabase
             if (isColObj && item.getName().equals("catalogNumber") && catalogNumberFmtName != null)
             {
                 newItem.setFormat(catalogNumberFmtName);
+            }
+            
+            if (isColObj && item.getName().equals("accessionNumber") && accessionNumberFmtName != null)
+            {
+                newItem.setFormat(accessionNumberFmtName);
             }
             
         }

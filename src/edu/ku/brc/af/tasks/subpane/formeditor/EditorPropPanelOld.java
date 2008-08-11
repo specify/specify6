@@ -44,6 +44,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellField;
@@ -235,7 +236,8 @@ public class EditorPropPanelOld extends JPanel
         
         int x = 2;
         
-        valBtn = FormViewObj.createValidationIndicator(mv.getCurrentView());
+        Viewable viewable = mv.getCurrentView();
+        valBtn = FormViewObj.createValidationIndicator(UIHelper.getFrame(viewable.getUIComponent()), viewable.getValidator());
         pb.add(valBtn, cc.xy(x, 1));
         x += 2;
        

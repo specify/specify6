@@ -76,6 +76,8 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     protected Integer           type;  // see PickListDBAdapterIFace.Type
     protected String            tableName;
     protected String            fieldName;
+    protected String            filterFieldName;
+    protected String            filterValue;
     protected String            formatter; // dataobj_formatter or uiformatter
     protected Boolean           readOnly;
     protected Integer           sizeLimit;
@@ -122,6 +124,8 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
         readOnly   = false;
         sizeLimit  = 50;
         isSystem   = false;
+        filterFieldName = null;
+        filterValue     = null;
         
         collection = AppContextMgr.getInstance() == null || !AppContextMgr.getInstance().hasContext() ? null : AppContextMgr.getInstance().getClassObject(Collection.class);
         
@@ -298,6 +302,40 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     public void setType(Integer type)
     {
         this.type = type;
+    }
+
+    /**
+     * @return the filterFieldName
+     */
+    @Column(name = "FilterFieldName", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getFilterFieldName()
+    {
+        return filterFieldName;
+    }
+
+    /**
+     * @param filterFieldName the filterFieldName to set
+     */
+    public void setFilterFieldName(String filterFieldName)
+    {
+        this.filterFieldName = filterFieldName;
+    }
+
+    /**
+     * @return the filterValue
+     */
+    @Column(name = "FilterValue", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getFilterValue()
+    {
+        return filterValue;
+    }
+
+    /**
+     * @param filterValue the filterValue to set
+     */
+    public void setFilterValue(String filterValue)
+    {
+        this.filterValue = filterValue;
     }
 
     /**

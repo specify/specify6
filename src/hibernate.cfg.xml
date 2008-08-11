@@ -50,11 +50,11 @@
 		<mapping class="edu.ku.brc.specify.datamodel.AttachmentTag"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AttributeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Author"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AutoNumberingScheme"/>
 		<mapping class="edu.ku.brc.specify.datamodel.BorrowAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Borrow"/>
 		<mapping class="edu.ku.brc.specify.datamodel.BorrowMaterial"/>
 		<mapping class="edu.ku.brc.specify.datamodel.BorrowReturnMaterial"/>
-		<mapping class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Collection"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectingEvent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectingEventAttachment"/>

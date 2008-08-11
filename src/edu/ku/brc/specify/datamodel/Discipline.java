@@ -85,7 +85,8 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     
     protected Set<SpLocaleContainer>    spLocaleContainers;
     protected Set<SpExportSchema>       spExportSchemas;  // Zero or One
-     
+    protected Set<AutoNumberingScheme>   numberingSchemes;
+
 
     // Constructors
 
@@ -138,6 +139,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
         spLocaleContainers    = new HashSet<SpLocaleContainer>();
         agents                = new HashSet<Agent>();
         spExportSchemas       = new HashSet<SpExportSchema>();
+        numberingSchemes       = new HashSet<AutoNumberingScheme>();
     }
     // End Initializer
 
@@ -431,6 +433,24 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     {
         this.spExportSchemas = spExportSchemas;
     }
+    
+    /**
+     * @return the numberingSchemes
+     */
+    @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="disciplines")
+    @Cascade( {CascadeType.SAVE_UPDATE} )
+    public Set<AutoNumberingScheme> getNumberingSchemes()
+    {
+        return numberingSchemes;
+    }
+
+    /**
+     * @param numberingSchemes the numberingSchemes to set
+     */
+    public void setNumberingSchemes(Set<AutoNumberingScheme> numberingSchemes)
+    {
+        this.numberingSchemes = numberingSchemes;
+    }
 
     /**
      * @param division the division to set
@@ -438,6 +458,20 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     public void setDivision(Division division)
     {
         this.division = division;
+    }
+    
+    
+    /**
+     * Asks the Object to force load and child object. This must be done within a Session. 
+     */
+    public void forceLoad()
+    {
+        getDeterminationStatuss().size(); // make sure they are loaded
+        
+        for (AutoNumberingScheme ans : numberingSchemes) // Force Load of Numbering Schemes
+        {
+            ans.getTableNumber();
+        }
     }
 
     /* (non-Javadoc)

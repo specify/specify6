@@ -34,7 +34,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.io.FilenameUtils;
@@ -414,6 +413,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             for (Object obj : session.getDataList(sqlStr))
             {
                 Collection cs = (Collection)obj; 
+                cs.forceLoad();
+                
                 cs.getDiscipline();// force load of Discipline
                 cs.getDiscipline().getAgents(); // force load of agents
                 collectionHash.put(cs.getCollectionName(), cs);
@@ -430,7 +431,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
 
                     collection = (Collection)list.get(0);
-
+                    collection.forceLoad();
                 }
                 else
                 {
@@ -449,6 +450,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 if (collectionHash.size() == 1)
                 {
                     collection = collectionHash.elements().nextElement();
+                    collection.forceLoad();
     
                 } else if (collectionHash.size() > 0)
                 {
@@ -506,6 +508,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     session = DataProviderFactory.getInstance().createSession();
                     session.attach(collection);
                     session.attach(spUser);
+                    
+                    collection.forceLoad();
                     
                 } else
                 {
@@ -1066,10 +1070,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
             int prevDisciplineId = curDis != null ? curDis.getDisciplineId() : -1;
     
             Discipline discipline = session.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ; //$NON-NLS-1$
-            discipline.getDeterminationStatuss().size(); // make sure they are loaded
+            discipline.forceLoad();
+            
             AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
             
             String disciplineStr = discipline.getName().toLowerCase();
+            
+            Division division = discipline.getDivision();
+            division.forceLoad();
+            AppContextMgr.getInstance().setClassObject(Division.class, division);
             
             //---------------------------------------------------------
             // This is the Full Path User / Discipline / Collection / UserType / isPersonal

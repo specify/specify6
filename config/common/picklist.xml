@@ -20,9 +20,6 @@
   <picklist name="GeologicTimePeriodTreeDef" issystem="true" type="1" tablename="geologictimeperiodtreedef" formatter="GeologicTimePeriodTreeDef" readonly="true" sizelimit="-1">
     <items/>
   </picklist>
-  <picklist name="CatalogNumberingScheme" issystem="true" type="1" tablename="catalognumberingscheme" formatter="CatalogNumberingScheme" readonly="true" sizelimit="-1">
-    <items/>
-  </picklist>
   <picklist name="PermitType" issystem="true" type="0" readonly="true" sizelimit="5">
     <items>
       <picklistitem title="US Dept Wildlife" value="US Dept Wildlife"/>

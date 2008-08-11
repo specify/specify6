@@ -21,14 +21,12 @@ import java.awt.BorderLayout;
 import java.util.Vector;
 
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -51,16 +49,15 @@ public class FormValidatorInfo extends JPanel
      * CReate a FormValidator.
      * @param formViewObj the FormViewObj that will be validated
      */
-    public FormValidatorInfo(final Viewable formViewObj)
+    public FormValidatorInfo(final FormValidator formValidator)
     {
-        model = new FormValidatorInfoModel(formViewObj);
+        model = new FormValidatorInfoModel(formValidator);
         table = new JTable(model);
         
-        formValidator = formViewObj.getValidator();
+        this.formValidator = formValidator;
         
         setLayout(new BorderLayout());
-        JScrollPane scrollPane = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        add(scrollPane, BorderLayout.CENTER);
+        add(UIHelper.createScrollPane(table), BorderLayout.CENTER);
     }
     
     /**
@@ -78,15 +75,13 @@ public class FormValidatorInfo extends JPanel
     class FormValidatorInfoModel extends AbstractTableModel
     {
         protected Vector<Pair<String, String>> rows   = new Vector<Pair<String, String>>();
-        protected String[]            header = {getResourceString("VAL_CONTROLSUBFORM_LABEL"), getResourceString("VAL_STATUS_LABEL")};
+        protected String[]                     header = {getResourceString("VAL_CONTROLSUBFORM_LABEL"), getResourceString("VAL_STATUS_LABEL")};
         
         /**
          * @param viewable
          */
-        public FormValidatorInfoModel(final Viewable viewable) 
+        public FormValidatorInfoModel(final FormValidator validator) 
         {
-            FormValidator validator = viewable.getValidator();
-            
             for (FormValidator kidValidator : validator.getKids())
             {
                 if (!kidValidator.isFormValid())

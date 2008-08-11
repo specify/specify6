@@ -252,6 +252,14 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
         return fieldName;
     }
     
+    /**
+     * @param isDefault the isDefault to set
+     */
+    public void setDefault(boolean isDefault)
+    {
+        this.isDefault = isDefault;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

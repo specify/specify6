@@ -23,6 +23,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -72,7 +73,6 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     protected Set<SpAppResourceDir>      spAppResourceDirs;
     protected Set<FieldNotebook>         fieldNoteBooks;
     protected Set<CollectionObject>      collectionObjects;
-    protected CatalogNumberingScheme     catalogNumberingScheme;
     protected Agent                      contactAgent;
     protected Agent                      curatorAgent;
     protected Set<PrepType>              prepTypes;
@@ -81,6 +81,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     protected Set<CollectionRelType>     leftSideRelTypes;
     protected Set<CollectionRelType>     rightSideRelTypes;
 
+    protected Set<AutoNumberingScheme>   numberingSchemes;
 
 
     // Constructors
@@ -120,7 +121,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         spAppResourceDirs      = new HashSet<SpAppResourceDir>();
         collectionObjects      = new HashSet<CollectionObject>();
         fieldNoteBooks         = new HashSet<FieldNotebook>();
-        catalogNumberingScheme = null;
+        numberingSchemes       = new HashSet<AutoNumberingScheme>();
         contactAgent           = null;
         curatorAgent           = null;
         prepTypes              = new HashSet<PrepType>();
@@ -247,17 +248,39 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         this.remarks = remarks;
     }
 
-
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "CatalogNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = true)
-    public CatalogNumberingScheme getCatalogNumberingScheme()
+    /**
+     * @return the numberingSchemes
+     */
+    @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collections")
+    @Cascade( {CascadeType.SAVE_UPDATE} )
+    public Set<AutoNumberingScheme> getNumberingSchemes()
     {
-        return catalogNumberingScheme;
+        return numberingSchemes;
     }
 
-    public void setCatalogNumberingScheme(CatalogNumberingScheme catalogNumberingScheme)
+    /**
+     * @param numberingSchemes the numberingSchemes to set
+     */
+    public void setNumberingSchemes(Set<AutoNumberingScheme> numberingSchemes)
     {
-        this.catalogNumberingScheme = catalogNumberingScheme;
+        this.numberingSchemes = numberingSchemes;
+    }
+    
+    /**
+     * @param schemeType
+     * @return
+     */
+    @Transient
+    public AutoNumberingScheme getNumberingSchemesByType(final Integer schemeType)
+    {
+        for (AutoNumberingScheme scheme : numberingSchemes)
+        {
+            if (scheme.getTableNumber().equals(schemeType))
+            {
+                return scheme;
+            }
+        }
+        return null;
     }
 
     /**
@@ -592,6 +615,17 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     public void setPickLists(Set<PickList> pickLists)
     {
         this.pickLists = pickLists;
+    }
+    
+    /**
+     * Asks the Object to force load and child object. This must be done within a Session. 
+     */
+    public void forceLoad()
+    {
+        for (AutoNumberingScheme ans : numberingSchemes) // Force Load of Numbering Schemes
+        {
+            ans.getTableNumber();
+        }
     }
 
     /* (non-Javadoc)

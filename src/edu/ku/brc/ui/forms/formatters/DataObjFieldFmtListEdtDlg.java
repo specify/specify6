@@ -59,7 +59,7 @@ import edu.ku.brc.util.ComparatorByStringRepresentation;
  * Created Date: Aug 5, 2008
  *
  */
-public class DataObjFieldFormatEditorDlg extends CustomDialog
+public class DataObjFieldFmtListEdtDlg extends CustomDialog
 {
    
     protected DBTableInfo                               tableInfo;
@@ -78,7 +78,7 @@ public class DataObjFieldFormatEditorDlg extends CustomDialog
      * @param uiFieldFormatterMgrCache
      * @throws HeadlessException
      */
-    public DataObjFieldFormatEditorDlg(final Frame                 parentDlg, 
+    public DataObjFieldFmtListEdtDlg(final Frame                 parentDlg, 
                                        final DBTableInfo           tableInfo, 
                                        final DataObjFieldFormatMgr dataObjFieldFormatMgrCache,
                                        final UIFieldFormatterMgr   uiFieldFormatterMgrCache) throws HeadlessException
@@ -130,8 +130,16 @@ public class DataObjFieldFormatEditorDlg extends CustomDialog
             }
         };
 
+        ActionListener defAL = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                setAsDefFormatter();
+            }
+        };
+
         // control panel
-        edaPanel = new EditDeleteAddPanel(editAL, delAL, addAL);
+        edaPanel = new DefEditDeleteAddPanel(defAL, editAL, delAL, addAL);
         edaPanel.getAddBtn().setEnabled(true);
         
         JLabel tableTitleLbl = createLabel(getResourceString("FFE_TABLE") + ": ");
@@ -145,7 +153,7 @@ public class DataObjFieldFormatEditorDlg extends CustomDialog
         tblInfoPB.add(tableTitleLbl, cc.xy(1, 1));
         tblInfoPB.add(tableTitleValueLbl, cc.xy(2, 1));
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:max(200px;p):g", "p,2px,f:max(200px;p):g,5px,p"));
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:max(200px;p):g", "p,2px,f:max(250px;p):g,5px,p"));
         pb.add(tblInfoPB.getPanel(), cc.xy(1, 1));
         pb.add(UIHelper.createScrollPane(formatList), cc.xy(1, 3));
         pb.add(edaPanel, cc.xy(1, 5));
@@ -183,6 +191,22 @@ public class DataObjFieldFormatEditorDlg extends CustomDialog
     }
     
     /**
+     * Sets the selected formatter as the default.
+     */
+    protected void setAsDefFormatter()
+    {
+        DataObjSwitchFormatter selected = (DataObjSwitchFormatter)formatList.getSelectedValue();
+        DefaultListModel model    = (DefaultListModel)formatList.getModel();
+        for (int i=0;i<model.getSize();i++)
+        {
+            DataObjSwitchFormatter dof = (DataObjSwitchFormatter)model.get(i);
+            dof.setDefault(dof == selected);
+            setWindowModified(true); 
+        }
+        formatList.repaint();
+    }
+    
+    /**
      * @param dataObjFieldFmt
      */
     protected void editFormatter(final DataObjSwitchFormatter dataObjFieldFmt, final boolean isNew)
@@ -207,6 +231,7 @@ public class DataObjFieldFormatEditorDlg extends CustomDialog
                     dataObjFieldFormatMgrCache.addFormatter(tempCopy);
                     listModel.addElement(tempCopy);
                 }
+                setWindowModified(true); 
             }
             
         } catch (CloneNotSupportedException ex)
@@ -237,18 +262,20 @@ public class DataObjFieldFormatEditorDlg extends CustomDialog
 
         dataObjFieldFormatMgrCache.removeFormatter(selectedFormat);
         
-        int              index = formatList.getSelectedIndex();
+        //int              index = formatList.getSelectedIndex();
         DefaultListModel model = (DefaultListModel) formatList.getModel();
         model.removeElement(selectedFormat);
+        
+        setWindowModified(true); 
 
-        if (model.getSize() == 0)
+        /*if (model.getSize() == 0)
         {
             return;
         }
 
         // else
         index = (index >= model.getSize()) ? index - 1 : index;
-        formatList.setSelectedIndex(index);
+        formatList.setSelectedIndex(index);*/
     }
 
     /**

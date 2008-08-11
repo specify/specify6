@@ -182,6 +182,14 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
         }
         return null;
     }
+    
+    /**
+     * @return returns the value as an Integer (via a cast).
+     */
+    public Integer getIntValue()
+    {
+        return (Integer)getValue();
+    }
 
     //--------------------------------------------------
     //-- UIValidatable Interface

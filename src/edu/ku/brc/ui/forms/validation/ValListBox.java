@@ -35,7 +35,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.hibernate.collection.PersistentSet;
 
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
@@ -102,7 +101,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
             valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPrefsCache.addChangeListener("ui.formatting.requiredfieldcolor", this);
         
         addFocusListener(new FocusAdapter() {
             @Override
@@ -237,7 +236,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
         UIHelper.removeFocusListeners(this);
         UIHelper.removeListSelectionListeners(this);
         UIHelper.removeKeyListeners(this);        
-        AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPrefsCache.removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
 
     /* (non-Javadoc)

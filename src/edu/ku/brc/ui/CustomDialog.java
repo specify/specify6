@@ -187,6 +187,15 @@ public class CustomDialog extends JDialog
     }
 
     /**
+     * Sets the title bar to look like the contents have been modified.
+     * @param isModified true/false
+     */
+    public void setWindowModified(final boolean isModified)
+    {
+        UIHelper.setWindowModified(this, isModified);
+    }
+    
+    /**
      * gets JButton corresponding to defaultBtn value.
      */
     protected JButton findDefaultBtn()

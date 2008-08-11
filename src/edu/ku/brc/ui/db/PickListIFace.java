@@ -94,6 +94,26 @@ public interface PickListIFace
      * @param readOnly
      */
     public abstract void setReadOnly(Boolean readOnly);
+    
+    /**
+     * @param filterName
+     */
+    public abstract void setFilterFieldName(String filterName);
+    
+    /**
+     * @return
+     */
+    public abstract String getFilterFieldName();
+    
+    /**
+     * @param filterName
+     */
+    public abstract void setFilterValue(String filterName);
+    
+    /**
+     * @return
+     */
+    public abstract String getFilterValue();
 
     /**
      * @return

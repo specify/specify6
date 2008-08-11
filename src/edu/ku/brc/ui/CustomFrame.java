@@ -129,7 +129,16 @@ public class CustomFrame extends JFrame
         this.whichBtns = whichBtns;
         this.contentPanel = contentPanel;
     }
-
+    
+    /**
+     * Sets the title bar to look like the contents have been modified.
+     * @param isModified true/false
+     */
+    public void setWindowModified(final boolean isModified)
+    {
+        UIHelper.setWindowModified(this, isModified);
+    }
+    
     /**
      * Create the UI for the frame.
      */

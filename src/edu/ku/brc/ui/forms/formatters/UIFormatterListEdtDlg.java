@@ -59,7 +59,7 @@ import edu.ku.brc.ui.CustomDialog;
  * Jan 27, 2008
  *
  */
-public class UIFormatterDlg extends CustomDialog
+public class UIFormatterListEdtDlg extends CustomDialog
 {
 	protected DBFieldInfo               fieldInfo = null;
     
@@ -82,7 +82,7 @@ public class UIFormatterDlg extends CustomDialog
      * @param contentPanel
      * @throws HeadlessException
      */
-    public UIFormatterDlg(final Frame               frame, 
+    public UIFormatterListEdtDlg(final Frame               frame, 
                           final DBFieldInfo         fieldInfo, 
                           final UIFieldFormatterMgr	uiFieldFormatterMgrCache) throws HeadlessException
     {

@@ -479,8 +479,8 @@
     </format>
     
     <format
-        name="CatalogNumberingScheme"
-        class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
+        name="AutoNumberingScheme"
+        class="edu.ku.brc.specify.datamodel.AutoNumberingScheme"
         default="true"
         >
         <switch single="true">

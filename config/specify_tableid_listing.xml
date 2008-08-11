@@ -58,7 +58,7 @@
         <table name="edu.ku.brc.specify.datamodel.BorrowAgent" abbrev="boa" id="19" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.BorrowMaterial" abbrev="bom" id="20" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" abbrev="brm" id="21" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.CatalogNumberingScheme" abbrev="cns" id="97"/>
+        <table name="edu.ku.brc.specify.datamodel.AutoNumberingScheme" abbrev="cns" id="97"/>
         <table name="edu.ku.brc.specify.datamodel.Collection" abbrev="col" id="23" workbench="true" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.CollectingEvent" abbrev="ce" id="10" workbench="true" searchable="true">
             <display view="CollectingEvent" dataobjformatter="CollectingEvent" searchdlg="CollectingEventSearch" newobjdlg="CollectingEvent"/>

@@ -67,7 +67,7 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
-import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
@@ -2126,7 +2126,7 @@ public class GenericDBConversion
                     }
 
                     Session localSession = HibernateUtil.getNewSession();
-                    CatalogNumberingScheme cns = new CatalogNumberingScheme();
+                    AutoNumberingScheme cns = new AutoNumberingScheme();
                     cns.initialize();
                     cns.setIsNumericOnly(true);
                     cns.setSchemeClassName("");

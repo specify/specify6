@@ -85,7 +85,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.formatters.UIFormatterDlg;
+import edu.ku.brc.ui.forms.formatters.UIFormatterListEdtDlg;
 import edu.ku.brc.ui.weblink.WebLinkConfigDlg;
 import edu.ku.brc.ui.weblink.WebLinkDef;
 import edu.ku.brc.ui.weblink.WebLinkMgr;
@@ -333,7 +333,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             formatMoreBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    UIFormatterDlg dlg = new UIFormatterDlg((Frame)UIRegistry.getTopWindow(), 
+                    UIFormatterListEdtDlg dlg = new UIFormatterListEdtDlg((Frame)UIRegistry.getTopWindow(), 
                                                             fieldInfo,
                                                             schemaPanel.getUiFieldFormatterMgrCache());
                     dlg.setVisible(true);

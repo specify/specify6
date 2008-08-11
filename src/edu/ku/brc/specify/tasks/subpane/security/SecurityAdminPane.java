@@ -922,7 +922,9 @@ public class SecurityAdminPane extends BaseSubPane
 
         PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("f:p:g,p,2px,p", "p")/*, new FormDebugPanel()*/);
         saveBtnPB.add(infoPanel.getSaveBtn(), cc.xy(4, 1));
-        JButton valBtn = FormViewObj.createValidationIndicator(panel.getMultiView().getCurrentView());
+        
+        Viewable viewable = panel.getMultiView().getCurrentView();
+        JButton valBtn = FormViewObj.createValidationIndicator(UIHelper.getFrame(viewable.getUIComponent()), viewable.getValidator());
         panel.getMultiView().getCurrentValidator().setValidationBtn(valBtn);
         saveBtnPB.add(valBtn, cc.xy(2, 1)); 
         
@@ -960,7 +962,10 @@ public class SecurityAdminPane extends BaseSubPane
 
         PanelBuilder saveBtnPB = new PanelBuilder(new FormLayout("f:p:g,p,2px,p", "p")/*, new FormDebugPanel()*/);
         saveBtnPB.add(infoPanel.getSaveBtn(), cc.xy(4, 1));
-        JButton valBtn = FormViewObj.createValidationIndicator(panel.getMultiView().getCurrentView());
+        
+        Viewable viewable = panel.getMultiView().getCurrentView();
+        JButton valBtn    = FormViewObj.createValidationIndicator(UIHelper.getFrame(viewable.getUIComponent()), viewable.getValidator());
+
         panel.getMultiView().getCurrentValidator().setValidationBtn(valBtn);
         saveBtnPB.add(valBtn, cc.xy(2, 1)); 
         

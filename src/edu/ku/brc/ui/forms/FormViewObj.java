@@ -24,9 +24,11 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -57,6 +59,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
@@ -397,7 +400,7 @@ public class FormViewObj implements Viewable,
             
             // We want it on the left side of other buttons
             // so wee need to add it before the Save button
-            JComponent valInfoBtn = createValidationIndicator(this);
+            JComponent valInfoBtn = createValidationIndicator(UIHelper.getFrame(getUIComponent()), getValidator());
             if (valInfoBtn != null)
             {
                 comps.add(valInfoBtn);
@@ -972,11 +975,13 @@ public class FormViewObj implements Viewable,
 
     /**
      * Creates the JButton that displays the current state of the forms validation
-     * @param comps the list of control that will be added to the controlbar
+     * @param window
+     * @param validator
+     * @return
      */
-    public static JButton createValidationIndicator(final Viewable viewable)
+    public static JButton createValidationIndicator(final Window window, final FormValidator validator)
     {
-        if (viewable.getValidator() != null)
+        if (validator != null)
         {
             JButton validationInfoBtn = new JButton(IconManager.getIcon("ValidationValid"));
             validationInfoBtn.setOpaque(false);
@@ -987,10 +992,10 @@ public class FormViewObj implements Viewable,
             validationInfoBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    showValidationInfo(viewable);
+                    showValidationInfo(window, validator);
                 }
             });
-            viewable.getValidator().setValidationBtn(validationInfoBtn);
+            validator.setValidationBtn(validationInfoBtn);
             return validationInfoBtn;
         }
         // else
@@ -1009,25 +1014,43 @@ public class FormViewObj implements Viewable,
      * Static Helper method for showing Validation info.
      * @param viewable the view to show info for.
      */
-    protected static void showValidationInfo(final Viewable viewable)
+    protected static void showValidationInfo(final Window window, final FormValidator validator)
     {
-        final FormValidatorInfo formInfo = new FormValidatorInfo(viewable);
+        final FormValidatorInfo formInfo = new FormValidatorInfo(validator);
 
         PanelBuilder panelBuilder = new PanelBuilder(new FormLayout("p", "p,5px,p"));
         panelBuilder.add(formInfo, cc.xy(1,1));
         
-        CustomDialog dialog = new CustomDialog(UIHelper.getFrame(viewable.getUIComponent()), viewable.getValidator().getName(), true, CustomDialog.OK_BTN, panelBuilder.getPanel())
+        CustomDialog dialog;
+        if (window instanceof JDialog)
         {
-            @Override
-            public void setVisible(final boolean visible)
+            dialog = new CustomDialog((Dialog)window, validator.getName(), true, CustomDialog.OK_BTN, panelBuilder.getPanel())
             {
-                if (!visible)
+                @Override
+                public void setVisible(final boolean visible)
                 {
-                    formInfo.cleanUp();
-                } 
-                super.setVisible(visible);
-            }
-        };
+                    if (!visible)
+                    {
+                        formInfo.cleanUp();
+                    } 
+                    super.setVisible(visible);
+                }
+            };
+        } else
+        {
+            dialog = new CustomDialog((Frame)window, validator.getName(), true, CustomDialog.OK_BTN, panelBuilder.getPanel())
+            {
+                @Override
+                public void setVisible(final boolean visible)
+                {
+                    if (!visible)
+                    {
+                        formInfo.cleanUp();
+                    } 
+                    super.setVisible(visible);
+                }
+            }; 
+        }
         dialog.setOkLabel(getResourceString("CLOSE"));
         UIHelper.centerAndShow(dialog);
         dialog.dispose();

@@ -11,7 +11,7 @@ package edu.ku.brc.specify.tests;
 
 
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccession;
-import static edu.ku.brc.specify.config.init.DataBuilder.createCatalogNumberingScheme;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAutoNumberingScheme;
 import static edu.ku.brc.specify.config.init.DataBuilder.createCollection;
 import static edu.ku.brc.specify.config.init.DataBuilder.createCollectionObject;
 
@@ -40,7 +40,7 @@ import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.init.DBConfigInfo;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -346,7 +346,7 @@ public class TestAutoNumbering extends TestCase
         Discipline discipline = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
-        Collection collection2 = createCollection("Fish", "Fish Tissue", collection.getCatalogNumberingScheme(), discipline);
+        Collection collection2 = createCollection("Fish", "Fish Tissue", collection.getNumberingSchemesByType(CollectionObject.getClassTableId()), discipline);
         HibernateUtil.beginTransaction();
         persist(collection2);
         HibernateUtil.commitTransaction();
@@ -375,8 +375,8 @@ public class TestAutoNumbering extends TestCase
         
         //colObj2.setCollection(null);
         //colObj1.setCollection(null);
-        collection2.setCatalogNumberingScheme(null);
-        collection.getCatalogNumberingScheme().getCollections().remove(collection2);
+        // ?? collection2.setCatalogNumberingScheme(null);
+        collection.getNumberingSchemesByType(CollectionObject.getClassTableId()).getCollections().remove(collection2);
         
         HibernateUtil.beginTransaction();
         session.delete(colObj1);
@@ -397,7 +397,7 @@ public class TestAutoNumbering extends TestCase
         Discipline discipline = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
-        CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAN", "", false);
+        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAN", "", false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric);
         HibernateUtil.commitTransaction();
@@ -422,7 +422,7 @@ public class TestAutoNumbering extends TestCase
         
         AppContextMgr.getInstance().setClassObject(Collection.class, null);
         
-        collection.setCatalogNumberingScheme(null);
+        // ?? collection.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric.getCollections().remove(collection);
         
         HibernateUtil.beginTransaction();
@@ -447,7 +447,7 @@ public class TestAutoNumbering extends TestCase
         Discipline     discipline = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
-        CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAN", "", false);
+        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAN", "", false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric);
         HibernateUtil.commitTransaction();
@@ -477,7 +477,7 @@ public class TestAutoNumbering extends TestCase
         
         AppContextMgr.getInstance().setClassObject(Collection.class, null);
         
-        collection.setCatalogNumberingScheme(null);
+     // ?? collection.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric.getCollections().remove(collection);
         
         HibernateUtil.beginTransaction();
@@ -504,7 +504,7 @@ public class TestAutoNumbering extends TestCase
         Discipline     discipline    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
-        CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAN", "", false);
+        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAN", "", false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric);
         HibernateUtil.commitTransaction();
@@ -516,7 +516,7 @@ public class TestAutoNumbering extends TestCase
         persist(collection2);
         HibernateUtil.commitTransaction();
         
-        CatalogNumberingScheme catNumSchemeAlphaNumeric3 = createCatalogNumberingScheme("CatalogNumber3", "", false);
+        AutoNumberingScheme catNumSchemeAlphaNumeric3 = createAutoNumberingScheme("CatalogNumber3", "", false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric3);
         HibernateUtil.commitTransaction();
@@ -570,13 +570,13 @@ public class TestAutoNumbering extends TestCase
         
         AppContextMgr.getInstance().setClassObject(Collection.class, null);
         
-        collection2.setCatalogNumberingScheme(null);
+     // ?? collection2.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric.getCollections().remove(collection2);
         
-        collection1.setCatalogNumberingScheme(null);
+     // ?? collection1.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric.getCollections().remove(collection1);
         
-        collection3.setCatalogNumberingScheme(null);
+     // ?? collection3.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric3.getCollections().remove(collection3);
         
         HibernateUtil.beginTransaction();
@@ -605,7 +605,7 @@ public class TestAutoNumbering extends TestCase
         Discipline     discipline    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
-        CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAlphaNumByYear", "", false);
+        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAlphaNumByYear", "", false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric);
         HibernateUtil.commitTransaction();
@@ -617,7 +617,7 @@ public class TestAutoNumbering extends TestCase
         persist(collection2);
         HibernateUtil.commitTransaction();
 
-        CatalogNumberingScheme catNumSchemeAlphaNumeric3 = createCatalogNumberingScheme("CatalogNumber3", "", false);
+        AutoNumberingScheme catNumSchemeAlphaNumeric3 = createAutoNumberingScheme("CatalogNumber3", "", false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric3);
         HibernateUtil.commitTransaction();
@@ -669,13 +669,13 @@ public class TestAutoNumbering extends TestCase
         
         AppContextMgr.getInstance().setClassObject(Collection.class, null);
         
-        collection2.setCatalogNumberingScheme(null);
+     // ?? collection2.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric.getCollections().remove(collection2);
         
-        collection1.setCatalogNumberingScheme(null);
+     // ?? collection1.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric.getCollections().remove(collection1);
         
-        collection3.setCatalogNumberingScheme(null);
+     // ?? collection3.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric3.getCollections().remove(collection3);
         
         HibernateUtil.beginTransaction();
@@ -704,7 +704,7 @@ public class TestAutoNumbering extends TestCase
         Discipline     discipline    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         
-        CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAlphaNumByYear", "", false);
+        AutoNumberingScheme catNumSchemeAlphaNumeric = createAutoNumberingScheme("CatalogNumberAlphaNumByYear", "", false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric);
         HibernateUtil.commitTransaction();
@@ -716,7 +716,7 @@ public class TestAutoNumbering extends TestCase
         persist(collection2);
         HibernateUtil.commitTransaction();
 
-        CatalogNumberingScheme catNumSchemeAlphaNumeric3 = createCatalogNumberingScheme("CatalogNumber3", "", false);
+        AutoNumberingScheme catNumSchemeAlphaNumeric3 = createAutoNumberingScheme("CatalogNumber3", "", false, CollectionObject.getClassTableId());
         HibernateUtil.beginTransaction();
         persist(catNumSchemeAlphaNumeric3);
         HibernateUtil.commitTransaction();
@@ -768,13 +768,13 @@ public class TestAutoNumbering extends TestCase
         
         AppContextMgr.getInstance().setClassObject(Collection.class, null);
         
-        collection2.setCatalogNumberingScheme(null);
+     // ?? collection2.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric.getCollections().remove(collection2);
         
-        collection1.setCatalogNumberingScheme(null);
+     // ?? collection1.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric.getCollections().remove(collection1);
         
-        collection3.setCatalogNumberingScheme(null);
+     // ?? collection3.setCatalogNumberingScheme(null);
         catNumSchemeAlphaNumeric3.getCollections().remove(collection3);
         
         HibernateUtil.beginTransaction();

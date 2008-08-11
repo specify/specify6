@@ -17,7 +17,7 @@ import java.security.PrivilegedAction;
  */
 public class DataProviderFactory
 {
-    protected static final String propName = "edu.ku.brc.dbsupport.DataProvider"; //$NON-NLS-1$
+    public static final String factoryName = "edu.ku.brc.dbsupport.DataProvider"; //$NON-NLS-1$
     
     private static DataProviderIFace instance = null;
    
@@ -34,26 +34,26 @@ public class DataProviderFactory
             
         }
         // else
-        String factoryName = AccessController.doPrivileged(new PrivilegedAction<String>() {
+        String factoryNameStr = AccessController.doPrivileged(new PrivilegedAction<String>() {
                 public String run() {
                     return System.getProperty(
-                    propName);}});
+                            factoryName);}});
             
-        if (factoryName != null) 
+        if (factoryNameStr != null) 
         {
             try 
             {
-                instance = Class.forName(factoryName).asSubclass(DataProviderIFace.class).newInstance();
+                instance = Class.forName(factoryNameStr).asSubclass(DataProviderIFace.class).newInstance();
                 return instance;
                  
             } catch (Exception e) 
             {
-                InternalError error = new InternalError("Can't instantiate DataProviderFactory factory " + factoryName); //$NON-NLS-1$
+                InternalError error = new InternalError("Can't instantiate DataProviderFactory factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
             }
         }
         
-        throw new InternalError("Can't instantiate DataProviderFactory factory becase " + propName + " has not been set."); //$NON-NLS-1$ //$NON-NLS-2$
+        throw new InternalError("Can't instantiate DataProviderFactory factory becase " + factoryName + " has not been set."); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

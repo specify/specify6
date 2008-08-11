@@ -282,7 +282,7 @@
     <table name="AppResource" id="83"/>
     <table name="AppResourceData" id="84"/>
     <table name="AppResourceDefault" id="85"/> 
-    <table name="CatalogNumberingScheme">
+    <table name="AutoNumberingScheme">
     <table name="AttributeDef"/>
     <table name="CollectingEventAttr"/>
     <table name="CollectionObjectAttr"/>

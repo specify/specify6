@@ -73,8 +73,8 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.formatters.DataObjAggregator;
-import edu.ku.brc.ui.forms.formatters.DataObjAggregatorDlg;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatEditorDlg;
+import edu.ku.brc.ui.forms.formatters.DataObjAggListEdtDlg;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFmtListEdtDlg;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
@@ -474,7 +474,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         	public void actionPerformed(ActionEvent e)
         	{
     			Frame frame = (Frame)UIRegistry.getTopWindow(); 
-    			DataObjFieldFormatEditorDlg dlg = new DataObjFieldFormatEditorDlg(frame, 
+    			DataObjFieldFmtListEdtDlg dlg = new DataObjFieldFmtListEdtDlg(frame, 
                                                                 				  tableInfo, 
                                                                 				  dataObjFieldFormatMgrCache, 
                                                                 				  uiFieldFormatterMgrCache);
@@ -483,6 +483,9 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         		// set combo selection to formatter selected in dialog
         		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
         		{
+                    setTableInfoChanged(true);
+                    setHasChanged(true);
+                    
 	        		// fill combo again, adding new formatter if it was new and selecting the appropriate one
         			fillFormatterCombo();
         		}
@@ -501,20 +504,17 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         	public void actionPerformed(ActionEvent e)
         	{
     			Frame frame = (Frame)UIRegistry.getTopWindow(); 
-    			DataObjAggregatorDlg dlg = new DataObjAggregatorDlg(frame, tableInfo, 
-    					aggregatorCbo.getSelectedIndex(), 
-    					dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache);
+    			DataObjAggListEdtDlg dlg = new DataObjAggListEdtDlg(frame, 
+                                    			        tableInfo, 
+                                    					dataObjFieldFormatMgrCache, 
+                                    					uiFieldFormatterMgrCache);
         		dlg.setVisible(true);
         		
         		// set combo selection to formatter selected in dialog
         		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
         		{
-        			DataObjAggregator agg = dlg.getSelectedAggregator();
-        			
-        			// TODO: assign selected aggregator as the default for current table
-        			currContainer.setAggregator(agg.getName());
-        			
-	        		// fill combo again, adding new formatter if it was new and selecting the appropriate one 
+                    setTableInfoChanged(true);
+                    setHasChanged(true);
         			fillAggregatorCombo();
         		}
         	}

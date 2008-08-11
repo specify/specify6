@@ -194,7 +194,7 @@ public class IconViewObj implements Viewable
             editBtn = UIHelper.createButton("EditForm", getResourceString("EditRecord"), IconManager.IconSize.Std16, true);
             newBtn  = UIHelper.createButton("CreateObj", getResourceString("NewRecord"), IconManager.IconSize.Std16, true);
             delBtn  = UIHelper.createButton("DeleteRecord", getResourceString("DeleteRecord"), IconManager.IconSize.Std16, true);
-            validationInfoBtn = FormViewObj.createValidationIndicator(this);
+            validationInfoBtn = FormViewObj.createValidationIndicator(UIHelper.getFrame(getUIComponent()), getValidator());
             
             editBtn.setEnabled(false);
             delBtn.setEnabled(false);

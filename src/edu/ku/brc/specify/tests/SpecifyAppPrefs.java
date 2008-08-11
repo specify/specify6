@@ -50,6 +50,11 @@ public class SpecifyAppPrefs
         
         AppPreferences.getRemote().load(); // Loads prefs from the database
         
+        loadColorAndFormatPrefs();
+    }
+    
+    public static void loadColorAndFormatPrefs()
+    {
         //FastDateFormat fastDateFormat = FastDateFormat.getDateInstance(FastDateFormat.SHORT);      
         AppPrefsCache.register(AppPrefsCache.getDefaultDatePattern(), "ui", "formatting", "scrdateformat");
         

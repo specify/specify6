@@ -25,12 +25,12 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 /**
@@ -44,26 +44,30 @@ import org.hibernate.annotations.Index;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "catalognumberingscheme")
+@Table(name = "autonumberingscheme")
 @org.hibernate.annotations.Table(appliesTo="catalognumberingscheme", indexes =
     {   @Index (name="SchemeNameIDX", columnNames={"SchemeName"})
     })
-public class CatalogNumberingScheme extends DataModelObjBase implements java.io.Serializable
+public class AutoNumberingScheme extends DataModelObjBase implements java.io.Serializable
 {
-    protected Integer            catalogNumberingSchemeId;
+    protected Integer         catalogNumberingSchemeId;
 
+    protected Integer          tableNumber; // Table Id number that matched DBTableIDMgr
     protected String          schemeName;
     protected String          schemeClassName;
     protected Boolean         isNumericOnly;
-    protected Set<Collection> collections;
     
-    public CatalogNumberingScheme()
+    protected Set<Collection> collections;
+    protected Set<Division>   divisions;
+    protected Set<Discipline> disciplines;
+    
+    public AutoNumberingScheme()
     {
         // no op
     }
     
     /** constructor with id */
-    public CatalogNumberingScheme(Integer catalogNumberingSchemeId) 
+    public AutoNumberingScheme(Integer catalogNumberingSchemeId) 
     {
         this.catalogNumberingSchemeId = catalogNumberingSchemeId;
     }
@@ -75,10 +79,12 @@ public class CatalogNumberingScheme extends DataModelObjBase implements java.io.
         super.init();
         
         catalogNumberingSchemeId = null;
-        schemeName      = null;
-        schemeClassName = null;
-        collections     = new HashSet<Collection>();
-        isNumericOnly   = false;
+        schemeName           = null;
+        schemeClassName      = null;
+        collections          = new HashSet<Collection>();
+        divisions            = new HashSet<Division>();
+        disciplines          = new HashSet<Discipline>();
+        isNumericOnly        = false;
     }
     
     // End Initializer
@@ -105,7 +111,7 @@ public class CatalogNumberingScheme extends DataModelObjBase implements java.io.
         this.catalogNumberingSchemeId = catalogNumberingSchemeId;
     }
 
-    @Column(name = "SchemeName", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "SchemeName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getSchemeName()
     {
         return schemeName;
@@ -116,7 +122,7 @@ public class CatalogNumberingScheme extends DataModelObjBase implements java.io.
         this.schemeName = schemeName;
     }
 
-    @Column(name = "SchemeClassName", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "SchemeClassName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getSchemeClassName()
     {
         return schemeClassName;
@@ -138,8 +144,27 @@ public class CatalogNumberingScheme extends DataModelObjBase implements java.io.
         this.isNumericOnly = isNumericOnly;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "catalogNumberingScheme")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    /**
+     * @return the type
+     */
+    @Column(name="TableNumber", unique=false, nullable=false, updatable=true, insertable=true)
+    public Integer getTableNumber()
+    {
+        return tableNumber;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setTableNumber(Integer tableNumber)
+    {
+        this.tableNumber = tableNumber;
+    }
+
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(name = "autonumsch_coll", 
+            joinColumns = { @JoinColumn(name = "AutoNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = false) }, 
+            inverseJoinColumns = { @JoinColumn(name = "CollectionID", unique = false, nullable = false, insertable = true, updatable = false) })
     public Set<Collection> getCollections()
     {
         return collections;
@@ -150,6 +175,34 @@ public class CatalogNumberingScheme extends DataModelObjBase implements java.io.
         this.collections = collections;
     }
     
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(name = "autonumsch_div", 
+            joinColumns = { @JoinColumn(name = "AutoNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = false) }, 
+            inverseJoinColumns = { @JoinColumn(name = "DivisionID", unique = false, nullable = false, insertable = true, updatable = false) })
+    public Set<Division> getDivisions()
+    {
+        return divisions;
+    }
+
+    public void setDivisions(Set<Division> divisions)
+    {
+        this.divisions = divisions;
+    }
+    
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(name = "autonumsch_dsp", 
+            joinColumns = { @JoinColumn(name = "AutoNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = false) }, 
+            inverseJoinColumns = { @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = false) })
+    public Set<Discipline> getDisciplines()
+    {
+        return disciplines;
+    }
+
+    public void setDisciplines(Set<Discipline> disciplines)
+    {
+        this.disciplines = disciplines;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
@@ -157,7 +210,7 @@ public class CatalogNumberingScheme extends DataModelObjBase implements java.io.
     @Override
     public Class<?> getDataClass()
     {
-        return CatalogNumberingScheme.class;
+        return AutoNumberingScheme.class;
     }
     
     /* (non-Javadoc)

@@ -175,9 +175,9 @@
                     <cell type="field" id="10" name="endDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                     
                     <cell type="label" labelfor="9"/>
-                    <cell type="field" id="9" name="startTime" uitype="text"/>
+                    <cell type="field" id="9" name="startTime" uitype="text" valtype="Changed"/>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="endTime" uitype="text"/> 
+                    <cell type="field" id="7" name="endTime" uitype="text" valtype="Changed"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>

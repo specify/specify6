@@ -248,7 +248,7 @@ public final class UIHelper
     /**
      * @param controlSize the controlSize to set
      */
-    public static void setControlSize(CONTROLSIZE controlSize)
+    public static void setControlSize(final CONTROLSIZE controlSize)
     {
         UIHelper.controlSize = controlSize;
     }
@@ -256,11 +256,47 @@ public final class UIHelper
     /**
      * @param comp
      */
-    public static void setControlSize(JComponent comp)
+    public static void setControlSize(final JComponent comp)
     {
         if (isMacOS_10_5_X && comp != null)
         {
             comp.putClientProperty("JComponent.sizeVariant", controlSize.toString());
+        }
+    }
+    
+    /**
+     * Changes the Window indicator to shoe that it is modified
+     * @param comp the Dialog/Frame
+     * @param isModified whether it is modified
+     */
+    public static void setWindowModified(final Component comp, final boolean isModified)
+    {
+        if (comp != null)
+        {
+            if (comp instanceof JDialog)
+            {
+                JDialog dlg = (JDialog)comp;
+                //if (isMacOS_10_5_X)
+                //{
+                //    only works on JFrame
+                //    dlg.getRootPane().putClientProperty("JComponent.windowModified", isModified ? Boolean.TRUE : Boolean.FALSE);
+                //} else
+                //{
+                    dlg.setTitle(dlg.getTitle() + "*");
+                //}
+                
+            } else if (comp instanceof JFrame)
+            {
+                JFrame dlg = (JFrame)comp;
+                if (isMacOS_10_5_X)
+                {
+                    dlg.getRootPane().putClientProperty("JComponent.windowModified", isModified ? Boolean.TRUE : Boolean.FALSE);
+    
+                } else
+                {
+                    dlg.setTitle(dlg.getTitle() + "*");
+                }
+            }
         }
     }
     

@@ -22,12 +22,15 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 
@@ -68,9 +71,12 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
      protected Set<Agent>               members;
      protected Set<ConservDescription>  conservDescriptions;
      protected Set<Loan>                loans;
+     protected Set<Gift>                gifts;
      protected Set<TreatmentEvent>      treatmentEvents;
      protected Set<Accession>           accessions;
      protected Set<RepositoryAgreement> repositoryAgreements;
+     protected Set<AutoNumberingScheme> numberingSchemes;
+
      
      protected static Division          currentDivision = null;
 
@@ -86,28 +92,7 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     {
         super(divisionId);
     }
-   
-    //----------------------------------------------------------------------
-    //-- Comparable Interface
-    //----------------------------------------------------------------------
-    
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    public int compareTo(Division obj)
-    {
-        if (title != null && obj != null && StringUtils.isNotEmpty(obj.title))
-        {
-            return title.compareTo(obj.title);
-        }
-        
-        if (name != null && obj != null && StringUtils.isNotEmpty(obj.name))
-        {
-            return name.compareTo(obj.name);
-        }
-        // else
-        return timestampCreated.compareTo(obj.timestampCreated);
-    }
+
 
     // Initializer
     @Override
@@ -127,9 +112,11 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
         members             = new HashSet<Agent>();
         conservDescriptions = new HashSet<ConservDescription>();
         loans               = new HashSet<Loan>();
+        gifts               = new HashSet<Gift>();
         treatmentEvents     = new HashSet<TreatmentEvent>();
         accessions          = new HashSet<Accession>();
         repositoryAgreements = new HashSet<RepositoryAgreement>();
+        numberingSchemes     = new HashSet<AutoNumberingScheme>();
         institution         = null;
         address             = null;
         disciplines         = new HashSet<Discipline>();
@@ -266,6 +253,24 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     {
         return repositoryAgreements;
     }
+    
+    /**
+     * @return the numberingSchemes
+     */
+    @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="divisions")
+    @Cascade( {CascadeType.SAVE_UPDATE} )
+    public Set<AutoNumberingScheme> getNumberingSchemes()
+    {
+        return numberingSchemes;
+    }
+
+    /**
+     * @param numberingSchemes the numberingSchemes to set
+     */
+    public void setNumberingSchemes(Set<AutoNumberingScheme> numberingSchemes)
+    {
+        this.numberingSchemes = numberingSchemes;
+    }
 
     /**
      * @return the title
@@ -322,6 +327,16 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     public Set<Loan> getLoans()
     {
         return loans;
+    }
+
+    /**
+     * @return the gifts
+     */
+    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<Gift> getGifts()
+    {
+        return gifts;
     }
 
     /**
@@ -472,11 +487,48 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     }
 
     /**
+     * @param gifts the gifts to set
+     */
+    public void setGifts(Set<Gift> gifts)
+    {
+        this.gifts = gifts;
+    }
+
+    /**
      * @param disciplines the disciplines to set
      */
     public void setDisciplines(Set<Discipline> disciplines)
     {
         this.disciplines = disciplines;
+    }
+    
+    
+    /**
+     * Asks the Object to force load and child object. This must be done within a Session. 
+     */
+    public void forceLoad()
+    {
+        for (AutoNumberingScheme ans : numberingSchemes) // Force Load of Numbering Schemes
+        {
+            ans.getTableNumber();
+        }
+    }
+    
+    /**
+     * @param schemeType
+     * @return
+     */
+    @Transient
+    public AutoNumberingScheme getNumberingSchemesByType(final Integer schemeType)
+    {
+        for (AutoNumberingScheme scheme : numberingSchemes)
+        {
+            if (scheme.getTableNumber().equals(schemeType))
+            {
+                return scheme;
+            }
+        }
+        return null;
     }
 
     /* (non-Javadoc)
@@ -524,5 +576,28 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     public String toString()
     {
         return getIdentityTitle();
+    }
+    
+    
+    //----------------------------------------------------------------------
+    //-- Comparable Interface
+    //----------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Division obj)
+    {
+        if (title != null && obj != null && StringUtils.isNotEmpty(obj.title))
+        {
+            return title.compareTo(obj.title);
+        }
+        
+        if (name != null && obj != null && StringUtils.isNotEmpty(obj.name))
+        {
+            return name.compareTo(obj.name);
+        }
+        // else
+        return timestampCreated.compareTo(obj.timestampCreated);
     }
  }

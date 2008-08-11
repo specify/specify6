@@ -44,7 +44,7 @@ import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.BorrowAgent;
 import edu.ku.brc.specify.datamodel.BorrowMaterial;
 import edu.ku.brc.specify.datamodel.BorrowReturnMaterial;
-import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
 import edu.ku.brc.specify.datamodel.CollectingTrip;
@@ -384,7 +384,7 @@ public class DataBuilder
      */
     public static Collection createCollection(final String prefix,
                                               final String name,
-                                              final CatalogNumberingScheme catalogNumberingScheme,
+                                              final AutoNumberingScheme catalogNumberingScheme,
                                               final Discipline[] disciplines,
                                               final boolean isEmbeddedCollectingEvent)
     {
@@ -393,7 +393,7 @@ public class DataBuilder
         collection.setCollectionPrefix(prefix);
         collection.setModifiedByAgent(null);
         collection.setCollectionName(name);
-        collection.setCatalogNumberingScheme(catalogNumberingScheme);
+        collection.addReference(catalogNumberingScheme, "numberingSchemes");
         collection.setIsEmbeddedCollectingEvent(isEmbeddedCollectingEvent);
         
         catalogNumberingScheme.getCollections().add(collection);
@@ -415,7 +415,7 @@ public class DataBuilder
      */
     public static Collection createCollection(final String prefix,
                                               final String name,
-                                              final CatalogNumberingScheme numberingScheme,
+                                              final AutoNumberingScheme numberingScheme,
                                               final Discipline discipline)
     {
         return createCollection(prefix, name, numberingScheme, discipline, true);
@@ -429,7 +429,7 @@ public class DataBuilder
      */
     public static Collection createCollection(final String prefix,
                                               final String name,
-                                              final CatalogNumberingScheme numberingScheme,
+                                              final AutoNumberingScheme numberingScheme,
                                               final Discipline discipline,
                                               final boolean isEmbeddedCE)
     {
@@ -2440,12 +2440,14 @@ public class DataBuilder
         return userPrincipal;   
     }
     
-    public static CatalogNumberingScheme createCatalogNumberingScheme(final String schemeName,
+    public static AutoNumberingScheme createAutoNumberingScheme(final String schemeName,
                                                                       final String schemeClassName,
-                                                                      final boolean isNumericOnly)
+                                                                      final boolean isNumericOnly,
+                                                                      final int   tableNumber)
     {
-        CatalogNumberingScheme cns = new CatalogNumberingScheme();
+        AutoNumberingScheme cns = new AutoNumberingScheme();
         cns.initialize();
+        cns.setTableNumber(tableNumber);
         cns.setSchemeName(schemeName);
         cns.setSchemeClassName(schemeClassName);
         cns.setIsNumericOnly(isNumericOnly);

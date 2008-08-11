@@ -29,9 +29,10 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.dbsupport.AutoNumberIFace;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.dbsupport.AccessionAutoNumberAlphaNum;
 import edu.ku.brc.specify.dbsupport.CollectionAutoNumber;
 import edu.ku.brc.specify.dbsupport.CollectionAutoNumberAlphaNum;
 import edu.ku.brc.ui.CommandAction;
@@ -155,6 +156,12 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
         {
             return new CollectionAutoNumberAlphaNum();
         }
+        
+        if (dataClassName.equals("edu.ku.brc.specify.datamodel.Accession") &&  //$NON-NLS-1$
+                fieldName.equals("accessionNumber")) //$NON-NLS-1$
+        {
+            return new AccessionAutoNumberAlphaNum();
+        }
 
         return UIFieldFormatterMgr.createAutoNumber(autoNumberClassName, dataClassName, fieldName);
     }
@@ -187,7 +194,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
             } else 
             {
                 Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-                CatalogNumberingScheme cns = collection != null ? collection.getCatalogNumberingScheme() : null;
+                AutoNumberingScheme cns = collection != null ? collection.getNumberingSchemesByType(CollectionObject.getClassTableId()) : null;
                 if (cns != null)
                 {
                     if (name.equals("CatalogNumberNumeric") || (name.equals("CatalogNumber") && cns.getIsNumericOnly())) //$NON-NLS-1$ //$NON-NLS-2$

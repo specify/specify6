@@ -6,7 +6,8 @@
  */
 package edu.ku.brc.specify.tools.schemalocale;
 
-import static edu.ku.brc.ui.UIRegistry.*;
+import static edu.ku.brc.ui.UIRegistry.getFormattedResStr;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -45,12 +46,14 @@ import com.jgoodies.looks.plastic.theme.SkyKrupp;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyWebLinkMgr;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.ui.SpecifyDataObjFieldFormatMgr;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
@@ -235,6 +238,9 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
 
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
+        
+        AppPrefsCache.setUseLocalOnly(true);
+        SpecifyAppPrefs.loadColorAndFormatPrefs();
         
         if (localizableIO.didModelChangeDuringLoad())
         {
@@ -484,10 +490,10 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 }
                 
                 System.setProperty(AppContextMgr.factoryName,          "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
-                System.setProperty(SchemaI18NService.factoryName,      "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema //$NON-NLS-1$
+                System.setProperty(SchemaI18NService.factoryName,      "edu.ku.brc.specify.config.SpecifySchemaI18NService");  // Needed for Localization and Schema //$NON-NLS-1$
                 System.setProperty(UIFieldFormatterMgr.factoryName,    "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumbering //$NON-NLS-1$
-                System.setProperty(WebLinkMgr.factoryName,             "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                  // Needed for WebLnkButton //$NON-NLS-1$
-                System.setProperty(DataObjFieldFormatMgr.factoryName,  "edu.ku.brc.specify.ui.SpecifyDataObjFieldFormatMgr");                // Needed for WebLnkButton //$NON-NLS-1$
+                System.setProperty(WebLinkMgr.factoryName,             "edu.ku.brc.specify.config.SpecifyWebLinkMgr");         // Needed for WebLnkButton //$NON-NLS-1$
+                System.setProperty(DataObjFieldFormatMgr.factoryName,  "edu.ku.brc.specify.ui.SpecifyDataObjFieldFormatMgr");  // Needed for WebLnkButton //$NON-NLS-1$
 
                 SpecifyDataObjFieldFormatMgr.setDoingLocal(true);
                 SpecifyUIFieldFormatterMgr.setDoingLocal(true);

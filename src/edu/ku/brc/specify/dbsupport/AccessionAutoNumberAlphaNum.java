@@ -17,8 +17,8 @@ import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.AutoNumberGeneric;
-import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -29,24 +29,24 @@ import edu.ku.brc.util.Pair;
  * Aug 8, 2007
  *
  */
-public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
+public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
 {
     /**
      * Default Constructor. 
      */
-    public CollectionAutoNumberAlphaNum()
+    public AccessionAutoNumberAlphaNum()
     {
         super();
         
-        classObj  = CollectionObject.class;
-        fieldName = "catalogNumber";
+        classObj  = Accession.class;
+        fieldName = "accessionNumber";
     }
 
     /**
      * Constructor with args.
      * @param properties the args
      */
-    public CollectionAutoNumberAlphaNum(final Properties properties)
+    public AccessionAutoNumberAlphaNum(final Properties properties)
     {
         super(properties);
     }
@@ -60,7 +60,7 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
                                       final Pair<Integer, Integer> yearPos, 
                                       final Pair<Integer, Integer> pos) throws Exception
     {
-        Collection currCollection = AppContextMgr.getInstance().getClassObject(Collection.class);
+        Division currDivision = AppContextMgr.getInstance().getClassObject(Division.class);
         
         Integer yearVal = null;
         if (yearPos != null && StringUtils.isNotEmpty(value) && value.length() >= yearPos.second)
@@ -68,8 +68,10 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
             yearVal = extractIntegerValue(yearPos, value);
         }
 
-        StringBuilder sb = new StringBuilder(" From CollectionObject c Join c.collection col Join col.numberingScheme cns WHERE cns.numberingSchemeId = ");
-        sb.append(currCollection.getNumberingSchemesByType(CollectionObject.getClassTableId()).getCatalogNumberingSchemeId());
+        StringBuilder sb = new StringBuilder(" From Accession c Join c.division dv Join dv.numberingSchemes ans WHERE ans.id = ");
+        sb.append(currDivision.getNumberingSchemesByType(Accession.getClassTableId()).getCatalogNumberingSchemeId());
+        sb.append(" AND dv.id = ");
+        sb.append(currDivision.getId());
         
         if (yearVal != null)
         {
@@ -77,6 +79,7 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
             sb.append(yearVal);
             sb.append(" = substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+")");
         }
+        
         sb.append(" ORDER BY");
         
         try
@@ -84,7 +87,6 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
             if (yearPos != null)
             {
                 sb.append(" substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+") desc");
-                
             }
             
             if (pos != null)
@@ -96,11 +98,12 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
                 sb.append(" substring("+fieldName+","+(pos.first+1)+","+pos.second+") desc");
             }
             
-            //System.out.println(sb.toString());
+            System.out.println(sb.toString());
             List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
             if (list.size() == 1)
             {
                 Object[] objArray = (Object[]) list.get(0);
+                System.err.println(((Accession)objArray[0]).getAccessionNumber());
                 return objArray[0];
             }
         } catch (Exception ex)

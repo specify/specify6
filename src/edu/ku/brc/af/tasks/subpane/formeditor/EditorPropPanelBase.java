@@ -187,7 +187,7 @@ public class EditorPropPanelBase extends JPanel
         
         int x = 2;
         
-        valBtn = FormViewObj.createValidationIndicator(mv.getCurrentView());
+        valBtn = FormViewObj.createValidationIndicator(UIHelper.getFrame(mv.getCurrentView().getUIComponent()), mv.getCurrentView().getValidator());
         pb.add(valBtn, cc.xy(x, 1));
         x += 2;
        

@@ -41,26 +41,26 @@ public class DefEditDeleteAddPanel extends EditDeleteAddPanel
      * @param editAL
      * @param defAL
      */
-    public DefEditDeleteAddPanel(final ActionListener addAL,
-                                 final ActionListener delAL,
+    public DefEditDeleteAddPanel(final ActionListener defAL,
                                  final ActionListener editAL,
-                                 final ActionListener defAL)
+                                 final ActionListener delAL,
+                                 final ActionListener addAL)
     {
         
         this(addAL, delAL, editAL, defAL, "", "", "", "");
 
     }
     
-    public DefEditDeleteAddPanel(final ActionListener addAL,
-                                 final ActionListener delAL,
+    public DefEditDeleteAddPanel(final ActionListener defAL,
                                  final ActionListener editAL,
-                                 final ActionListener defAL,
-                                 final String addTTKey,
-                                 final String delTTKey,
+                                 final ActionListener delAL,
+                                 final ActionListener addAL,
+                                 final String defTTKey,
                                  final String editTTKey,
-                                 final String defTTKey)
+                                 final String delTTKey,
+                                 final String addTTKey)
     {
-        createUI(addAL, delAL, editAL, defAL, addTTKey, delTTKey, editTTKey, defTTKey);
+        createUI(defAL, editAL, delAL, addAL, defTTKey, defTTKey, delTTKey, addTTKey);
     }
 
     /**
@@ -74,21 +74,21 @@ public class DefEditDeleteAddPanel extends EditDeleteAddPanel
      * @param defTTKey
      * @return
      */
-    protected PanelBuilder createUI(final ActionListener addAL,
-                                    final ActionListener delAL,
+    protected PanelBuilder createUI(final ActionListener defAL,
                                     final ActionListener editAL,
-                                    final ActionListener defAL,
-                                    final String addTTKey,
-                                    final String delTTKey,
+                                    final ActionListener delAL,
+                                    final ActionListener addAL,
+                                    final String defTTKey,
                                     final String editTTKey,
-                                    final String defTTKey)
+                                    final String delTTKey,
+                                    final String addTTKey)
     {
         if (defAL != null)
         {
             defBtn = UIHelper.createIconBtn("Checkmark", IconManager.IconSize.Std16, defTTKey, defAL);
         }
 
-        PanelBuilder    pb = super.createUI(addAL, delAL, editAL, addTTKey, delTTKey, editTTKey);
+        PanelBuilder    pb = super.createUI(editAL, delAL, addAL, defTTKey, editTTKey, addTTKey);
         CellConstraints cc = new CellConstraints();
         pb.add(defBtn, cc.xy(2, 1));
         return pb;

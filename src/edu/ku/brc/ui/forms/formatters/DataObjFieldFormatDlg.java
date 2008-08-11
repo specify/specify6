@@ -175,7 +175,7 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
         // after all is created, set initial selection on format list
-        fillWithObjFormatter(dataObjFormatter);
+        fillWithObjFormatter(dataObjFormatter, true);
         
         // title text field
         DocumentListener titleChangedDL = new DocumentListener()
@@ -218,6 +218,10 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
      */
     public void setHasChanged(boolean hasChanged)
     {
+        if (this.hasChanged != hasChanged)
+        {
+           setWindowModified(hasChanged); 
+        }
         this.hasChanged = hasChanged;
         updateUIEnabled();
     }
@@ -271,7 +275,7 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
                     fmtMultipleEditingPanel.fillWithObjFormatter(dataObjFormatter);
                     
                     setVisibleFormatPanel(btn);
-                    fillWithObjFormatter(dataObjFormatter);
+                    fillWithObjFormatter(dataObjFormatter, false);
                     
                     fmtSingleEditingPanel.setHasChanged(true);
                     fmtMultipleEditingPanel.setHasChanged(true);
@@ -303,12 +307,13 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
     /*
      * Populates the dialog controls with data from a given formatter
      */
-    protected void fillWithObjFormatter(final DataObjSwitchFormatter fmt)
+    protected void fillWithObjFormatter(final DataObjSwitchFormatter fmt, final boolean isFirstTime)
     {
         if (fmt.getTitle() != null)
         {
             ViewFactory.changeTextFieldUIForDisplay(nameText, false);
         }
+        
         titleText.setText(fmt.getTitle());
         nameText.setText(fmt.getName());
 
@@ -326,10 +331,14 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
             fmtMultipleEditingPanel.fillWithObjFormatter(fmt);
         }
 
+
         // update combo even if formatter is single (in this case the combo will
         // be disabled anyway)
         updateValueFieldCombo(fmt);
         updateUIEnabled();
+        
+        
+        setHasChanged(!isFirstTime);
     }
 
     /**
@@ -401,11 +410,10 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
     /**
      * @param btn
      */
-    protected void setVisibleFormatPanel(JRadioButton btn)
+    protected void setVisibleFormatPanel(final JRadioButton btn)
     {
         fmtSingleEditingPanel.setVisible(btn == singleDisplayBtn);
         fmtMultipleEditingPanel.setVisible(btn == multipleDisplayBtn);
-        setHasChanged(true);
         updateUIEnabled();
     }
 
@@ -439,11 +447,13 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
         super.cleanUp();
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+     */
     @Override
     public void stateChanged(ChangeEvent e)
     {
-        hasChanged = true;
-        updateUIEnabled();
+        setHasChanged(true);
     }
     
 }

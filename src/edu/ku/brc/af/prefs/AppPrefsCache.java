@@ -38,9 +38,11 @@ public class AppPrefsCache
     protected static final String NOT_INIT = "AppPrefs have not been initialized."; //$NON-NLS-1$
     protected static final String BAD_ARGS = "Empty fully qualified pref name."; //$NON-NLS-1$
     
-    protected static AppPrefsCache instance = new AppPrefsCache();
+    protected static AppPrefsCache instance     = new AppPrefsCache();
+    protected static boolean       useLocalOnly = false;
     
-    protected Hashtable<String, AppPrefsCacheEntry> hash     = new Hashtable<String, AppPrefsCacheEntry>();
+    protected Hashtable<String, AppPrefsCacheEntry> hash = new Hashtable<String, AppPrefsCacheEntry>();
+    
     
     
     /**
@@ -95,6 +97,41 @@ public class AppPrefsCache
         }
     }
     
+    /**
+     * @return return which prefs to use
+     */
+    protected static AppPreferences getPref()
+    {
+        return useLocalOnly ? AppPreferences.getLocalPrefs() : AppPreferences.getRemote();
+    }
+
+    /**
+     * @param useLocalOnly the useLocalOnly to set
+     */
+    public static void setUseLocalOnly(boolean useLocalOnly)
+    {
+        AppPrefsCache.useLocalOnly = useLocalOnly;
+    }
+    
+    /**
+     * Adds a change listener for a pref.
+     * @param name the name
+     * @param l the listener
+     */
+    public static void addChangeListener(final String name, final AppPrefsChangeListener l)
+    {
+        getPref().addChangeListener(name, l);
+    }
+
+    /**
+     * Removes a change listener for a pref.
+     * @param name the name
+     * @param l the listener
+     */
+    public static void removeChangeListener(final String name, final AppPrefsChangeListener l)
+    {
+        getPref().removeChangeListener(name, l);
+    }
 
     /**
      * The internal non-static version for registering a string
@@ -113,7 +150,7 @@ public class AppPrefsCache
         if (prefsCacheEntry == null)
         {
             prefsCacheEntry = new AppPrefsCacheEntry(attrName, AppPreferences.getRemote().get(name, defValue), defValue);
-            AppPreferences.getRemote().addChangeListener(name, prefsCacheEntry);
+            getPref().addChangeListener(name, prefsCacheEntry);
             hash.put(makeKey(section, pref, attrName), prefsCacheEntry);
         }
         return prefsCacheEntry;
@@ -143,7 +180,7 @@ public class AppPrefsCache
         
         // TODO error checking
         String name = makeKey(section, pref, attrName);
-        AppPreferences.getRemote().remove(name);
+        getPref().remove(name);
         getInstance().hash.remove(name);
         return true;
     }
@@ -174,7 +211,7 @@ public class AppPrefsCache
      */
     protected String checkForPref(final String fullName, final String defValue)
     {
-        AppPreferences appPrefs = AppPreferences.getRemote();
+        AppPreferences appPrefs = getPref();
         
         String prefVal;
 
@@ -209,7 +246,7 @@ public class AppPrefsCache
                                  final String       pref, 
                                  final String       attrName)
     {
-        AppPreferences appPrefs = AppPreferences.getRemote();
+        AppPreferences appPrefs = getPref();
         
         checkName(section, pref, attrName);
         
@@ -293,7 +330,7 @@ public class AppPrefsCache
             String prefVal  = checkForPref(fullName, defValue);
             simpleFormat.applyPattern(prefVal);
             DateFormatCacheEntry dateEntry = new DateFormatCacheEntry(simpleFormat, fullName, prefVal, defValue);
-            AppPreferences.getRemote().addChangeListener(fullName, dateEntry);
+            getPref().addChangeListener(fullName, dateEntry);
             hash.put(fullName, dateEntry);
         }
     }

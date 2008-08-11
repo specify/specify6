@@ -20,7 +20,7 @@ import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.AutoNumberGeneric;
-import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.util.Pair;
@@ -69,9 +69,12 @@ public class CollectionAutoNumber extends AutoNumberGeneric
     {
         boolean doDebug = false;
         
-        CatalogNumberingScheme cns = AppContextMgr.getInstance().getClassObject(Collection.class).getCatalogNumberingScheme();
+        AutoNumberingScheme cns = AppContextMgr.getInstance().getClassObject(Collection.class).getNumberingSchemesByType(CollectionObject.getClassTableId());
+        
+        cns = (AutoNumberingScheme)session.merge(cns);
         
         if (doDebug) System.out.println("CatNumScheme: "+cns.getSchemeName());
+        
         Vector<Integer> ids = new Vector<Integer>();
         for (Collection collection : cns.getCollections())
         {

@@ -461,10 +461,7 @@ public class UIFieldFormatterMgr
                         {
                             try
                             {
-                                UIFieldFormatterIFace formatter = Class
-                                        .forName(externalClassName).asSubclass(
-                                                UIFieldFormatterIFace.class)
-                                        .newInstance();
+                                UIFieldFormatterIFace formatter = Class.forName(externalClassName).asSubclass(UIFieldFormatterIFace.class).newInstance();
                                 formatter.setName(name);
                                 formatter.setAutoNumber(autoNumberObj);
                                 formatter.setDefault(isDefault);

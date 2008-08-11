@@ -56,7 +56,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
@@ -408,7 +407,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
-        AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPrefsCache.addChangeListener("ui.formatting.requiredfieldcolor", this);
 
         if (searchBtn != null)
         {
@@ -1010,7 +1009,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         focusListeners.clear();
 
         textWithQuery = null;
-        AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
+        AppPrefsCache.removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
 
     /* (non-Javadoc)

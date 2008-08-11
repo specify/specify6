@@ -31,7 +31,7 @@ import edu.ku.brc.helpers.XMLHelper;
  * Created Date: Jan 17, 2007
  *
  */
-public class DataObjAggregator
+public class DataObjAggregator implements Cloneable
 {
     protected String          name;	  // unique identifier to the aggregator 
     protected String		  title;  // name assigned to aggregator by the user (so that renaming won't affect references)
@@ -44,6 +44,9 @@ public class DataObjAggregator
     protected String          orderFieldName;
     protected boolean         useIdentity;
     
+    /**
+     * 
+     */
     public DataObjAggregator()
     {
     }
@@ -216,4 +219,15 @@ public class DataObjAggregator
 		sb.append("/>\n\n");
         XMLHelper.setEmptyAttrOK(false);
 	}
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    protected Object clone() throws CloneNotSupportedException
+    {
+        return super.clone();
+    }
+	
+	
 }

@@ -103,7 +103,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
         names = new HashSet<SpLocaleItemStr>();
         descs = new HashSet<SpLocaleItemStr>();
         
-        discipline          = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        discipline          = AppContextMgr.getInstance().hasContext() ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
         containerItems      = null;
     }
     

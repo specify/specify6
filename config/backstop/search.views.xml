@@ -169,13 +169,13 @@
         </view>
         
         <view 
-            name="CatalogNumberingScheme"
-            class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
+            name="AutoNumberingScheme"
+            class="edu.ku.brc.specify.datamodel.AutoNumberingScheme"
             usedefbusrule="false"
             resourcelabels="false">
-            <desc><![CDATA[The CatalogNumberingScheme Search Form]]></desc>
+            <desc><![CDATA[The AutoNumberingScheme Search Form]]></desc>
             <altviews>
-                <altview name="CatalogNumberingSchemeSearch" viewdef="CatalogNumberingSchemeSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="AutoNumberingSchemeSearch" viewdef="AutoNumberingSchemeSearch" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
 
@@ -645,12 +645,12 @@ Good: <cell type="field" name="FieldNum" ...>
         </viewdef>
         
         <viewdef type="form"
-            name="CatalogNumberingSchemeSearch"
-            class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
+            name="AutoNumberingSchemeSearch"
+            class="edu.ku.brc.specify.datamodel.AutoNumberingScheme"
             gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
             settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
             
-            <desc><![CDATA[The CatalogNumberingScheme Search Form]]></desc>
+            <desc><![CDATA[The AutoNumberingScheme Search Form]]></desc>
             <enableRules/>
             
             <columnDef>p,3dlu,p</columnDef>
