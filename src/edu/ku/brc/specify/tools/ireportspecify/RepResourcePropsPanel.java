@@ -119,10 +119,17 @@ public class RepResourcePropsPanel extends JPanel
             builder.add(tblCombo, cc.xy(3, 6));
         }
         
-        builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPEAT_LBL")), cc.xy(1, showTableIds ? 7 : 6));
-        repeatPanel = new ReportRepeatPanel(rep.getConnection(), canceller);
-        repeatPanel.createUI(rep.getSpReport() == null ? null : rep.getSpReport().getRepeats());
-        builder.add(repeatPanel, cc.xy(3, showTableIds ? 7 : 6));
+        if (rep != null)
+        {
+            builder.add(UIHelper.createLabel(UIRegistry.getResourceString("REP_REPEAT_LBL")), cc.xy(1, showTableIds ? 7 : 6));
+            repeatPanel = new ReportRepeatPanel(rep.getConnection(), canceller);
+            repeatPanel.createUI(rep.getSpReport() == null ? null : rep.getSpReport().getRepeats());
+            builder.add(repeatPanel, cc.xy(3, showTableIds ? 7 : 6));
+        }
+        else
+        {
+            repeatPanel = null;
+        }
     }
 
     public int getTableId()
@@ -200,11 +207,19 @@ public class RepResourcePropsPanel extends JPanel
     
     public Object getRepeats()
     {
-        return repeatPanel.getRepeats();
+        if (repeatPanel != null)
+        {
+            return repeatPanel.getRepeats();
+        }
+        return null;
     }
     
     public boolean validInputs()
     {
-        return repeatPanel.validInputs();
+        if (repeatPanel != null)
+        {
+            return repeatPanel.validInputs();
+        }
+        return true;
     }
 }
