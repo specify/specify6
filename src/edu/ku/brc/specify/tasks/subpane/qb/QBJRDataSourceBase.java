@@ -198,13 +198,10 @@ public class QBJRDataSourceBase implements JRDataSource
             return scrDateFormat.format((Date)obj);
         }
     
-        if (obj != null)
+        UIFieldFormatterIFace formatter = columnInfo.get(fldIdx).getUiFieldFormatter();
+        if (formatter != null && formatter.isInBoundFormatter())
         {
-            UIFieldFormatterIFace formatter = columnInfo.get(fldIdx).getUiFieldFormatter();
-            if (formatter != null && formatter.isInBoundFormatter())
-            {
-                return formatter.formatToUI(obj);
-            }
+            return formatter.formatToUI(obj);
         }
         
         return obj;
