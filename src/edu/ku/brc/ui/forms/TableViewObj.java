@@ -395,7 +395,7 @@ public class TableViewObj implements Viewable,
                         comps.add(saveBtn);
                     }
                 }
-                JComponent valInfoBtn = FormViewObj.createValidationIndicator(UIHelper.getFrame(getUIComponent()), getValidator());
+                JComponent valInfoBtn = FormViewObj.createValidationIndicator(getUIComponent(), getValidator());
                 if (valInfoBtn != null)
                 {
                     comps.add(valInfoBtn);

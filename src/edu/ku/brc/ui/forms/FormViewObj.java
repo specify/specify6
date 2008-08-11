@@ -400,7 +400,7 @@ public class FormViewObj implements Viewable,
             
             // We want it on the left side of other buttons
             // so wee need to add it before the Save button
-            JComponent valInfoBtn = createValidationIndicator(UIHelper.getFrame(getUIComponent()), getValidator());
+            JComponent valInfoBtn = createValidationIndicator(getUIComponent(), getValidator());
             if (valInfoBtn != null)
             {
                 comps.add(valInfoBtn);
@@ -979,7 +979,7 @@ public class FormViewObj implements Viewable,
      * @param validator
      * @return
      */
-    public static JButton createValidationIndicator(final Window window, final FormValidator validator)
+    public static JButton createValidationIndicator(final Component comp, final FormValidator validator)
     {
         if (validator != null)
         {
@@ -992,7 +992,7 @@ public class FormViewObj implements Viewable,
             validationInfoBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    showValidationInfo(window, validator);
+                    showValidationInfo(comp instanceof Window ? (Window)comp : UIHelper.getWindow(comp), validator);
                 }
             });
             validator.setValidationBtn(validationInfoBtn);

@@ -237,7 +237,7 @@ public class EditorPropPanelOld extends JPanel
         int x = 2;
         
         Viewable viewable = mv.getCurrentView();
-        valBtn = FormViewObj.createValidationIndicator(UIHelper.getFrame(viewable.getUIComponent()), viewable.getValidator());
+        valBtn = FormViewObj.createValidationIndicator(viewable.getUIComponent(), viewable.getValidator());
         pb.add(valBtn, cc.xy(x, 1));
         x += 2;
        
