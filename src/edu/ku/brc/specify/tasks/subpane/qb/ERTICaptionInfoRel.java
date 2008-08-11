@@ -119,6 +119,12 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
     @Override
     public Object processValue(Object key)
     {
+        //Suddenly, many formatters blow up when passed null values:
+        if (key == null)
+        {
+            return null;
+        }
+        
         if (relationship.getType() == DBRelationshipInfo.RelationshipType.OneToMany)
         {
             return DataObjFieldFormatMgr.getInstance().aggregate(getList(key), relationship.getDataClass());
