@@ -219,26 +219,30 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
      */
     protected DataObjDataFieldFormatIFace getDataFormatter(final Object dataObj)
     {
-        if (isSingle())
-        {
-            return getFormatterForValue(null); // null is ignored
-        }
-
-        DataObjectGettable getter = DataObjectGettableFactory.get(dataObj.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
-
         DataObjDataFieldFormatIFace dff = null;
-        Object[] values = UIHelper.getFieldValues(new String[] {getFieldName()}, dataObj, getter);
-        if (values != null)
+        if (dataObj != null)
         {
-            String value = values[0] != null ? values[0].toString() : "null";
-            dff = getFormatterForValue(value);
-            if (dff == null)
+            if (isSingle())
             {
-                throw new RuntimeException("Couldn't find a switchable data formatter for ["+getName()+"] field["+getFieldName()+"] value["+value+"]");
+                return getFormatterForValue(null); // null is ignored
             }
-        } else
-        {
-            throw new RuntimeException("Values Array was null for Class["+dataObj.getClass().getSimpleName()+"] couldn't find field["+getFieldName()+"] (you probably passed in the wrong type of object)");
+    
+            DataObjectGettable getter = DataObjectGettableFactory.get(dataObj.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
+    
+            
+            Object[] values = UIHelper.getFieldValues(new String[] {getFieldName()}, dataObj, getter);
+            if (values != null)
+            {
+                String value = values[0] != null ? values[0].toString() : "null";
+                dff = getFormatterForValue(value);
+                if (dff == null)
+                {
+                    throw new RuntimeException("Couldn't find a switchable data formatter for ["+getName()+"] field["+getFieldName()+"] value["+value+"]");
+                }
+            } else
+            {
+                throw new RuntimeException("Values Array was null for Class["+dataObj.getClass().getSimpleName()+"] couldn't find field["+getFieldName()+"] (you probably passed in the wrong type of object)");
+            }
         }
         return dff;
     }

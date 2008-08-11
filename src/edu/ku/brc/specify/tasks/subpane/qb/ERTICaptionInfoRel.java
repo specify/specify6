@@ -152,18 +152,22 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
      */
     protected Collection<?> getListFromKey(final Object key)
     {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
+        if (key != null)
         {
-            return session.getDataList("from " + relationship.getDataClass().getName() + " where "
-                    + (relationship.getColName() != null ? relationship.getColName() 
-                            : relationship.getOtherSide() + "Id")
-                    + " = " + key.toString());
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                return session.getDataList("from " + relationship.getDataClass().getName() + " where "
+                        + (relationship.getColName() != null ? relationship.getColName() 
+                                : relationship.getOtherSide() + "Id")
+                        + " = " + key.toString());
+            }
+            finally
+            {
+                session.close();
+            }
         }
-        finally
-        {
-            session.close();
-        }
+        return null;
     }
     
     /**

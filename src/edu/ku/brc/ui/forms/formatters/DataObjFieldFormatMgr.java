@@ -920,6 +920,11 @@ public class DataObjFieldFormatMgr
      */
     public String format(final Object dataObj, final Class<?> dataClass)
     {
+        if (dataObj == null)
+        {
+            return "";
+        }
+        
         if (domFound)
         {
             DataObjSwitchFormatter sf = formatClassHash.get(dataClass);
@@ -990,34 +995,36 @@ public class DataObjFieldFormatMgr
      */
     public String aggregate(final Collection<?> items, final Class<?> dataClass)
     {
-        if (domFound)
+        if (!domFound || items == null || dataClass == null)
         {
-            DataObjAggregator defAgg = null;
-            for (Enumeration<DataObjAggregator> e=aggHash.elements();e.hasMoreElements();)
+            return "";
+        }
+        
+        DataObjAggregator defAgg = null;
+        for (Enumeration<DataObjAggregator> e=aggHash.elements();e.hasMoreElements();)
+        {
+            DataObjAggregator agg = e.nextElement();
+            if (dataClass == agg.getDataClass())
             {
-                DataObjAggregator agg = e.nextElement();
-                if (dataClass == agg.getDataClass())
+                if (agg.isDefault())
                 {
-                    if (agg.isDefault())
-                    {
-                        defAgg = agg;
-                        break;
-                        
-                    } else if (defAgg == null)
-                    {
-                        defAgg = agg;
-                    }
+                    defAgg = agg;
+                    break;
+                    
+                } else if (defAgg == null)
+                {
+                    defAgg = agg;
                 }
             }
-            
-            if (defAgg != null)
-            {
-                return aggregateInternal(items, defAgg);
-                
-            }
-            // else
-            log.error("Could find aggregator of class ["+dataClass.getCanonicalName()+"]");
         }
+        
+        if (defAgg != null)
+        {
+            return aggregateInternal(items, defAgg);
+            
+        }
+        // else
+        log.error("Could find aggregator of class ["+dataClass.getCanonicalName()+"]");
         return "";
     }
     

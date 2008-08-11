@@ -104,6 +104,11 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
      */
     public String format(final Object dataValue)
     {
+        if (dataValue == null)
+        {
+            return "";
+        }
+        
         if (!(dataValue instanceof CollectingEvent))
         {
             throw new RuntimeException("The data value set into CollectingEventDataObjFmt is not a CollectingEvent ["+dataValue.getClass().getSimpleName()+"]");

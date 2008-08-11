@@ -160,6 +160,11 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
      */
     public String format(Object dataValue)
     {
+        if (dataValue == null)
+        {
+            return "";
+        }
+        
         if (!(dataValue instanceof Locality))
         {
             throw new RuntimeException("The data value set into LocalityLatLonFormatter is not a Locality ["+dataValue.getClass().getSimpleName()+"]");
