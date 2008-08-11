@@ -694,7 +694,7 @@ public class UploadTableTree extends UploadTable
 	 * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#addDomainCriteria(edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace, int)
 	 */
 	@Override
-	protected void addDomainCriteria(CriteriaIFace criteria, int recNum)
+	protected void addDomainCriteria(CriteriaIFace criteria)
 			throws UploaderException {
 		// all already taken care of.
 	}

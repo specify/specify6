@@ -38,14 +38,17 @@ import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorization;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectingEventAttribute;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.PreparationAttribute;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
@@ -142,10 +145,12 @@ public class UploadTable implements Comparable<UploadTable>
      * For example: Collectors must be checked when matching collectingEvents.
      */
     protected Vector<UploadTable>                       matchChildren;
+    
+    protected boolean                                   skipMatching = false;
     /**
      * If a matching parent including matchChildren has been found then skipRow is set true for
      * members of matchChildren
-     */
+     */    
     protected boolean                                   skipRow                      = false;
     /**
      * Non-null fields in tblClass that are not included in the uploading dataset.
@@ -196,6 +201,32 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
     /**
+     * @return true if the findMatch step should be skipped.
+     * 
+     * Match-skipping is done to implement one-to-one relationships, which
+     * currently must be annotated as many-to-ones in Hibernate.
+     */
+    protected boolean shouldSkipMatching()
+    {
+        return isOneToOneChild();
+    }
+    
+    /**
+     * @return true if this table is the 'child' in a 1-1 relationship.
+     * 
+     * One-to-one relationships currently must be annotated as many-to-ones in Hibernate.
+     * A more general solution might be to check for a DELETE_ORPHAN hibernate 
+     * annotation on the MANY side of the relationship between
+     * this table and it's many-side 'child'.
+     */
+    protected boolean isOneToOneChild()
+    {
+        return tblClass.equals(CollectionObjectAttribute.class)
+            || tblClass.equals(PreparationAttribute.class)
+            || tblClass.equals(CollectingEventAttribute.class);
+       
+    }
+    /**
      * Icky workaround for some problems with determining tblClass in constructor. Must be called
      * after constructor.
      * 
@@ -205,6 +236,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         determineTblClass();
         initReqRelClasses();
+        skipMatching = shouldSkipMatching();
     }
 
     /**
@@ -1308,7 +1340,7 @@ public class UploadTable implements Comparable<UploadTable>
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                DataModelObjBase temp = (DataModelObjBase )AppContextMgr.getInstance().getClassObject(Discipline.class);
+                DataModelObjBase temp = AppContextMgr.getInstance().getClassObject(Discipline.class);
                 discipline = (Discipline )session.get(temp.getDataClass(), temp.getId());
             }
             catch (Exception ex)
@@ -1323,7 +1355,13 @@ public class UploadTable implements Comparable<UploadTable>
     	return discipline;
     }
     
-    protected void addDomainCriteria(CriteriaIFace criteria, int recNum) throws UploaderException
+    /**
+     * @param criteriam
+     * @throws UploaderException
+     * 
+     * Adds extra criteria related to discipline.
+     */
+    protected void addDomainCriteria(CriteriaIFace criteria) throws UploaderException
     {
         //XXX might be better to add getSpecialColumnCriteria() method to QueryAdjusterForDomain??
     	//but it would only be used here. 
@@ -1366,6 +1404,12 @@ public class UploadTable implements Comparable<UploadTable>
     {
         // if (!forceMatch && (!hasChildren || tblClass == CollectionObject.class)) { return false;
         // }
+        
+        if (skipMatching)
+        {
+            return false;
+        }
+        
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         DataModelObjBase match = null;
         Vector<Pair<String, String>> restrictedVals = new Vector<Pair<String, String>>();
@@ -1404,7 +1448,7 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
 
-            addDomainCriteria(critter, recNum);
+            addDomainCriteria(critter);
             
             List<DataModelObjBase> matches;
             List<DataModelObjBase> matchList = (List<DataModelObjBase>) critter.list();
@@ -1887,6 +1931,8 @@ public class UploadTable implements Comparable<UploadTable>
      */
     public void undoUpload() throws UploaderException
     {
+        //if isOneToOneChild() we most probably don't even need to worry about deleting 
+        //but just to be sure will always delete.
         deleteObjects(uploadedRecs.iterator());
     }
 
@@ -1908,21 +1954,31 @@ public class UploadTable implements Comparable<UploadTable>
                 if (key != null)
                 {
                     boolean committed = false;
-                    boolean opened = true;
+                    boolean opened = false;
                     try
                     {
                         q.setParameter("theKey", key);
                         DataModelObjBase obj = (DataModelObjBase) q.uniqueResult();
-                        session.beginTransaction();
-                        opened = true;
-                        session.delete(obj);
-                        BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(tblClass);
-                        if (busRule != null)
+                        if (obj != null)
                         {
-                            busRule.beforeDeleteCommit(obj, session);
+                            session.beginTransaction();
+                            opened = true;
+                            session.delete(obj);
+                            BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(tblClass);
+                            if (busRule != null)
+                            {
+                                busRule.beforeDeleteCommit(obj, session);
+                            }
+                            session.commit();
+                            committed = true;
                         }
-                        session.commit();
-                        committed = true;
+                        else
+                        {
+                            if (!isOneToOneChild())
+                            {
+                                log.error(tblClass.getSimpleName() + ": record with key " + key + " does not exist.");
+                            }
+                        }
                     }
                     catch (ConstraintViolationException ex)
                     {
@@ -2230,5 +2286,21 @@ public class UploadTable implements Comparable<UploadTable>
     public void shutdown() throws UploaderException
     {
         //nothing to do here.
+    }
+
+    /**
+     * @return the skipMatching
+     */
+    public boolean isSkipMatching()
+    {
+        return skipMatching;
+    }
+
+    /**
+     * @param skipMatching the skipMatching to set
+     */
+    public void setSkipMatching(boolean skipMatching)
+    {
+        this.skipMatching = skipMatching;
     }
 }
