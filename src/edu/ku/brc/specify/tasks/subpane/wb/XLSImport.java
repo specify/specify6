@@ -57,7 +57,7 @@ public class XLSImport extends DataImport implements DataImportIFace
             HSSFCell cell = headerRow.getCell(c);
             if (cell != null)
             {
-                String header = cell.getStringCellValue();
+                String header = cell.getRichStringCellValue().getString();
                 if (header != null)
                 {
                     if (header.equals(IMAGE_PATH_HEADING))
@@ -181,7 +181,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                             }
     
                             case HSSFCell.CELL_TYPE_STRING:
-                                value = cell.getStringCellValue();
+                                value = cell.getRichStringCellValue().getString();
                                 break;
     
                             case HSSFCell.CELL_TYPE_BLANK:
@@ -224,7 +224,7 @@ public class XLSImport extends DataImport implements DataImportIFace
             HSSFCell imgCell = row.getCell(c);
             if (imgCell != null)
             {
-                String imagePath = imgCell.getStringCellValue();
+                String imagePath = imgCell.getRichStringCellValue().getString();
                 if (imagePath != null)
                 {
                     try
@@ -255,7 +255,7 @@ public class XLSImport extends DataImport implements DataImportIFace
             HSSFCell c = row.getCell(geoCol);
             if (c != null)
             {
-                String geoData = c.getStringCellValue();
+                String geoData = c.getRichStringCellValue().getString();
                 if (geoData != null)
                 {
                     // TEMP FIX FOR BUG 4562 RELEASE

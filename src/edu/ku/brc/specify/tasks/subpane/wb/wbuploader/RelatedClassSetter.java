@@ -267,8 +267,7 @@ public class RelatedClassSetter
 				.createSession();
 		try 
 		{
-			DataModelObjBase temp = (DataModelObjBase) AppContextMgr
-					.getInstance().getClassObject(Discipline.class);
+			DataModelObjBase temp = AppContextMgr.getInstance().getClassObject(Discipline.class);
 			discipline = (Discipline) session.get(temp.getDataClass(), temp
 					.getId());
 		} catch (Exception ex) 
@@ -288,8 +287,7 @@ public class RelatedClassSetter
 				.createSession();
 		try 
 		{
-			DataModelObjBase temp = (DataModelObjBase) AppContextMgr
-					.getInstance().getClassObject(Collection.class);
+			DataModelObjBase temp = AppContextMgr.getInstance().getClassObject(Collection.class);
 			collection = (Collection) session.get(temp.getDataClass(), temp
 					.getId());
 		} catch (Exception ex) 

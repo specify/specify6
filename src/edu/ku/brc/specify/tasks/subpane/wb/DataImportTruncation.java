@@ -9,7 +9,6 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 
 
 /**
