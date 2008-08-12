@@ -927,6 +927,10 @@ public class InteractionsTask extends BaseTask
                 {
                     recordSet = RecordSetTask.askForRecordSet(CollectionObject.getClassTableId(), rsList);
                     
+                } else if (rv == ASK_TYPE.EnterCats)
+                {
+                    recordSet = askForCatNumbersRecordSet();
+                    
                 } else if (rv == ASK_TYPE.Cancel)
                 {
                     return;
