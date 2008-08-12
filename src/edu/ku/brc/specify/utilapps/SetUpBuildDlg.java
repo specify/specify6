@@ -266,14 +266,14 @@ class SetUpBuildDlg extends JDialog
         catGblBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
-                setCatNumGroup("Group");
+                setCatNumGroup("Cat Group");
             }
          });
          
         accGblBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
-                setAccNumGroup("Group");
+                setAccNumGroup("Acc Group");
             }
          });
 
