@@ -13,6 +13,7 @@ import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createPasswordField;
 import static edu.ku.brc.ui.UIHelper.createTextField;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -32,12 +33,10 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JPasswordField;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -60,6 +59,7 @@ import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
@@ -73,18 +73,18 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
  * Aug 11, 2008
  *
  */
-class SetUpBuildDlg extends JDialog
+class SetUpBuildDlg extends CustomDialog
 {
     protected String                                   databaseName;
     protected DatabaseDriverInfo                       dbDriver;
     protected boolean                                  isCancelled = false;
+    protected String                                   dbDriverName;
     
     protected JTextField                               usernameTxtFld;
     protected JPasswordField                           passwdTxtFld;
     protected JTextField                               databaseNameTxt;
     protected JComboBox                                drivers;
     protected JCheckBox                                extraCollectionsChk;
-    protected JComboBox                                disciplines;
     protected Vector<DatabaseDriverInfo>               driverList;
     protected boolean                                  wasClosed = false;
     protected BuildSampleDatabase                      bldSampleDatabase;
@@ -114,8 +114,20 @@ class SetUpBuildDlg extends JDialog
                          final String              dbDriverName,
                          final BuildSampleDatabase bldSampleDatabase)
     {
-        super();
+        super(null, "Setup Collection", true, null);
+        
         this.bldSampleDatabase = bldSampleDatabase;
+        this.databaseName      = databaseName;
+        this.dbDriverName      = dbDriverName;
+        
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#createUI()
+     */
+    public void createUI()
+    {
+        super.createUI();
         
         Specify.setUpSystemProperties();
         UIFieldFormatterMgr.setDoingLocal(true);
@@ -172,10 +184,6 @@ class SetUpBuildDlg extends JDialog
             accNumGrpList.add("Acc "+d.getTitle() + " Group");
         }
         
-        //Vector<DisciplineType> disciplinesList = DisciplineType.getDisciplineList();
-        disciplines  = createComboBox(DisciplineType.getDisciplineList());
-        disciplines.setSelectedItem(DisciplineType.getDiscipline("fish"));
-        
         databaseNameTxt = createTextField(databaseName);
         
         usernameTxtFld = createTextField("rods");
@@ -184,7 +192,7 @@ class SetUpBuildDlg extends JDialog
         extraCollectionsChk = createCheckBox("Create Extra Collections");
         extraCollectionsChk.setSelected(true);
         
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p,p:g", "p,4px,p,4px,p,4px,p,4px,p,4px,p,4px,f:p:g,10px,p"));
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p,p:g", "p,4px,p,4px,p,4px,p,4px,p,4px,f:p:g,4px,p"));
         CellConstraints cc         = new CellConstraints();
         builder.add(createLabel("Username:", SwingConstants.RIGHT),      cc.xy(1,1));
         builder.add(usernameTxtFld,                                      cc.xy(3,1));
@@ -192,8 +200,6 @@ class SetUpBuildDlg extends JDialog
         builder.add(passwdTxtFld,                                        cc.xy(3,3));
         builder.add(createLabel("Database Name:", SwingConstants.RIGHT), cc.xy(1,5));
         builder.add(databaseNameTxt,                                     cc.xy(3,5));
-        builder.add(createLabel("DisciplineType Name:", SwingConstants.RIGHT), cc.xy(1,7));
-        builder.add(disciplines,                                         cc.xy(3,7));
         builder.add(createLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,9));
         builder.add(drivers,                                             cc.xy(3,9));
         
@@ -291,11 +297,6 @@ class SetUpBuildDlg extends JDialog
             }
          });
 
-        
-        final JButton okBtn        = createButton("OK");
-        final JButton cancelBtn    = createButton("Cancel");
-        builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1,15,4,1));
-        
         cancelBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
@@ -324,8 +325,9 @@ class SetUpBuildDlg extends JDialog
         });
         
         builder.setDefaultDialogBorder();
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setContentPane(builder.getPanel());
+        
+        contentPanel = builder.getPanel();
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
         
         pack();
         Dimension size = getSize();
@@ -455,7 +457,6 @@ class SetUpBuildDlg extends JDialog
                     
                     bldSampleDatabase.startBuild(databaseName, 
                                                  dbDriver.getName(), 
-                                                 (DisciplineType)disciplines.getSelectedItem(), 
                                                  username, 
                                                  password,
                                                  getSelectedColleectionChoices());
@@ -753,7 +754,7 @@ class SetUpBuildDlg extends JDialog
             }
     
             // Select the current value
-            UIFieldFormatterIFace fmt = hash.get((String)value);
+            UIFieldFormatterIFace fmt = hash.get(value);
             setSelectedItem(fmt);
             return this;
         }

@@ -21,8 +21,6 @@ import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -38,8 +36,8 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
-import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;

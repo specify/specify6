@@ -8,7 +8,6 @@ package edu.ku.brc.specify.tools.schemalocale;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -68,12 +67,12 @@ public class LocalizerApp extends LocalizableBaseApp
         setTitle(appName + " " + appVersion);// + "  -  "+ appBuildVersion);
     }
     
- 
+ /*
     protected void printLocales(final PrintWriter pw,
                                 final LocalizableItemIFace parent, 
                                 final LocalizableItemIFace lndi, 
                                 final String lang, final String country)
-    {/*
+    {
         for (Name nm : lndi.getNames())
         {
             if (nm.getLang().equals(lang) && nm.getCountry().equals(country))
@@ -100,8 +99,8 @@ public class LocalizerApp extends LocalizableBaseApp
             pw.write(d.getText());
             pw.write("\n");
         }
-        */
-    }
+        
+    }*/
     
     
     protected String findLineWith(final List<String> lines, final String key)

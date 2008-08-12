@@ -604,8 +604,7 @@ public class BuildSampleDatabase
      * @param dataObjects
      */
     @SuppressWarnings("unchecked")
-    protected void addConservatorData(final Agent userAgent, 
-                                      final List<Agent> agents, 
+    protected void addConservatorData(final List<Agent> agents, 
                                       final List<CollectionObject> colObjs)
     {
         //startTx();
@@ -3103,6 +3102,8 @@ public class BuildSampleDatabase
         persist(division);
         persist(discipline);
 
+        frame.setDesc("Loading Schema...");
+        
         loadSchemaLocalization(discipline, 
                 SpLocaleContainer.CORE_SCHEMA, 
                 DBTableIdMgr.getInstance(),
@@ -3168,6 +3169,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating a Collection");
         frame.setDesc("Creating a Collection");
+        
         Collection collection = createCollection("KU", disciplineType.getTitle(), cns, discipline, disciplineType.isEmbeddedCollecingEvent());
         persist(collection);
         
@@ -3209,6 +3211,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // build the tree def items and nodes
         ////////////////////////////////
+        frame.setDesc("Building Trees...");
         Vector<Object> taxa = new Vector<Object>();
         createTaxonTreeFromXML(taxa, taxonTreeDef, disciplineType);
         
@@ -3296,6 +3299,7 @@ public class BuildSampleDatabase
         String RECT  = "Rectangle";
         
         log.info("Creating localities");
+        frame.setDesc("Creating localities...");
         Locality forestStream = createLocality("Gravel Pit", (Geography)geos.get(12));
         forestStream.setLatLongType(POINT);
         forestStream.setOriginalLatLongUnit(0);
@@ -3391,6 +3395,7 @@ public class BuildSampleDatabase
         
         commitTx();
 
+        frame.setDesc("Group Persons...");
         List<GroupPerson> gpList = new ArrayList<GroupPerson>();
         if (true)
         {
@@ -3440,7 +3445,7 @@ public class BuildSampleDatabase
         startTx();
         
         frame.setProcess(++createStep);
-        
+        frame.setDesc("Creating collecting events, collectors and a collecting trip...");
         //////////////////////////////////////////////////
         // collecting events (collectors, collecting trip)
         ///////////////////////////////////////////////////
@@ -3498,6 +3503,8 @@ public class BuildSampleDatabase
         // permit
         ////////////////////////////////
         log.info("Creating a permit");
+        frame.setDesc("Creating a permit...");
+
         Calendar issuedDate = Calendar.getInstance();
         issuedDate.set(1993, 1, 12);
         Calendar startDate = Calendar.getInstance();
@@ -3535,6 +3542,8 @@ public class BuildSampleDatabase
         // Determination Status (Must be done here)
         ////////////////////////////////
         log.info("Creating determinations status");
+        frame.setDesc("Creating determinations status...");
+
         current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
         notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
         incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
@@ -3550,6 +3559,7 @@ public class BuildSampleDatabase
         // collection objects
         ////////////////////////////////
         log.info("Creating collection objects");
+        frame.setDesc("Creating collection objects...");
 
         List<CollectionObject> collObjs = new Vector<CollectionObject>();
         Collection      col     = collection;
@@ -3590,6 +3600,7 @@ public class BuildSampleDatabase
         // determinations (determination status)
         ////////////////////////////////
         log.info("Creating determinations");
+        frame.setDesc("Creating determinations...");
 
         List<Determination> determs = new Vector<Determination>();
         Calendar recent = Calendar.getInstance();
@@ -3628,7 +3639,8 @@ public class BuildSampleDatabase
         // preparations (prep types)
         ////////////////////////////////
         log.info("Creating preparations");
-        
+        frame.setDesc("Creating preparations...");
+
         Vector<PrepType> prepTypesForSaving = loadPrepTypes();
         PrepType pressed = prepTypesForSaving.get(0);
         
@@ -3673,6 +3685,8 @@ public class BuildSampleDatabase
         // accessions (accession agents)
         ////////////////////////////////
         log.info("Creating accessions and accession agents");
+        frame.setDesc("Creating accessions...");
+
         calendar.set(2006, 10, 27, 23, 59, 59);
         Accession acc1 = createAccession(division,
                                          "Gift", "Complete", "2000-"+disciplineType.getAbbrev()+"-001", 
@@ -3718,6 +3732,8 @@ public class BuildSampleDatabase
         // loans (loan agents, shipments)
         ////////////////////////////////
         log.info("Creating loans, loan agents, and shipments");
+        frame.setDesc("Creating loans...");
+
         Calendar loanDate1 = Calendar.getInstance();
         loanDate1.set(2005, 03, 19);
         
@@ -4417,17 +4433,17 @@ public class BuildSampleDatabase
                                            final SpecifyUser               user,
                                            final Agent                     userAgent,
                                            final Division                  division,                  
-                                           final TaxonTreeDef              taxonTreeDef,
-                                           final GeographyTreeDef          geoTreeDef,
-                                           final GeologicTimePeriodTreeDef gtpTreeDef,
-                                           final LithoStratTreeDef         lithoStratTreeDef,
-                                           final StorageTreeDef            locTreeDef,
+                                           @SuppressWarnings("unused") final TaxonTreeDef              taxonTreeDef,
+                                           @SuppressWarnings("unused") final GeographyTreeDef          geoTreeDef,
+                                           @SuppressWarnings("unused") final GeologicTimePeriodTreeDef gtpTreeDef,
+                                           @SuppressWarnings("unused") final LithoStratTreeDef         lithoStratTreeDef,
+                                           @SuppressWarnings("unused") final StorageTreeDef            locTreeDef,
                                            final Journal                   journal,
                                            final List<Object>              taxa,
                                            final List<Object>              geos,
                                            final List<Object>              locs,
-                                           final List<Object>              gtps,
-                                           final List<Object>              lithoStrats,
+                                           @SuppressWarnings("unused") final List<Object>              gtps,
+                                           @SuppressWarnings("unused") final List<Object>              lithoStrats,
                                            final String                    colPrefix,
                                            final String                    colName,
                                            final boolean                   isVoucherCol,
@@ -5441,7 +5457,7 @@ public class BuildSampleDatabase
                 log.error("Could not create attachments", e);
             }
         
-        addConservatorData(userAgent, agents, collObjs);
+        addConservatorData(agents, collObjs);
         
         commitTx();
         
@@ -5490,12 +5506,9 @@ public class BuildSampleDatabase
      * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
-    public void createSingleDiscipline(final DisciplineType   disciplineType,
-                                       final String           usernameArg,
-                                       final String           passwordArg)
+    public void createDisciplines(final String           usernameArg,
+                                  final String           passwordArg)
     {
-        System.out.println("Creating single disciplineType database: " + disciplineType.getTitle());
-        
         int createStep = 0;
         
         frame.setProcess(0, 4);
@@ -5578,15 +5591,12 @@ public class BuildSampleDatabase
                 DisciplineType dType = DisciplineType.getDiscipline(disp);
                 if (XMLHelper.getConfigDir(dType.getName()+ File.separator + "taxon_init.xml").exists())
                 {
-                    createGenericCollection(dType, institution, user, 
-                            getChoice(disp, false));
+                    createGenericCollection(dType, institution, user,  getChoice(disp, false));
                 }
             }
         }
         frame.setOverall(steps++);
         
-        // done
-        log.info("Done creating single disciplineType database: " + disciplineType.getTitle());
     }
 
     /**
@@ -6458,7 +6468,6 @@ public class BuildSampleDatabase
      */
     protected void startBuild(final String     dbName, 
                               final String     driverName, 
-                              final DisciplineType disciplineType,
                               final String     username, 
                               final String     password,
                               final List<CollectionChoice> selectedChoicesArg)
@@ -6473,16 +6482,7 @@ public class BuildSampleDatabase
             {
                 try
                 {
-                    if (false) // XXX Debug
-                    {
-                        DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("Derby");
-                        DBConfigInfo       config     = new DBConfigInfo(driverInfo, "localhost", "mydata", username, password, "Rod", "Spears", "rods@ku.edu", disciplineType, "Institition", "Division");
-                        buildEmptyDatabase(config);
-
-                    } else
-                    {
-                        build(dbName, driverName, disciplineType, username, password);
-                    }
+                    build(dbName, driverName, username, password);
                     
                 } catch (Exception ex)
                 {
@@ -6679,7 +6679,6 @@ public class BuildSampleDatabase
      */
     protected void build(final String     dbName, 
                          final String     driverName, 
-                         final DisciplineType disciplineType,
                          final String     username, 
                          final String     passwordStr) throws SQLException
     {
@@ -6730,45 +6729,6 @@ public class BuildSampleDatabase
         }
         SpecifySchemaGenerator.generateSchema(driverInfo, databaseHost, dbName, userName, password);
 
-        /*class PostInsertEL implements org.hibernate.event.PostInsertEventListener
-        {
-            protected int counter = 0;
-            public void onPostInsert(PostInsertEvent arg0)
-            {
-                if (arg0.getEntity() instanceof FormDataObjIFace)
-                {
-                    FormDataObjIFace dataObj = (FormDataObjIFace)arg0.getEntity();
-                    System.out.println(counter + " PostInsert["+dataObj.getId()+"] "+dataObj.getDataClass().getSimpleName() + " Id: " +dataObj.getId());
-                    counter++;
-                }
-            }
-
-        }
-        
-        class PreInsertEL implements org.hibernate.event.PreInsertEventListener
-        {
-            protected int counter = 0;
-            @Override
-            public boolean onPreInsert(PreInsertEvent arg0)
-            {
-                if (arg0.getEntity() instanceof FormDataObjIFace)
-                {
-                    FormDataObjIFace dataObj = (FormDataObjIFace)arg0.getEntity();
-                    //if (dataObj.getDataClass().getSimpleName().indexOf("Conserv") > -1)
-                    System.out.println(counter + " PreInsert["+dataObj.getId()+"] "+dataObj.getDataClass().getSimpleName());// + " Id: " +dataObj.getId());
-                    counter++;
-                }
-                return false;
-            }
-            
-        }*/
-        
-        //HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener());
-        //HibernateUtil.setListener("post-commit-insert", new PostInsertEL());
-        //HibernateUtil.setListener("pre-insert", new PreInsertEL());
-        //HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener());
-        //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
-        
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
@@ -6828,7 +6788,7 @@ public class BuildSampleDatabase
                     // save it all to the DB
                     setSession(HibernateUtil.getCurrentSession());
 
-                    createSingleDiscipline(disciplineType, username, password);
+                    createDisciplines(username, password);
 
                     attachMgr.cleanup();
                     
