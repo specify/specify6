@@ -113,7 +113,7 @@ import edu.ku.brc.ui.UIRegistry;
 @SuppressWarnings("serial")
 public class DataImportDialog extends JDialog implements ActionListener
 {
-	private static final Logger log = Logger.getLogger(DataImportDialog.class);
+    protected static final Logger log = Logger.getLogger(DataImportDialog.class);
 	private JButton cancelBtn;
 	private JButton okBtn;
 	private JButton helpBtn;
@@ -123,19 +123,19 @@ public class DataImportDialog extends JDialog implements ActionListener
 	public static final int HELP_BTN = 4;
 	protected int btnPressed = CANCEL_BTN;
 	
-	private JRadioButton tab;
-	private JRadioButton space;
-	private JRadioButton semicolon;
-	private JRadioButton comma;
-	private JRadioButton other;
-	private JTextField otherText;
+	protected JRadioButton tab;
+	protected JRadioButton space;
+	protected JRadioButton semicolon;
+	protected JRadioButton comma;
+	protected JRadioButton other;
+	protected JTextField otherText;
 	
-	private char stringQualifierChar;
-	private char delimChar;
-	private Charset charset;
-	private int escapeMode;
-	private boolean doesFirstRowHaveHeaders;
-    private boolean shouldUseTextQualifier;
+	protected char stringQualifierChar;
+	protected char delimChar;
+	protected Charset charset;
+	protected int escapeMode;
+	protected boolean doesFirstRowHaveHeaders;
+	protected boolean shouldUseTextQualifier;
 
 	private JLabel textQualLabel;
 	private JComboBox textQualCombo;
@@ -144,27 +144,27 @@ public class DataImportDialog extends JDialog implements ActionListener
 	private JLabel escapeModeLabel;
 	private JComboBox escapeModeCombo;
 
-	private JCheckBox containsHeaders;
+	protected JCheckBox containsHeaders;
 
-	private boolean isCancelled = false;
-	private boolean hasTooManyRows = false;
+	protected boolean isCancelled = true;
+	protected boolean hasTooManyRows = false;
 
 	private String fileName;
 	private File file;
-	private ConfigureExternalDataBase config;
-    private ConfigureCSV configCSV;
-    private ConfigureXLS configXLS;
+	protected ConfigureExternalDataBase config;
+	protected ConfigureCSV configCSV;
+	protected ConfigureXLS configXLS;
 	
 	private JTable myDisplayTable;
-	private PreviewTableModel model;
-	private DataErrorPanel errorPanel = new DataErrorPanel();
+	protected PreviewTableModel model;
+	protected DataErrorPanel errorPanel = new DataErrorPanel();
    
-    private int highestColumnCount;
+	protected int highestColumnCount;
     
-    private boolean ignoreActions = false;
+    protected boolean ignoreActions = false;
     
-    private short geoDataCol = -1;
-    private Vector<Short> imageDataCols = new Vector<Short>();
+    protected short geoDataCol = -1;
+    protected Vector<Short> imageDataCols = new Vector<Short>();
 
     /**
      * Constructor for Import Dialog for a csv
@@ -228,10 +228,6 @@ public class DataImportDialog extends JDialog implements ActionListener
     	{
     		init(getResourceString("IMPORT_CVS"));    
     	}
-    	else
-    	{
-    		isCancelled = true;
-    	}
     }
       
 
@@ -248,10 +244,6 @@ public class DataImportDialog extends JDialog implements ActionListener
     	if(!hasTooManyRows)
     	{
     		init(getResourceString("IMPORT_XLS"));    
-    	}
-    	else
-    	{
-    		isCancelled = true;
     	}
     }
     
@@ -409,7 +401,6 @@ public class DataImportDialog extends JDialog implements ActionListener
             public void actionPerformed(ActionEvent e)
             {
                 log.debug("User pressed help");
-                isCancelled = false;
                 btnPressed  = HELP_BTN;
             }
         });
@@ -599,7 +590,7 @@ public class DataImportDialog extends JDialog implements ActionListener
      * 
      * void
      */
-    private void updateTableDisplay()
+    protected void updateTableDisplay()
     {
         if (config instanceof ConfigureCSV)
         {
@@ -666,11 +657,11 @@ public class DataImportDialog extends JDialog implements ActionListener
 	 * 
 	 * void
 	 */
-    private void showErrors()
+    protected void showErrors()
     {
-        JList listOfErrors = genListOfErrorWhereTableDataDefiesSizeConstraints(model.getColumnNames(), model.data);
+        JList listOfErrors = genListOfErrorWhereTableDataDefiesSizeConstraints(model.getColumnNames(), model.getData());
         
-        if ((model.getColumnNames() ==null )|| (model.data == null) || (listOfErrors==null) || (listOfErrors.getModel().getSize() == 0))
+        if ((model.getColumnNames() ==null )|| (model.getData() == null) || (listOfErrors==null) || (listOfErrors.getModel().getSize() == 0))
         {
             JTextArea textArea = new JTextArea();
             textArea.setRows(25);
@@ -905,7 +896,7 @@ public class DataImportDialog extends JDialog implements ActionListener
                                     break;
 
                                 case HSSFCell.CELL_TYPE_STRING:
-                                    value = cell.getStringCellValue();
+                                    value = cell.getRichStringCellValue().getString();
                                     break;
 
                                 case HSSFCell.CELL_TYPE_BLANK:
@@ -986,20 +977,21 @@ public class DataImportDialog extends JDialog implements ActionListener
             log.debug(headers);
             log.debug(tableData);
             model = new PreviewTableModel(headers, tableData);
+            JTable result = null;
             if (t == null)
             {
-                t = new JTable();
-                t.setColumnSelectionAllowed(false);
-                t.setRowSelectionAllowed(false);
-                t.setCellSelectionEnabled(false);
-                t.getTableHeader().setReorderingAllowed(false);
-                t.setPreferredScrollableViewportSize(new Dimension(500, 100));
-                t.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+                result = new JTable();
+                result.setColumnSelectionAllowed(false);
+                result.setRowSelectionAllowed(false);
+                result.setCellSelectionEnabled(false);
+                result.getTableHeader().setReorderingAllowed(false);
+                result.setPreferredScrollableViewportSize(new Dimension(500, 100));
+                result.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             }
-            t.setModel(model);
+            result.setModel(model);
             model.fireTableDataChanged();
             model.fireTableStructureChanged();
-            return t;
+            return result;
         } 
         catch (IOException ex)
         {
@@ -1393,6 +1385,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         /* (non-Javadoc)
          * @see java.awt.event.KeyAdapter#keyReleased(java.awt.event.KeyEvent)
          */
+        @Override
         public void keyReleased(KeyEvent ke)
         {
             if (otherText.getText().length() == 1)
@@ -1435,6 +1428,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         /* (non-Javadoc)
          * @see javax.swing.text.PlainDocument#insertString(int, java.lang.String, javax.swing.text.AttributeSet)
          */
+        @Override
         public void insertString(int offset, String s, AttributeSet a) throws BadLocationException
         {
             if (offset + s.length() <= limit)
@@ -1533,6 +1527,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 	    /* (non-Javadoc)
 	     * @see javax.swing.table.AbstractTableModel#setValueAt(java.lang.Object, int, int)
 	     */
+		@Override
 	    public void setValueAt(Object value, int row, int col) {
 	        data[row][col] = value.toString();
 	        fireTableCellUpdated(row, col);
@@ -1549,6 +1544,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         /* (non-Javadoc)
          * @see javax.swing.table.AbstractTableModel#getColumnName(int)
          */
+		@Override
         public String getColumnName(int col) {
             return columnNames[col];
         }
@@ -1572,6 +1568,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 		/* (non-Javadoc)
 		 * @see javax.swing.table.AbstractTableModel#isCellEditable(int, int)
 		 */
+		@Override
 		public boolean isCellEditable(int row, int column)
         {
             return false;
@@ -1647,7 +1644,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 		 *            flag noting whether the panel should be visible
 		 * @return the data import error panel to be displayed
 		 */
-        private JPanel showDataImportStatusPanel(boolean shouldShow)
+        protected JPanel showDataImportStatusPanel(boolean shouldShow)
 		{
 			if (!shouldShow)
 			{
