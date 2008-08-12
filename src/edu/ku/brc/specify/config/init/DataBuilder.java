@@ -2441,9 +2441,9 @@ public class DataBuilder
     }
     
     public static AutoNumberingScheme createAutoNumberingScheme(final String schemeName,
-                                                                      final String schemeClassName,
-                                                                      final boolean isNumericOnly,
-                                                                      final int   tableNumber)
+                                                                final String schemeClassName,
+                                                                final boolean isNumericOnly,
+                                                                final int   tableNumber)
     {
         AutoNumberingScheme cns = new AutoNumberingScheme();
         cns.initialize();

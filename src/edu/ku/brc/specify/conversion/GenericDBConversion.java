@@ -1872,13 +1872,17 @@ public class GenericDBConversion
             
             discipline = (Discipline)disciplineeList.get(0);
 
-            BuildSampleDatabase.loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+            BuildSampleDatabase.loadSchemaLocalization(discipline, 
+                                                       SpLocaleContainer.CORE_SCHEMA, 
+                                                       DBTableIdMgr.getInstance(),
+                                                       "CatalogNumberNumeric",
+                                                       "AccessionNumber");
             localSession.save(discipline);
             trans.commit();
 
             DBTableIdMgr schema = new DBTableIdMgr(false);
             schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
-            BuildSampleDatabase.loadSchemaLocalization(discipline, SpLocaleContainer.WORKBENCH_SCHEMA, schema);
+            BuildSampleDatabase.loadSchemaLocalization(discipline, SpLocaleContainer.WORKBENCH_SCHEMA, schema, null, null);
 
             trans = localSession.beginTransaction();
             localSession.save(discipline);

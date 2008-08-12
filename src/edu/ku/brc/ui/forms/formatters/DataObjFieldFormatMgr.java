@@ -415,16 +415,6 @@ public class DataObjFieldFormatMgr
     }
     
     /**
-     * Gets a unique name for an aggregator if it doesn't yet have one
-     */
-    private void getAggregatorUniqueName(DataObjAggregator aggregator)
-    {
-        String name   = aggregator.getName();
-        String prefix = aggregator.getDataClass().getSimpleName();
-        aggregator.setName(getUniqueNameInHash(name, prefix, aggHash));
-    }
-    
-    /**
      * Generic method that creates a unique name for an object in a hash if it doesn't yet have one
      */
     private <T> String getUniqueNameInHash(final String name, 
@@ -1086,7 +1076,6 @@ public class DataObjFieldFormatMgr
      */
     public void addAggregator(final DataObjAggregator aggregator)
     {
-        getAggregatorUniqueName(aggregator);
         aggHash.put(aggregator.getName(), aggregator);
         aggClassHash.put(aggregator.getDataClass(), aggregator);
         hasChanged = true;

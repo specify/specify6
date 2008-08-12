@@ -174,39 +174,42 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
     {
         if (StringUtils.isNotEmpty(name))
         {
-        	if (!AppContextMgr.getInstance().hasContext() || AppContextMgr.getInstance().getClassObject(Collection.class) == null)
-        	{
-        		// collection is not set when running other applications (SchemaLocalizerFrame for example)
-        		return null;
-        	}
-        	
-            // check for date to short circut the other checks
-            if (name.equals("Date")) //$NON-NLS-1$
+            if (!doingLocal)
             {
-                return super.getFormatterInternal(name);
-                
-            } else if (name.equals("CatalogNumberString")) //$NON-NLS-1$
-            {
-                if (catalogNumberString != null)
+            	if (!AppContextMgr.getInstance().hasContext() || AppContextMgr.getInstance().getClassObject(Collection.class) == null)
+            	{
+            		// collection is not set when running other applications (SchemaLocalizerFrame for example)
+            		return null;
+            	}
+            	
+                // check for date to short circut the other checks
+                if (name.equals("Date")) //$NON-NLS-1$
                 {
-                    return catalogNumberString;
-                }
-            } else 
-            {
-                Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-                AutoNumberingScheme cns = collection != null ? collection.getNumberingSchemesByType(CollectionObject.getClassTableId()) : null;
-                if (cns != null)
+                    return super.getFormatterInternal(name);
+                    
+                } else if (name.equals("CatalogNumberString")) //$NON-NLS-1$
                 {
-                    if (name.equals("CatalogNumberNumeric") || (name.equals("CatalogNumber") && cns.getIsNumericOnly())) //$NON-NLS-1$ //$NON-NLS-2$
+                    if (catalogNumberString != null)
                     {
-                        if (catalogNumberNumeric != null)
-                        {
-                            return catalogNumberNumeric;
-                        }
+                        return catalogNumberString;
                     }
-                } else
+                } else 
                 {
-                    log.error("The CatalogNumberingScheme is null for the current Collection ["+(AppContextMgr.getInstance().getClassObject(Collection.class) != null ? AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName() : "null") +"] and should be!"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+                    AutoNumberingScheme cns = collection != null ? collection.getNumberingSchemesByType(CollectionObject.getClassTableId()) : null;
+                    if (cns != null)
+                    {
+                        if (name.equals("CatalogNumberNumeric") || (name.equals("CatalogNumber") && cns.getIsNumericOnly())) //$NON-NLS-1$ //$NON-NLS-2$
+                        {
+                            if (catalogNumberNumeric != null)
+                            {
+                                return catalogNumberNumeric;
+                            }
+                        }
+                    } else
+                    {
+                        log.error("The CatalogNumberingScheme is null for the current Collection ["+(AppContextMgr.getInstance().getClassObject(Collection.class) != null ? AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName() : "null") +"] and should be!"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    }
                 }
             }
         } else

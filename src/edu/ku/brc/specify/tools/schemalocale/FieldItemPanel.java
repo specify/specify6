@@ -337,17 +337,10 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                                                             fieldInfo,
                                                             schemaPanel.getUiFieldFormatterMgrCache());
                     dlg.setVisible(true);
-                    
-                	/*UIFormatterEditorDlg dlg = new UIFormatterEditorDlg((Frame)UIRegistry.getTopWindow(), 
-                                                			fieldInfo, 
-                                                			(UIFieldFormatter)formatCombo.getSelectedItem(),
-                                                			schemaPanel.getUiFieldFormatterMgrCache()); // MUST BE MODAL!
-                	dlg.setVisible(true);
-            		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
-            		{
-            			//setSelectedFieldFormatter(dlg.getSelectedFormat());
-            		}
-            		*/
+                    if (dlg.isCancelled() && dlg.hasChanged())
+                    {
+                        schemaPanel.setHasChanged(true);
+                    }
                 }
             });
             

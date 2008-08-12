@@ -89,6 +89,7 @@ public class WebLinkEditorDlg extends CustomDialog
     protected boolean isParsingIncomplete = false;
     protected Color   txtFGColor;
     protected Color   txtBGColor;
+    protected Color   errColor            = new Color(255, 220, 220);
     
     /**
      * @param webLinkDef the WebLink to be edited
@@ -284,8 +285,8 @@ public class WebLinkEditorDlg extends CustomDialog
     protected void setURLToError()
     {
         Toolkit.getDefaultToolkit().beep();
-        baseUrlTF.setForeground(txtBGColor);
-        baseUrlTF.setBackground(txtFGColor);
+        //baseUrlTF.setForeground(txtBGColor);
+        baseUrlTF.setBackground(errColor);
         isParsingError = true;
         baseUrlTF.repaint();
         enableUI();
@@ -298,7 +299,7 @@ public class WebLinkEditorDlg extends CustomDialog
     {
         if (isParsingError)
         {
-            baseUrlTF.setForeground(txtFGColor);
+            //baseUrlTF.setForeground(txtFGColor);
             baseUrlTF.setBackground(txtBGColor);
             isParsingError = false;
             enableUI();
@@ -362,7 +363,8 @@ public class WebLinkEditorDlg extends CustomDialog
                             
                         } else
                         {
-                            setURLToError();
+                            String titleStr = StringUtils.capitalize(prevToken);
+                            model.addItem(prevToken, titleStr, !prevToken.equals("this"));
                             return;
                         }
                     } else

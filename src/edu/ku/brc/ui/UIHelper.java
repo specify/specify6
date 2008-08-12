@@ -294,7 +294,19 @@ public final class UIHelper
     
                 } else
                 {
-                    dlg.setTitle(dlg.getTitle() + "*");
+                    String title;
+                    if (isModified)
+                    {
+                        title = dlg.getTitle() + "*";
+                    } else
+                    {
+                        title = dlg.getTitle();
+                        if (title.endsWith("*"))
+                        {
+                            title = StringUtils.chomp(title);
+                        }
+                    }
+                    dlg.setTitle(title);
                 }
             }
         }

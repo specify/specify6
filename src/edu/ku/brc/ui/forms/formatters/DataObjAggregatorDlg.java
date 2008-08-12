@@ -6,7 +6,6 @@ import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
-import static edu.ku.brc.ui.forms.validation.UIValidator.parseValidationType;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -52,11 +51,9 @@ import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.forms.validation.UIValidatable;
 import edu.ku.brc.ui.forms.validation.UIValidator;
-import edu.ku.brc.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 import edu.ku.brc.ui.forms.validation.ValSpinner;
 import edu.ku.brc.ui.forms.validation.ValTextField;
-import edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType;
 
 /**
  * @author Ricardo
@@ -109,6 +106,7 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         this.dataObjFieldFormatMgrCache = dataObjFieldFormatMgrCache;
         this.uiFieldFormatterMgrCache   = uiFieldFormatterMgrCache;
         this.selectedAggregator         = selectedAggregator;
+        this.helpContext                = "DOA_EDITOR";
         
         validator.addDataChangeListener(this);
         validator.addEnableRule("DOA_ENDING", "DOA_COUNT.getIntValue() > 0");
@@ -229,7 +227,7 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         pb.add(valInfoBtnPB.getPanel(), cc.xyw(3, y, 2)); 
         y += 2;
 
-        pb.setBorder(BorderFactory.createEmptyBorder(6, 6, 0, 6));
+        pb.setBorder(BorderFactory.createEmptyBorder(14, 14, 0, 14));
         
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
@@ -249,7 +247,6 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         validator.resetFields();
         validator.setEnabled(true);
         validator.setHasChanged(false);
-        //validator.setState(isNew ? ErrorType.Incomplete : ErrorType.Valid);
 
         pack();
     }
@@ -497,7 +494,6 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         validator.processFormRules();
         validator.validateForm();
         validator.processFormRules();
-
     }
 
     /**
@@ -511,6 +507,14 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         okBtn.setEnabled(hasChanged && validator.isFormValid());
     }
     
+    /**
+     * @return the hasChanged
+     */
+    public boolean hasChanged()
+    {
+        return hasChanged;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.forms.validation.DataChangeNotifier)
      */

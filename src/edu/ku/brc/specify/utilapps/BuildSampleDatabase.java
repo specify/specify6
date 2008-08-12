@@ -67,19 +67,8 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbench;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchDataItem;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchMappingItem;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchTemplate;
-import static edu.ku.brc.ui.UIHelper.createButton;
-import static edu.ku.brc.ui.UIHelper.createCheckBox;
-import static edu.ku.brc.ui.UIHelper.createComboBox;
-import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIHelper.createPasswordField;
-import static edu.ku.brc.ui.UIHelper.createTextField;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -89,8 +78,6 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -104,15 +91,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -125,10 +104,6 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.hibernate.Session;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.ButtonBarFactory;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
@@ -147,7 +122,6 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.init.BldrPickList;
 import edu.ku.brc.specify.config.init.BldrPickListItem;
@@ -231,14 +205,12 @@ import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.ui.ProgressFrame;
-import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
+import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
@@ -256,10 +228,8 @@ public class BuildSampleDatabase
     private static final Logger  log      = Logger.getLogger(BuildSampleDatabase.class);
     
     protected static boolean     debugOn  = false;
-    protected static final int   TIME_THRESHOLD = 30;
+    protected static final int   TIME_THRESHOLD = 3000;
     protected static Hashtable<String, Boolean> fieldsToHideHash       = new Hashtable<String, Boolean>();
-    protected static String                     catalogNumberFmtName   = null;
-    protected static String                     accessionNumberFmtName = "AccessionNumberString";
 
     protected Calendar           calendar = Calendar.getInstance();
     protected Session            session;
@@ -269,13 +239,15 @@ public class BuildSampleDatabase
     protected Properties         initPrefs     = null;
     protected Properties         backstopPrefs = null;
     
-    protected SetupDialog        setupDlg  = null;
+    protected SetUpBuildDlg      setupDlg  = null;
     protected boolean            hideFrame = false;
     
     protected boolean            doAddQueries        = false;
     protected boolean            copyToUserDir       = true;
     protected boolean            doShallowTaxonTree  = false;
     protected List<CollectionChoice> selectedChoices = null;
+    
+    protected Hashtable<Class<?>, Vector<AutoNumberingScheme>> numberingSchemesHash = new Hashtable<Class<?>, Vector<AutoNumberingScheme>>();
     
     protected Random             rand = new Random(12345678L);
     
@@ -341,6 +313,37 @@ public class BuildSampleDatabase
     }
     
     /**
+     * @param name the name of the scheme
+     * @return a numbering scheme by name.
+     */
+    private AutoNumberingScheme getAutoNumberingScheme(final Class<?> clazz, final String name)
+    {
+        Vector<AutoNumberingScheme> numberingSchemes = numberingSchemesHash.get(clazz);
+        if (numberingSchemes != null)
+        {
+            for (AutoNumberingScheme ans : numberingSchemes)
+            {
+                if (ans.getSchemeName().equals(name))
+                {
+                    return ans;
+                }
+            }
+        }
+        return null;
+    }
+    
+    private void addAutoNumberingScheme(final Class<?> clazz, final AutoNumberingScheme ans)
+    {
+        Vector<AutoNumberingScheme> numberingSchemes = numberingSchemesHash.get(clazz);
+        if (numberingSchemes == null)
+        {
+            numberingSchemes = new Vector<AutoNumberingScheme>();
+            numberingSchemesHash.put(clazz, numberingSchemes);
+        }
+        numberingSchemes.add(ans);
+    }
+    
+    /**
      * 
      */
     protected void adjustLocaleFromPrefs()
@@ -375,7 +378,8 @@ public class BuildSampleDatabase
      * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
-    public List<Object> createEmptyDiscipline(final DBConfigInfo config)
+    public List<Object> createEmptyDiscipline(final DBConfigInfo config, 
+                                              final CollectionChoice choice)
     {
         Vector<Object> dataObjects = new Vector<Object>();
 
@@ -451,13 +455,19 @@ public class BuildSampleDatabase
         frame.setDesc("Localizing Schema...");
         frame.setProcess(++createStep);
 
-        loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+        loadSchemaLocalization(discipline, 
+                SpLocaleContainer.CORE_SCHEMA, 
+                DBTableIdMgr.getInstance(),
+                "CatalogNumberNumeric",
+                "AccessionNumber");
+
         
         frame.setDesc("Creating CatalogNumberingScheme...");
         frame.setProcess(++createStep);
 
-        AutoNumberingScheme cns = createAutoNumberingScheme("CatalogNumber For "+config.getCollectionName(), "", true, CollectionObject.getClassTableId());
-        AutoNumberingScheme accessionNS = createAutoNumberingScheme("AccessionNumber For " + config.getCollectionName(), "", false, Accession.getClassTableId());
+        Pair<AutoNumberingScheme, AutoNumberingScheme> pairANS = createAutoNumberingSchemes(choice);
+        AutoNumberingScheme cns         = pairANS.first;
+        AutoNumberingScheme accessionNS = pairANS.second;
         
         persist(cns);
         persist(accessionNS);
@@ -762,7 +772,8 @@ public class BuildSampleDatabase
      */
     public List<Object> createSingleBotanyCollection(final DisciplineType disciplineType,
                                                      final Institution    institution,
-                                                     final SpecifyUser    user)
+                                                     final SpecifyUser    user,
+                                                     final CollectionChoice choice)
     {
         frame.setProcess(0, 16);
         frame.setDesc("Creating Botany...");
@@ -799,7 +810,11 @@ public class BuildSampleDatabase
         persist(discipline);
         
 
-        loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+        loadSchemaLocalization(discipline, 
+                SpLocaleContainer.CORE_SCHEMA, 
+                DBTableIdMgr.getInstance(),
+                choice.getCatalogNumberingFmtName(),
+                choice.getAccessionNumberingFmtName());
 
         ////////////////////////////////
         // Create the really high-level stuff
@@ -847,9 +862,10 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        AutoNumberingScheme cns = createAutoNumberingScheme("CatalogNumber For Plants", "", true, CollectionObject.getClassTableId());
-        AutoNumberingScheme accessionNS = createAutoNumberingScheme("AccessionNumber For Plans", "", false, Accession.getClassTableId());
-        
+        Pair<AutoNumberingScheme, AutoNumberingScheme> pairANS = createAutoNumberingSchemes(choice);
+        AutoNumberingScheme cns         = pairANS.first;
+        AutoNumberingScheme accessionNS = pairANS.second;
+
         persist(cns);
         persist(accessionNS);
 
@@ -1558,7 +1574,8 @@ public class BuildSampleDatabase
      */
     public List<Object> createHugeBotanyCollection(final DisciplineType disciplineType,
                                                      final Institution    institution,
-                                                     final SpecifyUser    user)
+                                                     final SpecifyUser    user,
+                                                     final CollectionChoice choice)
     {
         frame.setProcess(0, 16);
         frame.setDesc("Creating Botany...");
@@ -1589,7 +1606,11 @@ public class BuildSampleDatabase
         persist(division);
         persist(discipline);
 
-        loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+        loadSchemaLocalization(discipline, 
+                SpLocaleContainer.CORE_SCHEMA, 
+                DBTableIdMgr.getInstance(),
+                choice.getCatalogNumberingFmtName(),
+                choice.getAccessionNumberingFmtName());
 
         ////////////////////////////////
         // Create the really high-level stuff
@@ -1622,8 +1643,9 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        AutoNumberingScheme cns = createAutoNumberingScheme("CatalogNumber For Plants", "", true, CollectionObject.getClassTableId());
-        AutoNumberingScheme accessionNS = createAutoNumberingScheme("AccessionNumber For Plants", "", false, Accession.getClassTableId());
+        Pair<AutoNumberingScheme, AutoNumberingScheme> pairANS = createAutoNumberingSchemes(choice);
+        AutoNumberingScheme cns         = pairANS.first;
+        AutoNumberingScheme accessionNS = pairANS.second;
         
         persist(cns);
         persist(accessionNS);
@@ -1985,7 +2007,8 @@ public class BuildSampleDatabase
      */
     public List<Object> createSingleInvertPaleoCollection(final DisciplineType disciplineType,
                                                           final Institution    institution,
-                                                          final SpecifyUser    user)
+                                                          final SpecifyUser    user,
+                                                          final CollectionChoice choice)
     {
         frame.setProcess(0, 16);
         frame.setDesc("Creating "+disciplineType.getTitle()+"...");
@@ -2024,7 +2047,11 @@ public class BuildSampleDatabase
         persist(discipline);
         //persist(disciplineGroup);
 
-        loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+        loadSchemaLocalization(discipline, 
+                SpLocaleContainer.CORE_SCHEMA, 
+                DBTableIdMgr.getInstance(),
+                choice.getCatalogNumberingFmtName(),
+                choice.getAccessionNumberingFmtName());
 
         ////////////////////////////////
         // Create the really high-level stuff
@@ -2077,8 +2104,9 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        AutoNumberingScheme cns = createAutoNumberingScheme("CatNo "+disciplineType.getTitle(), "", true, CollectionObject.getClassTableId());
-        AutoNumberingScheme accessionNS = createAutoNumberingScheme("AccessionNumber For " + disciplineType.getTitle(), "", false, Accession.getClassTableId());
+        Pair<AutoNumberingScheme, AutoNumberingScheme> pairANS = createAutoNumberingSchemes(choice);
+        AutoNumberingScheme cns         = pairANS.first;
+        AutoNumberingScheme accessionNS = pairANS.second;
         
         persist(cns);
         persist(accessionNS);
@@ -3041,7 +3069,8 @@ public class BuildSampleDatabase
      */
     public List<Object> createGenericCollection(final DisciplineType disciplineType,
                                                 final Institution    institution,
-                                                final SpecifyUser    user)
+                                                final SpecifyUser    user,
+                                                final CollectionChoice choice)
     {
         frame.setProcess(0, 16);
         frame.setDesc("Creating "+disciplineType.getTitle()+"...");
@@ -3074,7 +3103,11 @@ public class BuildSampleDatabase
         persist(division);
         persist(discipline);
 
-        loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+        loadSchemaLocalization(discipline, 
+                SpLocaleContainer.CORE_SCHEMA, 
+                DBTableIdMgr.getInstance(),
+                choice.getCatalogNumberingFmtName(),
+                choice.getAccessionNumberingFmtName());
 
         ////////////////////////////////
         // Create the really high-level stuff
@@ -3123,8 +3156,9 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        AutoNumberingScheme cns = createAutoNumberingScheme("CatNo "+disciplineType.getTitle(), "", true, CollectionObject.getClassTableId());
-        AutoNumberingScheme accessionNS = createAutoNumberingScheme("AccessionNumber For " + disciplineType.getTitle(), "", false, Accession.getClassTableId());
+        Pair<AutoNumberingScheme, AutoNumberingScheme> pairANS = createAutoNumberingSchemes(choice);
+        AutoNumberingScheme cns         = pairANS.first;
+        AutoNumberingScheme accessionNS = pairANS.second;        
         
         persist(cns);
         persist(accessionNS);
@@ -4083,9 +4117,10 @@ public class BuildSampleDatabase
      * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
-    public void createFishCollection(final DisciplineType disciplineType,
-                                     final Institution    institution,
-                                     final SpecifyUser    user)
+    public void createFishCollection(final DisciplineType   disciplineType,
+                                     final Institution      institution,
+                                     final SpecifyUser      user,
+                                     final CollectionChoice collChoice)
     {
         frame.setDesc("Creating Fish Collection Overhead...");
         
@@ -4174,7 +4209,11 @@ public class BuildSampleDatabase
         persist(testerAgent);
         persist(groups);
              
-        loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+        loadSchemaLocalization(discipline, 
+                               SpLocaleContainer.CORE_SCHEMA, 
+                               DBTableIdMgr.getInstance(),
+                               collChoice.getCatalogNumberingFmtName(),
+                               collChoice.getAccessionNumberingFmtName());
         commitTx();
         
         makeFieldVisible(null, discipline);
@@ -4211,7 +4250,7 @@ public class BuildSampleDatabase
                                             taxonTreeDef, geoTreeDef, gtpTreeDef,
                                             lithoStratTreeDef, locTreeDef,
                                             journal, taxa, geos, locs, gtps, lithoStrats,
-                                            "KUFSH", "Fish", true, false);
+                                            "KUFSH", "Fish", true, false, collChoice);
         }
         
 
@@ -4224,7 +4263,7 @@ public class BuildSampleDatabase
                                             taxonTreeDef, geoTreeDef, gtpTreeDef,
                                             lithoStratTreeDef, locTreeDef,
                                             journal, taxa, geos, locs, gtps, lithoStrats,
-                                            "KUTIS", "Fish Tissue", false, true);
+                                            "KUTIS", "Fish Tissue", false, true, collChoice);
         }
         
         if (voucher != null && tissue != null)
@@ -4259,6 +4298,22 @@ public class BuildSampleDatabase
             }
         }
         return false;
+    }
+    
+    protected CollectionChoice getChoice(final DisciplineType.STD_DISCIPLINES type, 
+                                         final boolean isTissue)
+    {
+        if (selectedChoices != null)
+        {
+            for (CollectionChoice cc : selectedChoices)
+            {
+                if (cc.getType() == type && cc.isTissue() == isTissue)
+                {
+                    return cc;
+                }
+            }
+        }
+        return null;
     }
     
     /**
@@ -4314,6 +4369,44 @@ public class BuildSampleDatabase
     }
     
     /**
+     * @param cc
+     */
+    private Pair<AutoNumberingScheme, AutoNumberingScheme> createAutoNumberingSchemes(final CollectionChoice cc)
+    {
+        Pair<AutoNumberingScheme, AutoNumberingScheme> pair = new Pair<AutoNumberingScheme, AutoNumberingScheme>();
+        String catGroup = cc.getCatNumGroup();
+        if (StringUtils.isNotEmpty(catGroup))
+        {
+            AutoNumberingScheme catANS = getAutoNumberingScheme(CollectionObject.class, catGroup);
+            if (catANS == null)
+            {
+                catANS = createAutoNumberingScheme(catGroup, "", false, CollectionObject.getClassTableId());
+                addAutoNumberingScheme(CollectionObject.class, catANS);
+            }
+            pair.first = catANS;
+        }
+        
+        String accGroup = cc.getAccNumGroup();
+        if (StringUtils.isNotEmpty(accGroup))
+        {
+            AutoNumberingScheme accANS = getAutoNumberingScheme(Accession.class, accGroup);
+            if (accANS == null)
+            {
+                accANS = createAutoNumberingScheme(accGroup, "", false, Accession.getClassTableId());
+                addAutoNumberingScheme(Accession.class, accANS);
+            }
+            pair.second = accANS;
+        }
+        
+        if (pair.first == null || pair.second == null)
+        {
+            int x= 0;
+            x++;
+        }
+        return pair;
+    }
+    
+    /**
      * Creates a single disciplineType collection.
      * @param disciplineName the name of the Discipline to use
      * @param disciplineName the disciplineType name
@@ -4338,7 +4431,8 @@ public class BuildSampleDatabase
                                            final String                    colPrefix,
                                            final String                    colName,
                                            final boolean                   isVoucherCol,
-                                           final boolean                   doTissues)
+                                           final boolean                   doTissues,
+                                           final CollectionChoice          choice)
     {
         int createStep = 0;
         frame.setProcess(0, 15);
@@ -4346,8 +4440,10 @@ public class BuildSampleDatabase
         frame.setDesc("Creating Collection "+  colName);
         
         startTx();
-        AutoNumberingScheme cns = createAutoNumberingScheme("CatalogNumber For " + colName, "", true, CollectionObject.getClassTableId());
-        AutoNumberingScheme accessionNS = createAutoNumberingScheme("AccessionNumber For " + colName, "", false, Accession.getClassTableId());
+        
+        Pair<AutoNumberingScheme, AutoNumberingScheme> pairANS = createAutoNumberingSchemes(choice);
+        AutoNumberingScheme cns         = pairANS.first;
+        AutoNumberingScheme accessionNS = pairANS.second;
         
         persist(cns);
         persist(accessionNS);
@@ -5394,9 +5490,9 @@ public class BuildSampleDatabase
      * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
-    public void createSingleDiscipline(final DisciplineType disciplineType,
-                                       final String usernameArg,
-                                       final String passwordArg)
+    public void createSingleDiscipline(final DisciplineType   disciplineType,
+                                       final String           usernameArg,
+                                       final String           passwordArg)
     {
         System.out.println("Creating single disciplineType database: " + disciplineType.getTitle());
         
@@ -5438,11 +5534,13 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
+        
         //boolean done = false;
         if (isChoosen(DisciplineType.STD_DISCIPLINES.fish, false) ||
             isChoosen(DisciplineType.STD_DISCIPLINES.fish, true))
         {
-            createFishCollection(DisciplineType.getDiscipline("fish"), institution, user);/*, groupPrincipal);*/
+            createFishCollection(DisciplineType.getDiscipline("fish"), institution, user,
+                    getChoice(DisciplineType.STD_DISCIPLINES.fish, false));
             //done = true;
         }
         
@@ -5450,7 +5548,8 @@ public class BuildSampleDatabase
         
         if (isChoosen(DisciplineType.STD_DISCIPLINES.invertpaleo, false))
         {
-            createSingleInvertPaleoCollection(DisciplineType.getDiscipline("invertpaleo"), institution, user);
+            createSingleInvertPaleoCollection(DisciplineType.getDiscipline("invertpaleo"), institution, user, 
+                    getChoice(DisciplineType.STD_DISCIPLINES.invertpaleo, false));
             //done = true;
         }
         frame.setOverall(steps++);
@@ -5459,10 +5558,12 @@ public class BuildSampleDatabase
         {
             if (!doHugeBotany)
             {
-                createSingleBotanyCollection(DisciplineType.getDiscipline("botany"), institution, user);
+                createSingleBotanyCollection(DisciplineType.getDiscipline("botany"), institution, user, 
+                        getChoice(DisciplineType.STD_DISCIPLINES.botany, false));
             } else
             {
-                createHugeBotanyCollection(DisciplineType.getDiscipline("botany"), institution, user);
+                createHugeBotanyCollection(DisciplineType.getDiscipline("botany"), institution, user, 
+                        getChoice(DisciplineType.STD_DISCIPLINES.botany, false));
             }
             //done = true;
         }
@@ -5477,7 +5578,8 @@ public class BuildSampleDatabase
                 DisciplineType dType = DisciplineType.getDiscipline(disp);
                 if (XMLHelper.getConfigDir(dType.getName()+ File.separator + "taxon_init.xml").exists())
                 {
-                    createGenericCollection(dType, institution, user);
+                    createGenericCollection(dType, institution, user, 
+                            getChoice(disp, false));
                 }
             }
         }
@@ -6343,46 +6445,8 @@ public class BuildSampleDatabase
 
         } else
         {
-            setupDlg = new SetupDialog(databaseName, driverName);
-             
-            final SwingWorker worker = new SwingWorker()
-            {
-                @Override
-                public Object construct()
-                {
-                    setupDlg.pack();
-                    UIHelper.centerAndShow(setupDlg);
-                    try
-                    {
-                        int seconds = TIME_THRESHOLD;
-                        while (seconds > 0)
-                        {
-                            setupDlg.setTitle(Integer.toString(seconds));
-                            Thread.sleep(1000); 
-                            seconds--;
-                        }
-                        
-                        if (setupDlg != null)
-                        {
-                            setupDlg.closeDlg(false);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        // ignore
-                    }
-                    return null;
-                }
-    
-                //Runs on the event-dispatching thread.
-                @SuppressWarnings("synthetic-access")
-                @Override
-                public void finished()
-                {
-                    // no-op
-                }
-            };
-            worker.start();
+            setupDlg = new SetUpBuildDlg(databaseName, driverName, this);
+            UIHelper.centerAndShow(setupDlg);
         }
     }
     
@@ -6550,7 +6614,7 @@ public class BuildSampleDatabase
             
             if (hideFrame) System.out.println("Creating Empty Database");
             
-            List<Object> dataObjects = createEmptyDiscipline(config);
+            List<Object> dataObjects = createEmptyDiscipline(config, null);
             
 
             SwingUtilities.invokeLater(new Runnable()
@@ -6905,295 +6969,6 @@ public class BuildSampleDatabase
         return new Properties();
     }
     
-    
-    // XXX may want to use the Logon Dialog in the future
-    class SetupDialog extends JDialog
-    {
-        protected String             databaseName;
-        protected DatabaseDriverInfo dbDriver;
-        protected boolean            isCancelled = false;
-        
-        protected JTextField         usernameTxtFld;
-        protected JPasswordField     passwdTxtFld;
-        protected JTextField         databaseNameTxt;
-        protected JComboBox          drivers;
-        protected JComboBox          catNumFmts;
-        protected JCheckBox          extraCollectionsChk;
-        protected JComboBox          disciplines;
-        protected ToggleButtonChooserPanel<CollectionChoice> collChoicePanel;
-        protected Vector<DatabaseDriverInfo>  driverList;
-        protected Vector<UIFieldFormatterIFace> catNumFmtList;
-        protected boolean            wasClosed = false;
-        
-        /**
-         * Creates a dialog for entering database name and selecting the appropriate driver.
-         * @param databaseName 
-         * @param dbDriverName
-         */
-        public SetupDialog(final String databaseName, 
-                           final String dbDriverName)
-        {
-            super();
-            
-            Specify.setUpSystemProperties();
-            UIFieldFormatterMgr.setDoingLocal(true);
-            
-            driverList = DatabaseDriverInfo.getDriversList();
-            int inx = Collections.binarySearch(driverList, new DatabaseDriverInfo(dbDriverName, null, null));
-            
-            drivers = createComboBox(driverList);
-            drivers.setSelectedIndex(inx);
-            
-            catNumFmtList = (Vector<UIFieldFormatterIFace>)UIFieldFormatterMgr.getInstance().getFormatterList(CollectionObject.class, "catalogNumber");
-            Collections.sort(catNumFmtList, new Comparator<UIFieldFormatterIFace>() {
-                public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
-                {
-                    return o1.getTitle().compareTo(o2.getTitle());
-                }
-            });
-            catNumFmts = createComboBox(catNumFmtList);
-            
-            int i = 0;
-            for (UIFieldFormatterIFace fmt : catNumFmtList)
-            {
-                System.out.println(fmt.getName());
-                if (fmt.getName().equals("CatalogNumberNumeric"))
-                {
-                    catNumFmts.setSelectedIndex(i);
-                }
-                i++;
-            }
-            
-            //Vector<DisciplineType> disciplinesList = DisciplineType.getDisciplineList();
-            disciplines     = createComboBox(DisciplineType.getDisciplineList());
-            disciplines.setSelectedItem(DisciplineType.getDiscipline("fish"));
-            
-            databaseNameTxt = createTextField(databaseName);
-            
-            usernameTxtFld = createTextField("rods");
-            passwdTxtFld   = createPasswordField("rods");
-            
-            extraCollectionsChk = createCheckBox("Create Extra Collections");
-            extraCollectionsChk.setSelected(true);
-            
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p,4px,p,4px,p,4px,p,4px,p,4px,p,4px,p:g,10px,p"));
-            CellConstraints cc         = new CellConstraints();
-            builder.add(createLabel("Username:", SwingConstants.RIGHT),      cc.xy(1,1));
-            builder.add(usernameTxtFld,                                     cc.xy(3,1));
-            builder.add(createLabel("Password:", SwingConstants.RIGHT),      cc.xy(1,3));
-            builder.add(passwdTxtFld,                                       cc.xy(3,3));
-            builder.add(createLabel("Database Name:", SwingConstants.RIGHT), cc.xy(1,5));
-            builder.add(databaseNameTxt,                                    cc.xy(3,5));
-            builder.add(createLabel("DisciplineType Name:", SwingConstants.RIGHT), cc.xy(1,7));
-            builder.add(disciplines,                                        cc.xy(3,7));
-            builder.add(createLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,9));
-            builder.add(drivers,                                            cc.xy(3,9));
-            builder.add(createLabel("Cat. Num Fmt:", SwingConstants.RIGHT), cc.xy(1,11));
-            builder.add(catNumFmts,                                         cc.xy(3,11));
-            
-            //int y = 13;
-            CollectionChoice[] choicesArray = {
-                    new CollectionChoice(DisciplineType.STD_DISCIPLINES.fish, false, true),
-                    new CollectionChoice(DisciplineType.STD_DISCIPLINES.fish, true, true),
-                    new CollectionChoice(DisciplineType.STD_DISCIPLINES.botany, false, true),
-                    new CollectionChoice(DisciplineType.STD_DISCIPLINES.invertpaleo, false, true),
-            };
-            
-            // For some reason peristsing the CollectionChoice vector causes the JVM on the Mac to die.
-            // Get persisted choices
-            /*List<CollectionChoice> selectdObjects = new Vector<CollectionChoice>();
-            Hashtable<String, CollectionChoice> choiceHash = new Hashtable<String, CollectionChoice>();
-            for (CollectionChoice choice : loadPersistedChoices())
-            {
-                choiceHash.put(choice.toString(), choice);
-            }
-            for (CollectionChoice choice : choicesArray)
-            {
-                CollectionChoice permChoice = choiceHash.get(choice.toString());
-                if (permChoice != null && permChoice.isSelected())
-                {
-                    selectdObjects.add(choice);
-                }
-            }*/
-            Vector<CollectionChoice> choices = new Vector<CollectionChoice>();
-            Collections.addAll(choices, choicesArray);
-            
-            for (DisciplineType.STD_DISCIPLINES disp : DisciplineType.STD_DISCIPLINES.values())
-            {
-                if (disp != DisciplineType.STD_DISCIPLINES.botany &&
-                    disp != DisciplineType.STD_DISCIPLINES.invertpaleo &&
-                    disp != DisciplineType.STD_DISCIPLINES.fish)
-                {
-                    DisciplineType dType = DisciplineType.getDiscipline(disp);
-                    File file = XMLHelper.getConfigDir(dType.getName()+ File.separator + "taxon_init.xml");
-                    if (file != null && file.exists())
-                    {
-                        choices.add(new CollectionChoice(disp, false, true));
-                    }
-                }
-            }
-            collChoicePanel = new ToggleButtonChooserPanel<CollectionChoice>(choices, ToggleButtonChooserPanel.Type.Checkbox);
-            collChoicePanel.setAddSelectAll(true);
-            collChoicePanel.setUseScrollPane(true);
-            collChoicePanel.createUI();
-            collChoicePanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            builder.add(collChoicePanel, cc.xywh(1,13,3,1));
-            
-            collChoicePanel.setSelectedObjects(choices);
-            
-            final JButton okBtn     = createButton("OK");
-            final JButton cancelBtn = createButton("Cancel");
-            builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1,15,3,1));
-            
-            cancelBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    closeDlg(true);
-                }
-             });
-             
-            okBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    //saveChoices((Vector<CollectionChoice>)collChoicePanel.getSelectedObjects());
-
-                    closeDlg(false);
-                }
-             });
-            
-            // make sure closing the window does the same thing as clicking cancel
-            this.addWindowListener(new WindowAdapter()
-            {
-                @Override
-                public void windowClosed(WindowEvent e)
-                {
-                    cancelBtn.doClick();
-                }
-            });
-            
-            builder.setDefaultDialogBorder();
-            setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            setContentPane(builder.getPanel());
-            pack();
-            Dimension dim = getPreferredSize();
-            dim.width = 300;
-            setSize(dim);
-        }
-        
-        /**
-         * @return
-         */
-        public List<CollectionChoice> getSelectedColleectionChoices()
-        {
-            return collChoicePanel.getSelectedObjects();
-        }
-        
-        /**
-         * @return
-         */
-        @SuppressWarnings("unchecked")
-        protected Vector<CollectionChoice> loadPersistedChoices()
-        {
-            XStream xstream = new XStream();
-            config(xstream);
-            
-            File file = new File(UIRegistry.getDefaultWorkingPath()+File.separator+"bld_coll_choices.xml");
-            if (file.exists())
-            {
-                try
-                {
-                    Vector<CollectionChoice> list = (Vector<CollectionChoice>)xstream.fromXML(FileUtils.readFileToString(file));
-                    for (CollectionChoice cc : list)
-                    {
-                        cc.initialize();
-                    }
-                    return list;
-                    
-                } catch (IOException ex)
-                {
-                    ex.printStackTrace();
-                }
-            }
-            return new Vector<CollectionChoice>();
-        }
-        
-        /**
-         * @param choices
-         */
-        public void saveChoices(final Vector<CollectionChoice> choices)
-        {
-            XStream xstream = new XStream();
-            config(xstream);
-            
-            System.out.println("Start");
-            File file = new File(UIRegistry.getDefaultWorkingPath()+File.separator+"bld_coll_choices.xml");
-            try
-            {
-                FileUtils.writeStringToFile(file, xstream.toXML(choices));
-                
-            } catch (IOException ex)
-            {
-                ex.printStackTrace();
-            }
-            System.out.println("Stop");
-        }
-        
-        public void closeDlg(final boolean wasCancelled)
-        {
-            if (!wasClosed)
-            {
-                isCancelled = wasCancelled;
-                if (!isCancelled)
-                {
-                    databaseName = databaseNameTxt.getText();
-                    if (StringUtils.isEmpty(databaseName))
-                    {
-                        isCancelled = true;
-                        
-                    } else if (drivers.getSelectedIndex() > -1)
-                    {
-                        dbDriver = (DatabaseDriverInfo)drivers.getSelectedItem();
-                    } else
-                    {
-                        isCancelled = true;
-                    }
-                }
-                setVisible(false);
-                
-                if (!isCancelled)
-                {
-                    try
-                    {
-                        UIFieldFormatterIFace cnf = (UIFieldFormatterIFace)catNumFmts.getSelectedItem();
-                        if (cnf != null)
-                        {
-                            catalogNumberFmtName = cnf.getName();
-                        }
-                        String username = usernameTxtFld.getText();
-                        String password = new String(passwdTxtFld.getPassword());
-                        
-                        startBuild(databaseName, 
-                                   dbDriver.getName(), 
-                                   (DisciplineType)disciplines.getSelectedItem(), 
-                                   username, 
-                                   password,
-                                   getSelectedColleectionChoices());
-                        
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                } else
-                {
-                    System.exit(0);
-                }
-                wasClosed = true;
-                setupDlg.dispose();
-                setupDlg = null;
-            }
-        }
-    }
-    
     /**
      * 
      */
@@ -7282,7 +7057,9 @@ public class BuildSampleDatabase
      */
     public static void loadLocalization(final SpLocaleContainer memoryContainer, 
                                         final SpLocaleContainer newContainer,
-                                        final boolean hideGenericFields)
+                                        final boolean hideGenericFields,
+                                        final String catFmtName,
+                                        final String accFmtName)
     {
         newContainer.setName(memoryContainer.getName());
         newContainer.setType(memoryContainer.getType());
@@ -7334,14 +7111,14 @@ public class BuildSampleDatabase
             
             loadLocalization(item, newItem, hideGenericFields);
             
-            if (isColObj && item.getName().equals("catalogNumber") && catalogNumberFmtName != null)
+            if (isColObj && item.getName().equals("catalogNumber") && catFmtName != null)
             {
-                newItem.setFormat(catalogNumberFmtName);
+                newItem.setFormat(catFmtName);
             }
             
-            if (isColObj && item.getName().equals("accessionNumber") && accessionNumberFmtName != null)
+            if (isColObj && item.getName().equals("accessionNumber") && accFmtName != null)
             {
-                newItem.setFormat(accessionNumberFmtName);
+                newItem.setFormat(accFmtName);
             }
             
         }
@@ -7352,7 +7129,11 @@ public class BuildSampleDatabase
      * @param schemaType
      * @param tableMgr
      */
-    public static void loadSchemaLocalization(final Discipline discipline, final Byte schemaType, final DBTableIdMgr tableMgr)
+    public static void loadSchemaLocalization(final Discipline discipline, 
+                                              final Byte schemaType, 
+                                              final DBTableIdMgr tableMgr,
+                                              final String catFmtName,
+                                              final String accFmtName)
     {
         
         HiddenTableMgr hiddenTableMgr = new HiddenTableMgr();
@@ -7374,7 +7155,7 @@ public class BuildSampleDatabase
             
             container.setIsHidden(hiddenTableMgr.isHidden(discipline.getName(), table.getName()));
             
-            loadLocalization(table, container, hideGenericFields);
+            loadLocalization(table, container, hideGenericFields, catFmtName, accFmtName);
             
             discipline.getSpLocaleContainers().add(container);
             container.setDiscipline(discipline);
@@ -7558,101 +7339,7 @@ public class BuildSampleDatabase
         }
     }
     
-    private void config(final XStream xstream)
-    {
-        xstream.alias("choice",       CollectionChoice.class);
-        xstream.useAttributeFor(CollectionChoice.class, "name");
-        xstream.useAttributeFor(CollectionChoice.class, "isTissue");
-        xstream.useAttributeFor(CollectionChoice.class, "isSelected");
-        
-        xstream.omitField(CollectionChoice.class, "type");
-    }
-    
 
-    class CollectionChoice
-    {
-        protected DisciplineType.STD_DISCIPLINES  type;
-        protected String  name;
-        protected boolean isTissue;
-        protected boolean isSelected;
-        /**
-         * 
-         */
-        public CollectionChoice()
-        {
-            super();
-            // TODO Auto-generated constructor stub
-        }
-        /**
-         * @param name
-         * @param isTissue
-         * @param isSelected
-         */
-        public CollectionChoice(DisciplineType.STD_DISCIPLINES type, boolean isTissue, boolean isSelected)
-        {
-            super();
-            this.type = type;
-            this.isTissue = isTissue;
-            this.isSelected = isSelected;
-            this.name = type.toString();
-            
-        }
-        
-        public void initialize()
-        {
-            type = DisciplineType.STD_DISCIPLINES.valueOf(name);
-        }
-        
-        /**
-         * @return the type
-         */
-        public DisciplineType.STD_DISCIPLINES getType()
-        {
-            return type;
-        }
-        /**
-         * @param type the type to set
-         */
-        public void setType(DisciplineType.STD_DISCIPLINES type)
-        {
-            this.type = type;
-            this.name = type.toString();
-        }
-        
-        /**
-         * @return the isTissue
-         */
-        public boolean isTissue()
-        {
-            return isTissue;
-        }
-        /**
-         * @param isTissue the isTissue to set
-         */
-        public void setTissue(boolean isTissue)
-        {
-            this.isTissue = isTissue;
-        }
-        /**
-         * @return the isSelected
-         */
-        public boolean isSelected()
-        {
-            return isSelected;
-        }
-        /**
-         * @param isSelected the isSelected to set
-         */
-        public void setSelected(boolean isSelected)
-        {
-            this.isSelected = isSelected;
-        }
-        
-        public String toString()
-        {
-            DisciplineType dType = DisciplineType.getDiscipline(type);
-            return dType.getTitle() + (isTissue ? " Tissue" : "");
-        }
-    }
+
 
 }

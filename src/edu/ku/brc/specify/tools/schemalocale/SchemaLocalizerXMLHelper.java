@@ -267,6 +267,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                             item.setName(fi.getName());
                             item.setWebLinkName(fi.getWebLinkName());
                             item.setIsRequired(fi.isRequired());
+                            item.setIsHidden(fi.isHidden());
                             
                             nameStr = new SpLocaleItemStr();
                             nameStr.initialize();
@@ -312,6 +313,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                                 item.initialize();
                                 item.setName(fi.getName());
                                 item.setIsRequired(fi.isRequired());
+                                item.setIsHidden(fi.isHidden());
                                 
                                 SpLocaleItemStr nameStr = new SpLocaleItemStr();
                                 nameStr.initialize();
@@ -436,6 +438,33 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             } else
             {
                 log.info("There were no containers for ["+file.getAbsolutePath()+"]");
+            }
+            
+            // Force the hidden of special fields
+            if (false)
+            {
+                String[] fieldsToHide = {"timestampCreated","timestampModified",
+                                        "createdByAgent","modifiedByAgent","version",
+                                        "collectionMemberId"};
+                Hashtable<String, Boolean> hash = new Hashtable<String, Boolean>();
+                for (String fName : fieldsToHide)
+                {
+                    hash.put(fName, Boolean.TRUE);
+                }
+                for (DBTableInfo ti : tableMgr.getTables())
+                {
+                    DisciplineBasedContainer container = (DisciplineBasedContainer)tableHash.get(ti.getName());
+                    if (container != null)
+                    {
+                        for (SpLocaleContainerItem item : container.getItems())
+                        {
+                            if (hash.get(item.getName()) != null)
+                            {
+                                item.setIsHidden(Boolean.TRUE);
+                            }
+                        }
+                    }
+                }
             }
             
         } catch (IOException ex)

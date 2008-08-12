@@ -52,6 +52,8 @@ import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.ui.CustomDialog;
 
 /**
+ * (This needs to be converted over to use FmtListEditorDlgBase)
+ * 
  * @author rod
  *
  * @code_status Alpha
@@ -72,7 +74,7 @@ public class UIFormatterListEdtDlg extends CustomDialog
     protected JList                     formatList;
     protected DefEditDeleteAddPanel     dedaPanel;
     protected ListSelectionListener     formatListSelectionListener = null;
-    
+    protected boolean                   hasChanged = false;
     
     /**
      * @param dialog
@@ -83,8 +85,8 @@ public class UIFormatterListEdtDlg extends CustomDialog
      * @throws HeadlessException
      */
     public UIFormatterListEdtDlg(final Frame               frame, 
-                          final DBFieldInfo         fieldInfo, 
-                          final UIFieldFormatterMgr	uiFieldFormatterMgrCache) throws HeadlessException
+                                 final DBFieldInfo         fieldInfo, 
+                                 final UIFieldFormatterMgr uiFieldFormatterMgrCache) throws HeadlessException
     {
         super(frame, getResourceString("FFE_DLG_TITLE"), true, OKCANCELHELP, null);
         
@@ -255,7 +257,7 @@ public class UIFormatterListEdtDlg extends CustomDialog
                     {
                         return;
                     }
-                    enableUIControls();
+                    updateUIEnabled();
                 }
             };
         }
@@ -267,7 +269,7 @@ public class UIFormatterListEdtDlg extends CustomDialog
     /**
      * 
      */
-    protected void enableUIControls()
+    protected void updateUIEnabled()
     {
     	
     	UIFieldFormatterIFace uif = (UIFieldFormatterIFace)formatList.getSelectedValue();
@@ -289,6 +291,7 @@ public class UIFormatterListEdtDlg extends CustomDialog
             UIFieldFormatter uif = (UIFieldFormatter)model.get(i);
             uif.setDefault(uif == selected);
         }
+        setHasChanged(true);
         formatList.repaint();
     }
     
@@ -316,6 +319,7 @@ public class UIFormatterListEdtDlg extends CustomDialog
                 {
                     uiFieldFormatterMgrCache.addFormatter(uif);
                 }
+                setHasChanged(true);
             }
             
         } catch (CloneNotSupportedException ex)
@@ -335,6 +339,7 @@ public class UIFormatterListEdtDlg extends CustomDialog
             DefaultListModel model = (DefaultListModel) formatList.getModel();
             model.removeElement(uif);
             uiFieldFormatterMgrCache.removeFormatter(uif);
+            setHasChanged(true);
         }
     }
     
@@ -345,6 +350,27 @@ public class UIFormatterListEdtDlg extends CustomDialog
     {
         UIFieldFormatter uif = new UIFieldFormatter();
         editFormatter(uif, true);
+    }
+    
+    /**
+     * @return the hasChanged
+     */
+    public boolean hasChanged()
+    {
+        return hasChanged;
+    }
+
+    /**
+     * @param hasChanged the hasChanged to set
+     */
+    public void setHasChanged(boolean hasChanged)
+    {
+        if (this.hasChanged != hasChanged)
+        {
+            setWindowModified(hasChanged);
+        }
+        this.hasChanged = hasChanged;
+        updateUIEnabled();
     }
     
 }

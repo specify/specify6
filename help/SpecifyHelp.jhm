@@ -57,6 +57,8 @@
 	<mapID target="DOF_SINGLE_FF"           url="SpecifyHelp/System/DataObjFmtSingleEditor.html"/>
     <mapID target="UIF_LIST_EDITOR"         url="SpecifyHelp/System/UIFieldFmtListEditor.html"/>
 	<mapID target="UIF_EDITOR"              url="SpecifyHelp/System/UIfieldFmtEditor.html"/>
+	<mapID target="DOA_LIST_EDITOR"         url="SpecifyHelp/System/DataObjAggListEditor.html"/>
+	<mapID target="DOA_EDITOR"              url="SpecifyHelp/System/DataObjAggEditor.html"/>
 	
 	<!-- Workbench -->
 	

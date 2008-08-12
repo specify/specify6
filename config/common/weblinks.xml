@@ -56,7 +56,7 @@
     <args>
       <weblinkdefarg>
         <name>accessionNumber</name>
-        <prompt>true</prompt>
+        <prompt>false</prompt>
       </weblinkdefarg>
     </args>
     <usedByList/>

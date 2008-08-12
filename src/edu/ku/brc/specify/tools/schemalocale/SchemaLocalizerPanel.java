@@ -54,6 +54,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.JTextComponent;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -204,7 +205,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         dataObjFmtLbl = createI18NFormLabel("DOF_DISPLAY_FORMAT");
         dataObjFmtCbo = createComboBox();
         dataObjFmtBtn = createButton("...");
-        fillFormatterCombo();
+        fillDataObjFormatterCombo();
         addFormatterActionListener();
 
         // aggregator controls
@@ -383,7 +384,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     /**
      * 
      */
-    private void fillFormatterCombo()
+    private void fillDataObjFormatterCombo()
     {
         
         DataObjSwitchFormatter curSelDOF =  (DataObjSwitchFormatter)dataObjFmtCbo.getSelectedItem();
@@ -408,8 +409,13 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     		return;
     	}
     	
+    	
     	String fmtName = curSelDOF != null ? curSelDOF.getName() : currContainer.getFormat();
-
+        if (fList.size() == 1 && StringUtils.isEmpty(fmtName))
+        {
+            fmtName = fList.get(0).getName();
+        }
+        
     	int selectedInx = -1;
         for (DataObjSwitchFormatter format : fList)
         {
@@ -448,6 +454,11 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         if (currContainer == null) return;
         
         String aggName = currContainer.getAggregator();
+        
+        if (fList.size() == 1 && StringUtils.isEmpty(aggName))
+        {
+            aggName = fList.get(0).getName();
+        }
 
         int selectedInx = -1;
         for (DataObjAggregator aggregator : fList)
@@ -475,19 +486,19 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         	{
     			Frame frame = (Frame)UIRegistry.getTopWindow(); 
     			DataObjFieldFmtListEdtDlg dlg = new DataObjFieldFmtListEdtDlg(frame, 
-                                                                				  tableInfo, 
-                                                                				  dataObjFieldFormatMgrCache, 
-                                                                				  uiFieldFormatterMgrCache);
+                                                            				  tableInfo, 
+                                                            				  dataObjFieldFormatMgrCache, 
+                                                            				  uiFieldFormatterMgrCache);
         		dlg.setVisible(true);
         		
         		// set combo selection to formatter selected in dialog
-        		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+        		if (!dlg.isCancelled() && dlg.hasChanged())
         		{
                     setTableInfoChanged(true);
                     setHasChanged(true);
                     
 	        		// fill combo again, adding new formatter if it was new and selecting the appropriate one
-        			fillFormatterCombo();
+        			fillDataObjFormatterCombo();
         		}
         	}
         };
@@ -511,7 +522,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         		dlg.setVisible(true);
         		
         		// set combo selection to formatter selected in dialog
-        		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+        		if (dlg.getBtnPressed() == CustomDialog.OK_BTN && dlg.hasChanged())
         		{
                     setTableInfoChanged(true);
                     setHasChanged(true);
@@ -935,7 +946,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
                     tblNameText.setText(getNameDescStrForCurrLocale(currContainer));
                     tblHideChk.setSelected(currContainer.getIsHidden());
                     
-                    fillFormatterCombo();
+                    fillDataObjFormatterCombo();
                     fillAggregatorCombo();
                     
                     if (doAutoSpellCheck)

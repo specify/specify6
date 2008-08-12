@@ -23,7 +23,8 @@ public class WebLinkDefArg implements Cloneable
     protected boolean prompt;
     
     // Transient
-    protected boolean isField = false;
+    protected boolean isField    = false;
+    protected boolean isEditable = false;
     
     /**
      * 
@@ -102,6 +103,22 @@ public class WebLinkDefArg implements Cloneable
     public void setField(boolean isField)
     {
         this.isField = isField;
+    }
+
+    /**
+     * @return the isEditable
+     */
+    public boolean isEditable()
+    {
+        return isEditable;
+    }
+
+    /**
+     * @param isEditable the isEditable to set
+     */
+    public void setEditable(boolean isEditable)
+    {
+        this.isEditable = isEditable;
     }
 
     /* (non-Javadoc)

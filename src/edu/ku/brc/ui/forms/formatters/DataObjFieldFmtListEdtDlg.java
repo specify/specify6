@@ -17,36 +17,14 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
-import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIHelper.createList;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Frame;
 import java.awt.HeadlessException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.EditDeleteAddPanel;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 /**
@@ -59,161 +37,94 @@ import edu.ku.brc.util.ComparatorByStringRepresentation;
  * Created Date: Aug 5, 2008
  *
  */
-public class DataObjFieldFmtListEdtDlg extends CustomDialog
+public class DataObjFieldFmtListEdtDlg extends FmtListEditorDlgBase
 {
-   
-    protected DBTableInfo                               tableInfo;
-    protected DataObjFieldFormatMgr                     dataObjFieldFormatMgrCache;
-    protected UIFieldFormatterMgr                       uiFieldFormatterMgrCache;
+    protected DBTableInfo tableInfo;
     
-    // UI
-    protected JList                                     formatList;
-    protected DefaultListModel                          listModel;
-    protected EditDeleteAddPanel                        edaPanel;
-        
     /**
-     * @param parentDlg
+     * @param frame
      * @param tableInfo
      * @param dataObjFieldFormatMgrCache
      * @param uiFieldFormatterMgrCache
      * @throws HeadlessException
      */
-    public DataObjFieldFmtListEdtDlg(final Frame                 parentDlg, 
-                                       final DBTableInfo           tableInfo, 
-                                       final DataObjFieldFormatMgr dataObjFieldFormatMgrCache,
-                                       final UIFieldFormatterMgr   uiFieldFormatterMgrCache) throws HeadlessException
+    public DataObjFieldFmtListEdtDlg(final Frame                 frame, 
+                                     final DBTableInfo           tableInfo, 
+                                     final DataObjFieldFormatMgr dataObjFieldFormatMgrCache,
+                                     final UIFieldFormatterMgr   uiFieldFormatterMgrCache) throws HeadlessException
     {
-        super(parentDlg, getResourceString("DOF_DLG_TITLE"), true, OK_BTN, null);
-        
-        this.tableInfo                   = tableInfo;
-        this.dataObjFieldFormatMgrCache  = dataObjFieldFormatMgrCache;
-        this.uiFieldFormatterMgrCache    = uiFieldFormatterMgrCache;
-        
-        this.helpContext                 = "DOF_LIST_EDITOR"; 
-
+        super(frame, 
+                "DOF_DLG_TITLE",
+                "DOF_LIST_EDITOR", 
+                tableInfo, 
+                dataObjFieldFormatMgrCache, 
+                uiFieldFormatterMgrCache);
+        this.tableInfo = tableInfo;
     }
 
+    
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.CustomDialog#createUI()
+     * @see edu.ku.brc.ui.forms.formatters.FmtListEditorDlgBase#addItem()
      */
     @Override
-    public void createUI()
+    protected void addItem()
     {
-        okLabel = getResourceString("CLOSE");
-        
-        // TODO Auto-generated method stub
-        super.createUI();
-        
-        populateFormatterList();
-
-        ActionListener addAL = new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                addNewFormatter();
-            }
-        };
-
-        ActionListener delAL = new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                deleteSelectedFormatter();
-            }
-        };
-
-        ActionListener editAL = new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                editFormatter((DataObjSwitchFormatter)formatList.getSelectedValue(), false);
-            }
-        };
-
-        ActionListener defAL = new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                setAsDefFormatter();
-            }
-        };
-
-        // control panel
-        edaPanel = new DefEditDeleteAddPanel(defAL, editAL, delAL, addAL);
-        edaPanel.getAddBtn().setEnabled(true);
-        
-        JLabel tableTitleLbl = createLabel(getResourceString("FFE_TABLE") + ": ");
-        JLabel tableTitleValueLbl = createLabel(tableInfo.getTitle());
-        tableTitleValueLbl.setBackground(Color.WHITE);
-        tableTitleValueLbl.setOpaque(true);
-
-        CellConstraints cc = new CellConstraints();
-        
-        PanelBuilder tblInfoPB = new PanelBuilder(new FormLayout("p,p", "p"));
-        tblInfoPB.add(tableTitleLbl, cc.xy(1, 1));
-        tblInfoPB.add(tableTitleValueLbl, cc.xy(2, 1));
-        
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:max(200px;p):g", "p,2px,f:max(250px;p):g,5px,p"));
-        pb.add(tblInfoPB.getPanel(), cc.xy(1, 1));
-        pb.add(UIHelper.createScrollPane(formatList), cc.xy(1, 3));
-        pb.add(edaPanel, cc.xy(1, 5));
-        
-        pb.setDefaultDialogBorder();
-        
-        contentPanel   = pb.getPanel();
-        mainPanel.add(contentPanel, BorderLayout.CENTER);
-        
-        pack();
+        DataObjSwitchFormatter newFmt = new DataObjSwitchFormatter(null, null, true, true, tableInfo.getClassObj(), "");
+        editItem(newFmt, true);
     }
-    
-    /**
-     * @return
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.FmtListEditorDlgBase#createListDataModel()
      */
-    protected List<DataObjSwitchFormatter> populateFormatterList()
+    @Override
+    protected DefaultListModel createListDataModel()
     {
         // list of existing formats
-        listModel = new DefaultListModel();
+        DefaultListModel model = new DefaultListModel();
 
         // add available data object formatters
         List<DataObjSwitchFormatter> fmtrs = dataObjFieldFormatMgrCache.getFormatterList(tableInfo.getClassObj());
         Collections.sort(fmtrs, new ComparatorByStringRepresentation<DataObjSwitchFormatter>());
         for (DataObjSwitchFormatter format : fmtrs)
         {
-            listModel.addElement(format);
+            model.addElement(format);
         }
-
-        formatList = createList(listModel);
-        formatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        addFormatListSelectionListener();
-        addFormatListMouseListener();
-
-        return fmtrs;
+        return model;
     }
-    
-    /**
-     * Sets the selected formatter as the default.
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.FmtListEditorDlgBase#deleteSelectedItem()
      */
-    protected void setAsDefFormatter()
+    @Override
+    protected void deleteSelectedItem()
     {
-        DataObjSwitchFormatter selected = (DataObjSwitchFormatter)formatList.getSelectedValue();
-        DefaultListModel model    = (DefaultListModel)formatList.getModel();
-        for (int i=0;i<model.getSize();i++)
+        DataObjSwitchFormatter selectedFormat = (DataObjSwitchFormatter)list.getSelectedValue();
+        if (selectedFormat == null)
         {
-            DataObjSwitchFormatter dof = (DataObjSwitchFormatter)model.get(i);
-            dof.setDefault(dof == selected);
-            setWindowModified(true); 
+            return;
         }
-        formatList.repaint();
+
+        dataObjFieldFormatMgrCache.removeFormatter(selectedFormat);
+        
+        DefaultListModel model = (DefaultListModel) list.getModel();
+        model.removeElement(selectedFormat);
+        
+        setHasChanged(true);
     }
-    
-    /**
-     * @param dataObjFieldFmt
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.FmtListEditorDlgBase#editItem(java.lang.Object, boolean)
      */
-    protected void editFormatter(final DataObjSwitchFormatter dataObjFieldFmt, final boolean isNew)
+    @Override
+    protected void editItem(Object dataObj, boolean isNew)
     {
         try
         {
-            DataObjSwitchFormatter tempCopy = isNew ? dataObjFieldFmt : (DataObjSwitchFormatter)dataObjFieldFmt.clone();
+            DataObjSwitchFormatter dataObjFieldFmt = (DataObjSwitchFormatter)dataObj;
+            DataObjSwitchFormatter tempCopy        = isNew ? dataObjFieldFmt : (DataObjSwitchFormatter)dataObjFieldFmt.clone();
             
             DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(this, tableInfo, dataObjFieldFormatMgrCache, uiFieldFormatterMgrCache, tempCopy);
             dlg.setVisible(true);
@@ -231,7 +142,7 @@ public class DataObjFieldFmtListEdtDlg extends CustomDialog
                     dataObjFieldFormatMgrCache.addFormatter(tempCopy);
                     listModel.addElement(tempCopy);
                 }
-                setWindowModified(true); 
+                setHasChanged(true);
             }
             
         } catch (CloneNotSupportedException ex)
@@ -239,108 +150,33 @@ public class DataObjFieldFmtListEdtDlg extends CustomDialog
             ex.printStackTrace();
         }
     }
-    
-    /**
-     * Adds a new Formatter.
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.FmtListEditorDlgBase#getDEDAToolTipKeys()
      */
-    protected void addNewFormatter()
+    @Override
+    protected String[] getDEDAToolTipKeys()
     {
-        DataObjSwitchFormatter newFmt = new DataObjSwitchFormatter(null, null, true, true, tableInfo.getClassObj(), "");
-        editFormatter(newFmt, true);
+        return new String[]  { "", "", "", ""};
     }
 
-    /**
-     * 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.FmtListEditorDlgBase#setDefaultItem()
      */
-    protected void deleteSelectedFormatter()
+    @Override
+    protected void setDefaultItem()
     {
-        DataObjSwitchFormatter selectedFormat = getSelectedFormatter();
-        if (selectedFormat == null)
+        DataObjSwitchFormatter selected = (DataObjSwitchFormatter)list.getSelectedValue();
+        DefaultListModel model    = (DefaultListModel)list.getModel();
+        for (int i=0;i<model.getSize();i++)
         {
-            return;
+            DataObjSwitchFormatter dof = (DataObjSwitchFormatter)model.get(i);
+            dof.setDefault(dof == selected);
+            setHasChanged(true);
         }
-
-        dataObjFieldFormatMgrCache.removeFormatter(selectedFormat);
-        
-        //int              index = formatList.getSelectedIndex();
-        DefaultListModel model = (DefaultListModel) formatList.getModel();
-        model.removeElement(selectedFormat);
-        
-        setWindowModified(true); 
-
-        /*if (model.getSize() == 0)
-        {
-            return;
-        }
-
-        // else
-        index = (index >= model.getSize()) ? index - 1 : index;
-        formatList.setSelectedIndex(index);*/
+        list.repaint();
     }
 
-    /**
-     * @return
-     */
-    public DataObjSwitchFormatter getSelectedFormatter()
-    {
-        // get current formatter
-        Object value = formatList.getSelectedValue();
-        if (!(value instanceof DataObjSwitchFormatter))
-        {
-            return null;
-        }
-
-        DataObjSwitchFormatter fmt = (DataObjSwitchFormatter) value;
-        return fmt;
-    }
-
-    /**
-     * 
-     */
-    private void addFormatListMouseListener()
-    {
-        MouseAdapter mAdp = new MouseAdapter()
-        {
-            public void mouseClicked(MouseEvent e)
-            {
-                if (e.getClickCount() == 2)
-                {
-                    int index = formatList.locationToIndex(e.getPoint());
-                    formatList.ensureIndexIsVisible(index);
-                    editFormatter((DataObjSwitchFormatter)formatList.getSelectedValue(), false);
-                }
-            }
-        };
-
-        formatList.addMouseListener(mAdp);
-    }
-
-    /**
-     * 
-     */
-    private void addFormatListSelectionListener()
-    {
-        ListSelectionListener formatListSL = new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
-            {
-                if (e.getValueIsAdjusting())
-                {
-                    return;
-                }
-                updateUIEnabled();
-            }
-        };
-
-        formatList.addListSelectionListener(formatListSL);
-    }
-    
-    /**
-     * 
-     */
-    protected void updateUIEnabled()
-    {
-        edaPanel.getDelBtn().setEnabled(formatList.getSelectedIndex() != -1);
-        edaPanel.getEditBtn().setEnabled(formatList.getSelectedIndex() != -1);
-    }
 }

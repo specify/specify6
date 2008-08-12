@@ -421,7 +421,7 @@ public class ResourceImportExportDlg extends CustomDialog
                 {
                     SpViewSetObj vso = (SpViewSetObj)viewSetsList.getSelectedValue();
                     exportedName = vso.getName();
-                    fileName     = FilenameUtils.getName(vso.getName());
+                    fileName     = FilenameUtils.getName(vso.getFileName());
                     data         = vso.getDataAsString();
                 }
             }

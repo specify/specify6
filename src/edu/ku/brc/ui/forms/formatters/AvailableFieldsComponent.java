@@ -60,7 +60,9 @@ public class AvailableFieldsComponent
 	public static DataObjDataFieldWrapper wrapFieldInfo(DataObjDataField field)
 	{
 		if (field == null)
+		{
 			return null;
+		}
 		
 		return new DataObjDataFieldWrapper(field);
 	}
@@ -129,28 +131,34 @@ public class AvailableFieldsComponent
 	 * @param maxLevel
 	 * @return
 	 */
-	protected DefaultMutableTreeNode createTreeNodeRecursive(DBInfoBase infoBase, 
-															 int        currentLevel, 
-															 int 	    maxLevel)
+	protected DefaultMutableTreeNode createTreeNodeRecursive(final DBInfoBase infoBase, 
+	                                                         final int        currentLevel, 
+	                                                         final int 	      maxLevel)
 	{	
-		if (infoBase == null)
+		if (infoBase == null || infoBase.isHidden())
+		{
 			return null;
+		}
 
-		DBTableInfo currentTableInfo = null;
-		DBRelationshipInfo relInfo = null; 
+		System.out.println(infoBase.getTitle());
+		
+		DBTableInfo        currentTableInfo = null;
+		DBRelationshipInfo relInfo          = null; 
+		
 		if (infoBase instanceof DBTableInfo)
 		{
 			currentTableInfo = (DBTableInfo) infoBase;
-		}
-		else if (infoBase instanceof DBRelationshipInfo)
+			
+		} else if (infoBase instanceof DBRelationshipInfo)
 		{
 			relInfo = (DBRelationshipInfo) infoBase;
 			currentTableInfo = DBTableIdMgr.getInstance().getByClassName(relInfo.getClassName());
 			
 			if (currentTableInfo == null)
+			{
 				return null;
-		}
-		else
+			}
+		} else
 		{
 			// can't really do anything with DBFieldInfo or any other sub-type
 			return null;
@@ -165,7 +173,11 @@ public class AvailableFieldsComponent
 		for (DBFieldInfo field : currentTableInfo.getFields()) 
 		{
 			if (field.isHidden()) 
+			{
 				break;
+			}
+			
+			System.out.println(field.getTitle()+"  "+field.isHidden());
 			
 			DataObjDataField dataField = new DataObjDataField(field.getName(), field.getDataClass(), null, "", null, null);
 			dataField.setDbInfo(currentTableInfo, field, relInfo);
@@ -206,7 +218,9 @@ public class AvailableFieldsComponent
 		for (DBRelationshipInfo rel : currentTableInfo.getRelationships())
 		{
 			if (rel.isHidden()) 
+			{
 				break;
+			}
 			
 			// add sub-tree corresponding to the fields (and relationships) from the current relationship table
 			DefaultMutableTreeNode child = createTreeNodeRecursive(rel, currentLevel + 1, maxLevel);
