@@ -469,7 +469,6 @@ public class DataObjFieldFormatMultiplePanel extends DataObjFieldFormatPanel imp
     /* (non-Javadoc)
      * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
      */
-    @Override
     public void stateChanged(ChangeEvent e)
     {
         listener.stateChanged(e);

@@ -103,7 +103,6 @@ public class DataObjFieldFormatSingleDlg extends CustomDialog implements ChangeL
     /* (non-Javadoc)
      * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
      */
-    @Override
     public void stateChanged(ChangeEvent e)
     {
         okBtn.setEnabled(!fmtSingleEditingPanel.isInError());

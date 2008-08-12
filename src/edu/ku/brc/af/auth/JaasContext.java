@@ -66,15 +66,7 @@ public class JaasContext
      */
     public void createDatabaseBackedPolicyDefinition()
     {
-        Policy         defaultPolicy = Policy.getPolicy();
-        DatabasePolicy dbPolicy = new DatabasePolicy();
-        List<Policy>   policies = new ArrayList<Policy>(2);
-        
-        policies.add(defaultPolicy);
-        policies.add(dbPolicy);
-        
-        CompositePolicy compPolicy = new CompositePolicy(policies);
-        Policy.setPolicy(compPolicy);
+        Policy.setPolicy(new DatabasePolicy());
         
         // XXX Temporary fix for Speeding up the app 
         //SecurityManager securityMgr = new SecurityManager();

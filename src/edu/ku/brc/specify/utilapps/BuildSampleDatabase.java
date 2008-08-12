@@ -6946,7 +6946,6 @@ public class BuildSampleDatabase
             
             catNumFmtList = (Vector<UIFieldFormatterIFace>)UIFieldFormatterMgr.getInstance().getFormatterList(CollectionObject.class, "catalogNumber");
             Collections.sort(catNumFmtList, new Comparator<UIFieldFormatterIFace>() {
-                @Override
                 public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
                 {
                     return o1.getTitle().compareTo(o2.getTitle());

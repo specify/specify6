@@ -86,7 +86,7 @@ public class SecurityAdminTask extends BaseTask
         
         // check whether user can see the security admin panel
         // other permissions will be checked when the panel is created 
-        if (false && !SecurityMgr.getInstance().checkPermission("Task." + SECURITY_ADMIN, BasicSpPermission.view)) //$NON-NLS-1$
+        if (!SecurityMgr.getInstance().checkPermission("Task." + SECURITY_ADMIN, BasicSpPermission.view)) //$NON-NLS-1$
         {
         	return list;
         }
