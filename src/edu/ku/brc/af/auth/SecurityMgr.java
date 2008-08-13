@@ -145,6 +145,16 @@ public class SecurityMgr
     }
 
     /**
+     * Returns a Permission Object with the permission bits flipped accordingly
+     * @param name the name of the permission
+     * @return the options
+     */
+    public PermissionBits getPermission(final String name)
+    {
+        return new PermissionBits(ALL_PERM);
+    }
+
+    /**
      * Returns a integer mask with the permission bits flipped accordingly
      * @param name the name of the permission
      * @return the options
@@ -211,6 +221,64 @@ public class SecurityMgr
         System.err.print("  View: "   + (canView(options)   ? "Y" : "N"));
         System.err.print("  Delete: " + (canDelete(options) ? "Y" : "N"));
         System.err.println("  Add: "  + (canAdd(options)    ? "Y" : "N"));
+    }
+    
+    /**
+     * Creates a PermissionBits object.
+     * @param options the options
+     * @return the obj
+     */
+    private PermissionBits createPermissionBitsInternal(final int options)
+    {
+        return new PermissionBits(options);
+    }
+    
+    /**
+     * Creates a PermissionBits object.
+     * @param options the options
+     * @return the obj
+     */
+    public static PermissionBits createPermissionBits(final int options)
+    {
+        return getInstance().createPermissionBitsInternal(options);
+    }
+    
+    //------------------------------------------------------------
+    // Simple Class for making Permissions easy.
+    //------------------------------------------------------------
+    public class PermissionBits 
+    {
+        private int permissions;
+        
+        public PermissionBits(final int permissions)
+        {
+            this.permissions = permissions;
+        }
+        
+        public boolean canModify()
+        {
+            return isOn(permissions, CAN_MODIFY);
+        }
+        
+        public boolean canView()
+        {
+            return isOn(permissions, CAN_VIEW);
+        }
+
+        public boolean canAdd()
+        {
+            return isOn(permissions, CAN_ADD);
+        }
+
+        public boolean canDelete()
+        {
+            return isOn(permissions, CAN_DELETE);
+        }
+
+        public int getOptions()
+        {
+            return permissions;
+        }
     }
 }
 

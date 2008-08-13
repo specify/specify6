@@ -53,7 +53,7 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
 
 
     protected GhostMouseInputAdapter  mouseInputAdapter   = null;
-    protected RenderingHints          hints               = UIHelper.createTextRenderingHints();;
+    protected RenderingHints          hints               = UIHelper.createTextRenderingHints();
     protected BufferedImage           shadowBuffer        = null;
     protected BufferedImage           buffer              = null;
     protected boolean                 generateImgBuf      = true;    

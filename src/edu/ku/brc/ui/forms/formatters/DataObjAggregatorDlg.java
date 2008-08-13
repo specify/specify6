@@ -1,7 +1,6 @@
 package edu.ku.brc.ui.forms.formatters;
 
 import static edu.ku.brc.ui.UIHelper.createButton;
-import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
@@ -13,10 +12,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.HeadlessException;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,7 +22,6 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -78,7 +74,6 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
     protected ValTextField              sepText;
     protected ValSpinner                countSpinner; 
     protected ValTextField              endingText;
-    protected JCheckBox                 defaultCheck;
     
     // listeners
     protected DocumentListener[]        textChangedDL    = new DocumentListener[5];
@@ -87,8 +82,9 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
     protected ActionListener            cboAL            = null;
     
     protected boolean                   hasChanged       = false;
-    protected boolean                   isInError        = true;
+    protected boolean                   isNameInError    = false;
     protected FormValidator             validator        = new FormValidator(null);
+    protected boolean                   isNew            = false;
 
     /**
      * @throws HeadlessException
@@ -120,7 +116,7 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
     {
         super.createUI();
         
-        boolean isNew = StringUtils.isEmpty(selectedAggregator.getName());
+        isNew = StringUtils.isEmpty(selectedAggregator.getName());
         validator.setNewObj(isNew);
         
         CellConstraints cc = new CellConstraints();
@@ -140,6 +136,8 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         {
             public void actionPerformed(ActionEvent e)
             {
+                int x = 0;
+                x++;
                 /*
                 // subtract 1 from selected index to account for empty entry at the beginning
                 // if selected index is zero, then select "new" entry in the dialog, which is the last one
@@ -165,23 +163,32 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         
         // text fields
         titleText    = new ValTextField(10);
-        nameText     = new ValTextField(10);
+        nameText     = new ValTextField(10)
+        {
+            @Override
+            public ErrorType validateState()
+            {
+                ErrorType state =  super.validateState();
+                if (state == ErrorType.Valid)
+                {
+                    return isNameInError ? ErrorType.Error : ErrorType.Valid;
+                }
+                return state;
+            }
+        };
         sepText      = new ValTextField(10);
         endingText   = new ValTextField(10);
         countSpinner = new ValSpinner(0, 10, true, false); 
         
         countSpinner.setValue(0);
 
-        // checkbox
-        defaultCheck = createCheckBox(getResourceString("DOA_DEFAULT"));
-        
-        JButton      valBtn       = FormViewObj.createValidationIndicator((Window)this, validator);
+        JButton      valBtn       = FormViewObj.createValidationIndicator(this, validator);
         PanelBuilder valInfoBtnPB = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
         valInfoBtnPB.add(valBtn, cc.xy(2, 1));
         validator.setValidationBtn(valBtn);
         
         PanelBuilder pb = new PanelBuilder(new FormLayout("r:p,2px,p,f:p:g", 
-                                                UIHelper.createDuplicateJGoodiesDef("p", "2px", 11)));
+                                                          UIHelper.createDuplicateJGoodiesDef("p", "2px", 11)));
         int y = 1;
         
         JLabel       tableTitleLbl      = createI18NFormLabel("FFE_TABLE");
@@ -236,7 +243,6 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
 
         updateUIEnabled();
         
-        addCheckBoxListener();
         addComboBoxActionListeners();
         
         if (!isNew)
@@ -249,6 +255,23 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         validator.setHasChanged(false);
 
         pack();
+        
+        if (isNew)
+        {
+            nameText.getDocument().addDocumentListener(new DocumentListener() {
+                
+                public void removeUpdate(DocumentEvent e)  { changed(e); }
+                public void insertUpdate(DocumentEvent e)  { changed(e); }
+                public void changedUpdate(DocumentEvent e) { changed(e); }
+                
+                protected void changed(@SuppressWarnings("unused") DocumentEvent e)
+                {
+                    isNameInError = dataObjFieldFormatMgrCache.getAggregator(nameText.getText()) != null;
+                    validator.validateForm();
+                    updateUIEnabled();
+                }
+            });
+        }
     }
     
     /**
@@ -347,26 +370,6 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         fieldOrderCbo.addActionListener(cboAL);
     }
     
-    /**
-     * 
-     */
-    private void addCheckBoxListener()
-    {
-        if (checkBoxListener == null)
-        {
-            checkBoxListener = new ItemListener()
-            {
-                public void itemStateChanged(ItemEvent e)
-                {
-                    // only source should be the default checkbox
-                    selectedAggregator.setDefault(defaultCheck.isSelected());
-                    setHasChanged(true);
-                }
-            };
-        }
-        defaultCheck.addItemListener(checkBoxListener);
-    }
-    
     /*
      * Populates the display format combo with available formatters for this table 
      */
@@ -421,8 +424,8 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         cboModel.addElement(getResourceString("NONE"));
         
         // add fields to combo box
-        List<DBFieldInfo> fields = tableInfo.getFields();
-        int selectedFieldIndex = 0;
+        List<DBFieldInfo> fields             = tableInfo.getFields();
+        int               selectedFieldIndex = 0;
         for (int i = 0; i < fields.size(); ++i)
         {
             DBFieldInfo currentField = fields.get(i);
@@ -465,7 +468,6 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         nameText.setText(agg.getName());
         sepText.setText(agg.getSeparator());
         endingText.setText(agg.getEnding());
-        defaultCheck.setSelected(agg.isDefault());
         countSpinner.setValue(agg.getCount() != null ? agg.getCount() : 0);
         
         updateDisplayCombo();
@@ -473,12 +475,22 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         updateUIEnabled();
     }
 
-    /**
-     * @param agg the aggregator
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
      */
-    protected void setSelectedFormat(final DataObjAggregator agg)
+    @Override
+    protected void okButtonPressed()
     {
-        //fillWithObjAggregator(agg);
+        selectedAggregator.setTitle(titleText.getText());
+        selectedAggregator.setName(nameText.getText());
+        selectedAggregator.setSeparator(sepText.getText());
+        selectedAggregator.setEnding(endingText.getText());
+        if (isNew)
+        {
+            selectedAggregator.setDefault(false);
+        }
+        selectedAggregator.setCount((Integer)countSpinner.getValue());
+        super.okButtonPressed();
     }
 
     public DataObjAggregator getSelectedAggregator()
@@ -504,7 +516,7 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         endingText.setEnabled( ((Integer)countSpinner.getValue()) > 0 );
         
         //isInError = vaidateForm();
-        okBtn.setEnabled(hasChanged && validator.isFormValid());
+        okBtn.setEnabled(hasChanged && validator.isFormValid() && !isNameInError);
     }
     
     /**
@@ -541,7 +553,7 @@ public class DataObjAggregatorDlg extends CustomDialog implements DataChangeList
         public void insertUpdate(DocumentEvent e)  { changed(e); }
         public void changedUpdate(DocumentEvent e) { changed(e); }
         
-        protected void changed(DocumentEvent e)
+        protected void changed(@SuppressWarnings("unused") DocumentEvent e)
         {
             try
             {

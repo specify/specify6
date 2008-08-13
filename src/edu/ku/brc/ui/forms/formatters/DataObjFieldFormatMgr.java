@@ -405,39 +405,6 @@ public class DataObjFieldFormatMgr
     }
     
     /**
-     * Gets a unique name for a formatter if it doesn't yet have one
-     */
-    private void getFormatterUniqueName(DataObjSwitchFormatter formatter)
-    {
-        String name   = formatter.getName();
-        String prefix = formatter.getDataClass().getSimpleName();
-        formatter.setName(getUniqueNameInHash(name, prefix, formatHash));
-    }
-    
-    /**
-     * Generic method that creates a unique name for an object in a hash if it doesn't yet have one
-     */
-    private <T> String getUniqueNameInHash(final String name, 
-                                           final String prefix, 
-                                           final Hashtable<String, T> hash)
-    {
-        String newName = name;
-        if (name == null || name.equals(""))
-        {
-            // find a name that doesn't yet exist in the hash
-            // name formation patter is prefix.i, where i is a counter
-            int i = 1;
-            Set<String> names = hash.keySet();
-            newName = prefix + "." + Integer.toString(i);
-            while (names.contains(newName))
-            {
-                newName = prefix + "." + Integer.toString(++i);
-            }
-        }
-        return newName;
-    }
-    
-    /**
      * Copies the internal data structures from the source to this object. But only if they have changed.
      * @param source the source of the changes
      */
@@ -549,12 +516,6 @@ public class DataObjFieldFormatMgr
      */
     public void addFormatter(DataObjSwitchFormatter formatter)
     {
-        getFormatterUniqueName(formatter);
-        Object previousObj = formatHash.put(formatter.getName(), formatter);
-        if (previousObj != null)
-        {
-            log.debug("Formatter in formatHash replaced by new value. That's ok.");
-        }
         formatClassHash.put(formatter.getDataClass(), formatter);
         hasChanged = true;
     }
@@ -946,6 +907,10 @@ public class DataObjFieldFormatMgr
         //return instance.formatInternal(dataObjs, formatName);
     }
     
+    /**
+     * @param aggName
+     * @return
+     */
     public DataObjAggregator getAggregator(final String aggName)
     {
         return aggHash.get(aggName);

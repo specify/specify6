@@ -194,6 +194,9 @@ public class DataObjAggregator implements Cloneable
         this.orderFieldName = orderFieldName;
     }
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString()
 	{
 		return (StringUtils.isNotEmpty(title))? title : StringUtils.isNotEmpty(name)? name : "";

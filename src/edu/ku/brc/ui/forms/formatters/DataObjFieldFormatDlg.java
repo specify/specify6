@@ -178,7 +178,7 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
         fillWithObjFormatter(dataObjFormatter, true);
         
         // title text field
-        DocumentListener titleChangedDL = new DocumentListener()
+        DocumentListener nameChangedDL = new DocumentListener()
         {
             public void removeUpdate(DocumentEvent e)  { changed(e); }
             public void insertUpdate(DocumentEvent e)  { changed(e); }
@@ -203,8 +203,8 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
             }
         };
 
-        titleText.getDocument().addDocumentListener(titleChangedDL);
-        nameText.getDocument().addDocumentListener(titleChangedDL);
+        //titleText.getDocument().addDocumentListener(nameChangedDL);
+        nameText.getDocument().addDocumentListener(nameChangedDL);
 
         updateUIEnabled();
 

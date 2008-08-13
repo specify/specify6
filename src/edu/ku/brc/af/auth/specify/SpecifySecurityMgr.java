@@ -203,8 +203,7 @@ public class SpecifySecurityMgr extends SecurityMgr
         Set<Principal> p = currentSubject.getPrincipals();
         if (p == null)
         {
-            log
-                    .error("grantPermission - there are no principals associated with this user - cannot grant permission"); //$NON-NLS-1$
+            log.error("grantPermission - there are no principals associated with this user - cannot grant permission"); //$NON-NLS-1$
             return;
         }
         
@@ -247,7 +246,17 @@ public class SpecifySecurityMgr extends SecurityMgr
         final Class<?> permissionClass = BasicSpPermission.class;
         return getPermissionOptions(permissionClass, name);
     }
-
+    
+    /**
+     * Returns a Permission Object with the permission bits flipped accordingly
+     * @param name the name of the permission
+     * @return the options
+     */
+    public PermissionBits getPermission(final String name)
+    {
+        return new PermissionBits(getPermissionOptions(name));
+    }
+    
     /**
      * Checks whether current user has the permission defined by the permission class, 
      * the name and actions provided. This method is protected because there is only

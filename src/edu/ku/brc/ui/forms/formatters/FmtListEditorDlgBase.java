@@ -25,6 +25,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -123,7 +124,7 @@ public abstract class FmtListEditorDlgBase extends CustomDialog
         {
             public void actionPerformed(ActionEvent e) 
             {
-                editItem((DataObjAggregator)list.getSelectedValue(), false);
+                editItem(list.getSelectedValue(), false);
             }
         };
         
@@ -172,6 +173,12 @@ public abstract class FmtListEditorDlgBase extends CustomDialog
         list = new JList(listModel);
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
+        ListCellRenderer cellRenderer = getListCellRenderer();
+        if (cellRenderer != null)
+        {
+            list.setCellRenderer(cellRenderer);
+        }
+        
         list.addListSelectionListener(new ListSelectionListener()
         {
             public void valueChanged(ListSelectionEvent e)
@@ -196,6 +203,14 @@ public abstract class FmtListEditorDlgBase extends CustomDialog
         });
     }
     
+    protected ListCellRenderer getListCellRenderer()
+    {
+        return null;
+    }
+    
+    /**
+     * @return
+     */
     protected abstract String[] getDEDAToolTipKeys();
     
     /**

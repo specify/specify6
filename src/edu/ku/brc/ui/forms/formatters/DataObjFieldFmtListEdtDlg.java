@@ -17,14 +17,20 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 /**
@@ -62,7 +68,30 @@ public class DataObjFieldFmtListEdtDlg extends FmtListEditorDlgBase
         this.tableInfo = tableInfo;
     }
 
-    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.FmtListEditorDlgBase#getListCellRenderer()
+     */
+    @Override
+    protected ListCellRenderer getListCellRenderer()
+    {
+        return new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList listArg,
+                                                          Object value,
+                                                          int index,
+                                                          boolean isSelected,
+                                                          boolean cellHasFocus)
+            {
+                JLabel label = (JLabel)super.getListCellRendererComponent(listArg, value, index, isSelected, cellHasFocus);
+                DataObjSwitchFormatter doa = (DataObjSwitchFormatter)value;
+                label.setText(doa.getTitle() + (doa.isDefault() ? " " + UIRegistry.getResourceString("DOF_DEFAULT") : ""));
+                return label;
+            }
+            
+        };
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.FmtListEditorDlgBase#addItem()
      */
@@ -169,7 +198,7 @@ public class DataObjFieldFmtListEdtDlg extends FmtListEditorDlgBase
     protected void setDefaultItem()
     {
         DataObjSwitchFormatter selected = (DataObjSwitchFormatter)list.getSelectedValue();
-        DefaultListModel model    = (DefaultListModel)list.getModel();
+        DefaultListModel       model    = (DefaultListModel)list.getModel();
         for (int i=0;i<model.getSize();i++)
         {
             DataObjSwitchFormatter dof = (DataObjSwitchFormatter)model.get(i);

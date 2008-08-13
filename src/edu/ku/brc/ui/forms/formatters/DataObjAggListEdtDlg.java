@@ -1,13 +1,19 @@
 package edu.ku.brc.ui.forms.formatters;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 /**
@@ -42,6 +48,31 @@ public class DataObjAggListEdtDlg extends FmtListEditorDlgBase
 
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.FmtListEditorDlgBase#getListCellRenderer()
+     */
+    @Override
+    protected ListCellRenderer getListCellRenderer()
+    {
+        return new DefaultListCellRenderer()
+        {
+            @Override
+            public Component getListCellRendererComponent(JList listArg,
+                                                          Object value,
+                                                          int index,
+                                                          boolean isSelected,
+                                                          boolean cellHasFocus)
+            {
+                JLabel label = (JLabel)super.getListCellRendererComponent(listArg, value, index, isSelected, cellHasFocus);
+                DataObjAggregator agg = (DataObjAggregator)value;
+                label.setText(agg.getTitle() + (agg.isDefault() ? " " + UIRegistry.getResourceString("DOA_DEFAULT") : ""));
+                return label;
+            }
+            
+        };
+    }
+
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.FmtListEditorDlgBase#addItem()
      */
     @Override
@@ -67,7 +98,7 @@ public class DataObjAggListEdtDlg extends FmtListEditorDlgBase
         for (DataObjAggregator agg : aggs)
         {
             model.addElement(agg);
-        };
+        }
         return model;
     }
 
@@ -103,8 +134,12 @@ public class DataObjAggListEdtDlg extends FmtListEditorDlgBase
             {
                 if (isNew)
                 {
-                    dataObjFieldFormatMgrCache.addAggregator(agg);
-                    listModel.addElement(agg);
+                    if (listModel.size() == 0)
+                    {
+                        tempCopy.setDefault(true);
+                    }
+                    dataObjFieldFormatMgrCache.addAggregator(tempCopy);
+                    listModel.addElement(tempCopy);
                     
                 } else
                 {

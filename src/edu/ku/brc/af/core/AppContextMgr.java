@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.dom4j.Element;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewSetIFace;
@@ -311,6 +312,15 @@ public abstract class AppContextMgr
             }
         }
         return null;
+    }
+    
+    /**
+     * @return whether security is on
+     */
+    public static boolean isSecurityOn()
+    {
+        // XXX RELEASE must also return TRUE!
+        return AppPreferences.getLocalPrefs().getBoolean("security", false);
     }
 
 }

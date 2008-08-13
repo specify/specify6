@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.SecurityMgr.PermissionBits;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -87,7 +88,7 @@ public class MultiView extends JPanel
     protected FormValidator                currentValidator     = null;
     protected Class<?>                     classToCreate        = null;
     
-    protected int                          permissions;
+    protected PermissionBits               permissions           = SecurityMgr.createPermissionBits(SecurityMgr.ALL_PERM);
     
     protected boolean                      editable             = false;
     protected AltViewIFace.CreationMode    createWithMode       = AltViewIFace.CreationMode.NONE;
@@ -104,7 +105,7 @@ public class MultiView extends JPanel
     protected boolean                      doingSelector        = false; // This keeps us from recursing into the selector forever
     
     protected Vector<Object>               deletedItems         = null;
-
+    
     /**
      * Constructor - Note that createWithMode can be null and is passed in from parent ALWAYS.
      * So forms that may not have multiple views or do not wish to have Edit/View can pass in null. (See Class description)
@@ -205,15 +206,12 @@ public class MultiView extends JPanel
             ViewLoader.clearFieldVerInfo();
         }
         
-        if (view.getName().equals("CollectionObject"))
+        if (AppContextMgr.isSecurityOn())
         {
-            //boolean x = SecurityMgr.getInstance().checkPermission("Form."+view.getName(), "view");
-            //if (x) x = !x;
-            
-            permissions = SecurityMgr.getInstance().getPermissionOptions("Form."+view.getName()); 
+            permissions = SecurityMgr.getInstance().getPermission("Form."+view.getName()); 
             log.debug("*** View: "+view.getName() + " - " + permissions);
             
-            SecurityMgr.dumpPermissions("Form."+view.getName(), permissions);
+            SecurityMgr.dumpPermissions("Form."+view.getName(), permissions.getOptions());
             
             //log.debug("View: "+view.getName() + " - " + permissions+"  - "+SecurityMgr.getInstance().checkPermission("Form."+view.getName(), "view"));
             //log.debug("View: "+view.getName() + " - " + permissions+"  - "+SecurityMgr.getInstance().checkPermission("Form."+view.getName(), "modify"));
@@ -299,7 +297,7 @@ public class MultiView extends JPanel
         this.createWithMode = createWithMode;
         this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.EDIT ? IS_EDITTING : NO_OPTIONS);
         
-        this.permissions    = SecurityMgr.getInstance().getPermissionOptions("Form."+view.getName()); 
+        this.permissions    = SecurityMgr.getInstance().getPermission("Form."+view.getName()); 
         
         createViewable(altView != null ? altView : createDefaultViewable(null));
         showView(altView.getName());
@@ -308,7 +306,7 @@ public class MultiView extends JPanel
     /**
      * @return the permissions
      */
-    public int getPermissions()
+    public PermissionBits getPermissions()
     {
         return permissions;
     }
