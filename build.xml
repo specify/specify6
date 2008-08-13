@@ -14,7 +14,6 @@
 	<property name="lib.dir" value="libs" />
 	<property name="hibernatelib.dir" value="hibernate_libs" />
 	<property name="externallib.dir" value="external_libs" />
-	<property name="macnative.dir" value="system_dep_libs/mac" />
 	<property name="ireport.dir" value="iReportLibs" />
 	<property name="system.dep.libs.dir" value="system_dep_libs" />
 	<property name="hibernate.properties" value="hibernate.properties" />
@@ -53,10 +52,6 @@
 			<include name="**/*.jar" />
 		</fileset>
 
-		<fileset dir="${macnative.dir}">
-			<include name="**/*.jar" />
-		</fileset>
-		
 		<!-- Include our own classes, of course -->
 		<pathelement location="specify.jar"/>
 		
@@ -206,12 +201,6 @@
 			</fileset>
 		</copy>
 		
-        <copy todir="${installer.dir}/mac">
-			<fileset dir="system_dep_libs/mac">
-				<exclude name="**/*.svn" />
-			</fileset>
-		</copy>
-		
 		<!-- Copy Help -->
 		<copy todir="${installer.dir}/help">
 			<fileset dir="help">
@@ -279,10 +268,6 @@
 			</fileset>
 			<fileset dir="${ireport.dir}">
 				<include name="*.jar" />
-			</fileset>
-			<fileset dir="${macnative.dir}">
-				<include name="*.jar" />
-				<include name="**/*.jnilib" />
 			</fileset>
 		</copy>
 
@@ -527,10 +512,6 @@
 			<fileset dir="${ireport.dir}">
 				<include name="iReport.jar" />
 			</fileset>
-			<fileset dir="${macnative.dir}">
-				<include name="*.jar" />
-				<include name="**/*.jnilib" />
-			</fileset>
 		</copy>
 
 		<!-- Tell OS the dir is an App -->
@@ -615,10 +596,6 @@
 			</fileset>
 			<fileset dir="${ireport.dir}">
 				<include name="iReport.jar" />
-			</fileset>
-			<fileset dir="${macnative.dir}">
-				<include name="*.jar" />
-				<include name="**/*.jnilib" />
 			</fileset>
 		</copy>
 
