@@ -373,6 +373,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                     WebLinkConfigDlg dlg        = webLinkMgrCache.editWebLinks(tableInfo, false);
                     if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                     {
+                        fillWebLinkBox();
+                        
                         formHasChanged();
                         
                         if (selectedWL != null && !selectedWL.getName().equals(SL_WEBLINK))
