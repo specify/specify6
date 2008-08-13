@@ -20,6 +20,9 @@ import java.security.PermissionCollection;
 import java.security.Permissions;
 import java.security.Principal;
 import java.security.ProtectionDomain;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,11 +43,40 @@ public class DatabasePolicy extends java.security.Policy
 {
     protected static final Logger log   = Logger.getLogger(DatabasePolicy.class);
     
+    protected Permissions cachedPermissions;
+    protected Date cacheExpirationTime;
+    final protected int cacheExpirationInSeconds = 10 * 60; // use cache for at most 10 minutes
+    
     /**
      * 
      */
     public DatabasePolicy()
     {
+    	// force cache to expire now (but so that cacheExpirationTime is not null)
+    	cacheExpirationTime = new Date();
+    }
+    
+    /**
+     * Indicates whether the current cached permissions are still valid (fresh) or not.
+     * Note that we should really cache permissions for each different ProtectionDomain
+     * provided in method getPermissions, but we all know it will always be the same 
+     * (the current user) for our custom policy.
+     * 
+     * @return Boolean indicating whether the current cached permissions are still valid (fresh) or not.
+     */
+    protected boolean isCacheValid() {
+    	// cache is invalid if it hasn't been set yet, or if expiration time is past
+    	return (cachedPermissions != null && cacheExpirationTime.after(new Date()));
+    }
+    
+    /**
+     * Resets the cache timer to the pre-defined amount of seconds
+     */
+    protected void resetCacheTimer() {
+    	Calendar cal = new GregorianCalendar();
+    	cal.setTime(new Date());
+    	cal.add(Calendar.SECOND, cacheExpirationInSeconds);
+    	cacheExpirationTime = cal.getTime();
     }
     
     /*
@@ -54,8 +86,18 @@ public class DatabasePolicy extends java.security.Policy
     @SuppressWarnings("unchecked") //$NON-NLS-1$
     public PermissionCollection getPermissions(final ProtectionDomain domain)
     {
-    	// TODO: Cache permissions by principals to avoid retrieving them every time
-        final Permissions permissions = new Permissions();
+    	if (isCacheValid()) 
+    	{
+    		// cache is still valid, so there's no need to get permissions all over again
+    	    // Note that we should really cache permissions for each different ProtectionDomain
+    	    // provided in method getPermissions, but we all know it will always be the same 
+    	    // (the current user) for our custom policy.
+    		return cachedPermissions;
+    	}
+    	
+    	resetCacheTimer();
+    	
+    	cachedPermissions = new Permissions();
         Principal[] principals = domain.getPrincipals();
         if (principals != null && principals.length > 0)
         {
@@ -69,15 +111,17 @@ public class DatabasePolicy extends java.security.Policy
                 for (Iterator itr = perms.iterator(); itr.hasNext();)
                 {
                 	Permission perm = (Permission)itr.next();
-                	permissions.add(perm);
+                	cachedPermissions.add(perm);
                 }
             }
         } 
-        return permissions;
+        return cachedPermissions;
     }
 
     /* (non-Javadoc)
      * @see java.security.Policy#getPermissions(java.security.CodeSource)
+     * 
+     * Note: no permissions are granted to code running without a principal in Specify
      */
     @Override
     public PermissionCollection getPermissions(CodeSource arg0)
@@ -145,11 +189,13 @@ public class DatabasePolicy extends java.security.Policy
 
 	/* (non-Javadoc)
 	 * @see java.security.Policy#refresh()
+	 * 
+	 * Note: force permission cache expiration
 	 */
 	@Override
 	public void refresh()
 	{
-		// TODO Auto-generated method stub
-		
+		// sets cache to expire now
+		cachedPermissions = null;
 	}
 }
