@@ -17,8 +17,9 @@ import java.awt.Toolkit;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
@@ -312,74 +313,45 @@ public class WebLinkEditorDlg extends CustomDialog
         args.clear();
         model.fire();
         
+        //http://specify6-test.nhm.ku.edu/echo.php?email=<email>&title=<title>&url=<url>&prompttest=<prompttest>&interests=<interests>&testprompt2=<testprompt2>
+        
         String baseStr = baseUrlTF.getText();
         
-        StringTokenizer st = new StringTokenizer(baseStr, "[]", true);
-        
-        boolean hasStart  = false;
-        String  prevToken = null;
-        while (st.hasMoreTokens())
+        Pattern pattern = Pattern.compile("<.*?>");
+        Matcher matcher = pattern.matcher(baseStr);
+        while (matcher.find())
         {
-            String s = st.nextToken();
-            if (!hasStart)
+            String token = matcher.group(0);
+            if (token.length() > 2)
             {
-                if (s.equals("["))
-                {
-                    hasStart = true;
-                    isParsingIncomplete = true;
-                    
-                } else if (s.equals("]"))
+                token = token.substring(1, token.length()-1);
+                if (StringUtils.contains(token, ">") || StringUtils.contains(token, "<"))
                 {
                     setURLToError();
                     return;
                 }
-                
-            } else
-            {
-                if (s.equals("]"))
+                if (tableInfo == null || fieldInfoHash.get(token) != null)
                 {
-                    isParsingIncomplete = false;
-                    
-                    if (StringUtils.isNotEmpty(prevToken) && 
-                        !prevToken.equals("[") && 
-                        !prevToken.equals("]"))
-                    {
-                        hasStart = false;
-                        if (tableInfo == null || fieldInfoHash.get(prevToken) != null)
-                        {
-                            if (tableInfo != null && prevToken.equals("this"))
-                            {
-                                setURLToError();
-                                return;
-                            }
-                            
-                            fields.put(prevToken, prevToken);
-                            String titleStr = titleHash.get(prevToken);
-                            if (StringUtils.isEmpty(titleStr) && fieldInfoHash == null)
-                            {
-                                titleStr = StringUtils.capitalize(prevToken);
-                            }
-                            model.addItem(prevToken, titleStr, !prevToken.equals("this"));
-                            
-                        } else
-                        {
-                            String titleStr = StringUtils.capitalize(prevToken);
-                            model.addItem(prevToken, titleStr, !prevToken.equals("this"));
-                            return;
-                        }
-                    } else
+                    if (tableInfo != null && token.equals("this"))
                     {
                         setURLToError();
                         return;
                     }
                     
-                } if (s.equals("["))
+                    fields.put(token, token);
+                    String titleStr = titleHash.get(token);
+                    if (StringUtils.isEmpty(titleStr) && fieldInfoHash == null)
+                    {
+                        titleStr = StringUtils.capitalize(token);
+                    }
+                    model.addItem(token, titleStr, !token.equals("this"));
+                    
+                } else
                 {
-                    setURLToError();
-                    return;
+                    String titleStr = StringUtils.capitalize(token);
+                    model.addItem(token, titleStr, !token.equals("this"));
                 }
             }
-            prevToken = s;
         }
         
         if (wasIncomplete != isParsingIncomplete)
@@ -389,7 +361,6 @@ public class WebLinkEditorDlg extends CustomDialog
         
         adjustAvailableJList();
         format = baseStr;
-        
     }
     
     /* (non-Javadoc)

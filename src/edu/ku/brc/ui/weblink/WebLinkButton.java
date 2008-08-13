@@ -390,7 +390,7 @@ public class WebLinkButton extends JPanel implements UIPluginable,
             int i = 0;
             for (byte b : webLinkDef.getBaseURLStr().getBytes())
             {
-                if (b == '[' || b == ']')
+                if (b == '<' || b == '>')
                 {
                     chars[i] = '\'';
                 }
