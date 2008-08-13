@@ -132,26 +132,64 @@ public class DeterminationBusRules extends BaseBusRules
             if (item != null)
             {
                 DeterminationStatus status = (DeterminationStatus)item.getValueObject();
-                if (status != null && status.getType() == DeterminationStatus.CURRENT)
+                if (status != null && status.getType().equals(DeterminationStatus.CURRENT))
                 {
                     CollectionObject colObj = determination.getCollectionObject();
                     if (colObj != null)
                     {
-                        for (Determination det : colObj.getDeterminations())
+                        if (!checkDeterminationStatus(colObj, determination))
                         {
-                            if (det != determination && det.getStatus() != null && det.getStatus().getType() == DeterminationStatus.CURRENT)
-                            {
-                                JOptionPane.showMessageDialog(null, UIRegistry.getResourceString("DT_ALREADY_DETERMINATION"));
-                                ignoreSelection = true;
-                                cbx.setSelectedIndex(-1);
-                                ignoreSelection = false;
-                                break;
-                            }
+                            ignoreSelection = true;
+                            cbx.setSelectedIndex(-1);
+                            ignoreSelection = false;
+                            JOptionPane.showMessageDialog(null, UIRegistry.getResourceString("DT_ALREADY_DETERMINATION"));
                         }
                     }
                 }
             }
         }
+    }
+    
+    /**
+     * Checks to make sure there is a single 'current' determination.
+     * @param colObj the Collection Object
+     * @param deter the determination for the CO
+     * @return true is ok
+     */
+    protected boolean checkDeterminationStatus(final CollectionObject colObj, final Determination deter)
+    {
+        if (deter.getStatus().getType().equals(DeterminationStatus.CURRENT))
+        {
+            for (Determination det : colObj.getDeterminations())
+            {
+                if (det != deter && det.getStatus() != null && det.getStatus().getType().equals(DeterminationStatus.CURRENT))
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object, java.lang.Object, boolean)
+     */
+    @Override
+    public STATUS processBusinessRules(Object parentDataObj,
+                                       Object dataObj,
+                                       boolean isExistingObject)
+    {
+        STATUS status = super.processBusinessRules(parentDataObj, dataObj, isExistingObject);
+        
+        if (status == STATUS.OK)
+        {
+            if (!checkDeterminationStatus((CollectionObject)parentDataObj, (Determination)dataObj))
+            {
+                reasonList.add(UIRegistry.getResourceString("DT_ALREADY_DETERMINATION"));
+                status = STATUS.Error;
+            }
+        }
+        return status;
     }
 
     /* (non-Javadoc)
