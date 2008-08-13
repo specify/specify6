@@ -38,7 +38,6 @@ import java.lang.reflect.Method;
 import javax.swing.JOptionPane;
 
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Taken from the Web (Bare Bones Launcher). This is a cross platform approach for launching browsers from java Apps

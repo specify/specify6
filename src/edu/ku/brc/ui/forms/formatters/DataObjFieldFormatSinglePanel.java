@@ -18,12 +18,13 @@ package edu.ku.brc.ui.forms.formatters;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createI18NLabel;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -32,14 +33,19 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -49,10 +55,13 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.UIHelper;
 
@@ -68,15 +77,15 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
     // ui controls
     protected JTextPane          formatEditor;
     protected JButton            addFieldBtn;
-    
-    protected DocumentListener   formatTextDL;
-    protected ActionListener     addFieldAL;
-    protected MouseAdapter       addFieldMA;
+    protected JTextField         sepText;
+    protected JLabel             sepLbl;
     
     protected Set<String>        uniqueNameSet = new HashSet<String>();
 
     protected SimpleAttributeSet normalAttr;
     protected SimpleAttributeSet fieldDefAttr;
+    
+    protected boolean            ignoreFmtChange = false;
     
     
     /**
@@ -102,14 +111,6 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
     protected void buildUI() 
     {
         CellConstraints cc = new CellConstraints();
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:d:g",  
-                "10px,"       +   // empty space on top of panel 
-                "p,f:p:g,"    +   // Label & format text editor
-                "10px,p,"     +   // separator & label
-                "f:250px:g,"  +   // list box for available fields 
-                "10px"  // empty space where the delete button goes for the multiple value panel
-                
-                ), this);
         
         JLabel currentFieldsLbl = createI18NLabel("DOF_DISPLAY_FORMAT");
         formatEditor = new JTextPane();
@@ -117,27 +118,60 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
         formatEditor.setMinimumSize(new Dimension(200, 50));
         formatEditor.setPreferredSize(new Dimension(350, 100));
 
-        PanelBuilder addFieldPB = new PanelBuilder(new FormLayout("l:m:g,r:m", "p"));  
-        JLabel availableFieldsLbl = createI18NFormLabel("DOF_AVAILABLE_FIELDS");
+        PanelBuilder addFieldPB         = new PanelBuilder(new FormLayout("p,2px,p,f:p:g,r:m", "p,2px,p"));  
+        sepText     = createTextField(4);
         addFieldBtn = createButton(getResourceString("DOF_ADD_FIELD")); 
-        addFieldBtn.setEnabled(true);
-        addFieldPB.add(availableFieldsLbl, cc.xy(1,1));
-        addFieldPB.add(addFieldBtn, cc.xy(2,1));
+        sepLbl      = createI18NFormLabel("DOF_SEP_TXT");
+        
+        addFieldPB.add(sepLbl, cc.xy(1,1));
+        addFieldPB.add(sepText, cc.xy(3,1));
+        addFieldPB.add(addFieldBtn, cc.xy(5,1));
+        
+        addFieldBtn.setEnabled(false);
+        sepLbl.setEnabled(false);
+        sepText.setEnabled(false);
+        
+        sepText.setText(AppPreferences.getLocalPrefs().get("DOF_SEP", ", "));
 
-        // lay out components on main panel        
-        int y = 2; // leave first row blank 
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:d:g",  
+                "10px,"       +   // empty space on top of panel 
+                "p,f:p:g,"    +   // Label & format text editor
+                "2px,p,"      +   // separator & add field
+                "10px,p,"     +   // separator & label
+                "f:250px:g,"      // list box for available fields 
+                ), this);
+        
+        // layout components on main panel        
+        int y = 2; // leave first row blank
+        
         pb.add(currentFieldsLbl, cc.xy(1, y)); y += 1;
         pb.add(UIHelper.createScrollPane(formatEditor), cc.xy(1, y)); y += 2;
-    
-        pb.add(addFieldPB.getPanel(), cc.xy(1, y)); y += 1;
+        
+        pb.add(addFieldPB.getPanel(), cc.xy(1, y)); y += 2;
+        
+        JLabel availableFieldsLbl = createI18NFormLabel("DOF_AVAILABLE_FIELDS", SwingConstants.LEFT);
+        pb.add(availableFieldsLbl, cc.xy(1,y)); y += 1;
+        
         pb.add(UIHelper.createScrollPane(availableFieldsComp.getTree()), cc.xy(1, y)); y += 2;
+        
+        availableFieldsComp.getTree().addTreeSelectionListener(new TreeSelectionListener()
+        {
+            @Override
+            public void valueChanged(TreeSelectionEvent e)
+            {
+                boolean enable = availableFieldsComp.getTree().getSelectionCount() > 0;
+                addFieldBtn.setEnabled(enable);
+                sepText.setEnabled(enable);
+                sepLbl.setEnabled(enable);
+            }
+        });
         
         this.mainPanelBuilder = pb;
         
         fillWithObjFormatter(formatContainer.getSelectedFormatter());
 
-
         addFormatTextListeners();
+        
         // must be called after list of available fields has been created
         addFieldListeners();
     }
@@ -163,35 +197,25 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
     public void addFieldListeners()
     {
         // action listener for add field button
-        if (addFieldAL == null)
+        addFieldBtn.addActionListener(new ActionListener()
         {
-            addFieldAL = new ActionListener()
+            public void actionPerformed(ActionEvent e)
             {
-                public void actionPerformed(ActionEvent e)
+                addField();
+            }
+        });
+        
+        // mouse adapter to detect double-click on list of available fields 
+        availableFieldsComp.addMouseListener(new MouseAdapter()
+        {
+            public void mouseClicked(MouseEvent e)
+            {
+                if(e.getClickCount() == 2)
                 {
                     addField();
                 }
-            };
-        }
-        addFieldBtn.addActionListener(addFieldAL);
-        
-        // mouse adapter to detect double-click on list of available fields 
-        if (addFieldMA == null)
-        {
-            addFieldMA = new MouseAdapter()
-            {
-                public void mouseClicked(MouseEvent e)
-                {
-                    if(e.getClickCount() == 2)
-                    {
-                        addField();
-                    }
-                }
-            };
-        }
-        
-        availableFieldsComp.addMouseListener(addFieldMA);
-
+            }
+        });
     }
 
     /**
@@ -199,22 +223,32 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
      */
     public void addFormatTextListeners()
     {
-        // action listener for add field button
-        if (formatTextDL == null)
+        formatEditor.getDocument().addDocumentListener(new DocumentListener()
         {
-            formatTextDL = new DocumentListener()
-            {
-                public void removeUpdate (DocumentEvent e) { changed(e); }
-                public void insertUpdate (DocumentEvent e) { changed(e); }
-                public void changedUpdate(DocumentEvent e) { changed(e); }
+            public void removeUpdate (DocumentEvent e) { changed(e); }
+            public void insertUpdate (DocumentEvent e) { changed(e); }
+            public void changedUpdate(DocumentEvent e) { changed(e); }
 
-                private void changed(@SuppressWarnings("unused") DocumentEvent e)
-                { 
-                    formatChanged(); 
+            private void changed(@SuppressWarnings("unused") DocumentEvent e)
+            { 
+                if (!ignoreFmtChange)
+                {
+                    formatChanged();
                 }
-            };
-        }
-        formatEditor.getDocument().addDocumentListener(formatTextDL);
+            }
+        });
+        
+        sepText.getDocument().addDocumentListener(new DocumentListener()
+        {
+            public void removeUpdate (DocumentEvent e) { changed(e); }
+            public void insertUpdate (DocumentEvent e) { changed(e); }
+            public void changedUpdate(DocumentEvent e) { changed(e); }
+
+            private void changed(@SuppressWarnings("unused") DocumentEvent e)
+            { 
+                AppPreferences.getLocalPrefs().put("DOF_SEP", sepText.getText()); 
+            }
+        });
     }
     
     /**
@@ -235,14 +269,27 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) availableFieldsComp.getTree().getLastSelectedPathComponent();
         if (node == null || !node.isLeaf() || !(node.getUserObject() instanceof DataObjDataFieldWrapper) )
         {
-            // not really a field that can be added, just empty or a string
-            return;
+            return; // not really a field that can be added, just empty or a string
         }
 
         Object obj = node.getUserObject();
         if (obj instanceof DataObjDataFieldWrapper)
         {
             DataObjDataFieldWrapper wrapper = (DataObjDataFieldWrapper) obj;
+            String sep = sepText.getText();
+            if (StringUtils.isNotEmpty(sep))
+            {
+                try
+                {
+                    DefaultStyledDocument doc = (DefaultStyledDocument) formatEditor.getStyledDocument();
+                    if (doc.getLength() > 0)
+                    {
+                        doc.insertString(doc.getLength(), sep, null);
+                    }
+                }
+                catch (BadLocationException ble) {}
+                
+            }
             insertFieldIntoTextEditor(wrapper);
             setHasChanged(true);
         }
@@ -274,6 +321,8 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
             return;
         }
         
+        ignoreFmtChange = true;
+        
         Document doc = formatEditor.getDocument();
         DataObjDataField[] fields = singleFormatter.getFields();
         if (fields == null)
@@ -290,14 +339,15 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
             }
             catch (BadLocationException ble) {}
         }
+        ignoreFmtChange = false;
     }
     
     /**
      * @param wrapper
      */
-    protected void insertFieldIntoTextEditor(DataObjDataFieldWrapper wrapper)
+    protected void insertFieldIntoTextEditor(final DataObjDataFieldWrapper wrapper)
     {
-        formatEditor.insertComponent(new FieldDefinitionButton(wrapper));
+        formatEditor.insertComponent(new FieldDefinitionComp(wrapper));
     }
 
     /**
@@ -306,33 +356,34 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
      * 
      * @author Ricardo
      */
-    protected class FieldDefinitionButton extends JButton
+    protected class FieldDefinitionComp extends JLabel
     {
         protected final DataObjDataFieldWrapper dataObjFieldWrapper;
         
-        public FieldDefinitionButton(DataObjDataFieldWrapper dataObjFieldWrapper)
+        public FieldDefinitionComp(DataObjDataFieldWrapper dataObjFieldWrapper)
         {
             this.dataObjFieldWrapper = dataObjFieldWrapper;
+            
             setText(dataObjFieldWrapper.toString());
-
             setCursor(Cursor.getDefaultCursor());
-            setMargin(new Insets(0,0,0,0));
             setFont(new Font("Arial", Font.PLAIN, 11));
             setAlignmentY(0.75f);
-            //button.setActionCommand(buttonString);
+            setBackground(new Color(0,0,0,30));
+            setOpaque(true);
+            setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
            
             // create popup menu
             final JPopupMenu menu = createPopupMenu();
             
-            ActionListener showMenuAL = new ActionListener()
+            addMouseListener(new MouseAdapter()
             {
-                public void actionPerformed(ActionEvent e)
+                @Override
+                public void mouseClicked(MouseEvent e)
                 {
-                    JButton thisBtn = FieldDefinitionButton.this;
+                    JLabel thisBtn = FieldDefinitionComp.this;
                     menu.show(thisBtn, thisBtn.getWidth() / 2, thisBtn.getHeight());
                 }
-            };
-            addActionListener(showMenuAL);
+            });
         }
         
         /**
@@ -492,27 +543,28 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
         // store characters not associated with components (jbutton) to make up the separator text
 
         DefaultStyledDocument doc = (DefaultStyledDocument) formatEditor.getStyledDocument();
-        String text = formatEditor.getText(); 
-        int n = doc.getLength();
-        int lastFieldPos = 0;
+        String text         = formatEditor.getText(); 
+        int    docLen       = doc.getLength();
+        int    lastFieldPos = 0;
+        
         Vector<DataObjDataField> fields = new Vector<DataObjDataField>();
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < docLen; ++i)
         {
-            Element element = doc.getCharacterElement(i);
-            AttributeSet attrs = element.getAttributes();
-            Object obj = attrs.getAttribute(StyleConstants.ComponentAttribute);
-            if (obj instanceof FieldDefinitionButton)
+            Element      element = doc.getCharacterElement(i);
+            AttributeSet attrs   = element.getAttributes();
+            Object       obj     = attrs.getAttribute(StyleConstants.ComponentAttribute);
+            if (obj instanceof FieldDefinitionComp)
             {
                 // found button at the current position
                 // create corresponding field
-                String sepStr = (lastFieldPos < i - 1)? text.substring(lastFieldPos, i) : "";
+                String sepStr = (lastFieldPos < i - 1) ? text.substring(lastFieldPos, i) : "";
 
-                FieldDefinitionButton fieldDefBtn = (FieldDefinitionButton) obj;
-                DataObjDataField fmtField = fieldDefBtn.getValue();
+                FieldDefinitionComp fieldDefBtn = (FieldDefinitionComp) obj;
+                DataObjDataField    fmtField    = fieldDefBtn.getValue();
                 fmtField.setSep(sepStr);
                 fields.add(fmtField);
                 
-                lastFieldPos = i;
+                lastFieldPos = i+1;
             }
         }
 
