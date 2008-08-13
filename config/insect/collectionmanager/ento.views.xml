@@ -29,7 +29,7 @@
         
         <view name="CollectingEventSub"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
-            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectingEventBusRules"
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent SubForm]]></desc>
             <altviews>
