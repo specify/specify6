@@ -33,6 +33,7 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -1802,46 +1803,52 @@ public class Uploader implements ActionListener, KeyListener
      * Initializes progress bar for upload actions. If min and max = 0, sets progress bar is
      * indeterminate.
      */
-    protected synchronized void initProgressBar(int min,
-                                                int max,
-                                                boolean paintString,
-                                                String itemName, boolean useAppStatBar)
+    protected void initProgressBar(final int min,
+                                   final int max,
+                                   final boolean paintString,
+                                   final String itemName,
+                                   final boolean useAppStatBar)
     {
-        if (mainPanel == null)
-        {
-            log.error("UI does not exist.");
-            return;
-        }
-        JProgressBar pb;
-        if (useAppStatBar)
-        {
-            pb = UIRegistry.getStatusBar().getProgressBar();
-        }
-        else
-        {
-            pb = mainPanel.getCurrOpProgress();
-        }
-        pb.setVisible(true);
-        if (min == 0 && max == 0)
-        {
-            pb.setIndeterminate(true);
-            pb.setString("");
-        }
-        else
-        {
-            if (pb.isIndeterminate())
-            {
-                pb.setIndeterminate(false);
-            }
-            pb.setStringPainted(paintString);
-            if (paintString)
-            {
-                pb.setName(itemName);
-            }
-            pb.setMinimum(min);
-            pb.setMaximum(max);
-            pb.setValue(min);
-        }
+        SwingUtilities.invokeLater(new Runnable() {
+           public void run()
+           {
+               if (mainPanel == null)
+               {
+                   log.error("UI does not exist.");
+                   return;
+               }
+               JProgressBar pb;
+               if (useAppStatBar)
+               {
+                   pb = UIRegistry.getStatusBar().getProgressBar();
+               }
+               else
+               {
+                   pb = mainPanel.getCurrOpProgress();
+               }
+               pb.setVisible(true);
+               if (min == 0 && max == 0)
+               {
+                   pb.setIndeterminate(true);
+                   pb.setString("");
+               }
+               else
+               {
+                   if (pb.isIndeterminate())
+                   {
+                       pb.setIndeterminate(false);
+                   }
+                   pb.setStringPainted(paintString);
+                   if (paintString)
+                   {
+                       pb.setName(itemName);
+                   }
+                   pb.setMinimum(min);
+                   pb.setMaximum(max);
+                   pb.setValue(min);
+               }
+           }
+        });
     }
 
     /**
@@ -1849,53 +1856,77 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Sets progress bar progress.
      */
-    protected synchronized void setCurrentOpProgress(int val, boolean useAppStatBar)
+    protected void setCurrentOpProgress(final int val, final boolean useAppStatBar)
     {
-        if (mainPanel == null && !useAppStatBar)
+        SwingUtilities.invokeLater(new Runnable()
         {
-            log.error("UI does not exist.");
-            return;
-        }
-        JProgressBar pb;
-        if (useAppStatBar)
-        {
-            pb = UIRegistry.getStatusBar().getProgressBar();
-        }
-        else
-        {
-            pb = mainPanel.getCurrOpProgress();
-        }
-        if (!pb.isIndeterminate())
-        {
-            pb.setValue(val);
-            if (pb.isStringPainted())
+            public void run()
             {
-                pb.setString(String.format(getResourceString("WB_UPLOAD_PROGRESSBAR_TEXT"),
-                        new Object[] { pb.getName(), Integer.toString(val),
-                                Integer.toString(pb.getMaximum()) }));
+
+                if (mainPanel == null && !useAppStatBar)
+                {
+                    log.error("UI does not exist.");
+                    return;
+                }
+                JProgressBar pb;
+                if (useAppStatBar)
+                {
+                    pb = UIRegistry.getStatusBar().getProgressBar();
+                }
+                else
+                {
+                    pb = mainPanel.getCurrOpProgress();
+                }
+                if (!pb.isIndeterminate())
+                {
+                    int newVal = val == -1 ? Math.min(pb.getValue()+1, pb.getMaximum()) : val;
+                    pb.setValue(newVal);
+                    if (pb.isStringPainted())
+                    {
+                        pb.setString(String.format(getResourceString("WB_UPLOAD_PROGRESSBAR_TEXT"),
+                                new Object[] { pb.getName(), Integer.toString(newVal),
+                                        Integer.toString(pb.getMaximum()) }));
+                    }
+                }
             }
-        }
+        });
     }
 
-    protected synchronized void showUploadProgress(int val)
+    protected void showUploadProgress(final int val)
     {
-        if (mainPanel == null)
+        SwingUtilities.invokeLater(new Runnable()
         {
-            log.error("UI does not exist.");
-            return;
-        }
-        setCurrentOpProgress(val, false);
-        for (UploadMessage newMsg : newMessages)
-        {
-            mainPanel.addMsg(newMsg);
-            messages.add(newMsg);
-        }
-        newMessages.clear();
+            public void run()
+            {
+                if (mainPanel == null)
+                {
+                    log.error("UI does not exist.");
+                    return;
+                }
+                setCurrentOpProgress(val, false);
+                for (UploadMessage newMsg : newMessages)
+                {
+                    mainPanel.addMsg(newMsg);
+                    messages.add(newMsg);
+                }
+                newMessages.clear();
+            }
+        });
     }
 
-    protected synchronized void updateObjectsCreated()
+    public void undoStep()
     {
-        mainPanel.updateObjectsCreated();
+        setCurrentOpProgress(-1, false);
+    }
+    
+    protected void updateObjectsCreated()
+    {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                mainPanel.updateObjectsCreated();
+            }
+        });
     }
 
     /**
@@ -2505,7 +2536,6 @@ public class Uploader implements ActionListener, KeyListener
         }
         mainPanel.addAffectedTables(uts.iterator());
         mainPanel.setActionListener(this);
-        // mainPanel.addWindowStateListener(this);
     }
 
     /**
@@ -2513,115 +2543,120 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Sets up mainPanel for upload phase for op.
      */
-    protected synchronized void setupUI(final String op)
+    protected void setupUI(final String op)
     {
-        if (mainPanel == null)
-        {
-            log.error("UI does not exist.");
-            return;
-        }
+//        SwingUtilities.invokeLater(new Runnable() {
+//           public void run()
+//           {
+               if (mainPanel == null)
+               {
+                   log.error("UI does not exist.");
+                   return;
+               }
 
-        if (op.equals(Uploader.SUCCESS))
-        {
-            if (mainPanel.getUploadTbls().getSelectedIndex() == -1)
-            {
-                // assuming list is not empty
-                mainPanel.getUploadTbls().setSelectedIndex(0);
-            }
-        }
+               if (op.equals(Uploader.SUCCESS))
+               {
+                   if (mainPanel.getUploadTbls().getSelectedIndex() == -1)
+                   {
+                       // assuming list is not empty
+                       mainPanel.getUploadTbls().setSelectedIndex(0);
+                   }
+               }
 
-        if (op.equals(UPLOADING) || op.equals(SUCCESS))
-        {
-            mainPanel.showUploadTblTbl();
-        }
-        else
-        {
-            mainPanel.showUploadTblList();
-        }
-        
-        mainPanel.getValidateContentBtn().setEnabled(canValidateContent(op));
-        
-        mainPanel.getCancelBtn().setEnabled(canCancel(op));
-        mainPanel.getCancelBtn().setVisible(mainPanel.getCancelBtn().isEnabled());
+               if (op.equals(UPLOADING) || op.equals(SUCCESS))
+               {
+                   mainPanel.showUploadTblTbl();
+               }
+               else
+               {
+                   mainPanel.showUploadTblList();
+               }
+               
+               mainPanel.getValidateContentBtn().setEnabled(canValidateContent(op));
+               
+               mainPanel.getCancelBtn().setEnabled(canCancel(op));
+               mainPanel.getCancelBtn().setVisible(mainPanel.getCancelBtn().isEnabled());
 
-        mainPanel.getDoUploadBtn().setEnabled(canUpload(op));
+               mainPanel.getDoUploadBtn().setEnabled(canUpload(op));
 
-        mainPanel.getViewSettingsBtn().setEnabled(canViewSettings(op));
+               mainPanel.getViewSettingsBtn().setEnabled(canViewSettings(op));
 
-        mainPanel.getViewUploadBtn().setEnabled(canViewUpload(op));
-        mainPanel.getViewUploadBtn().setVisible(mainPanel.getViewUploadBtn().isEnabled());
+               mainPanel.getViewUploadBtn().setEnabled(canViewUpload(op));
+               mainPanel.getViewUploadBtn().setVisible(mainPanel.getViewUploadBtn().isEnabled());
 
-        mainPanel.getUndoBtn().setEnabled(canUndo(op));
-        mainPanel.getUndoBtn().setVisible(mainPanel.getUndoBtn().isEnabled());
+               mainPanel.getUndoBtn().setEnabled(canUndo(op));
+               mainPanel.getUndoBtn().setVisible(mainPanel.getUndoBtn().isEnabled());
 
-        mainPanel.getCloseBtn().setEnabled(canClose(op));
+               mainPanel.getCloseBtn().setEnabled(canClose(op));
 
-        mainPanel.getCurrOpProgress().setVisible(mainPanel.getCancelBtn().isVisible());
-        
-        String statText;
-        if (previousOp != null && previousOp.equals(UNDOING_UPLOAD) && op.equals(FAILURE))
-        {
-            statText = getResourceString("WB_UPLOAD_UNDO_FAILURE");
-        }
-        else
-        {
-            statText = getResourceString(op);
-        }
-        Exception killer = getOpKiller();
-        if (op.equals(Uploader.SUCCESS))
-        {
-            statText += ". " + getUploadedObjects().toString() + " "
-                    + getResourceString("WB_UPLOAD_OBJECT_COUNT") + ".";
-            if (killer != null)
-            {
-                log.debug("Hey. Wait a minute. The operation succeeded while dead. Is that not creepy?");
-            }
-        }
-        else if (op.equals(Uploader.FAILURE) && killer != null)
-        {
-            if (StringUtils.isNotEmpty(killer.getLocalizedMessage()))
-            {
-                statText += ": " + killer;
-            }
-            else
-            {
-                statText += ": " + killer.getLocalizedMessage();
-            }
-        }
-        if (dotDotDot(op)) 
-        {
-            statText += "...";
-        }
-        
-        mainPanel.clearMsgs(new Class<?>[]{UploadTableInvalidValue.class});
-        if (op.equals(USER_INPUT))
-        {
-            mainPanel.addMsg(new UploadTableInvalidValue(statText, null, null, -1, null));
-        }
-        else
-        {
-            mainPanel.addMsg(new BaseUploadMessage(statText));
-        }
-        
-        if (validationIssues != null)
-        {
-            for (int m=0; m<validationIssues.size() && m<MAX_MSG_DISPLAY_COUNT; m++)
-            {
-                mainPanel.addMsg(validationIssues.get(m));
-            }
-            if (validationIssues.size() > MAX_MSG_DISPLAY_COUNT)
-            {
-                log.info("Only displaying " + String.valueOf(MAX_MSG_DISPLAY_COUNT) + " of " 
-                        + String.valueOf(validationIssues.size()) + " validation errors ");
-                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
-                        String.format(getResourceString(WB_TOO_MANY_ERRORS), String.valueOf(MAX_MSG_DISPLAY_COUNT),
-                                    String.valueOf(validationIssues.size())), 
-                        getResourceString(WB_UPLOAD_FORM_TITLE), 
-                        JOptionPane.WARNING_MESSAGE,
-                        null);
-            }
-        }
-        mainPanel.getPrintBtn().setEnabled(validationIssues != null && validationIssues.size() > 0);
+               mainPanel.getCurrOpProgress().setVisible(mainPanel.getCancelBtn().isVisible());
+               
+               String statText;
+               if (previousOp != null && previousOp.equals(UNDOING_UPLOAD) && op.equals(FAILURE))
+               {
+                   statText = getResourceString("WB_UPLOAD_UNDO_FAILURE");
+               }
+               else
+               {
+                   statText = getResourceString(op);
+               }
+               Exception killer = getOpKiller();
+               if (op.equals(Uploader.SUCCESS))
+               {
+                   statText += ". " + getUploadedObjects().toString() + " "
+                           + getResourceString("WB_UPLOAD_OBJECT_COUNT") + ".";
+                   if (killer != null)
+                   {
+                       log.debug("Hey. Wait a minute. The operation succeeded while dead. Is that not creepy?");
+                   }
+               }
+               else if (op.equals(Uploader.FAILURE) && killer != null)
+               {
+                   if (StringUtils.isNotEmpty(killer.getLocalizedMessage()))
+                   {
+                       statText += ": " + killer;
+                   }
+                   else
+                   {
+                       statText += ": " + killer.getLocalizedMessage();
+                   }
+               }
+               if (dotDotDot(op)) 
+               {
+                   statText += "...";
+               }
+               
+               mainPanel.clearMsgs(new Class<?>[]{UploadTableInvalidValue.class});
+               if (op.equals(USER_INPUT))
+               {
+                   mainPanel.addMsg(new UploadTableInvalidValue(statText, null, null, -1, null));
+               }
+               else
+               {
+                   mainPanel.addMsg(new BaseUploadMessage(statText));
+               }
+               
+               if (validationIssues != null)
+               {
+                   for (int m=0; m<validationIssues.size() && m<MAX_MSG_DISPLAY_COUNT; m++)
+                   {
+                       mainPanel.addMsg(validationIssues.get(m));
+                   }
+                   if (validationIssues.size() > MAX_MSG_DISPLAY_COUNT)
+                   {
+                       log.info("Only displaying " + String.valueOf(MAX_MSG_DISPLAY_COUNT) + " of " 
+                               + String.valueOf(validationIssues.size()) + " validation errors ");
+                       JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                               String.format(getResourceString(WB_TOO_MANY_ERRORS), String.valueOf(MAX_MSG_DISPLAY_COUNT),
+                                           String.valueOf(validationIssues.size())), 
+                               getResourceString(WB_UPLOAD_FORM_TITLE), 
+                               JOptionPane.WARNING_MESSAGE,
+                               null);
+                   }
+               }
+               mainPanel.getPrintBtn().setEnabled(validationIssues != null && validationIssues.size() > 0);
+//           }
+//        });
     }
 
     /**
@@ -2961,22 +2996,31 @@ public class Uploader implements ActionListener, KeyListener
                     {
                         if (isUserCmd)
                         {
-                            initProgressBar(0, uploadTables.size(), true,
-                                    getResourceString("WB_UPLOAD_UNDOING") + " "
-                                            + getResourceString("ERD_TABLE"), false);
+                            SwingUtilities.invokeAndWait(new Runnable() {
+                                public void run()
+                                {
+                                    initProgressBar(0, getUploadedObjects(), true,
+                                            getResourceString("WB_UPLOAD_UNDOING") + " "
+                                                    + getResourceString("WB_UPLOAD_OBJECT"), false);
+                                }
+                            });
                         }
                         else
                         {
-                            initProgressBar(0, uploadTables.size(), true,
-                                    getResourceString("WB_UPLOAD_CLEANING_UP") + " "
-                                            + getResourceString("ERD_TABLE"), false);
+                            SwingUtilities.invokeAndWait(new Runnable()
+                            {
+                                public void run()
+                                {
+                                    initProgressBar(0, getUploadedObjects(), true,
+                                            getResourceString("WB_UPLOAD_CLEANING_UP") + " "
+                                                    + getResourceString("WB_UPLOAD_OBJECT"), false);
+                                }
+                            });
                         }
                         List<UploadTable> fixedUp = reorderUploadTablesForUndo();
                         for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
-                        //for (int ut = 0; ut < fixedUp.size(); ut++)
                         {
-                            setCurrentOpProgress(fixedUp.size() - ut, false);
-                            //setCurrentOpProgress(ut+1, false);
+                            //setCurrentOpProgress(fixedUp.size() - ut, false);
                             fixedUp.get(ut).undoUpload();
                         }
                         success = true;

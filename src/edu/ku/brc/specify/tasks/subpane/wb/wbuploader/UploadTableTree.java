@@ -397,7 +397,7 @@ public class UploadTableTree extends UploadTable
         {
             keys.add(new UploadedRecordInfo(((DataModelObjBase)defParent).getId(), -1, 0));
         }
-        deleteObjects(keys.iterator());
+        deleteObjects(keys.iterator(), true);
         if (parent == null && !this.incrementalNodeNumberUpdates)
         {
             try

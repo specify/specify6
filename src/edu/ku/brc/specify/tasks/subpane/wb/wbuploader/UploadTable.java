@@ -20,9 +20,11 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.persistence.CascadeType;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.ObjectDeletedException;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
 
@@ -1933,7 +1935,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         //if isOneToOneChild() we most probably don't even need to worry about deleting 
         //but just to be sure will always delete.
-        deleteObjects(uploadedRecs.iterator());
+        deleteObjects(uploadedRecs.iterator(), true);
     }
 
     /**
@@ -1941,11 +1943,22 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Deletes all the objects whose keys are present in objs.
      */
-    protected void deleteObjects(Iterator<UploadedRecordInfo> objs) throws UploaderException
+    protected void deleteObjects(Iterator<UploadedRecordInfo> objs, final boolean showProgress) throws UploaderException
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         String hql = "from " + getWriteTable().getName() + " where id =:theKey";
         QueryIFace q = session.createQuery(hql);
+        Runnable progShower = null;        
+        if (showProgress)
+        {
+            progShower = new Runnable()
+            {
+                public void run()
+                {
+                    Uploader.currentUpload.undoStep();
+                }
+            };
+        }
         try
         {
             while (objs.hasNext())
@@ -1990,6 +2003,14 @@ public class UploadTable implements Comparable<UploadTable>
                             session.rollback();
                         }
                     }
+                    catch (ObjectDeletedException ex)
+                    {
+                        log.info(table.getName() + "." + key + ":" + ex);
+                        if (opened && !committed)
+                        {
+                            session.rollback();
+                        }
+                    }
                     catch (Exception ex)
                     {
                         log.info(table.getName() + ":" + ex);
@@ -2000,6 +2021,11 @@ public class UploadTable implements Comparable<UploadTable>
                         throw new UploaderException(ex);
                     }
                 }
+                if (showProgress)
+                {
+                    SwingUtilities.invokeLater(progShower);
+                }
+                    
             }
         }
         finally
