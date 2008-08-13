@@ -438,21 +438,13 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
                 parent.removeChild(node);
                 node.setParent(null);
             }
-            
-            // detach the node from an accepted parent
-            if (node.getAcceptedParent() != null)
-            {
-                node.getAcceptedParent().getAcceptedChildren().remove(node);
-                node.setAcceptedParent(null);
-            }
-            
+                        
             // let Hibernate delete the subtree
             DataProviderSessionIFace sessionWrapper = new HibernateDataProviderSession(session);
             
             BusinessRulesIFace busRulesObj = DBTableIdMgr.getInstance().getBusinessRule(node);
             if (busRulesObj != null)
             {
-                // TODO: Have to rework this to provide a non-null DataProviderSessionIFace thingy
                 busRulesObj.beforeDelete(node, sessionWrapper);
             }
             session.delete(node);

@@ -837,4 +837,20 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         return (b == null) ? false : b.booleanValue();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeDelete(dataObj, session);
+        Treeable<?, ?, ?> node = (Treeable<?,?,?> )dataObj;
+        if (node.getAcceptedParent() != null)
+        {
+            node.getAcceptedParent().getAcceptedChildren().remove(node);
+            node.setAcceptedParent(null);
+        }
+    }
+
+    
 }

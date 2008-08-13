@@ -2614,6 +2614,7 @@ public class FormViewObj implements Viewable,
                     mvParent.getDeletedItems().clear();
                 }
                 
+                
                 FormDataObjIFace fdo   = (FormDataObjIFace)dataObj;
                 Integer          objId = fdo.getId();
                 if (objId != null)
@@ -2623,6 +2624,10 @@ public class FormViewObj implements Viewable,
                     if (dbDataObj != null)
                     {
                         session.beginTransaction();
+                        if (businessRules != null)
+                        {
+                            businessRules.beforeDelete(dbDataObj, session);
+                        }
                         session.delete(dbDataObj);
                         if (businessRules != null)
                         {
