@@ -131,7 +131,8 @@ public class QueryFieldPanel extends JPanel
             //XXX unfortunately this doesn't work because currently picklist defs are only setup via form view defs
             if (StringUtils.isNotEmpty(fieldQRI.getFieldInfo().getPickListName()))
             {
-                pickList = ((edu.ku.brc.specify.ui.db.PickListDBAdapterFactory)PickListDBAdapterFactory.getInstance()).create(fieldQRI.getFieldInfo().getPickListName(), false);
+                //pickList = ((edu.ku.brc.specify.ui.db.PickListDBAdapterFactory)PickListDBAdapterFactory.getInstance()).create(fieldQRI.getFieldInfo().getPickListName(), false);
+                pickList = PickListDBAdapterFactory.getInstance().create(fieldQRI.getFieldInfo().getPickListName(), false);
 //                if (pickList != null)
 //                {
 //                    System.out.println("got a picklist adaptor");

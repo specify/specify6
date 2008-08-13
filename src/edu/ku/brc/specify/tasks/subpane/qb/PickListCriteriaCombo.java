@@ -82,14 +82,18 @@ public class PickListCriteriaCombo extends JComboBox
                 if (e.getActionCommand().equals("comboBoxChanged"))
                 {
                     PickListItemIFace theSelection = (PickListItemIFace)getSelectedItem();
+                    setSelectedItem(null);
                     if (selMode == SELMODE_SINGLE)
                     {
+                        boolean addIt = !sels.contains(theSelection);
                         sels.clear();
-                        sels.add(theSelection);
+                        if (addIt)
+                        {
+                            sels.add(theSelection);
+                        }
                     }
                     else if (selMode == SELMODE_MULTI)
                     {
-                        setSelectedItem(null);
                         if (sels.contains(theSelection))
                         {
                             sels.remove(theSelection);
@@ -132,7 +136,7 @@ public class PickListCriteriaCombo extends JComboBox
                                                       boolean isSelected,
                                                       boolean cellHasFocus)
         {
-            if (index == -1)
+            if (index == -1) //currently, this should always be the case 
             {
                 return UIHelper.createLabel(getSelectionsText());
             }
@@ -316,8 +320,10 @@ public class PickListCriteriaCombo extends JComboBox
      */
     protected void setSelMode(final int mode)
     {
+        setSelectedItem(null);
         sels.clear();
         selMode = mode;
+        repaint();
     }
     
     /**
