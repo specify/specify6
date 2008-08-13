@@ -184,6 +184,8 @@ public class UploadTable implements Comparable<UploadTable>
     protected Collection collection = null;
     protected Discipline discipline = null;
     
+    UploadedRecFinalizerIFace                           finalizer                    = null;
+    
     /**
      * @param table
      * @param relationship
@@ -239,8 +241,26 @@ public class UploadTable implements Comparable<UploadTable>
         determineTblClass();
         initReqRelClasses();
         skipMatching = shouldSkipMatching();
+        finalizer = findFinalizer();
     }
 
+    protected UploadedRecFinalizerIFace findFinalizer() throws UploaderException
+    {
+        String className = this.getClass().getPackage().getName() + "." + tblClass.getSimpleName() + "RecFinalizer";
+        try
+        {
+            Class<?> cls = Class.forName(className);
+            return (UploadedRecFinalizerIFace )cls.newInstance();
+        }
+        catch (ClassNotFoundException ex)
+        {
+            return null;
+        }
+        catch (Exception ex)
+        {
+            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+        }
+    }
     /**
      * Determines the Java class for the specify table being uploaded.
      * 
@@ -1545,7 +1565,10 @@ public class UploadTable implements Comparable<UploadTable>
     @SuppressWarnings("unused")
     protected void finalizeWrite(DataModelObjBase rec, int recNum) throws UploaderException
     {
-        // do nothing for now
+        if (finalizer != null)
+        {
+            finalizer.finalizeForWrite(rec, recNum);
+        }
     }
 
 
@@ -1685,7 +1708,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected void writeRowOrNot(boolean doNotWrite, boolean forceMatch) throws UploaderException
     {
         int recNum = 0;
-        log.debug("writeRowOrNot: " + this.table.getName());
+        //log.debug("writeRowOrNot: " + this.table.getName());
         for (Vector<UploadField> seq : uploadFields)
         {
             try
@@ -1975,9 +1998,13 @@ public class UploadTable implements Comparable<UploadTable>
                         if (obj != null)
                         {
                             session.beginTransaction();
-                            opened = true;
-                            session.delete(obj);
                             BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(tblClass);
+                            opened = true;
+                            if (busRule != null)
+                            {
+                                busRule.beforeDelete(obj, session);
+                            }
+                            session.delete(obj);
                             if (busRule != null)
                             {
                                 busRule.beforeDeleteCommit(obj, session);

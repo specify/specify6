@@ -174,6 +174,7 @@ public class UploadTableTree extends UploadTable
     @Override
     protected void finalizeWrite(DataModelObjBase rec, int recNum) throws UploaderException
     {
+        super.finalizeWrite(rec, recNum);
         //assign treedef and treedefitem to rec
         DataModelObjBase parentRec = getParentRec(recNum);
         Treeable tRec = (Treeable)rec;
