@@ -258,6 +258,16 @@
             </altviews>
         </view>
         
+        <view name="GroupPerson"
+            class="edu.ku.brc.specify.datamodel.GroupPerson"
+            resourcelabels="false">
+            <desc><![CDATA[GroupPerson form.]]></desc>
+            <altviews>
+                <altview name="GroupPerson View" viewdef="GroupPerson" label="View" mode="view"/>
+                <altview name="GroupPerson Edit" viewdef="GroupPerson" label="Edit" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
         <view name="Institution"
             class="edu.ku.brc.specify.datamodel.Institution" 
             isinternal="false"
@@ -1424,6 +1434,34 @@
                     <cell type="separator" label="Attachments"/>
                     <cell type="subview" id="6" name="attachments" viewname="FieldNotebookPageSetAttachment" initialize="btn=true;icon=FieldNotebookPageSetAttachment;addsearch=true"/>
                     </row> -->
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="GroupPerson"
+            class="edu.ku.brc.specify.datamodel.GroupPerson"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Accession form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>60px,2px,p,2px,p,2px,p,2px,p,2px,p</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="member" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
+                    
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="orderNumber" uitype="text"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="5"/>
+                </row>
             </rows>
         </viewdef>
 
