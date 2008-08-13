@@ -131,7 +131,15 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
         sepLbl.setEnabled(false);
         sepText.setEnabled(false);
         
-        sepText.setText(AppPreferences.getLocalPrefs().get("DOF_SEP", ", "));
+        // For when it is standalone
+        if (AppPreferences.hasRemotePrefs())
+        {
+            sepText.setText(AppPreferences.getRemote().get("DOF_SEP", ", "));
+            
+        } else
+        {
+            sepText.setText(", ");
+        }
 
         PanelBuilder pb = new PanelBuilder(new FormLayout("f:d:g",  
                 "10px,"       +   // empty space on top of panel 
@@ -246,7 +254,10 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
 
             private void changed(@SuppressWarnings("unused") DocumentEvent e)
             { 
-                AppPreferences.getLocalPrefs().put("DOF_SEP", sepText.getText()); 
+                if (AppPreferences.hasRemotePrefs())
+                {
+                    AppPreferences.getRemote().put("DOF_SEP", sepText.getText()); 
+                } 
             }
         });
     }

@@ -109,6 +109,14 @@ public class AppPreferences
     }
 
     /**
+     * @return
+     */
+    public static boolean hasRemotePrefs()
+    {
+        return instanceRemote != null;
+    }
+    
+    /**
      * Returns the singleton.
      * @return the singleton
      */
