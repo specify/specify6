@@ -435,9 +435,17 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
 
             }
             
-            if (!UIHelper.isMacOS_10_5_X())
+            if (!(UIHelper.isMacOS_10_5_X()))
             {
+                String key = "ui.formatting.controlSizes"; //$NON-NLS-1$
                 UIRegistry.setBaseFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6));
+                
+                AppPreferences.getRemote().put(key+".FN", (String)fontNames.getSelectedItem());
+                AppPreferences.getRemote().putInt(key+".SZ", fontSizes.getSelectedIndex()+6);
+                
+                AppPreferences.getLocalPrefs().put(key+".FN", (String)fontNames.getSelectedItem());
+                AppPreferences.getLocalPrefs().putInt(key+".SZ", fontSizes.getSelectedIndex()+6);
+                
             } else
             {
                 String key = "ui.formatting.controlSizes"; //$NON-NLS-1$

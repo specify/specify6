@@ -177,11 +177,11 @@ public final class UIHelper
         {
             oSType   = OSTYPE.MacOSX;
             
-            String osVersion = System.getProperty("os.version");
+            /*String osVersion = System.getProperty("os.version");
             if (StringUtils.isNotEmpty(osVersion) && osVersion.compareTo("10.5.0") >= 0)
             {
                 isMacOS_10_5_X = true;
-            }
+            }*/
 
         } else if (osStr.indexOf("Windows") != -1)
         {

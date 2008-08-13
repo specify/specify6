@@ -1939,9 +1939,17 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         if (status == AppContextMgr.CONTEXT_STATUS.OK)
         {
-            if (firstTime && UIHelper.isMacOS_10_5_X())
+            //if (firstTime && UIHelper.isMacOS_10_5_X())
+            //{
+            //    setupUIControlSize(AppPreferences.getRemote());
+            //}
+            
+            String key = "ui.formatting.controlSizes"; //$NON-NLS-1$
+            String  fontName = AppPreferences.getRemote().get(key+".FN", null);
+            Integer fontSize = AppPreferences.getRemote().getInt(key+".SZ", null);
+            if (fontName != null && fontSize != null)
             {
-                setupUIControlSize(AppPreferences.getRemote());
+                UIRegistry.setBaseFont(new Font(fontName, Font.PLAIN, fontSize));
             }
             
             // XXX Get the current locale from prefs PREF
