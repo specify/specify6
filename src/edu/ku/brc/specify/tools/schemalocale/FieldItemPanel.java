@@ -1024,7 +1024,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 {
                     //f = localizableIO.realize(f);
                     LocalizableStrIFace  desc = getDescForCurrLocale(f);
-                    if (desc != null && StringUtils.isEmpty(desc.getText()))
+                    if (desc == null || StringUtils.isEmpty(desc.getText()))
                     {
                         return i;
                     }
@@ -1141,6 +1141,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         if (inx > -1)
         {
             fieldsList.setSelectedIndex(inx);
+            fieldsList.ensureIndexIsVisible(inx);
         }
         updateBtns();
     }
