@@ -106,6 +106,11 @@ public class ERTICaptionInfo
             throw new RuntimeException("search_config.xml caption has bad id["+getAttr(element, "tableid", "N/A")+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         }
         
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(tblId);
+        
+        String dataObjFormatterName = getAttr(element, "dataobjformatter", null); //$NON-NLS-1$
+        String formatter            = getAttr(element, "formatter", dataObjFormatterName); //$NON-NLS-1$
+
         this.colName = element.attributeValue("col"); //$NON-NLS-1$
         
         String key = getAttr(element, "key", null); //$NON-NLS-1$
@@ -123,33 +128,33 @@ public class ERTICaptionInfo
                 description = key+"_desc"; //$NON-NLS-1$
             }
             
+        } else if (tableInfo != null)
+        {
+            fieldInfo = tableInfo.getFieldByColumnName(this.colName);
+            if (fieldInfo == null)
+            {
+                if (this.colName.endsWith("ID")) //$NON-NLS-1$
+                {
+                    colLabel    = this.colName;
+                    description = ""; //$NON-NLS-1$
+                } else
+                {
+                    throw new RuntimeException("Couldn't convert column Name["+this.colName+"] to a field name to find the field in table["+tblId+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                }
+            } else if (fieldInfo.getFormatter() != null)
+            {
+                formatter = fieldInfo.getFormatter().getName();
+            }
+            
         } else
         {
-            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tblId);
-            if (ti != null)
-            {
-                fieldInfo = ti.getFieldByColumnName(this.colName);
-                if (fieldInfo == null)
-                {
-                    if (this.colName.endsWith("ID")) //$NON-NLS-1$
-                    {
-                        colLabel    = this.colName;
-                        description = ""; //$NON-NLS-1$
-                    } else
-                    {
-                        throw new RuntimeException("Couldn't convert column Name["+this.colName+"] to a field name to find the field in table["+tblId+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    }
-                }
-            } else
-            {
-                throw new RuntimeException("Table Id is bad id["+getAttr(element, "tableid", "N/A")+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-            }
+            throw new RuntimeException("Table Id is bad id["+getAttr(element, "tableid", "N/A")+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         }
         
         this.isVisible = getAttr(element, "visible", true); //$NON-NLS-1$
         
-        String dataObjFormatterName = getAttr(element, "dataobjformatter", null); //$NON-NLS-1$
-        String formatter            = getAttr(element, "formatter", dataObjFormatterName); //$NON-NLS-1$
+        
+        
         
         String aggTableClassName = null;
         
@@ -172,13 +177,13 @@ public class ERTICaptionInfo
                         x++;
                     }
                     boolean aggOK = false;
-                    DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(aggClass.getSimpleName());
-                    if (tableInfo != null && StringUtils.isNotEmpty(tableInfo.getAggregatorName()))
+                    DBTableInfo tInfo = DBTableIdMgr.getInstance().getByShortClassName(aggClass.getSimpleName());
+                    if (tInfo != null && StringUtils.isNotEmpty(tInfo.getAggregatorName()))
                     {
-                        DataObjAggregator agg = DataObjFieldFormatMgr.getInstance().getAggregator(tableInfo.getAggregatorName());
+                        DataObjAggregator agg = DataObjFieldFormatMgr.getInstance().getAggregator(tInfo.getAggregatorName());
                         if (agg != null)
                         {
-                            aggregatorName = tableInfo.getAggregatorName();
+                            aggregatorName = tInfo.getAggregatorName();
                             aggOK = true;
                         }
                     }

@@ -704,8 +704,12 @@ public class TableViewObj implements Viewable,
                     localSession = DataProviderFactory.getInstance().createSession();
                     localSession.attach(dObj);
                 }
+                dialog.setSession(localSession);
+                
                 dialog.setData(dObj);
                 dialog.showDisplay(true);
+                
+                dialog.setSession(null);
                 
             } catch (Exception ex)
             {

@@ -244,7 +244,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             });
         }
 
-        if (!isViewOnly) // NOTE: This is checking the method argument NOT the class member!
+        if (!isViewOnlyArg)
         {
             if (!formatterArg.isUserInputNeeded() && !isPartialOK)
             {
@@ -1040,7 +1040,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         @Override
         public void remove(int offset, int len)
         {
-            UIFieldFormatterField field = docFields[offset];
+            /*UIFieldFormatterField field = docFields[offset];
             
             // We can't let them try to delete separator's or incrementers
             if (!doSetText && len < limit && ((field.isIncrementer() && isAutoFmtOn) || field.isByYear() || docFields[offset].getType() == UIFieldFormatterField.FieldType.separator))
@@ -1048,7 +1048,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                 int pos = getCaretPosition();
                 setCaretPosition(pos - field.getSize());
                 return;
-            }
+            }*/
             
             try
             {

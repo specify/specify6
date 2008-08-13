@@ -2865,7 +2865,7 @@ public class FormViewObj implements Viewable,
         if (rsController == null && controlPanel != null)
         {
             boolean inEditMode = altView.getMode() == AltViewIFace.CreationMode.EDIT;
-            rsController = new ResultSetController(formValidator, inEditMode, inEditMode, inEditMode && addSearch, view.getObjTitle(), 0);
+            rsController = new ResultSetController(formValidator, inEditMode && !addSearch, inEditMode, inEditMode && addSearch, view.getObjTitle(), 0);
             rsController.getPanel().setBackground(bgColor);
             
             rsController.addListener(this);
@@ -2875,7 +2875,7 @@ public class FormViewObj implements Viewable,
             newRecBtn = rsController.getNewRecBtn();
             delRecBtn = rsController.getDelRecBtn();
             
-            if (formValidator != null)
+            if (formValidator != null && newRecBtn != null)
             {
                 formValidator.addEnableItem(newRecBtn, FormValidator.EnableType.ValidItems);
             }

@@ -16,6 +16,7 @@ package edu.ku.brc.ui.db;
 
 import javax.swing.JButton;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
@@ -116,4 +117,9 @@ public interface ViewBasedDisplayIFace
      * @param helpContext
      */
     public abstract void setHelpContext(String helpContext);
+    
+    /**
+     * @param session
+     */
+    public abstract void setSession(DataProviderSessionIFace session);
 }

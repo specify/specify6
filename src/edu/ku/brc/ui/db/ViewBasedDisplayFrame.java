@@ -25,6 +25,7 @@ import javax.swing.JButton;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.UIRegistry;
@@ -275,6 +276,15 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
         return viewBasedPanel.isEditMode();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#setsession(edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void setSession(final DataProviderSessionIFace session)
+    {
+        viewBasedPanel.setSession(session);
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#shutdown()
      */

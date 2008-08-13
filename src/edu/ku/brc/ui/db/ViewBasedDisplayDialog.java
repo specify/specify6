@@ -21,6 +21,7 @@ import java.awt.Frame;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
@@ -395,5 +396,12 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
         viewBasedPanel.shutdown();
     }
 
-
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#setsession(edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void setSession(final DataProviderSessionIFace session)
+    {
+        viewBasedPanel.setSession(session);
+    }
 }

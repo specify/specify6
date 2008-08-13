@@ -68,10 +68,17 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import sun.security.action.GetLongAction;
+
 import com.install4j.api.launcher.ApplicationLauncher;
+import com.install4j.api.update.ApplicationDisplayMode;
+import com.install4j.api.update.UpdateChecker;
+import com.install4j.api.update.UpdateDescriptor;
+import com.install4j.api.update.UpdateDescriptorEntry;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -2335,6 +2342,34 @@ public class Specify extends JPanel implements DatabaseLoginListener
   }
   
   /**
+   * @return
+   */
+  private static String getLastVersion()
+  {
+      try
+      {
+          return  FileUtils.readFileToString(new File("lastversion.dat"));
+          
+      } catch (Exception ex)
+      {
+          
+      }
+      return null;
+  }
+  
+  private static void setLastVersion(final String version)
+  {
+      try
+      {
+          FileUtils.writeStringToFile(new File("lastversion.dat"), version);
+          
+      } catch (Exception ex)
+      {
+          
+      } 
+  }
+  
+  /**
    *
    */
   public static void main(String[] args)
@@ -2402,19 +2437,50 @@ public class Specify extends JPanel implements DatabaseLoginListener
                   {
                       try
                       {
-                          ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
+                          
+                          String lastVersion = getLastVersion();
+                          
+                          UpdateDescriptor updateDesc= UpdateChecker.getUpdateDescriptor(UIRegistry.getResourceString("UPDATE_PATH"),
+                                                                                         ApplicationDisplayMode.UNATTENDED);
+
+                          UpdateDescriptorEntry entry = updateDesc.getPossibleUpdateEntry();
+
+                          if (entry != null)
                           {
-                            public void exited(int exitValue)
-                            {
-                                System.err.println("exitValue: "+exitValue);
-                                startApp(doConfig);
-                            }
-                            public void prepareShutdown()
-                            {
-                            }
-                              
+                               log.debug("Found Entry for update: " + entry);
+                               log.debug("URL: " + entry.getURL());
+                               log.debug("Ver: " + entry.getNewVersion());
+                          }
+                          
+                          setLastVersion(entry.getNewVersion());
+                          
+                          if (StringUtils.isNotEmpty(lastVersion) && lastVersion.equals(entry.getNewVersion()))
+                          {
+                              startApp(doConfig);
+                              return;
+                          }
+                          
+                      } catch (Exception ex)
+                      {
+                          startApp(doConfig);
+                          return;
+                      }
+                      
+                      try
+                      {
+                         ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
+                         {
+                             public void exited(int exitValue)
+                             {
+                                 System.err.println("exitValue: "+exitValue);
+                                 startApp(doConfig);
+                             }
+                             public void prepareShutdown()
+                             {
+                             }
                           };
                           ApplicationLauncher.launchApplication("100", null, true, callback);
+                          
                       } catch (Exception ex)
                       {
                           startApp(doConfig);
