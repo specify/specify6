@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.help.plaf.HelpUI;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -1248,8 +1249,8 @@ public class ViewFactory
                 {
                     JTextArea ta = createTextArea(validator, cellField);
                     JScrollPane scrollPane = new JScrollPane(ta);
-                    scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-                    scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+                    scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                    scrollPane.setVerticalScrollBarPolicy(UIHelper.isMacOS() ? ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS : ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
                     
                     bi.doAddToValidator = validator == null; // might already added to validator
                     bi.compToReg = ta;
