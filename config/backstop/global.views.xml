@@ -47,8 +47,8 @@
             <desc><![CDATA[GroupPerson form.]]></desc>
             <altviews>
                 <altview name="GroupPerson View" viewdef="GroupPerson" label="View" mode="view"/>
-                <altview name="GroupPerson Edit" viewdef="GroupPerson" label="Edit" mode="edit"/>
-                <altview name="GroupPerson Table View" viewdef="GroupPerson Table"   label="Grid" mode="view" default="true"/>
+                <altview name="GroupPerson Edit" viewdef="GroupPerson" label="Edit" mode="edit" default="true"/>
+                <altview name="GroupPerson Table View" viewdef="GroupPerson Table"   label="Grid" mode="view"/>
                 <altview name="GroupPerson Table Edit" viewdef="GroupPerson Table"   label="Grid" mode="edit"/>
             </altviews>
         </view>
@@ -642,11 +642,12 @@
 			    <row>
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="6"/>
                 </row>
-             <!--  <row>
+                <!-- 
+                <row>
                     <cell type="separator" id="30" label="Groups" collapse="groups" colspan="6"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="GroupPerson" id="31" name="groups" colspan="6"/>
+                    <cell type="subview" viewname="GroupPerson" id="31" name="groups" defaulttype="table" colspan="6"/>
                 </row> -->
 
                 <row>
@@ -762,7 +763,7 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
             
-            <columnDef>60px,2px,p,2px</columnDef>
+            <columnDef>60px,2px,p:g,2px</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>

@@ -34,10 +34,11 @@
     <dialog type="display" view="CollectionObject"   name="CollectionObject"         class="edu.ku.brc.specify.datamodel.CollectionObject"/>
     <dialog type="display" view="CollectingEvent"    name="CollectingEvent"          class="edu.ku.brc.specify.datamodel.CollectingEvent"/>
     <dialog type="display" view="CollectingTrip"     name="CollectingTripDisplay"    class="edu.ku.brc.specify.datamodel.CollectingTrip"/>
+    <dialog type="display" view="Determination"      name="DeterminationDisplay"     class="edu.ku.brc.specify.datamodel.Determination"/>
     <dialog type="display" view="Division"           name="DivisionDisplay"          class="edu.ku.brc.specify.datamodel.Division"/>
     <dialog type="display" view="GeologicTimePeriod" name="GeologicTimePeriodDisplay" class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
-    <dialog type="display" view="Determination"      name="DeterminationDisplay"     class="edu.ku.brc.specify.datamodel.Determination"/>
     <dialog type="display" view="Geography"          name="GeographyDisplay"         class="edu.ku.brc.specify.datamodel.Geography"/>
+    <dialog type="display" view="GroupPerson"        name="GroupPersonDisplay"       class="edu.ku.brc.specify.datamodel.GroupPerson"/>
     <dialog type="display" view="Journal"            name="JournalDisplay"           class="edu.ku.brc.specify.datamodel.Journal"/>
     <dialog type="display" view="LithoStrat"         name="LithoStratDisplay"        class="edu.ku.brc.specify.datamodel.LithoStrat"/>
     <dialog type="display" view="Locality"           name="LocalityDisplay"          class="edu.ku.brc.specify.datamodel.Locality"/>
