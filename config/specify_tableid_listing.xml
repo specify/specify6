@@ -151,6 +151,7 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.FieldNotebookPageSet" abbrev="fnbps" id="84" searchable="true">
+            <display view="FieldNotebookPageSet" dataobjformatter="FieldNotebookPageSet" newobjdlg="FieldNotebookPageSetDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.FieldNotebookPageSetBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment" abbrev="fnbpsat" id="128" searchable="true">
