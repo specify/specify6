@@ -1,0 +1,333 @@
+/*
+     * Copyright (C) 2008  The University of Kansas
+     *
+     * [INSERT KU-APPROVED LICENSE TEXT HERE]
+     *
+     */
+/**
+ * 
+ */
+package edu.ku.brc.specify.toycode;
+
+import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
+import org.apache.commons.io.FileUtils;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.thoughtworks.xstream.XStream;
+
+import edu.ku.brc.ui.BrowseBtnPanel;
+
+/**
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ * Aug 14, 2008
+ *
+ */
+public class UpdatesApp extends JPanel
+{
+    protected BrowseBtnPanel baseBBP    = null;
+    protected BrowseBtnPanel baseUpBBP  = null;
+    protected BrowseBtnPanel macFullBBP = null;
+    protected BrowseBtnPanel macUpBBP   = null;
+    protected BrowseBtnPanel outBBP     = null;
+    
+    protected JTextField baseTF    = new JTextField(40);
+    protected JTextField baseUpTF  = new JTextField(40);
+    protected JTextField macFullTF = new JTextField(40);
+    protected JTextField macUpTF   = new JTextField(40);
+    protected JTextField outTF     = new JTextField(40);
+    protected JTextField statusTF  = new JTextField();
+    
+    protected JTextField versionTF = new JTextField(2);
+    protected JTextField updateBaseTF = new JTextField();
+    protected JButton    mergeBtn  = new JButton("Merge");
+    
+    protected JSpinner   verSub1;
+    protected JSpinner   verSub2;
+    
+    protected UpdateDescriptor baseUpdateDesc;
+    protected UpdateDescriptor baseUpdateUpDesc;
+    protected UpdateDescriptor maxFullUpdateDesc;
+    protected UpdateDescriptor maxUpUpdateDesc;
+    
+    protected Properties props = null;
+    
+    /**
+     * 
+     */
+    public UpdatesApp()
+    {
+        
+        baseBBP    = new BrowseBtnPanel(baseTF, false, true);
+        baseUpBBP  = new BrowseBtnPanel(baseUpTF, false, true);
+        macFullBBP = new BrowseBtnPanel(macFullTF, false, true);
+        macUpBBP   = new BrowseBtnPanel(macUpTF, false, true);
+        outBBP     = new BrowseBtnPanel(outTF, false, true);
+        
+        verSub1 = new JSpinner();
+        verSub2 = new JSpinner();
+        
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p,2px,p,f:p:g,p", createDuplicateJGoodiesDef("p:g", "4px", 7)));
+        CellConstraints cc = new CellConstraints();
+        
+        int y = 1;
+        pb.add(createLabel("Linux/Win Full:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(baseBBP, cc.xyw(3, y, 3));
+        y += 2;
+        
+        pb.add(createLabel("Linux/Win Update:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(baseUpBBP, cc.xyw(3, y, 3));
+        y += 2;
+        
+        pb.add(createLabel("Mac Full:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(macFullBBP, cc.xyw(3, y, 3));
+        y += 2;
+        
+        pb.add(createLabel("Mac Update:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(macUpBBP, cc.xyw(3, y, 3));
+        y += 2;
+        
+        pb.add(createLabel("Output:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(outBBP, cc.xyw(3, y, 3));
+        y += 2;
+        
+        updateBaseTF.setText("6.0.0");
+        pb.add(createLabel("Update Base Version:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(updateBaseTF, cc.xy(3, y));
+        y += 2;
+        
+        versionTF.setText("6");
+        verSub1.setValue(99);
+        verSub2.setValue(99);
+        
+        PanelBuilder vpb = new PanelBuilder(new FormLayout("p,p,p:g,p,p:g,f:p:g", "p"));
+        vpb.add(versionTF,        cc.xy(1, 1));
+        vpb.add(createLabel("."), cc.xy(2, 1));
+        vpb.add(verSub1,          cc.xy(3, 1));
+        vpb.add(createLabel("."), cc.xy(4, 1));
+        vpb.add(verSub2,          cc.xy(5, 1));
+        
+        pb.add(createLabel("New Version:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(vpb.getPanel(), cc.xyw(3, y, 1));
+        y += 2;
+        
+        PanelBuilder pb2 = new PanelBuilder(new FormLayout("p,2px,p,f:p:g,p", "p"));
+        statusTF.setBackground(getBackground());
+        pb2.add(statusTF, cc.xyw(1, 1, 4));
+        pb2.add(mergeBtn, cc.xy(5, 1));
+        
+        pb.getPanel().setBorder(BorderFactory.createEmptyBorder(14, 14, 1, 14));
+        
+        setLayout(new BorderLayout());
+        
+        add(pb.getPanel(), BorderLayout.CENTER);
+        add(pb2.getPanel(), BorderLayout.SOUTH);
+        
+        try
+        {
+            XStream xstream = new XStream();
+            props = (Properties)xstream.fromXML(FileUtils.readFileToString(new File("props.init")));
+            
+        } catch (Exception ex) 
+        {
+            props = new Properties();
+        }
+        
+        baseTF.setText(props.getProperty("baseTF",       "MacMedia/updates.xml.winlinfull.6.1.17"));
+        baseUpTF.setText(props.getProperty("baseUpTF",   "MacMedia/updates.xml.winlinupdate.6.1.17"));
+        macFullTF.setText(props.getProperty("macFullTF", "MacMedia/updates_mac.xml"));
+        macUpTF.setText(props.getProperty("macUpTF",     "MacMedia/updates_mac_update.xml"));
+        outTF.setText(props.getProperty("outTF",         "MacMedia/updates.xml"));
+        updateBaseTF.setText(props.getProperty("updateBaseTF", "6.0.0"));
+        versionTF.setText(props.getProperty("versionTF", "6"));
+        
+        verSub1.setValue(Integer.parseInt(props.getProperty("subVer1", "1")));
+        verSub2.setValue(Integer.parseInt(props.getProperty("subVer2", "11")));
+        
+        mergeBtn.addActionListener(new ActionListener() {
+
+            /* (non-Javadoc)
+             * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+             */
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                merge();
+            }
+            
+        });
+        
+    }
+    
+    protected void merge()
+    {
+        try
+        {
+            props.setProperty("baseTF",    baseTF.getText());
+            props.setProperty("baseUpTF",  baseUpTF.getText());
+            props.setProperty("macFullTF", macFullTF.getText());
+            props.setProperty("macUpTF",   macUpTF.getText());
+            props.setProperty("outTF",     outTF.getText());
+            props.setProperty("versionTF", versionTF.getText());
+            
+            props.setProperty("subVer1", Integer.toString((Integer)verSub1.getValue()));
+            props.setProperty("subVer2", Integer.toString((Integer)verSub2.getValue()));
+            
+            XStream xstream = new XStream();
+            FileUtils.writeStringToFile(new File("props.init"), xstream.toXML(props));
+            
+        } catch (Exception ex) 
+        {
+            ex.printStackTrace();
+        }
+        
+        statusTF.setText("Merging...");
+        
+        baseUpdateDesc    = read(new File(baseTF.getText()));
+        baseUpdateUpDesc  = read(new File(baseUpTF.getText()));
+        maxFullUpdateDesc = read(new File(macFullTF.getText()));
+        maxUpUpdateDesc   = read(new File(macUpTF.getText()));
+        
+        setAsFull(baseUpdateDesc, updateBaseTF.getText(), versionTF.getText(), (Integer)verSub1.getValue(), (Integer)verSub2.getValue());
+        setAsUpdate(baseUpdateUpDesc, updateBaseTF.getText(), versionTF.getText(), (Integer)verSub1.getValue(), (Integer)verSub2.getValue());
+        
+        setAsFull(maxFullUpdateDesc, updateBaseTF.getText(), versionTF.getText(), (Integer)verSub1.getValue(), (Integer)verSub2.getValue());
+        setAsUpdate(maxUpUpdateDesc, updateBaseTF.getText(), versionTF.getText(), (Integer)verSub1.getValue(), (Integer)verSub2.getValue());
+        
+        baseUpdateDesc.getEntries().addAll(baseUpdateUpDesc.getEntries());
+        baseUpdateDesc.getEntries().addAll(maxFullUpdateDesc.getEntries());
+        baseUpdateDesc.getEntries().addAll(maxUpUpdateDesc.getEntries());
+        
+        write(baseUpdateDesc, outTF.getText());
+        
+        statusTF.setText("Merged.");
+
+    }
+    
+    protected void setAsFull(final UpdateDescriptor upDesc, final String baseVer, final String ver, final Integer vs1, final Integer vs2)
+    {
+        int i2 = (vs2-2);
+        if (i2 < 0)
+        {
+            i2 += 100;
+        }
+        String newVersion = ver + "." + vs1 + "." + vs2;
+        String verMax     = ver + "." + vs1 + "." + i2;
+        
+        for (UpdateEntry entry : upDesc.getEntries())
+        {
+            entry.setNewVersion(newVersion);
+            entry.setUpdatableVersionMax(verMax);
+            entry.setUpdatableVersionMin(baseVer);
+        }
+    }
+    
+    protected void setAsUpdate(final UpdateDescriptor upDesc, final String baseVer, final String ver, final Integer vs1, final Integer vs2)
+    {
+        int i2 = (vs2-1);
+        if (i2 < 0)
+        {
+            i2 += 100;
+        }
+        String newVersion = ver + "." + vs1 + "." + vs2;
+        String verMin     = ver + "." + vs1 + "." + i2;
+        
+        for (UpdateEntry entry : upDesc.getEntries())
+        {
+            entry.setNewVersion(newVersion);
+            entry.setUpdatableVersionMax(verMin);
+            entry.setUpdatableVersionMin(verMin);
+        }
+    }
+    
+    protected static UpdateDescriptor read(final File file)
+    {
+        XStream xstream = new XStream();
+        UpdateDescriptor.config(xstream);
+        UpdateEntry.config(xstream);
+        
+        if (file.exists())
+        {
+            try
+            {
+                UpdateDescriptor update = (UpdateDescriptor)xstream.fromXML(FileUtils.readFileToString(file));
+                return update;
+                
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+        } else
+        {
+            System.err.println("File: "+file.getAbsolutePath()+" doesn't exist.");
+        }
+        return null;
+    }
+    
+    /**
+     * @param update
+     * @param outPath
+     */
+    protected static void write(final UpdateDescriptor update,
+                                final String outPath)
+    {
+        XStream xstream = new XStream();
+        
+        UpdateDescriptor.config(xstream);
+        UpdateEntry.config(xstream);
+        
+        System.out.println("Start");
+        File file = new File(outPath);
+        try
+        {
+            FileUtils.writeStringToFile(file, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"+xstream.toXML(update));
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        System.out.println("Stop"); 
+    }
+    
+    /**
+     * @param args
+     */
+    public static void main(String[] args)
+    {
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                JFrame frame = new JFrame();
+                frame.setContentPane(new UpdatesApp());
+                frame.pack();
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setVisible(true);
+                
+            }
+        });
+    }
+
+}
