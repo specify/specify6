@@ -90,6 +90,7 @@ import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -1052,7 +1053,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 else
                 {
-                    erti = new ERTICaptionInfoQB(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0, qfp.getStringId());
+                    erti = new ERTICaptionInfoQB(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0, qfp.getStringId(), qfp.getPickList());
                 }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
                 result.add(erti);
@@ -1117,12 +1118,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     ERTICaptionInfo erti;
                     if (fi != null)
                     {
-                        erti = new ERTICaptionInfoQB(colName, lbl, true, fi.getFormatter(), 0, qf.getStringId());
+                        erti = new ERTICaptionInfoQB(colName, lbl, true, fi.getFormatter(), 0, qf.getStringId(), RecordTypeCodeBuilder.getTypeCode(fi));
                         erti.setColClass(fi.getDataClass());
                     }
                     else
                     {
-                        erti = new ERTICaptionInfoQB(colName, lbl, true, null, 0, qf.getStringId());
+                        erti = new ERTICaptionInfoQB(colName, lbl, true, null, 0, qf.getStringId(), null);
                         erti.setColClass(String.class);
                     }
                     result.add(erti);
@@ -2587,7 +2588,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected void refreshQuery()
     {
-        if (query != null && query.getId() != null)
+        if (query != null && query.getId() != null && !this.isChanged())
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance()
             .createSession();

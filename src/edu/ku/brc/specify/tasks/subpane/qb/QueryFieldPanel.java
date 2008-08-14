@@ -55,6 +55,7 @@ import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpQueryField;
+import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DateConverter;
 import edu.ku.brc.specify.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.ui.IconManager;
@@ -124,7 +125,7 @@ public class QueryFieldPanel extends JPanel
     
 
     
-    protected void setupPickList()
+    protected PickListDBAdapterIFace buildPickList()
     {
         if (fieldQRI != null && fieldQRI.getTableInfo() != null && fieldQRI.getFieldInfo() != null) 
         {
@@ -132,19 +133,12 @@ public class QueryFieldPanel extends JPanel
             if (StringUtils.isNotEmpty(fieldQRI.getFieldInfo().getPickListName()))
             {
                 //pickList = ((edu.ku.brc.specify.ui.db.PickListDBAdapterFactory)PickListDBAdapterFactory.getInstance()).create(fieldQRI.getFieldInfo().getPickListName(), false);
-                pickList = PickListDBAdapterFactory.getInstance().create(fieldQRI.getFieldInfo().getPickListName(), false);
-//                if (pickList != null)
-//                {
-//                    System.out.println("got a picklist adaptor");
-//                    
-//                }
-//                if (pickList.getList().size() == 0)
-//                {
-//                    System.out.println("but it was empty");
-//                    pickList = null;
-//                }
+                return PickListDBAdapterFactory.getInstance().create(fieldQRI.getFieldInfo().getPickListName(), false);
             }
+            //else
+            return RecordTypeCodeBuilder.getTypeCode(fieldQRI.getFieldInfo());
         }
+        return null;
     }
     
     /**
@@ -185,7 +179,7 @@ public class QueryFieldPanel extends JPanel
             dateConverter = new DateConverter();
         }
         
-        setupPickList();
+        pickList = buildPickList();
         
         this.columnDefStr  = columnDefStr;
         
@@ -1262,4 +1256,13 @@ public class QueryFieldPanel extends JPanel
     {
         return fieldQRI.getTableTree().getPathFromRoot() + "." + fieldQRI.getTableInfo().getName() + "." + fieldQRI.getFieldName();
     }
+
+    /**
+     * @return the pickList
+     */
+    public PickListDBAdapterIFace getPickList()
+    {
+        return pickList;
+    }
+    
 }

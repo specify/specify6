@@ -29,7 +29,9 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -47,6 +49,12 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.specify.dbsupport.RecordTypeCode;
+import edu.ku.brc.specify.dbsupport.RecordTypeCodeItem;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.ui.db.PickListItemIFace;
+
 /**
 
  */
@@ -61,6 +69,13 @@ import org.hibernate.annotations.Index;
     })
 public class ReferenceWork extends DataModelObjBase implements java.io.Serializable 
 {
+    // Record types
+    public static final byte                BOOK    = 0;
+    public static final byte                ELECTRONIC_MEDIA = 1;
+    public static final byte                PAPER  = 2;
+    public static final byte                TECHNICAL_REPORT  = 3;
+    public static final byte                THESIS  = 4;
+    public static final byte                SECTION_IN_BOOK  = 5;
 
     // Fields    
 
@@ -590,6 +605,30 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     public static int getClassTableId()
     {
         return 69;
+    }
+
+    /**
+     * @return List of pick lists for predefined system type codes.
+     * 
+     * The QueryBuilder function is used to generate picklist criteria controls for querying,
+     * and to generate text values for the typed fields in query results and reports.
+     * 
+     * The WB uploader will also need this function.
+     * 
+     */
+    @Transient
+    public static List<PickListDBAdapterIFace> getSpSystemTypeCodes()
+    {
+        List<PickListDBAdapterIFace> result = new Vector<PickListDBAdapterIFace>(1);
+        Vector<PickListItemIFace> stats = new Vector<PickListItemIFace>(4);
+        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("ReferenceWork_BOOK"), ReferenceWork.BOOK));
+        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("ReferenceWork_ELECTRONIC_MEDIA"), ReferenceWork.ELECTRONIC_MEDIA));
+        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("ReferenceWork_PAPER"), ReferenceWork.PAPER));
+        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("ReferenceWork_TECHNICAL_REPORT"), ReferenceWork.TECHNICAL_REPORT));
+        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("ReferenceWork_THESIS"), ReferenceWork.THESIS));
+        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("ReferenceWorks_SECTION_IN_BOOK"), ReferenceWork.SECTION_IN_BOOK));
+        result.add(new RecordTypeCode(stats, "referenceWorkType"));
+        return result;
     }
 
 }

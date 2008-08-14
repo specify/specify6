@@ -30,7 +30,9 @@ package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -56,6 +58,11 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.specify.dbsupport.RecordTypeCode;
+import edu.ku.brc.specify.dbsupport.RecordTypeCodeItem;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
@@ -1044,4 +1051,28 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         }
         return false;
     }
+
+    /**
+     * @return List of pick lists for predefined system type codes.
+     * 
+     * The QueryBuilder function is used to generate picklist criteria controls for querying,
+     * and to generate text values for the typed fields in query results and reports.
+     * 
+     * The WB uploader will also need this function.
+     * 
+     */
+    @Transient
+    public static List<PickListDBAdapterIFace> getSpSystemTypeCodes()
+    {
+        List<PickListDBAdapterIFace> result = new Vector<PickListDBAdapterIFace>(1);
+        Vector<PickListItemIFace> stats = new Vector<PickListItemIFace>(4);
+        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("Agent_ORG"), Agent.ORG));
+        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("Agent_PERSON"),
+                        Agent.PERSON));
+        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("Agent_OTHER"), Agent.OTHER));
+        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("Agent_GROUP"), Agent.GROUP));
+        result.add(new RecordTypeCode(stats, "agentType"));
+        return result;
+    }
+
 }

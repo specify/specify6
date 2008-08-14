@@ -40,7 +40,7 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
                            String colStringId,
                            DBRelationshipInfo relationship)
     {
-        super(colName, colLabel, isVisible, uiFieldFormatter, posIndex, colStringId);
+        super(colName, colLabel, isVisible, uiFieldFormatter, posIndex, colStringId, null);
         this.relationship = relationship;
     }
     
