@@ -1140,10 +1140,10 @@ public class MultiView extends JPanel
     {
         this.parentDataObj = parentDataObj;
         
-        if (currentViewable != null)
-        {
+        //if (currentViewable != null)
+        //{
             //currentViewable.setParentDataObj(parentDataObj);
-        }
+        //}
         
         for (Viewable v : viewMapByName.values())
         {

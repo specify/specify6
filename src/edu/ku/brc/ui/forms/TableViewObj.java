@@ -622,10 +622,7 @@ public class TableViewObj implements Viewable,
         {
             editButton.setEnabled(hasSelection);
         }
-        if (newButton != null)
-        {
-            newButton.setEnabled(true);
-        }
+        
         if (deleteButton != null)
         {
             deleteButton.setEnabled(hasSelection);
@@ -636,6 +633,19 @@ public class TableViewObj implements Viewable,
             int inx = table.getSelectedRow();
             orderUpBtn.setEnabled(inx > 0);
             orderDwnBtn.setEnabled(inx > -1 && inx < table.getRowCount()-1);
+        }
+        
+        updateUIEnabled();
+    }
+    
+    /**
+     * 
+     */
+    private void updateUIEnabled()
+    {
+        if (newButton != null)
+        {
+            newButton.setEnabled(parentDataObj != null);
         }
     }
     
@@ -1134,6 +1144,7 @@ public class TableViewObj implements Viewable,
     public void setParentDataObj(Object parentDataObj)
     {
         this.parentDataObj = (FormDataObjIFace)parentDataObj;
+        updateUIEnabled();
     }
 
     /* (non-Javadoc)
