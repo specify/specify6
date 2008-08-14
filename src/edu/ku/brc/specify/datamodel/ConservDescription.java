@@ -369,7 +369,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "conservDescription")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<ConservEvent> getEvents()
     {
        return this.events;
