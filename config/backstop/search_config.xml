@@ -414,7 +414,7 @@
  address.Postalcode, 
  address.Country
  FROM agent INNER JOIN agent_discipline ON agent.AgentID = agent_discipline.AgentID
- INNER JOIN address ON agent.AgentID = address.AgentID
+ LEFT JOIN address ON agent.AgentID = address.AgentID
  WHERE agent_discipline.DisciplineID = DSPLNID AND (%s)]]>
                 </sql>
                 <captions>
@@ -442,7 +442,7 @@
  permit.EndDate, 
  permit.RenewalDate, 
  permit.Type
- FROM permit INNER JOIN agent ON permit.IssuedByID = agent.AgentID WHERE (%s)]]>
+ FROM permit LEFT JOIN agent ON permit.IssuedByID = agent.AgentID WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="6" col="PermitID" visible="false"/>
