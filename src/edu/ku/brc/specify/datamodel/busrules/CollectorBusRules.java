@@ -13,7 +13,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collector;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BaseBusRules;
 
 /**
@@ -70,6 +69,8 @@ public class CollectorBusRules extends BaseBusRules
     @Override
     public STATUS processBusinessRules(final Object parentDataObj, final Object dataObj, final boolean isExistingObject)
     {
+        reasonList.clear();
+        
         // isEdit is false when the data object is new, true when editing an existing object.
         if (isExistingObject &&
             parentDataObj instanceof CollectingEvent &&
@@ -82,7 +83,7 @@ public class CollectorBusRules extends BaseBusRules
             {
                if (collector.getAgent().getAgentId().equals(col.getAgent().getAgentId())) 
                {
-                   UIRegistry.showError(String.format(getResourceString("CE_DUPLICATE_COLLECTORS"), col.getIdentityTitle()));
+                   reasonList.add(String.format(getResourceString("CE_DUPLICATE_COLLECTORS"), col.getIdentityTitle()));
                    return STATUS.Error;
                }
             }
