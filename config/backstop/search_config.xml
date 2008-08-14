@@ -577,7 +577,7 @@
             </detailView>
         </table>
         
-        <table id="111" tableid="100" name="LithoStrat" priority="1" color="30, 144, 255">
+        <table id="111" tableid="100" name="LithoStratSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT LithoStratID, FullName FROM lithostrat WHERE LithoStratTreeDefID = LITHOTREEDEFID AND (%s)]]>

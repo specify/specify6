@@ -1,63 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <formatters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
-    <format
-        name="Agent"
-        class="edu.ku.brc.specify.datamodel.Agent"
-        default="true"
-        >
-        <switch single="false" field="agentType">
-            <fields value="0">
-                <field>lastName</field>
-            </fields>
-            <fields value="1">
-                <field>lastName</field>
-                <field sep=", " >firstName</field>
-            </fields>
-            <fields value="2">
-                <field>lastName</field>
-            </fields>
-            <fields value="3">
-                <field>lastName</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="CollectionObject"
-        class="edu.ku.brc.specify.datamodel.CollectionObject"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field uifieldformatter="CatalogNumber">catalogNumber</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="Division"
-        class="edu.ku.brc.specify.datamodel.Division"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>title</field>
-            </fields>
-        </switch>
-    </format>
-
-    <format
-        name="Permit"
-        class="edu.ku.brc.specify.datamodel.Permit"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>permitNumber</field>
-            </fields>
-        </switch>
-    </format>
     
     <format
         name="Accession"
@@ -92,6 +34,76 @@
             <fields>
                 <field formatter="Agent">agent</field>
                 <field sep=" - ">role</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
+        name="Agent"
+        class="edu.ku.brc.specify.datamodel.Agent"
+        default="true"
+        >
+        <switch single="false" field="agentType">
+            <fields value="0">
+                <field>lastName</field>
+            </fields>
+            <fields value="1">
+                <field>lastName</field>
+                <field sep=", " >firstName</field>
+            </fields>
+            <fields value="2">
+                <field>lastName</field>
+            </fields>
+            <fields value="3">
+                <field>lastName</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
+        name="CollectionObject"
+        class="edu.ku.brc.specify.datamodel.CollectionObject"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field uifieldformatter="CatalogNumber">catalogNumber</field>
+            </fields>
+        </switch>
+    </format>
+    
+   <format
+        name="Deaccession"
+        class="edu.ku.brc.specify.datamodel.Deaccession"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>deaccessionNumber</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
+        name="Division"
+        class="edu.ku.brc.specify.datamodel.Division"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>title</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
+        name="Permit"
+        class="edu.ku.brc.specify.datamodel.Permit"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>permitNumber</field>
             </fields>
         </switch>
     </format>

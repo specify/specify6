@@ -75,6 +75,15 @@
       <picklistitem title="Receiver" value="Receiver"/>
     </items>
   </picklist>
+  <picklist name="DeaccessionRole" issystem="true" type="0" readonly="true" sizelimit="5">
+    <items>
+      <picklistitem title="Collector" value="Collector"/>
+      <picklistitem title="Staff" value="Staff"/>
+      <picklistitem title="Donor" value="Donor"/>
+      <picklistitem title="Reviewer" value="Reviewer"/>
+      <picklistitem title="Receiver" value="Receiver"/>
+    </items>
+  </picklist>
   <picklist name="ReferenceWorkType" issystem="true" type="0" readonly="true" sizelimit="6">
     <items>
       <picklistitem title="Book" value="0"/>

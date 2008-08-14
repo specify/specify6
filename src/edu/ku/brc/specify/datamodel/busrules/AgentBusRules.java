@@ -171,10 +171,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                 
             } else if (field instanceof JTextField)
             {
-                if (value != null)
-                {
-                    ((JTextField)field).setText(value);
-                }
+                ((JTextField)field).setText(value != null ? value : "");
                 
             } else
             {
@@ -197,10 +194,16 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                                          final boolean doSetOtherValues)
     {
         boolean isPerson = agent.getAgentType() == null || agent.getAgentType() == Agent.PERSON;
-        
+        if (!isPerson)
+        {
+            agent.setFirstName(null);
+            agent.setMiddleInitial(null);
+        }
         enableFieldAndLabel("1", isPerson, doSetOtherValues ? agent.getTitle() : null);           // Title
         enableFieldAndLabel("5", isPerson, doSetOtherValues ? agent.getFirstName() : null);       // First Name
         enableFieldAndLabel("4", isPerson, doSetOtherValues ? agent.getMiddleInitial() : null);       // First Name
+        
+
         
         // Last Name
         String lbl = UIRegistry.getResourceString(isPerson ? "AG_LASTNAME" : "AG_NAME");

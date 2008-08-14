@@ -166,8 +166,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 }
             })); 
             navBoxes.add(sysNavBox);
-
         }
+        isShowDefault = true;
     }
     
     /**
@@ -425,6 +425,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                                 dataItems,  
                                 MultiView.RESULTSET_CONTROLLER,
                                 IconManager.getIcon(clazz.getSimpleName(), IconManager.IconSize.Std16));
+                starterPane = null;
             }
 
         } 
@@ -481,6 +482,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                             MultiView.NO_OPTIONS,
                             IconManager.getIcon(iconName, IconManager.IconSize.Std16),
                             this);
+            starterPane = null;
         } 
     }
 

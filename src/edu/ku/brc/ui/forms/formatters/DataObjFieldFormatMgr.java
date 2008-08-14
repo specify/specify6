@@ -244,11 +244,6 @@ public class DataObjFieldFormatMgr
                         {
                             log.error("Couldn't load class ["+className+"]");
                         }
-                        if (dataClass == Accession.class)
-                        {
-                            int x = 0;
-                            x++;
-                        }
                     } else
                     {
                         log.error("Class name ["+className+"] is empty and can't be. Skipping.");

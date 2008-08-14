@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.help.plaf.HelpUI;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;

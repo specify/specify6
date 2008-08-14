@@ -812,6 +812,7 @@ public class QueryTask extends BaseTask
             navBoxes.add(actionNavBox);
             navBoxes.add(navBox);
         }
+        isShowDefault = true;
     }
 
     /*

@@ -478,6 +478,7 @@ public class InteractionsTask extends BaseTask
             infoRequestNavBox  = new NavBox(getResourceString("InfoRequest"));
             loadNavBox(infoRequestNavBox, InfoRequest.class, INFOREQUEST_FLAVOR);
         }
+        isShowDefault = true;
     }
     
     /**

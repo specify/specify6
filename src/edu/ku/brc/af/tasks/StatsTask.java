@@ -128,6 +128,7 @@ public class StatsTask extends BaseTask
                navBoxes.add(navBox);
             }
         }
+        isShowDefault = true;
     }
     
     /* (non-Javadoc)

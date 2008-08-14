@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <formats>
+
   <format system="true" name="AccessionNumber" class="edu.ku.brc.specify.datamodel.Accession" fieldname="accessionNumber" default="true">
     <autonumber>edu.ku.brc.specify.dbsupport.AccessionAutoNumberAlphaNum</autonumber>
     <field type="year" size="4" value="YEAR" byyear="true"/>
@@ -14,7 +15,7 @@
     <field type="separator" size="1" value="-"/>
     <field type="alphanumeric" size="2" value="AA"/>
     <field type="separator" size="1" value="-"/>
-    <field type="numeric" size="3" inc="true"/>
+    <field type="numeric" size="3" inc="false"/>
   </format>
   
   <format system="true" name="AccessionNumberByYear" class="edu.ku.brc.specify.datamodel.Accession" fieldname="accessionNumber" default="true">
