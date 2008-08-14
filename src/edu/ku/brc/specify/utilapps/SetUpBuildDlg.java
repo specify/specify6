@@ -184,11 +184,9 @@ class SetUpBuildDlg extends CustomDialog
             accNumGrpList.add("Acc "+d.getTitle() + " Group");
         }
         
-        databaseNameTxt = createTextField(databaseName);
-        
-        usernameTxtFld = createTextField("rods");
-        passwdTxtFld   = createPasswordField("rods");
-        
+        databaseNameTxt     = createTextField(databaseName);
+        usernameTxtFld      = createTextField("rods");
+        passwdTxtFld        = createPasswordField("rods");
         extraCollectionsChk = createCheckBox("Create Extra Collections");
         extraCollectionsChk.setSelected(true);
         
@@ -204,43 +202,8 @@ class SetUpBuildDlg extends CustomDialog
         builder.add(drivers,                                             cc.xy(3,9));
         
         collChoiceList = loadPersistedChoices();
-        if (collChoiceList == null || collChoiceList.size() == 0)
-        {
-            CollectionChoice[] choicesArray = {
-                    new CollectionChoice(DisciplineType.STD_DISCIPLINES.fish, false, true),
-                    new CollectionChoice(DisciplineType.STD_DISCIPLINES.fish, true, true),
-                    new CollectionChoice(DisciplineType.STD_DISCIPLINES.botany, false, true),
-                    new CollectionChoice(DisciplineType.STD_DISCIPLINES.invertpaleo, false, true),
-            };
-            
-            collChoiceList = new Vector<CollectionChoice>();
-            Collections.addAll(collChoiceList, choicesArray);
-            
-            for (DisciplineType.STD_DISCIPLINES disp : DisciplineType.STD_DISCIPLINES.values())
-            {
-                if (disp != DisciplineType.STD_DISCIPLINES.botany &&
-                    disp != DisciplineType.STD_DISCIPLINES.invertpaleo &&
-                    disp != DisciplineType.STD_DISCIPLINES.fish)
-                {
-                    DisciplineType dType = DisciplineType.getDiscipline(disp);
-                    File file = XMLHelper.getConfigDir(dType.getName()+ File.separator + "taxon_init.xml");
-                    if (file != null && file.exists())
-                    {
-                        CollectionChoice collChoice = new CollectionChoice(disp, false, true);
-                        collChoiceList.add(collChoice);
-                    }
-                }
-            }
-            
-            for (CollectionChoice collChoice : collChoiceList)
-            {
-                collChoice.setCatalogNumberingFmtName("CatalogNumberNumeric");
-                collChoice.setAccessionNumberingFmtName("AccessionNumber");
-                DisciplineType dType = DisciplineType.getDiscipline(collChoice.getType());
-                collChoice.setCatNumGroup("Cat "+dType.getTitle() + " Group");
-                collChoice.setAccNumGroup("Acc "+dType.getTitle() + " Group");
-            }
-        }
+        
+        fillChoicesWithDefaults();
         
         choiceTable = new JTable(new DisciplineSetupModel());
         choiceTable.setRowHeight((new JComboBox()).getPreferredSize().height);
@@ -267,7 +230,15 @@ class SetUpBuildDlg extends CustomDialog
         final JButton accGblBtn    = createButton("Global Acc Nums");
         final JButton selectAllBtn = createButton("Select All");
         final JButton deSelectAll  = createButton("Deselect All");
-        builder.add(ButtonBarFactory.buildOKCancelApplyHelpBar(catGblBtn, accGblBtn, selectAllBtn, deSelectAll), cc.xywh(1,13,4,1));
+        final JButton defBtn       = createButton("Revert");
+        
+        PanelBuilder btnBar = new PanelBuilder(new FormLayout("f:p:g,"+UIHelper.createDuplicateJGoodiesDef("p", "4px", 5), "p"));
+        btnBar.add(catGblBtn, cc.xy(2,1));
+        btnBar.add(accGblBtn, cc.xy(4,1));
+        btnBar.add(selectAllBtn, cc.xy(6,1));
+        btnBar.add(deSelectAll, cc.xy(8,1));
+        btnBar.add(defBtn, cc.xy(10,1));
+        builder.add(btnBar.getPanel(), cc.xywh(1,13,4,1));
         
         catGblBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
@@ -313,6 +284,13 @@ class SetUpBuildDlg extends CustomDialog
             }
          });
         
+        defBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae)
+            {
+                resetDefaults(collChoiceList);
+            }
+         });
+        
         
         // make sure closing the window does the same thing as clicking cancel
         this.addWindowListener(new WindowAdapter()
@@ -334,6 +312,50 @@ class SetUpBuildDlg extends CustomDialog
         size.width = Math.max(size.width, 900);
         
         setSize(size);
+    }
+    
+    /**
+     * 
+     */
+    protected void fillChoicesWithDefaults()
+    {
+        if (collChoiceList == null || collChoiceList.size() == 0)
+        {
+            CollectionChoice[] choicesArray = {
+                    new CollectionChoice(DisciplineType.STD_DISCIPLINES.fish, false, true),
+                    new CollectionChoice(DisciplineType.STD_DISCIPLINES.fish, true, true),
+                    new CollectionChoice(DisciplineType.STD_DISCIPLINES.botany, false, true),
+                    new CollectionChoice(DisciplineType.STD_DISCIPLINES.invertpaleo, false, true),
+            };
+            
+            collChoiceList = new Vector<CollectionChoice>();
+            Collections.addAll(collChoiceList, choicesArray);
+            
+            for (DisciplineType.STD_DISCIPLINES disp : DisciplineType.STD_DISCIPLINES.values())
+            {
+                if (disp != DisciplineType.STD_DISCIPLINES.botany &&
+                    disp != DisciplineType.STD_DISCIPLINES.invertpaleo &&
+                    disp != DisciplineType.STD_DISCIPLINES.fish)
+                {
+                    DisciplineType dType = DisciplineType.getDiscipline(disp);
+                    File file = XMLHelper.getConfigDir(dType.getName()+ File.separator + "taxon_init.xml");
+                    if (file != null && file.exists())
+                    {
+                        CollectionChoice collChoice = new CollectionChoice(disp, false, true);
+                        collChoiceList.add(collChoice);
+                    }
+                }
+            }
+            
+            for (CollectionChoice collChoice : collChoiceList)
+            {
+                collChoice.setCatalogNumberingFmtName("CatalogNumberNumeric");
+                collChoice.setAccessionNumberingFmtName("AccessionNumber");
+                DisciplineType dType = DisciplineType.getDiscipline(collChoice.getType());
+                collChoice.setCatNumGroup("Cat "+dType.getTitle() + " Group");
+                collChoice.setAccNumGroup("Acc "+dType.getTitle() + " Group");
+            }
+        }
     }
     
     protected void selectAll(final boolean isSelected)
@@ -405,9 +427,18 @@ class SetUpBuildDlg extends CustomDialog
         return new Vector<CollectionChoice>();
     }
     
+    
+    
     /**
      * @param choices
      */
+    public void resetDefaults(final Vector<CollectionChoice> choices)
+    {
+        choices.clear();
+        fillChoicesWithDefaults();
+        ((DisciplineSetupModel)choiceTable.getModel()).fireChanged();
+    }
+    
     public void saveChoices(final Vector<CollectionChoice> choices)
     {
         XStream xstream = new XStream();
