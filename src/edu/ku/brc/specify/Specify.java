@@ -2018,11 +2018,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         AppPreferences.shutdownRemotePrefs();
         
-        if (window != null)
-        {
-            window.setVisible(false);
-        }
-        
         //moved here because context needs to be set before loading prefs, we need to know the SpecifyUser
         AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
         
@@ -2080,6 +2075,11 @@ public class Specify extends JPanel implements DatabaseLoginListener
             if (changeCollectionMenuItem != null)
             {
                 changeCollectionMenuItem.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
+            }
+            
+            if (window != null)
+            {
+                window.setVisible(false);
             }
             
         } else if (status == AppContextMgr.CONTEXT_STATUS.Error)
@@ -2437,7 +2437,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
           
       } catch (Exception ex)
       {
-          ex.printStackTrace();  
+          //ex.printStackTrace();  
       }
       return null;
   }
@@ -2450,7 +2450,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
           
       } catch (Exception ex)
       {
-          ex.printStackTrace();
+          //ex.printStackTrace();
       } 
   }
   
