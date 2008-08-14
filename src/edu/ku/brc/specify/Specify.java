@@ -16,6 +16,7 @@
 package edu.ku.brc.specify;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -68,11 +69,8 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
-import sun.security.action.GetLongAction;
 
 import com.install4j.api.launcher.ApplicationLauncher;
 import com.install4j.api.update.ApplicationDisplayMode;
@@ -805,7 +803,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
-                            doExit();
+                            doExit(true);
                         }
                     });
         }
@@ -1340,6 +1338,20 @@ public class Specify extends JPanel implements DatabaseLoginListener
             }
         });
                 
+        ttle = "Specify.CHECK_UPDATE";//$NON-NLS-1$ 
+        mneu = "Specify.CHECK_UPDATE_MNEU";//$NON-NLS-1$ 
+        desc = "Specify.CHECK_UPDATE_DESC";//$NON-NLS-1$      
+        mi = UIHelper.createLocalizedMenuItem(helpMenu, ttle , mneu, desc,  true, null);
+        helpMenu.addSeparator();
+        mi.addActionListener(new ActionListener()
+        {
+            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
+            public void actionPerformed(ActionEvent ae)
+            {
+                checkForUpdates();
+            }
+        });
+                
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
             ttle = "Specify.ABOUT";//$NON-NLS-1$ 
@@ -1355,6 +1367,78 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     });
         }
         return mb;
+    }
+    
+    /**
+     * 
+     */
+    protected void checkForUpdates()
+    {
+        
+        try
+        {
+            
+            System.err.println("Checking ");
+            UpdateDescriptor updateDesc= UpdateChecker.getUpdateDescriptor(UIRegistry.getResourceString("UPDATE_PATH"),
+                                                                           ApplicationDisplayMode.UNATTENDED);
+
+            UpdateDescriptorEntry entry = updateDesc.getPossibleUpdateEntry();
+
+            System.err.println("entry: "+entry);
+            
+            if (entry != null)
+            {
+                Object[] options = { getResourceString("Specify.INSTALLUPDATE"),  //$NON-NLS-1$
+                        getResourceString("Specify.SKIP")  //$NON-NLS-1$
+                      };
+                int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                             getLocalizedMessage("Specify.UPDATE_AVAIL", entry.getNewVersion()),  //$NON-NLS-1$
+                                                             getResourceString("Specify.UPDATE_AVAIL_TITLE"),  //$NON-NLS-1$
+                                                             JOptionPane.YES_NO_CANCEL_OPTION,
+                                                             JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                if (userChoice == JOptionPane.YES_OPTION)
+                {
+                    if (!doExit(false))
+                    {
+                        return;
+                    }
+                    
+                } else
+                {
+                    return;
+                }
+            } else
+            {
+                return ;
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return;
+        }
+        
+        try
+        {
+            ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
+           {
+               public void exited(int exitValue)
+               {
+                   System.err.println("exitValue: "+exitValue);
+                   //startApp(doConfig);
+               }
+               public void prepareShutdown()
+               {
+                   System.err.println("prepareShutdown");
+                   
+               }
+            };
+            ApplicationLauncher.launchApplication("100", null, true, callback);
+            
+        } catch (Exception ex)
+        {
+            System.err.println("EXPCEPTION");
+        }
     }
     
     /**
@@ -1726,7 +1810,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      * Checks to see if cache has changed before exiting.
      *
      */
-    protected void doExit()
+    protected boolean doExit(boolean doAppExit)
     {
         boolean okToShutdown = true;
         try
@@ -1782,11 +1866,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
             
         } finally
         {
-            if (okToShutdown)
+            if (okToShutdown && doAppExit)
             {
                 System.exit(0);
             }
         }
+        return okToShutdown;
     }
     
     /**
@@ -1824,7 +1909,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         			@Override
                     public void windowClosing(WindowEvent e)
         			{
-        				doExit();
+        				doExit(true);
         			}
         		});
         UIHelper.centerAndShow(f);
@@ -2447,15 +2532,16 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
                           if (entry != null)
                           {
-                               log.debug("Found Entry for update: " + entry);
-                               log.debug("URL: " + entry.getURL());
-                               log.debug("Ver: " + entry.getNewVersion());
+                               //log.debug("Found Entry for update: " + entry);
+                               //log.debug("URL: " + entry.getURL());
+                               //log.debug("Ver: " + entry.getNewVersion());
+                               setLastVersion(entry.getNewVersion());
                           }
                           
-                          setLastVersion(entry.getNewVersion());
-                          
+                          //System.err.println("Last["+lastVersion+"]  New["+entry.getNewVersion()+"]");
                           if (StringUtils.isNotEmpty(lastVersion) && lastVersion.equals(entry.getNewVersion()))
                           {
+                              //System.err.println("Skipping update check");
                               startApp(doConfig);
                               return;
                           }
@@ -2472,11 +2558,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
                          {
                              public void exited(int exitValue)
                              {
-                                 System.err.println("exitValue: "+exitValue);
+                                 //System.err.println("exitValue: "+exitValue);
                                  startApp(doConfig);
                              }
                              public void prepareShutdown()
                              {
+                                 
                              }
                           };
                           ApplicationLauncher.launchApplication("100", null, true, callback);

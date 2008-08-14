@@ -64,7 +64,7 @@ public class MacOSAppHandler extends Application
 
         public void handleQuit(ApplicationEvent event)
         {
-            app.get().doExit();
+            app.get().doExit(true);
             event.setHandled(false);  // This is so bizarre that this needs to be set to false
                                       // It seems to work backwards compared to the other calls
          }
