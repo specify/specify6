@@ -2437,7 +2437,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
           
       } catch (Exception ex)
       {
-          
+          ex.printStackTrace();  
       }
       return null;
   }
@@ -2450,7 +2450,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
           
       } catch (Exception ex)
       {
-          
+          ex.printStackTrace();
       } 
   }
   
