@@ -40,6 +40,19 @@
                  -->
             </altviews> 
         </view>
+
+       <view name="GroupPerson"
+            class="edu.ku.brc.specify.datamodel.GroupPerson"
+            resourcelabels="false">
+            <desc><![CDATA[GroupPerson form.]]></desc>
+            <altviews>
+                <altview name="GroupPerson View" viewdef="GroupPerson" label="View" mode="view"/>
+                <altview name="GroupPerson Edit" viewdef="GroupPerson" label="Edit" mode="edit"/>
+                <altview name="GroupPerson Table View" viewdef="GroupPerson Table"   label="Grid" mode="view" default="true"/>
+                <altview name="GroupPerson Table Edit" viewdef="GroupPerson Table"   label="Grid" mode="edit"/>
+            </altviews>
+        </view>
+
         
         <view name="Permit"
             class="edu.ku.brc.specify.datamodel.Permit"
@@ -629,6 +642,13 @@
 			    <row>
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="6"/>
                 </row>
+             <!--  <row>
+                    <cell type="separator" id="30" label="Groups" collapse="groups" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="GroupPerson" id="31" name="groups" colspan="6"/>
+                </row> -->
+
                 <row>
                     <cell type="separator" id="100" label="Variant" collapse="variants" colspan="6"/>
                 </row>
@@ -721,6 +741,42 @@
                 </row>
             </rows>
         </viewdef> 
+
+        <viewdef
+            name="GroupPerson Table"
+            type="formtable"
+            class="edu.ku.brc.specify.datamodel.GroupPerson"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[GroupPerson subform table for Agent form.]]></desc>
+            <definition>GroupPerson</definition>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="GroupPerson"
+            class="edu.ku.brc.specify.datamodel.GroupPerson"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Accession form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>60px,2px,p,2px</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="member" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
+                </row>              
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="2"/>
+                </row>
+            </rows>
+        </viewdef>
+
         
          <viewdef
             type="form"
