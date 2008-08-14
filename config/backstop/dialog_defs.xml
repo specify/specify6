@@ -36,6 +36,7 @@
     <dialog type="display" view="CollectingTrip"     name="CollectingTripDisplay"    class="edu.ku.brc.specify.datamodel.CollectingTrip"/>
     <dialog type="display" view="Determination"      name="DeterminationDisplay"     class="edu.ku.brc.specify.datamodel.Determination"/>
     <dialog type="display" view="Division"           name="DivisionDisplay"          class="edu.ku.brc.specify.datamodel.Division"/>
+    <dialog type="display" view="FieldNotebookPageSet" name="FieldNotebookPageSetDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet"/>
     <dialog type="display" view="GeologicTimePeriod" name="GeologicTimePeriodDisplay" class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
     <dialog type="display" view="Geography"          name="GeographyDisplay"         class="edu.ku.brc.specify.datamodel.Geography"/>
     <dialog type="display" view="GroupPerson"        name="GroupPersonDisplay"       class="edu.ku.brc.specify.datamodel.GroupPerson"/>
