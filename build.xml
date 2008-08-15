@@ -143,7 +143,7 @@
 			</fileset>
 	    </jar>
 	</target>
-
+	
 	<!-- Jar Clean Up -->
 	<target name="clean-jar">
 		<delete file="${jar.name}.jar" />
@@ -221,6 +221,23 @@
 		<copy file="./demo_files/topbrc195x68.png" todir="${installer.dir}/demo_files" />
 		
 	</target>
+	
+	<target name="installer-linux-updater" depends="">
+		
+		<delete dir="UpdaterInstall"/>
+		<mkdir dir="UpdaterInstall" />
+		
+		<antcall target="dist-jar"/>
+		
+        <copy todir="UpdaterInstall/libs">
+			<fileset dir="libs">
+				<exclude name="**/*.svn" />
+			</fileset>
+		</copy>
+		<copy file="${jar.name}.jar" todir="UpdaterInstall" />
+    </target>
+	
+
 		
 	<!-- *************************************************************
 	     Mac Common Components Build

@@ -22,20 +22,25 @@ import java.util.Properties;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import org.apache.commons.io.FileUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.ui.BrowseBtnPanel;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rod
@@ -211,10 +216,10 @@ public class UpdatesApp extends JPanel
         maxUpUpdateDesc   = read(new File(macUpTF.getText()));
         
         setAsFull(baseUpdateDesc, updateBaseTF.getText(), versionTF.getText(), (Integer)verSub1.getValue(), (Integer)verSub2.getValue());
-        setAsUpdate(baseUpdateUpDesc, updateBaseTF.getText(), versionTF.getText(), (Integer)verSub1.getValue(), (Integer)verSub2.getValue());
+        setAsUpdate(baseUpdateUpDesc, versionTF.getText(), (Integer)verSub1.getValue(), (Integer)verSub2.getValue());
         
         setAsFull(maxFullUpdateDesc, updateBaseTF.getText(), versionTF.getText(), (Integer)verSub1.getValue(), (Integer)verSub2.getValue());
-        setAsUpdate(maxUpUpdateDesc, updateBaseTF.getText(), versionTF.getText(), (Integer)verSub1.getValue(), (Integer)verSub2.getValue());
+        setAsUpdate(maxUpUpdateDesc, versionTF.getText(), (Integer)verSub1.getValue(), (Integer)verSub2.getValue());
         
         baseUpdateDesc.getEntries().addAll(baseUpdateUpDesc.getEntries());
         baseUpdateDesc.getEntries().addAll(maxFullUpdateDesc.getEntries());
@@ -238,13 +243,17 @@ public class UpdatesApp extends JPanel
         
         for (UpdateEntry entry : upDesc.getEntries())
         {
-            entry.setNewVersion(newVersion);
+            if (!entry.getNewVersion().equals(newVersion))
+            {
+                String msg = String.format("The Full entry '%s'\n has the wrong version number '%s'\nThe version should be '%s'!", entry.getFileName(), entry.getNewVersion(), newVersion);
+                JOptionPane.showConfirmDialog(null, msg, "Version Mismatch", JOptionPane.ERROR_MESSAGE);
+            }
             entry.setUpdatableVersionMax(verMax);
             entry.setUpdatableVersionMin(baseVer);
         }
     }
     
-    protected void setAsUpdate(final UpdateDescriptor upDesc, final String baseVer, final String ver, final Integer vs1, final Integer vs2)
+    protected void setAsUpdate(final UpdateDescriptor upDesc, final String ver, final Integer vs1, final Integer vs2)
     {
         int i2 = (vs2-1);
         if (i2 < 0)
@@ -256,7 +265,11 @@ public class UpdatesApp extends JPanel
         
         for (UpdateEntry entry : upDesc.getEntries())
         {
-            entry.setNewVersion(newVersion);
+            if (!entry.getNewVersion().equals(newVersion))
+            {
+                String msg = String.format("The Update entry '%s'\n has the wrong version number '%s'\nThe version should be '%s'!", entry.getFileName(), entry.getNewVersion(), newVersion);
+                JOptionPane.showConfirmDialog(null, msg, "Version Mismatch", JOptionPane.ERROR_MESSAGE);
+            }
             entry.setUpdatableVersionMax(verMin);
             entry.setUpdatableVersionMin(verMin);
         }
@@ -320,7 +333,34 @@ public class UpdatesApp extends JPanel
         {
             public void run()
             {
+                
+                try
+                {
+                    UIHelper.OSTYPE osType = UIHelper.getOSType();
+                    if (osType == UIHelper.OSTYPE.Windows )
+                    {
+                        //UIManager.setLookAndFeel(new WindowsLookAndFeel());
+                        UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                        PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+                        
+                    } else if (osType == UIHelper.OSTYPE.Linux )
+                    {
+                        //UIManager.setLookAndFeel(new GTKLookAndFeel());
+                        UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                        //PlasticLookAndFeel.setPlasticTheme(new SkyKrupp());
+                        //PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
+                        //PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+                        //PlasticLookAndFeel.setPlasticTheme(new DesertGreen());
+                       
+                    }
+                }
+                catch (Exception e)
+                {
+                    System.err.println("Can't change L&F: "+e); //$NON-NLS-1$
+                }
+                
                 JFrame frame = new JFrame();
+                frame.setTitle("Install4J XML Updater");
                 frame.setContentPane(new UpdatesApp());
                 frame.pack();
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
