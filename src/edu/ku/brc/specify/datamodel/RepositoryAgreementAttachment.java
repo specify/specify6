@@ -164,7 +164,7 @@ public class RepositoryAgreementAttachment extends DataModelObjBase implements O
     @Transient
     public Integer getId()
     {
-        return getRepositoryAgreementAttachmentId();
+        return repositoryAgreementAttachmentId;
     }
 
     /* (non-Javadoc)

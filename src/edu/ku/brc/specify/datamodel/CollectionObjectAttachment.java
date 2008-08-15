@@ -172,7 +172,7 @@ public class CollectionObjectAttachment extends CollectionMember implements Obje
     @Transient
     public Integer getId()
     {
-        return getCollectionObjectAttachmentId();
+        return collectionObjectAttachmentId;
     }
 
     /* (non-Javadoc)

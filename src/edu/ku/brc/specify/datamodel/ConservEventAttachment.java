@@ -163,7 +163,7 @@ public class ConservEventAttachment extends DataModelObjBase implements ObjectAt
     @Transient
     public Integer getId()
     {
-        return getConservEventAttachmentId();
+        return conservEventAttachmentId;
     }
 
     /* (non-Javadoc)

@@ -164,7 +164,7 @@ public class AccessionAttachment extends DataModelObjBase implements ObjectAttac
     @Transient
     public Integer getId()
     {
-        return getAccessionAttachmentId();
+        return accessionAttachmentId;
     }
 
     /* (non-Javadoc)

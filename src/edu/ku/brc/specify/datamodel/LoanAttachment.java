@@ -164,7 +164,7 @@ public class LoanAttachment extends DataModelObjBase implements ObjectAttachment
     @Transient
     public Integer getId()
     {
-        return getLoanAttachmentId();
+        return loanAttachmentId;
     }
 
     /* (non-Javadoc)

@@ -164,7 +164,7 @@ public class PermitAttachment extends DataModelObjBase implements ObjectAttachme
     @Transient
     public Integer getId()
     {
-        return getPermitAttachmentId();
+        return permitAttachmentId;
     }
 
     /* (non-Javadoc)

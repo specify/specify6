@@ -164,7 +164,7 @@ public class TaxonAttachment extends DataModelObjBase implements ObjectAttachmen
     @Transient
     public Integer getId()
     {
-        return getTaxonAttachmentId();
+        return taxonAttachmentId;
     }
 
     /* (non-Javadoc)

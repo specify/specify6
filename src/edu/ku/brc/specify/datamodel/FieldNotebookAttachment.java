@@ -162,7 +162,7 @@ public class FieldNotebookAttachment extends DataModelObjBase implements ObjectA
     @Override
     public Integer getId()
     {
-        return getFieldNotebookAttachmentId();
+        return fieldNotebookAttachmentId;
     }
 
     @Transient

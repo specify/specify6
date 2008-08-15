@@ -168,7 +168,7 @@ public class PreparationAttachment extends CollectionMember implements ObjectAtt
     @Transient
     public Integer getId()
     {
-        return getPreparationAttachmentId();
+        return preparationAttachmentId;
     }
 
     /* (non-Javadoc)

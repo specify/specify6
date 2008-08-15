@@ -162,7 +162,7 @@ public class AgentAttachment extends DataModelObjBase implements ObjectAttachmen
     @Transient
     public Integer getId()
     {
-        return getAgentAttachmentId();
+        return agentAttachmentId;
     }
 
     /* (non-Javadoc)

@@ -165,7 +165,7 @@ public class LocalityAttachment extends DataModelObjBase implements ObjectAttach
     @Transient
     public Integer getId()
     {
-        return getLocalityAttachmentId();
+        return localityAttachmentId;
     }
 
     /* (non-Javadoc)

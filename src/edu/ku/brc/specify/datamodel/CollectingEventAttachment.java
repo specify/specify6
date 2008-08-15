@@ -169,7 +169,7 @@ public class CollectingEventAttachment extends CollectionMember implements Objec
     @Transient
     public Integer getId()
     {
-        return getCollectingEventAttachmentId();
+        return collectingEventAttachmentId;
     }
 
     /* (non-Javadoc)

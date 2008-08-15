@@ -156,7 +156,7 @@ public class DNASequenceAttachment extends DataModelObjBase implements ObjectAtt
     @Transient
     public Integer getId()
     {
-        return getDnaSequenceAttachmentId();
+        return dnaSequenceAttachmentId;
     }
 
     @Override

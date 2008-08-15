@@ -164,7 +164,7 @@ public class ConservDescriptionAttachment extends DataModelObjBase implements Ob
     @Transient
     public Integer getId()
     {
-        return getConservDescriptionAttachmentId();
+        return conservDescriptionAttachmentId;
     }
 
     /* (non-Javadoc)
