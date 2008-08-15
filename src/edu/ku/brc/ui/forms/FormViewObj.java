@@ -85,6 +85,7 @@ import com.jgoodies.forms.debug.FormDebugPanel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -595,21 +596,27 @@ public class FormViewObj implements Viewable,
     {
         // Add all the View if we are at the top level
         // If not, then we are a subform and we should only add the view that belong to our same creation mode.
-        if (mvParentArg.isTopLevel() && mvParentArg.isOKToAddAllAltViews())
-        {
-            altViewsListArg.addAll(viewArg.getAltViews());
-            
-        } else
-        {
+        //if (mvParentArg.isTopLevel() && mvParentArg.isOKToAddAllAltViews())
+        //{
+        //    //altViewsListArg.addAll(viewArg.getAltViews());
+        //    
+        //} else
+        //{
+        
+        SecurityMgr.PermissionBits perm = mvParentArg.getPermissions();
+        SecurityMgr.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
+        
             AltViewIFace.CreationMode mode = altViewArg.getMode();
             for (AltViewIFace av : viewArg.getAltViews())
             {
-                if (av.getMode() == mode)
+                boolean isModeOK = (perm.isViewOnly() && (mode == AltViewIFace.CreationMode.VIEW)) ||
+                                   (!perm.isViewOnly() && (mode != AltViewIFace.CreationMode.VIEW));
+                if (isModeOK && (av.getMode() == mode || mvParentArg.isOKToAddAllAltViews()))
                 {
                     altViewsListArg.add(av);
                 }
             }
-        }
+        //}
         
         return altViewsListArg.size() > 1 ? new MenuSwitcherPanel(mvParentArg, altViewArg, altViewsListArg) : null;
     }
@@ -2869,8 +2876,15 @@ public class FormViewObj implements Viewable,
         // If the Control panel doesn't exist, then add it
         if (rsController == null && controlPanel != null)
         {
+            SecurityMgr.PermissionBits perm = mvParent.getPermissions();
+            
             boolean inEditMode = altView.getMode() == AltViewIFace.CreationMode.EDIT;
-            rsController = new ResultSetController(formValidator, inEditMode && !addSearch, inEditMode, inEditMode && addSearch, view.getObjTitle(), 0);
+            rsController = new ResultSetController(formValidator, 
+                                                   inEditMode && !addSearch && perm.canAdd(), // Add New
+                                                   inEditMode && perm.canDelete(),            // Add Delete
+                                                   inEditMode && addSearch && perm.canAdd(),  // Add Search
+                                                   view.getObjTitle(),                        // Object Title
+                                                   0);                                        // current length 
             rsController.getPanel().setBackground(bgColor);
             
             rsController.addListener(this);
@@ -3490,7 +3504,7 @@ public class FormViewObj implements Viewable,
             //log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
             
             // 03/27/08 - rods - Add isSingle check for SubForms that hold a single Object
-            boolean isSingle = rsController == null && origDataSet == null;
+            boolean isSingle      = rsController == null && origDataSet == null;
             boolean newBtnEnabled = enableNewBtn && (dataObj == null || (!isNewlyCreatedDataObj() && !isSingle));
             newRecBtn.setEnabled(newBtnEnabled); 
             
@@ -3794,6 +3808,12 @@ public class FormViewObj implements Viewable,
     protected void setDataIntoUI(final boolean doResetAfterFill,
                                  final boolean forceCreateSession)
     {
+        SecurityMgr.PermissionBits perm = mvParent.getPermissions();
+        if (!perm.canView() && dataObj != null)
+        {
+            return;
+        }
+
         if (businessRules != null)
         {
             businessRules.beforeFormFill();

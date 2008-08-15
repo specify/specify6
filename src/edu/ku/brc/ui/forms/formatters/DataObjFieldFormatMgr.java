@@ -35,11 +35,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectGettableFactory;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -68,6 +72,9 @@ public class DataObjFieldFormatMgr
     public static final String factoryName = "edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr";
     
     protected static final Logger log = Logger.getLogger(DataObjFieldFormatMgr.class);
+    
+    protected static final String securityPrefix = "DO";
+    
     
     protected static DataObjFieldFormatMgr instance = null;
     
@@ -609,10 +616,25 @@ public class DataObjFieldFormatMgr
      */
     protected String formatInternal(final DataObjDataFieldFormatIFace format, final Object dataObj)
     {
+        if (AppContextMgr.isSecurityOn())
+        {
+            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(dataObj.getClass().getSimpleName());
+            // Security - Check security on incoming object
+            SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo != null ? tblInfo.getTitle() : dataObj.getClass().getSimpleName());
+            if (perm != null)
+            {
+                if (!perm.canView())
+                {
+                    return "";
+                }
+            }
+        }
+        
         if (format != null)
         {
             if (format.isDirectFormatter())
             {
+                
                 return format.format(dataObj);
             }
             
@@ -628,6 +650,19 @@ public class DataObjFieldFormatMgr
                     Object value = values != null ? values[0] : null;//getter.getFieldValue(dataObj, field.getName());
                     if (value != null)
                     {
+                        if (AppContextMgr.isSecurityOn())
+                        {
+                            // Security - Check security on 'value' object
+                            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(dataObj.getClass().getSimpleName());
+                            SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo != null ? tblInfo.getTitle() : dataObj.getClass().getSimpleName());                            if (perm != null)
+                            {
+                                if (!perm.canView())
+                                {
+                                    return "";
+                                }
+                            }
+                        }
+                        
                         if (field.getDataObjFormatterName() != null )
                         {
                             String fmtStr = formatInternal(getDataFormatter(value, field.getDataObjFormatterName()), value);

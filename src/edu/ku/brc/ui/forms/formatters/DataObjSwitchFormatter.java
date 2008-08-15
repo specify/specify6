@@ -31,7 +31,7 @@ import edu.ku.brc.ui.forms.DataObjectGettableFactory;
 import edu.ku.brc.ui.forms.FormHelper;
 
 /**
- * A formatter that can have one or more formatters that depend on an external value, typically from the database.
+ * A DataObj formatter that can have one or more formatters that depend on an external value, typically from the database.
  * It can be a "single" formatter meaning it can't switch between different formats given an external value.
  * 
  * @author rods
@@ -177,7 +177,9 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
         for (DataObjDataFieldFormatIFace field : formatsVector)
         {
         	if (field.getValue().equals(value))
+        	{
         		return field;
+        	}
         }
         
         return null;

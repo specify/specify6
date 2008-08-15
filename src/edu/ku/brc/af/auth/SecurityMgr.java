@@ -274,6 +274,11 @@ public class SecurityMgr
         {
             return isOn(permissions, CAN_DELETE);
         }
+        
+        public boolean isViewOnly()
+        {
+            return permissions == CAN_ADD;
+        }
 
         public int getOptions()
         {

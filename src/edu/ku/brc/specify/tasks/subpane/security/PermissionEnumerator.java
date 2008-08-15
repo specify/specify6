@@ -29,7 +29,8 @@ public abstract class PermissionEnumerator
 	 * @param overrulingPrincipal
 	 * @return
 	 */
-	public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, final SpPrincipal overrulingPrincipal)
+	public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
+	                                                     final SpPrincipal overrulingPrincipal)
 	{
 		Hashtable<String, SpPermission> existingPerms   = PermissionService.getExistingPermissions(principal.getId());
 		

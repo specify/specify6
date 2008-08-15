@@ -41,8 +41,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 /**
@@ -231,8 +229,10 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "journal")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    //@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "journal")
+    //@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "journal")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<ReferenceWork> getReferenceWorks() {
         return this.referenceWorks;
     }

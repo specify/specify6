@@ -998,7 +998,8 @@ public class SecurityAdminPane extends BaseSubPane
     protected static PermissionEditor createGeneralPermissionsEditor(final JTable table,
                                                                      final ChangeListener listener)
     {
-        PermissionEnumerator e1 = new FormPermissionEnumerator();
+        //PermissionEnumerator e1 = new FormPermissionEnumerator();
+        PermissionEnumerator e1 = new DataObjPermissionEnumerator();
         PermissionEnumerator e2 = new TaskPermissionEnumerator();
         CompositePermissionEnumerator enumerator = new CompositePermissionEnumerator();
         enumerator.addEnumerator(e1);
