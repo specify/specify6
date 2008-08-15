@@ -419,7 +419,7 @@ public class TreatmentEvent extends DataModelObjBase
     @Transient
     public Integer getId()
     {
-        return null;
+        return treatmentEventId;
     }
 
     /* (non-Javadoc)
