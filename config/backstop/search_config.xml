@@ -422,7 +422,7 @@
             </detailView>
         </table>
         
-        <table id="14" tableid="5" indexed="false" name="Agt2ATT" priority="1" color="30, 144, 144">
+        <table id="15" tableid="5" indexed="false" name="Agt2ATT" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="5" primary="true">agent.AgentID</join>
                 <join tableid="41">attachment.AttachmentID</join>
@@ -447,7 +447,30 @@
             </detailView>
         </table>
         
-       <table id="14" tableid="1" indexed="false" name="Co2ATT" priority="1" color="30, 144, 144">
+       <table id="16" tableid="10" indexed="false" name="CoEv2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="10" primary="true">collectingevent.CollectingEventID</join>
+                <join tableid="41">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="CollectingEvent">
+                <sql>
+                    <![CDATA[SELECT 
+  collectingevent.CollectingEventID, 
+  collectingevent.StationFieldNumber,
+  attachment.Title,
+  %s
+  FROM collectingevent INNER JOIN collectingeventattachment ON collectingevent.CollectingEventID = collectingeventattachment.CollectingEventID
+  INNER JOIN attachment ON collectingeventattachment.AttachmentID = attachment.AttachmentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="10" col="CollectingEventID" visible="false"/>
+                    <caption tableid="10" col="StationFieldNumber"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+                
+       <table id="17" tableid="1" indexed="false" name="Co2ATT" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
                 <join tableid="41">attachment.AttachmentID</join>
@@ -465,6 +488,285 @@
                 <captions>
                     <caption tableid="1" col="CollectionObjectID" visible="false"/>
                     <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+        
+       <table id="18" tableid="103" indexed="false" name="ConD2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="103" primary="true">conservdescription.ConservDescriptionID</join>
+                <join tableid="41">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="ConservDescription">
+                <sql>
+                    <![CDATA[SELECT 
+  conservdescription.ConservDescriptionID, 
+  conservdescription.ShortDesc,
+  attachment.Title,
+  %s
+  FROM conservdescription INNER JOIN conservdescriptionattachment ON conservdescription.ConservDescriptionID = conservdescriptionattachment.ConservDescriptionID
+  INNER JOIN attachment ON conservdescriptionattachment.AttachmentID = attachment.AttachmentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="103" col="ConservDescriptionID" visible="false"/>
+                    <caption tableid="103" col="ShortDesc"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>        
+        
+    	<table id="19" tableid="73" indexed="false" name="ConE2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="73" primary="true">conservevent.ConservEventID</join>
+                <join tableid="41">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="ConservEvent">
+                <sql>
+                    <![CDATA[SELECT 
+  conservevent.ConservEventID, 
+  conservevent.ExamDate,
+  conservevent.TreatmentCompDate,
+  attachment.Title,
+  %s
+  FROM conservevent INNER JOIN conserveventattachment ON conservevent.ConservEventID = conserveventattachment.ConservEventID
+  INNER JOIN attachment ON conserveventattachment.AttachmentID = attachment.AttachmentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="73" col="ConservEventID" visible="false"/>
+                    <caption tableid="73" col="ExamDate" formatter="Date"/>
+                    <caption tableid="73" col="TreatmentCompDate" formatter="Date"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        
+        <table id="20" tableid="121" indexed="false" name="DNA2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="121" primary="true">dnasequence.DNASequenceID</join>
+                <join tableid="41">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="DNASequence">
+                <sql>
+                    <![CDATA[SELECT 
+  dnasequence.DNASequenceID, 
+  dnasequence.GeneName,
+  dnasequence.SeqDate,
+  attachment.Title,
+  %s
+  FROM dnasequence INNER JOIN dnasequenceattachment ON dnasequence.DNASequenceID = dnasequenceattachment.DNASequenceID
+  INNER JOIN attachment ON dnasequenceattachment.AttachmentID = attachment.AttachmentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="121" col="DNASequenceID" visible="false"/>
+                    <caption tableid="121" col="GeneName"/>
+                    <caption tableid="121" col="SeqDate"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="21" tableid="83" indexed="false" name="Fbk2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="83" primary="true">fieldnotebook.FieldNotebookID</join>
+                <join tableid="41">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="FieldNotebook">
+                <sql>
+                    <![CDATA[SELECT 
+  fieldnotebook.FieldNotebookID, 
+  fieldnotebook.Name,
+  fieldnotebook.StartDate,
+  fieldnotebook.EndDate,
+  attachment.Title,
+  %s
+  FROM fieldnotebook INNER JOIN fieldnotebookattachment ON fieldnotebook.FieldNotebookID = fieldnotebookattachment.FieldNotebookID
+  INNER JOIN attachment ON fieldnotebookattachment.AttachmentID = attachment.AttachmentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="83" col="FieldNotebookID" visible="false"/>
+                    <caption tableid="83" col="Name"/>
+                    <caption tableid="83" col="StartDate"/>
+                    <caption tableid="83" col="EndDate"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="22" tableid="85" indexed="false" name="FbkPG2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="85" primary="true">fieldnotebookpage.FieldNotebookPageID</join>
+                <join tableid="41">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="FieldNotebookPage">
+                <sql>
+                    <![CDATA[SELECT 
+  fieldnotebookpage.FieldNotebookPageID, 
+  fieldnotebookpage.PageNumber,
+  fieldnotebookpage.ScanDate,
+  attachment.Title,
+  %s
+  FROM fieldnotebookpage INNER JOIN fieldnotebookpageattachment ON fieldnotebookpage.FieldNotebookPageID = fieldnotebookpageattachment.FieldNotebookPageID
+  INNER JOIN attachment ON fieldnotebookpageattachment.AttachmentID = attachment.AttachmentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="85" col="FieldNotebookPageID" visible="false"/>
+                    <caption tableid="85" col="PageNumber"/>
+                    <caption tableid="85" col="ScanDate"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="23" tableid="84" indexed="false" name="FbkPGS2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="84" primary="true">fieldnotebookpageset.FieldNotebookPageSetID</join>
+                <join tableid="41">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="FieldNotebookPageSet">
+                <sql>
+                    <![CDATA[SELECT 
+  fieldnotebookpageset.FieldNotebookPageSetID, 
+  fieldnotebookpageset.OrderNumber,
+  fieldnotebookpageset.StartDate,
+  fieldnotebookpageset.EndDate,
+  attachment.Title,
+  %s
+  FROM fieldnotebookpageset INNER JOIN fieldnotebookpagesetattachment ON fieldnotebookpageset.FieldNotebookPageSetID = fieldnotebookpagesetattachment.FieldNotebookPageSetID
+  INNER JOIN attachment ON fieldnotebookpagesetattachment.AttachmentID = attachment.AttachmentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="84" col="FieldNotebookPageSetID" visible="false"/>
+                    <caption tableid="84" col="OrderNumber"/>
+                    <caption tableid="84" col="StartDate"/>
+                    <caption tableid="84" col="EndDate"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="24" tableid="2" indexed="false" name="Loc2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="2" primary="true">locality.LocalityID</join>
+                <join tableid="41">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="Locality">
+                <sql>
+                    <![CDATA[SELECT 
+  locality.LocalityID, 
+  locality.LocalityName,
+  attachment.Title,
+  %s
+  FROM locality INNER JOIN localityattachment ON locality.LocalityID = localityattachment.LocalityID
+  INNER JOIN attachment ON localityattachment.AttachmentID = attachment.AttachmentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="2" col="LocalityID" visible="false"/>
+                    <caption tableid="2" col="LocalityName"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="25" tableid="6" indexed="false" name="Per2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="6" primary="true">permit.PermitID</join>
+                <join tableid="41">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="Permit">
+                <sql>
+                    <![CDATA[SELECT 
+  permit.PermitID, 
+  permit.PermitNumber,
+  permit.IssuedDate,
+  attachment.Title,
+  %s
+  FROM permit INNER JOIN permitattachment ON permit.PermitID = permitattachment.PermitID
+  INNER JOIN attachment ON permitattachment.AttachmentID = attachment.AttachmentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="6" col="PermitID" visible="false"/>
+                    <caption tableid="6" col="PermitNumber"/>
+                    <caption tableid="6" col="IssuedDate"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="26" tableid="63" indexed="false" name="Prep2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="63" primary="true">preparation.PreparationID</join>
+                <join tableid="41">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="Preparation">
+                <sql>
+                    <![CDATA[SELECT 
+  preparation.PreparationID, 
+  preparation.PreparedDate,
+  attachment.Title,
+  %s
+  FROM preparation INNER JOIN preparationattachment ON preparation.PreparationID = preparationattachment.PreparationID
+  INNER JOIN attachment ON preparationattachment.AttachmentID = attachment.AttachmentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="63" col="PreparationID" visible="false"/>
+                    <caption tableid="63" col="PreparedDate"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="27" tableid="70" indexed="false" name="Rep2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="70" primary="true">repositoryagreement.RepositoryAgreementID</join>
+                <join tableid="41">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="RepositoryAgreement">
+                <sql>
+                    <![CDATA[SELECT 
+  repositoryagreement.RepositoryAgreementID, 
+  repositoryagreement.RepositoryAgreementNumber,
+  repositoryagreement.StartDate,
+  attachment.Title,
+  %s
+  FROM repositoryagreement INNER JOIN repositoryagreementattachment ON repositoryagreement.RepositoryAgreementID = repositoryagreementattachment.RepositoryAgreementID
+  INNER JOIN attachment ON repositoryagreementattachment.AttachmentID = attachment.AttachmentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="70" col="RepositoryAgreementID" visible="false"/>
+                    <caption tableid="70" col="RepositoryAgreementNumber"/>
+                    <caption tableid="70" col="StartDate"/>
+                    <caption tableid="41" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="28" tableid="4" indexed="false" name="Tax2ATT" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="4" primary="true">taxon.TaxonID</join>
+                <join tableid="41">attachment.AttachmentID</join>
+            </joins>
+            <detailView icon="Taxon">
+                <sql>
+                    <![CDATA[SELECT 
+  taxon.TaxonID, 
+  taxon.FullName,
+  taxon.CommonName,
+  attachment.GUID,
+  attachment.Name,
+  attachment.TaxonomicSerialNumber,
+  %s
+  FROM taxon INNER JOIN taxonattachment ON taxon.TaxonID = taxonattachment.TaxonID
+  INNER JOIN attachment ON taxonattachment.AttachmentID = attachment.AttachmentID]]>
+                </sql>
+                <captions>
+                    <caption tableid="4" col="TaxonID" visible="false"/>
+                    <caption tableid="4" col="FullName"/>
+                    <caption tableid="4" col="CommonName"/>
+                    <caption tableid="4" col="GUID"/>
+                    <caption tableid="4" col="Name"/>
+                    <caption tableid="4" col="TaxonomicSerialNumber"/>                  
                     <caption tableid="41" col="Title"/>
                 </captions>
             </detailView>
