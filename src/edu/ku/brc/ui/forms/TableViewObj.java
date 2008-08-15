@@ -67,6 +67,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
@@ -142,7 +144,7 @@ public class TableViewObj implements Viewable,
 
     // Data Members
     protected DataProviderSessionIFace      session        = null;
-    protected boolean                       isEditting     = false;
+    protected boolean                       isEditing     = false;
     protected boolean                       formIsInNewDataMode = false; // when this is true it means the form was cleared and new data is expected
     protected MultiView                     mvParent       = null;
     protected ViewIFace                     view;
@@ -151,7 +153,6 @@ public class TableViewObj implements Viewable,
     protected FormViewDefIFace              formViewDef;
     protected int                           options;
     protected String                        cellName       = null;
-    protected Component                     formComp       = null;
     protected List<MultiView>               kids           = new ArrayList<MultiView>();
     protected Vector<AltViewIFace>          altViewsList   = null;
     protected TableViewDef                  tableViewDef;
@@ -179,7 +180,7 @@ public class TableViewObj implements Viewable,
     protected String                        dataClassName;
     protected String                        dataSetFieldName;
 
-    protected JPanel                        mainComp        = null;
+    protected RestrictablePanel             mainComp        = null;
     protected ControlBarPanel               controlPanel    = null;
     protected ResultSetController           rsController    = null;
     protected Vector<Object>                list            = null;
@@ -214,6 +215,9 @@ public class TableViewObj implements Viewable,
     protected JButton                       orderUpBtn  = null;
     protected JButton                       orderDwnBtn = null;
     protected boolean                       doOrdering  = false;
+    
+    // Security
+    private SecurityMgr.PermissionBits      perm = null;
     
 
     /**
@@ -254,7 +258,7 @@ public class TableViewObj implements Viewable,
 
         boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
         boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
-        isEditting                         = MultiView.isOptionOn(options, MultiView.IS_EDITTING) && altView.getMode() == AltViewIFace.CreationMode.EDIT;
+        isEditing                          = MultiView.isOptionOn(options, MultiView.IS_EDITTING) && altView.getMode() == AltViewIFace.CreationMode.EDIT;
         
         setValidator(formValidator);
 
@@ -265,7 +269,7 @@ public class TableViewObj implements Viewable,
 
         boolean addController = mvParent != null && view.getAltViews().size() > 1;
 
-        mainComp = new JPanel(new BorderLayout());
+        mainComp = new RestrictablePanel(new BorderLayout());
         mainComp.setBackground(bgColor);
         
         if (mvParent == null)
@@ -305,7 +309,7 @@ public class TableViewObj implements Viewable,
                     altView.setMode(AltViewIFace.CreationMode.EDIT);
                 }
                 
-                switcherUI = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
+                switcherUI = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList, mainComp);
                 
                 if (tempMode != null)
                 {
@@ -314,7 +318,7 @@ public class TableViewObj implements Viewable,
                 
                 if (altViewsList.size() > 0)
                 {
-                    if (isEditting)
+                    if (isEditing)
                     {
                         String edtTTStr = ResultSetController.createTooltip("EditRecordTT",   view.getObjTitle());
                         String newTTStr = ResultSetController.createTooltip("NewRecordTT",    view.getObjTitle());
@@ -690,7 +694,7 @@ public class TableViewObj implements Viewable,
             }
         }
         
-        final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, dObj, isEditting, isNew);
+        final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, dObj, isEditing, isNew);
         if (dialog != null)
         {
             // Now we need to get the MultiView and add it into the MV tree
@@ -736,7 +740,7 @@ public class TableViewObj implements Viewable,
             multiView.removeCurrentValidator();
             realParent.removeChildMV(multiView);
             
-            if (isEditting)
+            if (isEditing)
             {
                 if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
                 {
@@ -1047,6 +1051,20 @@ public class TableViewObj implements Viewable,
     {
         this.dataObj = dataObj;
         
+        if (AppContextMgr.isSecurityOn() && dataObj != null)
+        {
+            if (perm == null)
+            {
+                perm = SecurityMgr.getInstance().getPermission("DO."+dataObj.getClass().getSimpleName());
+                //SecurityMgr.dumpPermissions(dataObj.getClass().getSimpleName(), perm2.getOptions());
+            }
+            
+            if ((isEditing && perm.isViewOnly()) || (!isEditing && !perm.canView()))
+            {
+                return;
+            }
+        }
+        
         if (dataObj instanceof List)
         {
             origDataSet = null;
@@ -1080,7 +1098,7 @@ public class TableViewObj implements Viewable,
                         Collections.sort(newList);
                     }
                     
-                    if (firstObj instanceof Orderable && isEditting && orderUpBtn == null)
+                    if (firstObj instanceof Orderable && isEditing && orderUpBtn == null)
                     {
                         addOrderablePanel();
                     }
@@ -2111,7 +2129,6 @@ public class TableViewObj implements Viewable,
         public Object getValueAt(int row, int column)
         {
             //log.debug(row+","+column+"  isLoaded:"+isLoaded);
-            
 
             if (columnList != null && dataObjList != null && dataObjList.size() > 0)
             {

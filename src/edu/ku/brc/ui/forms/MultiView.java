@@ -208,14 +208,8 @@ public class MultiView extends JPanel
         
         if (AppContextMgr.isSecurityOn())
         {
-            permissions = SecurityMgr.getInstance().getPermission("Form."+view.getName()); 
             log.debug("*** View: "+view.getName() + " - " + permissions);
-            
-            SecurityMgr.dumpPermissions("Form."+view.getName(), permissions.getOptions());
-            
-            //log.debug("View: "+view.getName() + " - " + permissions+"  - "+SecurityMgr.getInstance().checkPermission("Form."+view.getName(), "view"));
-            //log.debug("View: "+view.getName() + " - " + permissions+"  - "+SecurityMgr.getInstance().checkPermission("Form."+view.getName(), "modify"));
-            //boolean hasPermissionToModify = SecurityMgr.getInstance().checkPermission("Form."+view.getName(), "modify"); 
+            SecurityMgr.dumpPermissions("DO."+view.getName(), permissions.getOptions());
         }
 
         AltViewIFace defaultAltView = createDefaultViewable(defaultAltViewType);
@@ -297,7 +291,12 @@ public class MultiView extends JPanel
         this.createWithMode = createWithMode;
         this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.EDIT ? IS_EDITTING : NO_OPTIONS);
         
-        this.permissions    = SecurityMgr.getInstance().getPermission("Form."+view.getName()); 
+        String shortClass = StringUtils.substringAfterLast(view.getClassName(), ".");
+        if (shortClass == null)
+        {
+            shortClass = view.getClassName();
+        }
+        this.permissions = SecurityMgr.getInstance().getPermission("DO."+shortClass); 
         
         createViewable(altView != null ? altView : createDefaultViewable(null));
         showView(altView.getName());

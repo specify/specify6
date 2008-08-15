@@ -17,7 +17,11 @@ import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -36,6 +40,8 @@ import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
  */
 public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
 {
+    protected static final String securityPrefix = "DO.";
+
     protected final String FIELD_NUM = "#FN#";
     protected final String LOC_DATE  = "#DT#";
     protected final String CONTINENT = "#CN#";
@@ -114,6 +120,24 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
             throw new RuntimeException("The data value set into CollectingEventDataObjFmt is not a CollectingEvent ["+dataValue.getClass().getSimpleName()+"]");
         }
         
+        boolean isSecurityOn = AppContextMgr.isSecurityOn();
+        
+        if (isSecurityOn)
+        {
+            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(CollectingEvent.getClassTableId());
+            if (tblInfo != null)
+            {
+                SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo.getShortClassName());
+                if (perm != null)
+                {
+                    if (!perm.canView())
+                    {
+                        return "(Restricted)"; // I18N
+                    }
+                }
+            }
+        }
+        
         CollectingEvent ce = (CollectingEvent)dataValue;
         
         values.clear();
@@ -131,6 +155,22 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
         
         Locality locality = ce.getLocality();
         
+        if (isSecurityOn && locality != null)
+        {
+            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(Locality.getClassTableId());
+            if (tblInfo != null)
+            {
+                SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo.getShortClassName());
+                if (perm != null)
+                {
+                    if (!perm.canView())
+                    {
+                        locality = null;
+                    }
+                }
+            }
+        }
+        
         if (locality != null)
         {
             str = locality.getLocalityName();
@@ -139,10 +179,24 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
             if (locality != null)
             {
                 Geography geo = locality.getGeography();
-                values.put(CONTINENT, getGeoNameByRank(geo, 100));
-                values.put(COUNTRY,   getGeoNameByRank(geo, 200));
-                values.put(STATE,     getGeoNameByRank(geo, 300));
-                values.put(COUNTY,    getGeoNameByRank(geo, 400));
+                if (isSecurityOn && locality != null)
+                {
+                    DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(Locality.getClassTableId());
+                    if (tblInfo != null)
+                    {
+                        SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo.getName());
+                        if (perm != null)
+                        {
+                            if (perm.canView())
+                            {
+                                values.put(CONTINENT, getGeoNameByRank(geo, 100));
+                                values.put(COUNTRY,   getGeoNameByRank(geo, 200));
+                                values.put(STATE,     getGeoNameByRank(geo, 300));
+                                values.put(COUNTY,    getGeoNameByRank(geo, 400));
+                            }
+                        }
+                    }
+                }
             }
             values.put(LATITUDE, getGeoCoordAsStr(locality.getLatitude1()));
             values.put(LONGITUDE, getGeoCoordAsStr(locality.getLongitude1()));

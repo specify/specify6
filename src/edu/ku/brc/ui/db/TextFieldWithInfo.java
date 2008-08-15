@@ -40,10 +40,14 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
@@ -230,12 +234,33 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);
+        updateEnabled(enabled);
+    }
+    
+    /**
+     * @param enabled
+     */
+    private void updateEnabled(final boolean enabled)
+    {
+        boolean isSecurityEnabledForBtn = true;
+        if (enabled && AppContextMgr.isSecurityOn())
+        {
+            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(classObj.getSimpleName());
+            if (tblInfo != null)
+            {
+                SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission("DO."+tblInfo.getShortClassName());
+                if (perm != null)
+                {
+                    isSecurityEnabledForBtn = perm.canView();
+                }
+            }
+        }
+        
         textField.setEnabled(enabled);
         if (infoBtn != null)
         {
-            infoBtn.setEnabled(enabled);
+            infoBtn.setEnabled(enabled && isSecurityEnabledForBtn);
         }
-
     }
 
     /**
@@ -319,7 +344,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     {
         dataObj = value;
         
-        infoBtn.setEnabled(value != null);
+        updateEnabled(value != null);
         
         if (value != null)
         {

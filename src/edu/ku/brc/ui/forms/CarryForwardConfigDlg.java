@@ -118,7 +118,7 @@ public class CarryForwardConfigDlg extends CustomDialog
     {
         for (Viewable viewable : mvp.getViewables())
         {
-            if (viewable instanceof FormViewObj && ((FormViewObj)viewable).isEditting)
+            if (viewable instanceof FormViewObj && ((FormViewObj)viewable).isEditing)
             {
                 Vector<String> ids = new Vector<String>();
                 FormViewObj fvo = (FormViewObj)viewable;

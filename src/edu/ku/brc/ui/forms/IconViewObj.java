@@ -38,6 +38,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
@@ -90,7 +92,7 @@ public class IconViewObj implements Viewable
     // UI stuff
     protected boolean                       dataTypeError;
     protected IconTray                      iconTray;
-    protected JPanel                        mainComp;
+    protected RestrictablePanel             mainComp;
     protected JPanel                        southPanel;
     protected JButton                       viewBtn           = null;
     protected JButton                       editBtn           = null;
@@ -105,6 +107,9 @@ public class IconViewObj implements Viewable
     protected BusinessRulesIFace            businessRules;
     
     protected boolean                       orderableDataClass;
+    
+    // Security
+    private SecurityMgr.PermissionBits      perm = null;
 
     /**
      * Constructor.
@@ -207,7 +212,7 @@ public class IconViewObj implements Viewable
         }
         
         altViewsList = new Vector<AltViewIFace>();
-        switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
+        switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList, mainComp);
         
         if (orderableDataClass && isEditing)
         {
@@ -259,7 +264,7 @@ public class IconViewObj implements Viewable
             addActionListenerToViewButton();
         }
 
-        mainComp = new JPanel();
+        mainComp = new RestrictablePanel();
         mainComp.setLayout(new BorderLayout());
         if (mvParent == null)
         {
@@ -643,6 +648,20 @@ public class IconViewObj implements Viewable
     @SuppressWarnings("unchecked")
     public void setDataObj(Object dataObj)
     {
+        if (AppContextMgr.isSecurityOn() && dataObj != null)
+        {
+            if (perm == null)
+            {
+                perm = SecurityMgr.getInstance().getPermission("DO."+dataObj.getClass().getSimpleName());
+                //SecurityMgr.dumpPermissions(dataObj.getClass().getSimpleName(), perm2.getOptions());
+            }
+            
+            if ((isEditing && perm.isViewOnly()) || (!isEditing && !perm.canView()))
+            {
+                return;
+            }
+        }
+        
         if (dataObj instanceof Set)
         {
             dataSet = (Set)dataObj;

@@ -41,9 +41,8 @@ import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectGettableFactory;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -73,7 +72,7 @@ public class DataObjFieldFormatMgr
     
     protected static final Logger log = Logger.getLogger(DataObjFieldFormatMgr.class);
     
-    protected static final String securityPrefix = "DO";
+    protected static final String securityPrefix = "DO.";
     
     
     protected static DataObjFieldFormatMgr instance = null;
@@ -616,16 +615,24 @@ public class DataObjFieldFormatMgr
      */
     protected String formatInternal(final DataObjDataFieldFormatIFace format, final Object dataObj)
     {
-        if (AppContextMgr.isSecurityOn())
+        if (dataObj instanceof Locality)
         {
-            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(dataObj.getClass().getSimpleName());
-            // Security - Check security on incoming object
-            SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo != null ? tblInfo.getTitle() : dataObj.getClass().getSimpleName());
-            if (perm != null)
+            int x = 0;
+            x++;
+        }
+        if (AppContextMgr.isSecurityOn() && dataObj != null && dataObj instanceof FormDataObjIFace)
+        {
+            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(dataObj.getClass().getSimpleName());
+            if (tblInfo != null)
             {
-                if (!perm.canView())
+                // Security - Check security on incoming object
+                SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo.getShortClassName());
+                if (perm != null)
                 {
-                    return "";
+                    if (!perm.canView())
+                    {
+                        return "(Restricted)"; // I18N
+                    }
                 }
             }
         }
@@ -634,7 +641,6 @@ public class DataObjFieldFormatMgr
         {
             if (format.isDirectFormatter())
             {
-                
                 return format.format(dataObj);
             }
             
@@ -650,15 +656,24 @@ public class DataObjFieldFormatMgr
                     Object value = values != null ? values[0] : null;//getter.getFieldValue(dataObj, field.getName());
                     if (value != null)
                     {
-                        if (AppContextMgr.isSecurityOn())
+                        if (value instanceof Locality)
                         {
-                            // Security - Check security on 'value' object
-                            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(dataObj.getClass().getSimpleName());
-                            SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo != null ? tblInfo.getTitle() : dataObj.getClass().getSimpleName());                            if (perm != null)
+                            int x = 0;
+                            x++;
+                        }
+
+                        if (AppContextMgr.isSecurityOn() && value instanceof FormDataObjIFace)
+                        {
+                            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(value.getClass().getSimpleName());
+                            if (tblInfo != null)
                             {
-                                if (!perm.canView())
+                                SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo.getShortClassName());
+                                if (perm != null)
                                 {
-                                    return "";
+                                    if (!perm.canView())
+                                    {
+                                        return "";
+                                    }
                                 }
                             }
                         }

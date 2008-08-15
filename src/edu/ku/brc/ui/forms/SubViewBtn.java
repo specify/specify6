@@ -40,6 +40,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -51,6 +53,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
@@ -82,6 +85,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     protected String                baseLabel;
     protected Class<?>              classToCreate = null;
     protected String                helpContext   = null;
+    protected boolean               isEditing;
     
     protected JButton               subViewBtn;
     protected JLabel                label;
@@ -92,7 +96,9 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     protected Class<?>              classObj;
     protected FormDataObjIFace      parentObj;
     
-    
+    // Security
+    private SecurityMgr.PermissionBits      perm = null;
+
     /**
      * @param subviewDef
      * @param isCollection
@@ -104,7 +110,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                       final DATA_TYPE            dataType,
                       final int                  options,
                       final Properties           props,
-                      final Class<?>             classToCreate)
+                      final Class<?>             classToCreate,
+                      final AltViewIFace.CreationMode mode)
     {
         this.mvParent      = mvParent;
         this.subviewDef    = subviewDef;
@@ -112,6 +119,21 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         this.view          = view;
         this.options       = options;
         this.classToCreate = classToCreate;
+        
+        isEditing = mode == AltViewIFace.CreationMode.EDIT;
+        
+        if (AppContextMgr.isSecurityOn() && dataObj != null)
+        {
+            if (perm == null)
+            {
+                String shortName = StringUtils.substringAfterLast(view.getClassName(), ".");
+                if (shortName == null)
+                {
+                    shortName = view.getClassName();
+                }
+                perm = SecurityMgr.getInstance().getPermission("DO."+shortName);
+            }
+        }
         
         // 02/12/08 - rods - Removing the "IS_NEW_OBJECT" of the parent object because it doesn't
         // matter to the popup form it creates. The form takes care of everything.
@@ -180,7 +202,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                 showForm();
             }
         });
-        subViewBtn.setEnabled(true);
+        subViewBtn.setEnabled(false);
 
         
         label  = createLabel("  ");
@@ -211,9 +233,15 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     public void setEnabled(final boolean enabled)
     {
         super.setEnabled(enabled);
+     
+        boolean isSecurityEnableOK = perm != null && ((isEditing && perm.isViewOnly()) || (!isEditing && !perm.canView()));
+        subViewBtn.setEnabled(enabled && isSecurityEnableOK);
+        label.setEnabled(enabled && isSecurityEnableOK);
         
-        subViewBtn.setEnabled(enabled);
-        label.setEnabled(enabled);
+        if (!isSecurityEnableOK)
+        {
+            subViewBtn.setToolTipText("SubForm is Restricted."); // I18N
+        }
     }
     
     /**
@@ -240,9 +268,9 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     {
         //boolean isParentNew = parentObj instanceof FormDataObjIFace ? ((FormDataObjIFace)parentObj).getId() == null : false;
         boolean isNewObject = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
-        boolean isEditing   = MultiView.isOptionOn(options, MultiView.IS_EDITTING) || isNewObject;
+        boolean isEdit      = MultiView.isOptionOn(options, MultiView.IS_EDITTING) || isNewObject;
         
-        String closeBtnTitle = isEditing ? getResourceString("DONE") : getResourceString("CLOSE");
+        String closeBtnTitle = isEdit ? getResourceString("DONE") : getResourceString("CLOSE");
         
         ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
                 subviewDef.getViewSetName(),
@@ -252,7 +280,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                 closeBtnTitle,
                 view.getClassName(),
                 cellName,  // idFieldName
-                isEditing | isNewObject,
+                isEdit | isNewObject,
                 false,
                 cellName,
                 mvParent,

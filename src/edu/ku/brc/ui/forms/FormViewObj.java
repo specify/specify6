@@ -86,6 +86,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -186,7 +187,7 @@ public class FormViewObj implements Viewable,
 
     // Data Members
     protected DataProviderSessionIFace      session        = null;
-    protected boolean                       isEditting     = false;
+    protected boolean                       isEditing     = false;
     protected boolean                       isNewlyCreatedDataObj = false;
     protected MultiView                     mvParent       = null;
     protected ViewIFace                     view;
@@ -226,6 +227,7 @@ public class FormViewObj implements Viewable,
     protected int                           mainCompRowInx  = 1;
     protected boolean                       saveAndNew      = false;  
     protected boolean                       isAutoNumberOn  = true; 
+    protected RestrictablePanel             restrictablePanel = null;
     
     
     protected String                        searchName      = null;
@@ -254,6 +256,9 @@ public class FormViewObj implements Viewable,
     protected Color                         bgColor           = null;
     
     protected Vector<ViewState>             viewStateList     = null;
+    
+    // Security
+    private SecurityMgr.PermissionBits      perm = null;
 
 
     /**
@@ -302,13 +307,13 @@ public class FormViewObj implements Viewable,
 
         
         businessRules    = view.createBusinessRule();
-        isEditting       = altView.getMode() == AltViewIFace.CreationMode.EDIT;
+        isEditing       = altView.getMode() == AltViewIFace.CreationMode.EDIT;
 
         this.formViewDef = (FormViewDef)altView.getViewDef();
         
         // Figure columns
         
-        JPanel panel = useDebugForm ? new FormDebugPanel() : new JPanel();
+        JPanel panel = useDebugForm ? new FormDebugPanel() : (restrictablePanel = new RestrictablePanel());
         formLayout = new FormLayout(formViewDef.getColumnDef(), formViewDef.getRowDef());
         builder    = new PanelBuilder(formLayout, panel);
         
@@ -418,7 +423,7 @@ public class FormViewObj implements Viewable,
                 altViewsList = new Vector<AltViewIFace>();
                 
                 // This will return null if it isn't suppose to have a switcher
-                switcherUI = createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
+                switcherUI = createMenuSwitcherPanel(mvParent, view, altView, altViewsList, restrictablePanel);
                 
                 if (altViewsList.size() > 0)
                 {
@@ -592,32 +597,56 @@ public class FormViewObj implements Viewable,
     public static MenuSwitcherPanel createMenuSwitcherPanel(final MultiView            mvParentArg, 
                                                             final ViewIFace            viewArg, 
                                                             final AltViewIFace         altViewArg, 
-                                                            final Vector<AltViewIFace> altViewsListArg)
+                                                            final Vector<AltViewIFace> altViewsListArg,
+                                                            final RestrictableUIIFace  restrictableUI)
     {
-        // Add all the View if we are at the top level
-        // If not, then we are a subform and we should only add the view that belong to our same creation mode.
-        //if (mvParentArg.isTopLevel() && mvParentArg.isOKToAddAllAltViews())
-        //{
-        //    //altViewsListArg.addAll(viewArg.getAltViews());
-        //    
-        //} else
-        //{
-        
-        SecurityMgr.PermissionBits perm = mvParentArg.getPermissions();
-        SecurityMgr.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
-        
+        if (AppContextMgr.isSecurityOn())
+        {
+            String shortName = StringUtils.substringAfterLast(viewArg.getClassName(), ".");
+            if (shortName == null)
+            {
+                shortName = viewArg.getClassName();
+            }
+            SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission("DO."+shortName);
+            //SecurityMgr.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
+            
+            if (perm.getOptions() == 0 && restrictableUI != null)
+            {
+                restrictableUI.setRestricted(true);
+            }
+            
             AltViewIFace.CreationMode mode = altViewArg.getMode();
             for (AltViewIFace av : viewArg.getAltViews())
             {
-                boolean isModeOK = (perm.isViewOnly() && (mode == AltViewIFace.CreationMode.VIEW)) ||
-                                   (!perm.isViewOnly() && (mode != AltViewIFace.CreationMode.VIEW));
-                if (isModeOK && (av.getMode() == mode || mvParentArg.isOKToAddAllAltViews()))
+                boolean isSecurityModeOK = perm.getOptions() > 0 && ((perm.isViewOnly() && (mode == AltViewIFace.CreationMode.VIEW)) ||
+                                                                     !perm.isViewOnly());
+                if (isSecurityModeOK && (av.getMode() == mode || mvParentArg.isOKToAddAllAltViews()))
                 {
                     altViewsListArg.add(av);
                 }
             }
-        //}
-        
+            
+        } else 
+        {
+            // Add all the View if we are at the top level
+            // If not, then we are a subform and we should only add the view that belong to our same creation mode.
+            if (mvParentArg.isTopLevel() && mvParentArg.isOKToAddAllAltViews())
+            {
+                //altViewsListArg.addAll(viewArg.getAltViews());
+                
+            } else
+            {
+                AltViewIFace.CreationMode mode = altViewArg.getMode();
+                for (AltViewIFace av : viewArg.getAltViews())
+                {
+                    if (av.getMode() == mode || mvParentArg.isOKToAddAllAltViews())
+                    {
+                        altViewsListArg.add(av);
+                    }
+                }
+            }
+        }
+
         return altViewsListArg.size() > 1 ? new MenuSwitcherPanel(mvParentArg, altViewArg, altViewsListArg) : null;
     }
     
@@ -748,7 +777,7 @@ public class FormViewObj implements Viewable,
         action = UIRegistry.getAction("AutoNumbering");
         if (action != null)
         {
-            action.setEnabled(isAutoNumberOn() && isEditting);
+            action.setEnabled(isAutoNumberOn() && isEditing);
         }
         
         comp = UIRegistry.get("AutoNumbering");
@@ -911,7 +940,7 @@ public class FormViewObj implements Viewable,
      */
     protected void showContextMenu(MouseEvent e)
     {
-        if (e.isPopupTrigger() && mvParent != null && mvParent.isTopLevel() && isEditting)
+        if (e.isPopupTrigger() && mvParent != null && mvParent.isTopLevel() && isEditing)
         {
             JPopupMenu popup = new JPopupMenu();
             JMenuItem menuItem = new JMenuItem(UIRegistry.getResourceString("CONFIG_CARRY_FORWARD_MENU"));
@@ -1113,7 +1142,7 @@ public class FormViewObj implements Viewable,
             Action action = UIRegistry.getAction("ConfigCarryForward");
             if (action != null)
             {
-                action.setEnabled(show && isEditting);
+                action.setEnabled(show && isEditing);
             }
             
         }
@@ -2428,9 +2457,9 @@ public class FormViewObj implements Viewable,
     
             if (newInx > -1 && (list == null || list.size() > 0))
             {
-                isEditting = false;
+                isEditing = false;
                 rsController.setIndex(newInx, mvParent == null); // only send notification about index change top form
-                isEditting = true;
+                isEditing = true;
 
                 // rods - 07/07/2008 - This has already been at this point when the index changed.
                 // and this ends 
@@ -2876,15 +2905,32 @@ public class FormViewObj implements Viewable,
         // If the Control panel doesn't exist, then add it
         if (rsController == null && controlPanel != null)
         {
-            SecurityMgr.PermissionBits perm = mvParent.getPermissions();
+            boolean canAdd = true;
+            boolean canDel = true;
+            
+            if (AppContextMgr.isSecurityOn())
+            {
+                if (perm == null)
+                {
+                    String shortName = StringUtils.substringAfterLast(view.getClassName(), ".");
+                    if (shortName == null)
+                    {
+                        shortName = view.getClassName();
+                    }
+                    perm = SecurityMgr.getInstance().getPermission("DO."+shortName);
+                    //SecurityMgr.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
+                    canAdd = perm.canAdd();
+                    canDel = perm.canDelete();
+                }
+            }
             
             boolean inEditMode = altView.getMode() == AltViewIFace.CreationMode.EDIT;
             rsController = new ResultSetController(formValidator, 
-                                                   inEditMode && !addSearch && perm.canAdd(), // Add New
-                                                   inEditMode && perm.canDelete(),            // Add Delete
-                                                   inEditMode && addSearch && perm.canAdd(),  // Add Search
-                                                   view.getObjTitle(),                        // Object Title
-                                                   0);                                        // current length 
+                                                   inEditMode && !addSearch && canAdd, // Add New
+                                                   inEditMode && canDel,               // Add Delete
+                                                   inEditMode && addSearch && canAdd,  // Add Search
+                                                   view.getObjTitle(),                 // Object Title
+                                                   0);                                 // current length 
             rsController.getPanel().setBackground(bgColor);
             
             rsController.addListener(this);
@@ -3186,7 +3232,7 @@ public class FormViewObj implements Viewable,
                     }
                 
                     DBTableChildIFace tblChild = derivedCI != null ? derivedCI : ti.getItemByName(fieldInfo.getFormCell().getName());
-                    if (isEditting && (cell.isRequired() || (tblChild != null && tblChild.isRequired())))
+                    if (isEditing && (cell.isRequired() || (tblChild != null && tblChild.isRequired())))
                     {
                         if (boldFont == null)
                         {
@@ -3614,7 +3660,7 @@ public class FormViewObj implements Viewable,
                 }
             }
             
-            if (isEditting && 
+            if (isEditing && 
                 //!alreadyInTheList && 
                 fieldInfo.getComp() instanceof EditViewCompSwitcherPanel)
             {
@@ -3808,10 +3854,21 @@ public class FormViewObj implements Viewable,
     protected void setDataIntoUI(final boolean doResetAfterFill,
                                  final boolean forceCreateSession)
     {
-        SecurityMgr.PermissionBits perm = mvParent.getPermissions();
-        if (!perm.canView() && dataObj != null)
+        
+        if (dataObj != null)
         {
-            return;
+            if (AppContextMgr.isSecurityOn())
+            {
+                if (perm == null)
+                {
+                    perm = SecurityMgr.getInstance().getPermission("DO."+dataObj.getClass().getSimpleName());
+                }
+                //SecurityMgr.dumpPermissions(dataObj.getClass().getSimpleName(), perm2.getOptions());
+                if ((isEditing && perm.isViewOnly()) || (!isEditing && !perm.canView()))
+                {
+                    return;
+                }
+            }
         }
 
         if (businessRules != null)
@@ -4163,7 +4220,7 @@ public class FormViewObj implements Viewable,
         }
 
 
-        if (doResetAfterFill && mvParent != null && mvParent.isTopLevel() && saveControl != null && isEditting)
+        if (doResetAfterFill && mvParent != null && mvParent.isTopLevel() && saveControl != null && isEditing)
         {
             saveControl.setEnabled(false);
         }
@@ -4194,7 +4251,7 @@ public class FormViewObj implements Viewable,
      */
     public void getDataFromUI()
     {
-        if (isEditting)
+        if (isEditing)
         {
             // This should only happen when the user created a new object
             // in a form in a dialog and then they pressed Cancel without it being saved.
@@ -5529,8 +5586,6 @@ public class FormViewObj implements Viewable,
         {
             this.fieldInfo = fieldInfo;
         }
-        
-        
     }
 
     /**

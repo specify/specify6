@@ -110,7 +110,7 @@ public class RecordSetTableViewObj extends TableViewObj
     protected void initMainComp()
     {
 
-        mainComp = new JPanel();
+        mainComp = new RestrictablePanel();
         mainComp.setLayout(new BorderLayout());
         if (mvParent == null)
         {

@@ -52,6 +52,7 @@ import javax.swing.border.Border;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -1110,6 +1111,23 @@ public class ViewFactory
                 {
                     uiType = cellField.getDspUIType();
                 }
+            } else if (uiType == FormCellField.FieldType.querycbx)
+            {
+                if (AppContextMgr.isSecurityOn())
+                {
+                    DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(childInfo.getDataClass().getSimpleName());
+                    if (tblInfo != null)
+                    {
+                        SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission("DO."+tblInfo.getShortClassName());
+                        if (perm != null)
+                        {
+                            if (!perm.canView())
+                            {
+                                uiType = FormCellField.FieldType.textfieldinfo;
+                            }
+                        }
+                    }
+                }
             }
             
             String uiFormatName = cellField.getUIFieldFormatterName();
@@ -1511,7 +1529,7 @@ public class ViewFactory
                                 dataType = cellSubView.getName().equals("this") ? SubViewBtn.DATA_TYPE.IS_THIS : SubViewBtn.DATA_TYPE.IS_SET;
                             }
                             
-                            SubViewBtn subViewBtn = new SubViewBtn(parent, cellSubView, subView, dataType, options, props, getClassToCreate(parent, cell));
+                            SubViewBtn subViewBtn = new SubViewBtn(parent, cellSubView, subView, dataType, options, props, getClassToCreate(parent, cell), mode);
                             subViewBtn.setHelpContext(props.getProperty("hc", null));
                             
                             bi.doAddToValidator   = false;
