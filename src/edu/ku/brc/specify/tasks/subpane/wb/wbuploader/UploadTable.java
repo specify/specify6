@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -53,11 +54,13 @@ import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.util.GeoRefConverter;
@@ -889,13 +892,13 @@ public class UploadTable implements Comparable<UploadTable>
                 fldClass = ufld.getSetter().getParameterTypes()[0];
             }
             String fldStr;
-            if (ufld.getValue() == null)
+            if (ufld.getValueObject() == null)
             {
                 fldStr = null;
             }
             else
             {
-               fldStr = fldClass.equals(String.class) ? ufld.getValue() : ufld.getValue().trim();
+               fldStr = fldClass.equals(String.class) ? ufld.getValueObject() : ufld.getValueObject().trim();
             }
             if (fldClass == java.util.Calendar.class || fldClass == java.util.Date.class)
             {
@@ -1599,6 +1602,74 @@ public class UploadTable implements Comparable<UploadTable>
         return fld.isRequired() && (fld.getValue() == null || fld.getValue().trim().equals(""));
     }
 
+    protected String getPickListName(final UploadField fld)
+    {
+        if (fld.getIndex() != -1 && fld.getField().getFieldInfo() != null)
+        {
+            String pickListName = fld.getField().getFieldInfo().getPickListName();
+            if (StringUtils.isEmpty(pickListName))
+            {
+                if (RecordTypeCodeBuilder.isTypeCodeField(fld.getField().getFieldInfo()))
+                {
+                    pickListName = fld.getField().getFieldInfo().getColumn() + "PREDEFSYS";
+                }
+            }
+            return pickListName;
+        }
+        return null;
+    }
+    
+    /**
+     * @param fld
+     * @return true if field does not have a picklist or current value of fld is in it's picklist.
+     * 
+     * This method assumes invalidNull(fld, ...) returns false.
+     */
+    protected boolean pickListCheck(final UploadField fld)
+    {
+        if (fld.getValue() == null || fld.getValue().trim().equals(""))
+        {
+            //assuming invalidNull() is false.
+            //XXX issues with null values and pick lists???
+            return true;
+        }
+        
+        Map<String, PickListItemIFace> validValues = fld.getValidValues();
+        if (validValues == null)
+        {
+            return true;
+        }
+        
+        return validValues.containsKey(fld.getValue());              
+    }
+    
+    /**
+     * @param fld
+     * @return a (possibly really really long) message listing the valid values for the fld.
+     */
+    protected String getInvalidPicklistValErrMsg(final UploadField fld)
+    {
+        String valList = "";
+        Map<String, PickListItemIFace> vals = fld.getValidValues();
+        if (vals != null)
+        {
+            for (String val : vals.keySet())
+            {
+                if (!StringUtils.isEmpty(valList))
+                {
+                    valList += ", ";
+                }
+                valList += "'" + val + "'";
+            }
+            return String.format(UIRegistry.getResourceString("WB_UPLOAD_VALID_VALS"), valList);
+        }
+        // this should never happen
+        log.error("Could not find picklist values for "
+                + (fld.getField().getFieldInfo() == null ? fld.getField().getName() : fld
+                        .getField().getFieldInfo().getColumn()));
+        return UIRegistry.getResourceString("WB_UPLOAD_UNABLE_TO_FIND_VALID_VALS");
+    }
+    
     public Vector<UploadTableInvalidValue> validateValues(final UploadData uploadData)
     {
         Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
@@ -1614,8 +1685,15 @@ public class UploadTable implements Comparable<UploadTable>
                         fld.setValue(uploadData.get(row, fld.getIndex()));
                         try
                         {
-                            if (invalidNull(fld, uploadData, row, seq)) { throw new Exception(
-                                    getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA")); }
+                            if (invalidNull(fld, uploadData, row, seq)) 
+                            { 
+                                throw new Exception(
+                                    getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA")); 
+                            }                
+                            if (!pickListCheck(fld))
+                            {
+                                throw new Exception(getInvalidPicklistValErrMsg(fld));
+                            }
                             getArgForSetter(fld);
                         }
                         catch (Exception e)
@@ -1954,11 +2032,11 @@ public class UploadTable implements Comparable<UploadTable>
      * undoes the most recent upload.
      * 
      */
-    public void undoUpload() throws UploaderException
+    public void undoUpload(final boolean showProgress) throws UploaderException
     {
         //if isOneToOneChild() we most probably don't even need to worry about deleting 
         //but just to be sure will always delete.
-        deleteObjects(uploadedRecs.iterator(), true);
+        deleteObjects(uploadedRecs.iterator(), showProgress);
     }
 
     /**

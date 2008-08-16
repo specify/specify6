@@ -2963,7 +2963,7 @@ public class Uploader implements ActionListener, KeyListener
                 {
                     for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
                     {
-                        fixedUp.get(ut).undoUpload();
+                        fixedUp.get(ut).undoUpload(false);
                     }
                 }
                 catch (Exception ex)
@@ -3021,7 +3021,7 @@ public class Uploader implements ActionListener, KeyListener
                         for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
                         {
                             //setCurrentOpProgress(fixedUp.size() - ut, false);
-                            fixedUp.get(ut).undoUpload();
+                            fixedUp.get(ut).undoUpload(true);
                         }
                         success = true;
                         return success;

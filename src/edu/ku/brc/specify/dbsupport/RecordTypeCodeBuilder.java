@@ -45,8 +45,10 @@ public class RecordTypeCodeBuilder
      * @return a List of predefined system pick lists for coded fields such as Agent.agentType,
      * ReferenceWork.referenceWorkType, DeterminationStatus.type
      * 
-     * Tables that contain such fields should implement a public static method with no arguments that
-     * returns List<PickListDBAdapterIFace>.
+     * Tables that contain such fields should implement a public static method named getSpSystemTypeCodes 
+     * with no arguments that returns List<PickListDBAdapterIFace>.
+     * 
+     * AND a public static method named getSpSystemTypeCodeFlds with no arguments that returns String[]
      */
     @SuppressWarnings("unchecked")
     public static List<PickListDBAdapterIFace> getTypeCodes(Class<?> tblClass)
@@ -88,18 +90,66 @@ public class RecordTypeCodeBuilder
      */
     public static PickListDBAdapterIFace getTypeCode(final DBFieldInfo fi)
     {
-        List<PickListDBAdapterIFace> picks = RecordTypeCodeBuilder.getTypeCodes(fi.getTableInfo().getClassObj());
-        if (picks != null)
+        if (isTypeCodeField(fi))
         {
-            for (int p = 0; p < picks.size(); p++)
+            List<PickListDBAdapterIFace> picks = RecordTypeCodeBuilder.getTypeCodes(fi.getTableInfo().getClassObj());
+            if (picks != null)
             {
-                if (((RecordTypeCode) picks.get(p)).getFldName().equalsIgnoreCase(fi.getName()))
+                for (int p = 0; p < picks.size(); p++)
                 {
-                    return picks.get(p);
+                    if (((RecordTypeCode) picks.get(p)).getFldName().equalsIgnoreCase(fi.getName()))
+                    {
+                        return picks.get(p);
+                    }
                 }
             }
         }
         return null;
     }
     
+    /**
+     * @param field
+     * @return true if field has a predefined system picklist.
+     */
+    @SuppressWarnings("unchecked")
+    public static boolean isTypeCodeField(final DBFieldInfo field)
+    {
+        Class<?> tblClass = field.getTableInfo().getClassObj();
+        try
+        {
+            Method codeGetter = tblClass.getMethod("getSpSystemTypeCodeFlds", (Class<?>[] )null);
+            //just to try to make sure codeGetter is really the method we want:
+            if (Modifier.isStatic(codeGetter.getModifiers()) && codeGetter.getReturnType().equals(String[].class))
+            {
+                log.debug("retrieving TypeCode Fields for " + tblClass.getName());
+                try
+                {
+                    String[] flds = (String[] )codeGetter.invoke(null, (Object[] )null);
+                    for (int f = 0; f < flds.length; f++)
+                    {
+                        if (flds[f].equals(field.getName()))
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                catch (InvocationTargetException ex)
+                {
+                    log.error(ex);
+                    return false;
+                }
+                catch (IllegalAccessException ex)
+                {
+                    log.error(ex);
+                    return false;
+                }
+             }
+        }
+        catch (NoSuchMethodException ex)
+        {
+            //ignore it and move on.
+        }
+        return false;
+    }
 }

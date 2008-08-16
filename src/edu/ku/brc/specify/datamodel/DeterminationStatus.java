@@ -271,4 +271,15 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         return result;
     }
 
+    /**
+     * @return a list (probably never containing more than one element) of fields
+     * with predefined system type codes.
+     */
+    @Transient
+    public static String[] getSpSystemTypeCodeFlds()
+    {
+        String[] result = {"type"};
+        return result;
+    }
+
 }

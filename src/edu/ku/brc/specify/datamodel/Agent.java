@@ -1075,4 +1075,15 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         return result;
     }
 
+    /**
+     * @return a list (probably never containing more than one element) of fields
+     * with predefined system type codes.
+     */
+    @Transient
+    public static String[] getSpSystemTypeCodeFlds()
+    {
+        String[] result = {"agentType"};
+        return result;
+    }
+
 }

@@ -133,6 +133,7 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.rstools.ExportToFile;
 import edu.ku.brc.specify.rstools.GoogleEarthExporter;
@@ -2209,7 +2210,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 {
                     wbtmi.setFieldInfo(fi);
                     //System.out.println(fi.getName()+"  "+fi.getLength()+"  "+fi.getType());
-                    if (fi.getLength() > 0)
+                    if (RecordTypeCodeBuilder.getTypeCode(fi) == null && fi.getLength() > 0)
                     {
                         fieldWidth = Math.min(fi.getLength(), WorkbenchDataItem.cellDataLength);
                     }

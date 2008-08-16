@@ -390,15 +390,15 @@ public class UploadTableTree extends UploadTable
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#undoUpload()
      */
     @Override
-    public void undoUpload() throws UploaderException
+    public void undoUpload(final boolean showProgress) throws UploaderException
     {
-        super.undoUpload();
+        super.undoUpload(showProgress);
         List<UploadedRecordInfo> keys = new LinkedList<UploadedRecordInfo>();
         for (Treeable defParent : defaultParents)
         {
             keys.add(new UploadedRecordInfo(((DataModelObjBase)defParent).getId(), -1, 0));
         }
-        deleteObjects(keys.iterator(), true);
+        deleteObjects(keys.iterator(), showProgress);
         if (parent == null && !this.incrementalNodeNumberUpdates)
         {
             try
