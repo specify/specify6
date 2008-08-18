@@ -338,7 +338,7 @@ public class ReportsBaseTask extends BaseTask
         if (StringUtils.isEmpty(tblIdStr))
         {
             roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
-        } else
+        } else if (tblContext == null)
         {
             DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
                     RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), new int[] {Integer.parseInt(tblIdStr)});
@@ -352,7 +352,9 @@ public class ReportsBaseTask extends BaseTask
             roc.addDragDataFlavor(spReportFlavor);
             if (tblContext != null)
             {
-                roc.addDropDataFlavor(new DataFlavorTableExt(ReportsBaseTask.class, "RecordSetTask", tblContext));
+                DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
+                        RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), new int[] {tblContext});
+                roc.addDropDataFlavor(dfx);
             }
         }
         
