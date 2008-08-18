@@ -7,7 +7,7 @@
 /**
  * 
  */
-package edu.ku.brc.ui;
+package edu.ku.brc.af.ui;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -35,6 +35,10 @@ import javax.swing.JSeparator;
 
 import edu.ku.brc.af.core.expresssearch.SearchConfigService;
 import edu.ku.brc.af.ui.db.JAutoCompTextField;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.SearchBorder;
+import edu.ku.brc.ui.SearchBorderMac;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rod

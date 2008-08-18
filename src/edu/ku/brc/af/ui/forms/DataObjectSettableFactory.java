@@ -68,6 +68,7 @@ public class DataObjectSettableFactory
                 
             } catch (Exception ex)
             {
+                System.err.println("Unable to create class["+className+"]");
                 ex.printStackTrace(); // XXX FIXME
             }
         }

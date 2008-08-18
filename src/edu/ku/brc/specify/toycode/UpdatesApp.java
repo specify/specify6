@@ -39,7 +39,7 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 import com.thoughtworks.xstream.XStream;
 
-import edu.ku.brc.ui.BrowseBtnPanel;
+import edu.ku.brc.af.ui.BrowseBtnPanel;
 import edu.ku.brc.ui.UIHelper;
 
 /**

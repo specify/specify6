@@ -306,8 +306,8 @@
             type="form"
             name="label"
             class="edu.ku.brc.ui.forms.persist.FormCell"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -341,8 +341,8 @@
             type="form"
             name="separator"
             class="edu.ku.brc.ui.forms.persist.FormCell"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -368,8 +368,8 @@
             type="form"
             name="subview"
             class="edu.ku.brc.ui.forms.persist.FormCell"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -399,8 +399,8 @@
             type="form"
             name="command"
             class="edu.ku.brc.ui.forms.persist.FormCell"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -430,8 +430,8 @@
             type="form"
             name="panel"
             class="edu.ku.brc.ui.forms.persist.FormCell"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -449,8 +449,8 @@
             type="form"
             name="statusbar"
             class="edu.ku.brc.ui.forms.persist.FormCell"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -474,8 +474,8 @@
             type="form"
             name="text"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -495,8 +495,8 @@
             type="form"
             name="formattedtext"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -517,8 +517,8 @@
             type="form"
             name="label"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -539,8 +539,8 @@
             type="form"
             name="dsptextfield"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -560,8 +560,8 @@
             type="form"
             name="textfieldinfo"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -581,8 +581,8 @@
             type="form"
             name="image"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -602,8 +602,8 @@
             type="form"
             name="url"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -623,8 +623,8 @@
             type="form"
             name="combobox"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -653,8 +653,8 @@
             type="form"
             name="checkbox"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -674,8 +674,8 @@
             type="form"
             name="spinner"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -695,8 +695,8 @@
             type="form"
             name="password"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -716,8 +716,8 @@
             type="form"
             name="dsptextarea"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -737,8 +737,8 @@
             type="form"
             name="textarea"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -758,8 +758,8 @@
             type="form"
             name="browse"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -779,8 +779,8 @@
             type="form"
             name="querycbx"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -800,8 +800,8 @@
             type="form"
             name="list"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -821,8 +821,8 @@
             type="form"
             name="colorchooser"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -842,8 +842,8 @@
             type="form"
             name="button"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -863,8 +863,8 @@
             type="form"
             name="progress"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -884,8 +884,8 @@
             type="form"
             name="plugin"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The label form.]]></desc>
             <enableRules/>
 
@@ -905,8 +905,8 @@
             type="form"
             name="baseFormCell"
             class="edu.ku.brc.ui.forms.persist.FormCell"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The base attributes form.]]></desc>
             <enableRules/>
 
@@ -949,8 +949,8 @@
             type="form"
             name="baseFormCellField"
             class="edu.ku.brc.ui.forms.persist.FormCellField"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The base attributes form.]]></desc>
             <enableRules/>
 
@@ -974,8 +974,8 @@
             type="form"
             name="AltViewProps"
             class="edu.ku.brc.specify.datamodel.AltView"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Alt View Props]]></desc>
 
@@ -1016,8 +1016,8 @@
             type="form"
             name="ViewDefProps"
             class="edu.ku.brc.specify.datamodel.ViewDef"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[View Def Props]]></desc>
 
@@ -1080,8 +1080,8 @@
             type="form"
             name="ViewProps"
             class="edu.ku.brc.specify.datamodel.ViewDef"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[View Props]]></desc>
 

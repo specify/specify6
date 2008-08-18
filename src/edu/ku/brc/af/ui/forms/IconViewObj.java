@@ -793,8 +793,8 @@ public class IconViewObj implements Viewable
         }
         
         dataSet.clear();
-        Set<FormDataObjIFace> iconTrayItems = iconTray.getItems();
-        for (FormDataObjIFace fdo: iconTrayItems)
+        Set<Object> iconTrayItems = iconTray.getItems();
+        for (Object fdo: iconTrayItems)
         {
             dataSet.add(fdo);
         }

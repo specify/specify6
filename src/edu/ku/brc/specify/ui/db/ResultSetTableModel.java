@@ -593,7 +593,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                          {
                              if (formatterObj.getDataClass() != null)
                              {
-                                 aggSetter = DataObjectSettableFactory.get(formatterObj.getDataClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+                                 aggSetter = DataObjectSettableFactory.get(formatterObj.getDataClass().getName(), "edu.ku.brc.af.ui.forms.DataSetterForObj");
                              } else
                              {
                                  log.error("formatterObj.getDataClass() was null for "+caption.getColName());

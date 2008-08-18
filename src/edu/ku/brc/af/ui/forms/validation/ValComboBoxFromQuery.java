@@ -62,6 +62,7 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.af.ui.db.JComboBoxFromQuery;
 import edu.ku.brc.af.ui.db.TextFieldWithQuery;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
@@ -84,7 +85,6 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 
 
 /**

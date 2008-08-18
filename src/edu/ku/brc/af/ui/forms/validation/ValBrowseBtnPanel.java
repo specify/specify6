@@ -8,7 +8,7 @@ package edu.ku.brc.af.ui.forms.validation;
 
 import java.awt.Component;
 
-import edu.ku.brc.ui.BrowseBtnPanel;
+import edu.ku.brc.af.ui.BrowseBtnPanel;
 
 /**
  * @author rod

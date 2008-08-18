@@ -672,37 +672,32 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         RolloverCommand.hoverColor = hoverColor;
     }
 
-    //-----------------------------------------------
-    // NavBoxItemIFace Interface
-    // Note: Both GhostActionable and NavBoxItemIFace both hace a get/set Data
-    //-----------------------------------------------
-
-   /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.NavBoxItemIFace#getUIComponent()
+    /**
+     * @return
      */
     public JComponent getUIComponent()
     {
         return this;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.NavBoxItemIFace#getTitle()
+    /**
+     * @return
      */
     public String getTitle()
     {
         return label;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.NavBoxItemIFace#setToolTip(java.lang.String)
+    /**
+     * @param toolTip
      */
     public void setToolTip(final String toolTip)
     {
         super.setToolTipText(toolTip);
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.NavBoxItemIFace#setIcon(javax.swing.ImageIcon)
+    /**
+     * @param icon
      */
     public void setIcon(ImageIcon icon)
     {

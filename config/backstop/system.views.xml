@@ -169,8 +169,8 @@
             type="form"
             name="PickList"
             class="edu.ku.brc.specify.datamodel.PickList"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form for editing an Info Request]]></desc>
             <enableRules>
@@ -224,8 +224,8 @@
             type="form"
             name="PickListItem"
             class="edu.ku.brc.specify.datamodel.PickListItem"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[PickListItem]]></desc>
             <enableRules/>
@@ -250,8 +250,8 @@
             type="form"
             name="SendMail"
             class="java.util.Hashtable"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[Send Mail Email Form]]></desc>
             <columnDef>p,3dlu,p:g</columnDef>
@@ -287,8 +287,8 @@
             type="form"
             name="PrepType"
             class="edu.ku.brc.specify.datamodel.PrepType"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[PrepType Data Entry Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
@@ -310,8 +310,8 @@
             type="form"
             name="DeterminationStatus"
             class="edu.ku.brc.specify.datamodel.DeterminationStatus"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[DeterminationStatus Data Entry Form]]></desc>
             <columnDef>p,3dlu,p,2dlu,p:g</columnDef>
@@ -344,8 +344,8 @@
             type="form"
             name="DataType"
             class="edu.ku.brc.specify.datamodel.DataType"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[DataType Data Entry Form]]></desc>
             <columnDef>p,3dlu,p,2dlu,p:g</columnDef>
@@ -366,8 +366,8 @@
             type="form"
             name="Discipline"
             class="edu.ku.brc.specify.datamodel.Discipline"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Discipline Data Entry Form]]></desc>
             <columnDef>p,3dlu,p,p:g</columnDef>
@@ -404,8 +404,8 @@
             type="form"
             name="DisciplineWithoutCollections"
             class="edu.ku.brc.specify.datamodel.Discipline"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Discipline Data Entry Form]]></desc>
             <columnDef>p,3dlu,p,p:g</columnDef>
@@ -438,8 +438,8 @@
             type="form"
             name="Collection"
             class="edu.ku.brc.specify.datamodel.Collection"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Collection Data Entry Form]]></desc>
             <columnDef>p,3dlu,p,p:g</columnDef>
@@ -481,8 +481,8 @@
             type="form"
             name="Institution"
             class="edu.ku.brc.specify.datamodel.Institution"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Institution Data Entry Form]]></desc>
             <columnDef>p,3dlu,p,p:g</columnDef>
@@ -531,8 +531,8 @@
             type="form"
             name="User Group"
             class="edu.ku.brc.specify.datamodel.SpPrincipal"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[User Group Data Entry Form]]></desc>
             <columnDef>p,3dlu,p,p:g</columnDef>
@@ -557,8 +557,8 @@
             type="form"
             name="User"
             class="edu.ku.brc.specify.datamodel.SpecifyUser"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[User Data Entry Form]]></desc>
             <columnDef>p,3dlu,p,p:g</columnDef>
@@ -590,8 +590,8 @@
         <viewdef type="form"
             name="CatalogNumberingScheme"
             class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The CatalogNumberingScheme Search Form]]></desc>
             <enableRules/>
@@ -615,8 +615,8 @@
             type="form"
             name="ViewProps"
             class="edu.ku.brc.specify.datamodel.View"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[View Props]]></desc>
 
@@ -669,8 +669,8 @@
             type="form"
             name="ExcelExportInfo"
             class="java.util.Hashtable"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[ExcelExportInfo Form]]></desc>
             <columnDef>p,3dlu,p:g</columnDef>

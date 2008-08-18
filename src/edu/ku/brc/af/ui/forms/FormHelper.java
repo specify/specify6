@@ -25,6 +25,7 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -32,7 +33,6 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIHelper;
 import static edu.ku.brc.ui.UIRegistry.*;
-import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
 
 
 /**
@@ -47,8 +47,8 @@ public final class FormHelper
     
     private static String currentUserEditStr = "";
     
-    public static final String DATA_OBJ_SETTER = "edu.ku.brc.ui.forms.DataSetterForObj";
-    public static final String DATA_OBJ_GETTER = "edu.ku.brc.ui.forms.DataGetterForObj";
+    public static final String DATA_OBJ_SETTER = "edu.ku.brc.af.ui.forms.DataSetterForObj";
+    public static final String DATA_OBJ_GETTER = "edu.ku.brc.af.ui.forms.DataGetterForObj";
 
     /**
      * XXX This needs to be moved! This references the specify packge

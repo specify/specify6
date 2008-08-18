@@ -14,7 +14,7 @@
  *//**
  * 
  */
-package edu.ku.brc.ui;
+package edu.ku.brc.af.ui;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 
@@ -23,6 +23,8 @@ import java.awt.Container;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Creates content for a PopupDialog as used with the PopupDlgMgr.  

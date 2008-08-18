@@ -52,7 +52,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.AutoNumberGeneric#getHighestObject(org.hibernate.Session, java.lang.String, edu.ku.brc.util.Pair, edu.ku.brc.util.Pair)
+     * @see edu.ku.brc.af.core.db.AutoNumberGeneric#getHighestObject(org.hibernate.Session, java.lang.String, edu.ku.brc.util.Pair, edu.ku.brc.util.Pair)
      */
     @Override
     protected Object getHighestObject(final Session session, 

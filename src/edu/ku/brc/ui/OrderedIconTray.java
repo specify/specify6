@@ -10,9 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collections;
-import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -25,9 +22,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.IconManager.IconSize;
-import edu.ku.brc.util.FormDataObjComparator;
 import edu.ku.brc.util.Orderable;
-import edu.ku.brc.util.OrderableComparator;
 
 /**
  * An extension of IconTray to be used for displaying ordered items.
@@ -61,7 +56,7 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
     {
         super(layoutStyle);
         
-        listModel = new ReorderableTrayListModel<FormDataObjIFace>();
+        listModel = new ReorderableTrayListModel<Object>();
         iconListWidget.setModel(listModel);
         
         iconListWidget.addListSelectionListener(this);
@@ -120,7 +115,7 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
      */
     public void actionPerformed(ActionEvent e)
     {
-        ReorderableTrayListModel<FormDataObjIFace> model = (ReorderableTrayListModel<FormDataObjIFace>)listModel;
+        ReorderableTrayListModel<Object> model = (ReorderableTrayListModel<Object>)listModel;
 
         if(e.getSource() == toStartButton)
         {
@@ -206,7 +201,7 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
     {
         for(int i = 0; i < listModel.getSize(); ++i )
         {
-            FormDataObjIFace o = listModel.getElementAt(i);
+            Object o = listModel.getElementAt(i);
             if (o instanceof Orderable)
             {
                 Orderable orderable = (Orderable)o;
@@ -256,7 +251,7 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
      * @param values the unsorted set of {@link Orderable} objects
      * @return a sorted Vector of {@link FormDataObjIFace} objects
      */
-    @Override
+    /*@Override
     protected Vector<FormDataObjIFace> sortSet(Set<?> values)
     {
         Vector<Orderable> tmpList = new Vector<Orderable>(values.size());
@@ -285,5 +280,5 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
         }
         
         return retVec;
-    }
+    }*/
 }

@@ -1090,8 +1090,8 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
             type="iconview"
             name="AccessionIconView"
             class="edu.ku.brc.specify.datamodel.Accession"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Accession Agent Icon Viewer]]></desc>
         </viewdef>
          */

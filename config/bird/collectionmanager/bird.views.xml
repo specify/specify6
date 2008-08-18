@@ -81,8 +81,8 @@
             type="form"
             name="Collection Object"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
@@ -169,8 +169,8 @@
             type="form"
             name="CollectingEvent"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Collecting Event]]></desc>
             <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
@@ -217,8 +217,8 @@
             type="form"
             name="CollectingEventSub"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Collecting Event]]></desc>
             <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
@@ -249,8 +249,8 @@
             name="Determination Table"
             type="formtable"
             class="edu.ku.brc.specify.datamodel.Determination"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Determination subform table for Collection Object form.]]></desc>
             <definition>Determination</definition>
@@ -260,8 +260,8 @@
             name="Determination"
             type="form"
             class="edu.ku.brc.specify.datamodel.Determination"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
             <enableRules/>
@@ -293,8 +293,8 @@
             type="form"
             name="BirdAttributes"
             class="edu.ku.brc.specify.datamodel.CollectionObjectAttribute"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form For OtherIdentifier]]></desc>
             <columnDef>75px,2px,150px,2px,100px,2px,150px,2px,100px,2px,150px,p:g</columnDef>
@@ -324,8 +324,8 @@
             type="form"
             name="Locality"
             class="edu.ku.brc.specify.datamodel.Locality"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Locality]]></desc>
             <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>

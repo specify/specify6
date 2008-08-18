@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.ui;
+package edu.ku.brc.af.ui;
 
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
@@ -40,6 +40,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
+import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This is a JPanel that contains a JTextField and a Button that enables the user to browser for a file
@@ -240,7 +242,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
     //-----------------------------------------------------
 
      /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
+     * @see edu.ku.brc.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
     public void setValue(Object value, String defaultValue)
     {
@@ -264,7 +266,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.GetSetValueIFace#getValue()
+     * @see edu.ku.brc.ui.GetSetValueIFace#getValue()
      */
     public Object getValue()
     {

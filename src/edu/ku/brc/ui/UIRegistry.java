@@ -69,6 +69,7 @@ import javax.swing.undo.UndoManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.exceptions.UIException;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;

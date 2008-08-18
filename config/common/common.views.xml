@@ -505,8 +505,8 @@
             type="form"
             name="Accession"
             class="edu.ku.brc.specify.datamodel.Accession"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
@@ -647,8 +647,8 @@
             type="form"
             name="AccessionAgent"
             class="edu.ku.brc.specify.datamodel.AccessionAgent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
@@ -675,8 +675,8 @@
             type="form"
             name="AccessionAuthorization"
             class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Permit subform for AccessionAuthorization.]]></desc>
             <enableRules/>
@@ -700,8 +700,8 @@
             type="form"
             name="Appraisal"
             class="edu.ku.brc.specify.datamodel.Appraisal"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Form For Appraisal]]></desc>
             
             <columnDef>100px,2px,p,2px,125px,2px,125px,2px,125px,2px,125px,p:g</columnDef>
@@ -734,8 +734,8 @@
             type="form"
             name="CollectingEventSubform"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Collecting Event]]></desc>
             <columnDef>110px,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
@@ -769,8 +769,8 @@
             type="form"
             name="CollectingTrip"
             class="edu.ku.brc.specify.datamodel.CollectingTrip"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[CollectingTrip Form]]></desc>
             
             <columnDef>110px,2px,100px,2px,p,2px,100px,2px,p,2px,p,p:g</columnDef>
@@ -799,8 +799,8 @@
             type="form"
             name="CollectingTripForm"
             class="edu.ku.brc.specify.datamodel.CollectingTrip"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[CollectingTrip Form]]></desc>
             
             <columnDef>110px,2px,100px,2px,p,2px,100px,2px,p,2px,p,p:g</columnDef>
@@ -835,8 +835,8 @@
             type="formtable"
             name="Collectors Table"
             class="edu.ku.brc.specify.datamodel.Collector"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Collectors grid view for CollectingEvent form.]]></desc>
             <definition>Collectors</definition>
@@ -846,8 +846,8 @@
             type="iconview"
             name="CollectorsIconView"
             class="edu.ku.brc.specify.datamodel.Collector"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Collectors Icon Viewer]]></desc>
         </viewdef>
 
@@ -855,8 +855,8 @@
             type="form"
             name="Collectors"
             class="edu.ku.brc.specify.datamodel.Collector"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[The Collectors form.]]></desc>
             <enableRules/>
@@ -887,8 +887,8 @@
             type="form"
             name="Collection Object Search"
             class="java.util.Hashtable"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
@@ -924,8 +924,8 @@
             type="formtable"
             name="CollectionObjectSub Table"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Collection Object subform table for Project form.]]></desc>
             <definition>CollectionObjectSub</definition>
@@ -935,8 +935,8 @@
               type="form"
               name="CollectionObjectSub"
               class="edu.ku.brc.specify.datamodel.CollectionObject"
-              gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-              settable="edu.ku.brc.ui.forms.DataSetterForObj">
+              gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+              settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
               
               <desc><![CDATA[The Collection Object Subform for Accessions.]]></desc>
               <enableRules/>
@@ -963,8 +963,8 @@
             type="form"
             name="CommonNameTx"
             class="edu.ku.brc.specify.datamodel.CommonNameTx"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Common Name form]]></desc>
             <enableRules/>
@@ -991,8 +991,8 @@
             type="form"
             name="ConservEvent"
             class="edu.ku.brc.specify.datamodel.ConservEvent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Conservation Event]]></desc>
             <enableRules/>
@@ -1024,8 +1024,8 @@
             type="form"
             name="ConservDescription"
             class="edu.ku.brc.specify.datamodel.ConservDescription"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Conservation Description]]></desc>
             <enableRules/>
@@ -1080,8 +1080,8 @@
             type="form"
             name="ConservDescriptionSub"
             class="edu.ku.brc.specify.datamodel.ConservDescription"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Conservation Description]]></desc>
             <enableRules/>
@@ -1117,8 +1117,8 @@
             type="form"
             name="Deaccession"
             class="edu.ku.brc.specify.datamodel.Deaccession"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Deaccession form.]]></desc>
             <enableRules/>
 
@@ -1160,8 +1160,8 @@
             type="form"
             name="DeaccessionAgent"
             class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The DeaccessionAgent subform for Deaccession form.]]></desc>
             <enableRules/>
 
@@ -1186,8 +1186,8 @@
             type="formtable"
             name="Determination Table"
             class="edu.ku.brc.specify.datamodel.Determination"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Determination subform table for Collection Object form.]]></desc>
             <definition>Determination</definition>
@@ -1197,8 +1197,8 @@
             name="Determination"
             type="form"
             class="edu.ku.brc.specify.datamodel.Determination"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
             <enableRules/>
@@ -1238,8 +1238,8 @@
             name="Division"
             type="form"
             class="edu.ku.brc.specify.datamodel.Division"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Division Form.]]></desc>
             <enableRules/>
@@ -1267,8 +1267,8 @@
       	name="DNASequence"
       	type="form"
       	class="edu.ku.brc.specify.datamodel.DNASequence" 
-      	gettable="edu.ku.brc.ui.forms.DataGetterForObj" 
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+      	gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
       	
       	<desc><![CDATA[DNA Sequence Form]]></desc>
         <enableRules/>
@@ -1305,8 +1305,8 @@
             type="form" 
             name="FieldNotebook" 
             class="edu.ku.brc.specify.datamodel.FieldNotebook" 
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj" 
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form For FieldNotebook]]></desc>
             <columnDef>100px,2px,175px,2px,100px,2px,100px,2px,100px,2px,100px,p:g</columnDef>
@@ -1358,8 +1358,8 @@
             type="form" 
             name="FieldNotebookPage" 
             class="edu.ku.brc.specify.datamodel.FieldNotebookPage" 
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj" 
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form For FieldNotebookPage]]></desc>
             <columnDef>100px,2px,100px,2px,100px,2px,100px,2px,100px,2px,175px,p:g</columnDef>
@@ -1394,8 +1394,8 @@
             name="FieldNotebookPageSet Table"
             type="formtable"
             class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[FieldNotebookPageSet subform table for FieldNotebook form.]]></desc>
             <definition>FieldNotebookPageSet</definition>
@@ -1405,8 +1405,8 @@
             type="form" 
             name="FieldNotebookPageSet" 
             class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet" 
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj" 
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form For FieldNotebookPage]]></desc>
             <columnDef>100px,2px,100px,2px,100px,2px,100px,2px,100px,2px,175px,p:g</columnDef>
@@ -1445,8 +1445,8 @@
             type="form" 
             name="Institution" 
             class="edu.ku.brc.specify.datamodel.Institution" 
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj" 
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form For FieldNotebookPage]]></desc>
             <columnDef>100px,2px,200px,2px,50px,2px,200px,2px,90px,2px,40px,p:g</columnDef>
@@ -1481,8 +1481,8 @@
             type="form"
             name="Loan"
             class="edu.ku.brc.specify.datamodel.Loan"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Loan viewing form.]]></desc>
             <columnDef>85px,4px,p,10px,p,4px,75px,5px,p,4px,p,p:g</columnDef>
@@ -1547,8 +1547,8 @@
             type="form"
             name="LoanItems"
             class="edu.ku.brc.specify.datamodel.LoanPreparation"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Loan viewing form.]]></desc>
             <columnDef>125px,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
@@ -1586,8 +1586,8 @@
             type="form"
             name="LoanPreparation"
             class="edu.ku.brc.specify.datamodel.Preparation"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Preparation for Collection Object form.]]></desc>
             <enableRules/>
             
@@ -1610,8 +1610,8 @@
             type="form"
             name="Locality"
             class="edu.ku.brc.specify.datamodel.Locality"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Locality]]></desc>
             <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
@@ -1681,8 +1681,8 @@
             type="form"
             name="LocalityCitation"
             class="edu.ku.brc.specify.datamodel.LocalityCitation"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Locality]]></desc>
             <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
@@ -1720,8 +1720,8 @@
             type="form"
             name="LocalitySubForm"
             class="edu.ku.brc.specify.datamodel.Locality"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Locality SubForm]]></desc>
             <columnDef>p,2px,p,10px,p,2px,p,p:g</columnDef>
@@ -1754,8 +1754,8 @@
             type="form"
             name="LocalityMapper"
             class="java.util.Hashtable"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
 
             <desc><![CDATA[Locality Mapper]]></desc>
             <columnDef>p,2px,p,2px</columnDef>
@@ -1796,8 +1796,8 @@
             type="form"
             name="Permit"
             class="edu.ku.brc.specify.datamodel.Permit"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Permit subform for Acessions.]]></desc>
             <enableRules/>
@@ -1857,8 +1857,8 @@
             type="form"
             name="PermitForAccessions"
             class="edu.ku.brc.specify.datamodel.Permit"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Permit subform for Acessions.]]></desc>
             <enableRules/>
@@ -1910,8 +1910,8 @@
             type="form" 
             name="Project" 
             class="edu.ku.brc.specify.datamodel.Project" 
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj" 
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form For Project]]></desc>
             <columnDef>100px,2px,p,2px,p,2px,100px,2px,100px,2px,100px,p:g</columnDef>
@@ -1971,8 +1971,8 @@
             type="form"
             name="InfoRequest"
             class="edu.ku.brc.specify.datamodel.InfoRequest"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[The Info Request form.]]></desc>
             <enableRules/>
@@ -2013,8 +2013,8 @@
             type="rstable"
             name="InfoRequestColObj"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[The Info Request Collection Object form.]]></desc>
             <enableRules/>
@@ -2065,8 +2065,8 @@
             type="formtable"
             name="Preparation Table"
             class="edu.ku.brc.specify.datamodel.Preparation"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Preparation subform table for Collection Object form.]]></desc>
             <definition>Preparation</definition>
@@ -2076,8 +2076,8 @@
             type="form"
             name="Preparation"
             class="edu.ku.brc.specify.datamodel.Preparation"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Preparation for Collection Object form.]]></desc>
             <enableRules/>
 
@@ -2113,8 +2113,8 @@
             type="form"
             name="Shipment"
             class="edu.ku.brc.specify.datamodel.Shipment"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Shipment form.]]></desc>
             <columnDef>100px,4px,p,10px,p,4px,p,p:g</columnDef>
@@ -2152,8 +2152,8 @@
             name="TaxonLabelFormattingPlugin"
             type="form"
             class="edu.ku.brc.specify.datamodel.Taxon"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Taxon Label Formatting Plugin Form]]></desc>
             <enableRules/>
@@ -2171,8 +2171,8 @@
             name="SubPaleoContext"
             type="form"
             class="edu.ku.brc.specify.datamodel.PaleoContext"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Stratigraphy subform within Collection Object form.]]></desc>
             <enableRules/>
@@ -2201,8 +2201,8 @@
             type="form" 
             name="TreatmentEvent" 
             class="edu.ku.brc.specify.datamodel.TreatmentEvent" 
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj" 
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form For Treatment Event]]></desc>
             <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
@@ -2252,8 +2252,8 @@
             type="form" 
             name="TreatmentEventForAccession" 
             class="edu.ku.brc.specify.datamodel.TreatmentEvent" 
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj" 
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form For Treatment Event]]></desc>
             <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
@@ -2300,8 +2300,8 @@
             type="form" 
             name="TreatmentEventForCollObj" 
             class="edu.ku.brc.specify.datamodel.TreatmentEvent" 
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj" 
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form For Treatment Event]]></desc>
             <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>

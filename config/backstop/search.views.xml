@@ -277,8 +277,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="AgentSearch"
             class="edu.ku.brc.specify.datamodel.Agent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Agent Search Form]]></desc>
             <enableRules/>
@@ -322,8 +322,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="AgentNameSearch"
             class="edu.ku.brc.specify.datamodel.Agent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Agent Name Search Form]]></desc>
             <enableRules/>
@@ -347,8 +347,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="AppraisalSearch"
             class="edu.ku.brc.specify.datamodel.Appraisal"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Agent Name Search Form]]></desc>
             <enableRules/>
@@ -372,8 +372,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="CollectionObjectSearch"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The CollectionObject Search Form]]></desc>
             <enableRules/>
@@ -395,8 +395,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="CollectingEventSearch"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The CollectingEvent Search Form]]></desc>
             <enableRules/>
@@ -422,8 +422,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="CollectingTripSearch"
             class="edu.ku.brc.specify.datamodel.CollectingTrip"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Collecting Trip Search Form]]></desc>
             <enableRules/>
@@ -450,8 +450,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="DivisionSearch"
             class="edu.ku.brc.specify.datamodel.Division"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Division Search Form]]></desc>
             <enableRules/>
@@ -474,8 +474,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="JournalSearch"
             class="edu.ku.brc.specify.datamodel.Journal"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The CollectingEvent Search Form]]></desc>
             <enableRules/>
@@ -497,8 +497,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="PermitSearch"
             class="edu.ku.brc.specify.datamodel.Permit"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Agent Search Form]]></desc>
             <enableRules/>
@@ -545,8 +545,8 @@ Good: <cell type="field" name="FieldNum" ...>
          <viewdef type="form"
             name="AccessionSearch"
             class="edu.ku.brc.specify.datamodel.Accession"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Accession Search Form]]></desc>
             <enableRules/>
@@ -583,8 +583,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="LocalitySearch"
             class="edu.ku.brc.specify.datamodel.Locality"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Locality Search Form]]></desc>
             <enableRules/>
@@ -603,8 +603,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="PrepTypeSearch"
             class="edu.ku.brc.specify.datamodel.PrepType"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The PrepType Search Form]]></desc>
             <enableRules/>
@@ -623,8 +623,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="DisciplineSearch"
             class="edu.ku.brc.specify.datamodel.Discipline"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Discipline Search Form]]></desc>
             <enableRules/>
@@ -647,8 +647,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="AutoNumberingSchemeSearch"
             class="edu.ku.brc.specify.datamodel.AutoNumberingScheme"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The AutoNumberingScheme Search Form]]></desc>
             <enableRules/>
@@ -671,8 +671,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="ReferenceWorkSearch"
             class="edu.ku.brc.specify.datamodel.ReferenceWork"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Taxon Search Form]]></desc>
             <enableRules/>
@@ -691,8 +691,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="TaxonSearch"
             class="edu.ku.brc.specify.datamodel.Taxon"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Taxon Search Form]]></desc>
             <enableRules/>
@@ -715,8 +715,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="GeographySearch"
             class="edu.ku.brc.specify.datamodel.Geography"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Geography Search Form]]></desc>
             <enableRules/>
@@ -735,8 +735,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="StorageSearch"
             class="edu.ku.brc.specify.datamodel.Storage"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Storage Search Form]]></desc>
             <enableRules/>
@@ -755,8 +755,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="GeologicTimePeriodSearch"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The GeologicTimePeriod Search Form]]></desc>
             <enableRules/>
@@ -775,8 +775,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="BioStratSearch"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The BioStrat Search Form]]></desc>
             <enableRules/>
@@ -795,8 +795,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="LithoStratSearch"
             class="edu.ku.brc.specify.datamodel.LithoStrat"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The LithoStrat Search Form]]></desc>
             <enableRules/>
@@ -815,8 +815,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="PaleoContextSearch"
             class="edu.ku.brc.specify.datamodel.PaleoContext"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The PaleoContext Search Form]]></desc>
             <enableRules/>
@@ -839,8 +839,8 @@ Good: <cell type="field" name="FieldNum" ...>
         <viewdef type="form"
             name="AttachmentSearch"
             class="edu.ku.brc.specify.datamodel.Attachment"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
             
             <desc><![CDATA[The Attachment Search Form]]></desc>
             <enableRules/>

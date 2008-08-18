@@ -53,7 +53,7 @@ public class IconTray extends JPanel
     /** A JList used to display the icons representing the items. */
     protected JList iconListWidget;
     /** The model holding the included items. */
-    protected ModifiableListModel<FormDataObjIFace> listModel;
+    protected ModifiableListModel<Object> listModel;
     /** A JScrollPane containing the iconListWidget. */
     protected JScrollPane listScrollPane;
     
@@ -65,7 +65,7 @@ public class IconTray extends JPanel
     public IconTray(int layoutStyle)
     {
         style = layoutStyle;
-        listModel = new DefaultModifiableListModel<FormDataObjIFace>();
+        listModel = new DefaultModifiableListModel<Object>();
         ListCellRenderer renderer = new TrayListCellRenderer();
         iconListWidget = new JList(listModel);
         iconListWidget.setCellRenderer(renderer);
@@ -191,9 +191,9 @@ public class IconTray extends JPanel
      * 
      * @return a Set containing all items in the tray
      */
-    public synchronized Set<FormDataObjIFace> getItems()
+    public synchronized Set<Object> getItems()
     {
-        HashSet<FormDataObjIFace> set = new HashSet<FormDataObjIFace>();
+        HashSet<Object> set = new HashSet<Object>();
         for(int i = 0; i < listModel.getSize(); ++i)
         {
             set.add(listModel.getElementAt(i));

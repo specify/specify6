@@ -39,6 +39,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayActionAdapter;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -51,7 +52,6 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 
 /**
  * FishBase plugin For SPNHC Demo

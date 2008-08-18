@@ -554,8 +554,8 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         return null;
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.DropDownButton#getPopMenuSize()
+    /**
+     * @return
      */
     protected int getPopMenuSize()
     {

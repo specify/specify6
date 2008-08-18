@@ -46,8 +46,8 @@
             type="form"
             name="Collection Object"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
@@ -132,8 +132,8 @@
             type="form"
             name="CollectingEvent"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Collecting Event]]></desc>
             <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
@@ -183,8 +183,8 @@
             type="form"
             name="SubCollectingEvent"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Sub Collecting Event]]></desc>
             <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>

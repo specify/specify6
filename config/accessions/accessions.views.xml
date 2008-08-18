@@ -123,8 +123,8 @@
             type="iconview"
             name="AccessionIconView"
             class="edu.ku.brc.specify.datamodel.Accession"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Accession Agent Icon Viewer]]></desc>
         </viewdef>
         
@@ -132,8 +132,8 @@
             type="iconview"
             name="AccessionAgentIconView"
             class="edu.ku.brc.specify.datamodel.AccessionAgent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Accession Agent Icon Viewer]]></desc>
         </viewdef>
         
@@ -141,8 +141,8 @@
             type="form"
             name="Accession"
             class="edu.ku.brc.specify.datamodel.Accession"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
@@ -219,8 +219,8 @@
             type="formtable"
             name="Accession Table"
             class="edu.ku.brc.specify.datamodel.Accession"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Accession Table.]]></desc>
             <definition>Accession</definition>
         </viewdef>
@@ -230,8 +230,8 @@
             type="form"
             name="AccessionAgent"
             class="edu.ku.brc.specify.datamodel.AccessionAgent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
@@ -258,8 +258,8 @@
             type="form"
             name="Agent"
             class="edu.ku.brc.specify.datamodel.Agent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
             <columnDef>p,3dlu,p,3dlu,p,3dlu,p</columnDef>
@@ -301,8 +301,8 @@
             type="form"
             name="Organization"
             class="edu.ku.brc.specify.datamodel.Agent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
             <columnDef>p,3dlu,p,p:g</columnDef>
@@ -334,8 +334,8 @@
             type="form"
             name="Permit"
             class="edu.ku.brc.specify.datamodel.Permit"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Permit subform for Acessions.]]></desc>
             <enableRules/>
@@ -397,8 +397,8 @@
             type="form"
             name="AccessionAuthorization"
             class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Permit subform for AccessionAuthorization.]]></desc>
             <enableRules/>
@@ -422,8 +422,8 @@
             type="form"
             name="Address"
             class="edu.ku.brc.specify.datamodel.Address"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Address subform for Acessions.]]></desc>
             <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p</columnDef>
@@ -476,8 +476,8 @@
             type="form"
             name="Loan"
             class="edu.ku.brc.specify.datamodel.Loan"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Loan viewing form.]]></desc>
             <columnDef>p,6dlu,p,15dlu,p</columnDef>
@@ -529,8 +529,8 @@
             type="iconview"
             name="AttachmentsIconView"
             class="edu.ku.brc.specify.datamodel.Attachment"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Attachments Icon Viewer]]></desc>
         </viewdef>
 
@@ -538,8 +538,8 @@
         	type="form"
         	name="Attachment"
         	class="edu.ku.brc.specify.datamodel.Attachment"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[The Attachments Icon Viewer]]></desc>
             <columnDef>p,3dlu,p,15dlu,p</columnDef>

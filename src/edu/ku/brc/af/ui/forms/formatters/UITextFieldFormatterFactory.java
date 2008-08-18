@@ -64,7 +64,7 @@ public class UITextFieldFormatterFactory extends UIFieldFormatterFactory
 				                                    false, 
 				                                    null);
 
-		AutoNumberIFace autoNumber = UIFieldFormatterMgr.createAutoNumber("edu.ku.brc.dbsupport.AutoNumberGeneric", 
+		AutoNumberIFace autoNumber = UIFieldFormatterMgr.createAutoNumber("edu.ku.brc.af.core.db.AutoNumberGeneric", 
 				                                                          clazz.getName(), 
 				                                                          fieldInfo.getName());
 		fmt.setAutoNumber(autoNumber);

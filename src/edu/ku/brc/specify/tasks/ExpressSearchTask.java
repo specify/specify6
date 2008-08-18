@@ -69,6 +69,7 @@ import edu.ku.brc.af.core.expresssearch.SearchTermField;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.af.ui.SearchBox;
 import edu.ku.brc.af.ui.db.JAutoCompTextField;
 import edu.ku.brc.af.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
@@ -93,7 +94,6 @@ import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.SearchBox;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 /**
