@@ -71,6 +71,7 @@ import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -110,7 +111,6 @@ import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
  * @author rod

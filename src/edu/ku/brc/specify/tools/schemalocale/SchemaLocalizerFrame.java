@@ -50,6 +50,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.SpecifyWebLinkMgr;
@@ -64,7 +65,6 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.IconManager.IconSize;
-import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
  * @author rod

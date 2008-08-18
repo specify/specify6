@@ -17,10 +17,10 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandListener;
-import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
  * @author rod

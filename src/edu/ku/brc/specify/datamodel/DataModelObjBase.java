@@ -49,8 +49,8 @@ import edu.ku.brc.af.ui.forms.DataObjectSettableFactory;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.af.ui.weblink.WebLinkDataProviderIFace;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.weblink.WebLinkDataProviderIFace;
 
 @MappedSuperclass
 public abstract class DataModelObjBase implements FormDataObjIFace,

@@ -78,6 +78,9 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFormatterListEdtDlg;
+import edu.ku.brc.af.ui.weblink.WebLinkConfigDlg;
+import edu.ku.brc.af.ui.weblink.WebLinkDef;
+import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
@@ -86,9 +89,6 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.weblink.WebLinkConfigDlg;
-import edu.ku.brc.ui.weblink.WebLinkDef;
-import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
  * @author rod

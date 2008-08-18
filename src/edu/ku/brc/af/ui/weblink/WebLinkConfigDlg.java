@@ -4,7 +4,7 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  *
  */
-package edu.ku.brc.ui.weblink;
+package edu.ku.brc.af.ui.weblink;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;

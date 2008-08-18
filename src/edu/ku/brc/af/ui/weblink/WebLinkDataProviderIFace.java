@@ -4,7 +4,7 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  *
  */
-package edu.ku.brc.ui.weblink;
+package edu.ku.brc.af.ui.weblink;
 
 /**
  * Any object that is set into a WebLinkButton can implement this interface to provide data

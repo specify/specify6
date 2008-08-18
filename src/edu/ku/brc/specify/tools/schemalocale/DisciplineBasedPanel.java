@@ -39,6 +39,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.init.BldrPickList;
 import edu.ku.brc.specify.config.init.BldrPickListItem;
@@ -47,7 +48,6 @@ import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
  * @author rods

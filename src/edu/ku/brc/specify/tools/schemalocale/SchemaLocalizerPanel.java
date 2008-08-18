@@ -71,6 +71,8 @@ import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFmtListEdtDlg;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.af.ui.weblink.WebLinkConfigDlg;
+import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
@@ -79,8 +81,6 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.weblink.WebLinkConfigDlg;
-import edu.ku.brc.ui.weblink.WebLinkMgr;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 /**

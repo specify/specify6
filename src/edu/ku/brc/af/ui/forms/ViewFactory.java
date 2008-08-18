@@ -97,6 +97,7 @@ import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.af.ui.forms.validation.ValTextArea;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.af.ui.forms.validation.ValidatedJPanel;
+import edu.ku.brc.af.ui.weblink.WebLinkButton;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.BrowseBtnPanel;
 import edu.ku.brc.ui.ColorChooser;
@@ -110,7 +111,6 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.weblink.WebLinkButton;
 
 /**
  * Creates FormViewObj object that implement the Viewable interface.

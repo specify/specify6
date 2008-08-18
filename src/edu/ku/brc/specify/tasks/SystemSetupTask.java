@@ -54,6 +54,8 @@ import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
+import edu.ku.brc.af.ui.weblink.WebLinkConfigDlg;
+import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
@@ -70,8 +72,6 @@ import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.Trash;
-import edu.ku.brc.ui.weblink.WebLinkConfigDlg;
-import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
  *

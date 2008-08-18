@@ -7,7 +7,7 @@
 /**
  * 
  */
-package edu.ku.brc.ui.weblink;
+package edu.ku.brc.af.ui.weblink;
 
 import com.thoughtworks.xstream.XStream;
 

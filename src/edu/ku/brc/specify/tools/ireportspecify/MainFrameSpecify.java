@@ -52,6 +52,7 @@ import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -70,7 +71,6 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
  * @author timbo

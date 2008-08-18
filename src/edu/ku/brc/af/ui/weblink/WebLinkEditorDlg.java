@@ -4,7 +4,7 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  *
  */
-package edu.ku.brc.ui.weblink;
+package edu.ku.brc.af.ui.weblink;
 
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
