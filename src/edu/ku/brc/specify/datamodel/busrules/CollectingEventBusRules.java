@@ -13,11 +13,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */package edu.ku.brc.specify.datamodel.busrules;
 
+import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  * @author rod 

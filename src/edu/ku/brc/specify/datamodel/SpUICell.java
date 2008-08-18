@@ -40,20 +40,20 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellCommandIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellLabelIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellPanelIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellSeparatorIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellSubViewIFace;
+import edu.ku.brc.af.ui.forms.persist.FormRowIFace;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.ui.forms.persist.AltViewIFace;
-import edu.ku.brc.ui.forms.persist.FormCellCommandIFace;
-import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
-import edu.ku.brc.ui.forms.persist.FormCellIFace;
-import edu.ku.brc.ui.forms.persist.FormCellLabelIFace;
-import edu.ku.brc.ui.forms.persist.FormCellPanelIFace;
-import edu.ku.brc.ui.forms.persist.FormCellSeparatorIFace;
-import edu.ku.brc.ui.forms.persist.FormCellSubViewIFace;
-import edu.ku.brc.ui.forms.persist.FormRowIFace;
-import edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode;
 
 /**
  * @author rods

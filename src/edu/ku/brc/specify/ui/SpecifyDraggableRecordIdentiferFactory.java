@@ -8,8 +8,8 @@ package edu.ku.brc.specify.ui;
 
 import javax.swing.ImageIcon;
 
-import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
-import edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory;
+import edu.ku.brc.af.ui.forms.DraggableRecordIdentifier;
+import edu.ku.brc.af.ui.forms.DraggableRecordIdentifierFactory;
 
 /**
  * Specify's implementation of the factory.

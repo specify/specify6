@@ -13,15 +13,15 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import edu.ku.brc.ui.forms.persist.AltView;
-import edu.ku.brc.ui.forms.persist.FormRow;
-import edu.ku.brc.ui.forms.persist.FormViewDef;
-import edu.ku.brc.ui.forms.persist.TableViewDef;
-import edu.ku.brc.ui.forms.persist.View;
-import edu.ku.brc.ui.forms.persist.ViewDef;
-import edu.ku.brc.ui.forms.persist.ViewDefIFace;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
-import edu.ku.brc.ui.forms.persist.ViewSet;
+import edu.ku.brc.af.ui.forms.persist.AltView;
+import edu.ku.brc.af.ui.forms.persist.FormRow;
+import edu.ku.brc.af.ui.forms.persist.FormViewDef;
+import edu.ku.brc.af.ui.forms.persist.TableViewDef;
+import edu.ku.brc.af.ui.forms.persist.View;
+import edu.ku.brc.af.ui.forms.persist.ViewDef;
+import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewSet;
 
 /**
  * @author rod

@@ -25,12 +25,12 @@ import javax.swing.JTextField;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.validation.FormValidator;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.FormViewObj;
-import edu.ku.brc.ui.forms.validation.FormValidator;
-import edu.ku.brc.ui.forms.validation.ValComboBox;
 
 /**
  * @author rod

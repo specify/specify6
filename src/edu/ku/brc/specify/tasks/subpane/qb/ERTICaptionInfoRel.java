@@ -12,11 +12,11 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import java.util.Collection;
 
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
-import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * @author timbo

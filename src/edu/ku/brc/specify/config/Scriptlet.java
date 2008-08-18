@@ -44,14 +44,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /*
  * @code_status Unknown (auto-generated)

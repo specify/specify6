@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.af.prefs;
 
-import edu.ku.brc.ui.forms.DataObjectGettable;
+import edu.ku.brc.af.ui.forms.DataObjectGettable;
 
 /**
  * This knows how to get a field's value from a POJO.<br><br>

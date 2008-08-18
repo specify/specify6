@@ -10,9 +10,9 @@ package edu.ku.brc.specify.datamodel.busrules;
 import java.io.File;
 import java.io.IOException;
 
+import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.thumbnails.Thumbnailer;

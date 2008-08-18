@@ -58,12 +58,12 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.specify.dbsupport.RecordTypeCode;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeItem;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.PickListDBAdapterIFace;
-import edu.ku.brc.ui.db.PickListItemIFace;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
 

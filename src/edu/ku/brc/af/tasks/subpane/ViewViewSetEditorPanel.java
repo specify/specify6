@@ -31,12 +31,12 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.persist.AltViewIFace;
-import edu.ku.brc.ui.forms.persist.ViewDefIFace;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
-import edu.ku.brc.ui.forms.persist.ViewSetIFace;
 
 /**
  * @author rod

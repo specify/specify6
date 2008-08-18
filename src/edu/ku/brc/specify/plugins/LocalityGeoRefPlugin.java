@@ -25,6 +25,7 @@ import javax.swing.event.ChangeListener;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -42,7 +43,6 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.util.Pair;
 
 /**

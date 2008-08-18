@@ -25,12 +25,12 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.forms.persist.FormRowIFace;
+import edu.ku.brc.af.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.persist.FormRowIFace;
-import edu.ku.brc.ui.forms.persist.FormViewDef;
 
 /**
  * Implementation of a Google Earth Export plugin for the form system.

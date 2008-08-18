@@ -11,10 +11,10 @@ import junit.framework.TestCase;
 import org.dom4j.Element;
 import org.junit.Before;
 
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.ui.CatalogNumberUIFieldFormatter;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 
 public class FormatterTest extends TestCase

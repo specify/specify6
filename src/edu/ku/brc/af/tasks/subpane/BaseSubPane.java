@@ -50,10 +50,10 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.MultiView;
 
 /**
  * Class that implements the SubPanelIFace interface which enables derived classes to participate in the main pane.

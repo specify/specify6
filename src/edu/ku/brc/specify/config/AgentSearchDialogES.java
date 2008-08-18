@@ -34,6 +34,11 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.ViewFactory;
+import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
@@ -41,11 +46,6 @@ import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.ui.DBObjSearchDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.QueryForIdResultsIFace;
-import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.ViewFactory;
-import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * NOTE: Thiks is an example of how to do the Search dialog usin express search instead of a regular search.

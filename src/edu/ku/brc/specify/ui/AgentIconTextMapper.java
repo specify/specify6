@@ -19,6 +19,7 @@ package edu.ku.brc.specify.ui;
 
 import javax.swing.ImageIcon;
 
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.BorrowAgent;
@@ -27,7 +28,6 @@ import edu.ku.brc.specify.datamodel.DeaccessionAgent;
 import edu.ku.brc.specify.datamodel.LoanAgent;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
  * @author rods

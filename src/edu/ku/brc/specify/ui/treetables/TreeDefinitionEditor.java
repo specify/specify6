@@ -48,6 +48,10 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
@@ -69,10 +73,6 @@ import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
-import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
-import edu.ku.brc.ui.forms.BusinessRulesIFace;
-import edu.ku.brc.ui.forms.MultiView;
 
 /**
  *

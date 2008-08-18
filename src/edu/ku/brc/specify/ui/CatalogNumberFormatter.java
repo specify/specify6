@@ -18,9 +18,9 @@ import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.ui.forms.formatters.DataObjDataField;
-import edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace;
-import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
+import edu.ku.brc.af.ui.forms.formatters.DataObjDataField;
+import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
+import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
 
 /**
  * Formats a single Latitude or Longitude field from a locality object.

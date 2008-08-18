@@ -52,6 +52,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
@@ -61,8 +63,6 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
  * @author rod

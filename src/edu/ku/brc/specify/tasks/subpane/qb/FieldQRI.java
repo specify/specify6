@@ -11,7 +11,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * @author rod

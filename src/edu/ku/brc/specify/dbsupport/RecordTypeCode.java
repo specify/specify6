@@ -14,9 +14,9 @@ import java.util.Vector;
 import javax.swing.ComboBoxModel;
 import javax.swing.event.ListDataListener;
 
-import edu.ku.brc.ui.db.PickListDBAdapterIFace;
-import edu.ku.brc.ui.db.PickListIFace;
-import edu.ku.brc.ui.db.PickListItemIFace;
+import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.af.ui.db.PickListIFace;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
 
 /**
  * @author timbo

@@ -69,6 +69,9 @@ import edu.ku.brc.af.core.expresssearch.SearchTermField;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.af.ui.db.JAutoCompTextField;
+import edu.ku.brc.af.ui.db.PickListDBAdapterFactory;
+import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.JPAQuery;
@@ -93,9 +96,6 @@ import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.SearchBox;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.JAutoCompTextField;
-import edu.ku.brc.ui.db.PickListDBAdapterFactory;
-import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 /**
  * This task will enable the user to index the database and preform express searches. This is where the Express Search starts.
  *

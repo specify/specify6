@@ -36,14 +36,14 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.FormProcessor;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
+import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.validation.FormValidator;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.tasks.SystemSetupTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.db.PickListItemIFace;
-import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
  * The process for the pick list "editor" form

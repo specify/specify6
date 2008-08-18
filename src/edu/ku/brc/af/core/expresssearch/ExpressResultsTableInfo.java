@@ -30,8 +30,8 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.db.ERTICaptionInfo;
 
 /**
  * Hold information about the subset of returns results. Each Express Search can return results from several different

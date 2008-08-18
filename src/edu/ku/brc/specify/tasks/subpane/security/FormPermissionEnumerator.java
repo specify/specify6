@@ -11,10 +11,10 @@ import java.util.Hashtable;
 import java.util.List;
 
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * This class enumerates form (view) permissions associated with a principal in a given scope

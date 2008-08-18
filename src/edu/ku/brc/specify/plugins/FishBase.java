@@ -39,6 +39,9 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayActionAdapter;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.extras.FishBaseInfoGetter;
 import edu.ku.brc.specify.extras.FishBaseInfoGetterListener;
@@ -49,9 +52,6 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
-import edu.ku.brc.ui.db.ViewBasedDisplayActionAdapter;
-import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
-import edu.ku.brc.ui.forms.MultiView;
 
 /**
  * FishBase plugin For SPNHC Demo

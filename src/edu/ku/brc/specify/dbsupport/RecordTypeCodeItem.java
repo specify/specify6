@@ -11,8 +11,8 @@ package edu.ku.brc.specify.dbsupport;
 
 import java.sql.Timestamp;
 
-import edu.ku.brc.ui.db.PickListIFace;
-import edu.ku.brc.ui.db.PickListItemIFace;
+import edu.ku.brc.af.ui.db.PickListIFace;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.util.Pair;
 
 /**

@@ -78,6 +78,8 @@ import edu.ku.brc.af.tasks.subpane.BarChartPane;
 import edu.ku.brc.af.tasks.subpane.ChartPane;
 import edu.ku.brc.af.tasks.subpane.PieChartPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -124,9 +126,7 @@ import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.dnd.Trash;
-import edu.ku.brc.ui.forms.MultiView;
 
 /**
  * Placeholder for additional work.

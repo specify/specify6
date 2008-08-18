@@ -8,10 +8,10 @@ package edu.ku.brc.specify.ui;
 
 import javax.swing.ImageIcon;
 
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
  * This class is an implementation of both {@link ObjectTextMapper} and {@link ObjectIconMapper}

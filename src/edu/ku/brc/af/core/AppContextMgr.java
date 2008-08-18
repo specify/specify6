@@ -23,9 +23,9 @@ import java.util.List;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
-import edu.ku.brc.ui.forms.persist.ViewSetIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
 
 /**
  * Abstract class for setting application context. It is designed that each application should implement its own.<br>

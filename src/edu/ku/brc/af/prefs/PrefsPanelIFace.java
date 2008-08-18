@@ -16,7 +16,7 @@ package edu.ku.brc.af.prefs;
 
 import java.util.Properties;
 
-import edu.ku.brc.ui.forms.validation.FormValidator;
+import edu.ku.brc.af.ui.forms.validation.FormValidator;
 
 /**
  * Simple interface for Pref Panels

@@ -9,10 +9,10 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
-import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 
 /**
  * @author timbo

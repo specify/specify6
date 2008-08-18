@@ -35,6 +35,14 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.db.ERTICaptionInfo;
+import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.af.ui.forms.DataObjectSettable;
+import edu.ku.brc.af.ui.forms.DataObjectSettableFactory;
+import edu.ku.brc.af.ui.forms.FormHelper;
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.JPAQuery;
@@ -49,14 +57,6 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.ERTICaptionInfo;
-import edu.ku.brc.ui.db.QueryForIdResultsIFace;
-import edu.ku.brc.ui.forms.DataObjectSettable;
-import edu.ku.brc.ui.forms.DataObjectSettableFactory;
-import edu.ku.brc.ui.forms.FormHelper;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
-import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * @code_status Alpha

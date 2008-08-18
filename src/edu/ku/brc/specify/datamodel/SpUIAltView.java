@@ -34,9 +34,9 @@ import javax.persistence.Transient;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.ui.forms.persist.AltViewIFace;
-import edu.ku.brc.ui.forms.persist.ViewDefIFace;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 
 /**
  * @author rods

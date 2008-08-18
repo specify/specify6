@@ -24,10 +24,10 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.forms.ViewSetMgr;
+import edu.ku.brc.af.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.ViewSetMgr;
-import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.util.FileCache;
 
 /**

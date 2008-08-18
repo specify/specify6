@@ -19,8 +19,8 @@ import java.awt.Component;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.ui.forms.MultiView;
 
 
 /**

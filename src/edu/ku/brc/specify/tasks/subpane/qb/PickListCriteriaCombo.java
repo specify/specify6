@@ -21,10 +21,10 @@ import javax.swing.ListCellRenderer;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.db.PickListDBAdapterIFace;
-import edu.ku.brc.ui.db.PickListItemIFace;
 
 public class PickListCriteriaCombo extends JComboBox
 {

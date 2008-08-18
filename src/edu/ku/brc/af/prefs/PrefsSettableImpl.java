@@ -16,8 +16,8 @@ package edu.ku.brc.af.prefs;
 
 import java.awt.Color;
 
+import edu.ku.brc.af.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.ColorWrapper;
-import edu.ku.brc.ui.forms.DataObjectSettable;
 
 /**
  * Class that implements the DataObjectSettable for preferences

@@ -22,10 +22,10 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.ESTermParser;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.core.expresssearch.SearchTermField;
+import edu.ku.brc.af.ui.db.ERTICaptionInfo;
+import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.ui.db.ERTICaptionInfo;
-import edu.ku.brc.ui.db.QueryForIdResultsIFace;
-import edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace;
 
 /**
  * @author rod

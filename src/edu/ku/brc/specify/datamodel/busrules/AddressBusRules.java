@@ -17,11 +17,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.BaseBusRules;
-import edu.ku.brc.ui.forms.validation.ValCheckBox;
 
 /**
  * @author rod

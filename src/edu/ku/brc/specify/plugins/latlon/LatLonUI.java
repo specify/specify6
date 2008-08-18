@@ -41,13 +41,13 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
 import static edu.ku.brc.ui.UIRegistry.*;
-import edu.ku.brc.ui.forms.validation.UIValidatable;
 
 
 

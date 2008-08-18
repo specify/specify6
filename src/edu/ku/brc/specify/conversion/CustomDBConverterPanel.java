@@ -62,14 +62,14 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.db.JEditComboBox;
+import edu.ku.brc.af.ui.db.PropertiesPickListAdapter;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.db.JEditComboBox;
-import edu.ku.brc.ui.db.PropertiesPickListAdapter;
 
 /**
  * This panel enables the user to configure all the params necessary to log into a JDBC database.<BR>

@@ -27,10 +27,10 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.tasks.subpane.formeditor.JGoodiesDefItem.ALIGN_TYPE;
 import edu.ku.brc.af.tasks.subpane.formeditor.JGoodiesDefItem.MINMAX_TYPE;
+import edu.ku.brc.af.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.forms.persist.FormViewDef;
 
 /**
  * @author rod

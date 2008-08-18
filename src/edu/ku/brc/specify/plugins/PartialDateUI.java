@@ -30,19 +30,19 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.forms.DataObjectGettable;
+import edu.ku.brc.af.ui.forms.DataObjectGettableFactory;
+import edu.ku.brc.af.ui.forms.DataObjectSettable;
+import edu.ku.brc.af.ui.forms.DataObjectSettableFactory;
+import edu.ku.brc.af.ui.forms.FormHelper;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatter;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.af.ui.forms.validation.UIValidatable;
+import edu.ku.brc.af.ui.forms.validation.ValFormattedTextField;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.DataObjectGettable;
-import edu.ku.brc.ui.forms.DataObjectGettableFactory;
-import edu.ku.brc.ui.forms.DataObjectSettable;
-import edu.ku.brc.ui.forms.DataObjectSettableFactory;
-import edu.ku.brc.ui.forms.FormHelper;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.ui.forms.validation.UIValidatable;
-import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
 
 /**
  * @author rod

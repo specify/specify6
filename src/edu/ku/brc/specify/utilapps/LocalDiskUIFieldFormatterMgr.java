@@ -11,9 +11,9 @@ package edu.ku.brc.specify.utilapps;
 
 import org.dom4j.Element;
 
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * @author rod

@@ -9,11 +9,11 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import edu.ku.brc.af.ui.db.ERTICaptionInfo;
+import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.specify.dbsupport.RecordTypeCode;
-import edu.ku.brc.ui.db.ERTICaptionInfo;
-import edu.ku.brc.ui.db.PickListDBAdapterIFace;
-import edu.ku.brc.ui.db.PickListItemIFace;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * @author timbo

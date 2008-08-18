@@ -15,9 +15,9 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.specify.datamodel.DataType;
-import edu.ku.brc.ui.forms.BaseBusRules;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 public class DataTypeBusRules extends BaseBusRules
 {   

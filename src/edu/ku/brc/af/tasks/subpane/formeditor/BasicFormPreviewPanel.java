@@ -26,12 +26,12 @@ import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.layout.CellConstraints;
 
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCell;
+import edu.ku.brc.af.ui.forms.persist.View;
+import edu.ku.brc.af.ui.forms.persist.ViewDef;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.persist.AltViewIFace;
-import edu.ku.brc.ui.forms.persist.FormCell;
-import edu.ku.brc.ui.forms.persist.View;
-import edu.ku.brc.ui.forms.persist.ViewDef;
 import edu.ku.brc.util.Pair;
 
 /**

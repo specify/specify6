@@ -19,8 +19,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  * This class provides a mapper from Objects to a String of representative text

@@ -53,14 +53,14 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.forms.validation.DataChangeListener;
+import edu.ku.brc.af.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.validation.DataChangeListener;
-import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
 
 
 /**

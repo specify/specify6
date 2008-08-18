@@ -52,6 +52,15 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.af.ui.forms.FormHelper;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.validation.DataChangeNotifier;
+import edu.ku.brc.af.ui.forms.validation.FormValidator;
+import edu.ku.brc.af.ui.forms.validation.UIValidator;
+import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpQueryField;
@@ -62,15 +71,6 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateIconButon;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.PickListDBAdapterIFace;
-import edu.ku.brc.ui.forms.FormHelper;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
-import edu.ku.brc.ui.forms.validation.FormValidator;
-import edu.ku.brc.ui.forms.validation.UIValidator;
-import edu.ku.brc.ui.forms.validation.ValCheckBox;
-import edu.ku.brc.ui.forms.validation.ValComboBox;
-import edu.ku.brc.ui.forms.validation.ValTextField;
 import edu.ku.brc.util.Pair;
 
 /**

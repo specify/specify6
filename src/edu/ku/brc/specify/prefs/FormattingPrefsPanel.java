@@ -33,14 +33,14 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
+import edu.ku.brc.af.ui.forms.validation.UIValidator;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.helpers.ImageFilter;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.validation.UIValidator;
-import edu.ku.brc.ui.forms.validation.ValComboBox;
 import edu.ku.brc.util.Pair;
 
 /**

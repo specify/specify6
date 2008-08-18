@@ -23,8 +23,8 @@ import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.ui.db.ERTICaptionInfo;
-import edu.ku.brc.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.af.ui.db.ERTICaptionInfo;
+import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.util.Pair;
 
 

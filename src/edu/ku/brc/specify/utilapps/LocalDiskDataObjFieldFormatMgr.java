@@ -11,8 +11,8 @@ package edu.ku.brc.specify.utilapps;
 
 import org.dom4j.Element;
 
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
  * @author rod

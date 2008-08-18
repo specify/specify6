@@ -8,7 +8,7 @@ package edu.ku.brc.util;
 
 import java.util.Comparator;
 
-import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 
 /**
  * A comparator for sorting objects that implement the FormDataObjIFace interface.

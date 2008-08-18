@@ -17,15 +17,15 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.ViewFactory;
+import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
+import edu.ku.brc.af.ui.forms.validation.FormValidator;
+import edu.ku.brc.af.ui.forms.validation.UIValidatable;
+import edu.ku.brc.af.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.forms.FormViewObj;
-import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.ViewFactory;
-import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
-import edu.ku.brc.ui.forms.validation.FormValidator;
-import edu.ku.brc.ui.forms.validation.UIValidatable;
-import edu.ku.brc.ui.forms.validation.UIValidator;
 
 /**
  * @author rod

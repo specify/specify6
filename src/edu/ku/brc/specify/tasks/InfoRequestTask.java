@@ -48,6 +48,12 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.TableViewObj;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -60,13 +66,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
-import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.dnd.Trash;
-import edu.ku.brc.ui.forms.FormViewObj;
-import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.TableViewObj;
-import edu.ku.brc.ui.forms.Viewable;
 
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.

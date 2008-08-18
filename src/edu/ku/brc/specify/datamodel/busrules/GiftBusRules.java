@@ -9,9 +9,9 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.specify.datamodel.Permit;
-import edu.ku.brc.ui.forms.BaseBusRules;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  * @author rod

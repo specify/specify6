@@ -16,8 +16,8 @@ package edu.ku.brc.ui;
 
 import java.awt.Window;
 
-import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
-import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
 
 /**
  * Interface to the factory for creating View (Form) Based Dialogs/Frame or Search dialogs.<br>

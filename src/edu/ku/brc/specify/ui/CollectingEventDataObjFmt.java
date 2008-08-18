@@ -22,13 +22,13 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.forms.formatters.DataObjDataField;
+import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
+import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.ui.forms.formatters.DataObjDataField;
-import edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace;
-import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 
 /**
  * @author rod

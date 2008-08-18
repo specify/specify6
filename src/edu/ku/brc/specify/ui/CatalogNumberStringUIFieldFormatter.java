@@ -11,11 +11,11 @@ import java.util.Vector;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.util.Pair;
 
 /**

@@ -35,6 +35,8 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.db.DatabaseConnectionProperties;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
@@ -64,8 +66,6 @@ import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.DatabaseConnectionProperties;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
  * Create more sample data, letting Hibernate persist it for us.

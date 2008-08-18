@@ -18,10 +18,10 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import edu.ku.brc.af.ui.forms.validation.DataChangeListener;
+import edu.ku.brc.af.ui.forms.validation.DataChangeNotifier;
+import edu.ku.brc.af.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.forms.validation.DataChangeListener;
-import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
-import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
  * @author rod

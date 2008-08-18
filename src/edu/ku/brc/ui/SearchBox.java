@@ -34,7 +34,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 
 import edu.ku.brc.af.core.expresssearch.SearchConfigService;
-import edu.ku.brc.ui.db.JAutoCompTextField;
+import edu.ku.brc.af.ui.db.JAutoCompTextField;
 
 /**
  * @author rod

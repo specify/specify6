@@ -40,6 +40,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import edu.ku.brc.af.ui.forms.validation.UIValidatable;
+import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -47,8 +49,6 @@ import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.ui.dnd.ShadowFactory;
-import edu.ku.brc.ui.forms.validation.UIValidatable;
-import edu.ku.brc.ui.forms.validation.ValCheckBox;
 
 /**
  * Simple panel that doies it's own layout of a JLabel (Caption) and a JComponent. It is draggable on a panel (canvas).

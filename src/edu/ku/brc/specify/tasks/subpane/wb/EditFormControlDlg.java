@@ -49,12 +49,12 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
+import edu.ku.brc.af.ui.forms.validation.ValFormattedTextField;
+import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.forms.validation.ValCheckBox;
-import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
-import edu.ku.brc.ui.forms.validation.ValSpinner;
 
 /**
  * Creates a Dialog used to edit form control attributes.

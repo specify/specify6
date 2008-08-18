@@ -27,7 +27,7 @@ import javax.swing.ScrollPaneConstants;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.renderers.TrayListCellRenderer;
 import edu.ku.brc.util.FormDataObjComparator;
 import edu.ku.brc.util.Orderable;

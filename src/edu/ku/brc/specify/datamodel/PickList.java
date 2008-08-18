@@ -47,8 +47,8 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.ui.db.PickListIFace;
-import edu.ku.brc.ui.db.PickListItemIFace;
+import edu.ku.brc.af.ui.db.PickListIFace;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
 
 /**
  * A pickList of items. A pcikList can be readonly or have a set number of items where the oldest items "falls off" the queue

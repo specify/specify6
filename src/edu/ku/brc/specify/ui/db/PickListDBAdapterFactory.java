@@ -11,14 +11,14 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.af.ui.db.PickListIFace;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
-import edu.ku.brc.ui.db.PickListDBAdapterIFace;
-import edu.ku.brc.ui.db.PickListIFace;
-import edu.ku.brc.ui.db.PickListItemIFace;
 
 /**
  * Factory for creating PickListDBAdapterIFace objects and PickListIFace objects.
@@ -30,7 +30,7 @@ import edu.ku.brc.ui.db.PickListItemIFace;
  * Created Date: Nov 10, 2006
  *
  */
-public class PickListDBAdapterFactory extends edu.ku.brc.ui.db.PickListDBAdapterFactory
+public class PickListDBAdapterFactory extends edu.ku.brc.af.ui.db.PickListDBAdapterFactory
 {
     protected static final Logger log = Logger.getLogger(PickListDBAdapterFactory.class);
     

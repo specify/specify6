@@ -18,7 +18,7 @@ import java.awt.Component;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import edu.ku.brc.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 
 /**
  * The important 

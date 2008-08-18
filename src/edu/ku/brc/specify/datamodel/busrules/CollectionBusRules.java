@@ -16,9 +16,9 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.ui.forms.BaseBusRules;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  * @author rod

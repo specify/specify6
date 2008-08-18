@@ -19,7 +19,7 @@ import java.util.Set;
 import org.hibernate.HibernateException;
 import org.hibernate.event.DeleteEvent;
 
-import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 
 /**
  * @author rods

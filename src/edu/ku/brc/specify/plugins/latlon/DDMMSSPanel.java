@@ -14,8 +14,8 @@ import org.apache.commons.lang.StringUtils;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 
-import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
-import edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType;
+import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
+import edu.ku.brc.af.ui.forms.validation.UIValidatable.ErrorType;
 import edu.ku.brc.util.LatLonConverter;
 
 /**

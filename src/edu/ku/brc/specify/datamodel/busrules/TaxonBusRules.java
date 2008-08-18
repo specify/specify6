@@ -13,12 +13,12 @@ import java.awt.event.ItemListener;
 
 import javax.swing.JCheckBox;
 
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.forms.Viewable;
 
 /**
  * A business rules class that handles various safety checking and housekeeping tasks

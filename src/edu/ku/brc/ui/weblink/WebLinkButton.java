@@ -39,18 +39,18 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormHelper;
+import edu.ku.brc.af.ui.forms.ViewFactory;
+import edu.ku.brc.af.ui.forms.validation.DataChangeListener;
+import edu.ku.brc.af.ui.forms.validation.DataChangeNotifier;
+import edu.ku.brc.af.ui.forms.validation.UIValidatable;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.forms.FormHelper;
-import edu.ku.brc.ui.forms.ViewFactory;
-import edu.ku.brc.ui.forms.validation.DataChangeListener;
-import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
-import edu.ku.brc.ui.forms.validation.UIValidatable;
-import edu.ku.brc.ui.forms.validation.ValTextField;
 import edu.ku.brc.util.AttachmentUtils;
 
 /**

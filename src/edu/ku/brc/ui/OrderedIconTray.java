@@ -23,8 +23,8 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.IconManager.IconSize;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.util.FormDataObjComparator;
 import edu.ku.brc.util.Orderable;
 import edu.ku.brc.util.OrderableComparator;

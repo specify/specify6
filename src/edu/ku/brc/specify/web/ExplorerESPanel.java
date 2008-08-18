@@ -16,12 +16,12 @@ import java.util.Vector;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import edu.ku.brc.af.ui.db.ERTICaptionInfo;
+import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
-import edu.ku.brc.ui.db.ERTICaptionInfo;
-import edu.ku.brc.ui.db.QueryForIdResultsIFace;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * @author rod

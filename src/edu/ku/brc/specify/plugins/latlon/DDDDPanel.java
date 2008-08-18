@@ -33,13 +33,13 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.ui.forms.ViewFactory;
-import edu.ku.brc.ui.forms.formatters.NumberMinMaxFormatter;
-import edu.ku.brc.ui.forms.validation.DataChangeListener;
-import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
-import edu.ku.brc.ui.forms.validation.UIValidatable;
-import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
-import edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType;
+import edu.ku.brc.af.ui.forms.ViewFactory;
+import edu.ku.brc.af.ui.forms.formatters.NumberMinMaxFormatter;
+import edu.ku.brc.af.ui.forms.validation.DataChangeListener;
+import edu.ku.brc.af.ui.forms.validation.DataChangeNotifier;
+import edu.ku.brc.af.ui.forms.validation.UIValidatable;
+import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
+import edu.ku.brc.af.ui.forms.validation.UIValidatable.ErrorType;
 import edu.ku.brc.util.LatLonConverter;
 
 /**

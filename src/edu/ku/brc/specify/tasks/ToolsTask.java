@@ -42,6 +42,8 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.HtmlDescPane;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.TableModel2Excel;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -54,8 +56,6 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
-import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 
 /**
  * A task to handle RecordSet data exporting.  This task provides a pluggable

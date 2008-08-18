@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
@@ -30,7 +31,6 @@ import edu.ku.brc.specify.datamodel.PermitAttachment;
 import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
-import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.util.AttachmentUtils;
 
 /**

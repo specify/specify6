@@ -14,9 +14,9 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.SwingConstants;
 
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.specify.ui.RepresentativeIconFactory;
 import edu.ku.brc.specify.ui.RepresentativeTextFactory;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  * An extension of {@link DefaultListCellRenderer} that delegates out the 

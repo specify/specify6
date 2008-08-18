@@ -8,10 +8,10 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Component;
 
+import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
+import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
-import edu.ku.brc.ui.forms.BaseBusRules;
-import edu.ku.brc.ui.forms.validation.ValCheckBox;
-import edu.ku.brc.ui.forms.validation.ValSpinner;
 
 /**
  * @author rod

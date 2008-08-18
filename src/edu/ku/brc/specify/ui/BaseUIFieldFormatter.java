@@ -17,12 +17,12 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.db.AutoNumberIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatter;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatter.PartialDateEnum;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatter.PartialDateEnum;
 import edu.ku.brc.util.Pair;
 
 /**

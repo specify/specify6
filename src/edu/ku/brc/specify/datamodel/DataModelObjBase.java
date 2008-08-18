@@ -42,14 +42,14 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.DataObjectGettable;
+import edu.ku.brc.af.ui.forms.DataObjectGettableFactory;
+import edu.ku.brc.af.ui.forms.DataObjectSettable;
+import edu.ku.brc.af.ui.forms.DataObjectSettableFactory;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormHelper;
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.forms.DataObjectGettable;
-import edu.ku.brc.ui.forms.DataObjectGettableFactory;
-import edu.ku.brc.ui.forms.DataObjectSettable;
-import edu.ku.brc.ui.forms.DataObjectSettableFactory;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.forms.FormHelper;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.weblink.WebLinkDataProviderIFace;
 
 @MappedSuperclass

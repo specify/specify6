@@ -16,6 +16,7 @@ import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.StatsTask;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.PairsMultipleQueryResultsHandler;
@@ -28,7 +29,6 @@ import edu.ku.brc.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * This class reads in the statistics.xml file and then enables others to ask for a statistic by name.

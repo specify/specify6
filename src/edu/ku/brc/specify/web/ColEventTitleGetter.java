@@ -11,9 +11,9 @@ package edu.ku.brc.specify.web;
 
 import java.text.SimpleDateFormat;
 
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  * @author rod

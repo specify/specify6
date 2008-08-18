@@ -55,14 +55,14 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.db.PickListDBAdapterFactory;
+import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.ui.DBObjSearchPanel;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.PickListDBAdapterFactory;
-import edu.ku.brc.ui.db.PickListDBAdapterIFace;
-import edu.ku.brc.ui.forms.FormViewObj;
-import edu.ku.brc.ui.forms.validation.ValComboBox;
 
 /**
  * @author rods

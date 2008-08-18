@@ -62,6 +62,13 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.af.ui.forms.ControlBarPanel;
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.ResultSetController;
+import edu.ku.brc.af.ui.forms.ResultSetControllerListener;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.services.mapping.LocalityMapper;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -77,13 +84,6 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.ControlBarPanel;
-import edu.ku.brc.ui.forms.FormViewObj;
-import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.ResultSetController;
-import edu.ku.brc.ui.forms.ResultSetControllerListener;
-import edu.ku.brc.ui.forms.persist.AltViewIFace;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * A default pane for display a simple label telling what it is suppose to do

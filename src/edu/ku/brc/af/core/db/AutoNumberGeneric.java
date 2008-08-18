@@ -18,10 +18,10 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 
+import edu.ku.brc.af.ui.forms.DataGetterForObj;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.ui.forms.DataGetterForObj;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.util.Pair;
 
 /**

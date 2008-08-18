@@ -24,8 +24,8 @@ import net.sf.jasperreports.engine.JRField;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.util.Pair;
 
 /**

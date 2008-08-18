@@ -8,12 +8,12 @@ package edu.ku.brc.specify.ui;
 
 import javax.swing.ImageIcon;
 
+import edu.ku.brc.af.ui.forms.DraggableRecordIdentifier;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.ui.DataFlavorTableExt;
-import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  * Dervied class that enables the "data" portion of the DraggableRecordIdentifier to be created internally as a RecordSet

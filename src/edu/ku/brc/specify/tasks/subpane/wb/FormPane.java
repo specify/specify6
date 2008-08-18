@@ -60,6 +60,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.ui.forms.ResultSetControllerListener;
+import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
+import edu.ku.brc.af.ui.forms.validation.ValTextArea;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
@@ -72,10 +76,6 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
-import edu.ku.brc.ui.forms.ResultSetControllerListener;
-import edu.ku.brc.ui.forms.validation.ValCheckBox;
-import edu.ku.brc.ui.forms.validation.ValTextArea;
-import edu.ku.brc.ui.forms.validation.ValTextField;
 
 /**
  * This Panel holds the form elements for Template definition of a Workbench. NOTE: This assumes that the IUNputPanel is a container and the label

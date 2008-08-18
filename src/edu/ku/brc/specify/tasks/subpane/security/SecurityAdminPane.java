@@ -61,6 +61,11 @@ import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.af.ui.db.JAutoCompTextField;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -75,11 +80,6 @@ import edu.ku.brc.ui.SearchBox;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.VerticalSeparator;
-import edu.ku.brc.ui.db.JAutoCompTextField;
-import edu.ku.brc.ui.db.ViewBasedDisplayPanel;
-import edu.ku.brc.ui.forms.FormViewObj;
-import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 /**

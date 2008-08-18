@@ -28,15 +28,15 @@ import org.dom4j.Element;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayFrame;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
-import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
-import edu.ku.brc.ui.db.ViewBasedDisplayFrame;
-import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
-import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * This class is the implementation for the ViewBasedDialogFactoryIFace interface for the entire application.

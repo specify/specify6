@@ -30,9 +30,9 @@ import javax.swing.SwingConstants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
+import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
-import edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace;
 
 /**
  * @author rods

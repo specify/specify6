@@ -27,8 +27,8 @@ import javax.swing.ImageIcon;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.forms.BusinessRulesIFace;
 
 /**
  * Holds the Schema information for a table.

@@ -26,15 +26,15 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.af.ui.forms.IconViewObj;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
-import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
-import edu.ku.brc.ui.forms.IconViewObj;
-import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.persist.AltViewIFace;
 
 /**
  * @author rods

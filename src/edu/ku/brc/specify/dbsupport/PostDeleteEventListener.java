@@ -16,9 +16,9 @@ package edu.ku.brc.specify.dbsupport;
 
 import org.hibernate.event.PostDeleteEvent;
 
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  * This class listens for Insert events from Hibernate so it can update the Lucene index. 

@@ -7,13 +7,13 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.forms.FormViewObj;
-import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
 
 /**
  * @author rod

@@ -44,11 +44,11 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.specify.dbsupport.RecordTypeCode;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeItem;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.PickListDBAdapterIFace;
-import edu.ku.brc.ui.db.PickListItemIFace;
 
 /**
  * 

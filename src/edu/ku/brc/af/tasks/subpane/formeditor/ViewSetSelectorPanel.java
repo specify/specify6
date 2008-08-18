@@ -60,6 +60,21 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCell;
+import edu.ku.brc.af.ui.forms.persist.FormCellField;
+import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellLabel;
+import edu.ku.brc.af.ui.forms.persist.FormRow;
+import edu.ku.brc.af.ui.forms.persist.FormRowIFace;
+import edu.ku.brc.af.ui.forms.persist.FormViewDef;
+import edu.ku.brc.af.ui.forms.persist.View;
+import edu.ku.brc.af.ui.forms.persist.ViewDef;
+import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewSet;
+import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
@@ -76,21 +91,6 @@ import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.VerticalSeparator;
-import edu.ku.brc.ui.forms.persist.AltViewIFace;
-import edu.ku.brc.ui.forms.persist.FormCell;
-import edu.ku.brc.ui.forms.persist.FormCellField;
-import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
-import edu.ku.brc.ui.forms.persist.FormCellIFace;
-import edu.ku.brc.ui.forms.persist.FormCellLabel;
-import edu.ku.brc.ui.forms.persist.FormRow;
-import edu.ku.brc.ui.forms.persist.FormRowIFace;
-import edu.ku.brc.ui.forms.persist.FormViewDef;
-import edu.ku.brc.ui.forms.persist.View;
-import edu.ku.brc.ui.forms.persist.ViewDef;
-import edu.ku.brc.ui.forms.persist.ViewDefIFace;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
-import edu.ku.brc.ui.forms.persist.ViewSet;
-import edu.ku.brc.ui.forms.persist.ViewSetIFace;
 
 /**
  * @author rod

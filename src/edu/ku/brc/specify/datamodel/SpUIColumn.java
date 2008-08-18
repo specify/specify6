@@ -29,7 +29,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.ui.forms.persist.FormColumnIFace;
+import edu.ku.brc.af.ui.forms.persist.FormColumnIFace;
 
 /**
  * @author rods

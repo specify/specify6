@@ -17,7 +17,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
-import edu.ku.brc.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 
 /**
  * @author timbo

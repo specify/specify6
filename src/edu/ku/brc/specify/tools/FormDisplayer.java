@@ -42,6 +42,16 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.FormPane;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.ViewSetMgr;
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
+import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.DisciplineType;
@@ -50,16 +60,6 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.utilapps.ERDVisualizer;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.ViewSetMgr;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.ui.forms.persist.AltViewIFace;
-import edu.ku.brc.ui.forms.persist.ViewDefIFace;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
-import edu.ku.brc.ui.forms.persist.ViewSetIFace;
-import edu.ku.brc.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -186,7 +186,7 @@ public class FormDisplayer
             try
             {
                 ViewDefIFace viewDef = view.getAltViews().get(0).getViewDef();
-                if (!(viewDef.getDataGettable() instanceof edu.ku.brc.ui.forms.DataGetterForHashMap))
+                if (!(viewDef.getDataGettable() instanceof edu.ku.brc.af.ui.forms.DataGetterForHashMap))
                 {
                     Class<?> dataCls = Class.forName(viewDef.getClassName());
                     if (dataCls != null)

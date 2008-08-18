@@ -27,6 +27,9 @@ import java.sql.Statement;
 import java.util.Hashtable;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.ui.forms.DraggableRecordIdentifier;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
@@ -36,9 +39,6 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.forms.FormViewObj;
 
 /**
  * Business Rules for validating a Accession.

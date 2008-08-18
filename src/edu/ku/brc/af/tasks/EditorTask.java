@@ -32,10 +32,10 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.tasks.subpane.formeditor.BasicFormPreviewPanel;
 import edu.ku.brc.af.tasks.subpane.formeditor.ViewSetSelectorPanel;
+import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.forms.persist.ViewSetIFace;
 
 /**
  * @author rod

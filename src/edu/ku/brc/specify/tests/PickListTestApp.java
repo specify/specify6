@@ -51,15 +51,15 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.af.ui.db.JAutoCompComboBox;
+import edu.ku.brc.af.ui.db.JAutoCompTextField;
+import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.JAutoCompComboBox;
-import edu.ku.brc.ui.db.JAutoCompTextField;
-import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
 /*
  * @code_status Unknown (auto-generated)
  **

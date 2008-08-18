@@ -30,6 +30,13 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
+import edu.ku.brc.af.ui.forms.validation.UIValidator;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
+import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
@@ -40,13 +47,6 @@ import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.forms.BaseBusRules;
-import edu.ku.brc.ui.forms.FormViewObj;
-import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode;
-import edu.ku.brc.ui.forms.validation.UIValidator;
-import edu.ku.brc.ui.forms.validation.ValComboBox;
-import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
 
 /**
  * @author rod 

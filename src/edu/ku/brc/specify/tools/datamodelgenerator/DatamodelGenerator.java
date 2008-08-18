@@ -45,6 +45,7 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
@@ -54,7 +55,6 @@ import edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace;
 import edu.ku.brc.specify.tools.schemalocale.LocalizableStrIFace;
 import edu.ku.brc.specify.tools.schemalocale.LocalizerBasePanel;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
-import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.util.DatamodelHelper;
 
 /**

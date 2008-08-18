@@ -21,9 +21,9 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import edu.ku.brc.af.ui.db.PickListIFace;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.specify.datamodel.PickList;
-import edu.ku.brc.ui.db.PickListIFace;
-import edu.ku.brc.ui.db.PickListItemIFace;
 
 /**
  * @author rod

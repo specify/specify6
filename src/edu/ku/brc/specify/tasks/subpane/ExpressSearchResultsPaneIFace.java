@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane;
 
-import edu.ku.brc.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 
 
 /**

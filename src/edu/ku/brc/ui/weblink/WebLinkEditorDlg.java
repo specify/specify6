@@ -41,10 +41,10 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.ViewFactory;
 
 /**
  * This class is used for editing a single WebLink Object and all of it's arguments. 

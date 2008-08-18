@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -34,7 +35,6 @@ import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.BaseBusRules;
 
 /**
  * Business Rules for DeterminationStatus.

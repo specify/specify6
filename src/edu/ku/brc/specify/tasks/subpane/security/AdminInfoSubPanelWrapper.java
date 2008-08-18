@@ -12,10 +12,10 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import edu.ku.brc.af.auth.specify.principal.UserPrincipalHibernateService;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.ui.db.ViewBasedDisplayPanel;
-import edu.ku.brc.ui.forms.MultiView;
 
 /**
  * Wraps a JPanel with a permission editor (if panel for group or user) 

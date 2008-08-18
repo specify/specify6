@@ -25,7 +25,7 @@ import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 
 
 /**

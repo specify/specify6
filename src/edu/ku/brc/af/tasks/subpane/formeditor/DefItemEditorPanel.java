@@ -24,7 +24,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.ui.forms.persist.FormViewDef;
+import edu.ku.brc.af.ui.forms.persist.FormViewDef;
 
 /**
  * @author rod

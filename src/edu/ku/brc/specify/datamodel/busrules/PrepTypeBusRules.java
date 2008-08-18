@@ -22,11 +22,11 @@ import java.sql.Statement;
 import java.util.List;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.PrepType;
-import edu.ku.brc.ui.forms.BaseBusRules;
-import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 
 /**
  * Business Rules for PrepTypes.

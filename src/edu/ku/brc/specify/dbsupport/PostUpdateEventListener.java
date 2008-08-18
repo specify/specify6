@@ -17,9 +17,9 @@ package edu.ku.brc.specify.dbsupport;
 
 import org.hibernate.event.PostUpdateEvent;
 
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  * THis class listens for Update events from Hibernate so it can update the Lucene index.<br>

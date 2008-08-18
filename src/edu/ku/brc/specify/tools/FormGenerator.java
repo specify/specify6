@@ -28,6 +28,10 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.FormHelper;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellFieldIFace;
+import edu.ku.brc.af.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.specify.datamodel.SpUIAltView;
 import edu.ku.brc.specify.datamodel.SpUICell;
 import edu.ku.brc.specify.datamodel.SpUIRow;
@@ -35,10 +39,6 @@ import edu.ku.brc.specify.datamodel.SpUIView;
 import edu.ku.brc.specify.datamodel.SpUIViewDef;
 import edu.ku.brc.specify.datamodel.SpUIViewSet;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
-import edu.ku.brc.ui.forms.FormHelper;
-import edu.ku.brc.ui.forms.persist.AltViewIFace;
-import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
-import edu.ku.brc.ui.forms.persist.ViewDefIFace;
 
 /**
  * @author rods

@@ -117,6 +117,14 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.db.DatabaseLoginDlg;
+import edu.ku.brc.af.ui.db.DatabaseLoginListener;
+import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
+import edu.ku.brc.af.ui.forms.DataObjectGettable;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormHelper;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.EMailHelper;
@@ -126,15 +134,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.CustomDBConverter;
 import edu.ku.brc.specify.conversion.CustomDBConverterDlg;
 import edu.ku.brc.specify.conversion.CustomDBConverterListener;
-import edu.ku.brc.ui.db.DatabaseLoginDlg;
-import edu.ku.brc.ui.db.DatabaseLoginListener;
-import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.dnd.GhostDataAggregatable;
-import edu.ku.brc.ui.forms.DataObjectGettable;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.forms.FormHelper;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.persist.FormCellIFace;
 
 /**
  * A Helper class that has a very wide array of misc methods for helping out. (Is that meaningless or what?)

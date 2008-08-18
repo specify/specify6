@@ -11,7 +11,7 @@ package edu.ku.brc.af.core.db;
 
 import java.util.Properties;
 
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * @author rod

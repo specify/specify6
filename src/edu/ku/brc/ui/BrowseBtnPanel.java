@@ -39,7 +39,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.ui.forms.validation.ValTextField;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 
 /**
  * This is a JPanel that contains a JTextField and a Button that enables the user to browser for a file

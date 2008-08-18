@@ -19,7 +19,7 @@ import java.util.Calendar;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * Represents a field in the database schema.
