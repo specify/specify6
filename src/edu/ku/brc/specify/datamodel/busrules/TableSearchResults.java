@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Future;
 
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.util.Pair;

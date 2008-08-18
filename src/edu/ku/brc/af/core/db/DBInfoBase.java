@@ -15,9 +15,12 @@
 /**
  * 
  */
-package edu.ku.brc.dbsupport;
+package edu.ku.brc.af.core.db;
 
 import org.apache.commons.lang.StringUtils;
+
+import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.SecurityMgr.PermissionBits;
 
 /**
  * Hold the Schema Information, this is used for for L10N/I18N and whether the item is visible.
@@ -35,6 +38,9 @@ public class DBInfoBase implements Comparable<DBInfoBase>
     protected String  title;
     protected String  description;
     protected boolean isHidden = false;
+    
+    // Transient
+    protected PermissionBits permissions;
     
     /**
      * Default Constructor.
@@ -144,5 +150,31 @@ public class DBInfoBase implements Comparable<DBInfoBase>
         return getTitle().compareTo(o.getTitle());
     }
     
-    
+    /**
+     * @return
+     */
+    protected String getSecurityName()
+    {
+        throw new RuntimeException("Must be implemented.");
+    }
+
+    /**
+     * @return the permissions
+     */
+    public PermissionBits getPermissions()
+    {
+        if (permissions == null)
+        {
+            permissions = SecurityMgr.getInstance().getPermission("DO."+getSecurityName());
+        }
+        return permissions;
+    }
+
+    /**
+     * @param permissions the permissions to set
+     */
+    public void setPermissions(PermissionBits permissions)
+    {
+        this.permissions = permissions;
+    }
 }

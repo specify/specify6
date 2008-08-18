@@ -40,9 +40,9 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.dbsupport.DBRelationshipInfo;
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.DefaultClassActionHandler;
@@ -350,7 +350,7 @@ public class IconViewObj implements Viewable
         }
         else
         {
-            ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
+            ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(altView, mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
             dialog.setData(selection);
             dialog.showDisplay(true);
             dialog.dispose();
@@ -388,7 +388,7 @@ public class IconViewObj implements Viewable
                     return;
                 }
                 
-                ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
+                ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(altView, mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
                 dialog.setData(selection);
                 dialog.showDisplay(true);
                 if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
@@ -471,7 +471,7 @@ public class IconViewObj implements Viewable
                 }
                 
                 // get an edit dialog for the object
-                ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, newObject, true, true);
+                ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(altView, mainComp, newObject, true, true);
                 if (dialog == null)
                 {
                     log.error("Unable to create a dialog for data entry.  [" + newObject.getClass().getName() + "]");

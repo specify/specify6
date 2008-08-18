@@ -44,7 +44,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;

@@ -282,7 +282,7 @@ public class AppPrefsCache
     }
 
     /**
-     * Gets a ColorWrapper Object
+     * Gets a ColorWrapper Object.
      * @param section the section or category of the pref
      * @param pref the pref's name
      * @param attrName the actual attribute
@@ -293,14 +293,24 @@ public class AppPrefsCache
                                                final String attrName)
     {
         checkName(section, pref, attrName);
-        
-        ColorCacheEntry colorEntry = (ColorCacheEntry)getInstance().hash.get(makeKey(section, pref, attrName));
+        return getColorWrapper(makeKey(section, pref, attrName));
+    }
+    
+    /**
+     * Gets a ColorWrapper Object by the fill name 'section.pref.attrname'
+     * @param fullName the 'section.pref.attrname'
+     * @return the ColorWrapper
+     */
+    public static ColorWrapper getColorWrapper(final String fullName)
+    {
+
+        ColorCacheEntry colorEntry = (ColorCacheEntry)getInstance().hash.get(fullName);
         if (colorEntry != null)
         {
             return colorEntry.getColorWrapper();
         }
         // else
-        throw new RuntimeException("Couldn't find Date Entry ["+makeKey(section, pref, attrName)+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+        throw new RuntimeException("Couldn't find Date Entry ["+fullName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 

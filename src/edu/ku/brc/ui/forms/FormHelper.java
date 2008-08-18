@@ -15,17 +15,24 @@ import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.Collection;
 
+import javax.swing.JComponent;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.dbsupport.DBRelationshipInfo;
-import edu.ku.brc.dbsupport.DBTableChildIFace;
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.af.core.db.DBTableChildIFace;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.UIHelper;
+import static edu.ku.brc.ui.UIRegistry.*;
+import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
 
 
 /**
@@ -460,6 +467,44 @@ public final class FormHelper
             }
             cnt++;
         }
+        return null;
+    }
+
+    /**
+     * Creates a dialog for editting or viewing a data object.
+     * @param altView the current AaltView
+     * @param mainComp the mainComp that this is being launched from
+     * @param dataObj the data object for the dialog (cannot be NULL)
+     * @param isEditMode whether it is in edit mode
+     * @param isNewObject whether it is a new object
+     * @return the dialog
+     */
+    public static  ViewBasedDisplayIFace createDataObjectDialog(@SuppressWarnings("unused") 
+                                                                final AltViewIFace     altView, 
+                                                                final JComponent       mainComp, 
+                                                                final FormDataObjIFace dataObj, 
+                                                                final boolean          isEditMode,
+                                                                final boolean          isNewObject)
+    {
+        DBTableInfo setTI = DBTableIdMgr.getInstance().getByClassName(dataObj.getClass().getName());
+        String defFormName = setTI.getEditObjDialog();
+    
+        if (StringUtils.isNotEmpty(defFormName))
+        {
+            int     opts = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | MultiView.HIDE_SAVE_BTN;
+            String  title   = (isNewObject && isEditMode) ? getResourceString("EDIT") : dataObj.getIdentityTitle();
+            ViewBasedDisplayIFace dialog = getViewbasedFactory().createDisplay(UIHelper.getWindow(mainComp),
+                                                                        defFormName,
+                                                                        title,
+                                                                        getResourceString(isEditMode ? "Accept" : "CLOSE"),
+                                                                        isEditMode,
+                                                                        opts,
+                                                                        FRAME_TYPE.DIALOG);
+            return dialog;
+        }
+        // else
+        log.error("The Default Form Name is empty for Object type ["+dataObj.getClass().getName()+"]");
+        
         return null;
     }
 }

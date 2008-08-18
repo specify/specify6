@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormViewObj.FVOFieldInfo;
 import edu.ku.brc.ui.forms.persist.FormCellField;

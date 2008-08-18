@@ -15,7 +15,7 @@
 /**
  * 
  */
-package edu.ku.brc.dbsupport;
+package edu.ku.brc.af.core.db;
 
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -121,9 +121,9 @@ public class DBTableInfo extends DBInfoBase
     public String getShortClassName()
     {
         // TODO: replace calls to this with a call to classObj.getSimpleName();
-        
-        int inx = className.lastIndexOf('.');
-        return inx == -1 ? className : className.substring(inx + 1);
+        //int inx = className.lastIndexOf('.');
+        //return inx == -1 ? className : className.substring(inx + 1);
+        return classObj.getSimpleName();
     }
 
     public int getTableId()
@@ -461,6 +461,14 @@ public class DBTableInfo extends DBInfoBase
     public List<DBFieldInfo> getFields()
     {
         return fields;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DBInfoBase#getSecurityName()
+     */
+    protected String getSecurityName()
+    {
+        return getShortClassName();
     }
 
 }

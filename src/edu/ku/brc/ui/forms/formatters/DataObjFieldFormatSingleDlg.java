@@ -27,7 +27,7 @@ import javax.swing.event.ChangeListener;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.ui.CustomDialog;
 
 /**

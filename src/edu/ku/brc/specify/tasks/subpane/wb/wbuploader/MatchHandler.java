@@ -43,7 +43,7 @@ import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;

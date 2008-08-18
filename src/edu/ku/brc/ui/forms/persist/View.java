@@ -23,7 +23,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 
 /**

@@ -15,7 +15,7 @@
 /**
  * 
  */
-package edu.ku.brc.dbsupport;
+package edu.ku.brc.af.core.db;
 
 import java.util.Iterator;
 import java.util.List;

@@ -19,7 +19,7 @@ package edu.ku.brc.specify.tasks;
 
 import com.thoughtworks.xstream.XStream;
 
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBTableInfo;
 
 /**
  * @author rods

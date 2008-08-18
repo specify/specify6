@@ -16,7 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.dbsupport.AutoNumberGeneric;
+import edu.ku.brc.af.core.db.AutoNumberGeneric;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.util.Pair;

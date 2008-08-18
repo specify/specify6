@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBTableInfo;
 
 /**
  * This is a singleton factory for managing WebLinks.

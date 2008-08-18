@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.tasks.subpane.wb.schema;
 
-import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 
 /**
  * @author timbo

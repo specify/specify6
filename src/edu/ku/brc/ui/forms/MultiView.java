@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.SecurityMgr.PermissionBits;
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.ui.CommandAction;

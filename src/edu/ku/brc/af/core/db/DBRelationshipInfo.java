@@ -15,7 +15,7 @@
 /**
  * 
  */
-package edu.ku.brc.dbsupport;
+package edu.ku.brc.af.core.db;
 
 import org.apache.log4j.Logger;
 

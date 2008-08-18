@@ -7,7 +7,7 @@
 /**
  * 
  */
-package edu.ku.brc.dbsupport;
+package edu.ku.brc.af.core.db;
 
 
 /**

@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.specify.config;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 
 /**
  * Creates a DBTableIDMgr for the WorkBench.

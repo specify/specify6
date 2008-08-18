@@ -18,7 +18,7 @@ package edu.ku.brc.ui.forms.formatters;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter.FormatterType;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter.PartialDateEnum;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField.FieldType;

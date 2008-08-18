@@ -16,7 +16,7 @@
 package edu.ku.brc.ui.forms.formatters;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
-import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 
 /**
  * This class is used to build UIFieldFormatters from a formatting string for integer numeric fields 

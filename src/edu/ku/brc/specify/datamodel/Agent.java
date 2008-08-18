@@ -56,8 +56,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.specify.dbsupport.RecordTypeCode;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeItem;
 import edu.ku.brc.ui.UIRegistry;

@@ -10,7 +10,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.ui.UIHelper;
 
 /**

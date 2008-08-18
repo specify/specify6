@@ -32,9 +32,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.af.core.db.AutoNumberIFace;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
-import edu.ku.brc.dbsupport.AutoNumberIFace;
-import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.UIRegistry;

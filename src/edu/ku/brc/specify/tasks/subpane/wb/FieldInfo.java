@@ -11,9 +11,9 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 
 import javax.swing.ImageIcon;
 
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.TableFieldPair;
-import edu.ku.brc.dbsupport.DBFieldInfo;
-import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.IconManager;
 
 /**

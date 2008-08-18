@@ -24,8 +24,8 @@ import java.awt.event.ActionListener;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.ui.UIRegistry;

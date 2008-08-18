@@ -17,7 +17,7 @@ package edu.ku.brc.ui.forms.formatters;
 
 import java.util.List;
 
-import edu.ku.brc.dbsupport.AutoNumberIFace;
+import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter.PartialDateEnum;
 import edu.ku.brc.util.Pair;

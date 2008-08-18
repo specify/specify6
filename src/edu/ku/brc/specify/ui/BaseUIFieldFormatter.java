@@ -16,7 +16,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.dbsupport.AutoNumberIFace;
+import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;

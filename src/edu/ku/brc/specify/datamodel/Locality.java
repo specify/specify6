@@ -49,7 +49,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 
 /**

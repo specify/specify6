@@ -49,7 +49,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.ui.CustomDialog;
 
 /**

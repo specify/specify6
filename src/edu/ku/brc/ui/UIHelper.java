@@ -114,11 +114,10 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.MenuItemPropertyChangeListener;
@@ -127,18 +126,14 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.CustomDBConverter;
 import edu.ku.brc.specify.conversion.CustomDBConverterDlg;
 import edu.ku.brc.specify.conversion.CustomDBConverterListener;
-import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
-import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.dnd.GhostDataAggregatable;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
-import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCellIFace;
 
 /**
@@ -1863,44 +1858,6 @@ public final class UIHelper
         btn.setMargin(new Insets(1,1,1,1));
         btn.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         return btn;
-    }
-    
-    /**
-     * Creates a dialog for editting or viewing a data object.
-     * @param altView the current AaltView
-     * @param mainComp the mainComp that this is being launched from
-     * @param dataObj the data object for the dialog (cannot be NULL)
-     * @param isEditMode whether it is in edit mode
-     * @param isNewObject whether it is a new object
-     * @return the dialog
-     */
-    public static  ViewBasedDisplayIFace createDataObjectDialog(@SuppressWarnings("unused") 
-                                                                final AltViewIFace     altView, 
-                                                                final JComponent       mainComp, 
-                                                                final FormDataObjIFace dataObj, 
-                                                                final boolean          isEditMode,
-                                                                final boolean          isNewObject)
-    {
-        DBTableInfo setTI = DBTableIdMgr.getInstance().getByClassName(dataObj.getClass().getName());
-        String defFormName = setTI.getEditObjDialog();
-
-        if (StringUtils.isNotEmpty(defFormName))
-        {
-            int     opts = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | MultiView.HIDE_SAVE_BTN;
-            String  title   = (isNewObject && isEditMode) ? getResourceString("EDIT") : dataObj.getIdentityTitle();
-            ViewBasedDisplayIFace dialog = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(mainComp),
-                                                                        defFormName,
-                                                                        title,
-                                                                        getResourceString(isEditMode ? "Accept" : "CLOSE"),
-                                                                        isEditMode,
-                                                                        opts,
-                                                                        FRAME_TYPE.DIALOG);
-            return dialog;
-        }
-        // else
-        log.error("The Default Form Name is empty for Object type ["+dataObj.getClass().getName()+"]");
-        
-        return null;
     }
     
     /**

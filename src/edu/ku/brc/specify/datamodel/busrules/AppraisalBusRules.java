@@ -6,8 +6,8 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Appraisal;
 import edu.ku.brc.ui.forms.BaseBusRules;

@@ -19,7 +19,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.security.AccessController;
 
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBTableInfo;
 
 /**
  * This is a singleton factory for adjusting the SQL before it is executed by the Express Search.

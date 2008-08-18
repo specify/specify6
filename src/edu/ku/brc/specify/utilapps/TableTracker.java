@@ -16,8 +16,8 @@ import java.util.Vector;
 
 import javax.swing.JLabel;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 
 /**
  * Reads in and Tracks each tables usage.

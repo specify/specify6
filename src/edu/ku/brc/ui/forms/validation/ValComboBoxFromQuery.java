@@ -56,10 +56,12 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
-import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.ColorWrapper;
@@ -158,6 +160,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     
     protected ViewBasedSearchQueryBuilderIFace builder = null;
     protected QueryWhereClauseProvider queryWhereClauseProvider = null;
+    
+    SecurityMgr.PermissionBits perm = null;
 
     /**
      *  Constructor.
@@ -372,16 +376,33 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         CellConstraints cc = new CellConstraints();
 
         pb.add(textWithQuery, cc.xy(1,1));
-
+        
+        if (AppContextMgr.isSecurityOn())
+        {
+            perm = SecurityMgr.getInstance().getPermission("DO."+tableInfo.getClassObj().getSimpleName());
+        }
+        
         int x = 3;
         if ((btnMask & CREATE_EDIT_BTN) != 0)
         {
-            editBtn = createBtn("EditIcon", "EditRecordTT", objTitle);
+            String iconName;
+            String ttName;
+            if (perm != null && perm.canModify())
+            {
+                iconName = "EditIcon";
+                ttName   = "EditRecordTT";
+            } else
+            {
+                iconName = "InfoIcon";
+                ttName   = "ShowRecordInfoTT";
+            }
+            
+            editBtn = createBtn(iconName, ttName, objTitle);
             pb.add(editBtn, cc.xy(x,1));
             x += 2;
         }
 
-        if ((btnMask & CREATE_NEW_BTN) != 0)
+        if (((btnMask & CREATE_NEW_BTN) != 0) && (perm == null || (perm != null && perm.canAdd())))
         {
             createBtn = createBtn("CreateObj", "NewRecordTT", objTitle); 
             pb.add(createBtn, cc.xy(x,1));
@@ -389,7 +410,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
 
 
-        if (hasSearchBtn && (btnMask & CREATE_SEARCH_BTN) != 0)
+        if (hasSearchBtn && ((btnMask & CREATE_SEARCH_BTN) != 0) && (perm == null || (perm != null && perm.canAdd())))
         {
             searchBtn = createBtn("Search", "SearchForRecordTT", objTitle); 
             pb.add(searchBtn, cc.xy(x,1));
@@ -404,9 +425,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         bgColor = textWithQuery.getTextField().getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
-            valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
-            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+            valtextcolor       = AppPrefsCache.getColorWrapper("ui.formatting.valtextcolor");
+            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui.formatting.requiredfieldcolor");
         }
+        
         AppPrefsCache.addChangeListener("ui.formatting.requiredfieldcolor", this);
 
         if (searchBtn != null)
@@ -456,13 +478,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     {
         String dlgName = StringUtils.isNotEmpty(searchDlgName) ? searchDlgName : tableInfo.getSearchDialog();
         
-        ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().
-                                createSearchDialog(UIHelper.getWindow(searchBtn), dlgName);
+        ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getWindow(searchBtn), dlgName);
         dlg.setMultipleSelection(false);
         if (builder != null)
         {
             dlg.registerQueryBuilder(builder);
         }
+        
         dlg.getDialog().setVisible(true);
         if (!dlg.isCancelled())
         {
@@ -576,6 +598,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     protected void createEditFrame(final boolean isNewObject)
     {
+        int options = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | 
+                      MultiView.HIDE_SAVE_BTN | 
+                      (perm.canModify() ? (MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE) : MultiView.NO_OPTIONS);
+        
         String dlgName = StringUtils.isNotEmpty(displayDlgName) ? displayDlgName : tableInfo.getNewObjDialog();
         String closeBtnTitle = getResourceString("SAVE");
         frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(this),
@@ -583,7 +609,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                                                    frameTitle,
                                                                    closeBtnTitle,
                                                                    true,   // false means View Mode
-                                                                   (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | MultiView.HIDE_SAVE_BTN,
+                                                                   options,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
         if (isNewObject)
         {

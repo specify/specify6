@@ -23,8 +23,8 @@ import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 
 /**
  * This class represents a single format. A DataobjectFormatter can switch between formats for a given field's value.

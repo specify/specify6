@@ -32,7 +32,7 @@ import javax.swing.JMenu;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.specify.tools.schemalocale.DisplayLocale;
 import edu.ku.brc.ui.UIRegistry;
 

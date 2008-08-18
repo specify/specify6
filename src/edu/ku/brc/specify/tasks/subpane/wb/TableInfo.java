@@ -10,7 +10,7 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.ui.IconManager;
 
 public class TableInfo implements TableListItemIFace, Comparable<TableInfo>

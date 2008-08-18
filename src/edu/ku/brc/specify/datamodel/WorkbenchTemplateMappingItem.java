@@ -27,7 +27,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 
 /**
  * Items are sorted by ViewOrder

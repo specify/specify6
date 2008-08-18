@@ -15,8 +15,8 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.dbsupport.DBFieldInfo;
-import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
 
 /**
  * @author rod

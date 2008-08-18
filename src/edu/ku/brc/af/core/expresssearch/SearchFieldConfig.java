@@ -17,7 +17,7 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
-import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 
 /**
  * @author rods

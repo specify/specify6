@@ -12,7 +12,7 @@ package edu.ku.brc.ui.forms;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 
 /**
  * A factory for serving up default value for a data member in a data object.

@@ -7,7 +7,7 @@
 /**
  * 
  */
-package edu.ku.brc.dbsupport;
+package edu.ku.brc.af.core.db;
 
 import static edu.ku.brc.helpers.XMLHelper.xmlNode;
 
@@ -18,6 +18,7 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.ui.forms.DataGetterForObj;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;

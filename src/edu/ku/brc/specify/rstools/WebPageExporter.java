@@ -10,7 +10,7 @@ package edu.ku.brc.specify.rstools;
 import java.util.List;
 import java.util.Properties;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Taxon;
 

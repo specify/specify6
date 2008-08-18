@@ -14,8 +14,8 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
-import edu.ku.brc.dbsupport.DBFieldInfo;
-import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableInfo;
 
 public class TableInfoRenderable implements TableNameRendererIFace, Comparable<TableInfoRenderable>
 {

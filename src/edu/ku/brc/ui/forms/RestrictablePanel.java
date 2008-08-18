@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.ui.forms;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -37,7 +38,11 @@ public class RestrictablePanel extends JPanel implements RestrictableUIIFace
 {
     private boolean isRestricted = false;
     private Font    newFont      = null;
+    private Color   shadeColor   = new Color(255,255,255,170);
     
+    /**
+     * 
+     */
     public RestrictablePanel()
     {
         
@@ -80,10 +85,14 @@ public class RestrictablePanel extends JPanel implements RestrictableUIIFace
             ((Graphics2D)g).setRenderingHints(UIHelper.createTextRenderingHints());
             
             g.setFont(newFont);
+            
             FontMetrics fm   = g.getFontMetrics();
             int         sw   = fm.stringWidth(restrictedStr);
+            g.setColor(shadeColor);
+            g.fillRect(0,0,size.width-1,size.height-1);
+            g.setColor(Color.BLACK);
             g.drawString(restrictedStr, (size.width-sw)/2, (size.height+fm.getHeight())/2);
-            //g.drawRect(0,0,size.width,size.height);
+
         }
     }
 }
