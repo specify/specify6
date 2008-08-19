@@ -143,11 +143,22 @@ public interface Taskable
     /**
      * @return whether it should have it's UI put into the menus or Toolbar
      */
-    //public abstract boolean isVisible();
+    public abstract boolean isVisible();
     
     /**
-     * @param enabled
+     * Sets whether the Task is available.
+     * @param enabled true/false
      */
     public abstract void setEnabled(boolean enabled);
-
+    
+    /**
+     * @return returns a permissions object
+     */
+    public abstract PermissionIFace getPermissions();
+    
+    /**
+     * Sets a permission object
+     * @param permissions the obj
+     */
+    public abstract void setPermissions(PermissionIFace permissions); 
 }

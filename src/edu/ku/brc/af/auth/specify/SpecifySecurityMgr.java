@@ -32,6 +32,7 @@ import javax.security.auth.login.LoginException;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.JaasContext;
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
@@ -252,9 +253,9 @@ public class SpecifySecurityMgr extends SecurityMgr
      * @param name the name of the permission
      * @return the options
      */
-    public PermissionBits getPermission(final String name)
+    public PermissionSettings getPermission(final String name)
     {
-        return new PermissionBits(getPermissionOptions(name));
+        return new PermissionSettings(getPermissionOptions(name));
     }
     
     /**
@@ -302,7 +303,7 @@ public class SpecifySecurityMgr extends SecurityMgr
             throw new SecurityException(permissionClass.getName() + " class is not part of Specify permission hierarchy."); //$NON-NLS-1$
         }
 
-        int options = NO_PERM;
+        int options = PermissionSettings.NO_PERM;
         
         Constructor<?> constructor = null;
         try
@@ -314,10 +315,10 @@ public class SpecifySecurityMgr extends SecurityMgr
             log.debug("******************* Can Del : "+name+" - "+ checkPermission((BasicSpPermission)constructor.newInstance(name, DELETE_PERM)));
             log.debug("******************* Can Add : "+name+" - "+ checkPermission((BasicSpPermission)constructor.newInstance(name, ADD_PERM)));
             
-            options |= checkPermission((BasicSpPermission)constructor.newInstance(name, MODIFY_PERM)) ? CAN_MODIFY : 0;
-            options |= checkPermission((BasicSpPermission)constructor.newInstance(name, VIEW_PERM)) ?   CAN_VIEW : 0;
-            options |= checkPermission((BasicSpPermission)constructor.newInstance(name, ADD_PERM)) ?    CAN_ADD : 0;
-            options |= checkPermission((BasicSpPermission)constructor.newInstance(name, DELETE_PERM)) ? CAN_DELETE : 0;
+            options |= checkPermission((BasicSpPermission)constructor.newInstance(name, MODIFY_PERM)) ? PermissionSettings.CAN_MODIFY : 0;
+            options |= checkPermission((BasicSpPermission)constructor.newInstance(name, VIEW_PERM)) ?   PermissionSettings.CAN_VIEW : 0;
+            options |= checkPermission((BasicSpPermission)constructor.newInstance(name, ADD_PERM)) ?    PermissionSettings.CAN_ADD : 0;
+            options |= checkPermission((BasicSpPermission)constructor.newInstance(name, DELETE_PERM)) ? PermissionSettings.CAN_DELETE : 0;
         }
         catch (Exception e)
         {

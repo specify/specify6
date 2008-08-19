@@ -67,6 +67,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
@@ -217,7 +218,7 @@ public class TableViewObj implements Viewable,
     protected boolean                       doOrdering  = false;
     
     // Security
-    private SecurityMgr.PermissionBits      perm = null;
+    private PermissionSettings      perm = null;
     
 
     /**

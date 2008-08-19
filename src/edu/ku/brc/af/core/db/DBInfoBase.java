@@ -20,7 +20,7 @@ package edu.ku.brc.af.core.db;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.auth.SecurityMgr;
-import edu.ku.brc.af.auth.SecurityMgr.PermissionBits;
+import edu.ku.brc.af.auth.PermissionSettings;
 
 /**
  * Hold the Schema Information, this is used for for L10N/I18N and whether the item is visible.
@@ -40,7 +40,7 @@ public class DBInfoBase implements Comparable<DBInfoBase>
     protected boolean isHidden = false;
     
     // Transient
-    protected PermissionBits permissions = null;
+    protected PermissionSettings permissions = null;
     
     /**
      * Default Constructor.
@@ -161,7 +161,7 @@ public class DBInfoBase implements Comparable<DBInfoBase>
     /**
      * @return the permissions
      */
-    public PermissionBits getPermissions()
+    public PermissionSettings getPermissions()
     {
         if (permissions == null)
         {
@@ -173,7 +173,7 @@ public class DBInfoBase implements Comparable<DBInfoBase>
     /**
      * @param permissions the permissions to set
      */
-    public void setPermissions(PermissionBits permissions)
+    public void setPermissions(PermissionSettings permissions)
     {
         this.permissions = permissions;
     }

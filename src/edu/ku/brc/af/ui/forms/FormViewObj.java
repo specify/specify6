@@ -85,6 +85,7 @@ import com.jgoodies.forms.debug.FormDebugPanel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.RecordSetFactory;
@@ -258,7 +259,7 @@ public class FormViewObj implements Viewable,
     protected Vector<ViewState>             viewStateList     = null;
     
     // Security
-    private SecurityMgr.PermissionBits      perm = null;
+    private PermissionSettings              perm = null;
 
 
     /**
@@ -607,8 +608,9 @@ public class FormViewObj implements Viewable,
             {
                 shortName = viewArg.getClassName();
             }
-            SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission("DO."+shortName);
-            SecurityMgr.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
+            
+            PermissionSettings perm = SecurityMgr.getInstance().getPermission("DO."+shortName);
+            //perm.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
             
             if (perm.hasNoPerm() && restrictableUI != null)
             {

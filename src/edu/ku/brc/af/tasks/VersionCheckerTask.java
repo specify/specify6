@@ -26,7 +26,6 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
-import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
@@ -106,38 +105,6 @@ public class VersionCheckerTask extends BaseTask
         }
     }
     
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.BaseTask#getMenuItems()
-     */
-    @Override
-    public List<MenuItemDesc> getMenuItems()
-    {
-        
-        /*String label    = getResourceString("VersionCheckerTask.CHECK_NOW"); //$NON-NLS-1$
-        
-        JMenuItem checkNow = new JMenuItem(label);
-        checkNow.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                UsageTracker.incrUsageCount("UpdateNow"); //$NON-NLS-1$
-                
-                // then perform the check
-                connectToServerNow(true);
-            }
-        });
-        
-        MenuItemDesc  miDesc = new MenuItemDesc(checkNow, getResourceString("VersionCheckerTask.HELP")); //$NON-NLS-1$
-        
-        miDesc.setPosition(MenuItemDesc.Position.Before, getResourceString("VersionCheckerTask.ABOUT")); //$NON-NLS-1$
-        miDesc.setSepPosition(MenuItemDesc.Position.After);
-        */
-        List<MenuItemDesc> menuItems = new Vector<MenuItemDesc>();
-
-        return menuItems;
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#getStarterPane()
      */
@@ -524,7 +491,7 @@ public class VersionCheckerTask extends BaseTask
                 popupMessage.append("<tr><td>Update versions are available for the following modules:<ul>"); //$NON-NLS-1$
                 for (String update: availableUpdates)
                 {
-                    popupMessage.append("<li>" + update + "</li>");; //$NON-NLS-1$ //$NON-NLS-2$
+                    popupMessage.append("<li>" + update + "</li>"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 popupMessage.append("</ul><br>"); //$NON-NLS-1$
                 String downloadSiteURL = getResourceString("VersionCheckerTask.DOWNLOAD_SITE_URL"); //$NON-NLS-1$
@@ -538,7 +505,7 @@ public class VersionCheckerTask extends BaseTask
     
     public static class ConnectionException extends IOException
     {
-        public ConnectionException(Throwable e)
+        public ConnectionException(@SuppressWarnings("unused") Throwable e)
         {
             super();
         }

@@ -56,7 +56,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -375,7 +375,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
         pb.add(textWithQuery, cc.xy(1,1));
         
-        SecurityMgr.PermissionBits perm = AppContextMgr.isSecurityOn() ? tableInfo.getPermissions() : null;
+        PermissionSettings perm = AppContextMgr.isSecurityOn() ? tableInfo.getPermissions() : null;
         
         int x = 3;
         if ((btnMask & CREATE_EDIT_BTN) != 0)

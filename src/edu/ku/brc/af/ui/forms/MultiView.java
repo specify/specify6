@@ -31,7 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.SecurityMgr;
-import edu.ku.brc.af.auth.SecurityMgr.PermissionBits;
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
@@ -88,7 +88,7 @@ public class MultiView extends JPanel
     protected FormValidator                currentValidator     = null;
     protected Class<?>                     classToCreate        = null;
     
-    protected PermissionBits               permissions;
+    protected PermissionSettings           permissions;
     
     protected boolean                      editable             = false;
     protected AltViewIFace.CreationMode    createWithMode       = AltViewIFace.CreationMode.NONE;
@@ -210,10 +210,10 @@ public class MultiView extends JPanel
         {
             this.permissions = getPremissionFromView(view);
             log.debug("*** View: "+view.getName() + " - " + permissions);
-            SecurityMgr.dumpPermissions("DO."+view.getName(), permissions.getOptions());
+            PermissionSettings.dumpPermissions("DO."+view.getName(), permissions.getOptions());
         } else
         {
-            this.permissions = SecurityMgr.createPermissionBits(SecurityMgr.ALL_PERM);
+            this.permissions = new PermissionSettings(PermissionSettings.ALL_PERM);
         }
 
         AltViewIFace defaultAltView = createDefaultViewable(defaultAltViewType);
@@ -300,7 +300,7 @@ public class MultiView extends JPanel
             this.permissions = getPremissionFromView(view);
         } else
         {
-            this.permissions = SecurityMgr.createPermissionBits(SecurityMgr.ALL_PERM);
+            this.permissions = new PermissionSettings(PermissionSettings.ALL_PERM);
         }
         
         createViewable(altView != null ? altView : createDefaultViewable(null));
@@ -312,7 +312,7 @@ public class MultiView extends JPanel
      * @param viewArg the view
      * @return the premissions
      */
-    public static SecurityMgr.PermissionBits getPremissionFromView(final ViewIFace viewArg)
+    public static PermissionSettings getPremissionFromView(final ViewIFace viewArg)
     {
         String shortClass = StringUtils.substringAfterLast(viewArg.getClassName(), ".");
         if (shortClass == null)
@@ -325,7 +325,7 @@ public class MultiView extends JPanel
     /**
      * @return the permissions
      */
-    public PermissionBits getPermissions()
+    public PermissionSettings getPermissions()
     {
         return permissions;
     }

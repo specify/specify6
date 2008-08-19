@@ -84,7 +84,9 @@ public class BasicPrincipal implements Principal, Serializable
     public boolean equals(Object o)
     {
         if (o == null)
+        {
             return false;
+        }
 
         if (this == o) { return true; }
 
@@ -97,13 +99,11 @@ public class BasicPrincipal implements Principal, Serializable
             if (((AdminPrincipal)o).getName().equals(name))
             {
                 return true;
-            } else
-            {
-                return false;
             }
-        } else
-        {
-            return super.equals(o);
+            // else
+            return false;
         }
+        // else
+        return super.equals(o);
     }
 }

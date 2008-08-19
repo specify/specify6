@@ -52,6 +52,7 @@ import javax.swing.border.Border;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.TaskMgr;
@@ -1118,10 +1119,10 @@ public class ViewFactory
                     DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(childInfo.getDataClass().getSimpleName());
                     if (tblInfo != null)
                     {
-                        SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
+                        PermissionSettings perm = tblInfo.getPermissions();
                         if (perm != null)
                         {
-                            SecurityMgr.dumpPermissions("QCBX: "+tblInfo.getShortClassName(), perm.getOptions());
+                            PermissionSettings.dumpPermissions("QCBX: "+tblInfo.getShortClassName(), perm.getOptions());
                             if (perm.isViewOnly() || !perm.canView())
                             {
                                 uiType = FormCellField.FieldType.textfieldinfo;

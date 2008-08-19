@@ -35,6 +35,7 @@ import javax.swing.SwingConstants;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
@@ -45,6 +46,7 @@ import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
+import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.SubPaneMgrListener;
@@ -90,6 +92,8 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     // Static Data Members
     //private static final Logger log = Logger.getLogger(BaseTask.class);
     
+    private static final String  securityPrefix    = "Task."; //$NON-NLS-1$
+    
     protected static final String APP_CMD_TYPE      = "App"; //$NON-NLS-1$
     protected static final String APP_START_ACT     = "StartUp"; //$NON-NLS-1$
     protected static final String APP_RESTART_ACT   = "AppRestart"; //$NON-NLS-1$
@@ -132,6 +136,9 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     // These are needed to support enabling and disabling of the task
     protected Vector<ToolBarItemDesc> toolbarItems     = null;
     protected Vector<MenuItemDesc>    menuItems        = null;
+    
+    // Security
+    private PermissionIFace       permissions          = null;
     
     /**
      * Default Constructor 
@@ -1110,6 +1117,26 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                 }
             }
         }
+    }
+
+    /**
+     * @return the permissions
+     */
+    public PermissionIFace getPermissions()
+    {
+        if (permissions == null)
+        {
+            permissions = SecurityMgr.getInstance().getPermission(securityPrefix + name);
+        }
+        return permissions;
+    }
+
+    /**
+     * @param permissions the permissions to set
+     */
+    public void setPermissions(PermissionIFace permissions)
+    {
+        this.permissions = permissions;
     }
     
     //--------------------------------------------------------------

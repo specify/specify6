@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
-import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
@@ -265,7 +265,7 @@ public class DataEntryTask extends BaseTask
                                 DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(dataClass.getSimpleName());
                                 if (tblInfo != null)
                                 {
-                                    SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
+                                    PermissionSettings perm = tblInfo.getPermissions();
                                     if (!perm.canView())
                                     {
                                         return;
@@ -357,7 +357,7 @@ public class DataEntryTask extends BaseTask
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
             if (tblInfo != null)
             {
-                SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
+                PermissionSettings perm = tblInfo.getPermissions();
                 if (!perm.canView())
                 {
                     return;

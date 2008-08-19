@@ -40,7 +40,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -97,7 +97,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     protected FormDataObjIFace      parentObj;
     
     // Security
-    private SecurityMgr.PermissionBits      perm = null;
+    private PermissionSettings      perm = null;
 
     /**
      * @param subviewDef
@@ -258,7 +258,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
      
         ensurePermissions(dataObj);
         
-        boolean isSecurityEnableOK = perm != null && ((isEditing && perm.isViewOnly()) || (!isEditing && !perm.canView()));
+        boolean isSecurityEnableOK = perm == null || (perm != null && ((isEditing && perm.isViewOnly()) || (!isEditing && !perm.canView())));
         subViewBtn.setEnabled(enabled && isSecurityEnableOK);
         label.setEnabled(enabled && isSecurityEnableOK);
         

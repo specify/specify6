@@ -80,7 +80,7 @@ public class TaskMgr implements CommandListener
     
     protected Hashtable<String, Taskable>   tasks          = new Hashtable<String, Taskable>();
     protected Hashtable<String, Class<?>>   uiPluginHash   = new Hashtable<String,  Class<?>>();
-    protected Hashtable<String, Taskable>   visTaskHash    = new Hashtable<String,  Taskable>();
+    //protected Hashtable<String, Taskable>   visTaskHash    = new Hashtable<String,  Taskable>();
 
     /**
      * Protected Default Constructor for Singleton
@@ -444,9 +444,8 @@ public class TaskMgr implements CommandListener
         }
         
         // Now call initialize.
-        for (Enumeration<Taskable> e=instance.tasks.elements();e.hasMoreElements();)
+        for (Taskable taskablePlugin : instance.tasks.values())
         {
-            Taskable taskablePlugin = e.nextElement();
             taskablePlugin.initialize(getCommandDefinitions(taskablePlugin.getTaskClass()), true);
         }
     }
@@ -500,21 +499,35 @@ public class TaskMgr implements CommandListener
     
                     if (newObj instanceof Taskable)
                     {
-                        Taskable tp = (Taskable)newObj;
+                        Taskable task = (Taskable)newObj;
+                        
+                        boolean shouldAddToUI =  getAttr(pluginElement, "addui", false);
+                        if (AppContextMgr.isSecurityOn())
+                        {
+                            PermissionIFace perm = task.getPermissions();
+                            if (perm != null)
+                            {
+                                if (!perm.canView())
+                                {
+                                    shouldAddToUI = false;
+                                    task.setEnabled(false);
+                                }
+                            }
+                        }
                         
                         boolean isTaskDefault = getAttr(pluginElement, "default", false); //$NON-NLS-1$
                         if (isTaskDefault)
                         {
                             if (instance.defaultTask == null)
                             {
-                                instance.defaultTask = tp;
+                                instance.defaultTask = task;
                             } else
                             {
-                                log.error("More than one plugin thinks it is the default["+tp.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                                log.error("More than one plugin thinks it is the default["+task.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                             }
                         }
                         
-                        register(tp, getAttr(pluginElement, "addui", false)); //$NON-NLS-1$
+                        register(task, shouldAddToUI); //$NON-NLS-1$
 
                     } else
                     {
@@ -594,7 +607,18 @@ public class TaskMgr implements CommandListener
     {
         if (cmdAction.isAction(APP_RESTART_ACT))
         {
-            
+            for (Taskable task : instance.tasks.values())
+            {
+                if (AppContextMgr.isSecurityOn())
+                {
+                    task.setPermissions(null); // for relo0ad of permissions
+                    PermissionIFace perm = task.getPermissions();
+                    if (perm != null)
+                    {
+                        task.setEnabled(perm.canView());
+                    }
+                }
+            }
         }
     }
     

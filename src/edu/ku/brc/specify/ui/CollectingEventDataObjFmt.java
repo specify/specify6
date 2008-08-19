@@ -17,6 +17,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -127,7 +128,7 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(CollectingEvent.getClassTableId());
             if (tblInfo != null)
             {
-                SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
+                PermissionSettings perm = tblInfo.getPermissions();
                 if (perm != null)
                 {
                     if (!perm.canView())
@@ -160,7 +161,7 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(Locality.getClassTableId());
             if (tblInfo != null)
             {
-                SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
+                PermissionSettings perm = tblInfo.getPermissions();
                 if (perm != null && !perm.canView())
                 {
                     locality = null;
@@ -181,7 +182,7 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
                     DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(Locality.getClassTableId());
                     if (tblInfo != null)
                     {
-                        SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo.getName());
+                        PermissionSettings perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo.getName());
                         if (perm != null)
                         {
                             if (perm.canView())

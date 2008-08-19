@@ -26,14 +26,6 @@ public class SecurityMgr
 {
     public static final String factoryName = "edu.ku.brc.af.auth.SecurityMgr"; //$NON-NLS-1$
     
-    public static final int NO_PERM          =   0; // Indicates there are no permissions
-    public static final int CAN_VIEW         =   1; // Indicates the user can view the form
-    public static final int CAN_MODIFY       =   2; // Indicates the user can modify data
-    public static final int CAN_DELETE       =   4; // Indicates the user can delete items
-    public static final int CAN_ADD          =   8; // Indicates the user can add new items
-    
-    public static final int ALL_PERM         = CAN_VIEW | CAN_MODIFY | CAN_DELETE | CAN_ADD;
-    
     public static final String VIEW_PERM     = "view";
     public static final String MODIFY_PERM   = "modify";
     public static final String DELETE_PERM   = "delete";
@@ -143,153 +135,17 @@ public class SecurityMgr
     {
         return true;
     }
-
+    
     /**
      * Returns a Permission Object with the permission bits flipped accordingly
      * @param name the name of the permission
      * @return the options
      */
-    public PermissionBits getPermission(final String name)
+    public PermissionSettings getPermission(final String name)
     {
-        return new PermissionBits(ALL_PERM);
+        return new PermissionSettings(PermissionSettings.ALL_PERM);
     }
 
-    /**
-     * Returns a integer mask with the permission bits flipped accordingly
-     * @param name the name of the permission
-     * @return the options
-     */
-    public int getPermissionOptions(String name)
-    {
-        return ALL_PERM;
-    }
-
-    /**
-     * Helper method to see if an option is turned on.
-     * @param options the range of options that can be turned on
-     * @param opt the actual option that may be turned on
-     * @return true if the opt bit is on
-     */
-    public static boolean isOn(final int options, final int opt)
-    {
-        return (options & opt) == opt;
-    }
-    
-    /**
-     * @param options
-     * @return
-     */
-    public static boolean canModify(final int options)
-    {
-        return isOn(options, CAN_MODIFY);
-    }
-    
-    /**
-     * @param options
-     * @return
-     */
-    public static boolean canView(final int options)
-    {
-        return isOn(options, CAN_VIEW);
-    }
-    
-    /**
-     * @param options
-     * @return
-     */
-    public static boolean canAdd(final int options)
-    {
-        return isOn(options, CAN_ADD);
-    }
-    
-    /**
-     * @param options
-     * @return
-     */
-    public static boolean canDelete(final int options)
-    {
-        return isOn(options, CAN_DELETE);
-    }
-    
-    /**
-     * @param options
-     */
-    public static void dumpPermissions(final String title, final int options)
-    {
-        System.err.print(title + " - ");
-        System.err.print("Modify: " + (canModify(options) ? "Y" : "N"));
-        System.err.print("  View: "   + (canView(options)   ? "Y" : "N"));
-        System.err.print("  Delete: " + (canDelete(options) ? "Y" : "N"));
-        System.err.println("  Add: "  + (canAdd(options)    ? "Y" : "N"));
-    }
-    
-    /**
-     * Creates a PermissionBits object.
-     * @param options the options
-     * @return the obj
-     */
-    private PermissionBits createPermissionBitsInternal(final int options)
-    {
-        return new PermissionBits(options);
-    }
-    
-    /**
-     * Creates a PermissionBits object.
-     * @param options the options
-     * @return the obj
-     */
-    public static PermissionBits createPermissionBits(final int options)
-    {
-        return getInstance().createPermissionBitsInternal(options);
-    }
-    
-    //------------------------------------------------------------
-    // Simple Class for making Permissions easy.
-    //------------------------------------------------------------
-    public class PermissionBits 
-    {
-        private int permissions;
-        
-        public PermissionBits(final int permissions)
-        {
-            this.permissions = permissions;
-        }
-        
-        public boolean canModify()
-        {
-            return isOn(permissions, CAN_MODIFY);
-        }
-        
-        public boolean canView()
-        {
-            return isOn(permissions, CAN_VIEW);
-        }
-
-        public boolean canAdd()
-        {
-            return isOn(permissions, CAN_ADD);
-        }
-
-        public boolean canDelete()
-        {
-            return isOn(permissions, CAN_DELETE);
-        }
-        
-        public boolean isViewOnly()
-        {
-            return permissions == CAN_VIEW;
-        }
-
-        public int getOptions()
-        {
-            return permissions;
-        }
-        
-        public boolean hasNoPerm()
-        {
-            return permissions == 0;
-        }
-    }
 }
 
 

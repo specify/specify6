@@ -35,7 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
-import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -623,7 +623,7 @@ public class DataObjFieldFormatMgr
             if (tblInfo != null)
             {
                 // Security - Check security on incoming object
-                SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
+                PermissionSettings perm = tblInfo.getPermissions();
                 if (perm != null)
                 {
                     if (!perm.canView())
@@ -664,7 +664,7 @@ public class DataObjFieldFormatMgr
                             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(value.getClass().getSimpleName());
                             if (tblInfo != null)
                             {
-                                SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
+                                PermissionSettings perm = tblInfo.getPermissions();
                                 if (perm != null)
                                 {
                                     if (!perm.canView())
