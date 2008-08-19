@@ -89,7 +89,7 @@ public class TaskMgr implements CommandListener
      */
     protected TaskMgr()
     {
-        CommandDispatcher.register(APP_RESTART_ACT, this);
+        CommandDispatcher.register("App", this);
     }
 
     /**

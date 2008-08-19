@@ -740,9 +740,9 @@ public class DatabaseLoginPanel extends JPanel
         log.debug("preparing to save"); //$NON-NLS-1$
         save();
 
-        statusBar.setIndeterminate(getClass().getName(), true);
+        final String name = getClass().getName();
+        statusBar.setIndeterminate(name, true);
         enableUI(false);
-
         
         setMessage(String.format(getResourceString("LoggingIn"), new Object[] { getDatabaseName() }), false); //$NON-NLS-1$
 
@@ -789,19 +789,13 @@ public class DatabaseLoginPanel extends JPanel
                     if (StringUtils.isNotEmpty(appName))
                     {
                         SwingUtilities.invokeLater(new Runnable(){
-
-                            /* (non-Javadoc)
-                             * @see java.lang.Runnable#run()
-                             */
-                            //@Override
+                            @Override
                             public void run()
                             {
                                 //Not exactly true yet, but make sure users know that this is NOT Specify starting up. 
                                 setMessage(String.format(getResourceString("Starting"), appName), false); //$NON-NLS-1$
                             }
-                            
                         });
-                        
                     }
                     
                     DatabaseDriverInfo drvInfo = dbDrivers.get(dbDriverCBX.getSelectedIndex());
@@ -825,7 +819,16 @@ public class DatabaseLoginPanel extends JPanel
                         finished();
                     }*/
                 }
+                SwingUtilities.invokeLater(new Runnable(){
+                    @Override
+                    public void run()
+                    {
+                        //Not exactly true yet, but make sure users know that this is NOT Specify starting up. 
+                        setMessage(getResourceString("INVALID_LOGIN"), true); //$NON-NLS-1$
+                    }
+                });
 
+                
                 return null;
             }
 
@@ -833,7 +836,8 @@ public class DatabaseLoginPanel extends JPanel
             @Override
             public void finished()
             {
-
+                statusBar.setIndeterminate(name, false);
+                
                 // I am not sure this is the rightplace for this
                 // but this is where I am putting it for now
                 if (isLoggedIn)
@@ -885,7 +889,8 @@ public class DatabaseLoginPanel extends JPanel
 
                 if (!isLoggedIn)
                 {
-                    setMessage(DBConnection.getInstance().getErrorMsg(), true);
+                    String msg = DBConnection.getInstance().getErrorMsg();
+                    setMessage(StringUtils.isEmpty(msg) ? getResourceString("INVALID_LOGIN") : msg, true);
 
                 } else
                 {

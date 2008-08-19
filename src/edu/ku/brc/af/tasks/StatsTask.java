@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
@@ -172,24 +171,14 @@ public class StatsTask extends BaseTask
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
-        Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
+        toolbarItems = new Vector<ToolBarItemDesc>();
         String label = getResourceString(name);
         String iconName = name;
         String hint = getResourceString("stats_hint"); //$NON-NLS-1$
         ToolBarDropDownBtn      btn  = createToolbarButton(label, iconName, hint);
 
-
-        list.add(new ToolBarItemDesc(btn));
-        return list;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.BaseTask#getMenuItems()
-     */
-    @Override
-    public List<MenuItemDesc> getMenuItems()
-    {
-        return null;
+        toolbarItems.add(new ToolBarItemDesc(btn));
+        return toolbarItems;
     }
 
     /* (non-Javadoc)
