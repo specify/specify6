@@ -267,10 +267,11 @@
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="typeStatusName" uitype="combobox" picklist="TypeStatus"/>
                     
-                    <cell type="label" labelfor="5" label="Date"/>
+                    <!--  <cell type="label" labelfor="5" label="Date"/>
                         <cell type="field" id="5" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                         
                         <cell type="field" id="7" name="yesNo1" uitype="checkbox" label="In Question"/>
+                     -->
                 </row>
                 
                 <row>
