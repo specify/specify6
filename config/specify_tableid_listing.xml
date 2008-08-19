@@ -4,7 +4,7 @@
 
     Last used ID is 133 or 526
     
-    78, 86, 89, 104, 105 is available
+    105 is available
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -38,6 +38,8 @@
             <display view="AgentAttachment" newobjdlg="AgentAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.AgentGeography" abbrev="ageo" id="78" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.AgentSpecialty" abbrev="agsp" id="86" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.AgentVariant" abbrev="av" id="107" workbench="false" searchable="true">
         	<display view="AgentVariant" newobjdlg="AgentVariant"/>
         </table>
@@ -136,6 +138,8 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.ExchangeIn" abbrev="exi" id="39" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.ExchangeOut" abbrev="exo" id="40" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.Exsiccata" abbrev="exsic" id="89" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.ExsiccataItem" abbrev="exsicit" id="104" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.FieldNotebook" abbrev="fnb" id="83" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.FieldNotebookBusRules</businessrule>
         </table>

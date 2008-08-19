@@ -50,6 +50,9 @@ public class AgentVariant extends DataModelObjBase implements Serializable
     public static final Byte LABLELNAME    = 4;
     
     protected Integer            agentVariantId;
+    protected String             country;    // Java Two Character Code
+    protected String             language;   // Java Two Character Code
+    protected String             variant;    // Java Two Character Code
     protected Byte               varType;
     protected String             name;
     protected Agent              agent;
@@ -74,6 +77,9 @@ public class AgentVariant extends DataModelObjBase implements Serializable
         super.init();
         agentVariantId = null;
         name           = null;
+        country        = null;
+        language       = null;
+        variant        = null;
         agent          = null;
     }
 
@@ -122,7 +128,58 @@ public class AgentVariant extends DataModelObjBase implements Serializable
     {
         this.name = name;
     }
-
+    
+    /**
+     * @return the language
+     */
+    @Column(name = "Language", unique = false, nullable = true, insertable = true, updatable = true, length = 2)
+    public String getLanguage()
+    {
+    	return language;
+    }
+    
+    /**
+     * @param language the language to set
+     */
+    public void setLanguage(String language)
+    {
+    	this.language = language;
+    }
+    
+    /**
+     * @return the country 
+     */
+    @Column(name = "Country", unique = false, nullable = true, insertable = true, updatable = true, length = 2)
+    public String getCountry()
+    {
+    	return country;
+    }
+    
+    /**
+     * @param country the country to set 
+     */
+    public void setCountry(String country)
+    {
+    	this.country = country;
+    }
+    
+    /**
+     * @return the variant
+     */
+    @Column(name = "Variant", unique = false, nullable = true, insertable = true, updatable = true, length = 2)
+    public String getVariant()
+    {
+    	return variant;
+    }
+    
+    /**
+     * @param variant the variant to set
+     */
+    public void setVariant(String variant)
+    {
+    	this.variant = variant;
+    }
+    
     /**
      * @return the varType
      */

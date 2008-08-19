@@ -43,6 +43,8 @@
 		<mapping class="edu.ku.brc.specify.datamodel.AddressOfRecord"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Agent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AgentAttachment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AgentGeography"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AgentSpecialty"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AgentVariant"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Appraisal"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Attachment"/>
@@ -88,6 +90,8 @@
 		<mapping class="edu.ku.brc.specify.datamodel.DNASequenceAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ExchangeIn"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ExchangeOut"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Exsiccata"/>
+		<mapping class="edu.ku.brc.specify.datamodel.ExsiccataItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebook"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet"/>
