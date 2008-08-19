@@ -62,7 +62,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
      protected Integer journalId;
      protected String  journalName;
      protected String  journalAbbreviation;
-     protected String  iSSN;
+     protected String  issn;
      protected String  text1;
      protected String  guid;
      protected String  remarks;
@@ -94,7 +94,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
         journalName = null;
         journalAbbreviation = null;
         guid        = null;
-        iSSN        = null;
+        issn        = null;
         text1       = null;
         remarks     = null;
         referenceWorks = new HashSet<ReferenceWork>();
@@ -180,20 +180,20 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
     }
 
     /**
-     * @return the iSSN
+     * @return the issn
      */
     @Column(name = "ISSN", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
-    public String getISSN()
+    public String getIssn()
     {
-        return iSSN;
+        return issn;
     }
 
     /**
-     * @param issn the iSSN to set
+     * @param issn the issn to set
      */
-    public void setISSN(String issn)
+    public void setIssn(String issn)
     {
-        iSSN = issn;
+        this.issn = issn;
     }
 
     /**

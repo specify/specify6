@@ -90,7 +90,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     protected String                        pages;
     protected String                        url;
     protected String                        libraryNumber;
-    protected String                        iSBN;
+    protected String                        isbn;
     protected String                        remarks;
     protected String                        text1;
     protected String                        text2;
@@ -120,9 +120,6 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         this.referenceWorkId = referenceWorkId;
     }
    
-    
-    
-
     // Initializer
     @Override
     public void initialize()
@@ -139,7 +136,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         pages = null;
         url = null;
         libraryNumber = null;
-        iSBN    = null;
+        isbn    = null;
         remarks = null;
         text1 = null;
         text2 = null;
@@ -319,17 +316,20 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
      * @return the iSBN
      */
     @Column(name = "ISBN", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
-    public String getISBN()
+    /**
+     * @return the isbn
+     */
+    public String getIsbn()
     {
-        return iSBN;
+        return isbn;
     }
 
     /**
-     * @param isbn the iSBN to set
+     * @param isbn the isbn to set
      */
-    public void setISBN(String isbn)
+    public void setIsbn(String isbn)
     {
-        iSBN = isbn;
+        this.isbn = isbn;
     }
 
     /**
