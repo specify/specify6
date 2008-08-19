@@ -18,8 +18,6 @@
 package edu.ku.brc.af.auth;
 
 import java.security.Policy;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.security.auth.Subject;
 import javax.security.auth.login.Configuration;
@@ -30,7 +28,6 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.specify.module.DbLoginCallbackHandler;
 import edu.ku.brc.af.auth.specify.module.SpDBConfiguration;
-import edu.ku.brc.af.auth.specify.policy.CompositePolicy;
 import edu.ku.brc.af.auth.specify.policy.DatabasePolicy;
 
 /**

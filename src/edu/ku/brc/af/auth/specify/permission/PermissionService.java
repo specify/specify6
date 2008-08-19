@@ -67,7 +67,7 @@ public class PermissionService
         PreparedStatement permPstmt = null;
         try
         {
-            //XXX convert to hibernate
+            //XXX convert to hibernate (it's ok if it isn't converted to Hibernate - rods)
             conn = DatabaseService.getInstance().getConnection();
             String sql = "DELETE FROM spprincipal_sppermission WHERE SpPermissionID = ?"; //$NON-NLS-1$
             tiePstmt = conn.prepareStatement(sql);

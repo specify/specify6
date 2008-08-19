@@ -27,7 +27,6 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.specify.policy.DatabaseService;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author megkumin

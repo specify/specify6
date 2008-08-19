@@ -19,8 +19,6 @@ import java.security.Principal;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.ui.UIRegistry;
-
 @SuppressWarnings("serial") //$NON-NLS-1$
 public class BasicPrincipal implements Principal, Serializable
 {

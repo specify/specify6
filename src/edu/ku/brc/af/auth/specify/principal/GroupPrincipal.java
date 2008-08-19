@@ -19,8 +19,6 @@ package edu.ku.brc.af.auth.specify.principal;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.ui.UIRegistry;
-
 
 
 /**
