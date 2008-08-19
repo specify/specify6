@@ -608,9 +608,9 @@ public class FormViewObj implements Viewable,
                 shortName = viewArg.getClassName();
             }
             SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission("DO."+shortName);
-            //SecurityMgr.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
+            SecurityMgr.dumpPermissions(mvParentArg.getViewName(), perm.getOptions());
             
-            if (perm.getOptions() == 0 && restrictableUI != null)
+            if (perm.hasNoPerm() && restrictableUI != null)
             {
                 restrictableUI.setRestricted(true);
             }
@@ -632,7 +632,7 @@ public class FormViewObj implements Viewable,
             // If not, then we are a subform and we should only add the view that belong to our same creation mode.
             if (mvParentArg.isTopLevel() && mvParentArg.isOKToAddAllAltViews())
             {
-                //altViewsListArg.addAll(viewArg.getAltViews());
+                altViewsListArg.addAll(viewArg.getAltViews());
                 
             } else
             {
@@ -3698,7 +3698,16 @@ public class FormViewObj implements Viewable,
             // Now tell the RecordController how many Object we have
             if (rsController != null)
             {
-                rsController.setLength(list.size());
+                int len = list.size();
+                if (AppContextMgr.isSecurityOn())
+                {
+                    ensurePermissions();
+                    if (perm.hasNoPerm())
+                    {
+                        len = 0;
+                    }
+                }
+                rsController.setLength(len);
                 //updateControllerUI();
             }
 
@@ -3845,6 +3854,17 @@ public class FormViewObj implements Viewable,
     {
         setDataIntoUI(true, false);
     }
+    
+    /**
+     * Makes sure we have gotten the permissions.
+     */
+    private void ensurePermissions()
+    {
+        if (perm == null)
+        {
+            perm = SecurityMgr.getInstance().getPermission("DO."+dataObj.getClass().getSimpleName());
+        }
+    }
 
     /**
      * Fill the form with data, indicate whether the form should be reset because the data is new.
@@ -3859,11 +3879,7 @@ public class FormViewObj implements Viewable,
         {
             if (AppContextMgr.isSecurityOn())
             {
-                if (perm == null)
-                {
-                    perm = SecurityMgr.getInstance().getPermission("DO."+dataObj.getClass().getSimpleName());
-                }
-                //SecurityMgr.dumpPermissions(dataObj.getClass().getSimpleName(), perm2.getOptions());
+                ensurePermissions();
                 if ((isEditing && perm.isViewOnly()) || (!isEditing && !perm.canView()))
                 {
                     return;
@@ -4102,6 +4118,11 @@ public class FormViewObj implements Viewable,
                             
                         } else
                         {
+                            if (cellField.getIdent().equals("3"))
+                            {
+                                int x = 0;
+                                x++;
+                            }
                             values = UIHelper.getFieldValues(cellField, dataObj, dg);
                         }
 

@@ -277,12 +277,17 @@ public class SecurityMgr
         
         public boolean isViewOnly()
         {
-            return permissions == CAN_ADD;
+            return permissions == CAN_VIEW;
         }
 
         public int getOptions()
         {
             return permissions;
+        }
+        
+        public boolean hasNoPerm()
+        {
+            return permissions == 0;
         }
     }
 }

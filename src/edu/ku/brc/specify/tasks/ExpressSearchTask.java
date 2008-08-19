@@ -54,6 +54,9 @@ import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.ERTIJoinColInfo;
 import edu.ku.brc.af.core.expresssearch.ESTermParser;
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
@@ -70,6 +73,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.ui.SearchBox;
+import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.JAutoCompTextField;
 import edu.ku.brc.af.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
@@ -369,9 +373,22 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     queryCount     = 0;
                     queryCountDone = 0;
                     
+                    
                     for (SearchTableConfig table : config.getTables())
                     {
-                        startSearchJPA(esrPane, table, searchTerm, ESTermParser.getFields());
+                        if (AppContextMgr.isSecurityOn())
+                        {
+                            if (table.getTableInfo().getPermissions().canView())
+                            {
+                                startSearchJPA(esrPane, table, searchTerm, ESTermParser.getFields());
+                            } else
+                            {
+                                log.debug("Skipping ["+table.getTableInfo().getTitle()+"]");
+                            }
+                        } else
+                        {
+                            startSearchJPA(esrPane, table, searchTerm, ESTermParser.getFields());
+                        }
                     }
                     
                     // Check to see if any queries got started.
@@ -450,17 +467,51 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                         continue;
                     }
                     
-                    //if (!erti.getId().equals("5")) // ZZZ
-                    //{
-                    //    continue;
-                    //}
-                    //log.debug("Checking up["+tblInfo.getTableId()+"]");
+                    //log.debug("Id: "+erti.getId()+"  "+erti.getTitle()+"  "+erti.getTableInfo().getPermissions().canView());
+                    //SecurityMgr.dumpPermissions(erti.getTableInfo().getTitle(), erti.getTableInfo().getPermissions().getOptions());
+                    if (AppContextMgr.isSecurityOn())
+                    {
+                        if (!erti.getTableInfo().getPermissions().canView())
+                        {
+                            continue;
+                        }
+                        
+                        boolean hasUnviewableCol = false;
+                        for (ERTICaptionInfo capInfo : erti.getCaptionInfo())
+                        {
+                            DBFieldInfo fldInfo = capInfo.getFieldInfo();
+                            if (fldInfo != null)
+                            {
+                                if (!fldInfo.getTableInfo().getPermissions().canView())
+                                {
+                                    hasUnviewableCol = true;
+                                    break;
+                                }
+                                
+                            } else if (capInfo.getAggClass() != null)
+                            {
+                                DBTableInfo aggTblInfo = DBTableIdMgr.getInstance().getByShortClassName(capInfo.getAggClass().getSimpleName());
+                                if (aggTblInfo != null && !aggTblInfo.getPermissions().canAdd())
+                                {
+                                    hasUnviewableCol = true;
+                                    break; 
+                                }
+                            } else
+                            {
+                                log.error("*********** NO FIELD: "+capInfo.getColName());
+                            }
+                        }
+                        if (hasUnviewableCol)
+                        {
+                            continue;
+                        }
+                    }
                     
                     QueryForIdResultsSQL results = resultsForJoinsHash.get(erti.getId());
                     if (results == null)
                     {
-                        Integer joinColTableId = null;
-                        ERTIJoinColInfo joinCols[] = erti.getJoins();
+                        Integer         joinColTableId = null;
+                        ERTIJoinColInfo joinCols[]     = erti.getJoins();
                         if (joinCols != null)
                         {
                             for (ERTIJoinColInfo jci :  joinCols)
@@ -468,6 +519,11 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                                 if (tableId.equals(jci.getJoinTableId()))
                                 {
                                     joinColTableId = jci.getJoinTableIdAsInt();
+                                    //log.debug("CHK: "+jci.getTableInfo().getTitle()+"  "+jci.getTableInfo().getPermissions().canView());
+                                    if (AppContextMgr.isSecurityOn() && !jci.getTableInfo().getPermissions().canView())
+                                    {
+                                        continue;
+                                    }
                                     break;
                                 }
                             }
@@ -1098,7 +1154,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 
                 if (cnt >= RESULTS_THRESHOLD)
                 {
-                    String reason = String.format("%d hits returned of %d maximum allowed. ", RESULTS_THRESHOLD, cnt);
+                    String reason = String.format("%d hits returned of %d maximum allowed. ", RESULTS_THRESHOLD, cnt); // I18N
                     if (searchWarningsResults == null)
                     {
                         searchWarningsResults = new SIQueryForIdResults();

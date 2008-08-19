@@ -324,19 +324,22 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
             FormHelper.updateLastEdittedInfo(viewBasedPanel.getMultiView().getData());
         }
         
-        FormViewObj fvo = viewBasedPanel.getMultiView().getCurrentViewAsFormViewObj();
-        if (fvo != null)
+        if (viewBasedPanel.isEditMode())
         {
-            BusinessRulesIFace br = fvo.getBusinessRules();
-            if (br != null && fvo.getDataObj() != null)
+            FormViewObj fvo = viewBasedPanel.getMultiView().getCurrentViewAsFormViewObj();
+            if (fvo != null)
             {
-                boolean isNewObj = MultiView.isOptionOn(fvo.getMVParent().getOptions(), MultiView.IS_NEW_OBJECT);
-                if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, 
-                                                                            fvo.getDataObj(), 
-                                                                            isNewObj))
+                BusinessRulesIFace br = fvo.getBusinessRules();
+                if (br != null && fvo.getDataObj() != null)
                 {
-                    UIRegistry.showError(br.getMessagesAsString());
-                    return;
+                    boolean isNewObj = MultiView.isOptionOn(fvo.getMVParent().getOptions(), MultiView.IS_NEW_OBJECT);
+                    if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, 
+                                                                                fvo.getDataObj(), 
+                                                                                isNewObj))
+                    {
+                        UIRegistry.showError(br.getMessagesAsString());
+                        return;
+                    }
                 }
             }
         }

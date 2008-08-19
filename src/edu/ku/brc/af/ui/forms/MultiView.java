@@ -88,7 +88,7 @@ public class MultiView extends JPanel
     protected FormValidator                currentValidator     = null;
     protected Class<?>                     classToCreate        = null;
     
-    protected PermissionBits               permissions           = SecurityMgr.createPermissionBits(SecurityMgr.ALL_PERM);
+    protected PermissionBits               permissions;
     
     protected boolean                      editable             = false;
     protected AltViewIFace.CreationMode    createWithMode       = AltViewIFace.CreationMode.NONE;
@@ -208,8 +208,12 @@ public class MultiView extends JPanel
         
         if (AppContextMgr.isSecurityOn())
         {
+            this.permissions = getPremissionFromView(view);
             log.debug("*** View: "+view.getName() + " - " + permissions);
             SecurityMgr.dumpPermissions("DO."+view.getName(), permissions.getOptions());
+        } else
+        {
+            this.permissions = SecurityMgr.createPermissionBits(SecurityMgr.ALL_PERM);
         }
 
         AltViewIFace defaultAltView = createDefaultViewable(defaultAltViewType);
@@ -291,15 +295,31 @@ public class MultiView extends JPanel
         this.createWithMode = createWithMode;
         this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.EDIT ? IS_EDITTING : NO_OPTIONS);
         
-        String shortClass = StringUtils.substringAfterLast(view.getClassName(), ".");
-        if (shortClass == null)
+        if (AppContextMgr.isSecurityOn())
         {
-            shortClass = view.getClassName();
+            this.permissions = getPremissionFromView(view);
+        } else
+        {
+            this.permissions = SecurityMgr.createPermissionBits(SecurityMgr.ALL_PERM);
         }
-        this.permissions = SecurityMgr.getInstance().getPermission("DO."+shortClass); 
         
         createViewable(altView != null ? altView : createDefaultViewable(null));
         showView(altView.getName());
+    }
+    
+    /**
+     * Get the Permissions for the data type from the views.
+     * @param viewArg the view
+     * @return the premissions
+     */
+    public static SecurityMgr.PermissionBits getPremissionFromView(final ViewIFace viewArg)
+    {
+        String shortClass = StringUtils.substringAfterLast(viewArg.getClassName(), ".");
+        if (shortClass == null)
+        {
+            shortClass = viewArg.getClassName();
+        }
+        return SecurityMgr.getInstance().getPermission("DO."+shortClass);
     }
     
     /**
@@ -369,13 +389,13 @@ public class MultiView extends JPanel
             if (viewable.getValidator() != null && viewable.getValidator().hasChanged()) // XXX Not sure why it must have a validator ???
             {
                 viewable.getDataFromUI();
-                if (viewable.getValidator() != null && viewable.getValidator().hasChanged())
-                {
+                //if (viewable.getValidator() != null && viewable.getValidator().hasChanged())
+                //{
                     //if (FormHelper.updateLastEdittedInfo(viewable.getDataObj()))
                     //{
                     //    viewable.setDataIntoUI();
                     //}
-                }
+                //}
             }
             // XXX For the Demo I can't figure out why a Different session is being checked when I try
             // to save the session in the form.
@@ -1251,6 +1271,10 @@ public class MultiView extends JPanel
      */
     public boolean isOKToAddAllAltViews()
     {
+        if (permissions.isViewOnly())
+        {
+            return false;
+        }
         return !MultiView.isOptionOn(createOptions, MultiView.DONT_ADD_ALL_ALTVIEWS);
     }
 

@@ -21,6 +21,9 @@ import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import org.dom4j.Element;
 
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+
 /**
  * @author rods
  *
@@ -31,11 +34,17 @@ import org.dom4j.Element;
  */
 public class ERTIJoinColInfo
 {
-    protected String joinTableId;
-    protected int    joinTableIdAsInt;
-    protected String colName;
+    protected String  joinTableId;
+    protected int     joinTableIdAsInt;
+    protected String  colName;
     protected boolean isPrimary;
     
+    // Transient
+    private DBTableInfo tableInfo = null;
+    
+    /**
+     * @param element
+     */
     public ERTIJoinColInfo(final Element element)
     {
         joinTableId      = getAttr(element, "tableid", null); //$NON-NLS-1$
@@ -63,4 +72,18 @@ public class ERTIJoinColInfo
     {
         return isPrimary;
     }
+
+    /**
+     * @return the tableInfo
+     */
+    public DBTableInfo getTableInfo()
+    {
+        if (tableInfo == null)
+        {
+            tableInfo = DBTableIdMgr.getInstance().getInfoById(joinTableIdAsInt);
+        }
+        return tableInfo;
+    }
+    
+    
 }

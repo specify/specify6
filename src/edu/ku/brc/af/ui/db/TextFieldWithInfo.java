@@ -248,7 +248,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(classObj.getSimpleName());
             if (tblInfo != null)
             {
-                SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission("DO."+tblInfo.getShortClassName());
+                SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
                 if (perm != null)
                 {
                     isSecurityEnabledForBtn = perm.canView();
@@ -259,7 +259,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         textField.setEnabled(enabled);
         if (infoBtn != null)
         {
-            infoBtn.setEnabled(enabled && isSecurityEnabledForBtn);
+            infoBtn.setEnabled(enabled && isSecurityEnabledForBtn && dataObj != null);
         }
     }
 

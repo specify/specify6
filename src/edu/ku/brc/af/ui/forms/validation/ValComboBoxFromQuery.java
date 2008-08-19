@@ -161,8 +161,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected ViewBasedSearchQueryBuilderIFace builder = null;
     protected QueryWhereClauseProvider queryWhereClauseProvider = null;
     
-    SecurityMgr.PermissionBits perm = null;
-
     /**
      *  Constructor.
      * @param domName name of the table to be searched
@@ -377,10 +375,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
         pb.add(textWithQuery, cc.xy(1,1));
         
-        if (AppContextMgr.isSecurityOn())
-        {
-            perm = SecurityMgr.getInstance().getPermission("DO."+tableInfo.getClassObj().getSimpleName());
-        }
+        SecurityMgr.PermissionBits perm = AppContextMgr.isSecurityOn() ? tableInfo.getPermissions() : null;
         
         int x = 3;
         if ((btnMask & CREATE_EDIT_BTN) != 0)
@@ -560,13 +555,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     /**
      * @param enabled
      */
-    public void setEditEnabled(boolean enabled)
+    /*public void setEditEnabled(boolean enabled)
     {
         if (editBtn != null)
         { 
             editBtn.setEnabled(enabled);
         }
-    }
+    }*/
     
     /**
      * 
@@ -598,17 +593,23 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     protected void createEditFrame(final boolean isNewObject)
     {
+        boolean canModify = true;
+        if (AppContextMgr.isSecurityOn() && tableInfo.getPermissions() != null)
+        {
+            canModify = tableInfo.getPermissions() .canModify();
+        }
+        
         int options = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | 
                       MultiView.HIDE_SAVE_BTN | 
-                      (perm.canModify() ? (MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE) : MultiView.NO_OPTIONS);
+                      (canModify ? (MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE) : MultiView.NO_OPTIONS);
         
-        String dlgName = StringUtils.isNotEmpty(displayDlgName) ? displayDlgName : tableInfo.getNewObjDialog();
+        String dlgName       = StringUtils.isNotEmpty(displayDlgName) ? displayDlgName : tableInfo.getNewObjDialog();
         String closeBtnTitle = getResourceString("SAVE");
         frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(this),
                                                                    dlgName,
                                                                    frameTitle,
                                                                    closeBtnTitle,
-                                                                   true,   // false means View Mode
+                                                                   canModify,   // false means View Mode
                                                                    options,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
         if (isNewObject)

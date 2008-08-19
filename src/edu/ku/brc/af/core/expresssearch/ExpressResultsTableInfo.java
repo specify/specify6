@@ -65,6 +65,9 @@ public class ExpressResultsTableInfo
     protected List<ERTICaptionInfo>     visibleCaptionInfo;  
     
     protected Color                     color;
+    
+    // Transient
+    private DBTableInfo                 tableInfo = null;
 
     /**
      * Constructs a table info object
@@ -107,10 +110,10 @@ public class ExpressResultsTableInfo
             }
         } else
         {
-            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
-            if (tableInfo != null)
+            DBTableInfo tblInfo = getTableInfo();
+            if (tblInfo != null)
             {
-                title = tableInfo.getTitle();
+                title = tblInfo.getTitle();
             }
         }
         
@@ -288,6 +291,18 @@ public class ExpressResultsTableInfo
     public void setDescription(String description)
     {
         this.description = description;
+    }
+
+    /**
+     * @return the tableInfo
+     */
+    public DBTableInfo getTableInfo()
+    {
+        if (tableInfo == null)
+        {
+            tableInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
+        }
+        return tableInfo;
     }
 
 }

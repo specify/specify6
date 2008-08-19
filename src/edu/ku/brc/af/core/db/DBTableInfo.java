@@ -35,7 +35,7 @@ import edu.ku.brc.ui.IconManager;
  * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Oct 3, 2007
  *

@@ -1118,10 +1118,11 @@ public class ViewFactory
                     DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(childInfo.getDataClass().getSimpleName());
                     if (tblInfo != null)
                     {
-                        SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission("DO."+tblInfo.getShortClassName());
+                        SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
                         if (perm != null)
                         {
-                            if (!perm.canView())
+                            SecurityMgr.dumpPermissions("QCBX: "+tblInfo.getShortClassName(), perm.getOptions());
+                            if (perm.isViewOnly() || !perm.canView())
                             {
                                 uiType = FormCellField.FieldType.textfieldinfo;
                             }

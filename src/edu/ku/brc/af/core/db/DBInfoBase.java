@@ -40,7 +40,7 @@ public class DBInfoBase implements Comparable<DBInfoBase>
     protected boolean isHidden = false;
     
     // Transient
-    protected PermissionBits permissions;
+    protected PermissionBits permissions = null;
     
     /**
      * Default Constructor.

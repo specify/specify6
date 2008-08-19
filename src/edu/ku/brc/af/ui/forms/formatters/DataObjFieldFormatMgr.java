@@ -72,9 +72,6 @@ public class DataObjFieldFormatMgr
     
     protected static final Logger log = Logger.getLogger(DataObjFieldFormatMgr.class);
     
-    protected static final String securityPrefix = "DO.";
-    
-    
     protected static DataObjFieldFormatMgr instance = null;
     
     protected boolean domFound = false;
@@ -626,7 +623,7 @@ public class DataObjFieldFormatMgr
             if (tblInfo != null)
             {
                 // Security - Check security on incoming object
-                SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo.getShortClassName());
+                SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
                 if (perm != null)
                 {
                     if (!perm.canView())
@@ -667,7 +664,7 @@ public class DataObjFieldFormatMgr
                             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(value.getClass().getSimpleName());
                             if (tblInfo != null)
                             {
-                                SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo.getShortClassName());
+                                SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
                                 if (perm != null)
                                 {
                                     if (!perm.canView())

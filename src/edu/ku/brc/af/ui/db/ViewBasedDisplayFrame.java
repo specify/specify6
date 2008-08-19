@@ -213,19 +213,22 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
     @Override
     protected void okButtonPressed()
     {
-        FormViewObj fvo = viewBasedPanel.getMultiView().getCurrentViewAsFormViewObj();
-        if (fvo != null)
+        if (viewBasedPanel.isEditMode())
         {
-            BusinessRulesIFace br = fvo.getBusinessRules();
-            if (br != null)
+            FormViewObj fvo = viewBasedPanel.getMultiView().getCurrentViewAsFormViewObj();
+            if (fvo != null)
             {
-                boolean isNewObj = MultiView.isOptionOn(fvo.getMVParent().getOptions(), MultiView.IS_NEW_OBJECT);
-                if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, 
-                                                                            fvo.getDataObj(),
-                                                                            isNewObj))
+                BusinessRulesIFace br = fvo.getBusinessRules();
+                if (br != null)
                 {
-                    UIRegistry.showError(br.getMessagesAsString());
-                    return;
+                    boolean isNewObj = MultiView.isOptionOn(fvo.getMVParent().getOptions(), MultiView.IS_NEW_OBJECT);
+                    if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, 
+                                                                                fvo.getDataObj(),
+                                                                                isNewObj))
+                    {
+                        UIRegistry.showError(br.getMessagesAsString());
+                        return;
+                    }
                 }
             }
         }

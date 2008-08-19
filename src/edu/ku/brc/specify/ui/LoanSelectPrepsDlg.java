@@ -17,7 +17,7 @@ package edu.ku.brc.specify.ui;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -457,7 +457,6 @@ public class LoanSelectPrepsDlg extends CustomDialog
             PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p,2px,p:g", "c:p"), this); //$NON-NLS-1$ //$NON-NLS-2$
             CellConstraints cc      = new CellConstraints();
             
-            
             pbuilder.add(label = createLabel(prep.getPrepType().getName()), cc.xy(1,1));
             label.setOpaque(false);
             
@@ -479,20 +478,19 @@ public class LoanSelectPrepsDlg extends CustomDialog
                     fixBGOfJSpinner(spinner);
                     pbuilder.add(spinner, cc.xy(3, 1));
                     //String str = " of " + Integer.toString(quantityAvailable) + "  " + (quantityOut > 0 ? "(" + quantityOut + " on loan.)" : "");
-                    String fmtStr = String.format(" of %3d  ", quantityAvailable); // TODO I18N //$NON-NLS-1$
+                    String fmtStr = getLocalizedMessage("LoanSelectPrepsDlg.OF_QUANT_OUT", quantityAvailable);
                     pbuilder.add(label2 = createLabel(fmtStr), cc.xy(5, 1));
                     if (quantityOut > 0)
                     {
-                        fmtStr = String.format(getResourceString("LoanSelectPrepsDlg.NUM_ON_LOAN"), new Object[] {quantityOut}); // TODO I18N //$NON-NLS-1$
+                        fmtStr = getLocalizedMessage("LoanSelectPrepsDlg.OF_QUANT_OUT", quantityOut); //$NON-NLS-1$
                         prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon")); //$NON-NLS-1$
                         //prepInfoBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
                         pbuilder.add(prepInfoBtn, cc.xy(7, 1));
                     }
                     
-                    
                 } else
                 {
-                    pbuilder.add(label2 = createLabel(getResourceString("LoanSelectPrepsDlg.NONE_AVAIL")), cc.xywh(3, 1, 5, 1));// I18N //$NON-NLS-1$
+                    pbuilder.add(label2 = createLabel(getResourceString("LoanSelectPrepsDlg.NONE_AVAIL")), cc.xywh(3, 1, 5, 1));//$NON-NLS-1$
                 }
             } else
             {
@@ -503,7 +501,7 @@ public class LoanSelectPrepsDlg extends CustomDialog
                 spinner = new JSpinner(model);
                 fixBGOfJSpinner(spinner);
                 pbuilder.add(spinner, cc.xy(3, 1));
-                pbuilder.add(label2 = createLabel(getResourceString("LoanSelectPrepsDlg.UNKN_NUM_AVAIL")), cc.xywh(5, 1, 2, 1)); // I18N //$NON-NLS-1$
+                pbuilder.add(label2 = createLabel(getResourceString("LoanSelectPrepsDlg.UNKN_NUM_AVAIL")), cc.xywh(5, 1, 2, 1)); //$NON-NLS-1$
                 unknownQuantity = true;
                 maxValue = 1;
             }

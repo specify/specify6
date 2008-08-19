@@ -241,7 +241,7 @@ public class SpecifySecurityMgr extends SecurityMgr
     /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.SecurityMgr#getPermissionOptions(java.lang.String)
      */
-    public int getPermissionOptions(String name)
+    public int getPermissionOptions(final String name)
     {
         final Class<?> permissionClass = BasicSpPermission.class;
         return getPermissionOptions(permissionClass, name);

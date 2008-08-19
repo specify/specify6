@@ -122,19 +122,6 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         
         isEditing = mode == AltViewIFace.CreationMode.EDIT;
         
-        if (AppContextMgr.isSecurityOn() && dataObj != null)
-        {
-            if (perm == null)
-            {
-                String shortName = StringUtils.substringAfterLast(view.getClassName(), ".");
-                if (shortName == null)
-                {
-                    shortName = view.getClassName();
-                }
-                perm = SecurityMgr.getInstance().getPermission("DO."+shortName);
-            }
-        }
-        
         // 02/12/08 - rods - Removing the "IS_NEW_OBJECT" of the parent object because it doesn't
         // matter to the popup form it creates. The form takes care of everything.
         this.options &= ~MultiView.IS_NEW_OBJECT;
@@ -227,6 +214,41 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         }
     }
     
+    /**
+     * Getting the permissions for the data object.
+     * @param dObj the data object
+     */
+    private void ensurePermissions(final Object dObj)
+    {
+        if (dObj != null)
+        {
+            if (AppContextMgr.isSecurityOn())
+            {
+                if (perm == null)
+                {
+                    Class<?> cls;
+                    if (dObj instanceof Set<?>)
+                    {
+                        Set<?> set = (Set<?>)dObj;
+                        if (set.size() == 0)
+                        {
+                            return;
+                        }
+                        cls = set.iterator().next().getClass();
+                    } else
+                    {
+                        cls = dObj.getClass();
+                    }
+                    DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(cls.getSimpleName());
+                    if (tblInfo != null)
+                    {
+                        perm = tblInfo.getPermissions();
+                    }
+                }
+            }
+        }
+    }
+    
     /* (non-Javadoc)
      * @see javax.swing.JComponent#setEnabled(boolean)
      */
@@ -234,6 +256,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     {
         super.setEnabled(enabled);
      
+        ensurePermissions(dataObj);
+        
         boolean isSecurityEnableOK = perm != null && ((isEditing && perm.isViewOnly()) || (!isEditing && !perm.canView()));
         subViewBtn.setEnabled(enabled && isSecurityEnableOK);
         label.setEnabled(enabled && isSecurityEnableOK);
@@ -426,13 +450,23 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
      */
     protected void updateBtnText()
     {
-        if (dataObj instanceof Set<?>)
+        if (dataObj instanceof Set<?> && icon != null)
         {
-            int    size   = ((Set<?>)dataObj).size();
-            if (icon != null)
+            ensurePermissions(dataObj);
+            
+            String lblStr = null;
+            if (AppContextMgr.isSecurityOn() && (perm != null && perm.hasNoPerm()) || perm == null)
             {
-                label.setText(" " + String.format("%s", size)+ " ");
+                lblStr = "   ";
             }
+
+            if (!lblStr.equals("   "))
+            {
+                int size = ((Set<?>)dataObj).size();
+                lblStr = " " + String.format("%s", size)+ " ";
+            }
+            
+            label.setText(lblStr);
         }
     }
     

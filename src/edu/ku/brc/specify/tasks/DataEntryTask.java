@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
@@ -147,7 +148,6 @@ public class DataEntryTask extends BaseTask
             super.initialize(); // sets isInitialized to false
             
             navBoxes.add(viewsNavBox);
-            navBoxes.add(treeNavBox);
             
             // No Series Processing
             //NavBox navBox = new NavBox(getResourceString("Actions"));
@@ -155,6 +155,10 @@ public class DataEntryTask extends BaseTask
             //navBoxes.add(navBox);
             
             loadTreeNavBoxes();
+            if (treeNavBox.getItems().size() > 0)
+            {
+                navBoxes.add(treeNavBox);
+            }
            
         }
         isShowDefault = true;
@@ -178,6 +182,14 @@ public class DataEntryTask extends BaseTask
      */
     private void createTreeEditNB(final BaseTreeTask<?,?,?> treeTask)
     {
+        if (AppContextMgr.isSecurityOn())
+        {
+            if (!DBTableIdMgr.getInstance().getByShortClassName(treeTask.getTreeClass().getSimpleName()).getPermissions().canModify())
+            {
+                return;
+            }
+        }
+        
         if (treeTask != null && treeTask.isTreeOnByDefault())
         {
             Action treeEditAction = UIRegistry.getAction("TreeEditing_" + treeTask.getTreeClass().getSimpleName());
@@ -243,12 +255,24 @@ public class DataEntryTask extends BaseTask
             {
                 try
                 {
-                    String         className   = view.getClassName();
+                    String className = view.getClassName();
                     if (StringUtils.isNotEmpty(className))
                     {
                         try
                         {
                             Class<?> dataClass = Class.forName(className);
+                            if (AppContextMgr.isSecurityOn())
+                            {
+                                DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(dataClass.getSimpleName());
+                                if (tblInfo != null)
+                                {
+                                    SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
+                                    if (!perm.canView())
+                                    {
+                                        return;
+                                    }
+                                }
+                            }
                             formDataObj = FormHelper.createAndNewDataObj(dataClass);
                             dataObjList.add(formDataObj);
                             dataObj = dataObjList;
@@ -329,7 +353,19 @@ public class DataEntryTask extends BaseTask
     public static void openView(final Taskable task, final ViewIFace view, final String mode, final String idStr)
     {
         int tableId = DBTableIdMgr.getInstance().getIdByClassName(view.getClassName());
-        String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(tableId, Integer.parseInt(idStr));
+        if (AppContextMgr.isSecurityOn())
+        {
+            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
+            if (tblInfo != null)
+            {
+                SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
+                if (!perm.canView())
+                {
+                    return;
+                }
+            }
+        }
+        String sqlStr  = DBTableIdMgr.getInstance().getQueryForTable(tableId, Integer.parseInt(idStr));
         if (StringUtils.isNotEmpty(sqlStr))
         {
             try
@@ -390,14 +426,22 @@ public class DataEntryTask extends BaseTask
      * @param recordSet the record to create a form for
      * @return the FormPane
      */
-    protected static FormPane createFormFor(final Taskable task, 
-                                            final String name, 
-                                            final String viewSetName,
-                                            final String viewName,
+    protected static FormPane createFormFor(final Taskable       task, 
+                                            final String         name, 
+                                            final String         viewSetName,
+                                            final String         viewName,
                                             final RecordSetIFace recordSet)
     {
-        FormPane formPane = null;
+        if (AppContextMgr.isSecurityOn())
+        {
+            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
+            if (!tblInfo.getPermissions().hasNoPerm())
+            {
+                return null;
+            }
+        }
         
+        FormPane formPane = null;
         // Look up and see if we already have a SubPane that is working on the RecordSet
         
         SubPaneIFace subPane = SubPaneMgr.getSubPaneWithRecordSet(recordSet);
@@ -1016,16 +1060,20 @@ public class DataEntryTask extends BaseTask
     {
         if (data instanceof RecordSetIFace)
         {
-            addSubPaneToMgr(createFormFor(task, name, null, viewName, (RecordSetIFace)data));
+            FormPane formPane = createFormFor(task, name, null, viewName, (RecordSetIFace)data);
+            if (formPane != null)
+            {
+                addSubPaneToMgr(formPane);
+            }
             
         } else if (data instanceof Object[])
         {
             Object[] dataList = (Object[])data;
             if (dataList.length == 3)
             {
-                ViewIFace   view = (ViewIFace)dataList[0];
-                String mode = (String)dataList[1];
-                String idStr = (String)dataList[2];
+                ViewIFace view  = (ViewIFace)dataList[0];
+                String    mode  = (String)dataList[1];
+                String    idStr = (String)dataList[2];
                 
                 openView(task, view, mode, idStr);
                 
@@ -1048,9 +1096,9 @@ public class DataEntryTask extends BaseTask
     
         if (cmdAction.isAction(OPEN_NEW_VIEW))
         {
-            String viewName    = cmdAction.getPropertyAsString("view");
+            String   viewName  = cmdAction.getPropertyAsString("view");
             Taskable task      = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
-            Object data        = cmdAction.getData();
+            Object   data      = cmdAction.getData();
             
             if (data instanceof RecordSetIFace)
             {
@@ -1237,7 +1285,11 @@ public class DataEntryTask extends BaseTask
             Object srcData = src.getData();
             if (srcData instanceof RecordSetIFace)
             {
-                addSubPaneToMgr(createFormFor(task, "XXXX", null, null, (RecordSetIFace)srcData));
+                FormPane formPane = createFormFor(task, "XXXX", null, null, (RecordSetIFace)srcData);
+                if (formPane != null)
+                {
+                    addSubPaneToMgr(formPane);
+                }
                 
             }/* else if (srcData instanceof CommandActionForDB)
             {

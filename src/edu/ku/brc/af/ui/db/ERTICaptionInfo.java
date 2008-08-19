@@ -113,6 +113,19 @@ public class ERTICaptionInfo
 
         this.colName = element.attributeValue("col"); //$NON-NLS-1$
         
+        String lookupColName = null;
+        if (this.colName != null)
+        {
+            if (this.colName.indexOf('.') > -1)
+            {
+                lookupColName = StringUtils.substringAfterLast(this.colName, ".");
+            } else
+            {
+                lookupColName = this.colName;
+            }
+            fieldInfo = tableInfo.getFieldByColumnName(lookupColName);
+        }
+        
         String key = getAttr(element, "key", null); //$NON-NLS-1$
         if (StringUtils.isNotEmpty(key))
         {
@@ -130,7 +143,6 @@ public class ERTICaptionInfo
             
         } else if (tableInfo != null)
         {
-            fieldInfo = tableInfo.getFieldByColumnName(this.colName);
             if (fieldInfo == null)
             {
                 if (this.colName.endsWith("ID")) //$NON-NLS-1$
@@ -152,9 +164,6 @@ public class ERTICaptionInfo
         }
         
         this.isVisible = getAttr(element, "visible", true); //$NON-NLS-1$
-        
-        
-        
         
         String aggTableClassName = null;
         

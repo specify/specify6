@@ -149,7 +149,7 @@ public class ExpressSearchConfigCache
                 // put into the Id hash
                 byIdHash.put(erti.getId(), erti);
                 
-                // Check for dumplicate names
+                // Check for duplicate names
                 if (tables.get(erti.getName()) == null)
                 {
                     tables.put(erti.getName(), erti);

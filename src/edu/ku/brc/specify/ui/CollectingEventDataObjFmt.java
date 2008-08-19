@@ -127,7 +127,7 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(CollectingEvent.getClassTableId());
             if (tblInfo != null)
             {
-                SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo.getShortClassName());
+                SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
                 if (perm != null)
                 {
                     if (!perm.canView())
@@ -160,13 +160,10 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(Locality.getClassTableId());
             if (tblInfo != null)
             {
-                SecurityMgr.PermissionBits perm = SecurityMgr.getInstance().getPermission(securityPrefix+tblInfo.getShortClassName());
-                if (perm != null)
+                SecurityMgr.PermissionBits perm = tblInfo.getPermissions();
+                if (perm != null && !perm.canView())
                 {
-                    if (!perm.canView())
-                    {
-                        locality = null;
-                    }
+                    locality = null;
                 }
             }
         }
