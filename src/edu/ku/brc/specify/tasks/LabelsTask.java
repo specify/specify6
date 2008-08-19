@@ -146,14 +146,14 @@ public class LabelsTask extends ReportsBaseTask
      */
     public List<ToolBarItemDesc> getToolBarItems()
     {
-        Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
+        toolbarItems = new Vector<ToolBarItemDesc>();
         String             label     = getResourceString(name);
         String             iconName  = name;
         String             hint      = getResourceString("labels_hint");
         ToolBarDropDownBtn btn       = createToolbarButton(label, iconName, hint);
 
-        list.add(new ToolBarItemDesc(btn));
-        return list;
+        toolbarItems.add(new ToolBarItemDesc(btn));
+        return toolbarItems;
     }
 
     /* (non-Javadoc)

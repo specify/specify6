@@ -189,8 +189,7 @@ public class StatsTask extends BaseTask
     @Override
     public List<MenuItemDesc> getMenuItems()
     {
-        Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
-        return list;
+        return null;
     }
 
     /* (non-Javadoc)

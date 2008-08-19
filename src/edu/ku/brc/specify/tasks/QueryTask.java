@@ -54,7 +54,6 @@ import com.thoughtworks.xstream.XStream;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.DroppableNavBox;
-import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
@@ -822,7 +821,7 @@ public class QueryTask extends BaseTask
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
-        Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
+        toolbarItems = new Vector<ToolBarItemDesc>();
 
         String label    = getResourceString(name);
         String iconName = name;
@@ -832,9 +831,9 @@ public class QueryTask extends BaseTask
         {
             tbList.add(btn);
         }
-        list.add(new ToolBarItemDesc(btn));
+        toolbarItems.add(new ToolBarItemDesc(btn));
 
-        return list;
+        return toolbarItems;
 
     }
     
@@ -990,19 +989,6 @@ public class QueryTask extends BaseTask
         return extendedNavBoxes;
     }
     
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.af.core.Taskable#getMenuItems()
-     */
-    @Override
-    public List<MenuItemDesc> getMenuItems()
-    {
-        Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
-
-        return list;
-
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#isSingletonPane()
      */

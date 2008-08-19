@@ -713,7 +713,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
-        Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
+        toolbarItems = new Vector<ToolBarItemDesc>();
 
         // Create Search Panel
         GridBagLayout gridbag = new GridBagLayout();
@@ -789,9 +789,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             searchPanel.add(searchBtn);
         }
 
-        list.add(new ToolBarItemDesc(searchPanel, ToolBarItemDesc.Position.AdjustRightLastComp));
+        toolbarItems.add(new ToolBarItemDesc(searchPanel, ToolBarItemDesc.Position.AdjustRightLastComp));
 
-        return list;
+        return toolbarItems;
     }
     
     /**

@@ -17,14 +17,11 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
@@ -100,32 +97,6 @@ public class LocalityMapperTask extends BaseTask
         }
     }
 
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
-     */
-    @Override
-    public List<ToolBarItemDesc> getToolBarItems()
-    {
-        Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        //ToolBarDropDownBtn      btn  = createToolbarButton(name, "locality.gif", "stats_hint");
-        //list.add(new ToolBarItemDesc(btn));
-        return list;
-    }
-
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
-     */
-    @Override
-    public List<MenuItemDesc> getMenuItems()
-    {
-        Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
-
-        return list;
-
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
      */

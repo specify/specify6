@@ -139,5 +139,15 @@ public interface Taskable
      * Displays any UI necessary to configure the task.
      */
     public abstract void doConfigure();
+    
+    /**
+     * @return whether it should have it's UI put into the menus or Toolbar
+     */
+    //public abstract boolean isVisible();
+    
+    /**
+     * @param enabled
+     */
+    public abstract void setEnabled(boolean enabled);
 
 }

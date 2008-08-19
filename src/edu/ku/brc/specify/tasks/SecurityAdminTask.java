@@ -30,7 +30,6 @@ import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.tasks.subpane.security.SecurityAdminPane;
 import edu.ku.brc.ui.CommandAction;
@@ -82,16 +81,15 @@ public class SecurityAdminTask extends BaseTask
      */
     public List<MenuItemDesc> getMenuItems()
     {
-        Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
-        
         // check whether user can see the security admin panel
         // other permissions will be checked when the panel is created 
         if (!SecurityMgr.getInstance().checkPermission("Task." + SECURITY_ADMIN, BasicSpPermission.view)) //$NON-NLS-1$
         {
-        	return list;
+        	return null;
         }
-
-        // else
+        
+        menuItems = new Vector<MenuItemDesc>();
+        
         String menuTitle = "SecurityAdminTask.SECURITY_TOOLS_MENU"; //$NON-NLS-1$
         String mneu      = "SecurityAdminTask.SECURITY_TOOLS_MNEU"; //$NON-NLS-1$
         String desc      = "SecurityAdminTask.SECURITY_TOOLS_DESC"; //$NON-NLS-1$
@@ -104,20 +102,10 @@ public class SecurityAdminTask extends BaseTask
             }
         });
         String menuDesc = "AdvMenu/SystemMenu";
-        list.add(new MenuItemDesc(mi, menuDesc ));
-        return list;
+        menuItems.add(new MenuItemDesc(mi, menuDesc ));
+        return menuItems;
 
     }  
-    
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
-     */
-    public List<ToolBarItemDesc> getToolBarItems()
-    {
-        Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        return list;
-    } 
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)

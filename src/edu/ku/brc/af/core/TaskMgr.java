@@ -45,6 +45,9 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIPluginable;
@@ -63,19 +66,21 @@ import edu.ku.brc.ui.UIRegistry;
  * @author rods
  *
  */
-public class TaskMgr
+public class TaskMgr implements CommandListener
 {
     // Static Data Members
-    private static final Logger  log      = Logger.getLogger(TaskMgr.class);
-    private static final TaskMgr instance = new TaskMgr();
+    private static final Logger  log               = Logger.getLogger(TaskMgr.class);
+    private static final TaskMgr instance          = new TaskMgr();
+    private static final String  APP_RESTART_ACT   = "AppRestart"; //$NON-NLS-1$
 
     // Data Members
-    protected Hashtable<String, Taskable> tasks          = new Hashtable<String, Taskable>();
     protected Vector<Taskable>            toolbarTasks   = new Vector<Taskable>();
     protected Element                     commandDOMRoot = null;
     protected Taskable                    defaultTask    = null;
     
+    protected Hashtable<String, Taskable>   tasks          = new Hashtable<String, Taskable>();
     protected Hashtable<String, Class<?>>   uiPluginHash   = new Hashtable<String,  Class<?>>();
+    protected Hashtable<String, Taskable>   visTaskHash    = new Hashtable<String,  Taskable>();
 
     /**
      * Protected Default Constructor for Singleton
@@ -83,7 +88,7 @@ public class TaskMgr
      */
     protected TaskMgr()
     {
-        // do nothing
+        CommandDispatcher.register(APP_RESTART_ACT, this);
     }
 
     /**
@@ -212,7 +217,7 @@ public class TaskMgr
      * Registers the plugin's UI compontents with the various parts of the UI. If the requested poxition
      * is 'Position.AppendNextToLast' then it is appended and the ToolBar is set to adjust the last item to
      * the right. Note: If two items request Position.AppendNextToLast then the last one to do so is 
-     * is adjusted right sincer they are appended.
+     * is adjusted right since they are appended.
      * @param plugin the plugin that will register it's UI
      */
     protected static void registerWithUI(final Taskable plugin)
@@ -266,10 +271,14 @@ public class TaskMgr
         JMenuBar menuBar = (JMenuBar)UIRegistry.get(UIRegistry.MENUBAR);
         if (menuBar != null)
         {
-            for (MenuItemDesc menuItem : plugin.getMenuItems())
+            List<MenuItemDesc> menuItems = plugin.getMenuItems();
+            if (menuItems != null)
             {
-                String[] menuPath = split(menuItem.getMenuPath(), "/"); //$NON-NLS-1$
-                buildMenuTree(menuBar, menuItem, menuPath, 0);
+                for (MenuItemDesc menuItem : plugin.getMenuItems())
+                {
+                    String[] menuPath = split(menuItem.getMenuPath(), "/"); //$NON-NLS-1$
+                    buildMenuTree(menuBar, menuItem, menuPath, 0);
+                }
             }
         } else
         {
@@ -568,7 +577,27 @@ public class TaskMgr
         list.addAll(uiPluginHash.keySet());
         return list;
     }
-
+    
+    /**
+     * @return all the tasks
+     */
+    public Collection<Taskable> getAllTasks()
+    {
+        return tasks.values();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(CommandAction cmdAction)
+    {
+        if (cmdAction.isAction(APP_RESTART_ACT))
+        {
+            
+        }
+    }
+    
     /**
      * Get the command definitions for a class
      * @param classObj a class object
@@ -622,9 +651,5 @@ public class TaskMgr
         }
         return list;
     }
-    
-    public Collection<Taskable> getAllTasks()
-    {
-    	return tasks.values();
-    }
+
 }

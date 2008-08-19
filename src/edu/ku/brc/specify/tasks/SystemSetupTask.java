@@ -40,7 +40,6 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
@@ -592,31 +591,17 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         return starterPane = new SimpleDescPane(SYSTEMSETUPTASK, this, "System Tools");
     }
 
-     /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
-     */
-    public List<ToolBarItemDesc> getToolBarItems()
-    {
-        Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-
-        //ToolBarDropDownBtn btn = createToolbarButton(SYSTEMSETUPTASK, "information.gif", "inforequest_hint");
-        //list.add(new ToolBarItemDesc(btn));
-
-        return list;
-    }
-
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
      */
     public List<MenuItemDesc> getMenuItems()
     {
-        Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
+        menuItems = new Vector<MenuItemDesc>();
         
         String titleArg = "SystemSetupTask.SYS_TOOLS_MENU"; 
-        String mneu = "SystemSetupTask.SYS_TOOLS_MNEU"; 
-        String desc = ""; 
+        String mneu     = "SystemSetupTask.SYS_TOOLS_MNEU"; 
+        String desc     = ""; 
         
         JMenuItem mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, desc, true, null);
         mi.addActionListener(new ActionListener()
@@ -627,8 +612,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             }
         }); 
         String menuDesc = "AdvMenu/SystemMenu";
-        list.add(new MenuItemDesc(mi, menuDesc));
-        return list;
+        menuItems.add(new MenuItemDesc(mi, menuDesc));
+        return menuItems;
 
     }
     

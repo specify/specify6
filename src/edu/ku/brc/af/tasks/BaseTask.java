@@ -127,6 +127,11 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected FormPane            recentFormPane       = null;
 
     protected boolean             isShowDefault        = false;
+    protected boolean             isEnabled            = true;
+    
+    // These are needed to support enabling and disabling of the task
+    protected Vector<ToolBarItemDesc> toolbarItems     = null;
+    protected Vector<MenuItemDesc>    menuItems        = null;
     
     /**
      * Default Constructor 
@@ -889,12 +894,18 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getToolBarItems()
      */
-    public abstract List<ToolBarItemDesc> getToolBarItems();
+    public List<ToolBarItemDesc> getToolBarItems()
+    {
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getMenuItems()
      */
-    public abstract List<MenuItemDesc> getMenuItems();
+    public List<MenuItemDesc> getMenuItems()
+    {
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#initialize(java.util.List)
@@ -1074,9 +1085,37 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         return popupMenu;
     }
 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#setEnabled(boolean)
+     */
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+        if (toolbarItems != null)
+        {
+            for (ToolBarItemDesc tbi : toolbarItems)
+            {
+               tbi.getComp().setEnabled(enabled); 
+            }
+        }
+        
+        if (menuItems != null)
+        {
+            for (MenuItemDesc mi : menuItems)
+            {
+                if (mi.getMenuItem() instanceof JMenuItem)
+                {
+                    ((JMenuItem)mi.getMenuItem()).setEnabled(enabled);
+                }
+            }
+        }
+    }
+    
     //--------------------------------------------------------------
     // NavBoxButton Helpers
     //--------------------------------------------------------------
+
 
     /**
      * Gets Command Items for a mime type in the AppResources XML and adds them to commands list.

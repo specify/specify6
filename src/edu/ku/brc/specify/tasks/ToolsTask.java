@@ -459,13 +459,13 @@ public class ToolsTask extends BaseTask
         String hint     = getResourceString("export_hint");
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
-        Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
+        toolbarItems = new Vector<ToolBarItemDesc>();
         String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
         if (AppPreferences.getRemote().getBoolean("ExportTask.OnTaskbar"+"."+ds, false))
         {
-            list.add(new ToolBarItemDesc(toolBarBtn));
+            toolbarItems.add(new ToolBarItemDesc(toolBarBtn));
         }
-        return list;
+        return toolbarItems;
     }
 
     /*
@@ -475,10 +475,10 @@ public class ToolsTask extends BaseTask
     @Override
     public List<MenuItemDesc> getMenuItems()
     {
-        Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
+        menuItems = new Vector<MenuItemDesc>();
         
         JMenuItem exporter = new JMenuItem(getResourceString("EXPORTERS_MENU"));
-        list.add(new MenuItemDesc(exporter, "ToolsMenu"));
+        menuItems.add(new MenuItemDesc(exporter, "ToolsMenu"));
         
         exporter.addActionListener(new ActionListener()
         {
@@ -489,7 +489,7 @@ public class ToolsTask extends BaseTask
             }
         });
 
-        return list;
+        return menuItems;
 
     }
 

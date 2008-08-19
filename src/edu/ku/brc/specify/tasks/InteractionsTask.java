@@ -50,7 +50,6 @@ import com.thoughtworks.xstream.XStream;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxButton;
@@ -670,7 +669,7 @@ public class InteractionsTask extends BaseTask
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
-        Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
+        toolbarItems = new Vector<ToolBarItemDesc>();
         String label = getResourceString(name);
         String iconName = name;
         String hint = getResourceString("interactions_hint");
@@ -685,21 +684,10 @@ public class InteractionsTask extends BaseTask
 
         if (isUsingInteractions)
         {
-            list.add(new ToolBarItemDesc(toolBarBtn));
+            toolbarItems.add(new ToolBarItemDesc(toolBarBtn));
         }
 
-        return list;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
-     */
-    @Override
-    public List<MenuItemDesc> getMenuItems()
-    {
-        Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
-        return list;
-
+        return toolbarItems;
     }
 
     /* (non-Javadoc)

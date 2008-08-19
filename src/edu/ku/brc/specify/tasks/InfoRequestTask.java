@@ -25,7 +25,6 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
@@ -34,7 +33,6 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxButton;
@@ -42,7 +40,6 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.BaseTask;
@@ -357,31 +354,6 @@ public class InfoRequestTask extends BaseTask
         recentFormPane = new FormPane(name, this, "");
         starterPane = recentFormPane;
         return recentFormPane;
-    }
-    
-     /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
-     */
-    public List<ToolBarItemDesc> getToolBarItems()
-    {
-        Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        
-        //ToolBarDropDownBtn btn = createToolbarButton(INFOREQUEST,   "information.gif",    "inforequest_hint");      
-        //list.add(new ToolBarItemDesc(btn));
-        
-        return list;
-    }
-    
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
-     */
-    public List<MenuItemDesc> getMenuItems()
-    {
-        Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
-        return list;
-        
     }
     
     /* (non-Javadoc)
