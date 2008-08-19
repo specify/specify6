@@ -376,7 +376,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     
                     for (SearchTableConfig table : config.getTables())
                     {
-                        if (AppContextMgr.isSecurityOn())
+                        if (UIHelper.isSecurityOn())
                         {
                             if (table.getTableInfo().getPermissions().canView())
                             {
@@ -469,7 +469,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     
                     //log.debug("Id: "+erti.getId()+"  "+erti.getTitle()+"  "+erti.getTableInfo().getPermissions().canView());
                     //SecurityMgr.dumpPermissions(erti.getTableInfo().getTitle(), erti.getTableInfo().getPermissions().getOptions());
-                    if (AppContextMgr.isSecurityOn())
+                    if (UIHelper.isSecurityOn())
                     {
                         if (!erti.getTableInfo().getPermissions().canView())
                         {
@@ -520,7 +520,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                                 {
                                     joinColTableId = jci.getJoinTableIdAsInt();
                                     //log.debug("CHK: "+jci.getTableInfo().getTitle()+"  "+jci.getTableInfo().getPermissions().canView());
-                                    if (AppContextMgr.isSecurityOn() && !jci.getTableInfo().getPermissions().canView())
+                                    if (UIHelper.isSecurityOn() && !jci.getTableInfo().getPermissions().canView())
                                     {
                                         continue;
                                     }

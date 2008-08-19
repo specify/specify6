@@ -283,6 +283,17 @@ public class DBTableIdMgr
 	}
     
     /**
+     * Clears (resets) all the permissions so they are re-read.
+     */
+    public void clearPermissions()
+    {
+        for (DBTableInfo ti : hash.values())
+        {
+            ti.setPermissions(null);
+        }
+    }
+    
+    /**
      * Cleanups internal state.
      */
     public void cleanUp()

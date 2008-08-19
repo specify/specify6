@@ -617,7 +617,7 @@ public class DataObjFieldFormatMgr
             int x = 0;
             x++;
         }
-        if (AppContextMgr.isSecurityOn() && dataObj != null && dataObj instanceof FormDataObjIFace)
+        if (UIHelper.isSecurityOn() && dataObj != null && dataObj instanceof FormDataObjIFace)
         {
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(dataObj.getClass().getSimpleName());
             if (tblInfo != null)
@@ -659,7 +659,7 @@ public class DataObjFieldFormatMgr
                             x++;
                         }
 
-                        if (AppContextMgr.isSecurityOn() && value instanceof FormDataObjIFace)
+                        if (UIHelper.isSecurityOn() && value instanceof FormDataObjIFace)
                         {
                             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(value.getClass().getSimpleName());
                             if (tblInfo != null)

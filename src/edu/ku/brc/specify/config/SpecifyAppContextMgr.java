@@ -1001,6 +1001,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         classObjHash.clear();
         
+        DBTableIdMgr.getInstance().clearPermissions();
+        
         // This is where we will read it in from the Database
         // but for now we don't need to do that.
         //

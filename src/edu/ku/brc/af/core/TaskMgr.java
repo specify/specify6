@@ -50,6 +50,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolbarLayoutManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -502,7 +503,7 @@ public class TaskMgr implements CommandListener
                         Taskable task = (Taskable)newObj;
                         
                         boolean shouldAddToUI =  getAttr(pluginElement, "addui", false);
-                        if (AppContextMgr.isSecurityOn())
+                        if (UIHelper.isSecurityOn())
                         {
                             PermissionIFace perm = task.getPermissions();
                             if (perm != null)
@@ -609,7 +610,7 @@ public class TaskMgr implements CommandListener
         {
             for (Taskable task : instance.tasks.values())
             {
-                if (AppContextMgr.isSecurityOn())
+                if (UIHelper.isSecurityOn())
                 {
                     task.setPermissions(null); // for relo0ad of permissions
                     PermissionIFace perm = task.getPermissions();

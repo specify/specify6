@@ -1114,7 +1114,7 @@ public class ViewFactory
                 }
             } else if (uiType == FormCellField.FieldType.querycbx)
             {
-                if (AppContextMgr.isSecurityOn())
+                if (UIHelper.isSecurityOn())
                 {
                     DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(childInfo.getDataClass().getSimpleName());
                     if (tblInfo != null)

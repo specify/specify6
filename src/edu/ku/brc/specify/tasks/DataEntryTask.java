@@ -75,6 +75,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.GhostActionable;
@@ -181,7 +182,7 @@ public class DataEntryTask extends BaseTask
      */
     private void createTreeEditNB(final BaseTreeTask<?,?,?> treeTask)
     {
-        if (AppContextMgr.isSecurityOn())
+        if (UIHelper.isSecurityOn())
         {
             if (!DBTableIdMgr.getInstance().getByShortClassName(treeTask.getTreeClass().getSimpleName()).getPermissions().canModify())
             {
@@ -260,7 +261,7 @@ public class DataEntryTask extends BaseTask
                         try
                         {
                             Class<?> dataClass = Class.forName(className);
-                            if (AppContextMgr.isSecurityOn())
+                            if (UIHelper.isSecurityOn())
                             {
                                 DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(dataClass.getSimpleName());
                                 if (tblInfo != null)
@@ -352,7 +353,7 @@ public class DataEntryTask extends BaseTask
     public static void openView(final Taskable task, final ViewIFace view, final String mode, final String idStr)
     {
         int tableId = DBTableIdMgr.getInstance().getIdByClassName(view.getClassName());
-        if (AppContextMgr.isSecurityOn())
+        if (UIHelper.isSecurityOn())
         {
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
             if (tblInfo != null)
@@ -431,7 +432,7 @@ public class DataEntryTask extends BaseTask
                                             final String         viewName,
                                             final RecordSetIFace recordSet)
     {
-        if (AppContextMgr.isSecurityOn())
+        if (UIHelper.isSecurityOn())
         {
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
             if (!tblInfo.getPermissions().hasNoPerm())

@@ -19,7 +19,6 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -30,6 +29,7 @@ import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rod
@@ -121,7 +121,7 @@ public class CollectingEventDataObjFmt implements DataObjDataFieldFormatIFace
             throw new RuntimeException("The data value set into CollectingEventDataObjFmt is not a CollectingEvent ["+dataValue.getClass().getSimpleName()+"]");
         }
         
-        boolean isSecurityOn = AppContextMgr.isSecurityOn();
+        boolean isSecurityOn = UIHelper.isSecurityOn();
         
         if (isSecurityOn)
         {

@@ -87,7 +87,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBInfoBase;
@@ -601,7 +600,7 @@ public class FormViewObj implements Viewable,
                                                             final Vector<AltViewIFace> altViewsListArg,
                                                             final RestrictableUIIFace  restrictableUI)
     {
-        if (AppContextMgr.isSecurityOn())
+        if (UIHelper.isSecurityOn())
         {
             String shortName = StringUtils.substringAfterLast(viewArg.getClassName(), ".");
             if (shortName == null)
@@ -2910,7 +2909,7 @@ public class FormViewObj implements Viewable,
             boolean canAdd = true;
             boolean canDel = true;
             
-            if (AppContextMgr.isSecurityOn())
+            if (UIHelper.isSecurityOn())
             {
                 if (perm == null)
                 {
@@ -3701,7 +3700,7 @@ public class FormViewObj implements Viewable,
             if (rsController != null)
             {
                 int len = list.size();
-                if (AppContextMgr.isSecurityOn())
+                if (UIHelper.isSecurityOn())
                 {
                     ensurePermissions();
                     if (perm.hasNoPerm())
@@ -3879,7 +3878,7 @@ public class FormViewObj implements Viewable,
         
         if (dataObj != null)
         {
-            if (AppContextMgr.isSecurityOn())
+            if (UIHelper.isSecurityOn())
             {
                 ensurePermissions();
                 if ((isEditing && perm.isViewOnly()) || (!isEditing && !perm.canView()))

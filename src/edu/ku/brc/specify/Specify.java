@@ -391,9 +391,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
             log.debug("JavaDB Path: "+UIRegistry.getJavaDBPath());
         }*/
         
+        
+        
         /////////////////////////////////////////////
         // NOT FOR RELEASE
         /////////////////////////////////////////////
+        
+        UIHelper.setSecurityOn(AppPreferences.getLocalPrefs().getBoolean("security", false));
+        
         String schemaKey = "schemaSize";
         int    schemaFileSize = 0;
         File schemaFile = XMLHelper.getConfigDir("specify_datamodel.xml");
@@ -1351,6 +1356,18 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 checkForUpdates();
             }
         });
+        
+        JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("Security Activated"); //$NON-NLS-1$
+        menu.add(cbMenuItem);
+        cbMenuItem.setSelected(UIHelper.isSecurityOn());
+        cbMenuItem.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        boolean isOn = !UIHelper.isSecurityOn()   ;                 
+                        AppPreferences.getLocalPrefs().putBoolean("security", isOn);
+                        ((JMenuItem)ae.getSource()).setSelected(isOn);
+                    }});
+
                 
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {

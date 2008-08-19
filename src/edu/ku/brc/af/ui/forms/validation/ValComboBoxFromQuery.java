@@ -57,7 +57,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.PermissionSettings;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
@@ -375,7 +374,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
         pb.add(textWithQuery, cc.xy(1,1));
         
-        PermissionSettings perm = AppContextMgr.isSecurityOn() ? tableInfo.getPermissions() : null;
+        PermissionSettings perm = UIHelper.isSecurityOn() ? tableInfo.getPermissions() : null;
         
         int x = 3;
         if ((btnMask & CREATE_EDIT_BTN) != 0)
@@ -594,7 +593,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected void createEditFrame(final boolean isNewObject)
     {
         boolean canModify = true;
-        if (AppContextMgr.isSecurityOn() && tableInfo.getPermissions() != null)
+        if (UIHelper.isSecurityOn() && tableInfo.getPermissions() != null)
         {
             canModify = tableInfo.getPermissions() .canModify();
         }

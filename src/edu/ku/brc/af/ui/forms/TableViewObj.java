@@ -69,7 +69,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -1052,7 +1051,7 @@ public class TableViewObj implements Viewable,
     {
         this.dataObj = dataObj;
         
-        if (AppContextMgr.isSecurityOn() && dataObj != null)
+        if (UIHelper.isSecurityOn() && dataObj != null)
         {
             if (perm == null)
             {

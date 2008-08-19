@@ -41,7 +41,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.PermissionSettings;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
@@ -222,7 +221,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     {
         if (dObj != null)
         {
-            if (AppContextMgr.isSecurityOn())
+            if (UIHelper.isSecurityOn())
             {
                 if (perm == null)
                 {
@@ -455,7 +454,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             ensurePermissions(dataObj);
             
             String lblStr = null;
-            if (AppContextMgr.isSecurityOn() && (perm != null && perm.hasNoPerm()) || perm == null)
+            if (UIHelper.isSecurityOn() && (perm != null && perm.hasNoPerm()) || perm == null)
             {
                 lblStr = "   ";
             }

@@ -163,7 +163,8 @@ public final class UIHelper
     protected static Border          focusBorder     = new LineBorder(Color.GRAY, 1, true);
     protected static RenderingHints  txtRenderingHints;
     protected static Hashtable<String, Boolean> baseClassHash = new Hashtable<String, Boolean>();
-    protected static CONTROLSIZE     controlSize = CONTROLSIZE.regular;
+    protected static CONTROLSIZE     controlSize     = CONTROLSIZE.regular;
+    protected static boolean         isSecurityOn    = false;
     
     static {
 
@@ -2259,6 +2260,22 @@ public final class UIHelper
         return str.toString();
     }
     
+    /**
+     * @return whether security is on
+     */
+    public static boolean isSecurityOn()
+    {
+        return isSecurityOn;
+    }
+
+    /**
+     * @param isSecurityOn the isSecurityOn to set
+     */
+    public static void setSecurityOn(boolean isSecurityOn)
+    {
+        UIHelper.isSecurityOn = isSecurityOn;
+    }
+
     /**
      * Get Property as int, if it is empty then it passes back the default value.
      * @param properties the properties
