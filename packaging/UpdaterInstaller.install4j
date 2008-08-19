@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="4.1.3" transformSequenceNumber="2">
-  <directoryPresets config="/home/rods/workspace/Specify" />
+  <directoryPresets config="/Users/xdavio/Documents/workspace/Specify" />
   <application name="Install4JUpdater" distributionSourceDir="" applicationId="1442-3789-3913-7893" mediaDir="../Install4JUpdater" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" shortName="Install4JUpdater" publisher="University of Kansas" publisherWeb="" version="6.0.2" allPathsRelative="false" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false">
       <principalLanguage id="en" customLocalizationFile="" />
@@ -20,7 +20,7 @@
       <mountPoint id="70" root="" location="" mode="755" />
     </mountPoints>
     <entries>
-      <dirEntry mountPoint="70" file="/home/rods/workspace/Specify/UpdaterInstall" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="" dirMode="755">
+      <dirEntry mountPoint="70" file="../UpdaterInstall" overwrite="4" shared="false" mode="644" uninstallMode="0" excludeSuffixes="" dirMode="755">
         <exclude />
       </dirEntry>
     </entries>
@@ -288,7 +288,25 @@
         <scriptLines />
       </installerScript>
     </unixInstaller>
+    <macosFolder name="Mac OS X Folder" id="107" mediaFileName="" installDir="Install4JUpdater" overridePrincipalLanguage="false" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="">
+      <excludedLaunchers />
+      <excludedComponents />
+      <excludedBeans />
+      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
+      <exclude />
+      <variables />
+    </macosFolder>
+    <win32 name="Windows" id="108" mediaFileName="" installDir="Install4JUpdater" overridePrincipalLanguage="false" requires64bit="false" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreFtpURL="" jreShared="false" customInstallBaseDir="" createUninstallIcon="true" contentFilesType="1" downloadURL="" runAsAdmin="false">
+      <excludedLaunchers />
+      <excludedComponents />
+      <excludedBeans />
+      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
+      <exclude />
+      <variables />
+    </win32>
   </mediaSets>
-  <buildIds buildAll="true" />
+  <buildIds buildAll="false">
+    <mediaSet refId="107" />
+  </buildIds>
 </install4j>
 
