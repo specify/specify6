@@ -222,7 +222,7 @@
 		
 	</target>
 	
-	<target name="installer-linux-updater" depends="">
+	<target name="installer-updater" depends="">
 		
 		<delete dir="UpdaterInstall"/>
 		<mkdir dir="UpdaterInstall" />
