@@ -71,7 +71,7 @@
     <table name="CollectingTrip">
         <alias name="CollectingEvent"/>
         <alias name="Agent" field="createdByAgent" />
-        <alias name="Agent" field="modifedByAgent" />
+        <alias name="Agent" field="modifiedByAgent" />
     </table>
 
     <table name="Collection">
@@ -80,7 +80,6 @@
         <alias name="Agent" field="createdByAgent" />
     	<alias name="Agent" field="curatorAgent" />
     	<table name="FieldNotebook" field="fieldNoteBooks">
-    		
     	</table>
         <alias name="Agent" field="modifiedByAgent" />
       	<alias name="CollectionRelType" field="leftSideRelTypes" />
