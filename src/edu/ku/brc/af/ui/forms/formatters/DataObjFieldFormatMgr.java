@@ -612,11 +612,6 @@ public class DataObjFieldFormatMgr
      */
     protected String formatInternal(final DataObjDataFieldFormatIFace format, final Object dataObj)
     {
-        if (dataObj instanceof Locality)
-        {
-            int x = 0;
-            x++;
-        }
         if (UIHelper.isSecurityOn() && dataObj != null && dataObj instanceof FormDataObjIFace)
         {
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(dataObj.getClass().getSimpleName());

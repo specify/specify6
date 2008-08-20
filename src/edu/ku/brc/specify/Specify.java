@@ -1365,6 +1365,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     {
                         boolean isOn = !UIHelper.isSecurityOn()   ;                 
                         AppPreferences.getLocalPrefs().putBoolean("security", isOn);
+                        UIHelper.setSecurityOn(isOn);
                         ((JMenuItem)ae.getSource()).setSelected(isOn);
                     }});
 

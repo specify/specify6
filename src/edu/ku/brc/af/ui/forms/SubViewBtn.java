@@ -188,7 +188,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                 showForm();
             }
         });
-        subViewBtn.setEnabled(false);
+        //subViewBtn.setEnabled(false);
 
         
         label  = createLabel("  ");
@@ -453,13 +453,14 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         {
             ensurePermissions(dataObj);
             
+            String blank = "  ";
             String lblStr = null;
-            if (UIHelper.isSecurityOn() && (perm != null && perm.hasNoPerm()) || perm == null)
+            if (UIHelper.isSecurityOn() && ((perm != null && perm.hasNoPerm()) || perm == null))
             {
-                lblStr = "   ";
+                lblStr = blank;
             }
 
-            if (!lblStr.equals("   "))
+            if (lblStr == null || lblStr != blank)
             {
                 int size = ((Set<?>)dataObj).size();
                 lblStr = " " + String.format("%s", size)+ " ";
