@@ -579,9 +579,11 @@ public class ReportsBaseTask extends BaseTask
         extendedNavBoxes.addAll(navBoxes);
 
         RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-
-        extendedNavBoxes.addAll(rsTask.getNavBoxes());
-
+        List<NavBoxIFace> nbs = rsTask.getNavBoxes();
+        if (nbs != null)
+        {
+            extendedNavBoxes.addAll(nbs);
+        }
         return extendedNavBoxes;
     }
 

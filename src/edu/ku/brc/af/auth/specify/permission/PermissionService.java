@@ -176,7 +176,7 @@ public class PermissionService
                     + "sppermission.Actions Actions " + "FROM spprincipal_sppermission, sppermission " //$NON-NLS-1$ //$NON-NLS-2$
                     + "WHERE spprincipal_sppermission.SpPrincipalID="+principalId+" "                  //$NON-NLS-1$ //$NON-NLS-2$
                     + "AND sppermission.SpPermissionID=spprincipal_sppermission.SpPermissionID ";      //$NON-NLS-1$
-            log.debug("sql: " + sql); //$NON-NLS-1$
+            if(debug)log.debug("sql: " + sql); //$NON-NLS-1$
             pstmt = conn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next())
@@ -186,7 +186,7 @@ public class PermissionService
                 String name     = rs.getString("Name");            //$NON-NLS-1$
                 String actions  = rs.getString("Actions");         //$NON-NLS-1$
 
-                log.debug("findPermissions()Permission found:  id={" //$NON-NLS-1$
+                if(debug)log.debug("findPermissions()Permission found:  id={" //$NON-NLS-1$
                         +id+"}, class={" //$NON-NLS-1$
                         +clazzStr+"}, name={" //$NON-NLS-1$
                         +name+"}, actions={" //$NON-NLS-1$
@@ -306,7 +306,7 @@ public class PermissionService
     
     static private boolean joinSpPrincipalPermission(SpPrincipal sp, Permission permission)
     {
-        log.debug("joinSpPrincipalPermission"); //$NON-NLS-1$
+        if(debug)log.debug("joinSpPrincipalPermission"); //$NON-NLS-1$
         
         Connection        conn         = null;
         PreparedStatement pstmt        = null;
@@ -327,7 +327,7 @@ public class PermissionService
                 String query = "INSERT INTO spprincipal_sppermission VALUES (" + principalId + ", " //$NON-NLS-1$ //$NON-NLS-2$
                         + permissionId + ")"; //$NON-NLS-1$
                 pstmt = conn.prepareStatement(query);
-                log.debug("joinSpPrincipalPermission - executing: " + query); //$NON-NLS-1$
+                if(debug)log.debug("joinSpPrincipalPermission - executing: " + query); //$NON-NLS-1$
                 pstmt.executeUpdate();
                 conn.close();
                 return true;
@@ -358,7 +358,7 @@ public class PermissionService
      */
     private static boolean doesSpPrincipalHavePermission(SpPrincipal sp, Permission permission)
     {
-        log.debug("doesSpPrincipalHavePermission"); //$NON-NLS-1$
+        if(debug)log.debug("doesSpPrincipalHavePermission"); //$NON-NLS-1$
         boolean isPermissionGranted = false;
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -374,7 +374,7 @@ public class PermissionService
                 + "WHERE spprincipal_sppermission.SpPrincipalID="+principalId+" " //$NON-NLS-1$ //$NON-NLS-2$
                 + "AND spprincipal_sppermission.SpPermissionID="+permissionId+" "; //$NON-NLS-1$ //$NON-NLS-2$
             pstmt = conn.prepareStatement(query);
-            log.debug("doesSpPrincipalHavePermission - executing: " + query); //$NON-NLS-1$
+            if(debug)log.debug("doesSpPrincipalHavePermission - executing: " + query); //$NON-NLS-1$
             ResultSet rs = pstmt.executeQuery();
             while (rs.next())
             {
@@ -382,7 +382,7 @@ public class PermissionService
                 if (i > 0)
                 {
                     isPermissionGranted = true;
-                    log.debug("doesSpPrincipalHavePermission -   permission is already granted"); //$NON-NLS-1$
+                    if(debug)log.debug("doesSpPrincipalHavePermission -   permission is already granted"); //$NON-NLS-1$
                 }
             }        
         }
@@ -412,7 +412,7 @@ public class PermissionService
      */
     private static Integer getPermissionsId(Permission permission)
     {
-        log.debug("getPermissionsId"); //$NON-NLS-1$
+        if(debug)log.debug("getPermissionsId"); //$NON-NLS-1$
         Connection conn = null;
         PreparedStatement pstmt = null;
         try
@@ -423,12 +423,12 @@ public class PermissionService
             + "AND sppermission.Name=\""+permission.getName() + "\" " //$NON-NLS-1$ //$NON-NLS-2$
             + "AND sppermission.PermissionClass=\""+permission.getClass().getCanonicalName()+ "\" "; //$NON-NLS-1$ //$NON-NLS-2$
              pstmt = conn.prepareStatement(query);
-            log.debug("executing: " + query); //$NON-NLS-1$
+            if(debug)log.debug("executing: " + query); //$NON-NLS-1$
             ResultSet rs = pstmt.executeQuery();
             while (rs.next())
             {
                 Integer id = rs.getInt("SpPermissionID"); //$NON-NLS-1$
-                log.debug("getPermissionsId() found: sppermission.SpPermissionID="+id); //$NON-NLS-1$
+                if(debug)log.debug("getPermissionsId() found: sppermission.SpPermissionID="+id); //$NON-NLS-1$
                 return id;
             }
             return null;
@@ -537,7 +537,7 @@ public class PermissionService
      */
     public static boolean runCheckPermssion(Subject s, final Permission perm)
     {
-        log.debug("runCheckPermssion - calling doAsPrivileged to check if subject has permission"); //$NON-NLS-1$
+        if(debug)log.debug("runCheckPermssion - calling doAsPrivileged to check if subject has permission"); //$NON-NLS-1$
         try
         {
             //log.debug("runCheckPermssion: calling doAsPrivileged"); //$NON-NLS-1$
@@ -546,7 +546,7 @@ public class PermissionService
                 {
                     //log.debug("runCheckPermssion: checking permission"); //$NON-NLS-1$
                     AccessController.checkPermission(perm);
-                    log.debug("runCheckPermssion - permission found, returning true"); //$NON-NLS-1$
+                    if(debug)log.debug("runCheckPermssion - permission found, returning true"); //$NON-NLS-1$
                     return true;
                 }
 
@@ -562,7 +562,7 @@ public class PermissionService
             log.error(ee.getCause());
             log.error(ee.getMessage());
         }
-        log.debug("runCheckPermssion - permission NOT granted"); //$NON-NLS-1$
+        if(debug)log.debug("runCheckPermssion - permission NOT granted"); //$NON-NLS-1$
         return false;
     }
 }

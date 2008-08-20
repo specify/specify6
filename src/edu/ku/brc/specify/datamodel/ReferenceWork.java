@@ -70,12 +70,12 @@ import edu.ku.brc.ui.UIRegistry;
 public class ReferenceWork extends DataModelObjBase implements java.io.Serializable 
 {
     // Record types
-    public static final byte                BOOK    = 0;
-    public static final byte                ELECTRONIC_MEDIA = 1;
-    public static final byte                PAPER  = 2;
+    public static final byte                BOOK              = 0;
+    public static final byte                ELECTRONIC_MEDIA  = 1;
+    public static final byte                PAPER             = 2;
     public static final byte                TECHNICAL_REPORT  = 3;
-    public static final byte                THESIS  = 4;
-    public static final byte                SECTION_IN_BOOK  = 5;
+    public static final byte                THESIS            = 4;
+    public static final byte                SECTION_IN_BOOK   = 5;
 
     // Fields    
 

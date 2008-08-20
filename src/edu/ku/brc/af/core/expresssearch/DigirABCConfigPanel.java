@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.Vector;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -40,7 +39,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods

@@ -16,6 +16,7 @@
 package edu.ku.brc.specify.dbsupport.customqueries;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -99,6 +100,17 @@ public class CatalogedByYearCustomQuery implements CustomQueryIFace
             list.addElement(ndbrc);
         }
         
+        return list;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQueryIFace#getTableIds()
+     */
+    @Override
+    public List<Integer> getTableIds()
+    {
+        Vector<Integer> list = new Vector<Integer>();
+        Collections.addAll(list, new Integer[] {1});
         return list;
     }
 

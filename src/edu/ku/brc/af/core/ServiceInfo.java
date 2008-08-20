@@ -20,6 +20,8 @@ import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
 
@@ -45,9 +47,10 @@ public class ServiceInfo implements Comparable<ServiceInfo>
     protected String         tooltip;
     protected CommandAction  command;
     protected boolean        isDefault;
-    
-    
+ 
+    // Transient
     protected Hashtable<String, ImageIcon> icons = new Hashtable<String, ImageIcon>();
+    protected Boolean        isPermissionOK = null;
     
     /**
      * Constructs a service info object describing the service for UI components to use; also looks up the iconName in the IconCache
@@ -179,6 +182,33 @@ public class ServiceInfo implements Comparable<ServiceInfo>
     public void setDefault(boolean isDefault)
     {
         this.isDefault = isDefault;
+    }
+    
+    /**
+     * @return
+     */
+    public boolean isPermissionOK()
+    {
+        if (isPermissionOK == null)
+        {
+            if (!task.getPermissions().canView())
+            {
+                return isPermissionOK = false;
+            }
+            
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
+            
+            isPermissionOK = tableInfo != null ? tableInfo.getPermissions().canView() : false;
+        }
+        return isPermissionOK;
+    }
+    
+    /**
+     * 
+     */
+    public void resetPermissions()
+    {
+        isPermissionOK = null;
     }
     
     //------------------------------------------

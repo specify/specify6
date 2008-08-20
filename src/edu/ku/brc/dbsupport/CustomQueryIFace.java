@@ -32,53 +32,58 @@ public interface CustomQueryIFace
      * Synchronous execution of the query
      * @return true if executed correctly
      */
-    public boolean execute();
+    public abstract boolean execute();
     
     /**
      * Asynchronous execution of a query callback notification is on  (It uses SwingWorker)
      * @param cql the listener for the results of the execute
      * @return
      */
-    public void execute(CustomQueryListener cql);
+    public abstract void execute(CustomQueryListener cql);
     
     /**
      * Returns a list of results.
      * @return the list of results
      */
-    public List<?> getDataObjects();
+    public abstract List<?> getDataObjects();
     
     /**
      * @return
      */
-    public List<QueryResultsDataObj> getResults();
+    public abstract List<QueryResultsDataObj> getResults();
     
     /**
      * Return a collection QueryResultsContainers that need to be processed
      * @return Return a collection QueryResultsContainers that need to be processed
      */
-    public List<QueryResultsContainerIFace> getQueryDefinition();
+    public abstract List<QueryResultsContainerIFace> getQueryDefinition();
     
     /**
      * @return the name
      */
-    public String getName();
+    public abstract String getName();
     
-    //public void clear();
+    //public abstract void clear();
     
     /**
      * @return true in case of error.
      */
-    public boolean isInError();
+    public abstract boolean isInError();
     
     
     /**
      * @return true if cancelled.
      */
-    public boolean isCancelled();
+    public abstract boolean isCancelled();
     
     /**
      * cancel the query
      */
-    public void cancel();
+    public abstract void cancel();
+    
+    /**
+     * @return the list of table ids the query uses.
+     */
+    public abstract List<Integer> getTableIds();
     
 }

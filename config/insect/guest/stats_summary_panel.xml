@@ -1,60 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <panel>
-
   <row>
       <box title="Specimen">
         <item title="Number of Specimens">
             <sql>
+                <tables><id>1</id></tables>            
                 <statement row="1" col="1">
-                  <![CDATA[select count(*) from collectionobject]]>
+                  <![CDATA[SELECT count(*) FROM collectionobject WHERE CollectionMemberID = COLMEMID]]>
                 </statement>
             </sql>
         </item>
         <item title="Type Specimens">
             <sql>
+                <tables><id>1</id><id>9</id></tables>            
                 <statement row="1" col="1">
-                  <![CDATA[select count(determinationid) from determination where TypeStatusName is not null]]>
+                  <![CDATA[SELECT count(DeterminationID) FROM determination WHERE CollectionMemberID = COLMEMID AND TypeStatusName is not null]]>
                 </statement>
             </sql>
         </item>
         <item title="Unique Families" useprogress="true">
             <sql>
-                <statement>
-                  <![CDATA[create temporary table Families1 select TaxonID from determination where DeterminationStatusID = 1]]>
-                </statement>
-                <statement>
-                  <![CDATA[create temporary table Families2 select DISTINCT tax.TaxonID,tax.nodenumber from Families1,taxon as tax where tax.isaccepted <> 0 and tax.TaxonID = Families1.TaxonID]]>
-                </statement>
-               <statement>
-                  <![CDATA[create temporary table Families3 select DISTINCT tx.TaxonID from Families2, taxon as tx where tx.rankid = 140 and Families2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
-                </statement>
+                <tables><id>4</id></tables>            
                 <statement row="1" col="1">
-                  <![CDATA[select count(*) from Families3]]>
-                </statement>
-                <statement>
-                  <![CDATA[drop table Families1]]>
-                </statement>
-                <statement>
-                  <![CDATA[drop table Families2]]>
-                </statement>
-                <statement>
-                  <![CDATA[drop table Families3]]>
+                    <![CDATA[SELECT count(*) FROM (SELECT DISTINCT tx.TaxonID FROM (SELECT DISTINCT tax.TaxonID,tax.nodenumber FROM (SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND DeterminationStatusID = 1) as Families1,taxon as tax WHERE tax.isaccepted <> 0 and tax.TaxonID = Families1.TaxonID) as Families2, taxon as tx WHERE tx.rankid = 140 and Families2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber) as Familes3]]>
                 </statement>
             </sql>
         </item>
         <item title="Unique Genera" useprogress="true">
             <sql>
+                <tables><id>4</id></tables>            
                 <statement>
-                  <![CDATA[create temporary table Genera1 select TaxonID from determination where DeterminationStatusID = 1]]>
+                  <![CDATA[create temporary table Genera1 SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND DeterminationStatusID = 1]]>
                 </statement>
                 <statement>
-                  <![CDATA[create temporary table Genera2 select DISTINCT tax.TaxonID,tax.nodenumber from Genera1,taxon as tax where tax.isaccepted <> 0 and tax.TaxonID = Genera1.TaxonID]]>
+                  <![CDATA[create temporary table Genera2 SELECT DISTINCT tax.TaxonID,tax.nodenumber FROM Genera1,taxon as tax WHERE tax.isaccepted <> 0 and tax.TaxonID = Genera1.TaxonID]]>
                 </statement>
                <statement>
-                  <![CDATA[create temporary table Genera3 select DISTINCT tx.TaxonID from Genera2, taxon as tx where tx.rankid = 180 and Genera2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
+                  <![CDATA[create temporary table Genera3 SELECT DISTINCT tx.TaxonID FROM Genera2, taxon as tx WHERE tx.rankid = 180 and Genera2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
                 </statement>
                 <statement row="1" col="1">
-                  <![CDATA[select count(*) from Genera3]]>
+                  <![CDATA[SELECT count(*) FROM Genera3]]>
                 </statement>
                 <statement>
                   <![CDATA[drop table Genera1]]>
@@ -69,17 +54,18 @@
         </item>
         <item title="Unique Species" useprogress="true">
             <sql>
+                <tables><id>4</id></tables>            
                 <statement>
-                  <![CDATA[create temporary table Species1 select TaxonID from determination where DeterminationStatusID = 1]]>
+                  <![CDATA[create temporary table Species1 SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND DeterminationStatusID = 1]]>
                 </statement>
                 <statement>
-                  <![CDATA[create temporary table Species2 select DISTINCT tax.TaxonID,tax.nodenumber from Species1,taxon as tax where tax.isaccepted <> 0 and tax.TaxonID = Species1.TaxonID]]>
+                  <![CDATA[create temporary table Species2 SELECT DISTINCT tax.TaxonID,tax.nodenumber FROM Species1,taxon as tax WHERE tax.isaccepted <> 0 and tax.TaxonID = Species1.TaxonID]]>
                 </statement>
                <statement>
-                  <![CDATA[create temporary table Species3 select DISTINCT tx.TaxonID from Species2, taxon as tx where tx.rankid = 220 and Species2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
+                  <![CDATA[create temporary table Species3 SELECT DISTINCT tx.TaxonID FROM Species2, taxon as tx WHERE tx.rankid = 220 and Species2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber]]>
                 </statement>
                 <statement row="1" col="1">
-                  <![CDATA[select count(*) from Species3]]>
+                  <![CDATA[SELECT count(*) FROM Species3]]>
                 </statement>
                 <statement>
                   <![CDATA[drop table Species1]]>
@@ -93,81 +79,123 @@
             </sql>
         </item>
         <item title="Taxa in Collection" useprogress="true">
-            <sql><statement><![CDATA[select count(TaxonID) AS TaxaInCollectionCount from taxon where TaxonID in (select TaxonId from determination where DeterminationStatusID = 1)]]></statement></sql>
+            <sql>
+                <tables><id>4</id><id>9</id></tables>            
+                <statement><![CDATA[SELECT count(TaxonID) AS TaxaInCollectionCount FROM taxon WHERE TaxonID in (SELECT TaxonId FROM determination WHERE CollectionMemberID = COLMEMID AND DeterminationStatusID = 1)]]></statement>
+            </sql>
         </item>
       </box>
-      <box title="Data Entry">
-        <item title="Cataloged in Last 7 Days">
-            <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= TimestampCreated]]></statement></sql>
-            <link>CatalogedLast7DaysDetail</link>
-        </item>
-        <item title="Cataloged in Last 30 Days">
-            <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= TimestampCreated]]></statement></sql>
-            <link>CatalogedLastMonth</link>
-        </item>
-        <item title="Cataloged in Last Year">
-            <sql><statement><![CDATA[select count(*) from collectionobject WHERE DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= TimestampCreated;]]></statement></sql>
-            <link>CatalogedLastYear</link>
-        </item>
-      </box>
+        <box title="Data Entry">
+            <item title="Cataloged in Last 7 Days">
+                <sql type="custom" name="CatalogedLast7Days"/>
+                <link>CatalogedLast7DaysDetail</link>
+            </item>
+            <item title="Cataloged in Last 30 Days">
+                <sql type="custom" name="CatalogedLast30Days"/>
+                <link>CatalogedLastMonth</link>
+            </item>
+            <item title="Cataloged in Last Year">
+                <sql type="custom" name="CatalogedLastYear"/>
+                <link>CatalogedLastYear</link>
+            </item>
+        </box>
   </row>
   <row>
       <box title="Loans">
         <item title="Items On Loan">
-            <sql><statement><![CDATA[select count(loanpreparationid) AS ItemsOnLoanCount from loanpreparation as lpo inner join loan on loan.loanid = lpo.loanid where quantityresolved < quantity and (IsClosed = false or IsClosed is null)]]></statement></sql>
+            <sql>
+                <tables><id>52</id><id>54</id></tables>            
+                <statement><![CDATA[SELECT count(LoanPreparationID) AS ItemsOnLoanCount FROM loanpreparation as lpo inner join loan on loan.loanid = lpo.loanid WHERE loan.DisciplineID = DSPLNID AND quantityresolved < quantity and (IsClosed = false or IsClosed is null)]]></statement>
+            </sql>
         </item>
         <item title="Overdue Loans">
-            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loanid in (select loanid from loan where (not (currentduedate is null)) and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)]]></statement></sql>
+            <sql>
+                <tables><id>52</id></tables>            
+                <statement><![CDATA[SELECT count(LoanID) as OpenLoanCount FROM loan WHERE loanid in (SELECT loanid FROM loan WHERE loan.DisciplineID = DSPLNID AND (not (currentduedate is null)) and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)]]></statement>
+            </sql>
             <link>OverdueLoansList</link>
         </item>
         <item title="Open Loans">
-            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where (IsClosed = false or IsClosed is null)]]></statement></sql>
-            <link>ListOnLoan</link>
+            <sql>
+                <tables><id>52</id></tables>            
+                <statement><![CDATA[SELECT count(LoanID) as OpenLoanCount FROM loan WHERE loan.DisciplineID = DSPLNID AND (IsClosed = false or IsClosed is null)]]></statement>
+            </sql>
+            <link>OpenLoans</link>
         </item>
       </box>
       <box title="Locality/Geography">
         <item title="Number of Localities">
-            <sql><statement><![CDATA[select count(*) from locality]]></statement></sql>
+            <sql>
+                <tables><id>2</id></tables>            
+                <statement><![CDATA[SELECT count(*) FROM locality INNER JOIN discipline ON locality.DisciplineID = discipline.DisciplineID WHERE discipline.DisciplineID = DSPLNID]]></statement>
+            </sql>
         </item>
         <item title="Number of Geographies">
-            <sql><statement><![CDATA[select count(*) from geography]]></statement></sql>
+            <sql>
+                <tables><id>3</id></tables>            
+                <statement><![CDATA[SELECT count(*) FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID]]></statement>
+            </sql>
         </item>
         <item title="Number of Countries" useprogress="true">
-            <sql><statement><![CDATA[select count(Name) from (select DISTINCT Name from (select g.GeographyID,g.nodenumber from locality as l inner join geography as g on l.GeographyID = g.GeographyID) as GEO, geography as g where g.rankid = 200 and GEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber) As GEO2]]></statement></sql>
+            <sql>
+                <tables><id>2</id><id>3</id></tables>            
+                <statement><![CDATA[SELECT count(Name) FROM (SELECT DISTINCT Name FROM (SELECT g.GeographyID,g.nodenumber FROM locality as l inner join geography as g on l.GeographyID = g.GeographyID) as GEO, geography as g WHERE g.rankid = 200 and GEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber) As GEO2]]></statement>
+            </sql>
         </item>
         <item title="Percent Geo Referenced">
-            <sql><statement><![CDATA[select CASE WHEN (select count(*) from locality) = 0 THEN 0 ELSE ((count(localityid) * 1.0) / ((select count(*) from locality) * 1.0)) * 100.0 END AS PercentGeoReferencedLocalities from locality where not latitude1 is null]]></statement></sql>
+            <sql>
+                <tables><id>2</id></tables>            
+                <statement><![CDATA[SELECT CASE WHEN (SELECT count(*) FROM locality INNER JOIN discipline ON locality.DisciplineID = discipline.DisciplineID WHERE discipline.DisciplineID = DSPLNID) = 0 THEN 0 ELSE ((count(localityid) * 1.0) / ((SELECT count(*) FROM locality) * 1.0)) * 100.0 END AS PercentGeoReferencedLocalities FROM locality WHERE not latitude1 is null]]></statement>
+                <format>%5.2f</format>
+            </sql>
         </item>
     </box>
   </row>
   <row>
     <box title="Taxonomic Tree Information">
         <item title="Class">
-            <sql><statement><![CDATA[select count(*) from taxon where taxon.rankid = 60]]></statement></sql>
+            <sql>
+                <tables><id>4</id></tables>            
+                <statement><![CDATA[SELECT count(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND rankid = 60]]></statement>
+            </sql>
         </item>
         <item title="Order">
-            <sql><statement><![CDATA[select count(*) from taxon where taxon.rankid = 100]]></statement></sql>
+            <sql>
+                <tables><id>4</id></tables>            
+                <statement><![CDATA[SELECT count(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND rankid = 100]]></statement>
+            </sql>
         </item>
         <item title="Families">
-            <sql><statement><![CDATA[select count(*) from taxon where taxon.rankid = 140]]></statement></sql>
+            <sql>
+                <tables><id>4</id></tables>            
+                <statement><![CDATA[SELECT count(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND rankid = 140]]></statement>
+            </sql>
         </item>
         <item title="Genera">
-            <sql><statement><![CDATA[select count(*) from taxon where taxon.rankid = 180]]></statement></sql>
+            <sql>
+                <tables><id>4</id></tables>            
+                <statement><![CDATA[SELECT count(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND rankid = 180]]></statement>
+            </sql>
         </item>
         <item title="Species">
-            <sql><statement><![CDATA[select count(*) from taxon where taxon.rankid = 220]]></statement></sql>
+            <sql>
+                <tables><id>4</id></tables>            
+                <statement><![CDATA[SELECT count(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND rankid = 220]]></statement>
+            </sql>
         </item>
     </box>
       <box title="Taxa Type Counts" desccol="1" valcol="2" desctitle="Taxon" valtitle="Count" noresults="No Type Specimens">
-		<sql><![CDATA[select TypeStatusName, count(determinationid) AS DeterminationCount from determination where TypeStatusName is not null group by TypeStatusName]]></sql>
+        <sql>
+            <tables><id>9</id></tables>            
+            <statement><![CDATA[SELECT TypeStatusName, count(DeterminationID) AS DeterminationCount FROM determination WHERE CollectionMemberID = COLMEMID AND TypeStatusName is not null group by TypeStatusName]]></statement>
+        </sql>
     </box>
   </row>
-
 </panel>
 
 <!--
     This is the Total Number of Countries Used by all the Localities
-    select count(Name) from (select DISTINCT Name from (select g.GeographyID,g.nodenumber from locality as l inner join geography as g on l.GeographyID = g.GeographyID) as GEO, geography as g where g.rankid = 200 and GEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber) As GEO2
+    SELECT count(Name) FROM (SELECT DISTINCT Name FROM (SELECT g.GeographyID,g.nodenumber FROM locality as l inner join geography as g on l.GeographyID = g.GeographyID) as GEO, geography as g WHERE g.rankid = 200 and GEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber) As GEO2
     
     
 -->

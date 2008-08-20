@@ -138,7 +138,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected Vector<MenuItemDesc>    menuItems        = null;
     
     // Security
-    private PermissionIFace       permissions          = null;
+    protected PermissionIFace     permissions          = null;
     
     /**
      * Default Constructor 

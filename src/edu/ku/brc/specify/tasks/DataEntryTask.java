@@ -114,6 +114,7 @@ public class DataEntryTask extends BaseTask
     
     protected Vector<DataEntryView> stdViews       = null;
     protected Vector<DataEntryView> miscViews      = null;
+    protected Vector<DataEntryView> availMiscViews = new Vector<DataEntryView>();
     
     // These are needed for changes with the DisciplineType icon
     protected NavBoxButton        colObjNavBtn        = null;
@@ -184,7 +185,7 @@ public class DataEntryTask extends BaseTask
     {
         if (UIHelper.isSecurityOn())
         {
-            if (!DBTableIdMgr.getInstance().getByShortClassName(treeTask.getTreeClass().getSimpleName()).getPermissions().canModify())
+            if (!DBTableIdMgr.getInstance().getByShortClassName(treeTask.getTreeClass().getSimpleName()).getPermissions().canView())
             {
                 return;
             }
@@ -267,7 +268,7 @@ public class DataEntryTask extends BaseTask
                                 if (tblInfo != null)
                                 {
                                     PermissionSettings perm = tblInfo.getPermissions();
-                                    if (!perm.canView())
+                                    if (!perm.canAdd())
                                     {
                                         return;
                                     }
@@ -530,6 +531,14 @@ public class DataEntryTask extends BaseTask
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
                 dev.setTableInfo(tableInfo);
                 
+                if (UIHelper.isSecurityOn())
+                {
+                    if (!tableInfo.getPermissions().canView())
+                    {
+                        continue;
+                    }
+                }
+
                 //System.err.println(tableInfo.getName()+"  "+tableInfo.isHidden());
                 
                 if (tableInfo != null)
@@ -716,19 +725,40 @@ public class DataEntryTask extends BaseTask
         
         if (miscList != null && !miscList.isEmpty())
         {
-            initDataEntryViews(miscList);
-            
-            NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("DET_MISC_FORMS"),
-                                                         name, 
-                                                         getResourceString("DET_CHOOSE_TT"), 
-                                                         IconManager.STD_ICON_SIZE, createMiscActionListener());
-            
-            NavBoxButton roc = (NavBoxButton)nbi;
+            availMiscViews.clear();
             for (DataEntryView dev : miscList)
             {
-                roc.addDropDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "RecordSetTask", dev.getTableInfo().getTableId()));
+                ViewIFace view = AppContextMgr.getInstance().getView(null, dev.getView());
+                if (view != null)
+                {
+                    DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                    if (UIHelper.isSecurityOn())
+                    {
+                        if (!tableInfo.getPermissions().canView())
+                        {
+                            continue;
+                        }
+                    }
+                }
+                availMiscViews.add(dev);
             }
-            viewsNavBox.add(nbi);
+
+            if (availMiscViews.size() > 0)
+            {
+                initDataEntryViews(availMiscViews);
+                
+                NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("DET_MISC_FORMS"),
+                                                             name, 
+                                                             getResourceString("DET_CHOOSE_TT"), 
+                                                             IconManager.STD_ICON_SIZE, createMiscActionListener());
+                
+                NavBoxButton roc = (NavBoxButton)nbi;
+                for (DataEntryView dev : availMiscViews)
+                {
+                    roc.addDropDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "RecordSetTask", dev.getTableInfo().getTableId()));
+                }
+                viewsNavBox.add(nbi);
+            }
         }
     }
     
@@ -745,7 +775,7 @@ public class DataEntryTask extends BaseTask
         } else
         {
             ToggleButtonChooserDlg<DataEntryView> dlg = new ToggleButtonChooserDlg<DataEntryView>((Frame)UIRegistry.getTopWindow(), 
-                    "DET_CHOOSE_TITLE", miscViews, ToggleButtonChooserPanel.Type.RadioButton);
+                    "DET_CHOOSE_TITLE", availMiscViews, ToggleButtonChooserPanel.Type.RadioButton);
             dlg.setUseScrollPane(true);
             dlg.setVisible(true);
             if (!dlg.isCancelled())
@@ -776,7 +806,11 @@ public class DataEntryTask extends BaseTask
 
         RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
 
-        extendedNavBoxes.addAll(rsTask.getNavBoxes());
+        List<NavBoxIFace> nbs = rsTask.getNavBoxes();
+        if (nbs != null)
+        {
+            extendedNavBoxes.addAll(nbs);
+        }
 
         return extendedNavBoxes;
     }

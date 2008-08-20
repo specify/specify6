@@ -24,8 +24,6 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -54,13 +52,12 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.apache.commons.io.FileUtils;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -154,88 +151,96 @@ public class ExpressSearchConfigDlg extends CustomDialog
 
         for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
         {
-            if (!ti.isSearchable())
+            if (ti.isSearchable())
             {
-                continue;
-            }
-            
-            List<DBFieldInfo> fieldList = searchConfigService.getPruncedFieldList(ti);
-            
-            int     notSortedIndex   = 1000;
-            boolean hasIndexedFields = false;
-            for (DBFieldInfo fi : fieldList)
-            {
-                if (fi.isIndexed())
+                List<DBFieldInfo> fieldList = searchConfigService.getPruncedFieldList(ti);
+                
+                int     notSortedIndex   = 1000;
+                boolean hasIndexedFields = false;
+                for (DBFieldInfo fi : fieldList)
                 {
-                    hasIndexedFields = true;
-                    break;
+                    if (fi.isIndexed())
+                    {
+                        hasIndexedFields = true;
+                        break;
+                    }
                 }
-            }
-            if (!hasIndexedFields)
-            {
-                continue;
-            }
-
-            SearchTableConfig stc = config.findTableOrCreate(ti.getClassObj().getSimpleName());
-            stc.setTableInfo(ti);
-            
-            List<ExpressResultsTableInfo> joinList = joinHash.get(Integer.toString(ti.getTableId()));
-            if (joinList != null)
-            {
-                tableListInfoWithJoins.add(ti);
-            }
-            
-            int displayCnt = 0;
-            int searchCnt  = 0;
-            
-            for (DBFieldInfo fi : fieldList)
-            {
-                if (fi.isHidden())
+                
+                if (!hasIndexedFields)
                 {
-                    if (config.findSearchField(stc, fi.getName(), true) != null)
-                    {
-                        config.removeSearchField(stc.getTableName(), fi.getName());
-                    }
-                    if (config.findDisplayField(stc, fi.getName(), true) != null)
-                    {
-                        config.removeDisplayField(stc.getTableName(), fi.getName());
-                    }
                     continue;
                 }
                 
-                if (fi.isIndexed())
+                SearchTableConfig stc = config.findTableOrCreate(ti.getClassObj().getSimpleName());
+                stc.setTableInfo(ti);
+                
+                List<ExpressResultsTableInfo> joinList = joinHash.get(Integer.toString(ti.getTableId()));
+                if (joinList != null)
                 {
-                    // If found it sets inUse to true, otherwise it is false when created
-                    SearchFieldConfig sfc = config.findSearchField(stc, fi.getName(), true);
-                    sfc.setFieldInfo(fi);
-                    sfc.setStc(stc);
-                    if (sfc.getOrder() == null)
+                    tableListInfoWithJoins.add(ti);
+                }
+                
+                int displayCnt = 0;
+                int searchCnt  = 0;
+                
+                for (DBFieldInfo fi : fieldList)
+                {
+                    if (fi.isHidden())
                     {
-                        sfc.setOrder(notSortedIndex++);
+                        if (config.findSearchField(stc, fi.getName(), true) != null)
+                        {
+                            config.removeSearchField(stc.getTableName(), fi.getName());
+                        }
+                        if (config.findDisplayField(stc, fi.getName(), true) != null)
+                        {
+                            config.removeDisplayField(stc.getTableName(), fi.getName());
+                        }
+                        continue;
                     }
-                    searchCnt++;
+                    
+                    if (fi.isIndexed())
+                    {
+                        // If found it sets inUse to true, otherwise it is false when created
+                        SearchFieldConfig sfc = config.findSearchField(stc, fi.getName(), true);
+                        sfc.setFieldInfo(fi);
+                        sfc.setStc(stc);
+                        if (sfc.getOrder() == null)
+                        {
+                            sfc.setOrder(notSortedIndex++);
+                        }
+                        searchCnt++;
+                    }
+                    
+                    if (!fi.isHidden())
+                    {
+                        // If found it sets inUse to true, otherwise it is false when created
+                        DisplayFieldConfig dfc = config.findDisplayField(stc, fi.getName(), true);
+                        dfc.setFieldInfo(fi);
+                        dfc.setStc(stc);
+                    }
+                    
+                    displayCnt++;
                 }
+                maxDisplayCnt = Math.max(maxDisplayCnt, displayCnt);
+                maxSearchCnt  = Math.max(maxSearchCnt, searchCnt);
                 
-                if (!fi.isHidden())
-                {
-                    // If found it sets inUse to true, otherwise it is false when created
-                    DisplayFieldConfig dfc = config.findDisplayField(stc, fi.getName(), true);
-                    dfc.setFieldInfo(fi);
-                    dfc.setStc(stc);
-                }
-                
-                displayCnt++;
+                Collections.sort(stc.getSearchFields());
+                Collections.sort(stc.getDisplayFields());
             }
-            maxDisplayCnt = Math.max(maxDisplayCnt, displayCnt);
-            maxSearchCnt  = Math.max(maxSearchCnt, searchCnt);
-            
-            Collections.sort(stc.getSearchFields());
-            Collections.sort(stc.getDisplayFields());
-        }
+        } // For
         
         Collections.sort(config.getTables());
         for (SearchTableConfig stc : config.getTables())
         {
+            if (UIHelper.isSecurityOn())
+            {
+                PermissionSettings perm = stc.getTableInfo().getPermissions(); 
+                if (!perm.canView())
+                {
+                    continue;
+                }
+            }
+            
             tiRenderList.add(stc);
             tiRenderHash.put(stc.getTableInfo().getTableId(), stc);
         }
@@ -651,7 +656,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         SearchConfig.configXStream(xstream);
         
         // This is for testing only RELEASE
-        try
+        /*try
         {
             FileUtils.writeStringToFile(new File("esconfig.xml"), xstream.toXML(config)); //$NON-NLS-1$
             //System.out.println(xstream.toXML(config));
@@ -659,9 +664,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         } catch (IOException ex)
         {
             ex.printStackTrace();
-        }
-        
-        //AppContextMgr.getInstance().putResourceAsXML("ExpressSearchConfig", xstream.toXML(config));
+        }*/
         
         searchConfigService.saveConfig();
         

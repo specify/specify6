@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -38,7 +39,11 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.dbsupport.CustomQueryFactory;
+import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.stats.BarChartPanel;
@@ -48,6 +53,7 @@ import edu.ku.brc.stats.StatGroupTableFromCustomQuery;
 import edu.ku.brc.stats.StatGroupTableFromQuery;
 import edu.ku.brc.stats.StatsMgr;
 import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * A class that loads a page of statistics from an XML description
@@ -140,8 +146,6 @@ public class StatsPane extends BaseSubPane
             String className = getAttr(command, "class",  null); //$NON-NLS-1$
             String data      = getAttr(command, "data",  null); //$NON-NLS-1$
             
-            
-            
             if (StringUtils.isNotEmpty(typeStr) && 
                 StringUtils.isNotEmpty(actionStr))
             {
@@ -169,7 +173,261 @@ public class StatsPane extends BaseSubPane
         }
         return cmdAction;
     }
+    
+    /**
+     * @param boxElement
+     * @param title
+     * @param colNames
+     * @return
+     */
+    protected StatGroupTable processGroupItems(final Element  boxElement, 
+                                               final String   title, 
+                                               final String[] colNames)
+    {
+        StatGroupTable groupTable = null;
+        
+        List<?> items = boxElement.selectNodes("item"); //$NON-NLS-1$
+        if (items != null)
+        {
+            groupTable = new StatGroupTable(title, colNames, useSeparatorTitles, items.size());
+            for (Object io : items)
+            {
+                Element itemElement = (Element)io;
+                String  itemTitle   = getAttr(itemElement, "title", "N/A"); //$NON-NLS-1$ //$NON-NLS-2$
+                
+                String  formatStr  = null;
+                Element formatNode = (Element)itemElement.selectSingleNode("sql/format"); //$NON-NLS-1$
+                if (formatNode != null)
+                {
+                    formatStr = formatNode.getTextTrim();
+                }
+                
+                Element       command   = (Element)itemElement.selectSingleNode("command"); //$NON-NLS-1$
+                CommandAction cmdAction = null;
+                if (command != null)
+                {
+                    cmdAction = createCommandActionFromElement(command);
+                }
+    
+                Element      subSqlEl  = (Element)itemElement.selectSingleNode("sql"); //$NON-NLS-1$
+                QueryType    queryType  = getQueryType(getAttr(subSqlEl, "type", "sql")); //$NON-NLS-1$ //$NON-NLS-2$
+                
+                CustomQueryIFace customQuery = null;
+                if (queryType == QueryType.CUSTOM)
+                {
+                    String customQueryName = getAttr(subSqlEl, "name", null); //$NON-NLS-1$
+                    if (StringUtils.isNotEmpty(customQueryName))
+                    {
+                        customQuery = CustomQueryFactory.getInstance().getQuery(customQueryName);
+                        if (customQuery == null)
+                        {
+                            return null;
+                        }
+                        
+                        if (!isPermissionOK(customQuery.getTableIds()))
+                        {
+                            return null;
+                        }
+                    } else
+                    {
+                        log.error("Name is empty for box item ["+getAttr(itemElement, "title", "N/A")+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        return null;
+                    }
+                    
+                } else 
+                {
+                    List<Integer> tableIds = getTabledIds(subSqlEl);
+                    if (!isPermissionOK(tableIds))
+                    {
+                        return null;
+                    }
+                }
+                
+                StatDataItem statItem  = new StatDataItem(itemTitle, cmdAction, getAttr(itemElement, "useprogress", false)); //$NON-NLS-1$
+                
+                //System.out.println("["+queryType+"]");
+                switch (queryType)
+                {
+                    case SQL :
+                    {
+                        List<?> statements = itemElement.selectNodes("sql/statement"); //$NON-NLS-1$
+                        
+                        if (statements.size() == 1)
+                        {
+                            String sql = QueryAdjusterForDomain.getInstance().adjustSQL(((Element)statements.get(0)).getText());
+                            statItem.add(sql, 1, 1, StatDataItem.VALUE_TYPE.Value, formatStr);
 
+                        } else if (statements.size() > 0)
+                        {
+                            int cnt = 0;
+                            for (Object stObj : statements)
+                            {
+                                Element stElement = (Element)stObj;
+                                int    vRowInx = getAttr(stElement, "row", -1); //$NON-NLS-1$
+                                int    vColInx = getAttr(stElement, "col", -1); //$NON-NLS-1$
+                                String format  = getAttr(stElement, "format", null); //$NON-NLS-1$
+                                String sql     = QueryAdjusterForDomain.getInstance().adjustSQL(stElement.getText());
+                                
+                                if (vRowInx == -1 || vColInx == -1)
+                                {
+                                    statItem.add(sql, format); // ignore return object
+                                } else
+                                {
+                                    statItem.add(sql, vRowInx, vColInx, StatDataItem.VALUE_TYPE.Value, format); // ignore return object
+                                }
+                                cnt++;
+                            }
+                        }
+                    } break;
+                    
+                    case JPA :
+                    {
+                        List<?> statements = itemElement.selectNodes("sql/statement"); //$NON-NLS-1$
+                        String sql = QueryAdjusterForDomain.getInstance().adjustSQL(((Element)statements.get(0)).getText());
+                        statItem.addCustomQuery(new JPAQuery(sql), formatStr);
+
+                    } break;
+                    
+                    case CUSTOM :
+                        statItem.addCustomQuery(customQuery, formatStr);
+                        break;
+                }
+
+                groupTable.addDataItem(statItem);
+                statItem.startUp();
+            }
+            groupTable.relayout();
+        }
+        return groupTable;
+    }
+    
+    /**
+     * @param boxElement
+     * @return
+     */
+    protected Component processBox(final Element boxElement)
+    {
+        Component comp = null;
+        
+        int    descCol   = getAttr(boxElement, "desccol", -1); //$NON-NLS-1$
+        int    valCol    = getAttr(boxElement, "valcol", -1); //$NON-NLS-1$
+        String descTitle = getAttr(boxElement, "desctitle", " "); //$NON-NLS-1$ //$NON-NLS-2$
+        String title     = getAttr(boxElement, "title", " "); //$NON-NLS-1$ //$NON-NLS-2$
+        String noresults = getAttr(boxElement, "noresults", null); //$NON-NLS-1$
+        
+        log.debug("***** "+title+" *******");
+        
+        String[] colNames = null;
+        if (valCol != -1 && descCol == -1)
+        {
+            colNames = new String[] {getAttr(boxElement, "valtitle", " ")}; //$NON-NLS-1$ //$NON-NLS-2$
+            
+        } else if (descCol != -1 && valCol == -1 && StringUtils.isNotEmpty(descTitle))
+        {
+            colNames = new String[] {descTitle};
+            
+        } else
+        {
+            colNames = new String[] {descTitle, getAttr(boxElement, "valtitle", " ")}; //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
+        Element sqlElement = (Element)boxElement.selectSingleNode("sql"); //$NON-NLS-1$
+        if (valCol > -1 && sqlElement != null)
+        {
+            List<Integer> tableIds = getTabledIds(sqlElement);
+            if (isPermissionOK(tableIds))
+            {
+                QueryType queryType = getQueryType(getAttr(sqlElement, "type", "sql")); //$NON-NLS-1$ //$NON-NLS-2$
+                
+                Element       command   = (Element)boxElement.selectSingleNode("command"); //$NON-NLS-1$
+                int           colId     = -1;
+                CommandAction cmdAction = null;
+                
+                if (command != null)
+                {
+                    colId     = getAttr(command, "colid", -1); //$NON-NLS-1$
+                    cmdAction = createCommandActionFromElement(command);
+                }
+                
+                //System.out.println("["+queryType+"]");
+                try
+                {
+                    Element sqlStmt = (Element)sqlElement.selectSingleNode("statement"); //$NON-NLS-1$
+                    if (sqlStmt == null)
+                    {
+                        int xx = 0;
+                        xx++;
+                    }
+                    String sql =  QueryAdjusterForDomain.getInstance().adjustSQL(sqlStmt.getText());
+                    
+                    switch (queryType)
+                    {
+                        case SQL :
+                        {
+                            sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+                            StatGroupTableFromQuery group = new StatGroupTableFromQuery(title,
+                                                                    colNames,
+                                                                    sql,
+                                                                    descCol,
+                                                                    valCol,
+                                                                    useSeparatorTitles,
+                                                                    noresults);
+                            if (cmdAction != null)
+                            {
+                                group.setCommandAction(cmdAction, colId);
+                            }
+                            comp = group;
+                            group.relayout();
+                        } break;
+                        
+                        case JPA :
+                        {
+                            StatGroupTableFromCustomQuery group = new StatGroupTableFromCustomQuery(title,
+                                                                            colNames,
+                                                                            new JPAQuery(sql),
+                                                                            useSeparatorTitles,
+                                                                            noresults);
+                            if (cmdAction != null)
+                            {
+                                group.setCommandAction(cmdAction, colId);
+                            }
+                            comp = group;
+                            group.relayout();
+                        } break;
+                        
+                        case CUSTOM :
+                        {
+                            StatGroupTableFromCustomQuery group = new StatGroupTableFromCustomQuery(title,
+                                                                                    colNames,
+                                                                                    sql, // the name
+                                                                                    useSeparatorTitles,
+                                                                                    noresults);
+                            if (cmdAction != null)
+                            {
+                                group.setCommandAction(cmdAction, colId);
+                            }
+                            comp = group;
+                            group.relayout();
+                        } break;
+                        
+                    } // switch
+
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+            //log.debug("After Relayout: "+group.getPreferredSize()+" "+group.getSize()+" "+group.getComponentCount());
+
+        } else
+        {
+            comp = processGroupItems(boxElement, title, colNames);
+        }
+        
+        return comp;
+    }
+    
     /**
      * Loads all the panels
      * @param upperDisplayComp upper half display component
@@ -249,219 +507,7 @@ public class StatsPane extends BaseSubPane
 
                     } else // The default is "Box"
                     {
-                        
-                        /*Vector<BoxColumnInfo> colInfo = new Vector<BoxColumnInfo>();
-                        for (Object colObj : boxElement.selectNodes("cols/col"))
-                        {
-                            Element colElement = (Element)colObj;
-                            
-                            BoxColumnInfo.Type disciplinee = BoxColumnInfo.Type.valueOf(getAttr(colElement, "type", (String)null));
-                            
-                            colInfo.add(new BoxColumnInfo(getAttr(colElement, "col", -1),
-                                                          getAttr(colElement, "title", ""),
-                                                          disciplinee));
-                            
-                        }*/
-                        
-                        int    descCol   = getAttr(boxElement, "desccol", -1); //$NON-NLS-1$
-                        int    valCol    = getAttr(boxElement, "valcol", -1); //$NON-NLS-1$
-                        String descTitle = getAttr(boxElement, "desctitle", " "); //$NON-NLS-1$ //$NON-NLS-2$
-                        String title     = getAttr(boxElement, "title", " "); //$NON-NLS-1$ //$NON-NLS-2$
-                        String noresults = getAttr(boxElement, "noresults", null); //$NON-NLS-1$
-                        
-                        String[] colNames = null;
-                        if (valCol != -1 && descCol == -1)
-                        {
-                            colNames = new String[] {getAttr(boxElement, "valtitle", " ")}; //$NON-NLS-1$ //$NON-NLS-2$
-                            
-                        } else if (descCol != -1 && valCol == -1 && StringUtils.isNotEmpty(descTitle))
-                        {
-                            colNames = new String[] {descTitle};
-                            
-                        } else
-                        {
-                            colNames = new String[] {descTitle,
-                                                     getAttr(boxElement, "valtitle", " ")}; //$NON-NLS-1$ //$NON-NLS-2$
-                        }
-
-                        Element sqlElement = (Element)boxElement.selectSingleNode("sql"); //$NON-NLS-1$
-                        if (valCol > -1 && sqlElement != null)
-                        {
-                            QueryType queryType = getQueryType(getAttr(sqlElement, "type", "sql")); //$NON-NLS-1$ //$NON-NLS-2$
-                            
-                            Element       command   = (Element)boxElement.selectSingleNode("command"); //$NON-NLS-1$
-                            int           colId     = -1;
-                            CommandAction cmdAction = null;
-                            
-                            if (command != null)
-                            {
-                                colId     = getAttr(command, "colid", -1); //$NON-NLS-1$
-                               cmdAction = createCommandActionFromElement(command);
-                            }
-                            
-                            //System.out.println("["+queryType+"]");
-                            try
-                            {
-                                String sql =  QueryAdjusterForDomain.getInstance().adjustSQL(sqlElement.getText());
-                                
-                                switch (queryType)
-                                {
-                                    case SQL :
-                                    {
-                                        sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
-                                        StatGroupTableFromQuery group = new StatGroupTableFromQuery(title,
-                                                                                colNames,
-                                                                                sql,
-                                                                                descCol,
-                                                                                valCol,
-                                                                                useSeparatorTitles,
-                                                                                noresults);
-                                        if (cmdAction != null)
-                                        {
-                                            group.setCommandAction(cmdAction, colId);
-                                        }
-                                        comp = group;
-                                        group.relayout();
-                                    } break;
-                                    
-                                    case JPA :
-                                    {
-                                        StatGroupTableFromCustomQuery group = new StatGroupTableFromCustomQuery(title,
-                                                                                        colNames,
-                                                                                        new JPAQuery(sql),
-                                                                                        useSeparatorTitles,
-                                                                                        noresults);
-                                        if (cmdAction != null)
-                                        {
-                                            group.setCommandAction(cmdAction, colId);
-                                        }
-                                        comp = group;
-                                        group.relayout();
-                                    } break;
-                                    
-                                    case CUSTOM :
-                                    {
-                                        StatGroupTableFromCustomQuery group = new StatGroupTableFromCustomQuery(title,
-                                                                                                colNames,
-                                                                                                sql, // the name
-                                                                                                useSeparatorTitles,
-                                                                                                noresults);
-                                        if (cmdAction != null)
-                                        {
-                                            group.setCommandAction(cmdAction, colId);
-                                        }
-                                        comp = group;
-                                        group.relayout();
-                                    } break;
-                                    
-                                } // switch
-    
-                                
-                            } catch (Exception ex)
-                            {
-                                ex.printStackTrace();
-                            }
-                            //log.debug("After Relayout: "+group.getPreferredSize()+" "+group.getSize()+" "+group.getComponentCount());
-
-                        } else
-                        {
-                            
-                            List<?> items = boxElement.selectNodes("item"); //$NON-NLS-1$
-                            StatGroupTable groupTable = new StatGroupTable(title,
-                                                                           colNames,
-                                                                           useSeparatorTitles, 
-                                                                           items.size());
-                            for (Object io : items)
-                            {
-                                Element itemElement = (Element)io;
-                                String  itemTitle   = getAttr(itemElement, "title", "N/A"); //$NON-NLS-1$ //$NON-NLS-2$
-
-                                String  formatStr  = null;
-                                Element formatNode = (Element)itemElement.selectSingleNode("sql/format"); //$NON-NLS-1$
-                                if (formatNode != null)
-                                {
-                                    formatStr = formatNode.getTextTrim();
-                                }
-                                
-                                Element       command   = (Element)itemElement.selectSingleNode("command"); //$NON-NLS-1$
-                                CommandAction cmdAction = null;
-                                if (command != null)
-                                {
-                                    cmdAction = createCommandActionFromElement(command);
-                                }
-
-                                StatDataItem statItem       = new StatDataItem(itemTitle, cmdAction, getAttr(itemElement, "useprogress", false)); //$NON-NLS-1$
-                                Element      subSqlElement  = (Element)itemElement.selectSingleNode("sql"); //$NON-NLS-1$
-                                QueryType    queryType      = getQueryType(getAttr(subSqlElement, "type", "sql")); //$NON-NLS-1$ //$NON-NLS-2$
-                                
-                                //System.out.println("["+queryType+"]");
-                                switch (queryType)
-                                {
-                                    case SQL :
-                                    {
-                                        List<?> statements = itemElement.selectNodes("sql/statement"); //$NON-NLS-1$
-                                        
-                                        if (statements.size() == 1)
-                                        {
-                                            String sql = QueryAdjusterForDomain.getInstance().adjustSQL(((Element)statements.get(0)).getText());
-                                            statItem.add(sql, 1, 1, StatDataItem.VALUE_TYPE.Value, formatStr);
-        
-                                        } else if (statements.size() > 0)
-                                        {
-                                            int cnt = 0;
-                                            for (Object stObj : statements)
-                                            {
-                                                Element stElement = (Element)stObj;
-                                                int    vRowInx = getAttr(stElement, "row", -1); //$NON-NLS-1$
-                                                int    vColInx = getAttr(stElement, "col", -1); //$NON-NLS-1$
-                                                String format  = getAttr(stElement, "format", null); //$NON-NLS-1$
-                                                String sql     = QueryAdjusterForDomain.getInstance().adjustSQL(stElement.getText());
-                                                
-                                                if (vRowInx == -1 || vColInx == -1)
-                                                {
-                                                    statItem.add(sql, format); // ignore return object
-                                                } else
-                                                {
-                                                    statItem.add(sql, vRowInx, vColInx, StatDataItem.VALUE_TYPE.Value, format); // ignore return object
-                                                }
-                                                cnt++;
-                                            }
-                                        }
-                                    } break;
-                                    
-                                    case JPA :
-                                    {
-                                        List<?> statements = itemElement.selectNodes("sql/statement"); //$NON-NLS-1$
-                                        String sql = QueryAdjusterForDomain.getInstance().adjustSQL(((Element)statements.get(0)).getText());
-                                        statItem.addCustomQuery(new JPAQuery(sql), formatStr);
-
-                                    } break;
-                                    
-                                    case CUSTOM :
-                                    {
-                                        String subSqlName = getAttr(subSqlElement, "name", null); //$NON-NLS-1$
-                                        if (StringUtils.isNotEmpty(subSqlName))
-                                        {
-                                            statItem.addCustomQuery(subSqlName, formatStr);
-                                            
-                                        } else
-                                        {
-                                            log.error("Name is empty for box item ["+getAttr(itemElement, "title", "N/A")+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                                        }
-                                        
-                                    } break;
-                                }
-
-                                groupTable.addDataItem(statItem);
-                                statItem.startUp();
-
-                            }
-                            groupTable.relayout();
-                            //log.debug(groupTable.getPreferredSize());
-                            comp = groupTable;
-                            //comp = scrollPane;
-                        }
-
+                        comp = processBox(boxElement);
                     }
 
                     if (comp != null)
@@ -518,6 +564,54 @@ public class StatsPane extends BaseSubPane
             ex.printStackTrace();
         }
 
+    }
+    
+    /**
+     * @param item
+     * @return
+     */
+    protected static List<Integer> getTabledIds(final Element item)
+    {
+        if (item != null)
+        {
+            List<?> tables = item.selectNodes("tables/id");//$NON-NLS-1$
+            if (tables != null)
+            {
+                List<Integer> list = new Vector<Integer>();
+                for (Object obj : tables)
+                {
+                    Element tbl = (Element)obj;
+                    list.add(Integer.parseInt(tbl.getTextTrim()));
+                }
+                return list;
+            }
+        }
+        return null;
+    }
+
+    public static boolean isPermissionOK(final List<Integer> list)
+    {
+        // not sure if the default should be true or false
+        // certainly is security is off it should return true.
+        boolean isOK = true; 
+        if (UIHelper.isSecurityOn())
+        {
+            if (list != null)
+            {
+                for (Integer tableId : list)
+                {
+                    DBTableInfo tInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
+                    if (tInfo != null)
+                    {
+                        if (!tInfo.getPermissions().canView())
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return isOK;
     }
 
 }

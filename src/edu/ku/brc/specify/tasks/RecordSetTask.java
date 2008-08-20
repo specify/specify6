@@ -77,6 +77,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.Trash;
@@ -226,6 +227,20 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getNavBoxes()
+     */
+    @Override
+    public List<NavBoxIFace> getNavBoxes()
+    {
+        if (UIHelper.isSecurityOn() && !permissions.canView())
+        {
+            return null;
+        }
+        return super.getNavBoxes();
+    }
+
+
     /**
      * Adds a RecordSet to the Left Pane NavBox
      * @param recordSet the recordset to be added

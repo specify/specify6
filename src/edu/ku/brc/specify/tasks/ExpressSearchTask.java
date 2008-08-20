@@ -47,6 +47,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
@@ -702,8 +703,12 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
 
         RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
 
-        extendedNavBoxes.addAll(rsTask.getNavBoxes());
-
+        List<NavBoxIFace> nbs = rsTask.getNavBoxes();
+        if (nbs != null)
+        {
+            extendedNavBoxes.addAll(nbs);
+        }
+        
         return extendedNavBoxes;
     }
 
@@ -1253,6 +1258,16 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 
                 for (SearchTableConfig stc : scService.getSearchConfig().getTables())
                 {
+                    // This needed for the first time in before there are any settings
+                    if (UIHelper.isSecurityOn())
+                    {
+                        PermissionSettings perm = stc.getTableInfo().getPermissions(); 
+                        if (!perm.canView())
+                        {
+                            continue;
+                        }
+                    }
+                    
                     JMenuItem menu = new JMenuItem(stc.getTitle(), IconManager.getIcon(stc.getIconName(), IconManager.IconSize.Std16));
                     menu.addActionListener(action);
                     menus.add(menu);

@@ -818,7 +818,9 @@ public class DatabaseLoginPanel extends JPanel
                         log.warn(ex);
                         finished();
                     }*/
+                    return null;
                 }
+                
                 SwingUtilities.invokeLater(new Runnable(){
                     @Override
                     public void run()

@@ -106,10 +106,10 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
      */
     public void load()
     {
-        log.debug("loading AppPrefsDBIOIImpl");
+        //log.debug("loading AppPrefsDBIOIImpl");
         if (spAppResource == null && appPrefsMgr != null)
         {
-            log.debug("loading creating Properties");
+            //log.debug("loading creating Properties");
             Properties properties = new Properties(); // must be done fist thing
             appPrefsMgr.setProperties(properties);
 

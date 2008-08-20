@@ -37,7 +37,7 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
 		List<PermissionEditorRowIFace> perms = new ArrayList<PermissionEditorRowIFace>(tasks.size());
 		
 		// create a special permission that allows user to see all forms
-		perms.add(getStarPermission(permissionBaseName, "Tasks: permissions to all tasks", 
+		perms.add(getStarPermission(permissionBaseName, "Tasks: permissions to all tasks", // I18N
 				"Permissions to view, add, modify and delete data in all tasks", 
 				existingPerms, overrulingPerms));
 
@@ -58,7 +58,7 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
 				perm.setPermissionClass(BasicSpPermission.class.getCanonicalName());
 			}
 			
-			String title = "Task: " + task.getTitle();
+			String title = "Task: " + task.getTitle(); // I18N ???? (maybe not)
 			String desc = "Permissions to view, add, modify and delete data in task " + task.getTitle();
 
 			// add newly created permission to the bag that will be returned

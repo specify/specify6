@@ -59,7 +59,6 @@ public class StatsTask extends BaseTask
     protected static final String TABLE     = "table"; //$NON-NLS-1$
     protected static final String FORM      = "form"; //$NON-NLS-1$
 
-
     // Data Members
      protected Element panelDOM;
 

@@ -24,6 +24,9 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * Manages the task context of the UI. The task context is controlled by what tab is visible in the main pane
@@ -37,11 +40,12 @@ import edu.ku.brc.ui.CommandAction;
  * @author rods
  *
  */
-public class ContextMgr
+public class ContextMgr implements CommandListener
 {
     // Static Data Members
     private static final Logger      log      = Logger.getLogger(ContextMgr.class);
     private static final ContextMgr  instance = new ContextMgr();
+    private static final String  APP_RESTART_ACT = "AppRestart"; //$NON-NLS-1$
 
     // Data Members
     protected Taskable         currentContext         = null;
@@ -57,7 +61,7 @@ public class ContextMgr
      */
     protected ContextMgr()
     {
-        // do nothing
+        CommandDispatcher.register("App", this);
     }
 
     /**
@@ -232,6 +236,10 @@ public class ContextMgr
         {
             if (si.isDefault())
             {
+                if (UIHelper.isSecurityOn() && !si.isPermissionOK())
+                {
+                    return null;
+                }
                 return si;
             }
         }
@@ -305,7 +313,6 @@ public class ContextMgr
         }
     }
 
-
     /**
      * Returns the ServiceInfo object for a given service and the table it is to act upon.
      * @param serviceName name of service to be provided
@@ -334,11 +341,33 @@ public class ContextMgr
         {
             if (!serviceList.contains(srvInfo))
             {
+                if (UIHelper.isSecurityOn() && !srvInfo.isPermissionOK())
+                {
+                    continue;
+                }
                 serviceList.add(srvInfo);
             }
         }
         Collections.sort(serviceList);
         return serviceList;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(CommandAction cmdAction)
+    {
+        if (cmdAction.isAction(APP_RESTART_ACT))
+        {
+            for (ServiceInfo srvInfo : instance.genericService)
+            {
+                if (UIHelper.isSecurityOn())
+                {
+                    srvInfo.resetPermissions();
+                }
+            }
+        }
     }
 
 }

@@ -384,4 +384,13 @@ public class JPAQuery implements CustomQueryIFace
         cancelled.set(true);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQueryIFace#getTableIds()
+     */
+    @Override
+    public List<Integer> getTableIds()
+    {
+        return null;
+    }
+
 }

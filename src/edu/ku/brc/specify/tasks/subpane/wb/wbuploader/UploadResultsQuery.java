@@ -56,10 +56,9 @@ public class UploadResultsQuery implements CustomQueryIFace
     }
     
     /**
+     * Populates dataObjects with data directly from the dataSet.
      * @param uploadTable
      * @param uploadData
-     * 
-     * Populates dataObjects with data directly from the dataSet.
      */
     public UploadResultsQuery(final CustomQueryListener cql, final UploadTable uploadTable, final UploadData uploadData)
     {
@@ -69,6 +68,9 @@ public class UploadResultsQuery implements CustomQueryIFace
         dataObjects = new ArrayList<Object[]>(uploadTable.getUploadedRecs().size());
     }
     
+    /**
+     * 
+     */
     protected void fillRows()
     {
         Vector<Vector<edu.ku.brc.util.Pair<Integer, Integer>>> indexes = setupFldIdxInfo(uploadTable);
@@ -156,7 +158,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#execute()
      */
-   //@Override
+    @Override
     public boolean execute()
     {
         // JPQQuery uses this trick...
@@ -167,7 +169,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#execute(edu.ku.brc.dbsupport.CustomQueryListener)
      */
-    //@Override
+    @Override
     public void execute(CustomQueryListener cql)
     {
         fillRows();
@@ -180,7 +182,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#getDataObjects()
      */
-    //@Override
+    @Override
     public List<?> getDataObjects()
     {
         return dataObjects;
@@ -189,7 +191,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#getName()
      */
-    //@Override
+    @Override
     public String getName()
     {
         // TODO Auto-generated method stub
@@ -199,7 +201,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#getQueryDefinition()
      */
-    //@Override
+    @Override
     public List<QueryResultsContainerIFace> getQueryDefinition()
     {
         // TODO Auto-generated method stub
@@ -209,7 +211,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#getResults()
      */
-    //@Override
+    @Override
     public List<QueryResultsDataObj> getResults()
     {
         // TODO Auto-generated method stub
@@ -219,7 +221,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#isInError()
      */
-    //@Override
+    @Override
     public boolean isInError()
     {
         return false;
@@ -228,7 +230,7 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#isCancelled()
      */
-    //@Override
+    @Override
     public boolean isCancelled()
     {
         return false;
@@ -237,10 +239,19 @@ public class UploadResultsQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#cancel()
      */
-    //@Override
+    @Override
     public void cancel()
     {
         //ignore
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQueryIFace#getTableIds()
+     */
+    @Override
+    public List<Integer> getTableIds()
+    {
+        return null;
     }
 
 }

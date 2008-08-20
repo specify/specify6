@@ -122,6 +122,13 @@
 	<icon name="preparationattachment"          alias="PreparationAttachment"/>
 	<icon name="repositoryagreementattachment"  alias="RepositoryAgreementAttachment"/>
 	<icon name="taxonattachment"                alias="TaxonAttachment"/>
+
+    <icon name="loanpreparation"        alias="preparation"/>
+    <icon name="LoanPreparation"        alias="preparation"/>
+    <icon name="deaccessionagent"       alias="agent"/>
+    <icon name="DeaccessionAgent"       alias="agent"/>
+    <icon name="deaccessionpreparation" alias="preparation"/>
+    <icon name="DeaccessionPreparation"  alias="preparation"/>
     
     
 	<icon name="citation"               file="citation.png" sizes="all"/>

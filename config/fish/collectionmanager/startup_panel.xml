@@ -1,35 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <panel>
-
   <row>
       <!--
       <box title="Task List" desccol="1" valcol="1">
-		<sql><![CDATA[SELECT name FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></sql>
+		<sql><statement><![CDATA[SELECT name FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></statement></sql>
       </box>
       -->
         <box title="Workbench DataSets" valcol="1" valtitle="Workbench">
-          <sql><![CDATA[SELECT Name,WorkbenchID FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></sql>
-          <command type="Workbench" action="WB.SelectedWorkbench" colid="2" class="edu.ku.brc.specify.datamodel.Workbench"/>
+              <sql>
+                <tables>
+		          <id>79</id>
+		        </tables>            
+              	<statement><![CDATA[SELECT Name,WorkbenchID FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></statement>
+              </sql>
+              <command type="Workbench" action="WB.SelectedWorkbench" colid="2" class="edu.ku.brc.specify.datamodel.Workbench"/>
         </box>
         <box title="Loans">
             <item title="Items On Loan">
-                <sql><statement><![CDATA[SELECT count(loanpreparationid) AS ItemsOnLoanCount FROM loanpreparation AS lpo 
+                <sql>
+			      <tables>
+			        <id>52</id>
+			      </tables>            
+                  <statement><![CDATA[SELECT count(loanpreparationid) AS ItemsOnLoanCount FROM loanpreparation AS lpo 
                 INNER JOIN loan ON loan.loanid = lpo.loanid where quantityresolved < quantity AND 
                 loan.DisciplineID = DSPLNID AND (IsClosed = 0 or IsClosed is null)]]></statement></sql>
                 <link>ListOnLoan</link>
             </item>
-            <!--
-            <item title="Items On Loan">
-                <sql type="jpa" name="ItemsOnLoan"><statement><![CDATA[select count(loanPreparationId) AS ItemsOnLoanCount FROM LoanPreparation lpo Inner Join lpo.loan l where (lpo.CollectionMemberId = COLMEMID AND (quantityResolved < quantity AND (isClosed = 0 or isClosed is null))]]></statement></sql>
-                <link>ListOnLoan</link>
-            </item>
-            -->
             <item title="Overdue Loans">
                 <sql type="custom" name="OverdueLoans"/>
                 <link>OverdueLoansList</link>
             </item>
             <item title="Open Loans">
                 <sql type="jpa" name="OpenLoans">
+				      <tables>
+				        <id>52</id>
+				      </tables>            
                     <statement><![CDATA[SELECT count(loanId) as OpenLoanCount FROM Loan l INNER JOIN l.discipline dsp WHERE (isClosed = 0 OR isClosed is null) AND 
  dsp.disciplineId = DSPLNID ]]></statement></sql>
                 <link>OpenLoans</link>
@@ -53,7 +58,11 @@
         </item>
       </box>
        <box title="Overdue Loans" desccol="1" valcol="5" desctitle="Loan Number" valtitle="Agent">
-          <sql><![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName, loan.loanid, loan.OriginalDueDate, loanpreparation.Quantity, loanpreparation.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanpreparation ON loan.LoanID =  loanpreparation.LoanID Inner Join loanagent ON loan.LoanID = loanagent.LoanID Inner Join agent ON loanagent.AgentID = agent.AgentID Inner Join address ON agent.AgentID = address.AgentID where loan.loanid in (select loanid from loan where (not  (currentduedate is null)) and (IsClosed = 0 or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)  group by LoanNumber]]></sql>
+            <item title="Items On Loan">
+		      <tables>
+		        <id>52</id>
+		      </tables>            
+          <sql><statement><![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName, loan.loanid, loan.OriginalDueDate, loanpreparation.Quantity, loanpreparation.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanpreparation ON loan.LoanID =  loanpreparation.LoanID Inner Join loanagent ON loan.LoanID = loanagent.LoanID Inner Join agent ON loanagent.AgentID = agent.AgentID Inner Join address ON agent.AgentID = address.AgentID where loan.loanid in (select loanid from loan where (not  (currentduedate is null)) and (IsClosed = 0 or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)  group by LoanNumber]]><statement></sql>
 		  <link colid="6">OverdueLookup</link>
       </box>
    </row>

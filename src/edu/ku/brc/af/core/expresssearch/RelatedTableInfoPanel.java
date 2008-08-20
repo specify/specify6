@@ -49,7 +49,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods

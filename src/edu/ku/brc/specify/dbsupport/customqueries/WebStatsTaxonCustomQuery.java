@@ -106,7 +106,7 @@ public class WebStatsTaxonCustomQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#isInError()
      */
-    //@Override
+    @Override
     public boolean isInError()
     {
         return false;
@@ -115,7 +115,7 @@ public class WebStatsTaxonCustomQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#isCancelled()
      */
-    //@Override
+    @Override
     public boolean isCancelled()
     {
         return false;
@@ -124,10 +124,19 @@ public class WebStatsTaxonCustomQuery implements CustomQueryIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryIFace#cancel()
      */
-    //@Override
+    @Override
     public void cancel()
     {
         // ignore
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQueryIFace#getTableIds()
+     */
+    @Override
+    public List<Integer> getTableIds()
+    {
+        return null;
     }
 
 }
