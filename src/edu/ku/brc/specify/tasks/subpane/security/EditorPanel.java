@@ -49,7 +49,7 @@ public class EditorPanel extends JPanel implements ChangeListener,
         saveBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                sap.doSave();
+                sap.doSave(true);
             }
         });
     }

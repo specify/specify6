@@ -12,9 +12,9 @@ import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Institution;
@@ -31,14 +31,14 @@ import edu.ku.brc.ui.IconManager;
 public class DataModelObjBaseWrapper 
 {
     private String           title = null;
-    private DataModelObjBase dataObj;
+    private FormDataObjIFace dataObj;
 	private ImageIcon        icon;
 	
 	/**
 	 * Constructor
 	 * @param dataObj data object to be wrapped
 	 */
-	public DataModelObjBaseWrapper(DataModelObjBase dataObj)
+	public DataModelObjBaseWrapper(final FormDataObjIFace dataObj)
 	{
 		this.dataObj = dataObj;
 
@@ -80,12 +80,20 @@ public class DataModelObjBaseWrapper
 	 * Returns wrapped data object
 	 * @return Wrapped data object
 	 */
-	public DataModelObjBase getDataObj()
+	public FormDataObjIFace getDataObj()
 	{
 		return dataObj;
 	}
 	
 	/**
+     * @param dataObj the dataObj to set
+     */
+    public void setDataObj(FormDataObjIFace dataObj)
+    {
+        this.dataObj = dataObj;
+    }
+
+    /**
 	 * 
 	 * @return
 	 */

@@ -17,9 +17,9 @@ import javax.swing.table.DefaultTableModel;
  */
 public interface PermissionEditorRowIFace 
 {
-	public void addTableRow(DefaultTableModel model, ImageIcon icon);
+	public abstract void addTableRow(DefaultTableModel model, ImageIcon icon);
 	
-	public String getTitle();
+	public abstract String getTitle();
 	
-	public String getDescription();
+	public abstract String getDescription();
 }

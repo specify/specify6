@@ -23,19 +23,21 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
 {
 	protected SpPermission permission;
 	protected SpPermission overrulingPermission;
-	protected String title;
-	protected String description;
+	protected String       title;
+	protected String       description;
+	protected ImageIcon    icon;
 	
-	public GeneralPermissionEditorRow(
-			SpPermission permission, 
-			SpPermission overrulingPermission,
-			String title,
-			String description) 
+	public GeneralPermissionEditorRow(final SpPermission permission, 
+			                          final SpPermission overrulingPermission,
+			                          final String title,
+                                      final String description,
+                                      final ImageIcon icon) 
 	{
 		this.permission 			= permission;
 		this.overrulingPermission 	= overrulingPermission;
 		this.title					= title;
-		this.description			= description;
+        this.description            = description;
+        this.icon                   = icon;
 	}
 	
 	public SpPermission getPermission() 
@@ -53,12 +55,12 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
 		return description;
 	}
 
-	public void addTableRow(DefaultTableModel model, ImageIcon icon)
+	public void addTableRow(DefaultTableModel model, ImageIcon defaultIcon)
 	{
 		// FIXME: adjust this to work with 3-state checkbox
 		model.addRow(new Object[] 
 		        				{ 
-		        					icon, this, 
+		                            icon != null ? icon : defaultIcon, this, 
 		        					new Boolean(permission.canView()), 
 		        					new Boolean(permission.canAdd()), 
 		        					new Boolean(permission.canModify()), 

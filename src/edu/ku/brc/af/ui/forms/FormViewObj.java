@@ -1950,7 +1950,7 @@ public class FormViewObj implements Viewable,
             session = DataProviderFactory.getInstance().createSession();
             //DataProviderFactory.getInstance().evict(dataObj.getClass()); 
             
-            if (dataObj instanceof FormDataObjIFace)
+            if (list != null && dataObj instanceof FormDataObjIFace)
             {
                 int index = list.indexOf(dataObj);
                 Integer id = ((FormDataObjIFace)dataObj).getId();
@@ -2194,6 +2194,7 @@ public class FormViewObj implements Viewable,
                 tryAgain = false;
                 dObj     = dataObj;
                 saveState = SAVE_STATE.StaleRecovery;
+                e.printStackTrace();
                 
             } catch (ConstraintViolationException e)
             {

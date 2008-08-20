@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.toycode;
 
@@ -19,9 +16,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -31,6 +33,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -58,16 +61,16 @@ public class UpdatesApp extends JPanel
     protected BrowseBtnPanel macUpBBP   = null;
     protected BrowseBtnPanel outBBP     = null;
     
-    protected JTextField baseTF    = new JTextField(40);
-    protected JTextField baseUpTF  = new JTextField(40);
-    protected JTextField macFullTF = new JTextField(40);
-    protected JTextField macUpTF   = new JTextField(40);
-    protected JTextField outTF     = new JTextField(40);
-    protected JTextField statusTF  = new JTextField();
+    protected JTextField baseTF       = new JTextField(40);
+    protected JTextField baseUpTF     = new JTextField(40);
+    protected JTextField macFullTF    = new JTextField(40);
+    protected JTextField macUpTF      = new JTextField(40);
+    protected JTextField outTF        = new JTextField(40);
+    protected JTextField statusTF     = new JTextField();
     
-    protected JTextField versionTF = new JTextField(2);
+    protected JTextField versionTF    = new JTextField(2);
     protected JTextField updateBaseTF = new JTextField();
-    protected JButton    mergeBtn  = new JButton("Merge");
+    protected JButton    mergeBtn     = new JButton("Merge");
     
     protected JSpinner   verSub1;
     protected JSpinner   verSub2;
@@ -225,8 +228,6 @@ public class UpdatesApp extends JPanel
         baseUpdateDesc.getEntries().addAll(maxFullUpdateDesc.getEntries());
         baseUpdateDesc.getEntries().addAll(maxUpUpdateDesc.getEntries());
         
-        write(baseUpdateDesc, outTF.getText());
-        
         statusTF.setText("Merged.");
 
     }
@@ -273,6 +274,24 @@ public class UpdatesApp extends JPanel
             entry.setUpdatableVersionMax(verMin);
             entry.setUpdatableVersionMin(verMin);
         }
+    }
+    
+    protected void doOpen()
+    {
+        
+    }
+    
+    protected void doSave()
+    {
+        
+        write(baseUpdateDesc, outTF.getText());
+        
+        statusTF.setText("Saved.");
+    }
+    
+    protected void shutdown()
+    {
+        System.exit(0);
     }
     
     protected static UpdateDescriptor read(final File file)
@@ -325,6 +344,77 @@ public class UpdatesApp extends JPanel
     }
     
     /**
+     * Sets a mnemonic on a button.
+     * @param btn the button
+     * @param mnemonicKey the one char string.
+     */
+    public static void setMnemonic(final AbstractButton btn, final String mnemonic)
+    {
+        if (StringUtils.isNotEmpty(mnemonic) && btn != null)
+        {
+            btn.setMnemonic(mnemonic.charAt(0));
+        }
+    }
+    
+    public static JMenu createMenu(final JMenuBar menuBar, final String label, final String mneu)
+    {
+        JMenu menu = null;
+        try
+        {
+            menu = menuBar.add(new JMenu(label));
+            //if (oSType != OSTYPE.MacOSX)
+            {
+                setMnemonic(menu, mneu);
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return menu;
+    }
+
+    
+    public JMenuBar createMenus()
+    {
+        JMenuBar menuBar = new JMenuBar();
+        
+        JMenu fileMenu = createMenu(menuBar, "File", "F");
+        
+        UIHelper.createMenuItemWithAction(fileMenu, "Open", "O",  "", true, new AbstractAction() //$NON-NLS-1$
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                doOpen();
+            }
+        });
+        
+        JMenuItem saveMenuItem = UIHelper.createMenuItemWithAction(fileMenu, "File", "F", "", false, new AbstractAction() //$NON-NLS-1$
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                doSave();
+            }
+            
+        });
+        saveMenuItem.setEnabled(false);
+        
+        if (!UIHelper.isMacOS())
+        {
+            fileMenu.addSeparator();
+            
+            UIHelper.createMenuItemWithAction(fileMenu, "Exit", "x",  "", true, new AbstractAction() //$NON-NLS-1$
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    shutdown();
+                }
+            });
+        }
+
+        return menuBar;
+    }
+    
+    /**
      * @param args
      */
     public static void main(String[] args)
@@ -359,9 +449,18 @@ public class UpdatesApp extends JPanel
                     System.err.println("Can't change L&F: "+e); //$NON-NLS-1$
                 }
                 
+                UpdatesApp panel = new UpdatesApp();
                 JFrame frame = new JFrame();
                 frame.setTitle("Install4J XML Updater");
-                frame.setContentPane(new UpdatesApp());
+                frame.setContentPane(panel);
+                
+                JMenuBar menuBar = panel.createMenus();
+                if (menuBar != null)
+                {
+                    //top.add(menuBar, BorderLayout.NORTH);
+                    frame.setJMenuBar(menuBar);
+                }
+
                 frame.pack();
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setVisible(true);

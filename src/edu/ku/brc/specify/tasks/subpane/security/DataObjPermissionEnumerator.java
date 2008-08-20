@@ -15,6 +15,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
+import edu.ku.brc.ui.IconManager;
 
 /**
  * This class enumerates Data Objects permissions associated with a principal in a given scope
@@ -72,7 +73,7 @@ public class DataObjPermissionEnumerator extends PermissionEnumerator
             String desc  = "Permissions to view, add, modify and delete data using form " + tblInfo.getTitle(); // I18N
             
             // add newly created permission to the bag that will be returned
-            perms.add(new GeneralPermissionEditorRow(perm, oPerm, title, desc));
+            perms.add(new GeneralPermissionEditorRow(perm, oPerm, title, desc, IconManager.getImage(tblInfo.getName(), IconManager.IconSize.Std16)));
         }
 
 

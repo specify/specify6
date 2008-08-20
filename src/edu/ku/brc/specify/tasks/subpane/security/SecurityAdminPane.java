@@ -64,6 +64,7 @@ import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.af.ui.SearchBox;
 import edu.ku.brc.af.ui.db.JAutoCompTextField;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
@@ -112,6 +113,9 @@ public class SecurityAdminPane extends BaseSubPane
     private boolean hasPermissionToAdd    = false;
     private boolean hasPermissionToModify = false;
     private boolean hasPermissionToDelete = false;
+    
+    private DataModelObjBaseWrapper objWrapper       = null;
+    private DataModelObjBaseWrapper secondObjWrapper = null;
     
     private final int formOptions = MultiView.IS_EDITTING | MultiView.IS_NEW_OBJECT;
     
@@ -791,11 +795,16 @@ public class SecurityAdminPane extends BaseSubPane
         return infoPanel;
     }
     
-    private void showInfoPanel(final DataModelObjBaseWrapper objWrapper, 
-                               final DataModelObjBaseWrapper secondObjWrapper,
+    /**
+     * @param objWrapper
+     * @param secondObjWrapper
+     * @param selectedObjTitle
+     */
+    private void showInfoPanel(final DataModelObjBaseWrapper objWrapperArg, 
+                               final DataModelObjBaseWrapper secondObjWrapperArg,
                                final String selectedObjTitle)
     {
-        String className = objWrapper.getType();
+        String className = objWrapperArg.getType();
         
         if (currentEditorPanel != null && currentEditorPanel.hasChanged())
         {
@@ -813,8 +822,7 @@ public class SecurityAdminPane extends BaseSubPane
         
             if (rv == JOptionPane.YES_OPTION)
             {
-                doSave();
-                currentEditorPanel.setHasChanged(false);
+                doSave(true);
             }
         }
         
@@ -832,8 +840,11 @@ public class SecurityAdminPane extends BaseSubPane
         
         // fill form with object data
         currentDisplayPanel = panelWrapper;
-        currentDisplayPanel.setData(objWrapper.getDataObj(), secondObjWrapper != null? secondObjWrapper.getDataObj() : null);
+        currentDisplayPanel.setData(objWrapperArg.getDataObj(), secondObjWrapperArg != null ? secondObjWrapperArg.getDataObj() : null);
         cardLayout.show(infoCards, className);
+        
+        objWrapper       = objWrapperArg;
+        secondObjWrapper = secondObjWrapperArg;
     }
     
     /**
@@ -981,13 +992,47 @@ public class SecurityAdminPane extends BaseSubPane
         editorPanels.put(className, infoPanel);
     }
 
-    protected void doSave()
+    /**
+     * @param refreshObj
+     */
+    protected void doSave(final boolean refreshObj)
     {
-     // save object in view 
-        saveObjectInCurrentDisplayPanel();
-        
         // then save permissions
         currentDisplayPanel.savePermissionData();
+        currentEditorPanel.setHasChanged(false);
+        
+       if (refreshObj)
+       {
+           refreshTreeNode();
+       }
+    }
+    
+    protected void refreshTreeNode()
+    {
+        
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            FormDataObjIFace dbObj        = objWrapper.getDataObj();
+            FormDataObjIFace refreshedObj = (FormDataObjIFace)session.get(dbObj.getDataClass(), dbObj.getId());
+            objWrapper.setDataObj(refreshedObj);
+            
+            if (secondObjWrapper != null)
+            {
+                dbObj = secondObjWrapper.getDataObj();
+                if (dbObj != null)
+                {
+                    refreshedObj = (FormDataObjIFace)session.get(dbObj.getDataClass(), dbObj.getId());
+                    secondObjWrapper.setDataObj(refreshedObj);
+                }
+            }
+            
+            currentDisplayPanel.setData(objWrapper.getDataObj(), secondObjWrapper != null ? secondObjWrapper.getDataObj() : null);
+        } 
+        finally
+        {
+            session.close();
+        }
     }
     
     /**
@@ -1108,7 +1153,7 @@ public class SecurityAdminPane extends BaseSubPane
                                                    JOptionPane.YES_NO_CANCEL_OPTION);
             if (rv == JOptionPane.YES_OPTION)
             {
-                saveObjectInCurrentDisplayPanel();
+                doSave(false);
             }
             else if (rv == JOptionPane.CANCEL_OPTION || rv == JOptionPane.CLOSED_OPTION)
             {
@@ -1122,19 +1167,6 @@ public class SecurityAdminPane extends BaseSubPane
         return result;
     }
 
-    public void saveObjectInCurrentDisplayPanel()
-    {
-        MultiView mv = currentDisplayPanel.getMultiView();
-        Viewable view = mv.getCurrentView();
-        if (view instanceof FormViewObj)
-        {
-            // this is needed because doSave() method is not part of Viewable interface (but it may have been one day)
-            FormViewObj vo = (FormViewObj) view;
-            vo.doSave();
-        }
-    }
-    
-    
     private class MyTreeCellRenderer extends DefaultTreeCellRenderer
     {
         /* (non-Javadoc)

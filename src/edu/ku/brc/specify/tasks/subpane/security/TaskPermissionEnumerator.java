@@ -16,6 +16,7 @@ import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
+import edu.ku.brc.ui.IconManager;
 
 /**
  * This class enumerates task related permissions associated with a principal
@@ -62,7 +63,8 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
 			String desc = "Permissions to view, add, modify and delete data in task " + task.getTitle();
 
 			// add newly created permission to the bag that will be returned
-			perms.add(new GeneralPermissionEditorRow(perm, oPerm, title, desc));
+//			/ImageIcon icon = IconManager.getIcon(task.getImageIcon(), id)
+			perms.add(new GeneralPermissionEditorRow(perm, oPerm, title, desc, task.getImageIcon()));
 		}
 		
 		return perms;

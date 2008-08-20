@@ -138,13 +138,16 @@ public class PermissionEditor
 	protected void addColumnHeaders(final DefaultTableModel model)
 	{
 		model.addColumn("");
-		model.addColumn("Task");
+		model.addColumn("Task"); // I18N
 		model.addColumn("View");
 		model.addColumn("Add");
 		model.addColumn("Modify");
 		model.addColumn("Delete");
 	}
 	
+	/**
+	 * 
+	 */
 	public void savePermissions()
 	{
 		// nothing to save if we didn't specify a principal yet
@@ -158,7 +161,7 @@ public class PermissionEditor
         {
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
-			session.attach(principal);
+            principal = session.merge(principal);
 
             DefaultTableModel model = (DefaultTableModel) permissionTable.getModel();
     		int numRows = model.getRowCount();

@@ -265,6 +265,22 @@ public class DatabaseLoginPanel extends JPanel
 
         username = createTextField(20);
         password = createPasswordField(20);
+        
+        FocusAdapter focusAdp = new FocusAdapter()
+        {
+
+            /* (non-Javadoc)
+             * @see java.awt.event.FocusAdapter#focusGained(java.awt.event.FocusEvent)
+             */
+            @Override
+            public void focusGained(FocusEvent e)
+            {
+                super.focusGained(e);
+                ((JTextField)e.getSource()).selectAll();
+            }
+        };
+        username.addFocusListener(focusAdp);
+        password.addFocusListener(focusAdp);
 
         databases = new JEditComboBox(dbPickList);
         servers   = new JEditComboBox(svPickList);

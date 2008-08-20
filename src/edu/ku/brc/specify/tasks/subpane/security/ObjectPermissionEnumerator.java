@@ -72,11 +72,10 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator {
 		return perms;
 	}
 
-	private SpPermission createPermission(
-			final String taskName, 
-			final String subType, 
-			final Integer targetId, 
-			final Hashtable<String, SpPermission> existingPerms)
+	private SpPermission createPermission(final String taskName, 
+	                                      final String subType, 
+	                                      final Integer targetId, 
+	                                      final Hashtable<String, SpPermission> existingPerms)
 	{
 		// first check if there is a permission with this name
 		SpPermission perm  = existingPerms.get(taskName + "." + subType);
@@ -94,11 +93,10 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator {
 		return perm;
 	}
 	
-	private void addCustomPermissions(
-			ObjectPermissionEditorRow wrapper, 
-			final String taskName, 
-			final Integer targetId, 
-			final Hashtable<String, SpPermission> existingPerms)
+	private void addCustomPermissions(final ObjectPermissionEditorRow wrapper, 
+	                                  final String taskName, 
+	                                  final Integer targetId, 
+	                                  final Hashtable<String, SpPermission> existingPerms)
 	{
 		// TODO: add custom permissions to wrapper
 	}
@@ -149,7 +147,7 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator {
         	String title = objBaseTitle + ": " + name;
         	String description = objBaseDesc + name;
         	
-        	ObjectPermissionEditorRow wrapper = new ObjectPermissionEditorRow(owner, group, other, title, description);
+        	ObjectPermissionEditorRow wrapper = new ObjectPermissionEditorRow(owner, group, other, title, description, null);
         	addCustomPermissions(wrapper, taskName, targetId, existingPerms);
         	
 			// add newly created permission to the bag that will be returned

@@ -62,6 +62,9 @@ public class AdminInfoSubPanelWrapper
 	
 	public void savePermissionData()
 	{
+        MultiView   mv  = getMultiView();
+        mv.getDataFromUI();
+        
 		for (PermissionEditor editor : permissionEditors)
 		{
 			editor.savePermissions();			
@@ -74,7 +77,7 @@ public class AdminInfoSubPanelWrapper
 	 * @param dataObj
 	 * @param secondObject
 	 */
-	public void setData(Object dataObj, Object secondObject)
+	public void setData(final Object dataObj, final Object secondObject)
 	{
 		if (displayPanel instanceof ViewBasedDisplayPanel)
 		{

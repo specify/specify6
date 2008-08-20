@@ -32,13 +32,15 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 	private SpPermission groupPermission;
 	private SpPermission otherPermission;
 	private List<SpPermission> customPermissions;
-	
+	private ImageIcon    icon;
 
-	public ObjectPermissionEditorRow(
-			SpPermission ownerPermission,
-			SpPermission groupPermission, 
-			SpPermission otherPermission,
-			String title, String description) 
+
+	public ObjectPermissionEditorRow(final SpPermission ownerPermission,
+	                                 final SpPermission groupPermission, 
+	                                 final SpPermission otherPermission,
+	                                 final String title, 
+	                                 final String description, 
+	                                 final ImageIcon icon) 
 	{
 		this.ownerPermission = ownerPermission;
 		this.groupPermission = groupPermission;
@@ -46,7 +48,8 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 		this.customPermissions = null;
 		
 		this.title = title;
-		this.description = description;
+        this.description = description;
+        this.icon = icon;
 	}
 
 	public String getTitle() {
@@ -113,11 +116,11 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 		return getTitle();
 	}
 	
-	public void addTableRow(DefaultTableModel model, ImageIcon icon)
+	public void addTableRow(DefaultTableModel model, ImageIcon defaultIcon)
 	{
 		model.addRow(new Object[] 
 		        				{ 
-		        					icon, this,
+		        					icon != null ? icon : defaultIcon, this,
 		        					// owner permissions
 		        					new Boolean(ownerPermission.canView()), 
 		        					new Boolean(ownerPermission.canAdd()), 
@@ -139,11 +142,10 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 		        			);
 	}
 	
-	public void savePermissions(
-			DataProviderSessionIFace session, 
-			DefaultTableModel model,
-			SpPrincipal principal,
-			int row) throws Exception
+	public void savePermissions(final DataProviderSessionIFace session, 
+	                            final DefaultTableModel model,
+	                            final SpPrincipal principal,
+	                            final int row) throws Exception
 	{
 		// get value of boolean objects
 		Boolean[] values = new Boolean[12]; 
@@ -163,12 +165,11 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 		//}
 	}
 	
-	private void savePermission(
-			DataProviderSessionIFace session,
-			SpPermission perm,
-			Boolean[] values,
-			SpPrincipal principal,
-			int col) throws Exception
+	private void savePermission(final DataProviderSessionIFace session,
+	                            final SpPermission perm,
+	                            final Boolean[] values,
+	                            final SpPrincipal principal,
+	                            final int col) throws Exception
 	{
 		Boolean canView = values[col + 0];
 		Boolean canAdd  = values[col + 1];
