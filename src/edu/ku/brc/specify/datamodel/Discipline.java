@@ -72,7 +72,6 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     protected Set<AttributeDef>         attributeDefs;
     protected GeographyTreeDef          geographyTreeDef;
     protected GeologicTimePeriodTreeDef geologicTimePeriodTreeDef;
-    protected StorageTreeDef            storageTreeDef;
     protected TaxonTreeDef              taxonTreeDef;
     protected LithoStratTreeDef         lithoStratTreeDef;
     protected Set<Locality>             localities;
@@ -130,7 +129,6 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
         attributeDefs         = new HashSet<AttributeDef>();
         geographyTreeDef      = null;
         geologicTimePeriodTreeDef = null;
-        storageTreeDef       = null;
         taxonTreeDef          = null;
         lithoStratTreeDef     = null;
         determinationStatuss  = new HashSet<DeterminationStatus>();
@@ -268,20 +266,6 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
 
     public void setGeologicTimePeriodTreeDef(GeologicTimePeriodTreeDef geologicTimePeriodTreeDef) {
         this.geologicTimePeriodTreeDef = geologicTimePeriodTreeDef;
-    }
-
-    /**
-     *
-     */
-    @ManyToOne( fetch = FetchType.LAZY )
-    @Cascade( {CascadeType.ALL} )
-    @JoinColumn(name="StorageTreeDefID")
-    public StorageTreeDef getStorageTreeDef() {
-        return this.storageTreeDef;
-    }
-
-    public void setStorageTreeDef(StorageTreeDef storageTreeDef) {
-        this.storageTreeDef = storageTreeDef;
     }
 
     /**

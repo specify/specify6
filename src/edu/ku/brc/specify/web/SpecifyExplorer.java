@@ -92,6 +92,7 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -423,16 +424,17 @@ public class SpecifyExplorer extends HttpServlet
                 Discipline discipline = collection.getDiscipline();
                 if (discipline != null)
                 {
-                    
+                    Institution institution = discipline.getDivision().getInstitution();
                     AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
                     AppContextMgr.getInstance().setClassObject(Division.class, discipline.getDivision());
+                    AppContextMgr.getInstance().setClassObject(Institution.class, institution);
                     
                 	Agent.setUserAgent(user, discipline.getAgents());
                 	
                 	AppContextMgr am = AppContextMgr.getInstance();
                     am.setClassObject(TaxonTreeDef.class, discipline.getTaxonTreeDef());
                     am.setClassObject(GeologicTimePeriodTreeDef.class, discipline.getGeologicTimePeriodTreeDef());
-                    am.setClassObject(StorageTreeDef.class, discipline.getStorageTreeDef());
+                    am.setClassObject(StorageTreeDef.class, institution.getStorageTreeDef());
                     am.setClassObject(LithoStratTreeDef.class, discipline.getLithoStratTreeDef());
                     am.setClassObject(GeographyTreeDef.class, discipline.getGeographyTreeDef());
                     

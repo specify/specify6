@@ -18,6 +18,7 @@ import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -49,7 +50,8 @@ public class SpecifyDBTableIdMgr extends DBTableIdMgr implements SQLExecutionLis
     @Override
     public List<String> getTreeFieldNames(DBTableInfo tableInfo)
     {
-        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        Discipline discipline   = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
         
         Integer id = null;
         if (tableInfo.getClassObj() == Taxon.class)
@@ -70,7 +72,7 @@ public class SpecifyDBTableIdMgr extends DBTableIdMgr implements SQLExecutionLis
             
         } else if (tableInfo.getClassObj() == Storage.class)
         {
-            id = discipline.getStorageTreeDef().getId();
+            id = institution.getStorageTreeDef().getId();
         } else
         {
             return null;

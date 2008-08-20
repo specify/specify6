@@ -33,7 +33,7 @@ public class StorageTreeDef extends BaseTreeDef<Storage, StorageTreeDef, Storage
 	protected String				    name;
 	protected String				    remarks;
     protected Integer                   fullNameDirection;
-	protected Set<Discipline>       disciplines;
+	protected Set<Institution>          institutions;
 	protected Set<Storage>			    treeEntries;
 	protected Set<StorageTreeDefItem>	treeDefItems;
 
@@ -57,7 +57,7 @@ public class StorageTreeDef extends BaseTreeDef<Storage, StorageTreeDef, Storage
 		name = null;
 		remarks = null;
         fullNameDirection = null;
-		disciplines = new HashSet<Discipline>();
+		institutions = new HashSet<Institution>();
 		treeEntries = new HashSet<Storage>();
 		treeDefItems = new HashSet<StorageTreeDefItem>();
 	}
@@ -134,27 +134,15 @@ public class StorageTreeDef extends BaseTreeDef<Storage, StorageTreeDef, Storage
     }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "storageTreeDef")
-    public Set<Discipline> getDisciplines()
+    public Set<Institution> getInstitutions()
 	{
-		return this.disciplines;
+		return this.institutions;
 	}
 
-	public void setDisciplines(Set<Discipline> collObjDefs)
+	public void setInstitutions(Set<Institution> institutions)
 	{
-		this.disciplines = collObjDefs;
+		this.institutions = institutions;
 	}
-
-    public void addCollObjDef( Discipline ct )
-    {
-        this.disciplines.add(ct);
-        ct.setStorageTreeDef(this);
-    }
-    
-    public void removeCollObjDef( Discipline ct )
-    {
-        this.disciplines.remove(ct);
-        ct.setStorageTreeDef(null);
-    }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definition")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })

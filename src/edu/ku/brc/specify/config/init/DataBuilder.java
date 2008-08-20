@@ -40,11 +40,11 @@ import edu.ku.brc.specify.datamodel.AgentVariant;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.Author;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.BorrowAgent;
 import edu.ku.brc.specify.datamodel.BorrowMaterial;
 import edu.ku.brc.specify.datamodel.BorrowReturnMaterial;
-import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
 import edu.ku.brc.specify.datamodel.CollectingTrip;
@@ -353,7 +353,6 @@ public class DataBuilder
                                                       final TaxonTreeDef     taxonTreeDef,
                                                       final GeographyTreeDef geographyTreeDef,
                                                       final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
-                                                      final StorageTreeDef  storageTreeDef,
                                                       final LithoStratTreeDef lithoStratTreeDef)
     {
         Discipline discipline = new Discipline();
@@ -364,7 +363,6 @@ public class DataBuilder
         discipline.setTaxonTreeDef(taxonTreeDef);
         discipline.setGeographyTreeDef(geographyTreeDef);//meg added to support not-null constraints
         discipline.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);//meg added to support not-null constraints
-        discipline.setStorageTreeDef(storageTreeDef);//meg added to support not-null constraints
         discipline.setLithoStratTreeDef(lithoStratTreeDef);
         taxonTreeDef.setDiscipline(discipline);
         
@@ -1626,7 +1624,6 @@ public class DataBuilder
                                                           final DataType dataType,
                                                           final GeographyTreeDef geographyTreeDef,
                                                           final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
-                                                          final StorageTreeDef storageTreeDef,
                                                           final TaxonTreeDef taxonTreeDef)
     {
         Discipline discipline = new Discipline();
@@ -1634,7 +1631,6 @@ public class DataBuilder
         discipline.setDataType(dataType);
         discipline.setGeographyTreeDef(geographyTreeDef);
         discipline.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);
-        discipline.setStorageTreeDef(storageTreeDef);
         discipline.setTaxonTreeDef(taxonTreeDef);
         discipline.setName(name);
         persist(discipline);

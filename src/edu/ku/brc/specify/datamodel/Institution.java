@@ -28,6 +28,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 
@@ -65,7 +67,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      protected Set<Agent>    technicalContacts;
      protected Set<Agent>    contentContacts;
      protected Set<Division> divisions;
-
+     protected StorageTreeDef            storageTreeDef;
 
     // Constructors
 
@@ -102,6 +104,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
         divisions         = new HashSet<Division>();
+        storageTreeDef    = null;
     }
     
     /**
@@ -415,6 +418,23 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     {
         this.divisions = divisions;
     }
+    
+    /**
+     * 
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.ALL })
+    @JoinColumn(name = "StorageTreeDefID")
+    public StorageTreeDef getStorageTreeDef()
+    {
+        return this.storageTreeDef;
+    }
+
+    public void setStorageTreeDef(StorageTreeDef storageTreeDef)
+    {
+        this.storageTreeDef = storageTreeDef;
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()

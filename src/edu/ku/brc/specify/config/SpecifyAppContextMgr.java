@@ -454,9 +454,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
     
                 } else if (collectionHash.size() > 0)
                 {
-                    //Collections.sort(list); // Why doesn't this work?
-                    
-                    
                     List<Collection> list = new Vector<Collection>();
                     list.addAll(collectionHash.values());
                     Collections.sort(list);
@@ -545,6 +542,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 Discipline discipline = collection.getDiscipline();
                 session.attach(discipline);
                 
+                Institution institution = discipline.getDivision().getInstitution();
+                AppContextMgr.getInstance().setClassObject(Institution.class, institution);
+                
                 if (discipline != null)
                 {
                     Agent.setUserAgent(spUser, discipline.getAgents());
@@ -552,7 +552,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     AppContextMgr am = AppContextMgr.getInstance();
                 	am.setClassObject(TaxonTreeDef.class, discipline.getTaxonTreeDef());
                     am.setClassObject(GeologicTimePeriodTreeDef.class, discipline.getGeologicTimePeriodTreeDef());
-                    am.setClassObject(StorageTreeDef.class, discipline.getStorageTreeDef());
+                    am.setClassObject(StorageTreeDef.class, institution.getStorageTreeDef());
                     am.setClassObject(LithoStratTreeDef.class, discipline.getLithoStratTreeDef());
                     am.setClassObject(GeographyTreeDef.class, discipline.getGeographyTreeDef());
                 }

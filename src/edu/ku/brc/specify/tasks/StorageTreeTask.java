@@ -21,7 +21,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Container;
-import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Storage;
@@ -73,7 +73,7 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
     @Override
     protected StorageTreeDef getCurrentTreeDef()
     {
-        return AppContextMgr.getInstance().getClassObject(Discipline.class).getStorageTreeDef();
+        return AppContextMgr.getInstance().getClassObject(Institution.class).getStorageTreeDef();
     }
     
     /**
