@@ -320,7 +320,7 @@ public class UploadResults implements QueryForIdResultsIFace
     //@Override
     public boolean shouldInstallServices()
     {
-        return false;
+        return true;
     }
 
     /**

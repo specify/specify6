@@ -1134,7 +1134,7 @@ public class UploadTable implements Comparable<UploadTable>
                                         + match.getId() + " order by orderNumber");
                         List<?> matches = matchesQ.list();
                         child.loadFromDataSet();
-                        if (matches.size() != child.getUploadFields().size())
+                        if (matches.size() > child.getUploadFields().size())
                         {
                             result = false;
                         }
@@ -1143,6 +1143,11 @@ public class UploadTable implements Comparable<UploadTable>
                             {
                                 Collector coll1 = (Collector) matches.get(rec);
                                 Collector coll2 = (Collector) child.getCurrentRecord(rec);
+                                if (coll2 == null)
+                                {
+                                    result = false;
+                                    break;
+                                }
                                 if (!coll1.getOrderNumber().equals(coll2.getOrderNumber()))
                                 {
                                     // maybe this doesn't really need to be checked?
@@ -1783,7 +1788,7 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * @throws UploaderException
      */
-    protected void writeRowOrNot(boolean doNotWrite, boolean forceMatch) throws UploaderException
+    protected void writeRowOrNot(boolean doNotWrite, boolean skipMatch) throws UploaderException
     {
         int recNum = 0;
         //log.debug("writeRowOrNot: " + this.table.getName());
@@ -1793,7 +1798,7 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 if (needToWrite(recNum))
                 {
-                    if (!findMatch(recNum, forceMatch))
+                    if (skipMatch || !findMatch(recNum, false))
                     {
                         DataModelObjBase rec = getCurrentRecordForSave(recNum);
                         rec.initialize();
@@ -2130,7 +2135,6 @@ public class UploadTable implements Comparable<UploadTable>
                 {
                     SwingUtilities.invokeLater(progShower);
                 }
-                    
             }
         }
         finally

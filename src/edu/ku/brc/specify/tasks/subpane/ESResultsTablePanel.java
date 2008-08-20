@@ -191,15 +191,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         showTopNumEntriesBtn.setVisible(false);
         showTopNumEntriesBtn.setCursor(handCursor);
 
-        List<ServiceInfo> services = installServices ? ContextMgr.checkForServices(results.getTableId()) : null;
-        if (results instanceof ServiceProviderIFace)
-        {
-            List<ServiceInfo> additionalServices = ((ServiceProviderIFace)results).getServices(this);
-            if (additionalServices != null)
-            {
-                services.addAll(additionalServices);
-            }
-        }
+        List<ServiceInfo> services = installServices ? getServices() : null;
 
         //System.out.println("["+tableInfo.getTableId()+"]["+services.size()+"]");
         StringBuffer colDef = new StringBuffer("p,0px,p:g,0px,p,0px,p,0px,");
@@ -388,6 +380,20 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         });
     }
     
+    
+    protected List<ServiceInfo> getServices()
+    {
+        List<ServiceInfo> services = ContextMgr.checkForServices(results.getTableId());
+        if (results instanceof ServiceProviderIFace)
+        {
+            List<ServiceInfo> additionalServices = ((ServiceProviderIFace)results).getServices(this);
+            if (additionalServices != null)
+            {
+                services.addAll(additionalServices);
+            }
+        }
+        return services;
+    }
     /**
      * @return
      */

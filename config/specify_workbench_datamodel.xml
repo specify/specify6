@@ -89,7 +89,7 @@
     <field column="Cataloger Last Name" name="catalogerLastName" type="java.lang.String" length="50"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.CollectionObjectAttribute" table="collectionobjectattribute" tableid="93" lazy="true" query="false">
-    <field column="Remarks (Col. Obj. Attribute)" name="colObjAttributesRemarks" type="java.lang.String" length="4096"/>
+    <field column="Remarks (Col. Obj. Attribute)" name="colObjAttributeRemarks" type="java.lang.String" length="4096"/>
     <field column="Number 1 (Col. Obj. Attribute)" name="colObjAttributeNumber1" type="java.lang.Float" length="24"/>
     <field column="Number 2 (Col. Obj. Attribute)" name="colObjAttributeNumber2" type="java.lang.Float" length="24"/>
     <field column="Number 3 (Col. Obj. Attribute)" name="colObjAttributeNumber3" type="java.lang.Float" length="24"/>

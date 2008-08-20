@@ -42,12 +42,14 @@ import net.sf.jasperreports.engine.JRField;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -3018,13 +3020,22 @@ public class Uploader implements ActionListener, KeyListener
                             });
                         }
                         List<UploadTable> fixedUp = reorderUploadTablesForUndo();
-                        for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
+                        boolean isEmbeddedCE = AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent();
+                        try
                         {
-                            //setCurrentOpProgress(fixedUp.size() - ut, false);
-                            fixedUp.get(ut).undoUpload(true);
+                            AppContextMgr.getInstance().getClassObject(Collection.class).setIsEmbeddedCollectingEvent(false);
+                            for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
+                            {
+                                //setCurrentOpProgress(fixedUp.size() - ut, false);
+                                fixedUp.get(ut).undoUpload(true);
+                            }
+                            success = true;
+                            return success;
                         }
-                        success = true;
-                        return success;
+                        finally
+                        {
+                            AppContextMgr.getInstance().getClassObject(Collection.class).setIsEmbeddedCollectingEvent(isEmbeddedCE);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -3273,6 +3284,7 @@ public class Uploader implements ActionListener, KeyListener
     {
         for (UploadField field : uploadFields)
         {
+            System.out.println(field.getField());
             if (field.getField().getTable().equals(t.getTable()))
             {
                 if (field.getIndex() != -1)

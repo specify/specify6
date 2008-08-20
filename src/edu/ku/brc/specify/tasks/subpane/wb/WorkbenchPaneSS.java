@@ -554,7 +554,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 doDatasetUpload();
             }
         });
-        uploadDatasetBtn.setEnabled(datasetUploader == null);
+        uploadDatasetBtn.setEnabled(canUpload());
         if (!uploadDatasetBtn.isEnabled())
         {
             uploadDatasetBtn.setToolTipText(getResourceString("WB_UPLOAD_IN_PROGRESS"));
@@ -2783,7 +2783,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         finally
         {
-            setAllUploadDatasetBtnEnabled(datasetUploader == null);
+            setAllUploadDatasetBtnEnabled(canUpload());
         }
     }
     
@@ -2828,7 +2828,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void updateUploadBtnState()
     {
-        if (datasetUploader == null)
+        if (canUpload())
         {
            uploadDatasetBtn.setEnabled(!hasChanged);
            if (uploadDatasetBtn.isEnabled())
@@ -2842,6 +2842,13 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
     }
 
+    /**
+     * @return true if it is OK/possible to perform an upload.
+     */
+    protected boolean canUpload()
+    {
+        return datasetUploader == null;
+    }
     //------------------------------------------------------------
     // Inner Classes
     //------------------------------------------------------------
