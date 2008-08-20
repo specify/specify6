@@ -171,6 +171,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     */
 
     protected Set<AgentAttachment>          agentAttachments;
+    protected Set<AgentGeography>           agentGeographies;
+    protected Set<AgentSpecialty>           agentSpecialties;
     
     protected static Agent                  currentUserAgent = null;
 
@@ -241,6 +243,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         addresses                      = new HashSet<Address>();
         agentAttachments               = new HashSet<AgentAttachment>();
         variants                       = new HashSet<AgentVariant>();
+        agentGeographies               = new HashSet<AgentGeography>();
+        agentSpecialties               = new HashSet<AgentSpecialty>();
 
         /*
         loanAgents                     = new HashSet<LoanAgent>();
@@ -931,7 +935,44 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         this.variants = variants;
     }
 
+    /**
+     * @return the geographies
+     */
+    @OneToMany(mappedBy = "agent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<AgentGeography> getAgentGeographies()
+    {
+        return agentGeographies;
+    }
 
+    /**
+     * @param geographies the geographies to set
+     */
+    public void setAgentGeographies(Set<AgentGeography> agentGeographies)
+    {
+        this.agentGeographies = agentGeographies;
+    }
+    
+    
+    /**
+     * @return the specialties
+     */
+    @OneToMany(mappedBy = "agent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<AgentSpecialty> getAgentSpecialties()
+    {
+        return agentSpecialties;
+    }
+
+    /**
+     * @param specialties the specialties to set
+     */
+    public void setAgentSpecialties(Set<AgentSpecialty> agentSpecialties)
+    {
+        this.agentSpecialties = agentSpecialties;
+    }
+    
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

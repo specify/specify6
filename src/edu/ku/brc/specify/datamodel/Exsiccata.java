@@ -28,18 +28,22 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
  * @author mkelly
@@ -66,6 +70,8 @@ public class Exsiccata extends DataModelObjBase implements java.io.Serializable
 
      protected ReferenceWork referenceWork;
      
+     protected Set<ExsiccataItem> exsiccataItems;
+     
     // Constructors
 
     /** default constructor */
@@ -83,9 +89,10 @@ public class Exsiccata extends DataModelObjBase implements java.io.Serializable
     public void initialize()
     {
         super.init();
-        exsiccataId   = null;
-        title         = null;
-        referenceWork = null;
+        exsiccataId    = null;
+        title          = null;
+        referenceWork  = null;
+        exsiccataItems = new HashSet<ExsiccataItem>();
     }
     // End Initializer
 
@@ -124,12 +131,26 @@ public class Exsiccata extends DataModelObjBase implements java.io.Serializable
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "ReferenceWorkID", unique = false, nullable = false, insertable = true, updatable = true)
-    public ReferenceWork getReferenceWork() {
+    public ReferenceWork getReferenceWork()
+    {
         return this.referenceWork;
     }
     
-    public void setReferenceWork(ReferenceWork referenceWork) {
+    public void setReferenceWork(ReferenceWork referenceWork)
+    {
         this.referenceWork = referenceWork;
+    }
+    
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "exsiccata")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<ExsiccataItem> getExsiccataItems()
+    {
+        return this.exsiccataItems;
+    }
+    
+    public void setExsiccataItems(Set<ExsiccataItem> exsiccataItems)
+    {
+        this.exsiccataItems = exsiccataItems;
     }
     
     /**
