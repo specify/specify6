@@ -53,7 +53,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.PermissionSettings;
-import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -1270,6 +1269,8 @@ public class ViewFactory
                     JScrollPane scrollPane = new JScrollPane(ta);
                     scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                     scrollPane.setVerticalScrollBarPolicy(UIHelper.isMacOS() ? ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS : ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+                    ta.setLineWrap(true);
+                    ta.setWrapStyleWord(true);
                     
                     bi.doAddToValidator = validator == null; // might already added to validator
                     bi.compToReg = ta;
