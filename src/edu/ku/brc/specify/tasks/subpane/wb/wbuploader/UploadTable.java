@@ -57,6 +57,7 @@ import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
@@ -1159,6 +1160,11 @@ public class UploadTable implements Comparable<UploadTable>
                                     result = false;
                                     break;
                                 }
+                                else if (!coll1.getIsPrimary().equals(coll1.getIsPrimary()))
+                                {
+                                    result = false;
+                                    break;
+                                }
                             }
                     }
                     finally
@@ -1681,13 +1687,23 @@ public class UploadTable implements Comparable<UploadTable>
         for (int row = 0; row < uploadData.getRows(); row++)
         {
             int seq = 0;
+            boolean gotABlank = false;
+            int blankSeq = 0;
+            UploadField blankFirstFld = null;
             for (Vector<UploadField> flds : uploadFields)
             {
+                boolean isBlank = true;
+                UploadField currFirstFld = null;
                 for (UploadField fld : flds)
                 {
                     if (fld.getIndex() != -1)
                     {
+                        if (currFirstFld == null)
+                        {
+                            currFirstFld = fld;
+                        }
                         fld.setValue(uploadData.get(row, fld.getIndex()));
+                        isBlank &= StringUtils.isEmpty(fld.getValue());
                         try
                         {
                             if (invalidNull(fld, uploadData, row, seq)) 
@@ -1707,6 +1723,27 @@ public class UploadTable implements Comparable<UploadTable>
                         }
                     }
                 }
+                if (isBlank && !gotABlank && currFirstFld != null && !(Treeable.class.isAssignableFrom(tblClass)))
+                /* 
+                 * Disallow situations where 1-many lists have 'holes' - eg. CollectorLastName2 is blank but CollectorLastName1 and -3 are not.
+                 * (Except for treeables (Genus and Species) - which can lead to strange - determinations with no taxa - but allowaable results.) 
+                 * 
+                 */
+                {
+                    gotABlank = true;
+                    blankSeq = seq;
+                    if (blankFirstFld == null)
+                    {
+                        blankFirstFld = currFirstFld;
+                    }
+                }
+                else if (gotABlank)
+                {
+                    result.add(new UploadTableInvalidValue(null, this, blankFirstFld, row, 
+                            new Exception(String.format(UIRegistry.getResourceString("WB_UPLOAD_ONE_TO_MANY_SKIP"),
+                                    toString(), blankSeq+1))));
+                }
+                    
                 seq++;
             }
         }

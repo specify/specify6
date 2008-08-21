@@ -12,11 +12,13 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.specify.datamodel.Discipline;
 
 /**
  * @author timbo
@@ -127,6 +129,7 @@ class DeterminationStatusSetter extends RelatedClassSetter
             {
                 hql += String.valueOf(DeterminationStatus.NOTCURRENT);
             }
+            hql += " and disciplineID = " + AppContextMgr.getInstance().getClassObject(Discipline.class).getId();
             QueryIFace q = session.createQuery(hql);
             List<?> result = q.list();
             if (result.size() == 0)
