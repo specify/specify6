@@ -381,7 +381,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             String iconName;
             String ttName;
-            if (perm != null && perm.canModify())
+            if (perm == null || perm.canModify())
             {
                 iconName = "EditIcon";
                 ttName   = "EditRecordTT";
