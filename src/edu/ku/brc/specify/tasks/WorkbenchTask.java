@@ -66,6 +66,7 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -268,12 +269,12 @@ public class WorkbenchTask extends BaseTask
                         params.put("title", ap.getDescription());
                         params.put("file", ap.getName());
                         //log.debug("["+ap.getDescription()+"]["+ap.getName()+"]");
-                        String iconName = params.getProperty("icon");
-                        if (StringUtils.isEmpty(iconName))
+                        String iconNameStr = params.getProperty("icon");
+                        if (StringUtils.isEmpty(iconNameStr))
                         {
-                            iconName = name;
+                            iconNameStr = name;
                         }                        
-                        commands.add(new TaskCommandDef(ap.getDescription(), iconName, params));
+                        commands.add(new TaskCommandDef(ap.getDescription(), iconNameStr, params));
                     }
 
                 }
@@ -651,7 +652,6 @@ public class WorkbenchTask extends BaseTask
     {
         toolbarItems = new Vector<ToolBarItemDesc>();
         String label    = getResourceString(name);
-        String iconName = name;
         String hint     = getResourceString("workbench_hint");
         ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
 
@@ -3064,14 +3064,26 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @see edu.ku.brc.af.tasks.BaseTask#getImageIcon()
      */
     @Override
-    public ImageIcon getImageIcon()
+    public ImageIcon getIcon(final int size)
     {
+        IconManager.IconSize iSize = IconManager.IconSize.Std16;
+        if (size != Taskable.StdIcon16)
+        {
+            for (IconManager.IconSize ic : IconManager.IconSize.values())
+            {
+                if (ic.size() == size)
+                {
+                    iSize = ic;
+                    break;
+                }
+            }
+        }
         if (doingStarterPane)
         {
             doingStarterPane = false;
-            return IconManager.getIcon("Workbench", IconManager.IconSize.Std16);
+            return IconManager.getIcon("Workbench", iSize);
         }
-        return IconManager.getIcon("DataSet", IconManager.IconSize.Std16);
+        return IconManager.getIcon("DataSet", iSize);
     }
 
     //-------------------------------------------------------

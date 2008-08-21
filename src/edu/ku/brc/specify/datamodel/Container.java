@@ -57,30 +57,35 @@ import org.hibernate.annotations.Index;
     {   @Index (name="ContainerNameIDX", columnNames={"Name"}),
         @Index (name="ContainerMemIDX", columnNames={"CollectionMemberID"})
     })
-public class Container extends CollectionMember implements java.io.Serializable {
+public class Container extends CollectionMember implements java.io.Serializable 
+{
 
-    // Fields
+     // Fields
 
      protected Integer               containerId;
      protected Short                 type;
      protected String                name;
      protected String                description;
      protected Integer               number;
-     protected Container             parent;
      protected Set<CollectionObject> collectionObjects;
      protected Set<CollectionObject> collectionObjectOwners;
      protected Storage               storage;
 
+     // Tree
+     protected Container             parent;
+     protected Set<Container>        children;
 
     // Constructors
 
     /** default constructor */
-    public Container() {
+    public Container() 
+    {
         //
     }
 
     /** constructor with id */
-    public Container(Integer containerId) {
+    public Container(Integer containerId) 
+    {
         this.containerId = containerId;
     }
 
@@ -89,15 +94,16 @@ public class Container extends CollectionMember implements java.io.Serializable 
     public void initialize()
     {
         super.init();
-        containerId = null;
-        type = null;
-        name = null;
-        description = null;
-        number = null;
-        parent = null;
-        collectionObjects = new HashSet<CollectionObject>();
+        containerId            = null;
+        type                   = null;
+        name                   = null;
+        description            = null;
+        number                 = null;
+        parent                 = null;
+        collectionObjects      = new HashSet<CollectionObject>();
         collectionObjectOwners = new HashSet<CollectionObject>();
-        storage = null;
+        storage                = null;
+        children               = new HashSet<Container>();
     }
     // End Initializer
 
@@ -109,7 +115,8 @@ public class Container extends CollectionMember implements java.io.Serializable 
     @Id
     @GeneratedValue
     @Column(name = "ContainerID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getContainerId() {
+    public Integer getContainerId() 
+    {
         return this.containerId;
     }
 
@@ -134,7 +141,8 @@ public class Container extends CollectionMember implements java.io.Serializable 
         return Container.class;
     }
 
-    public void setContainerId(Integer containerId) {
+    public void setContainerId(Integer containerId) 
+    {
         this.containerId = containerId;
     }
 
@@ -142,11 +150,13 @@ public class Container extends CollectionMember implements java.io.Serializable 
      *
      */
     @Column(name = "Type", unique = false, nullable = true, insertable = true, updatable = true)
-    public Short getType() {
+    public Short getType() 
+    {
         return this.type;
     }
 
-    public void setType(Short type) {
+    public void setType(Short type) 
+    {
         this.type = type;
     }
 
@@ -154,11 +164,13 @@ public class Container extends CollectionMember implements java.io.Serializable 
      *
      */
     @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
-    public String getName() {
+    public String getName() 
+    {
         return this.name;
     }
 
-    public void setName(String name) {
+    public void setName(String name) 
+    {
         this.name = name;
     }
 
@@ -166,11 +178,13 @@ public class Container extends CollectionMember implements java.io.Serializable 
      *
      */
     @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true)
-    public String getDescription() {
+    public String getDescription() 
+    {
         return this.description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(String description) 
+    {
         this.description = description;
     }
 
@@ -178,30 +192,14 @@ public class Container extends CollectionMember implements java.io.Serializable 
      *
      */
     @Column(name = "Number", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getNumber() {
+    public Integer getNumber() 
+    {
         return this.number;
     }
 
-    public void setNumber(Integer number) {
+    public void setNumber(Integer number) 
+    {
         this.number = number;
-    }
-
-    /**
-     * @return the parent
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "ParentID")
-    public Container getParent()
-    {
-        return parent;
-    }
-
-    /**
-     * @param parent the parent to set
-     */
-    public void setParent(Container parent)
-    {
-        this.parent = parent;
     }
 
     /**
@@ -209,21 +207,25 @@ public class Container extends CollectionMember implements java.io.Serializable 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "container")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<CollectionObject> getCollectionObjects() {
+    public Set<CollectionObject> getCollectionObjects() 
+    {
         return this.collectionObjects;
     }
 
-    public void setCollectionObjects(Set<CollectionObject> collectionObjects) {
+    public void setCollectionObjects(Set<CollectionObject> collectionObjects) 
+    {
         this.collectionObjects = collectionObjects;
     }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "containerOwner")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<CollectionObject> getCollectionObjectOwners() {
+    public Set<CollectionObject> getCollectionObjectOwners() 
+    {
         return this.collectionObjectOwners;
     }
 
-    public void setCollectionObjectOwners(Set<CollectionObject> collectionObjectOwners) {
+    public void setCollectionObjectOwners(Set<CollectionObject> collectionObjectOwners) 
+    {
         this.collectionObjectOwners = collectionObjectOwners;
     }
 
@@ -232,15 +234,43 @@ public class Container extends CollectionMember implements java.io.Serializable 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "StorageID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Storage getStorage() {
+    public Storage getStorage() 
+    {
         return this.storage;
     }
 
-    public void setStorage(Storage storage) {
+    public void setStorage(Storage storage) 
+    {
         this.storage = storage;
     }
 
+    /**
+     * 
+     */
+    @ManyToOne
+    @JoinColumn(name = "ParentID")
+    public Container getParent()
+    {
+        return this.parent;
+    }
 
+    public void setParent(Container parent)
+    {
+        this.parent = parent;
+    }
+
+    @OneToMany(mappedBy = "parent")
+    @Cascade( { CascadeType.ALL })
+    public Set<Container> getChildren()
+    {
+        return this.children;
+    }
+
+    public void setChildren(Set<Container> children)
+    {
+        this.children = children;
+    }
+    
     // Add Methods
 
     /* (non-Javadoc)

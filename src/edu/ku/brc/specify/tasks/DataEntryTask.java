@@ -504,22 +504,22 @@ public class DataEntryTask extends BaseTask
             ImageIcon iconImage = IconManager.getIcon(dev.getIconName(), IconManager.STD_ICON_SIZE);
             if (iconImage != null)
             {
-                String iconName;
+                String iconNameStr;
                 if (isColObj)
                 {
-                    iconName            = AppPreferences.getRemote().get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject");
-                    ImageIcon colIconImage = IconManager.getIcon(iconName, IconManager.STD_ICON_SIZE);
+                    iconNameStr            = AppPreferences.getRemote().get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject");
+                    ImageIcon colIconImage = IconManager.getIcon(iconNameStr, IconManager.STD_ICON_SIZE);
                     if (colIconImage != null)
                     {
                         iconImage = colIconImage;
                     }
-                    iconName            = "CollectionObject";
-                    iconClassLookUpName = iconName;
+                    iconNameStr            = "CollectionObject";
+                    iconClassLookUpName = iconNameStr;
                 } else
                 {
-                    iconName = dev.getView();
+                    iconNameStr = dev.getView();
                 }
-                iconForFormClass.put(iconName, iconImage);
+                iconForFormClass.put(iconNameStr, iconImage);
             } else
             {
                 log.error("Icon ["+dev.getIconName()+"] could not be found.");
@@ -851,7 +851,6 @@ public class DataEntryTask extends BaseTask
         toolbarItems = new Vector<ToolBarItemDesc>();
 
         String label     = getResourceString(DATA_ENTRY);
-        String iconName = name;
         String hint     = getResourceString("dataentry_hint");
         ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
 
@@ -999,8 +998,8 @@ public class DataEntryTask extends BaseTask
     {
         if (appPrefs == AppPreferences.getRemote())
         {
-            String    iconName  = appPrefs.get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject");
-            ImageIcon iconImage = IconManager.getIcon(iconName, IconManager.STD_ICON_SIZE);
+            String    iconNameStr  = appPrefs.get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject");
+            ImageIcon iconImage = IconManager.getIcon(iconNameStr, IconManager.STD_ICON_SIZE);
             if (iconImage != null)
             {
                 if (colObjNavBtn != null)

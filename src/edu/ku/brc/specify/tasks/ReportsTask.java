@@ -59,13 +59,12 @@ public class ReportsTask extends ReportsBaseTask
         super();
         
         name          = "Reports";
+        iconName      = name;
         title         = getResourceString(name);
         defaultFlavor = new DataFlavor(ReportsBaseTask.class, name);
         navMimeDefs     = new ArrayList<Pair<String,String>>(2);
         navMimeDefs.add(new Pair<String,String>(name, REPORTS_MIME));
         navMimeDefs.add(new Pair<String,String>("Labels", LABELS_MIME));
-
-        setIcon(this.name);
     }
     
     /* (non-Javadoc)
@@ -160,7 +159,6 @@ public class ReportsTask extends ReportsBaseTask
     {
         toolbarItems = new Vector<ToolBarItemDesc>();
         String label = getResourceString(name);
-        String iconName = name;
         String hint = getResourceString("reports_hint");
         ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
 

@@ -133,8 +133,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Collection                    collection;
     protected Accession                     accession;
     protected Agent                         cataloger;
-    protected Container                     container;
-    protected Container                     containerOwner;
+    protected Container                     container;        // The container it belongs to
+    protected Container                     containerOwner;   // The container it is a part of
     protected Appraisal                     appraisal;
     protected CollectionObjectAttribute     collectionObjectAttribute; // Specify 5 Attributes table
     protected Set<CollectionObjectAttr>     collectionObjectAttrs;      // Generic Expandable Attributes

@@ -21,6 +21,7 @@ import edu.ku.brc.specify.datamodel.SpPermission;
  */
 public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
 {
+    private String         type;
 	protected SpPermission permission;
 	protected SpPermission overrulingPermission;
 	protected String       title;
@@ -29,13 +30,15 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
 	
 	public GeneralPermissionEditorRow(final SpPermission permission, 
 			                          final SpPermission overrulingPermission,
-			                          final String title,
+                                      final String type,
+                                      final String title,
                                       final String description,
                                       final ImageIcon icon) 
 	{
 		this.permission 			= permission;
 		this.overrulingPermission 	= overrulingPermission;
-		this.title					= title;
+        this.type                   = type;
+        this.title                  = title;
         this.description            = description;
         this.icon                   = icon;
 	}
@@ -45,7 +48,15 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
 		return permission;
 	}
 	
-	public String getTitle()
+	/**
+     * @return the type
+     */
+    public String getType()
+    {
+        return type;
+    }
+
+    public String getTitle()
 	{
 		return title;
 	}

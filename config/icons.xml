@@ -67,6 +67,9 @@
 
     <!-- Aliases -->
     <icon name="ShowMap"                   alias="LocalityMapper"/>
+    <icon name="workbench"                 alias="Workbench"/>
+    <icon name="recordset"                 alias="Record_Set"/>
+    
     
     <icon name="taxontreedef"              alias="taxon"/>
     <icon name="geographytreedef"          alias="geography"/>

@@ -26,6 +26,7 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -1842,6 +1843,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
             if (okToShutdown)
             {
         		log.info("Application shutdown"); //$NON-NLS-1$
+        		
+                Rectangle r = topFrame.getBounds();
+                AppPreferences.getLocalPrefs().putInt("APP.X", r.x);
+                AppPreferences.getLocalPrefs().putInt("APP.Y", r.y);
+                AppPreferences.getLocalPrefs().putInt("APP.W", r.width);
+                AppPreferences.getLocalPrefs().putInt("APP.H", r.height);
+
         
                 AppPreferences.shutdownLocalPrefs();
                 
@@ -1930,7 +1938,16 @@ public class Specify extends JPanel implements DatabaseLoginListener
         				doExit(true);
         			}
         		});
-        UIHelper.centerAndShow(f);
+        
+        UIHelper.centerWindow(f);
+        Rectangle r = f.getBounds();
+        int x = AppPreferences.getLocalPrefs().getInt("APP.X", r.x);
+        int y = AppPreferences.getLocalPrefs().getInt("APP.Y", r.y);
+        int w = AppPreferences.getLocalPrefs().getInt("APP.W", r.width);
+        int h = AppPreferences.getLocalPrefs().getInt("APP.H", r.height);
+        UIHelper.positionAndFitToScreen(f, x, y, w, h);
+        
+        f.setVisible(true);
     }
     
     /**

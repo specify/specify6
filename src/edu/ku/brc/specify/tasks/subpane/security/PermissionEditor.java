@@ -7,10 +7,14 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -26,6 +30,8 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 
@@ -47,21 +53,48 @@ public class PermissionEditor
 	protected SpPrincipal 			principal;
 	protected ChangeListener        listener;
 	
+	protected DefaultTableModel     model;
+	protected ImageIcon             icon;
+	protected JComboBox             typeSwitcherCBX;
+	
+    protected String                nameColTitle = UIRegistry.getResourceString("SEC_NAME_TITLE");
+    protected String                viewColTitle = UIRegistry.getResourceString("SEC_VIEW_TITLE");
+    protected String                addColTitle  = UIRegistry.getResourceString("SEC_ADD_TITLE");
+    protected String                modColTitle  = UIRegistry.getResourceString("SEC_MOD_TITLE");
+    protected String                delColTitle  = UIRegistry.getResourceString("SEC_DEL_TITLE");
+    
+    protected Hashtable<String, Vector<PermissionEditorRowIFace>> typeRowHash = new Hashtable<String, Vector<PermissionEditorRowIFace>>();
+	
 	/**
 	 * @param permissionTable
 	 * @param enumerator
 	 */
 	public PermissionEditor(final JTable               permissionTable,
+                            final JComboBox            typeSwitcherCBX,
                             final ChangeListener       listener, 
 	                        final PermissionEnumerator enumerator)
 	{
-		this.permissionTable 	= permissionTable;
+        this.permissionTable    = permissionTable;
+        this.typeSwitcherCBX    = typeSwitcherCBX;
 		this.enumerator 		= enumerator;
 		this.principal 			= null;
 		this.listener           = listener;
 	}
 	
 	// TODO: overruling principal (nor the three-state checkbox) feature have been implemented yet
+	
+	public void fillWithType(final String type)
+	{
+	    while (model.getRowCount() > 0)
+	    {
+	        model.removeRow(0);
+	    }
+	    
+	    for (PermissionEditorRowIFace permWrapper : typeRowHash.get(type)) 
+        {
+	        permWrapper.addTableRow(model, icon);
+        }
+	}
 	
 	/**
 	 * Updates the table that will be used to display and edit the permissions 
@@ -71,8 +104,7 @@ public class PermissionEditor
 		// save principal used when saving permissions later
 		this.principal = principalArg;
 		
-		@SuppressWarnings("serial")
-		DefaultTableModel model = new DefaultTableModel()
+		model = new DefaultTableModel()
 		{
 			public Class<?> getColumnClass(int columnIndex)
 			{
@@ -92,21 +124,49 @@ public class PermissionEditor
 		
 		addColumnHeaders(model);
 		
-		ImageIcon sysIcon = IconManager.getIcon("SystemSetup", IconManager.IconSize.Std16);
-
+		IconManager.IconSize iconSize = IconManager.IconSize.Std20;
+		icon = IconManager.getIcon("SystemSetup", iconSize);
+		
+		JLabel label = UIHelper.createLabel("XXXX");
+		label.setIcon(icon);
+		
+		typeRowHash.clear();
+		typeSwitcherCBX.removeAllItems();
+		
 		List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, overrulingPrincipal);
 		Collections.sort(perms, new ComparatorByStringRepresentation<PermissionEditorRowIFace>(true));
-		for (PermissionEditorRowIFace permWrapper : perms) 
-		{
-			permWrapper.addTableRow(model, sysIcon);
-		}
+        for (PermissionEditorRowIFace permWrapper : perms) 
+        {
+            Vector<PermissionEditorRowIFace> list = typeRowHash.get(permWrapper.getType());
+            if (list == null)
+            {
+                list = new Vector<PermissionEditorRowIFace>();
+                typeRowHash.put(permWrapper.getType(), list);
+                typeSwitcherCBX.addItem(permWrapper.getType());
+            }
+            list.add(permWrapper);
+        }
+        
+        if (typeSwitcherCBX.getModel().getSize() > 0)
+        {
+            typeSwitcherCBX.setSelectedIndex(0);
+            fillWithType((String)typeSwitcherCBX.getSelectedItem());
+        }
+        typeSwitcherCBX.setSelectedIndex(0);
 
 		permissionTable.setModel(model);
-
+		permissionTable.setRowHeight(label.getPreferredSize().height+3);
+		
 		TableColumn column = permissionTable.getColumnModel().getColumn(0);
-		column.setMinWidth(16);
-		column.setMaxWidth(16);
-		column.setPreferredWidth(16);
+		int cellWidth = iconSize.size()+4;
+		column.setMinWidth(cellWidth);
+		column.setMaxWidth(cellWidth);
+		column.setPreferredWidth(cellWidth);
+        
+        // For Strings with no changes made to the table, the render is a DefaultTableCellRender.
+        //DefaultTableCellRenderer dtcr = (DefaultTableCellRenderer) column.getCellRenderer();
+        // set the alignment to center
+        //dtcr.setHorizontalAlignment(SwingConstants.CENTER);
 
 		column = permissionTable.getColumnModel().getColumn(1);
 		column.setMinWidth(100);
@@ -135,14 +195,14 @@ public class PermissionEditor
 		*/
 	}
 	
-	protected void addColumnHeaders(final DefaultTableModel model)
+	protected void addColumnHeaders(final DefaultTableModel modelArg)
 	{
-		model.addColumn("");
-		model.addColumn("Task"); // I18N
-		model.addColumn("View");
-		model.addColumn("Add");
-		model.addColumn("Modify");
-		model.addColumn("Delete");
+		modelArg.addColumn("");
+		modelArg.addColumn(nameColTitle);
+		modelArg.addColumn(viewColTitle);
+		modelArg.addColumn(addColTitle);
+		modelArg.addColumn(modColTitle);
+		modelArg.addColumn(delColTitle);
 	}
 	
 	/**
@@ -163,13 +223,12 @@ public class PermissionEditor
             session.beginTransaction();
             principal = session.merge(principal);
 
-            DefaultTableModel model = (DefaultTableModel) permissionTable.getModel();
     		int numRows = model.getRowCount();
-    		int taskCol = permissionTable.getColumn("Task").getModelIndex();
-    		int viewCol = permissionTable.getColumn("View").getModelIndex();
-    		int addCol  = permissionTable.getColumn("Add").getModelIndex();
-    		int modCol  = permissionTable.getColumn("Modify").getModelIndex();
-    		int delCol  = permissionTable.getColumn("Delete").getModelIndex();
+    		int taskCol = permissionTable.getColumn(nameColTitle).getModelIndex();
+    		int viewCol = permissionTable.getColumn(viewColTitle).getModelIndex();
+    		int addCol  = permissionTable.getColumn(addColTitle).getModelIndex();
+    		int modCol  = permissionTable.getColumn(modColTitle).getModelIndex();
+    		int delCol  = permissionTable.getColumn(delColTitle).getModelIndex();
 
     		for (int row = 0; row < numRows; ++row)
     		{

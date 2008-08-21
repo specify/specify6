@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.ui.UIRegistry;
 
 /**

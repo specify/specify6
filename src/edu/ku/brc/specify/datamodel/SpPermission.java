@@ -11,8 +11,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.StringUtils;
-
 @SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)

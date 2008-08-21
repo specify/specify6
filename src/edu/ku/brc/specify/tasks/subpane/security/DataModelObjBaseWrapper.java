@@ -30,9 +30,12 @@ import edu.ku.brc.ui.IconManager;
  */
 public class DataModelObjBaseWrapper 
 {
+    private static IconManager.IconSize iconSize = IconManager.IconSize.Std20;
+    
     private String           title = null;
     private FormDataObjIFace dataObj;
 	private ImageIcon        icon;
+	
 	
 	/**
 	 * Constructor
@@ -47,11 +50,11 @@ public class DataModelObjBaseWrapper
 
 		if (dataObj instanceof SpPrincipal)
 		{
-			icon = IconManager.getIcon("group", IconManager.IconSize.Std16);
+			icon = IconManager.getIcon("group", iconSize);
 		}
 		else if (dataObj instanceof SpecifyUser)
 		{
-			icon = IconManager.getIcon("person", IconManager.IconSize.Std16);
+			icon = IconManager.getIcon("person", iconSize);
 		}
 		else if (dataObj instanceof Discipline)
 		{
@@ -59,10 +62,10 @@ public class DataModelObjBaseWrapper
 			String iconName = "";
 			Discipline discipline = (Discipline) dataObj;
 			
-			icon = IconManager.getIcon(discipline.getName(), IconManager.IconSize.Std16);
+			icon = IconManager.getIcon(discipline.getName(), iconSize);
 			if (icon == null)
 			{
-			    icon = IconManager.getIcon(iconName, IconManager.IconSize.Std16);
+			    icon = IconManager.getIcon(iconName, iconSize);
 			}
 		}
 		else 
@@ -72,7 +75,7 @@ public class DataModelObjBaseWrapper
 				// FIXME: SpPrincipal table isn't registered with DBTableIdMgr
 				return;
 			}
-			icon = tableInfo.getIcon(IconManager.IconSize.Std16);
+			icon = tableInfo.getIcon(iconSize);
 		}
 	}
 	

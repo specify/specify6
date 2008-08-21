@@ -17,7 +17,6 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules;
-import edu.ku.brc.ui.IconManager;
 
 /**
  * Task that handles the UI for viewing geologic time period data.
@@ -38,7 +37,6 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
         
         treeClass        = GeologicTimePeriod.class;
         treeDefClass     = GeologicTimePeriodTreeDef.class;
-        icon             = IconManager.getIcon(GTP,IconManager.IconSize.Std16);
         
         menuItemText     = getResourceString("GeoTimePeriodMenu");
         menuItemMnemonic = getResourceString("GeoTimePeriodMnemonic");

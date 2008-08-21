@@ -372,6 +372,47 @@ public final class UIHelper
 
         window.setLocation(centerWidth, centerHeight);
     }
+    
+    /**
+     * @param window
+     * @param x
+     * @param y
+     * @param w
+     * @param h
+     */
+    public static void positionAndFitToScreen(final java.awt.Window window,
+                                              final int x,
+                                              final int y,
+                                              final int w,
+                                              final int h)
+    {
+        Insets    screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(window.getGraphicsConfiguration());
+        Rectangle winRect      = window.getGraphicsConfiguration().getBounds();
+        
+        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        int xCoord = Math.max(0, x);
+        int yCoord = Math.max(0, y);
+        
+        int width  = w;
+        int height = h;
+        
+        if ((xCoord+width) > size.width)
+        {
+            xCoord = size.width - width;
+            xCoord = (winRect.width-width) / 2;
+            width  = Math.min(winRect.width-screenInsets.left-screenInsets.right, width);
+        }
+        
+        if (yCoord+height > size.height)
+        {
+            yCoord = size.height - x;
+            yCoord = (winRect.height - height) / 2;
+            
+            height = Math.min(winRect.height-screenInsets.top-screenInsets.bottom, height);
+        }
+        window.setBounds(xCoord, yCoord, width, height);
+    }
+
 
     /**
      * Center and make the window visible

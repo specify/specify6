@@ -82,11 +82,11 @@
     	<table name="FieldNotebook" field="fieldNoteBooks">
     	</table>
         <alias name="Agent" field="modifiedByAgent" />
-      	<alias name="CollectionRelType" field="leftSideRelTypes" />
+      	<!-- <alias name="CollectionRelType" field="leftSideRelTypes" />  -->
       	<table name="PickList" field="pickLists"/>
       	<table name="PrepType" field="prepTypes"/>
-      	<alias name="CollectionRelType" field="rightSideRelTypes"/>
-      	<table name="SpAppResourceDir" field="spAppResourceDirs"/>
+      	<!-- <alias name="CollectionRelType" field="rightSideRelTypes"/> -->
+      	<!-- <table name="SpAppResourceDir" field="spAppResourceDirs"/> -->
       	<table name="SpPrincipal" field="userGroups"/>
     </table>
     
@@ -118,7 +118,7 @@
       	<alias name="Agent" field="createdByAgent" />
       	<table name="DNASequence" field="dnaSequences" />
       	<table name="FieldNotebookPage" field="fieldNotebookPage" />
-      	<table name="CollectionRelationship" field="leftSideRels" />
+      	<!-- <table name="CollectionRelationship" field="leftSideRels" /> -->
       	<alias name="Agent" field="modifiedByAgent" />
       	<table name="OtherIdentifier" field="otherIdentifiers" />
       	<table name="Project" field="projects" />
@@ -126,8 +126,10 @@
       	<table name="TreatmentEvent" field="treatmentEvents" />
     </table>
     
+    <!-- 
     <table name="CollectionRelType">
     </table>
+     -->
     
     <table name="Deaccession">
       <table name="DeaccessionAgent" field="deaccessionAgents" >

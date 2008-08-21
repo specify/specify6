@@ -17,7 +17,6 @@ import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
 import edu.ku.brc.specify.datamodel.busrules.LithoStratBusRules;
-import edu.ku.brc.ui.IconManager;
 
 /**
  * Task that handles the UI for viewing litho stratigraphy data.
@@ -38,7 +37,6 @@ public class LithoStratTreeTask extends BaseTreeTask<LithoStrat,LithoStratTreeDe
         
         treeClass        = LithoStrat.class;
         treeDefClass     = LithoStratTreeDef.class;
-        icon             = IconManager.getIcon(LITHO, IconManager.IconSize.Std16);
         
         menuItemText     = getResourceString("LithoStratMenu");
         menuItemMnemonic = getResourceString("LithoStratMnemonic");

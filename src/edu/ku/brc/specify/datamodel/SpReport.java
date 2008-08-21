@@ -31,8 +31,6 @@ import javax.persistence.Transient;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.specify.tools.ireportspecify.ReportRepeatPanel;
-
 /**
  * @author rods
  *

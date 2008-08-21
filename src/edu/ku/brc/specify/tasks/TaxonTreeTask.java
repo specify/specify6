@@ -30,7 +30,6 @@ import edu.ku.brc.specify.ui.treetables.TreeNodePopupMenu;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
 
@@ -53,7 +52,6 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         
         treeClass         = Taxon.class;
         treeDefClass      = TaxonTreeDef.class;
-        icon              = IconManager.getIcon(TAXON, IconManager.IconSize.Std16);
         
         menuItemText      = getResourceString("TaxonMenu");
         menuItemMnemonic  = getResourceString("TaxonMnemonic");

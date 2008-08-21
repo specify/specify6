@@ -14,9 +14,10 @@ import java.util.List;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.tasks.StartUpTask;
+import edu.ku.brc.af.tasks.VersionCheckerTask;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
-import edu.ku.brc.ui.IconManager;
 
 /**
  * This class enumerates task related permissions associated with a principal
@@ -28,6 +29,28 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
 {
 	public final String permissionBaseName = "Task";
 
+	/**
+	 * 
+	 */
+	public TaskPermissionEnumerator()
+	{
+	    
+	}
+	
+    /**
+     * @param tblInfo
+     * @return
+     */
+    protected boolean isTaskOK(final Taskable task)
+    {
+        if (!(VersionCheckerTask.class.isAssignableFrom(task.getTaskClass()) ||
+              StartUpTask.class.isAssignableFrom(task.getTaskClass())))
+        {
+            return true;
+        }
+        return false;
+    }
+
 	//@Override
 	public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
 			 final Hashtable<String, SpPermission> existingPerms,
@@ -37,34 +60,39 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
 		Collection<Taskable> tasks = TaskMgr.getInstance().getAllTasks();
 		List<PermissionEditorRowIFace> perms = new ArrayList<PermissionEditorRowIFace>(tasks.size());
 		
+		String type = "Task";
 		// create a special permission that allows user to see all forms
-		perms.add(getStarPermission(permissionBaseName, "Tasks: permissions to all tasks", // I18N
-				"Permissions to view, add, modify and delete data in all tasks", 
-				existingPerms, overrulingPerms));
+		perms.add(getStarPermission(permissionBaseName, 
+		                            type,
+		                            "Tasks: permissions to all tasks", // I18N
+				                    "Permissions to view, add, modify and delete data in all tasks", 
+				                    existingPerms, 
+				                    overrulingPerms));
 
 		// sort permissions by their string representations 
 		//Arrays.sort(perms, new ComparatorByStringRepresentation<SpPermission>());
 		for (Taskable task : tasks)
 		{
-			// first check if there is a permission with this name
-			String taskName = permissionBaseName + "." + task.getName();
-			SpPermission perm  = existingPerms.get(taskName);
-			SpPermission oPerm = (overrulingPerms != null)? overrulingPerms.get(taskName) : null;
-
-			if (perm == null)
-			{
-				perm = new SpPermission();
-				perm.setName(taskName);
-				perm.setActions("");
-				perm.setPermissionClass(BasicSpPermission.class.getCanonicalName());
-			}
-			
-			String title = "Task: " + task.getTitle(); // I18N ???? (maybe not)
-			String desc = "Permissions to view, add, modify and delete data in task " + task.getTitle();
-
-			// add newly created permission to the bag that will be returned
-//			/ImageIcon icon = IconManager.getIcon(task.getImageIcon(), id)
-			perms.add(new GeneralPermissionEditorRow(perm, oPerm, title, desc, task.getImageIcon()));
+		    if (isTaskOK(task))
+		    {
+        		// first check if there is a permission with this name
+        		String       taskName = permissionBaseName + "." + task.getName();
+        		SpPermission perm     = existingPerms.get(taskName);
+        		SpPermission oPerm    = (overrulingPerms != null)? overrulingPerms.get(taskName) : null;
+        
+        		if (perm == null)
+        		{
+        			perm = new SpPermission();
+        			perm.setName(taskName);
+        			perm.setActions("");
+        			perm.setPermissionClass(BasicSpPermission.class.getCanonicalName());
+        		}
+        		
+        		String desc = "Permissions to view, add, modify and delete data in task " + task.getTitle();
+        
+        		// add newly created permission to the bag that will be returned
+        		perms.add(new GeneralPermissionEditorRow(perm, oPerm, type, task.getShortDesc(), desc, task.getIcon(Taskable.StdIcon20)));
+		    }
 		}
 		
 		return perms;

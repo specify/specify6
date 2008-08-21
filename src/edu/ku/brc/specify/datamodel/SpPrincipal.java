@@ -31,7 +31,6 @@ package edu.ku.brc.specify.datamodel;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

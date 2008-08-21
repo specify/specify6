@@ -35,9 +35,13 @@ public class FormPermissionEnumerator extends PermissionEnumerator
 	{
 		List<PermissionEditorRowIFace> perms = new ArrayList<PermissionEditorRowIFace>();
 
+		String type = "Form";
 		// create a special permission that allows user to see all forms
-		perms.add(getStarPermission(permissionBaseName, "Forms: permissions to all forms", 
-				"Permissions to view, add, modify and delete data using all forms", existingPerms, overrulingPerms));
+		perms.add(getStarPermission(permissionBaseName, 
+		                            type,
+		                            "Forms: permissions to all forms", 
+				                    "Permissions to view, add, modify and delete data using all forms", 
+				                    existingPerms, overrulingPerms));
 
 		// get all views
         List<ViewIFace> list = SpecifyAppContextMgr.getInstance().getAllViews();
@@ -59,11 +63,11 @@ public class FormPermissionEnumerator extends PermissionEnumerator
 				perm.setPermissionClass(BasicSpPermission.class.getCanonicalName());
 			}
 			
-			String title = "Form: " + view.getTitle();
+			String title = view.getTitle();
 			String desc = "Permissions to view, add, modify and delete data using form " + view.getTitle();
 			
 			// add newly created permission to the bag that will be returned
-			perms.add(new GeneralPermissionEditorRow(perm, oPerm, title, desc, null));
+			perms.add(new GeneralPermissionEditorRow(perm, oPerm, type, title, desc, null));
 		}
 
 		return perms;

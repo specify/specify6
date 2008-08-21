@@ -32,7 +32,6 @@ import edu.ku.brc.specify.ui.treetables.TreeNodePopupMenu;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -54,7 +53,6 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
         
         treeClass         = Geography.class;
         treeDefClass      = GeographyTreeDef.class;
-        icon              = IconManager.getIcon(GEOGRAPHY,IconManager.IconSize.Std16);
         
         menuItemText      = getResourceString("GeographyMenu");
         menuItemMnemonic  = getResourceString("GeographyMnemonic");

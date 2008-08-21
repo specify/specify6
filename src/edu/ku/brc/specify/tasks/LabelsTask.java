@@ -58,13 +58,12 @@ public class LabelsTask extends ReportsBaseTask
     public LabelsTask()
     {
         name          = "Labels";
+        iconName      = name;
         title         = getResourceString(name);
         defaultFlavor = new DataFlavor(ReportsBaseTask.class, name);
         navMimeDefs     = new ArrayList<Pair<String,String>>(2);
         navMimeDefs.add(new Pair<String,String>("Labels", LABELS_MIME));
         reportHintKey = "LABEL_TT";
-        
-        setIcon(this.name);
     }
 
 
@@ -148,7 +147,6 @@ public class LabelsTask extends ReportsBaseTask
     {
         toolbarItems = new Vector<ToolBarItemDesc>();
         String             label     = getResourceString(name);
-        String             iconName  = name;
         String             hint      = getResourceString("labels_hint");
         ToolBarDropDownBtn btn       = createToolbarButton(label, iconName, hint);
 

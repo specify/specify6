@@ -48,14 +48,15 @@ public abstract class PermissionEnumerator
 	 */
 	protected PermissionEditorRowIFace getStarPermission(
 			final String permissionBaseName,
-			final String title,
+            final String type,
+            final String title,
 			final String description,
 			final Hashtable<String, SpPermission> existingPerms,
 		 	final Hashtable<String, SpPermission> overrulingPerms)
 	{
-		String permName = permissionBaseName + ".*";
-		SpPermission perm  = existingPerms.get(permName);
-		SpPermission oPerm = (overrulingPerms != null)? overrulingPerms.get(permName) : null;
+		String       permName = permissionBaseName + ".*";
+		SpPermission perm     = existingPerms.get(permName);
+		SpPermission oPerm    = (overrulingPerms != null)? overrulingPerms.get(permName) : null;
 
 		if (perm == null)
 		{
@@ -65,7 +66,7 @@ public abstract class PermissionEnumerator
 			perm.setActions("");
 			perm.setPermissionClass(BasicSpPermission.class.getCanonicalName());
 		}
-		return new GeneralPermissionEditorRow(perm, oPerm, title, description, null);
+		return new GeneralPermissionEditorRow(perm, oPerm, type, title, description, null);
 	}
 
 	/**

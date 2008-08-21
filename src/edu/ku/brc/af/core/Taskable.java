@@ -33,6 +33,11 @@ import javax.swing.JPopupMenu;
  */
 public interface Taskable
 {
+    public final static int StdIcon32 = 32;
+    public final static int StdIcon24 = 24;
+    public final static int StdIcon20 = 20;
+    public final static int StdIcon16 = 16;
+    
     /**
      * @return whether this Taskable should only ever have a single pane.
      */
@@ -47,9 +52,10 @@ public interface Taskable
 
     /**
      * Return the icon that represents the task.
+     * @param size use standard size (i.e. 32, 24, 20, 26)
      * @return the icon that represents the task
      */
-    public ImageIcon getImageIcon();
+    public ImageIcon getIcon(int size);
 
     /**
      * Returns the name of the task (NOT Localized).
@@ -62,6 +68,11 @@ public interface Taskable
      * @return the title of the task (Localized)
      */
     public String getTitle();
+
+    /**
+     * @return a short description of what the task is (or does).
+     */
+    public String getShortDesc();
 
     /**
      * Initializes the task. The Taskable is responsible for making sure this method

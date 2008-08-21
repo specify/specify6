@@ -152,7 +152,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     {
         super(EXPRESSSEARCH, getResourceString(EXPRESSSEARCH));
         
-        icon = IconManager.getIcon("Search", IconManager.IconSize.Std16);
+        iconName = "Search";
         
         closeOnLastPane = true;
 

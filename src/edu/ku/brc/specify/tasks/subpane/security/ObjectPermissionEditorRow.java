@@ -26,8 +26,9 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
  */
 public class ObjectPermissionEditorRow implements PermissionEditorRowIFace 
 {
-	private String title;
-	private String description;
+    private String       type;
+    private String       title;
+	private String       description;
 	private SpPermission ownerPermission;
 	private SpPermission groupPermission;
 	private SpPermission otherPermission;
@@ -38,7 +39,8 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 	public ObjectPermissionEditorRow(final SpPermission ownerPermission,
 	                                 final SpPermission groupPermission, 
 	                                 final SpPermission otherPermission,
-	                                 final String title, 
+                                     final String type, 
+                                     final String title, 
 	                                 final String description, 
 	                                 final ImageIcon icon) 
 	{
@@ -47,9 +49,10 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 		this.otherPermission = otherPermission;
 		this.customPermissions = null;
 		
-		this.title = title;
+        this.type       = type;
+        this.title       = title;
         this.description = description;
-        this.icon = icon;
+        this.icon        = icon;
 	}
 
 	public String getTitle() {
@@ -61,7 +64,15 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 		return description;
 	}
 	
-	public SpPermission getOwnerPermission() 
+	/**
+     * @return the type
+     */
+    public String getType()
+    {
+        return type;
+    }
+
+    public SpPermission getOwnerPermission() 
 	{
 		return ownerPermission;
 	}

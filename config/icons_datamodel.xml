@@ -4,24 +4,30 @@
     <icon name="colobj_backstop" file="collection_object.png" sizes="all"/>
     
     <!--  Table Icons -->
-    <icon name="accession"      file="accession.png" sizes="all"/>
-    <icon name="deaccession"    file="deaccession.png" sizes="all"/>
-    <icon name="appraisal"      file="appraisal.png" sizes="all"/>
-    <icon name="accessionagent" file="agent.png" sizes="all"/>
-    <!-- <icon name="address"        file="address.png" sizes="all"/>  -->
-    <icon name="agent"          file="agent.png" sizes="all"/>
-    <icon name="agentvariant"   file="agent.png" sizes="all"/>
-    <icon name="author"         file="author.png" sizes="all"/>
-    <icon name="attachment"     file="attachment.png" sizes="all"/>
-    <icon name="attribute"      file="attribute.png" sizes="all"/>
-    <icon name="borrow"         file="borrow.png" sizes="all"/>
-    <icon name="borrowmaterial" file="borrow_material.png" sizes="all"/>
+    <icon name="accession"            file="accession.png" sizes="all"/>
+    <icon name="deaccession"          file="deaccession.png" sizes="all"/>
+    <icon name="appraisal"            file="appraisal.png" sizes="all"/>
+    <icon name="accessionagent"       file="agent.png" sizes="all"/>
+    <icon name="address"              file="address.png" sizes="all"/>
+    <icon name="addressofrecord"      file="address.png" sizes="all"/>
+    <icon name="agent"                file="agent.png" sizes="all"/>
+    <icon name="agentgeography"       file="agent_geography.png" sizes="all"/>
+    <icon name="agentspecialty"       file="agent_specialty.png" sizes="all"/>
+    <icon name="agentvariant"         file="agent.png" sizes="all"/>
+    <icon name="author"               file="author.png" sizes="all"/>
+    <icon name="attachment"           file="attachment.png" sizes="all"/>
+    <icon name="attribute"            file="attribute.png" sizes="all"/>
+    <icon name="attributedef"         file="attribute_def.png" sizes="all"/>
+    <icon name="borrow"               file="borrow.png" sizes="all"/>
+    <icon name="borrowmaterial"       file="borrow_material.png" sizes="all"/>
     <icon name="borrowreturnmaterial" file="borrow_return_material.png" sizes="all"/>
-    <icon name="collectingevent" file="collecting_event.png" sizes="all"/>
-    <icon name="collectingtrip" file="collection_trip.png" sizes="all"/>
-    <icon name="collection"     file="collection.png" sizes="all"/>
-    <icon name="collector"      file="collector.png" sizes="all"/>
-    <icon name="collectionobject" file="collection_object.png" sizes="all"/>
+    <icon name="collectingevent"      file="collecting_event.png" sizes="all"/>
+    <icon name="collectingtrip"       file="collection_trip.png" sizes="all"/>
+    <icon name="collection"           file="collection.png" sizes="all"/>
+    <icon name="collectionrelationship" file="collection_relationship.png" sizes="all"/>
+    <icon name="collectionreltype"    file="collection_rel_type.png" sizes="all"/>
+    <icon name="collector"            file="collector.png" sizes="all"/>
+    <icon name="collectionobject"     file="collection_object.png" sizes="all"/>
     <icon name="collectionobjectcitation" file="citation.png" sizes="all"/>
     <icon name="commonnametx"         file="common_name.png" sizes="all"/>
     <icon name="container"            file="container.png" sizes="all"/>
@@ -34,11 +40,14 @@
     <icon name="discipline"           file="discipline.png" sizes="all"/>
     <icon name="division"             file="division.png" sizes="all"/>
     <icon name="dnasequence"          file="dna.png" sizes="all"/>
+    <icon name="exsiccata"            file="exsiccata.png" sizes="all"/>
+    <icon name="exsiccataitem"        file="eexsiccata_item.png" sizes="all"/>
     <icon name="exchangein"           file="exchange_in.png" sizes="all"/>
     <icon name="exchangeout"          file="exchange_out.png" sizes="all"/>
     <icon name="fieldnotebook"        file="field_notebook.png" sizes="all"/>
     <icon name="fieldnotebookpage"    file="field_notebook_page.png" sizes="all"/>
     <icon name="fieldnotebookpageset" file="field_notebook_page_set.png" sizes="all"/>
+    <icon name="geocoorddetail"       file="geo_coord_detail.png" sizes="all"/>
     <icon name="geography"            file="geography.png" sizes="all"/>
     <icon name="gift"                 file="gift.png" sizes="all"/>
     <icon name="geologictimeperiod"   file="geologic_time_period.png" sizes="all"/>
@@ -49,7 +58,9 @@
     <icon name="loan"                 file="loan.png" sizes="all"/>
     <icon name="loanreturnpreparation" file="loan_return_prep.png" sizes="all"/>
     <icon name="locality"             file="locality.png" sizes="all"/>
+    <icon name="localitydetail"       file="locality_detail.png" sizes="all"/>
     <icon name="localitynamealias"    file="locality_name_alias.png" sizes="all"/>
+    <icon name="otheridentifier"      file="other_identifier.png" sizes="all"/>
     <icon name="paleocontext"         file="paleocontext.png" sizes="all"/>
     <icon name="permit"               file="permit.png" sizes="all"/>
     <icon name="preparation"          file="preparation.png" sizes="all"/>
@@ -94,10 +105,14 @@
 	<icon name="borrowagent"                    alias="agent"/>
 	<icon name="giftagent"                      alias="agent"/>
 	<icon name="loanagent"                      alias="agent"/>
+	<icon name="groupperson"                    alias="agent"/>
+	<icon name="deaccessionagent"               alias="agent"/>
 	
 	<icon name="BorrowAgent"                    alias="agent"/>
 	<icon name="GiftAgent"                      alias="agent"/>
 	<icon name="LoanAgent"                      alias="agent"/>
+	<icon name="GroupPerson"                    alias="agent"/>
+    <icon name="DeaccessionAgent"               alias="agent"/>
 	
 	<icon name="accessionauthorization"         alias="permit"/>
 	<icon name="AccessionAuthorization"         alias="permit"/>
@@ -125,8 +140,8 @@
 
     <icon name="loanpreparation"        alias="preparation"/>
     <icon name="LoanPreparation"        alias="preparation"/>
-    <icon name="deaccessionagent"       alias="agent"/>
-    <icon name="DeaccessionAgent"       alias="agent"/>
+    <icon name="giftpreparation"        alias="preparation"/>
+    <icon name="GiftPreparation"        alias="preparation"/>
     <icon name="deaccessionpreparation" alias="preparation"/>
     <icon name="DeaccessionPreparation"  alias="preparation"/>
     
@@ -147,12 +162,18 @@
     <icon name="TaxonCitation"          alias="citation"/>
     
     <icon name="collectingeventattribute"  alias="attribute"/>
+    <icon name="collectingeventattr"       alias="attribute"/>
     <icon name="preparationattribute"      alias="attribute"/>
+    <icon name="preparationattr"           alias="attribute"/>
   	<icon name="collectionobjectattribute" alias="attribute"/>
+  	<icon name="collectionobjectattr"      alias="attribute"/>
     
     <icon name="CollectingEventAttribute"  alias="attribute"/>
+    <icon name="CollectingEventAttr"       alias="attribute"/>
     <icon name="PreparationAttribute"      alias="attribute"/>
+    <icon name="PreparationAttr"           alias="attribute"/>
   	<icon name="CollectionobjectAttribute" alias="attribute"/>
+  	<icon name="CollectionobjectAttr"      alias="attribute"/>
     
     
     <icon name="Accession Agent"        alias="accessionagent"/>
@@ -171,10 +192,14 @@
     <icon name="Accession"              alias="accession"/>
     <icon name="AccessionAgent"         alias="agent"/>
     <icon name="Address"                alias="address"/>
+    <icon name="AddressOfRecord"        alias="addressofrecord"/>
     <icon name="Agent"                  alias="agent"/>
+    <icon name="AgentGeography"         alias="agentgeography"/>
+    <icon name="AgentSpecialty"         alias="agentspecialty"/>
     <icon name="AgentVariant"           alias="agentvariant"/>
     <icon name="Appraisal"              alias="appraisal"/>
-    <icon name="Attachment"             alias="attachment"/>
+    <icon name="Attachment"             alias="attributedefinition"/>
+    <icon name="AttributeDef"           alias="attributedef"/>
     <icon name="Author"                 alias="author"/>
     <icon name="Borrow"                 alias="borrow"/>
     <icon name="BorrowMaterial"         alias="borrowmaterial"/>
@@ -184,6 +209,8 @@
     <icon name="CollectingEvent"        alias="collectingevent"/>
     <icon name="CollectingTrip"         alias="collectingtrip"/>
     <icon name="Collection"             alias="collection"/>
+    <icon name="CollectionRelationship" alias="collectionrelationsip"/>
+    <icon name="CollectionRelType"      alias="collectionreltype"/>
     <icon name="Collector"              alias="collector"/>
     <icon name="CollectionName"         alias="collectionname"/>
     <icon name="CollectionObject"       alias="collectionobject"/>
@@ -198,11 +225,14 @@
     <icon name="Discipline"             alias="discipline"/>
     <icon name="DNASequence"            alias="dnasequence"/>
     <icon name="Deaccession"            alias="deaccession"/>
+    <icon name="Exsiccata"              alias="exsiccata"/>
+    <icon name="ExsiccataItem"          alias="exsiccataitem"/>
     <icon name="ExchangeIn"             alias="exchangein"/>
     <icon name="ExchangeOut"            alias="exchangeout"/>
     <icon name="FieldNotebookPage"      alias="fieldnotebookpage"/>
     <icon name="FieldNotebookPageSet"   alias="fieldnotebookpageset"/>
     <icon name="FieldNotebook"          alias="fieldnotebook"/>
+    <icon name="GeoCoordDetail"         alias="geocoorddetail"/>
     <icon name="Geography"              alias="geography"/>
     <icon name="GeologicTimePeriod"     alias="geologictimeperiod"/>
     <icon name="Gift"                   alias="gift"/>
@@ -213,7 +243,9 @@
     <icon name="Loan"                   alias="loan"/>
     <icon name="LoanReturnPreparation"  alias="loanreturnpreparation"/>
     <icon name="Locality"               alias="locality"/>
+    <icon name="LocalityDetail"         alias="locality_detail"/>
     <icon name="LocalityNameAlias"      alias="localitynamealias"/>
+    <icon name="OtherIdentifier"        alias="otheridentifier"/>
     <icon name="Permit"                 alias="permit"/>
     <icon name="PaleoContext"           alias="permit"/>
     <icon name="Preparation"            alias="preparation"/>
@@ -221,7 +253,6 @@
     <icon name="PrepType"               alias="preptype"/>
     <icon name="Project"                alias="project"/>
     <icon name="ReferenceWork"          alias="referencework"/>
-    <icon name="Stratigraphy"           alias="lithostrat"/>
     <icon name="Shipment"               alias="shipment"/>
     <icon name="Storage"                alias="storage"/>
     <icon name="Taxon"                  alias="taxon"/>
@@ -229,18 +260,19 @@
     
     <icon name="taxontreedef"              alias="taxon"/>
     <icon name="geographytreedef"          alias="geography"/>
-    <icon name="geologictimePeriodtreedef" alias="geologictimeperiod"/>
+    <icon name="geologictimeperiodtreedef" alias="geologictimeperiod"/>
     <icon name="storagetreedef"            alias="storage"/>
+    <icon name="lithostrattreedef"         alias="lithostrat"/>
     
     <!-- Tree Task icons -->
+    <icon name="TaxonTree"                 alias="taxon"/>
     <icon name="GeographyTree"             alias="geography"/>
-    <icon name="StorageTree"               alias="storage"/>
     <icon name="GeoTimePeriodTree"         alias="geologictimeperiod"/>
+    <icon name="StorageTree"               alias="storage"/>
     <icon name="LithoStratTree"            alias="lithostrat"/>
     
     <icon name="TreeDefEditor"             alias="taxon"/>
     <icon name="TreeViewer"			       alias="taxon"/>
-    <icon name="TaxonTree"                 alias="taxon"/>
     
     <icon name="Person"                    alias="person"/>
     <icon name="People"                    alias="group"/>

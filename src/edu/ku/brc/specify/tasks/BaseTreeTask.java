@@ -100,7 +100,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	 */
 	protected BaseTreeTask(final String name, final String title)
 	{
-		super(name,title);
+		super(name, title);
 		
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
 	}
@@ -124,6 +124,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             {
                 CommandDispatcher.register(commandTypeString,this);
             }
+            
+            shortDesc = getResourceString("TASK.SHRTDESC." + currentDef.getClass().getSimpleName());
         }
 	}
     

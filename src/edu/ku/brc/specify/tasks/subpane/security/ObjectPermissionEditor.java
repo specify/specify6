@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
+import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
@@ -27,35 +28,36 @@ public class ObjectPermissionEditor extends PermissionEditor
 	 * @param enumerator
 	 */
 	public ObjectPermissionEditor(final JTable                     permissionTable, 
+	                              final JComboBox                  typeSwitcherCBX,
 	                              final ChangeListener             listener, 
 	                              final ObjectPermissionEnumerator enumerator)
 	{
 		// we can only create instances of this class providing the right enumerator class
-		super(permissionTable, listener, enumerator);
+		super(permissionTable, typeSwitcherCBX, listener, enumerator);
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditor#addColumnHeaders(javax.swing.table.DefaultTableModel)
 	 */
-	protected void addColumnHeaders(DefaultTableModel model)
+	protected void addColumnHeaders(DefaultTableModel modelArg)
 	{
-		model.addColumn("");
-		model.addColumn("Task");
+		modelArg.addColumn("");
+		modelArg.addColumn("Task");
 		
-		model.addColumn("View");
-		model.addColumn("Add");
-		model.addColumn("Modify");
-		model.addColumn("Delete");
+		modelArg.addColumn("View");
+		modelArg.addColumn("Add");
+		modelArg.addColumn("Modify");
+		modelArg.addColumn("Delete");
 		
-		model.addColumn("View");
-		model.addColumn("Add");
-		model.addColumn("Modify");
-		model.addColumn("Delete");
+		modelArg.addColumn("View");
+		modelArg.addColumn("Add");
+		modelArg.addColumn("Modify");
+		modelArg.addColumn("Delete");
 		
-		model.addColumn("View");
-		model.addColumn("Add");
-		model.addColumn("Modify");
-		model.addColumn("Delete");
+		modelArg.addColumn("View");
+		modelArg.addColumn("Add");
+		modelArg.addColumn("Modify");
+		modelArg.addColumn("Delete");
 	}
 	
 	public void savePermissions()
@@ -71,7 +73,6 @@ public class ObjectPermissionEditor extends PermissionEditor
             session.beginTransaction();
 			session.attach(principal);
 
-            DefaultTableModel model = (DefaultTableModel) permissionTable.getModel();
     		int numRows = model.getRowCount();
     		int taskCol = permissionTable.getColumn("Task").getModelIndex();
 

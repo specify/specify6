@@ -112,9 +112,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     // Data Members
     protected String              name;
     protected String              title;
+    protected String              shortDesc;
+    protected String              iconName;
 
     protected List<NavBoxIFace>   navBoxes      = new Vector<NavBoxIFace>();
-    protected ImageIcon           icon          = null;
     protected boolean             isInitialized = false;
 
     // Members needed for initialization
@@ -160,10 +161,9 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     {
         this();
         
-        this.name  = name;
-        this.title = title;
-        
-        setIcon(name);
+        this.name     = name;
+        this.title    = title;
+        this.iconName = name;
     }
 
     /**
@@ -193,46 +193,46 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     }
 
     /**
-     * Sets the icon from the IconCacheManager with the appropritae size.
+     * Sets the icon from the IconCacheManager with the appropriate size.
      * @param iconName the name of the icon to use
      */
-    protected void setIcon(final String iconName)
+    protected void setIconName(final String iconName)
     {
-        this.icon = IconManager.getIcon(iconName, IconManager.IconSize.Std16);
+        this.iconName = iconName;
     }
 
     /**
      * Helper.
      * @param label the (localized) label string
-     * @param iconName the name of the icon (as registered with IconManager)
+     * @param iconNameArg the name of the icon (as registered with IconManager)
      * @param hint a (localized) hint string
      * @return the drop down button
      */
     protected ToolBarDropDownBtn createToolbarButton(final String label,
-                                                     final String iconName,
+                                                     final String iconNameArg,
                                                      final String hint)
     {
 
-        return createToolbarButton(label, iconName, hint, null);
+        return createToolbarButton(label, iconNameArg, hint, null);
 
     }
 
     /**
      * Helper.
      * @param label the (localized) label string
-     * @param iconName the name of the icon (as registered with IconManager)
+     * @param iconNameArg the name of the icon (as registered with IconManager)
      * @param hint a (localized) hint string
      * @param menus a List of JComponents to be added in a drop down box
      * @param actionListener the listener to notify when the button is clicked
      * @return the drop down button
      */
     protected ToolBarDropDownBtn createToolbarButton(final String label,
-                                                     final String iconName,
+                                                     final String iconNameArg,
                                                      final String hint,
                                                      final List<JComponent> menus,
                                                      final ActionListener actionListener )
     {
-        ImageIcon buttonIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std24);
+        ImageIcon buttonIcon = IconManager.getIcon(iconNameArg, IconManager.IconSize.Std24);
 
         ToolBarDropDownBtn btn = new ToolBarDropDownBtn(label, buttonIcon, SwingConstants.BOTTOM, menus);
         if (toolbarBtnFont != null)
@@ -246,11 +246,11 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     }
     
     protected MemoryDropDownButton createMemoryToolbarButton(final String label,
-                                                             final String iconName,
+                                                             final String iconNameArg,
                                                              final String hint,
                                                              final List<JComponent> menus)
     {
-        ImageIcon buttonIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std24);
+        ImageIcon buttonIcon = IconManager.getIcon(iconNameArg, IconManager.IconSize.Std24);
 
         MemoryDropDownButton btn = new MemoryDropDownButton(label, buttonIcon, SwingConstants.BOTTOM, menus);
         btn.setStatusBarHintText(hint);
@@ -260,7 +260,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /**
      * Helper.
      * @param summaryLabel the (localized) label string
-     * @param iconName the name of the icon (as registered with IconManager)
+     * @param iconNameArg the name of the icon (as registered with IconManager)
      * @param hint a (localized) hint string
      * @param menus a List of JComponents to be added in a drop down box
      * @return the drop down button
@@ -291,12 +291,12 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     protected NavBoxItemIFace addNavBoxItem(final NavBox        navBox,
                                             final String        labelText,
-                                            final String        iconName,
+                                            final String        iconNameArg,
                                             final CommandAction delCmdAction,
                                             final Object        data,
                                             final int           position)
     {
-        NavBoxItemIFace nbi = makeDnDNavBtn(navBox, labelText, iconName, null, null, delCmdAction, true, position, false);
+        NavBoxItemIFace nbi = makeDnDNavBtn(navBox, labelText, iconNameArg, null, null, delCmdAction, true, position, false);
         if (nbi instanceof GhostActionable)
         {
             ((GhostActionable)nbi).setData(data != null ? data : this);
@@ -306,14 +306,14 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     
     protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
                                             final String        labelText,
-                                            final String        iconName,
+                                            final String        iconNameArg,
                                             final CommandAction cmdAction,
                                             final CommandAction delCmdAction,
                                             final Class<?>      flavorClass,
                                             final String        dragFlavor,
                                             final String        dropFlavor)
 {
-        RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, labelText, null, iconName, cmdAction, delCmdAction, true, -1, false);
+        RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, labelText, null, iconNameArg, cmdAction, delCmdAction, true, -1, false);
         roc.addDragDataFlavor(new DataFlavor(Workbench.class, dragFlavor));
         roc.addDropDataFlavor(new DataFlavor(flavorClass, dropFlavor));
         return (NavBoxItemIFace)roc;
@@ -321,30 +321,30 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     
     protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
                                             final String        labelText,
-                                            final String        iconName,
+                                            final String        iconNameArg,
                                             final CommandAction cmdAction,
                                             final CommandAction delCmdAction,
                                             final boolean       makeDraggable,
                                             final boolean       addSorted)
     {
-        return makeDnDNavBtn(navBox, labelText, iconName, null, cmdAction, delCmdAction, makeDraggable, -1, addSorted);
+        return makeDnDNavBtn(navBox, labelText, iconNameArg, null, cmdAction, delCmdAction, makeDraggable, -1, addSorted);
     }
  
     protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
                                             final String        labelText,
-                                            final String        iconName,
+                                            final String        iconNameArg,
                                             final String        toolTip,
                                             final CommandAction cmdAction,
                                             final CommandAction delCmdAction,
                                             final boolean       makeDraggable,
                                             final boolean       addSorted)
     {
-        return makeDnDNavBtn(navBox, labelText, iconName, toolTip, cmdAction, delCmdAction, makeDraggable, -1, addSorted);
+        return makeDnDNavBtn(navBox, labelText, iconNameArg, toolTip, cmdAction, delCmdAction, makeDraggable, -1, addSorted);
     }
  
     protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
                                             final String        labelText,
-                                            final String        iconName,
+                                            final String        iconNameArg,
                                             final String        toolTip,
                                             final CommandAction cmdAction,
                                             final CommandAction delCmdAction,
@@ -352,7 +352,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                             final int           position,
                                             final boolean       addSorted)
     {
-        NavBoxItemIFace nb = NavBox.createBtn(labelText, iconName, IconManager.STD_ICON_SIZE);
+        NavBoxItemIFace nb = NavBox.createBtn(labelText, iconNameArg, IconManager.STD_ICON_SIZE);
         if (StringUtils.isNotEmpty(toolTip))
         {
             ((RolloverCommand)nb).setToolTip(toolTip);
@@ -455,7 +455,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * Helper method to add an item to the navbox.
      * @param navBox navBox
      * @param labelText navBox
-     * @param iconName icon name
+     * @param iconNameArg icon name
      * @param cmdAction cmdAction
      * @param delCmdAction delCmdAction
      * @param data data
@@ -463,11 +463,11 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     protected NavBoxItemIFace addNavBoxItem(final NavBox navBox,
                                             final String labelText,
-                                            final String iconName,
+                                            final String iconNameArg,
                                             final CommandAction delCmdAction,
                                             final Object data)
     {
-        return addNavBoxItem(navBox, labelText,  iconName, delCmdAction, data, -1);
+        return addNavBoxItem(navBox, labelText,  iconNameArg, delCmdAction, data, -1);
     }
     
     /**
@@ -677,7 +677,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                        final ImageIcon paneIcon,
                                        final FormPane.FormPaneAdjusterIFace adjuster)
     {
-        ImageIcon iconImg = paneIcon == null ? icon : paneIcon;
+        ImageIcon iconImg = paneIcon == null ? getIcon(StdIcon16) : paneIcon;
         FormPane fp = null;
 
         if (recentFormPane != null && recentFormPane.getComponentCount() == 0)
@@ -861,13 +861,19 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         return navBoxes;
     }
 
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.af.core.Taskable#getIcon()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#getIcon(int)
      */
-    public ImageIcon getImageIcon()
+    public ImageIcon getIcon(int size)
     {
-        return icon;
+        switch (size)
+        {
+            case 32 : return IconManager.getIcon(iconName, IconManager.IconSize.Std32);
+            case 24 : return IconManager.getIcon(iconName, IconManager.IconSize.Std24);
+            case 20 : return IconManager.getIcon(iconName, IconManager.IconSize.Std20);
+            case 16 : return IconManager.getIcon(iconName, IconManager.IconSize.Std16);
+        }
+        return IconManager.getIcon(iconName);
     }
 
     /* (non-Javadoc)
@@ -883,8 +889,26 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#getShortDesc()
+     */
+    @Override
+    public String getShortDesc()
+    {
+        return this.shortDesc == null ? title : this.shortDesc;
+    }
+
+    /**
+     * @param shortDesc the shortDesc to set
+     */
+    public void setShortDesc(String shortDesc)
+    {
+        this.shortDesc = shortDesc;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getName()
      */
+    @Override
     public String getName()
     {
         return name;
@@ -893,6 +917,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getTitle()
      */
+    @Override
     public String getTitle()
     {
         return title;
@@ -901,6 +926,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getToolBarItems()
      */
+    @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
         return null;
@@ -909,6 +935,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getMenuItems()
      */
+    @Override
     public List<MenuItemDesc> getMenuItems()
     {
         return null;
@@ -917,6 +944,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#initialize(java.util.List)
      */
+    @Override
     public void initialize(List<TaskCommandDef> cmds, final boolean isVisibleArg)
     {
         this.commands  = cmds;
@@ -927,6 +955,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#isVisible()
      */
+    @Override
     public boolean isVisible()
     {
         return isVisible;
@@ -935,6 +964,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#isShowDefault()
      */
+    @Override
     public boolean isShowDefault()
     {
         return AppPreferences.getRemote().getBoolean("task.isShowDefault."+name, isShowDefault); //$NON-NLS-1$
@@ -943,6 +973,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#isStarterPane()
      */
+    @Override
     public boolean isStarterPane()
     {
         return starterPane != null;
@@ -995,10 +1026,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                 if (formData instanceof RecordSetIFace)
                 {
                     RecordSetIFace rs = (RecordSetIFace)formData;
-                    createFormPanel(formData.getIdentityTitle(), "edit", formData, rs.getDataClassFormItems(), getImageIcon()); //$NON-NLS-1$
+                    createFormPanel(formData.getIdentityTitle(), "edit", formData, rs.getDataClassFormItems(), getIcon(StdIcon16)); //$NON-NLS-1$
                 } else
                 {
-                    createFormPanel(formData.getIdentityTitle(), "edit", formData, getImageIcon()); //$NON-NLS-1$
+                    createFormPanel(formData.getIdentityTitle(), "edit", formData, getIcon(StdIcon16)); //$NON-NLS-1$
                 }
                 cmdActionArg.setConsumed(true);
                 
@@ -1221,12 +1252,12 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                 
                 //log.debug("["+ap.getDescription()+"]["+ap.getName()+"]");
                 
-                String iconName = params.getProperty("icon"); //$NON-NLS-1$
-                if (StringUtils.isEmpty(iconName))
+                String iconNameStr = params.getProperty("icon"); //$NON-NLS-1$
+                if (StringUtils.isEmpty(iconNameStr))
                 {
-                    iconName = defaultIcon;
+                    iconNameStr = defaultIcon;
                 }                        
-                result.add(new TaskCommandDef(ap.getDescription(), iconName, params));
+                result.add(new TaskCommandDef(ap.getDescription(), iconNameStr, params));
             }
         }
         return result;

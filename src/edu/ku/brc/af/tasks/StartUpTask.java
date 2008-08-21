@@ -27,7 +27,6 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.StatsPane;
 import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 
 /**
@@ -63,8 +62,6 @@ public class StartUpTask extends BaseTask
     public StartUpTask()
     {
         super(STARTUP, getResourceString(STARTUP));
-        
-        icon = IconManager.getImage(STARTUP, IconManager.IconSize.Std16);
     }
     
     /**

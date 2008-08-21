@@ -172,7 +172,6 @@ public class StatsTask extends BaseTask
     {
         toolbarItems = new Vector<ToolBarItemDesc>();
         String label = getResourceString(name);
-        String iconName = name;
         String hint = getResourceString("stats_hint"); //$NON-NLS-1$
         ToolBarDropDownBtn      btn  = createToolbarButton(label, iconName, hint);
 

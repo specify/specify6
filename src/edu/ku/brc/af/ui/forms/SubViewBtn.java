@@ -255,6 +255,14 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     {
         super.setEnabled(enabled);
      
+        setEnabledInternal(enabled);
+    }
+    
+    /**
+     * @param enabled
+     */
+    public void setEnabledInternal(final boolean enabled)
+    {
         ensurePermissions(dataObj);
         
         boolean isSecurityEnableOK = perm == null || (perm != null && ((isEditing && perm.isViewOnly()) || (!isEditing && !perm.canView())));
@@ -473,7 +481,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.GetSetValueIFace#getValue()
      */
-    //@Override
+    @Override
     public Object getValue()
     {
         return dataObj;
@@ -482,7 +490,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    //@Override
+    @Override
     public void setValue(Object value, String defaultValue)
     {
         dataObj = value;
@@ -507,6 +515,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                     }
                 }*/
             }
+            
+            setEnabledInternal(isEnabled());
         }
     }
 

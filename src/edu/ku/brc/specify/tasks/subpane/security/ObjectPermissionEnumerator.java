@@ -48,11 +48,11 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator {
         	
         	addPermissions(Workbench.class, session, user, existingPerms, perms, 
         			Workbench.class.getMethod("getId"), Workbench.class.getMethod("getName"),
-        			"Workbench", "Permission to view, add, modify, or delete data in the workbench ");
+        			"DO", "Workbench", "Permission to view, add, modify, or delete data in the workbench ");
         	
         	addPermissions(RecordSet.class, session, user, existingPerms, perms, 
         			RecordSet.class.getMethod("getId"), RecordSet.class.getMethod("getName"),
-        			"RecordSet", "Permission to view, add, modify, or delete record set ");
+        			"DO", "RecordSet", "Permission to view, add, modify, or delete record set ");
         	
 /*			XXX problem: loans are not linked to specify user directly
          	addPermissions(Loan.class, session, user, existingPerms, perms, 
@@ -94,7 +94,7 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator {
 	}
 	
 	private void addCustomPermissions(final ObjectPermissionEditorRow wrapper, 
-	                                  final String taskName, 
+                                      final String taskName, 
 	                                  final Integer targetId, 
 	                                  final Hashtable<String, SpPermission> existingPerms)
 	{
@@ -122,7 +122,8 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator {
 			List<PermissionEditorRowIFace> perms,
 			Method getId,
 			Method getName,
-			String objBaseTitle,
+            String objBaseType,
+            String objBaseTitle,
 			String objBaseDesc)
 	{
     	List<T> list = session.getDataList(clazz, "specifyUser", user);
@@ -147,7 +148,7 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator {
         	String title = objBaseTitle + ": " + name;
         	String description = objBaseDesc + name;
         	
-        	ObjectPermissionEditorRow wrapper = new ObjectPermissionEditorRow(owner, group, other, title, description, null);
+        	ObjectPermissionEditorRow wrapper = new ObjectPermissionEditorRow(owner, group, other, objBaseType, title, description, null);
         	addCustomPermissions(wrapper, taskName, targetId, existingPerms);
         	
 			// add newly created permission to the bag that will be returned

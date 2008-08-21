@@ -32,7 +32,6 @@ import edu.ku.brc.specify.ui.treetables.TreeNodePopupMenu;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -54,7 +53,6 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
         
         treeClass         = Storage.class;
         treeDefClass      = StorageTreeDef.class;
-        icon              = IconManager.getIcon(STORAGE,IconManager.IconSize.Std16);
         
         menuItemText      = getResourceString("StorageMenu");
         menuItemMnemonic  = getResourceString("StorageMnemonic");

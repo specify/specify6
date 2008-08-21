@@ -12,16 +12,13 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 
-import org.apache.log4j.Logger;
 import org.hibernate.annotations.GenericGenerator;
-
-import edu.ku.brc.specify.config.UserGroupType;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class UserGroupScope extends DataModelObjBase 
 {
-    private static final Logger log = Logger.getLogger(UserGroupScope.class);
+    //private static final Logger log = Logger.getLogger(UserGroupScope.class);
 	
     protected Integer userGroupScopeId;
     protected Set<SpPrincipal> userGroups;

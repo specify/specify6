@@ -34,7 +34,6 @@ import edu.ku.brc.af.tasks.subpane.formeditor.BasicFormPreviewPanel;
 import edu.ku.brc.af.tasks.subpane.formeditor.ViewSetSelectorPanel;
 import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
 import edu.ku.brc.ui.CustomFrame;
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 
 /**
@@ -59,7 +58,7 @@ public class EditorTask extends BaseTask
     public EditorTask()
     {
         super(EDITOR, getResourceString(EDITOR));
-        icon = IconManager.getImage("Form", IconManager.IconSize.Std16); //$NON-NLS-1$
+        iconName = "Form";
     }
     
     protected JPanel createChooseViewSetPanel()
