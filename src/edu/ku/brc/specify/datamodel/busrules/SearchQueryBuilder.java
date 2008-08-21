@@ -26,6 +26,7 @@ import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Storage;
 
 /**
  * @author rod
@@ -162,9 +163,17 @@ public class SearchQueryBuilder<T> implements ViewBasedSearchQueryBuilderIFace
             }
         }
         
-        String queryFormatStr = "SELECT %s.%s, %s from %s INNER JOIN %s d ON %s.%s = d.%s INNER JOIN discipline dsp ON d.%s = dsp.%s WHERE (%s) AND dsp.DisciplineID = %d ORDER BY %s";
-        String queryStr = String.format(queryFormatStr, tableName, idColName, colNames.toString(), tableName, defTableName, tableName, defIdColName, defIdColName, 
-                                        defIdColName, defIdColName, criteria.toString(), disciplineId, orderBy.toString());
+        String queryStr;
+        if (tableInfo.getTableId() == Storage.getClassTableId())
+        {
+            String queryFormatStr = "SELECT %s.%s, %s from %s INNER JOIN %s d ON %s.%s = d.%s WHERE (%s) ORDER BY %s";
+            queryStr = String.format(queryFormatStr, tableName, idColName, colNames.toString(), tableName, defTableName, tableName, defIdColName, defIdColName, criteria.toString(), orderBy.toString());
+        } else
+        {
+            String queryFormatStr = "SELECT %s.%s, %s from %s INNER JOIN %s d ON %s.%s = d.%s INNER JOIN discipline dsp ON d.%s = dsp.%s WHERE (%s) AND dsp.DisciplineID = %d ORDER BY %s";
+            queryStr = String.format(queryFormatStr, tableName, idColName, colNames.toString(), tableName, defTableName, tableName, defIdColName, defIdColName, 
+                    defIdColName, defIdColName, criteria.toString(), disciplineId, orderBy.toString());
+        }
         //System.out.println(queryStr);
         return queryStr;
     }
