@@ -34,6 +34,7 @@ import javax.swing.JTextField;
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.IconManager;
@@ -550,7 +551,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         UIValidator.Type type = isRequired ? UIValidator.Type.Changed : valType;
 
         UIValidator uiv;
-        if (valStr == null)
+        if (StringUtils.isEmpty(valStr))
         {
             uiv = createValidator(textField, valType);
         } else
