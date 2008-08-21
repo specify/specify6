@@ -1377,6 +1377,8 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                             fieldLengthTxt.setText(" ");
                             fieldLengthLbl.setEnabled(false);
                             fieldLengthTxt.setEnabled(false);
+                            
+                            fieldReqChk.setSelected(ri.isRequired());
                         } else
                         {
                             throw new RuntimeException("couldn't find field or relationship.");
