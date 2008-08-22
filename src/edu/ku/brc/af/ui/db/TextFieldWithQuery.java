@@ -121,6 +121,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     
     protected boolean              isDoingCount        = false;
     protected Integer              returnCount         = null;
+    protected String               prevEnteredText     = null;
     
     protected QueryWhereClauseProvider queryWhereClauseProvider = null;
     
@@ -209,6 +210,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             public void focusGained(FocusEvent arg0)
             {
                 tabOutSearch = false;
+                //prevEnteredText = textField.getText();
+                //log.debug("PREV: "+prevEnteredText);
                 
                 int len = textField.getText().length();
                 if (len > 0)
@@ -277,6 +280,15 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         });
     }
     
+    
+    /**
+     * @return the prevEnteredText
+     */
+    public String getPrevEnteredText()
+    {
+        return prevEnteredText;
+    }
+
     /**
      * @return the format
      */
@@ -514,6 +526,9 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
 
                 public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
                 {
+                    //prevEnteredText = textField.getText();
+                    //log.debug("PREV: "+prevEnteredText);
+                    
                     isPopupShowing  = false;
                     ignoreFocusLost = false;
                     
@@ -964,6 +979,9 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      */
     protected void doQuery(final String newEntryStr)
     {
+        prevEnteredText = newEntryStr;
+        log.debug("PREV: ["+prevEnteredText+"]");
+
         if (hasNewText)
         {
             list.clear();

@@ -624,7 +624,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             if (ds != null)
             {
                 log.error("ID: "+textWithQuery.getSelectedId());
-                String value = textWithQuery.getSelectedId() == null ? textWithQuery.getTextField().getText() : "";
+                String value = textWithQuery.getSelectedId() == null ? textWithQuery.getPrevEnteredText() : "";
                 ds.setFieldValue(newDataObj, fieldNames[0], value);
             }
             frame.setData(newDataObj);
