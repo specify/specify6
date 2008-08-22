@@ -621,7 +621,7 @@ public class FormViewObj implements Viewable,
             {
                 boolean isSecurityModeOK = perm.getOptions() > 0 && ((perm.isViewOnly() && (mode == AltViewIFace.CreationMode.VIEW)) ||
                                                                      !perm.isViewOnly());
-                if (isSecurityModeOK && (av.getMode() == mode || mvParentArg.isOKToAddAllAltViews()))
+                if (isSecurityModeOK && (av.getMode() == mode))
                 {
                     altViewsListArg.add(av);
                 }
@@ -640,7 +640,7 @@ public class FormViewObj implements Viewable,
                 AltViewIFace.CreationMode mode = altViewArg.getMode();
                 for (AltViewIFace av : viewArg.getAltViews())
                 {
-                    if (av.getMode() == mode || mvParentArg.isOKToAddAllAltViews())
+                    if (av.getMode() == mode)
                     {
                         altViewsListArg.add(av);
                     }
