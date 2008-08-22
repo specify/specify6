@@ -96,6 +96,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     
     protected boolean              popupFromBtn   = false;
     protected boolean              ignoreFocusLost = false;
+    protected boolean              tabOutSearch   = false;
     
     protected boolean              addAddItem     = false;
     
@@ -207,6 +208,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             @Override
             public void focusGained(FocusEvent arg0)
             {
+                tabOutSearch = false;
+                
                 int len = textField.getText().length();
                 if (len > 0)
                 {
@@ -219,27 +222,36 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             }
 
             @Override
-            public void focusLost(FocusEvent arg0)
+            public void focusLost(FocusEvent event)
             {
                 if (selectedId == null && !ignoreFocusLost)
                 {
-                    textField.setText(""); //$NON-NLS-1$
-                    
-                    ///////////////////////////////////////////////////////////////////////////////////
-                    // We only want to generate a change event if it once had a value and then it is
-                    // cleared and the user tabs to a new control. - rods 02/28/08
-                    ///////////////////////////////////////////////////////////////////////////////////
-                    if (wasCleared)
+                    int len = textField.getText().length();
+                    if (len > 0)
                     {
-                        ListSelectionEvent lse = new ListSelectionEvent(TextFieldWithQuery.this, 0, 0, false);
-                        for (ListSelectionListener l : listSelectionListeners)
+                        tabOutSearch = true;
+                        doQuery(currentText);
+                    } else
+                    {
+                        
+                        textField.setText(""); //$NON-NLS-1$
+                        
+                        ///////////////////////////////////////////////////////////////////////////////////
+                        // We only want to generate a change event if it once had a value and then it is
+                        // cleared and the user tabs to a new control. - rods 02/28/08
+                        ///////////////////////////////////////////////////////////////////////////////////
+                        if (wasCleared)
                         {
-                            l.valueChanged(lse);
+                            ListSelectionEvent lse = new ListSelectionEvent(TextFieldWithQuery.this, 0, 0, false);
+                            for (ListSelectionListener l : listSelectionListeners)
+                            {
+                                l.valueChanged(lse);
+                            }
                         }
                     }
                 }
                 textField.setCaretPosition(0);
-                super.focusLost(arg0);
+                super.focusLost(event);
             }
             
         });
@@ -720,8 +732,6 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         List<?> dataObjList =  customQuery.getDataObjects();
         if (dataObjList == null || dataObjList.size() == 0)
         {
-            //textField.setText("");
-            
             if (addAddItem)
             {
                 showPopup();
@@ -729,18 +739,18 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             
         } else
         {
-            
             boolean isFirst = true;
             duplicatehash.clear();
             for (Object obj : dataObjList)
             {
                 Object[] array = (Object[])obj;
                 
+                
                 if (isFirst)
                 {
                     numColumns = array.length - 1;
                     values     = new Object[numColumns];
-                    isFirst = false;
+                    isFirst    = false;
                 }
                 
                 Integer id = (Integer)array[numColumns];
@@ -780,7 +790,12 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             
             if (idList.size() > 0 && returnCount != null)
             {
-                if (returnCount > popupDlgThreshold)
+                if (tabOutSearch)
+                {
+                    selectedId = idList.elementAt(0);
+                    textField.setText(list.get(0));
+                        
+                } else if (returnCount > popupDlgThreshold)
                 {
                     showDialog();
                     
