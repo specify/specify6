@@ -81,6 +81,7 @@ import edu.ku.brc.af.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -158,6 +159,7 @@ public class TableViewObj implements Viewable,
     protected TableViewDef                  tableViewDef;
     protected DataObjectGettable            dataGetter      = null;
     protected Class<?>                      classToCreate   = null;
+    protected String                        searchName      = null;
     
     protected Stack<FormCellSubView>        subViewStack    = new Stack<FormCellSubView>();
     protected StringBuilder                 fullObjPath     = new StringBuilder();
@@ -192,6 +194,7 @@ public class TableViewObj implements Viewable,
     protected JComboBox                     selectorCBX     = null;
     protected int                           mainCompRowInx  = 1;
     
+    protected JButton                       searchButton    = null;
     protected JButton                       editButton      = null;
     protected JButton                       newButton       = null;
     protected JButton                       deleteButton    = null;
@@ -324,24 +327,8 @@ public class TableViewObj implements Viewable,
                         String newTTStr = ResultSetController.createTooltip("NewRecordTT",    view.getObjTitle());
                         String delTTStr = ResultSetController.createTooltip("RemoveRecordTT", view.getObjTitle());
                         
-                        editButton   = UIHelper.createButton("EditForm", edtTTStr, IconManager.IconSize.Std16, true);
-                        newButton    = UIHelper.createButton("CreateObj", newTTStr, IconManager.IconSize.Std16, true);
+                        
                         deleteButton = UIHelper.createButton("DeleteRecord", delTTStr, IconManager.IconSize.Std16, true);
-                        
-                        editButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent e)
-                            {
-                                editRow(table.getSelectedRow(), false);
-                            }
-                        });
-                        
-                        newButton.addActionListener(new ActionListener() {
-                            public void actionPerformed(ActionEvent e)
-                            {
-                                editRow(table.getSelectedRow(), true);
-                            }
-                        });
-                        
                         deleteButton.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e)
                             {
@@ -349,10 +336,80 @@ public class TableViewObj implements Viewable,
                             }
                         });
                         
-                        PanelBuilder builder = new PanelBuilder(new FormLayout("f:1px:g,p,1px,p,1px,p,1px,p,1px,p", "p"));
-                        builder.add(editButton, cc.xy(2,1));
-                        builder.add(newButton, cc.xy(4,1));
-                        builder.add(deleteButton, cc.xy(6,1));
+                        boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
+                        if (addSearch)
+                        {
+                            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                            if (tblInfo != null)
+                            {
+                                searchName = tblInfo.getSearchDialog();
+                                if (StringUtils.isEmpty(searchName))
+                                {
+                                    searchName = ""; // Note not null but empty tells it to disable the search btn
+                                    
+                                    log.error("The Search Dialog Name is empty or missing for class["+view.getClassName()+"]");
+                                }
+                            } else
+                            {
+                                log.error("Couldn't find TableInfo for class["+view.getClassName()+"]");
+                            }
+                            
+                            searchButton = UIHelper.createButton("Search", "SearchForRecordTT", IconManager.IconSize.Std16, true);
+                            searchButton.addActionListener(new ActionListener() {
+                                public void actionPerformed(ActionEvent e)
+                                {
+                                    doSearch();
+                                }
+                            });
+                            
+                        } else
+                        {
+                            editButton   = UIHelper.createButton("EditForm", edtTTStr, IconManager.IconSize.Std16, true);
+                            newButton    = UIHelper.createButton("CreateObj", newTTStr, IconManager.IconSize.Std16, true);
+                            
+                            editButton.addActionListener(new ActionListener() {
+                                public void actionPerformed(ActionEvent e)
+                                {
+                                    editRow(table.getSelectedRow(), false);
+                                }
+                            });
+                            
+                            newButton.addActionListener(new ActionListener() {
+                                public void actionPerformed(ActionEvent e)
+                                {
+                                    editRow(table.getSelectedRow(), true);
+                                }
+                            });
+                        }
+                        
+                        int cnt = (deleteButton != null ? 1 : 0) + (searchButton != null ? 1 : 0) + (editButton != null ? 1 : 0) + (newButton != null ? 1 : 0);
+                        
+                        PanelBuilder builder = new PanelBuilder(new FormLayout("f:1px:g,"+UIHelper.createDuplicateJGoodiesDef("p", "1px", cnt), "p"));
+                        int x = 2;
+                        if (editButton != null)
+                        {
+                            builder.add(editButton, cc.xy(x,1));  
+                            x += 2;
+                        }
+                        
+                        if (newButton != null)
+                        {
+                            builder.add(newButton, cc.xy(x,1));  
+                            x += 2;
+                        }
+                        
+                        if (deleteButton != null)
+                        {
+                            builder.add(deleteButton, cc.xy(x,1));  
+                            x += 2;
+                        }
+                        
+                        if (searchButton != null)
+                        {
+                            builder.add(searchButton, cc.xy(x,1));  
+                            x += 2;
+                        }
+                        
                         builder.getPanel().setBackground(bgColor);
                         
                         comps.add(builder.getPanel());
@@ -414,6 +471,87 @@ public class TableViewObj implements Viewable,
             //mainBuilder.add(controlPanel, cc.xy(1, mainCompRowInx+2));
             mainComp.add(controlPanel, BorderLayout.SOUTH);
         }
+    }
+    
+    /**
+     * 
+     */
+    private void doSearch()
+    {
+        if (StringUtils.isNotEmpty(searchName))
+        {
+            ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getWindow(mainComp), searchName);
+            dlg.setMultipleSelection(true);
+            dlg.getDialog().setModal(true);
+            dlg.getDialog().setVisible(true);
+            if (!dlg.isCancelled())
+            {
+                // Some object that are searched for need to have a new parent
+                // so we ask them if they want us to create one for them
+                // and then we hand it to them.
+                // Otherwise we just set the new object into the form.
+                List<Object>  newDataObjects = dlg.getSelectedObjects();
+                boolean doSetNewDataObj = true;
+                
+                if (businessRules != null && newDataObjects != null)
+                {
+                    if (businessRules.doesSearchObjectRequireNewParent())
+                    {
+                        //createNewDataObject(false);
+                        //doSetNewDataObj = false;
+                        throw new RuntimeException("NOT IMPLMENTED!");
+                    }
+                    
+                    for (Object dObj : newDataObjects)
+                    {
+                        businessRules.processSearchObject(!doSetNewDataObj ? dataObj : null, dObj);
+                    }
+
+                    // Set the data and validate
+                    this.setDataIntoUI();
+                    
+                    if (formValidator != null)
+                    {
+                        formValidator.validateForm();
+                    }
+                }
+                
+                if (newDataObjects != null && newDataObjects.size() > 0)
+                {
+                    if (doSetNewDataObj)
+                    {
+                        if (dataObjList != null && origDataSet != null)
+                        {
+                            dataObjList.addAll(newDataObjects);
+                            origDataSet.addAll(newDataObjects);
+                            
+                            for (Object dObj : newDataObjects)
+                            {
+                                parentDataObj.addReference((FormDataObjIFace)dObj, dataSetFieldName);
+                            }
+                            
+                            if (rsController != null)
+                            {
+                                int len = dataObjList.size();
+                                rsController.setLength(len);
+                                rsController.setIndex(len-1, false);
+                            }
+                            model.fireDataChanged();
+                            tellMultiViewOfChange();
+                            
+                        } else 
+                        {
+                            setDataObj(newDataObjects.get(0));
+                        }
+                    }
+                }
+            }
+
+        } else
+        {
+            log.error("The search name is empty is there one defined in the display tag for the XML?");
+        }
+   
     }
     
     /* (non-Javadoc)
@@ -848,10 +986,12 @@ public class TableViewObj implements Viewable,
      */
     protected void deleteRow(final int rowIndex)
     {
+        boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
+        
         FormDataObjIFace dObj = (FormDataObjIFace)dataObjList.get(rowIndex);
         if (dObj != null)
         {
-            Object[] delBtnLabels = {getResourceString("Delete"), getResourceString("CANCEL")};
+            Object[] delBtnLabels = {getResourceString(addSearch ? "Remove" : "Delete"), getResourceString("CANCEL")};
             int rv = JOptionPane.showOptionDialog(null, UIRegistry.getLocalizedMessage("ASK_DELETE", dObj.getIdentityTitle()),
                                                   getResourceString("Delete"),
                                                   JOptionPane.YES_NO_OPTION,
@@ -878,12 +1018,15 @@ public class TableViewObj implements Viewable,
                 table.getSelectionModel().clearSelection();
                 updateUI(false);
                 
-                // Delete a child object by caching it in the Top Level MultiView
-                if (mvParent != null && !mvParent.isTopLevel())
+                if (!addSearch)
                 {
-                    mvParent.getTopLevel().addDeletedItem(dObj);
-                    String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dObj) : "";
-                    UIRegistry.getStatusBar().setText(delMsg);
+                    // Delete a child object by caching it in the Top Level MultiView
+                    if (mvParent != null && !mvParent.isTopLevel())
+                    {
+                        mvParent.getTopLevel().addDeletedItem(dObj);
+                        String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dObj) : "";
+                        UIRegistry.getStatusBar().setText(delMsg);
+                    }
                 }
             }
         }
