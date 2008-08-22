@@ -191,20 +191,22 @@ public class UploadTableTree extends UploadTable
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getParentRecordForMatching(edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry, int)
-     * 
-     */
     /*
      * Climbs the tree looking for a non-null parent.
      */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getParentRecord(int, edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable)
+     */
     @Override
-    protected DataModelObjBase getParentRecordForMatching(final ParentTableEntry pte, final int recNum) throws UploaderException
+    protected DataModelObjBase getParentRecord(final int recNum, UploadTable forChild) throws UploaderException
     {
-        DataModelObjBase result = super.getParentRecordForMatching(pte, recNum);
+        DataModelObjBase result = super.getParentRecord(recNum, forChild);
         if (result != null) { return result; }
         result = getParentRec(recNum);
-        if (result == null) { return (DataModelObjBase) getDefaultParent2(getTreeDefItem()); }
+        if (result == null && (forChild instanceof UploadTableTree)) 
+        { 
+            return (DataModelObjBase) getDefaultParent2(getTreeDefItem()); 
+        }
         return result;
     }
 
@@ -685,7 +687,7 @@ public class UploadTableTree extends UploadTable
      */
     @Override
     protected boolean setParents(DataModelObjBase rec, int recNum)
-            throws InvocationTargetException, IllegalArgumentException, IllegalAccessException
+            throws InvocationTargetException, IllegalArgumentException, IllegalAccessException, UploaderException
     {
         super.setParents(rec, recNum);
         return true; //don't worry. It will be OK in the end.
@@ -700,5 +702,81 @@ public class UploadTableTree extends UploadTable
 		// all already taken care of.
 	}
 
-    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#isBlankVal(edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadField, int, int, edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData)
+     */
+    @Override
+    protected boolean isBlankVal(UploadField fld, int seq, int row, UploadData uploadData)
+    {
+        boolean result = super.isBlankVal(fld, seq, row, uploadData);
+        if (!result || uploadFields.size() == 1 || (parent != null && parent.uploadFields.size() > 1))
+        {
+            return false;
+        }
+        
+        UploadTableTree kid = child;
+        while (kid != null)
+        {
+            UploadField kidField = null;
+            for (UploadField field : kid.uploadFields.get(seq))
+            {
+                if (field.getField().getName().equals(fld.getField().getName()))
+                {
+                    kidField = field; 
+                    break;
+                }
+            }
+            if (kidField != null)
+            {
+                kidField.setValue(uploadData.get(row, kidField.getIndex()));
+                if (!super.isBlankVal(kidField, seq, row, uploadData))
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                //this should never happen
+                log.error("Possibly invalid tree structure for " + tblClass.getSimpleName() + " (" + fld + ")");
+            }
+            kid = kid.child;
+        }
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#addInvalidValueMsgForOneToManySkip(java.util.Vector, edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadField, java.lang.String, int, int)
+     */
+    @Override
+    protected void addInvalidValueMsgForOneToManySkip(Vector<UploadTableInvalidValue> msgs,
+                                                      UploadField fld,
+                                                      String name,
+                                                      int row,
+                                                      int seq)
+    {
+        super.addInvalidValueMsgForOneToManySkip(msgs, fld, name, row, seq);
+        UploadTableTree kid = child;
+        while (kid != null)
+        {
+            UploadField kidField = null;
+            for (UploadField field : kid.uploadFields.get(seq))
+            {
+                if (field.getField().getName().equals(fld.getField().getName()))
+                {
+                    kidField = field; 
+                    break;
+                }
+            }
+            if (kidField != null)
+            {
+                super.addInvalidValueMsgForOneToManySkip(msgs, kidField, kid.toString(), row, seq);
+            }
+            else
+            {
+                //this should never happen
+                log.error("Possibly invalid tree structure for " + tblClass.getSimpleName() + " (" + fld + ")");
+            }
+            kid = kid.child;
+        }
+    }
 }

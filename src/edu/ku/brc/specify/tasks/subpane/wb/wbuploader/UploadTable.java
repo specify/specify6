@@ -57,7 +57,6 @@ import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
@@ -739,7 +738,7 @@ public class UploadTable implements Comparable<UploadTable>
      * @param index Specifies the 'sequence' (for one-to-many relationships).
      * @return Current (or last uploaded) record for this table.
      */
-    public final DataModelObjBase getCurrentRecord(int index)
+    public DataModelObjBase getCurrentRecord(int index)
     {
         if (currentRecords.size() == 0) { return null; }
         if (index > currentRecords.size() - 1) { return currentRecords.get(0); }
@@ -829,7 +828,7 @@ public class UploadTable implements Comparable<UploadTable>
      * Sets parent classes for rec.
      */
     protected boolean setParents(DataModelObjBase rec, int recNum) throws InvocationTargetException,
-            IllegalArgumentException, IllegalAccessException
+            IllegalArgumentException, IllegalAccessException, UploaderException
     {
         boolean requirementsMet = true;
         for (Vector<ParentTableEntry> ptes : parentTables)
@@ -837,7 +836,7 @@ public class UploadTable implements Comparable<UploadTable>
             for (ParentTableEntry pt : ptes)
             {
                 Object arg[] = new Object[1];
-                DataModelObjBase parentRec = pt.getImportTable().getCurrentRecord(recNum);
+                DataModelObjBase parentRec = pt.getImportTable().getParentRecord(recNum, this);
                 if (parentRec == null || parentRec.getId() == null)
                 {
                     arg[0] = null;
@@ -1358,15 +1357,15 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
     /**
-     * @param pte
      * @param recNum
+     * @param forChild
      * @return the current value for the parent represented by pte.
      * @throws UploaderException
      */
     @SuppressWarnings("unused")
-    protected DataModelObjBase getParentRecordForMatching(final ParentTableEntry pte, final int recNum) throws UploaderException
+    protected DataModelObjBase getParentRecord(final int recNum, UploadTable forChild) throws UploaderException
     {
-        return pte.getImportTable().getCurrentRecord(recNum);
+        return getCurrentRecord(recNum);
     }
     
     protected Discipline getDiscipline() throws UploaderException
@@ -1469,7 +1468,7 @@ public class UploadTable implements Comparable<UploadTable>
                 for (ParentTableEntry pte : ptes)
                 {
                     restrictedVals.add(new Pair<String, String>(pte.getPropertyName(),
-                            addRestriction(critter, pte.getPropertyName(), getParentRecordForMatching(pte, recNum), false)));
+                            addRestriction(critter, pte.getPropertyName(), pte.getImportTable().getParentRecord(recNum, this), false)));
                 }
             }
             for (RelatedClassSetter rce : relatedClassDefaults)
@@ -1681,6 +1680,34 @@ public class UploadTable implements Comparable<UploadTable>
         return UIRegistry.getResourceString("WB_UPLOAD_UNABLE_TO_FIND_VALID_VALS");
     }
     
+    /**
+     * @param fld
+     * @param seq
+     * @param row
+     * @param uploadData
+     * @return true if the fld is blank/empty
+     * This function is called during validation. It is used to validate
+     * consistency for one-to-many fields such as "Collector LastName XX"
+     */
+    protected boolean isBlankVal(final UploadField fld, final int seq, final int row, final UploadData uploadData)
+    {
+        return StringUtils.isEmpty(fld.getValue());
+    }
+    
+    /**
+     * @param msgs
+     * @param fld
+     * @param name
+     * @param row
+     * @param seq
+     */
+    protected void addInvalidValueMsgForOneToManySkip(Vector<UploadTableInvalidValue> msgs, UploadField fld, String name, int row, int seq)
+    {
+        msgs.add(new UploadTableInvalidValue(null, this, fld, row, 
+                new Exception(String.format(UIRegistry.getResourceString("WB_UPLOAD_ONE_TO_MANY_SKIP"),
+                        name, seq+1))));
+    }
+    
     public Vector<UploadTableInvalidValue> validateValues(final UploadData uploadData)
     {
         Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
@@ -1703,7 +1730,7 @@ public class UploadTable implements Comparable<UploadTable>
                             currFirstFld = fld;
                         }
                         fld.setValue(uploadData.get(row, fld.getIndex()));
-                        isBlank &= StringUtils.isEmpty(fld.getValue());
+                        isBlank &= isBlankVal(fld, seq, row, uploadData);
                         try
                         {
                             if (invalidNull(fld, uploadData, row, seq)) 
@@ -1723,10 +1750,9 @@ public class UploadTable implements Comparable<UploadTable>
                         }
                     }
                 }
-                if (isBlank && !gotABlank && currFirstFld != null && !(Treeable.class.isAssignableFrom(tblClass)))
+                if (isBlank && !gotABlank && currFirstFld != null)
                 /* 
                  * Disallow situations where 1-many lists have 'holes' - eg. CollectorLastName2 is blank but CollectorLastName1 and -3 are not.
-                 * (Except for treeables (Genus and Species) - which can lead to strange - determinations with no taxa - but allowaable results.) 
                  * 
                  */
                 {
@@ -1739,9 +1765,7 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 else if (gotABlank)
                 {
-                    result.add(new UploadTableInvalidValue(null, this, blankFirstFld, row, 
-                            new Exception(String.format(UIRegistry.getResourceString("WB_UPLOAD_ONE_TO_MANY_SKIP"),
-                                    toString(), blankSeq+1))));
+                    addInvalidValueMsgForOneToManySkip(result, blankFirstFld, toString(), row, blankSeq);
                 }
                     
                 seq++;

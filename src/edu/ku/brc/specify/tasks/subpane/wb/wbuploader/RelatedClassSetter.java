@@ -95,18 +95,7 @@ public class RelatedClassSetter
      */
     public Object getDefaultId(int idx)
     {
-        //if idx is greater than number of vals set, assume same val (at idx=0) is to be used for all idxs.
-        int index = idx;
-        if (index >= getSettings())
-        {
-            index = 0;
-            //if idx is greater than number of vals set and number of vals set is > 1, something is wrong.
-            if (getSettings() > 1)
-            {
-                log.error("invalid idx for defaultId");
-            }
-        }
-        return defaultIds.get(index);
+        return defaultIds.get(adjustIdx(idx));
     }
     
     public Object getDefaultId()
@@ -183,6 +172,11 @@ public class RelatedClassSetter
      */
     protected Object getSetDefault(int idx)
     {
+        return defaultObjs.get(adjustIdx(idx));
+    }
+    
+    protected int adjustIdx(int idx)
+    {
         //if idx is greater than number of vals set, assume same val (at idx=0) is to be used for all idxs.
         int index = idx;
         if (index >= getSettings())
@@ -194,10 +188,8 @@ public class RelatedClassSetter
                 log.error("invalid idx for defaultObj");
             }
         }
-        return defaultObjs.get(index);
-        
+        return index;
     }
-    
     /**
      * @return the defaultObj
      */
@@ -217,7 +209,7 @@ public class RelatedClassSetter
                     Object[] args = new Object[2];
                     args[0] = relatedClass;
                     args[1] = keyClass.cast(getDefaultId(idx));
-                    defaultObjs.set(idx, getMethod.invoke(objSession, args));
+                    defaultObjs.set(adjustIdx(idx), getMethod.invoke(objSession, args));
                     if (getDefaultObj(idx) == null) { throw new UploaderException("Object with id "
                             + getDefaultId(idx).toString() + " does not exist.",
                             UploaderException.ABORT_IMPORT); }
