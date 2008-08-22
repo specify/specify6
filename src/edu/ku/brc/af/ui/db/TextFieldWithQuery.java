@@ -210,8 +210,6 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             public void focusGained(FocusEvent arg0)
             {
                 tabOutSearch = false;
-                //prevEnteredText = textField.getText();
-                //log.debug("PREV: "+prevEnteredText);
                 
                 int len = textField.getText().length();
                 if (len > 0)
@@ -526,9 +524,6 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
 
                 public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
                 {
-                    //prevEnteredText = textField.getText();
-                    //log.debug("PREV: "+prevEnteredText);
-                    
                     isPopupShowing  = false;
                     ignoreFocusLost = false;
                     
