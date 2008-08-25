@@ -314,17 +314,25 @@ public class LoanSelectPrepsDlg extends CustomDialog
             PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", "p,5px,p"), this); //$NON-NLS-1$ //$NON-NLS-2$
             CellConstraints cc      = new CellConstraints();
      
-            String taxonName = getResourceString("LoanSelectPrepsDlg.NO_DET"); // This title should never happen //$NON-NLS-1$
+            String taxonName = null;
             for (Determination deter : colObj.getDeterminations())
             {
-                if (deter.getStatus().getType() == DeterminationStatus.CURRENT)
+                if (deter.getStatus() != null && deter.getStatus().getType() == DeterminationStatus.CURRENT)
                 {
                     taxonName = getTaxonName(deter);
                     break;
                 }
             }
-            String descr = String.format(getResourceString("LoanSelectPrepsDlg.TITLE_PAIR"), colObj.getIdentityTitle(), taxonName); //$NON-NLS-1$
-            descr = StringUtils.stripToEmpty(descr);
+            
+            String descr;
+            if (StringUtils.isNotEmpty(taxonName))
+            {
+                descr = String.format(getResourceString("LoanSelectPrepsDlg.TITLE_PAIR"), colObj.getIdentityTitle(), taxonName); //$NON-NLS-1$
+                descr = StringUtils.stripToEmpty(descr);
+            } else
+            {
+                descr = getResourceString("LoanSelectPrepsDlg.NO_DET"); //$NON-NLS-1$
+            }
             
             pbuilder.add(checkBox = createCheckBox(descr), cc.xy(1,1));
             //builder.add(createLabel(String.format("%6.0f", new Object[]{colObj.getCatalogNumber()})), cc.xy(1,1));
@@ -377,16 +385,19 @@ public class LoanSelectPrepsDlg extends CustomDialog
         
         public String getTaxonName(final Determination deter)
         {
-            String taxonName;
-            if (deter.getTaxon().getFullName() == null)
+            String taxonName = null;
+            if (deter.getTaxon() != null)
             {
-                Taxon  parent = deter.getTaxon().getParent();
-                String genus  = parent.getFullName() == null ? parent.getName() : parent.getFullName();
-                taxonName = genus + " " + deter.getTaxon().getName(); //$NON-NLS-1$
-                
-            } else
-            {
-                taxonName = deter.getTaxon().getFullName();
+                if (deter.getTaxon().getFullName() == null)
+                {
+                    Taxon  parent = deter.getTaxon().getParent();
+                    String genus  = parent.getFullName() == null ? parent.getName() : parent.getFullName();
+                    taxonName = genus + " " + deter.getTaxon().getName(); //$NON-NLS-1$
+                    
+                } else
+                {
+                    taxonName = deter.getTaxon().getFullName();
+                }
             }
             return taxonName;
         }
