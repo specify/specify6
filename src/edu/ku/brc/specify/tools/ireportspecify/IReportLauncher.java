@@ -96,7 +96,7 @@ public class IReportLauncher implements DatabaseLoginListener
         //...end specify.restartApp snatch
         
         boolean canOpen = true;
-        if (UIHelper.isSecurityOn() || true)
+        if (UIHelper.isSecurityOn() || true)//XXX - may need to check Specify prefs for security
         {
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             canOpen = permissions.canView();

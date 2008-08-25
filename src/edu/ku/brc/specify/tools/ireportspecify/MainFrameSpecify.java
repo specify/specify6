@@ -396,7 +396,7 @@ public class MainFrameSpecify extends MainFrame
                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
                 false);
 
-        if (UIHelper.isSecurityOn() || true)
+        if (UIHelper.isSecurityOn() || true)//XXX - may need to check Specify prefs for security
         {
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canModify())
@@ -464,7 +464,7 @@ public class MainFrameSpecify extends MainFrame
 //            result = null;
         }
         // else
-        if (UIHelper.isSecurityOn() || true)
+        if (UIHelper.isSecurityOn() || true) //XXX - may need to check Specify prefs for security
         {
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canAdd())
@@ -1001,7 +1001,7 @@ public class MainFrameSpecify extends MainFrame
     @Override
     public Report newWizard()
     {
-        if (UIHelper.isSecurityOn() || true)
+        if (UIHelper.isSecurityOn() || true) //XXX - may need to check Specify prefs for security
         {
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canAdd())
