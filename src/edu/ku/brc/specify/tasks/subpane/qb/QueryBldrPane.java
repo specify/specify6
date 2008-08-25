@@ -589,6 +589,24 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
     
+    protected boolean canSave()
+    {
+        boolean result = true;
+        if (UIHelper.isSecurityOn() && (!task.getPermissions().canAdd() || !task.getPermissions().canModify()))
+        {
+            if (!task.getPermissions().canAdd() && !task.getPermissions().canModify())
+            {
+                result = false;
+            }
+            else
+            {
+                boolean newQ = query == null || query.getId() == null;
+                //if canAdd but !canModify then some strange behavior may result
+                result = newQ ? task.getPermissions().canAdd() : task.getPermissions().canModify();
+            }
+        }
+        return result;
+    }
     /**
      * 
      */
@@ -605,6 +623,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             list.repaint();
         }
         saveBtn.setEnabled(saveBtnEnabled);
+        saveBtn.setVisible(canSave());
         updateSearchBtn();
         QueryBldrPane.this.validate();
     }
@@ -2060,7 +2079,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     log.error(ex);
                 }
                 queryFieldsPanel.repaint();
-                saveBtn.setEnabled(QueryBldrPane.this.queryFieldItems.size() > 0);
+                saveBtn.setEnabled(QueryBldrPane.this.queryFieldItems.size() > 0 && canSave());
                 updateSearchBtn();
             }
         });
@@ -2228,7 +2247,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         queryFieldsPanel.repaint();
                         if (!loading)
                         {
-                            saveBtn.setEnabled(true);
+                            saveBtn.setEnabled(canSave());
                             updateSearchBtn();
                         }
                         //Sorry, but a new context can't be selected if any fields are selected from the current context.
@@ -2487,7 +2506,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 scrollQueryFieldsToRect(toMove.getBounds());
                 queryFieldsPanel.repaint();
                 updateMoverBtns();
-                saveBtn.setEnabled(true);
+                saveBtn.setEnabled(canSave());
             }
         });
     }
