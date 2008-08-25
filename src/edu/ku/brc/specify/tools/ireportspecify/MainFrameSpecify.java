@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.specify.tools.ireportspecify;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import it.businesslogic.ireport.JRField;
 import it.businesslogic.ireport.Report;
 import it.businesslogic.ireport.ReportReader;
@@ -48,6 +49,7 @@ import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -394,6 +396,18 @@ public class MainFrameSpecify extends MainFrame
                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
                 false);
 
+        if (UIHelper.isSecurityOn() || true)
+        {
+            PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
+            if (!permissions.canModify())
+            {
+                JOptionPane.showMessageDialog(null, getResourceString("IReportLauncher.PERMISSION_TO_MODIFY_DENIED"),
+                        getResourceString("IReportLauncher.PERMISSION_DENIED_TITLE"),
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
         AppResAndProps apr = getAppResAndPropsForFrame(jrf);        
         if (apr != null)
         {
@@ -450,6 +464,17 @@ public class MainFrameSpecify extends MainFrame
 //            result = null;
         }
         // else
+        if (UIHelper.isSecurityOn() || true)
+        {
+            PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
+            if (!permissions.canAdd())
+            {
+                JOptionPane.showMessageDialog(null, getResourceString("IReportLauncher.PERMISSION_TO_ADD_DENIED"),
+                        getResourceString("IReportLauncher.PERMISSION_DENIED_TITLE"),
+                        JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+        }
         AppResAndProps result = createAppResAndProps(jrf.getReport().getName(), -1, (ReportSpecify )jrf.getReport());
         if (result != null)
         {
@@ -976,6 +1001,17 @@ public class MainFrameSpecify extends MainFrame
     @Override
     public Report newWizard()
     {
+        if (UIHelper.isSecurityOn() || true)
+        {
+            PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
+            if (!permissions.canAdd())
+            {
+                JOptionPane.showMessageDialog(null, getResourceString("IReportLauncher.PERMISSION_TO_ADD_DENIED"),
+                        getResourceString("IReportLauncher.PERMISSION_DENIED_TITLE"),
+                        JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+        }
         List<QBJRDataSourceConnection> spConns = new Vector<QBJRDataSourceConnection>();
         for (Object conn : this.getConnections())
         {
@@ -999,7 +1035,8 @@ public class MainFrameSpecify extends MainFrame
         }
         Report result = makeNewReport(dlg.getSelectedObject());
         dlg.dispose();
-        if (result != null) {
+        if (result != null) 
+        {
             if (getReportProperties(result))
             {
                 openNewReportWindow(result);

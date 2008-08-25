@@ -50,6 +50,7 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -260,11 +261,11 @@ public class ReportsBaseTask extends BaseTask
                 String tableIdStr = tcd.getParams().getProperty("tableid");
                 if (tableIdStr != null)
                 {
-                    makeROCForCommand(tcd, navBox);
-                }
-                else
-                {
-                    log.error("Report Command is missing the table id");
+                    if (!UIHelper.isSecurityOn() || 
+                            DBTableIdMgr.getInstance().getInfoById(Integer.valueOf(tableIdStr)).getPermissions().canView())
+                    {
+                        makeROCForCommand(tcd, navBox);
+                    }
                 }
             }
             navBoxes.add(navBox);

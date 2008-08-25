@@ -38,6 +38,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -93,7 +94,9 @@ public class ReportsTask extends ReportsBaseTask
                 new CommandAction(REPORTS, RUN_REPORT, SpReport.getClassTableId()), null, false, false);// true means make it draggable
         roc.addDropDataFlavor(runReportFlavor);
         
-        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("RefreshReports"), name,
+        if (!UIHelper.isSecurityOn() || getPermissions().canModify() || getPermissions().canAdd())
+        {
+            actionNavBox.add(NavBox.createBtnWithTT(getResourceString("RefreshReports"), name,
                 getResourceString("REFRESH_REPORT_TT"), IconManager.STD_ICON_SIZE,
                 new ActionListener()
                 {
@@ -113,8 +116,11 @@ public class ReportsTask extends ReportsBaseTask
                         refreshCommands();
                     }
                 }));
+        }
         
-        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("ImportReport"), name,
+        if (!UIHelper.isSecurityOn() || getPermissions().canAdd())
+        {
+            actionNavBox.add(NavBox.createBtnWithTT(getResourceString("ImportReport"), name,
                 getResourceString("IMPORT_REPORT_TT"), IconManager.STD_ICON_SIZE,
                 new ActionListener()
                 {
@@ -135,6 +141,7 @@ public class ReportsTask extends ReportsBaseTask
                                 ReportsBaseTask.IMPORT, null));
                     }
                 }));
+        }
     }
 
     /**

@@ -18,7 +18,9 @@ import java.util.Locale;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -27,6 +29,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author timbo
@@ -92,7 +95,23 @@ public class IReportLauncher implements DatabaseLoginListener
         }
         //...end specify.restartApp snatch
         
-        openIReportEditor();
+        boolean canOpen = true;
+        if (UIHelper.isSecurityOn() || true)
+        {
+            PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
+            canOpen = permissions.canView();
+        }
+        if (canOpen)
+        {
+            openIReportEditor();
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, getResourceString("IReportLauncher.PERMISSION_DENIED"),
+                        getResourceString("IReportLauncher.PERMISSION_DENIED_TITLE"),
+                        JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        }
     }
 
     
