@@ -271,6 +271,29 @@ public class QueryTask extends BaseTask
     {
         freqQueries  = readResourceForList("QueryFreqList");
         extraQueries = readResourceForList("QueryExtraList");
+        if (UIHelper.isSecurityOn())
+        {
+            securityFilter(freqQueries);
+            securityFilter(extraQueries);
+        }
+    }
+    
+    /**
+     * @param list
+     * 
+     * Removes tables from list if they are not viewable.
+     * Assumes security is ON.
+     */
+    protected void securityFilter(Vector<String> list)
+    {
+        for (int t = list.size()-1; t >= 0; t--)
+        {
+            String tblName = list.get(t);
+            if (!DBTableIdMgr.getInstance().getByShortClassName(tblName).getPermissions().canView())
+            {
+                list.remove(t);
+            }
+        }
     }
     
     /**
@@ -515,24 +538,39 @@ public class QueryTask extends BaseTask
      */
     protected void checkForOtherNavBtn()
     {
+        // XXX Users will probably want to share queries??
+        String sqlStr = "From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = false AND user.specifyUserId = "
+                + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId();
         DataProviderSessionIFace session = null;
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            Integer count = (Integer)session.getData("SELECT count(spQueryId) From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = false AND user.specifyUserId = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId());
-            if (count != null && count > 0)
+            List<?> queries = session.getDataList(sqlStr);
+            int count = 0;
+            for (Iterator<?> iter = queries.iterator(); iter.hasNext();)
+            {
+                Object[] obj = (Object[]) iter.next();
+                SpQuery query = (SpQuery) obj[0];
+                if (!UIHelper.isSecurityOn()
+                        || DBTableIdMgr.getInstance().getInfoById(query.getContextTableId())
+                                .getPermissions().canView())
+                {
+                    count = 1;
+                    break;
+                }
+            }
+            if (count > 0)
             {
                 NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("QY_OTHER_QUERIES"),
-                        name, 
-                        getResourceString("QY_OTHER_QUERIES_TT"), 
-                        IconManager.STD_ICON_SIZE, new ActionListener() 
+                        name, getResourceString("QY_OTHER_QUERIES_TT"), IconManager.STD_ICON_SIZE,
+                        new ActionListener()
                         {
                             public void actionPerformed(ActionEvent e)
                             {
                                 showOtherViewsDlg();
                             }
                         });
-                    
+
                 navBox.add(nbi);
             }
         }
@@ -545,7 +583,9 @@ public class QueryTask extends BaseTask
         }
     }
     
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.ku.brc.af.tasks.BaseTask#isConfigurable()
      */
     @Override
@@ -554,7 +594,9 @@ public class QueryTask extends BaseTask
         return true;
     }
     
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.ku.brc.af.tasks.BaseTask#doConfigure()
      */
     @Override
@@ -755,20 +797,20 @@ public class QueryTask extends BaseTask
      */
     protected void createQueryCreateNB(final String shortClassName)
     {
-        final DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(shortClassName);
-        actionNavBox.add(NavBox.createBtnWithTT(String.format(getResourceString("QB_CREATE_NEWQUERY"), 
-                tableInfo.getTitle()), 
-                tableInfo.getTitle(),
-                //name, 
-                getResourceString("QB_CREATE_NEWQUERY_TT"), 
-                IconManager.STD_ICON_SIZE, new ActionListener() 
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                new NewQueryWorker(tableInfo).start();
-            }
-        }
-        ));
+        final DBTableInfo tableInfo = DBTableIdMgr.getInstance()
+                .getByShortClassName(shortClassName);
+        actionNavBox.add(NavBox.createBtnWithTT(String.format(
+                getResourceString("QB_CREATE_NEWQUERY"), tableInfo.getTitle()), tableInfo
+                .getTitle(),
+                // name,
+                getResourceString("QB_CREATE_NEWQUERY_TT"), IconManager.STD_ICON_SIZE,
+                new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        new NewQueryWorker(tableInfo).start();
+                    }
+                }));
     }
 
     /**
@@ -786,8 +828,10 @@ public class QueryTask extends BaseTask
             for (Object obj : tableNodes)
             {
                 String sName = XMLHelper.getAttr((Element)obj, "name", null);
-                stdQueries.add(sName);
-                
+                if (!UIHelper.isSecurityOn() || DBTableIdMgr.getInstance().getByShortClassName(sName).getPermissions().canView())
+                {
+                    stdQueries.add(sName);
+                }
             }
         }
         catch (Exception ex)
@@ -824,9 +868,9 @@ public class QueryTask extends BaseTask
         toolbarItems = new Vector<ToolBarItemDesc>();
 
         String label    = getResourceString(name);
-        String iconName = name;
+        String localIconName = name;
         String hint     = getResourceString("search_hint");
-        ToolBarDropDownBtn btn = createToolbarButton(label,iconName,hint,menus);
+        ToolBarDropDownBtn btn = createToolbarButton(label,localIconName,hint,menus);
         if (tbList.size() == 0)
         {
             tbList.add(btn);
@@ -844,18 +888,21 @@ public class QueryTask extends BaseTask
      */
     protected NavBoxItemIFace addToNavBox(final RecordSet recordSet)
     {
-        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, recordSet.getName(), "Query", null, 
-                                                                   new CommandAction(QUERY, DELETE_CMD_ACT, recordSet), 
-                                                                   true, true);// true means make it draggable
+        boolean canDelete = UIHelper.isSecurityOn() ? getPermissions().canDelete() : true;
+        
+        final RolloverCommand roc = (RolloverCommand) makeDnDNavBtn(navBox, recordSet.getName(),
+                "Query", null,
+                canDelete ? new CommandAction(QUERY, DELETE_CMD_ACT, recordSet) : null, 
+                true, true);
         roc.setData(recordSet);
-        roc.addActionListener(new ActionListener() {
+        roc.addActionListener(new ActionListener()
+        {
             public void actionPerformed(final ActionEvent e)
             {
-                new EditQueryWorker(recordSet.getOnlyItem().getRecordId(), (RolloverCommand )e.getSource()).start();
+                new EditQueryWorker(recordSet.getOnlyItem().getRecordId(), (RolloverCommand) e
+                        .getSource()).start();
             }
-            
         });
-        
         NavBoxItemIFace nbi = (NavBoxItemIFace)roc;
         
         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getTableId());
@@ -869,8 +916,10 @@ public class QueryTask extends BaseTask
         }
         
         roc.addDragDataFlavor(new DataFlavorTableExt(QueryTask.class, QUERY, recordSet.getTableId()));
-        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-        
+        if (canDelete)
+        {
+            roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+        }        
         return nbi;
     }
     
@@ -879,7 +928,11 @@ public class QueryTask extends BaseTask
      */
     protected void loadQueries()
     {
-        String sqlStr = "From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = true AND user.specifyUserId = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId() + " ORDER BY ordinal";
+        navBox = new DroppableNavBox(getResourceString("Queries"), QUERY_FLAVOR, QUERY, SAVE_QUERY);
+        // XXX Users will probably want to share queries??
+        String sqlStr = "From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = true AND user.specifyUserId = "
+                + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId()
+                + " ORDER BY ordinal";
 
         DataProviderSessionIFace session = null;
         try
@@ -887,19 +940,22 @@ public class QueryTask extends BaseTask
             session = DataProviderFactory.getInstance().createSession();
             List<?> queries = session.getDataList(sqlStr);
 
-            navBox = new DroppableNavBox(getResourceString("Queries"), QUERY_FLAVOR, QUERY, SAVE_QUERY);
-
             for (Iterator<?> iter = queries.iterator(); iter.hasNext();)
             {
                 Object[] obj = (Object[]) iter.next();
                 SpQuery query = (SpQuery) obj[0];
-                RecordSet rs = new RecordSet();
-                rs.initialize();
-                rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
-                rs.addItem(query.getSpQueryId());
-                addToNavBox(rs);
+                if (!UIHelper.isSecurityOn()
+                        || DBTableIdMgr.getInstance().getInfoById(query.getContextTableId())
+                                .getPermissions().canView())
+                {
+                    RecordSet rs = new RecordSet();
+                    rs.initialize();
+                    rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
+                    rs.addItem(query.getSpQueryId());
+                    addToNavBox(rs);
+                }
             }
-            
+
         }
         finally
         {
@@ -908,7 +964,6 @@ public class QueryTask extends BaseTask
                 session.close();
             }
         }
-        
         checkForOtherNavBtn();
     }
     
@@ -1342,10 +1397,13 @@ public class QueryTask extends BaseTask
      */
     protected void clearTableTree(final TableTree tree)
     {
+        System.out.println("Clear TableTree: " + tree.getName());
         if (tree.getTableQRI() != null)
         {
+            tree.getTableQRI().setIsInUse(false);
             for (int f = 0; f < tree.getTableQRI().getFields(); f++)
             {
+                System.out.println("   " + tree.getTableQRI().getField(f).getFieldName());
                 tree.getTableQRI().getField(f).setIsInUse(false);
             }
         }
@@ -1354,6 +1412,7 @@ public class QueryTask extends BaseTask
             clearTableTree(tree.getKid(k));
         }
     }
+    
     
     /**
      * @return tableTree paired with tableTreeHash
@@ -1415,7 +1474,7 @@ public class QueryTask extends BaseTask
     {
         String tableName = XMLHelper.getAttr(parent, "name", null);
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(tableName);
-        if (!tableInfo.isHidden())
+        if (!tableInfo.isHidden() && (!UIHelper.isSecurityOn() || tableInfo.getPermissions().canView()))
         {
             String fieldName = XMLHelper.getAttr(parent, "field", null);
             if (StringUtils.isEmpty(fieldName))
@@ -1489,7 +1548,7 @@ public class QueryTask extends BaseTask
                 Element kidElement = (Element) obj;
                 String kidClassName = XMLHelper.getAttr(kidElement, "name", null);
                 tableInfo = DBTableIdMgr.getInstance().getByShortClassName(kidClassName);
-                if (!tableInfo.isHidden())
+                if (!tableInfo.isHidden() && (!UIHelper.isSecurityOn() || tableInfo.getPermissions().canView()))
                 {
                     tableName = XMLHelper.getAttr(kidElement, "name", null);
                     fieldName = XMLHelper.getAttr(kidElement, "field", null);
@@ -1508,7 +1567,7 @@ public class QueryTask extends BaseTask
      * @param treeRoot
      * @return a Hashtable of top-level tables in tableTree.
      */
-    protected static Hashtable<String, TableTree> buildTableTreeHash(final TableTree treeRoot)
+    protected Hashtable<String, TableTree> buildTableTreeHash(final TableTree treeRoot)
     {
         Hashtable<String, TableTree> result = new Hashtable<String, TableTree>();
         try
