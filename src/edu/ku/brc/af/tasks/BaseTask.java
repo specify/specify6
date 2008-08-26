@@ -1101,7 +1101,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     public void doConfigure()
     {
-        
+        //Documented Empty Block
     }
 
     /* (non-Javadoc)
@@ -1157,11 +1157,19 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     {
         if (permissions == null)
         {
-            permissions = SecurityMgr.getInstance().getPermission(securityPrefix + name);
+            permissions = SecurityMgr.getInstance().getPermission(securityPrefix + getPermissionName());
         }
         return permissions;
     }
 
+    /**
+     * @return name to be used when getting permissions from SecurityMgr.
+     */
+    protected String getPermissionName()
+    {
+        return name;
+    }
+    
     /**
      * @param permissions the permissions to set
      */
@@ -1313,7 +1321,5 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             CommandDispatcher.dispatch(cmdAction);
         }
     }
-
-
 
 }

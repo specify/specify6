@@ -51,6 +51,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -123,21 +124,24 @@ public class MainFrameSpecify extends MainFrame
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            List<SpQuery> qs = session.getDataList(SpQuery.class);
-            Collections.sort(qs, new Comparator<SpQuery>() {
+            // XXX Added userId condition to be consistent with QueryTask, but, Users will probably want to share queries??
+            String sqlStr = "From SpQuery where specifyUserId = "
+                    + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId();
+            List<?> qs = session.createQuery(sqlStr).list();
+            Collections.sort(qs, new Comparator<Object>() {
 
                 /* (non-Javadoc)
                  * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
                  */
                 //@Override
-                public int compare(SpQuery o1, SpQuery o2)
+                public int compare(Object o1, Object o2)
                 {
                     return o1.toString().compareTo(o2.toString());
                 }
             });
-            for (SpQuery q : qs)
+            for (Object q : qs)
             {
-                addSpQBConn(q);
+                addSpQBConn((SpQuery )q);
             }
         }
         catch (Exception e)
@@ -188,9 +192,13 @@ public class MainFrameSpecify extends MainFrame
     @SuppressWarnings("unchecked")  //iReport doesn't parameterize generics.
     protected void addSpQBConn(final SpQuery q)
     {
-        QBJRDataSourceConnection newq = new QBJRDataSourceConnection(q);
-        newq.loadProperties(null);
-        this.getConnections().add(newq);
+        if (!UIHelper.isSecurityOn() ||
+                DBTableIdMgr.getInstance().getInfoById(q.getContextTableId()).getPermissions().canView())
+        {
+            QBJRDataSourceConnection newq = new QBJRDataSourceConnection(q);
+            newq.loadProperties(null);
+            this.getConnections().add(newq);
+        }
     }
     
     /**
@@ -396,7 +404,7 @@ public class MainFrameSpecify extends MainFrame
                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
                 false);
 
-        if (UIHelper.isSecurityOn() || true)//XXX - may need to check Specify prefs for security
+        if (UIHelper.isSecurityOn())
         {
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canModify())
@@ -464,7 +472,7 @@ public class MainFrameSpecify extends MainFrame
 //            result = null;
         }
         // else
-        if (UIHelper.isSecurityOn() || true) //XXX - may need to check Specify prefs for security
+        if (UIHelper.isSecurityOn())
         {
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canAdd())
@@ -1001,7 +1009,7 @@ public class MainFrameSpecify extends MainFrame
     @Override
     public Report newWizard()
     {
-        if (UIHelper.isSecurityOn() || true) //XXX - may need to check Specify prefs for security
+        if (UIHelper.isSecurityOn())
         {
             PermissionIFace permissions = SecurityMgr.getInstance().getPermission("Task.Reports");
             if (!permissions.canAdd())

@@ -420,6 +420,14 @@ public class DataEntryTask extends BaseTask
         }
     }
 
+    protected static FormPane createFormFor(final Taskable       task, 
+                                            final String         name, 
+                                            final String         viewSetName,
+                                            final String         viewName,
+                                            final RecordSetIFace recordSet)
+    {
+        return createFormFor(task, name, viewSetName, viewName, recordSet, false);
+    }
     /**
      * Create a form for a recordset.
      * @param task the task it belongs to
@@ -431,7 +439,8 @@ public class DataEntryTask extends BaseTask
                                             final String         name, 
                                             final String         viewSetName,
                                             final String         viewName,
-                                            final RecordSetIFace recordSet)
+                                            final RecordSetIFace recordSet,
+                                            final boolean readOnly)
     {
         if (UIHelper.isSecurityOn())
         {
@@ -470,7 +479,16 @@ public class DataEntryTask extends BaseTask
             
             if (view != null)
             {
-                formPane = new FormPane(name, task, view, null, null, MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
+                int options = MultiView.RESULTSET_CONTROLLER;
+                if (readOnly)
+                {
+                    options |= MultiView.HIDE_SAVE_BTN; 
+                }
+                else
+                {
+                    options |= MultiView.VIEW_SWITCHER;
+                }
+                formPane = new FormPane(name, task, view, null, null, options);
                 formPane.setIcon(getIconForView(view));
                 formPane.setRecordSet(recordSet);
                 
@@ -1069,6 +1087,13 @@ public class DataEntryTask extends BaseTask
         }
     }
     
+    protected void editData(final Taskable task,
+                            final Object data,
+                            final String viewName)
+    {
+        editData(task, data, viewName, false);
+    }
+    
     /**
      * Handles creating a form for viewing/editing and that will have data placed into it. The ViewSetName and View name are optional.
      * @param task the originating task
@@ -1078,11 +1103,12 @@ public class DataEntryTask extends BaseTask
      */
     protected void editData(final Taskable task,
                             final Object data, 
-                            final String viewName)
+                            final String viewName,
+                            final boolean readOnly)
     {
         if (data instanceof RecordSetIFace)
         {
-            FormPane formPane = createFormFor(task, name, null, viewName, (RecordSetIFace)data);
+            FormPane formPane = createFormFor(task, name, null, viewName, (RecordSetIFace)data, readOnly);
             if (formPane != null)
             {
                 addSubPaneToMgr(formPane);
@@ -1121,7 +1147,6 @@ public class DataEntryTask extends BaseTask
             String   viewName  = cmdAction.getPropertyAsString("view");
             Taskable task      = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
             Object   data      = cmdAction.getData();
-            
             if (data instanceof RecordSetIFace)
             {
                 editData(task != null ? task : this, data, viewName);
@@ -1133,7 +1158,7 @@ public class DataEntryTask extends BaseTask
             
         } else if (cmdAction.isAction(EDIT_DATA))
         {
-            editData(this, cmdAction.getData(), null);
+            editData(this, cmdAction.getData(), null, cmdAction.getProperty("readonly") != null);
         }
         else if (cmdAction.isAction("ShowView"))
         {

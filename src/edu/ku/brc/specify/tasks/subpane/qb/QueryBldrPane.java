@@ -1124,28 +1124,31 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             if (qf.getContextTableIdent() != null)
             {
                 DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(qf.getContextTableIdent());
-                DBFieldInfo fi = ti.getFieldByColumnName(qf.getFieldName());
-                String colName = ti.getAbbrev() + '.' + qf.getFieldName();
-                if (qf.getIsDisplay())
+                if (!UIHelper.isSecurityOn() || ti.getPermissions().canView())
                 {
-                    String lbl = qf.getColumnAliasTitle();
-                    if (fixLabels)
+                    DBFieldInfo fi = ti.getFieldByColumnName(qf.getFieldName());
+                    String colName = ti.getAbbrev() + '.' + qf.getFieldName();
+                    if (qf.getIsDisplay())
                     {
-                        lbl = lbl.replaceAll(" ", "_");
-                        lbl = lbl.replaceAll("/", "_");
+                        String lbl = qf.getColumnAliasTitle();
+                        if (fixLabels)
+                        {
+                            lbl = lbl.replaceAll(" ", "_");
+                            lbl = lbl.replaceAll("/", "_");
+                        }
+                        ERTICaptionInfo erti;
+                        if (fi != null)
+                        {
+                            erti = new ERTICaptionInfoQB(colName, lbl, true, fi.getFormatter(), 0, qf.getStringId(), RecordTypeCodeBuilder.getTypeCode(fi));
+                            erti.setColClass(fi.getDataClass());
+                        }
+                        else
+                        {
+                            erti = new ERTICaptionInfoQB(colName, lbl, true, null, 0, qf.getStringId(), null);
+                            erti.setColClass(String.class);
+                        }
+                        result.add(erti);
                     }
-                    ERTICaptionInfo erti;
-                    if (fi != null)
-                    {
-                        erti = new ERTICaptionInfoQB(colName, lbl, true, fi.getFormatter(), 0, qf.getStringId(), RecordTypeCodeBuilder.getTypeCode(fi));
-                        erti.setColClass(fi.getDataClass());
-                    }
-                    else
-                    {
-                        erti = new ERTICaptionInfoQB(colName, lbl, true, null, 0, qf.getStringId(), null);
-                        erti.setColClass(String.class);
-                    }
-                    result.add(erti);
                 }
             }
             else log.error("null contextTableIdent for " + qf.getFieldName());

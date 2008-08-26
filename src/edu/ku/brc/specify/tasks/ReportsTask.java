@@ -59,7 +59,7 @@ public class ReportsTask extends ReportsBaseTask
     {
         super();
         
-        name          = "Reports";
+        name          = REPORTS;
         iconName      = name;
         title         = getResourceString(name);
         defaultFlavor = new DataFlavor(ReportsBaseTask.class, name);

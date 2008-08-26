@@ -51,6 +51,7 @@ import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -94,7 +95,7 @@ public class ReportsBaseTask extends BaseTask
     protected static final Logger log = Logger.getLogger(ReportsBaseTask.class);
             
     // Static Data Members
-    public static final String     REPORTS      = "REPORTS";
+    public static final String     REPORTS      = "Reports";
     public static final String     REPORTS_MIME = "jrxml/report";
     public static final String     LABELS_MIME  = "jrxml/label";
 
@@ -212,12 +213,12 @@ public class ReportsBaseTask extends BaseTask
                     params.put("appresource", ap);
                 }
 
-                String iconName = params.getProperty("icon"); //$NON-NLS-1$
-                if (StringUtils.isEmpty(iconName))
+                String localIconName = params.getProperty("icon"); //$NON-NLS-1$
+                if (StringUtils.isEmpty(localIconName))
                 {
-                    iconName = defaultIcon;
+                    localIconName = defaultIcon;
                 }
-                result.add(new TaskCommandDef(ap.getDescription(), iconName, params));
+                result.add(new TaskCommandDef(ap.getDescription(), localIconName, params));
             }
         }
         return result;
@@ -261,8 +262,16 @@ public class ReportsBaseTask extends BaseTask
                 String tableIdStr = tcd.getParams().getProperty("tableid");
                 if (tableIdStr != null)
                 {
-                    if (!UIHelper.isSecurityOn() || 
-                            DBTableIdMgr.getInstance().getInfoById(Integer.valueOf(tableIdStr)).getPermissions().canView())
+                    boolean makeROC = true;
+                    if (UIHelper.isSecurityOn())
+                    {
+                        DBTableInfo tblFo = DBTableIdMgr.getInstance().getInfoById(Integer.valueOf(tableIdStr));
+                        if (tblFo != null)
+                        {
+                            makeROC = tblFo.getPermissions().canView();
+                        }
+                    }
+                    if (makeROC)
                     {
                         makeROCForCommand(tcd, navBox);
                     }
@@ -315,12 +324,15 @@ public class ReportsBaseTask extends BaseTask
         CommandAction delCmd = null;
         if (repRS != null || cmdAction.getProperties().get("isimport") != null)
         {
-            delCmd = new CommandAction(REPORTS, DELETE_CMD_ACT, repRS);
-            if (cmdAction.getProperties().get("isimport") != null)
+            if (!UIHelper.isSecurityOn() || getPermissions().canDelete())
             {
-                delCmd.getProperties().put("name", cmdAction.getProperties().getProperty("name"));
-                delCmd.getProperties().put("appresource", cmdAction.getProperties().get("appresource"));
-                cmdAction.getProperties().remove("appresource");
+                delCmd = new CommandAction(REPORTS, DELETE_CMD_ACT, repRS);
+                if (cmdAction.getProperties().get("isimport") != null)
+                {
+                    delCmd.getProperties().put("name", cmdAction.getProperties().getProperty("name"));
+                    delCmd.getProperties().put("appresource", cmdAction.getProperties().get("appresource"));
+                    cmdAction.getProperties().remove("appresource");
+                }
             }
         }
         
@@ -597,9 +609,9 @@ public class ReportsBaseTask extends BaseTask
     {
         toolbarItems = new Vector<ToolBarItemDesc>();
         String label = getResourceString(name);
-        String iconName = name;
+        String localIconName = name;
         String hint = getResourceString("labels_hint");
-        ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
+        ToolBarDropDownBtn btn = createToolbarButton(label, localIconName, hint);
 
         toolbarItems.add(new ToolBarItemDesc(btn));
         return toolbarItems;
@@ -1351,6 +1363,17 @@ public class ReportsBaseTask extends BaseTask
             needsRS = Boolean.parseBoolean(needsRSStr);
         } 
         return needsRS;
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getPermissionName()
+     */
+    @Override
+    protected String getPermissionName()
+    {
+        //This is required(?) because the Reports and Labels tasks are currently merged. 
+        return REPORTS;
     }
 
 
