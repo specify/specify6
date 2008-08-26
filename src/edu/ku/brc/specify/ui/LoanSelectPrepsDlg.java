@@ -119,7 +119,7 @@ public class LoanSelectPrepsDlg extends CustomDialog
         Vector<CollectionObject> availCOsToLoan = new Vector<CollectionObject>();
         for (CollectionObject co : colObjs)
         {
-            if (getCurrentDetermination(co) != null)
+            if (co.getDeterminations().size() == 0 || getCurrentDetermination(co) != null)
             {
                 int cntLoanablePreps = 0;
                 for (Preparation prep : co.getPreparations())

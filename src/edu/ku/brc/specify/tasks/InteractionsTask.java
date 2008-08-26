@@ -501,18 +501,18 @@ public class InteractionsTask extends BaseTask
      * @param navBox
      * @param action
      * @param cmdName
-     * @param iconName
+     * @param iconNameStr
      * @param tableIds
      * @return
      */
     protected NavBoxButton addCommand(final NavBox navBox, 
                                       final String action, 
                                       final String cmdName, 
-                                      final String iconName,
+                                      final String iconNameStr,
                                       final int[]  tableIds)
     {
         CommandAction cmdAction = new CommandAction(INTERACTIONS, action);
-        NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(cmdName), iconName, cmdAction, null, true, false);// true means make it draggable
+        NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(cmdName), iconNameStr, cmdAction, null, true, false);// true means make it draggable
         DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
                                                         RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), tableIds);
         roc.addDropDataFlavor(dfx);
@@ -671,11 +671,11 @@ public class InteractionsTask extends BaseTask
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
-        toolbarItems = new Vector<ToolBarItemDesc>();
-        String label = getResourceString(name);
-        String iconName = name;
+        toolbarItems       = new Vector<ToolBarItemDesc>();
+        String label       = getResourceString(name);
+        String iconNameStr = name;
         String hint = getResourceString("interactions_hint");
-        toolBarBtn = createToolbarButton(label, iconName, hint);
+        toolBarBtn = createToolbarButton(label, iconNameStr, hint);
 
         AppPreferences remotePrefs = AppPreferences.getRemote();
         if (remotePrefs == AppPreferences.getRemote())
@@ -1013,7 +1013,7 @@ public class InteractionsTask extends BaseTask
                     }
                 }
                 
-                if (noCurrDetList.size() == colObjList.size())
+                /*if (noCurrDetList.size() == colObjList.size())
                 {
                     UIRegistry.showLocalizedError("InteractionsTask.ALL_COLOBJ_BAD");
                     return; 
@@ -1021,7 +1021,7 @@ public class InteractionsTask extends BaseTask
                 } else if (noCurrDetList.size() > 0)
                 {
                     showMissingDetsDlg(noCurrDetList);
-                }
+                }*/
                 
                 final LoanSelectPrepsDlg loanSelectPrepsDlg = new LoanSelectPrepsDlg(availColObjList);
                 loanSelectPrepsDlg.createUI();

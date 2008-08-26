@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.GenericBusRules;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
@@ -466,15 +467,27 @@ public class DBTableIdMgr
 		DBTableInfo tableInfo = hash.get(recordSet.getDbTableId());
 		if (tableInfo != null)
 		{
+		    String joins    = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true, null, false);
+		    String specCols = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
+		    
 			StringBuffer strBuf = new StringBuffer("from "); //$NON-NLS-1$
 			strBuf.append(tableInfo.getName());
-			strBuf.append(" in class "); //$NON-NLS-1$
+			strBuf.append(" IN CLASS "); //$NON-NLS-1$
 			strBuf.append(tableInfo.getShortClassName());
-			strBuf.append(" where "); //$NON-NLS-1$
+			if (joins != null)
+			{
+			    strBuf.append(joins);
+			}
+			strBuf.append(" WHERE "); //$NON-NLS-1$
 			strBuf.append(tableInfo.getName());
 			strBuf.append('.');
 			strBuf.append(tableInfo.getPrimaryKeyName());
 			strBuf.append(getInClause(recordSet));
+	        if (specCols != null)
+            {
+                strBuf.append( " AND ");
+                strBuf.append(specCols);
+            }
 			log.debug(strBuf.toString());
             return strBuf.toString();
 		}
