@@ -25,6 +25,7 @@ import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.ServiceProviderIFace;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
@@ -34,7 +35,9 @@ import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
+import edu.ku.brc.specify.tasks.ReportsTask;
 import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -192,44 +195,55 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     public void buildReports()
     {
         reports.clear();
-        //first add reports associated directly with the results
-        if (queryBuilder != null)
+        boolean buildEm = true;
+        if (UIHelper.isSecurityOn())
         {
-            for (SpReport rep : queryBuilder.getReportsForQuery())
+            Taskable reportsTask = ContextMgr.getTaskByClass(ReportsTask.class);
+            if (reportsTask != null)
             {
-                if (repContextIsActive(rep.getAppResource()))
-                {
-                    reports.add(new QBResultReportServiceInfo(rep.getName(), rep.getName(), true, null, rep.getAppResource().getId(), rep.getRepeats()));
-                }
+                buildEm = reportsTask.getPermissions().canView();
             }
         }
-        
-        if (tableId != -1)
+        if (buildEm)
         {
-            //second add reports associated with the same table as the current results
-            List<AppResourceIFace> reps = AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.LABELS_MIME);
-            reps.addAll(AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.REPORTS_MIME));
-            for (AppResourceIFace rep : reps)
+            //first add reports associated directly with the results
+            if (queryBuilder != null)
             {
-                String tblIdStr = rep.getMetaData("tableid");
-                if (tblIdStr != null)
+                for (SpReport rep : queryBuilder.getReportsForQuery())
                 {
-                    if (tableId == Integer.valueOf(tblIdStr))
+                    if (repContextIsActive(rep.getAppResource()))
                     {
-                        reports.add(new QBResultReportServiceInfo(rep.getDescription() /*'title' seems to be currently stored in description */,
-                            rep.getName() /* and filename in name */, false, null, ((SpAppResource)rep).getId(), null));
+                        reports.add(new QBResultReportServiceInfo(rep.getName(), rep.getName(), true, null, rep.getAppResource().getId(), rep.getRepeats()));
                     }
-                    else
+                }
+            }
+        
+            if (tableId != -1)
+            {
+                //second add reports associated with the same table as the current results
+                List<AppResourceIFace> reps = AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.LABELS_MIME);
+                reps.addAll(AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.REPORTS_MIME));
+                for (AppResourceIFace rep : reps)
+                {
+                    String tblIdStr = rep.getMetaData("tableid");
+                    if (tblIdStr != null)
                     {
-                        //third add reports based on other queries...
-                        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                        try
+                        if (tableId == Integer.valueOf(tblIdStr))
                         {
-                            SpReport spRep = (SpReport)session.getData("from SpReport where appResourceId = " + ((SpAppResource)rep).getId());
-                            if (spRep != null && spRep.getQuery() != null && spRep.getQuery().getContextTableId().intValue() == tableId)
+                            reports.add(new QBResultReportServiceInfo(rep.getDescription() /*'title' seems to be currently stored in description */,
+                                    rep.getName() /* and filename in name */, false, null, ((SpAppResource)rep).getId(), null));
+                        }
+                        else
+                        {
+                            //third add reports based on other queries...
+                            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                            try
                             {
-                                reports
-                                        .add(new QBResultReportServiceInfo(
+                                SpReport spRep = (SpReport)session.getData("from SpReport where appResourceId = " + ((SpAppResource)rep).getId());
+                                if (spRep != null && spRep.getQuery() != null && spRep.getQuery().getContextTableId().intValue() == tableId)
+                                {
+                                    reports
+                                            .add(new QBResultReportServiceInfo(
                                                 rep.getDescription() /*
                                                                          * 'title' seems to be
                                                                          * currently stored in
@@ -237,14 +251,14 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
                                                                          */,
                                                 rep.getName() /* and filename in name */, false, spRep.getId(),
                                                 ((SpAppResource)rep).getId(), null));
+                                }
+                            }
+                            finally
+                            {
+                                session.close();
                             }
                         }
-                        finally
-                        {
-                            session.close();
-                        }
                     }
-                    
                 }
             }
         }
