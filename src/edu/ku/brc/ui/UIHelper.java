@@ -1945,7 +1945,7 @@ public final class UIHelper
                                         final boolean              withEmptyBorder,
                                         final ActionListener       al)
     {
-        JButton btn = new JButton(size != null ? IconManager.getIcon(iconName, size) : IconManager.getIcon(iconName));
+        /*JButton btn = new JButton(size != null ? IconManager.getIcon(iconName, size) : IconManager.getIcon(iconName));
         btn.setOpaque(false);
         
         if (!withEmptyBorder)
@@ -2000,6 +2000,18 @@ public final class UIHelper
         }
         btn.setEnabled(false);
         btn.setMargin(new Insets(0,0,0,0));
+        */
+        
+        IconButton btn = new IconButton(size != null ? IconManager.getIcon(iconName, size) : IconManager.getIcon(iconName), withEmptyBorder);
+        if (StringUtils.isNotEmpty(toolTipTextKey))
+        {
+            btn.setToolTipText(getResourceString(toolTipTextKey));
+        }
+        if (al != null)
+        {
+            btn.addActionListener(al);
+        }
+        btn.setEnabled(false);
         return btn;
     }
 
