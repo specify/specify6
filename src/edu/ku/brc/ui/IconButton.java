@@ -6,7 +6,6 @@
  */
 package edu.ku.brc.ui;
 
-import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
@@ -15,9 +14,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.UIManager;
 import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 
 /**
  * @author rod
@@ -34,8 +31,9 @@ public class IconButton extends JButton
 
     static
     {
-        emptyBorder = UIHelper.isMacOS() ? BorderFactory.createEmptyBorder(3, 3, 3, 3) : BorderFactory.createEmptyBorder(1, 1, 1, 1);
-        focusBorder = UIHelper.isMacOS() ? new LineBorder(UIManager.getColor("Button.focus") != null ?  UIManager.getColor("Button.focus") : Color.GRAY, 1, true) : new MacBtnBorder();
+        emptyBorder = BorderFactory.createEmptyBorder(3, 3, 3, 3);
+        //emptyBorder = UIHelper.isMacOS() ? BorderFactory.createEmptyBorder(3, 3, 3, 3) : BorderFactory.createEmptyBorder(1, 1, 1, 1);
+        focusBorder = UIHelper.isMacOS() ? new MacBtnBorder() : BorderFactory.createEmptyBorder(3, 3, 3, 3);//new LineBorder(UIManager.getColor("Button.focus") != null ?  UIManager.getColor("Button.focus") : Color.GRAY, 1, true);
     }
     
     /**
