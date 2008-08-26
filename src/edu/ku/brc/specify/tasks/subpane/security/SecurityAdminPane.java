@@ -41,6 +41,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -183,7 +184,7 @@ public class SecurityAdminPane extends BaseSubPane
             private void changed(DocumentEvent e)
             { 
                 FilteredTreeModel model = (FilteredTreeModel) tree.getModel();
-                Filter filter = (StringUtils.isNotEmpty(searchText.getText()))? 
+                Filter filter = (StringUtils.isNotEmpty(searchText.getText())) ? 
                         new Filter(searchText.getText()) : null;
                 model.setFilter(filter);
             }
@@ -464,6 +465,15 @@ public class SecurityAdminPane extends BaseSubPane
         label.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
         
         tree.setRowHeight(label.getPreferredSize().height);
+        
+        // Why doesn't this work?
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                tree.expandRow(1);
+            }
+        });
 
         //expandAll(tree, true);
     }
@@ -935,7 +945,7 @@ public class SecurityAdminPane extends BaseSubPane
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                generalPermissionsEditor.fillWithType((String)((JComboBox)e.getSource()).getSelectedItem());
+                generalPermissionsEditor.fillWithType();
             }
         });
 
@@ -955,7 +965,7 @@ public class SecurityAdminPane extends BaseSubPane
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                objectsPermissionEditor.fillWithType((String)((JComboBox)e.getSource()).getSelectedItem());
+                objectsPermissionEditor.fillWithType();
             }
         });
 
@@ -1014,7 +1024,7 @@ public class SecurityAdminPane extends BaseSubPane
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                editor.fillWithType((String)((JComboBox)e.getSource()).getSelectedItem());
+                editor.fillWithType();
             }
         });
 

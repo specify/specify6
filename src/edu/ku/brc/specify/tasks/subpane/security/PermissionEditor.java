@@ -83,16 +83,24 @@ public class PermissionEditor
 	
 	// TODO: overruling principal (nor the three-state checkbox) feature have been implemented yet
 	
-	public void fillWithType(final String type)
+	public void fillWithType()
 	{
-	    while (model.getRowCount() > 0)
-	    {
-	        model.removeRow(0);
-	    }
-	    
-	    for (PermissionEditorRowIFace permWrapper : typeRowHash.get(type)) 
+        while (model.getRowCount() > 0)
         {
-	        permWrapper.addTableRow(model, icon);
+            model.removeRow(0);
+        }
+        
+        String type = (String)typeSwitcherCBX.getSelectedItem();
+        if (type != null)
+        {
+    	    Vector<PermissionEditorRowIFace> list = typeRowHash.get(type);
+    	    if (list != null)
+    	    {
+        	    for (PermissionEditorRowIFace permWrapper : list) 
+                {
+        	        permWrapper.addTableRow(model, icon);
+                }
+    	    }
         }
 	}
 	
@@ -130,6 +138,8 @@ public class PermissionEditor
 		JLabel label = UIHelper.createLabel("XXXX");
 		label.setIcon(icon);
 		
+		int oldSelIndex = typeSwitcherCBX.getSelectedIndex();
+		
 		typeRowHash.clear();
 		typeSwitcherCBX.removeAllItems();
 		
@@ -149,10 +159,9 @@ public class PermissionEditor
         
         if (typeSwitcherCBX.getModel().getSize() > 0)
         {
-            typeSwitcherCBX.setSelectedIndex(0);
-            fillWithType((String)typeSwitcherCBX.getSelectedItem());
+            typeSwitcherCBX.setSelectedIndex(oldSelIndex > -1 && oldSelIndex < typeSwitcherCBX.getModel().getSize() ? oldSelIndex : 0);
+            fillWithType();
         }
-        typeSwitcherCBX.setSelectedIndex(0);
 
 		permissionTable.setModel(model);
 		permissionTable.setRowHeight(label.getPreferredSize().height+3);
