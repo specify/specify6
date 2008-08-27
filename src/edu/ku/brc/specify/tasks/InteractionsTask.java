@@ -19,6 +19,8 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -983,147 +985,135 @@ public class InteractionsTask extends BaseTask
             String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
             if (StringUtils.isNotBlank(sqlStr))
             {
-                ArrayList<CollectionObject> availColObjList = new ArrayList<CollectionObject>();
-                ArrayList<CollectionObject> noCurrDetList   = new ArrayList<CollectionObject>();
-                List<CollectionObject>      colObjList      = (List<CollectionObject>)session.getDataList(sqlStr);
-                for (CollectionObject co : colObjList)
-                {
-                    if (co.getDeterminations().size() > 0)
-                    {
-                        boolean hasCurrDet = false;
-                        for (Determination det : co.getDeterminations())
-                        {
-                            if (det.getStatus() != null && 
-                                det.getStatus().getType() != null &&
-                                det.getStatus().getType().equals(DeterminationStatus.CURRENT))
-                            {
-                                hasCurrDet = true;
-                                availColObjList.add(co);
-                                break;
+                final JStatusBar statusBar = UIRegistry.getStatusBar();
+                statusBar.setIndeterminate("LoanLoader", true);
+                
+                LoanPrepLoader loader = new LoanPrepLoader(this, session, sqlStr, infoRequest);
+                loader.addPropertyChangeListener(
+                        new PropertyChangeListener() {
+                            public  void propertyChange(PropertyChangeEvent evt) {
+                                if ("progress".equals(evt.getPropertyName())) 
+                                {
+                                    statusBar.setValue("LoanLoader", (Integer)evt.getNewValue());
+                                }
                             }
-                        }
-                        
-                        if (!hasCurrDet)
-                        {
-                            noCurrDetList.add(co);
-                        }
-                    } else
-                    {
-                        availColObjList.add(co);
-                    }
-                }
-                
-                /*if (noCurrDetList.size() == colObjList.size())
-                {
-                    UIRegistry.showLocalizedError("InteractionsTask.ALL_COLOBJ_BAD");
-                    return; 
-                    
-                } else if (noCurrDetList.size() > 0)
-                {
-                    showMissingDetsDlg(noCurrDetList);
-                }*/
-                
-                final LoanSelectPrepsDlg loanSelectPrepsDlg = new LoanSelectPrepsDlg(availColObjList);
-                loanSelectPrepsDlg.createUI();
-                
-                if (!loanSelectPrepsDlg.hasAvaliblePrepsToLoan())
-                {
-                    UIRegistry.showLocalizedMsg("InteractionsTask.NO_PREPS_TITLE", "InteractionsTask.NO_PREPS");
-                    return;
-                }
-                loanSelectPrepsDlg.setModal(true);
-                
-                UIHelper.centerAndShow(loanSelectPrepsDlg);
-                
-                if (loanSelectPrepsDlg.isCancelled())
-                {
-                    return;
-                }
-    
-                final Taskable thisTask = this;
-                final Hashtable<Preparation, Integer> prepsHash = loanSelectPrepsDlg.getPreparationCounts();
-                if (prepsHash.size() > 0)
-                {
-                    final SwingWorker worker = new SwingWorker()
-                    {
-                        @Override
-                        public Object construct()
-                        {
-                            JStatusBar statusBar = UIRegistry.getStatusBar();
-                            statusBar.setIndeterminate(INTERACTIONS, true);
-                            statusBar.setText(getResourceString("CreatingLoan"));
-                            
-                            Loan loan = new Loan();
-                            loan.initialize();
-                            
-                            Calendar dueDate = Calendar.getInstance();
-                            dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
-                            loan.setCurrentDueDate(dueDate);
-                            
-                            Shipment shipment = new Shipment();
-                            shipment.initialize();
-                            
-                            // Get Defaults for Certain fields
-                            //SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-                            
-                            // Comment out defaults for now until we can manage them
-                            //PickListItemIFace    defShipmentMethod = appContextMgr.getDefaultPickListItem("ShipmentMethod", getResourceString("SHIPMENT_METHOD"));
-                            //if (defShipmentMethod != null)
-                            //{
-                            //     shipment.setShipmentMethod(defShipmentMethod.getValue());
-                            //}
-                            
-                            //FormDataObjIFace shippedBy = appContextMgr.getDefaultObject(Agent.class, "ShippedBy", getResourceString("SHIPPED_BY"), true, false);
-                            //if (shippedBy != null)
-                            //{
-                            //    shipment.setShippedBy((Agent)shippedBy);
-                            //}
-                            
-                            if (infoRequest != null && infoRequest.getAgent() != null)
-                            {
-                                shipment.setShippedTo(infoRequest.getAgent());
-                            }
-                            
-                            loan.addReference(shipment, "shipments");
-                            
-                            for (Preparation prep : prepsHash.keySet())
-                            {
-                                Integer count = prepsHash.get(prep);
-                                
-                                LoanPreparation lpo = new LoanPreparation();
-                                lpo.initialize();
-                                lpo.setPreparation(prep);
-                                lpo.setQuantity(count);
-                                lpo.setLoan(loan);
-                                loan.getLoanPreparations().add(lpo);
-                            }
-                            
-                            DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
-                            if (dataEntryTask != null)
-                            {
-                                DBTableInfo loanTableInfo = DBTableIdMgr.getInstance().getInfoById(loan.getTableId());
-                                dataEntryTask.openView(thisTask, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
-                            }
-                            return null;
-                        }
-    
-                        //Runs on the event-dispatching thread.
-                        @Override
-                        public void finished()
-                        {
-                            JStatusBar statusBar = UIRegistry.getStatusBar();
-                            statusBar.setProgressDone(INTERACTIONS);
-                            statusBar.setText("");
-                        }
-                    };
-                    worker.start();
-                }
+                        });
+                loader.execute();
                 
             } else
             {
                 log.error("Query String empty for RecordSet tableId["+recordSet.getDbTableId()+"]");
             }
             
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            ex.printStackTrace();
+            
+        }
+    }
+   
+    protected void loanPrepsLoaded(final ArrayList<CollectionObject> availColObjList,
+                                   final InfoRequest                 infoRequest,
+                                   final DataProviderSessionIFace    session)
+    {
+        try
+        {
+            final LoanSelectPrepsDlg loanSelectPrepsDlg = new LoanSelectPrepsDlg(availColObjList);
+            loanSelectPrepsDlg.createUI();
+            
+            if (!loanSelectPrepsDlg.hasAvaliblePrepsToLoan())
+            {
+                UIRegistry.showLocalizedMsg("InteractionsTask.NO_PREPS_TITLE", "InteractionsTask.NO_PREPS");
+                return;
+            }
+            loanSelectPrepsDlg.setModal(true);
+            
+            UIHelper.centerAndShow(loanSelectPrepsDlg);
+            
+            if (loanSelectPrepsDlg.isCancelled())
+            {
+                return;
+            }
+
+            final Taskable thisTask = this;
+            final Hashtable<Preparation, Integer> prepsHash = loanSelectPrepsDlg.getPreparationCounts();
+            if (prepsHash.size() > 0)
+            {
+                final SwingWorker worker = new SwingWorker()
+                {
+                    @Override
+                    public Object construct()
+                    {
+                        JStatusBar statusBar = UIRegistry.getStatusBar();
+                        statusBar.setIndeterminate(INTERACTIONS, true);
+                        statusBar.setText(getResourceString("CreatingLoan"));
+                        
+                        Loan loan = new Loan();
+                        loan.initialize();
+                        
+                        Calendar dueDate = Calendar.getInstance();
+                        dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
+                        loan.setCurrentDueDate(dueDate);
+                        
+                        Shipment shipment = new Shipment();
+                        shipment.initialize();
+                        
+                        // Get Defaults for Certain fields
+                        //SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+                        
+                        // Comment out defaults for now until we can manage them
+                        //PickListItemIFace    defShipmentMethod = appContextMgr.getDefaultPickListItem("ShipmentMethod", getResourceString("SHIPMENT_METHOD"));
+                        //if (defShipmentMethod != null)
+                        //{
+                        //     shipment.setShipmentMethod(defShipmentMethod.getValue());
+                        //}
+                        
+                        //FormDataObjIFace shippedBy = appContextMgr.getDefaultObject(Agent.class, "ShippedBy", getResourceString("SHIPPED_BY"), true, false);
+                        //if (shippedBy != null)
+                        //{
+                        //    shipment.setShippedBy((Agent)shippedBy);
+                        //}
+                        
+                        if (infoRequest != null && infoRequest.getAgent() != null)
+                        {
+                            shipment.setShippedTo(infoRequest.getAgent());
+                        }
+                        
+                        loan.addReference(shipment, "shipments");
+                        
+                        for (Preparation prep : prepsHash.keySet())
+                        {
+                            Integer count = prepsHash.get(prep);
+                            
+                            LoanPreparation lpo = new LoanPreparation();
+                            lpo.initialize();
+                            lpo.setPreparation(prep);
+                            lpo.setQuantity(count);
+                            lpo.setLoan(loan);
+                            loan.getLoanPreparations().add(lpo);
+                        }
+                        
+                        DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                        if (dataEntryTask != null)
+                        {
+                            DBTableInfo loanTableInfo = DBTableIdMgr.getInstance().getInfoById(loan.getTableId());
+                            dataEntryTask.openView(thisTask, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
+                        }
+                        return null;
+                    }
+
+                    //Runs on the event-dispatching thread.
+                    @Override
+                    public void finished()
+                    {
+                        JStatusBar statusBar = UIRegistry.getStatusBar();
+                        statusBar.setProgressDone(INTERACTIONS);
+                        statusBar.setText("");
+                    }
+                };
+                worker.start();
+            }
         } catch (Exception ex)
         {
             log.error(ex);
@@ -1908,5 +1898,92 @@ public class InteractionsTask extends BaseTask
         {
             processRecordSetCommands(cmdAction);
         }
+    }
+    
+    //--------------------------------------------------------------
+    // Background loader class for loading a large number of loan preparations
+    //--------------------------------------------------------------
+    class LoanPrepLoader extends javax.swing.SwingWorker<Integer, Integer>
+    {
+        private InteractionsTask         task;
+        private DataProviderSessionIFace session;
+        private String                   sqlStr;
+        private InfoRequest              infoRequest;
+               
+        private ArrayList<CollectionObject> availColObjList = new ArrayList<CollectionObject>();
+        private ArrayList<CollectionObject> noCurrDetList   = new ArrayList<CollectionObject>();
+        private List<CollectionObject>      colObjList      = null;
+
+        public LoanPrepLoader(final InteractionsTask         task, 
+                              final DataProviderSessionIFace session,
+                              final String                   sqlStr,
+                              final InfoRequest              infoRequest)
+        {
+            this.task        = task;
+            this.session     = session;
+            this.sqlStr      = sqlStr;
+            this.infoRequest = infoRequest;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.SwingWorker#doInBackground()
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        protected Integer doInBackground() throws Exception
+        {
+            try
+            {
+                colObjList = (List<CollectionObject>)session.getDataList(sqlStr);
+                UIRegistry.getStatusBar().setProgressRange("LoanLoader", 0, 100);
+                
+                int count = 0;
+                for (CollectionObject co : colObjList)
+                {
+                    if (co.getDeterminations().size() > 0)
+                    {
+                        boolean hasCurrDet = false;
+                        for (Determination det : co.getDeterminations())
+                        {
+                            if (det.getStatus() != null && 
+                                det.getStatus().getType() != null &&
+                                det.getStatus().getType().equals(DeterminationStatus.CURRENT))
+                            {
+                                hasCurrDet = true;
+                                availColObjList.add(co);
+                                break;
+                            }
+                        }
+                        
+                        if (!hasCurrDet)
+                        {
+                            noCurrDetList.add(co);
+                        }
+                    } else
+                    {
+                        availColObjList.add(co);
+                    }
+                    count++;
+                    setProgress((int)(100.0 * count / colObjList.size()));
+                }
+            } catch (Exception ex)
+            {
+                log.error(ex);
+                ex.printStackTrace();
+            }
+            return 0;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.SwingWorker#done()
+         */
+        @Override
+        protected void done()
+        {
+            super.done();
+            UIRegistry.getStatusBar().setProgressDone("LoanLoader");
+            task.loanPrepsLoaded(availColObjList, infoRequest, session);
+        }
+        
     }
 }
