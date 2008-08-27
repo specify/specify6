@@ -542,6 +542,9 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
             case combobox:
                 xmlAttr(sb, "picklist", pickListName);
                 break;
+                
+            default:
+                break;
         }
         
         xmlAttr(sb, "format", format);

@@ -80,6 +80,7 @@ public class MultiView extends JPanel
     public static final int DONT_ADD_ALL_ALTVIEWS  =  256; // Whether it is OK to add all the AltView to the Switcher
     public static final int USE_ONLY_CREATION_MODE =  512; // Create only the AltViews that have the same creation mode
     public static final int DONT_USE_EMBEDDED_SEP  = 1024; // use the internal embedded separator
+    public static final int NO_MORE_BTN_FOR_SEP    = 2048; // doesn't include the separator's 'more' btn
 
     // Statics
     private static final Logger log = Logger.getLogger(MultiView.class);
@@ -317,6 +318,9 @@ public class MultiView extends JPanel
         showView(altView.getName());
     }
     
+    /**
+     * @param options
+     */
     private void initializeCardPanel(final int options)
     {
         if (!isOptionOn(options, DONT_USE_EMBEDDED_SEP))
@@ -337,7 +341,7 @@ public class MultiView extends JPanel
                 }
             }
             this.cardPanel = new JPanel(cardLayout);
-            this.separator = new CollapsableSeparator(title);
+            this.separator = new CollapsableSeparator(title, !isOptionOn(options, NO_MORE_BTN_FOR_SEP));
             this.separator.setInnerComp(this.cardPanel);
             
             add(this.separator, BorderLayout.NORTH);

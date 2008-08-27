@@ -1398,7 +1398,7 @@ public class ViewFactory
             Component sep = viewBldObj.createSeparator(label);
             if (isNotEmpty(collapsableName))
             {
-                CollapsableSeparator collapseSep = new CollapsableSeparator(sep);
+                CollapsableSeparator collapseSep = new CollapsableSeparator(sep, false);
                 if (bi.collapseSepHash == null)
                 {
                     bi.collapseSepHash = new Hashtable<CollapsableSeparator, String>();
@@ -1438,7 +1438,10 @@ public class ViewFactory
                     int options = MultiView.VIEW_SWITCHER
                             | (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT
                                     : MultiView.NO_OPTIONS);
-
+                    
+                    options |= cellSubView.getPropertyAsBoolean("nosep", false) ? MultiView.DONT_USE_EMBEDDED_SEP : 0;
+                    options |= cellSubView.getPropertyAsBoolean("nosepmorebtn", false) ? MultiView.NO_MORE_BTN_FOR_SEP : 0;
+                    
                     MultiView multiView = new MultiView(parent, 
                                                         cellSubView.getName(), 
                                                         subView, 
@@ -1509,6 +1512,9 @@ public class ViewFactory
                         (mode == AltViewIFace.CreationMode.EDIT ? MultiView.IS_EDITTING : MultiView.NO_OPTIONS) |
                         (useNoScrollbars ? MultiView.NO_SCROLLBARS : MultiView.NO_OPTIONS);
                         
+                        options |= cellSubView.getPropertyAsBoolean("nosep", false) ? MultiView.DONT_USE_EMBEDDED_SEP : 0;
+                        options |= cellSubView.getPropertyAsBoolean("nosepmorebtn", false) ? MultiView.NO_MORE_BTN_FOR_SEP : 0;
+                        
                         if (!(isACollection && !isSingle))
                         {
                             options &= ~MultiView.ADD_SEARCH_BTN;
@@ -1548,6 +1554,7 @@ public class ViewFactory
                             
                             Color bgColor = getBackgroundColor(props, parent.getBackground());
                             
+                            log.debug(cellSubView.getName()+"  "+UIHelper.getProperty(props, "addsearch", false));
                             if (UIHelper.getProperty(props, "addsearch", false))
                             {
                                 options |= MultiView.ADD_SEARCH_BTN;

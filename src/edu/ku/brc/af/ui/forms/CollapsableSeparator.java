@@ -55,6 +55,7 @@ public class CollapsableSeparator extends JPanel
     protected JPanel       subPanel         = null;
     protected CardLayout   cardLayout       = new CardLayout();
     protected PanelBuilder panelBldr;
+    protected boolean      includeMore;
 
     /**
      * Create a collapsable panel where there is a "more" button that indicates whether the pane
@@ -62,33 +63,47 @@ public class CollapsableSeparator extends JPanel
      * below it.
      * @param separator this can be any component but usually it is a separator.
      */
-    public CollapsableSeparator(final Component separator)
+    public CollapsableSeparator(final Component separator, final boolean includeMore)
     {
+        this.includeMore = includeMore;
+        
         init();
         
-        panelBldr = new PanelBuilder(new FormLayout("p,p,f:p:g", "b:p"), this);
+        panelBldr = new PanelBuilder(new FormLayout((includeMore ? "p," : "") + "p,f:p:g", "b:p"), this);
         CellConstraints cc        = new CellConstraints();
         
-        panelBldr.add(moreBtn, cc.xy(1,1));
-        panelBldr.add(separator, cc.xy(3,1));
+        int x = 1;
+        if (includeMore)
+        {
+            panelBldr.add(moreBtn, cc.xy(x,1));
+            x++;
+        }
+        panelBldr.add(separator, cc.xy(x,1));
     }
     
     /**
      * @param title
      */
-    public CollapsableSeparator(final String title)
+    public CollapsableSeparator(final String title, final boolean includeMore)
     {
+        this.includeMore = includeMore;
         init();
         
-        panelBldr = new PanelBuilder(new FormLayout("p,p,p,f:p:g", "b:p"), this);
+        panelBldr = new PanelBuilder(new FormLayout((includeMore ? "p," : "") +"p,p,f:p:g", "b:p"), this);
         CellConstraints cc        = new CellConstraints();
         
         subPanel = new JPanel(cardLayout);
         subPanel.setBorder(null);
         
-        panelBldr.add(moreBtn,                     cc.xy(1, 1));
-        panelBldr.add(UIHelper.createLabel(title), cc.xy(2, 1));
-        panelBldr.addSeparator(" ",                cc.xy(4, 1));
+        int x = 1;
+        if (includeMore)
+        {
+            panelBldr.add(moreBtn, cc.xy(x,1));
+            x++;
+        }
+        panelBldr.add(UIHelper.createLabel(title), cc.xy(x, 1));
+        x += 2;
+        panelBldr.addSeparator(" ",                cc.xy(x, 1));
     }
     
     /**
@@ -96,11 +111,14 @@ public class CollapsableSeparator extends JPanel
      */
     protected void init()
     {
-        forwardImgIcon = IconManager.getIcon("Forward");
-        downImgIcon    = IconManager.getIcon("Down");
-        moreBtn        = new JCheckBox("", forwardImgIcon); // I18N
-        moreBtn.setOpaque(false);
-        moreBtn.setFocusable(false);
+        if (includeMore)
+        {
+            forwardImgIcon = IconManager.getIcon("Forward");
+            downImgIcon    = IconManager.getIcon("Down");
+            moreBtn        = new JCheckBox("", forwardImgIcon); // I18N
+            moreBtn.setOpaque(false);
+            moreBtn.setFocusable(false);
+        }
         UIHelper.setControlSize(moreBtn);
         setOpaque(false);
     }
@@ -114,9 +132,9 @@ public class CollapsableSeparator extends JPanel
         if (subPanel != null && subPanel.getComponentCount() == 0)
         {
             CellConstraints cc = new CellConstraints();
-            panelBldr.add(subPanel, cc.xy(3, 1));
+            panelBldr.add(subPanel, cc.xy(includeMore ? 3 : 2, 1));
             
-            if (comp instanceof Container && ((Container)comp).getComponentCount() > 0)
+            if (((Container)comp).getComponentCount() > 0)
             {
                 subPanel.setBorder(BorderFactory.createEmptyBorder(1,3,1,3));
             }
@@ -150,25 +168,28 @@ public class CollapsableSeparator extends JPanel
         {
             this.innerComp = innerComp;
             
-            moreBtn.setIcon(innerComp.isVisible() ? downImgIcon : forwardImgIcon);
-            
-            moreBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    if (innerComp.isVisible())
+            if (moreBtn != null)
+            {
+                moreBtn.setIcon(innerComp.isVisible() ? downImgIcon : forwardImgIcon);
+                
+                moreBtn.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
                     {
-                        innerComp.setVisible(false);
-                        moreBtn.setIcon(forwardImgIcon);
-                    } else
-                    {
-                        innerComp.setVisible(true);
-                        moreBtn.setIcon(downImgIcon);
+                        if (innerComp.isVisible())
+                        {
+                            innerComp.setVisible(false);
+                            moreBtn.setIcon(forwardImgIcon);
+                        } else
+                        {
+                            innerComp.setVisible(true);
+                            moreBtn.setIcon(downImgIcon);
+                        }
+                        invalidate();
+                        doLayout();
+                        repaint();
                     }
-                    invalidate();
-                    doLayout();
-                    repaint();
-                }
-             });
+                 });
+            }
         }
     }    
 }
