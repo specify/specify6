@@ -988,6 +988,7 @@ public class InteractionsTask extends BaseTask
                 final JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setIndeterminate("LoanLoader", true);
                 
+                UIRegistry.writeGlassPaneMsg(getResourceString("InteractionsTask.LOAD_LOAN_PREP"), 24);
                 LoanPrepLoader loader = new LoanPrepLoader(this, session, sqlStr, infoRequest);
                 loader.addPropertyChangeListener(
                         new PropertyChangeListener() {
@@ -1982,7 +1983,9 @@ public class InteractionsTask extends BaseTask
         {
             super.done();
             UIRegistry.getStatusBar().setProgressDone("LoanLoader");
+            UIRegistry.clearGlassPaneMsg();
             task.loanPrepsLoaded(availColObjList, infoRequest, session);
+            
         }
         
     }
