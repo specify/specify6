@@ -33,10 +33,12 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -208,16 +210,17 @@ class SetUpBuildDlg extends CustomDialog
         choiceTable.setRowHeight((new JComboBox()).getPreferredSize().height);
         
         TableColumn col = choiceTable.getColumnModel().getColumn(2);
-        col.setCellEditor(new MyComboBoxEditor(catNumFmtList));
+        col.setCellEditor(new MyComboBoxEditor(catNumFmtList, catNumFmtHash));
+        col.setCellRenderer(new MyLabelRenderer(catNumFmtHash));
         
         col = choiceTable.getColumnModel().getColumn(3);
-        col.setCellEditor(new MyComboBoxEditor(catNumGrpList));
+        col.setCellEditor(new MyComboBoxStringEditor(catNumGrpList));
         
         col = choiceTable.getColumnModel().getColumn(4);
-        col.setCellEditor(new MyComboBoxEditor(accNumFmtList));
+        col.setCellEditor(new MyComboBoxEditor(accNumFmtList, accNumFmtHash));
         
         col = choiceTable.getColumnModel().getColumn(5);
-        col.setCellEditor(new MyComboBoxEditor(accNumGrpList));
+        col.setCellEditor(new MyComboBoxStringEditor(accNumGrpList));
         //col.setCellRenderer(new MyComboBoxRenderer(catNumFmtList));
         
         UIHelper.makeTableHeadersCentered(choiceTable, false);
@@ -438,6 +441,9 @@ class SetUpBuildDlg extends CustomDialog
         ((DisciplineSetupModel)choiceTable.getModel()).fireChanged();
     }
     
+    /**
+     * @param choices
+     */
     public void saveChoices(final Vector<CollectionChoice> choices)
     {
         XStream xstream = new XStream();
@@ -745,29 +751,84 @@ class SetUpBuildDlg extends CustomDialog
             totalWidth += column.getPreferredWidth();
         }
     }
-
     
-    public class MyComboBoxEditor extends DefaultCellEditor 
+    public class MyComboBoxStringEditor extends DefaultCellEditor 
     {
-        public MyComboBoxEditor(final Vector<?> items) 
+        public MyComboBoxStringEditor(final Vector<?> items) 
         {
             super(new JComboBox(items));
         }
+    }
+    
+    public class MyComboBoxEditor extends DefaultCellEditor 
+    {
+        protected Hashtable<String, UIFieldFormatterIFace> hash;
+        
+        public MyComboBoxEditor(final Vector<?> items, final Hashtable<String, UIFieldFormatterIFace> hash) 
+        {
+            super(new JComboBox(items));
+            //setOpaque(true);
+            this.hash = hash;
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table,
+                                                     Object value,
+                                                     boolean isSelected,
+                                                     int row,
+                                                     int column)
+        {
+            JComboBox cbx =  (JComboBox)super.getTableCellEditorComponent(table, value, isSelected, row, column);
+            UIFieldFormatterIFace fmt = hash.get(value);
+            cbx.setSelectedItem(fmt);
+            return cbx;
+        }
+    }
+    
+    public class MyLabelRenderer extends DefaultTableCellRenderer
+    {
+        protected Hashtable<String, UIFieldFormatterIFace> hash;
+        
+        public MyLabelRenderer(final Hashtable<String, UIFieldFormatterIFace> hash) 
+        {
+            //setOpaque(true);
+            this.hash = hash;
+        }
+        
+        @Override
+        public Component getTableCellRendererComponent(JTable table,
+                                                       Object value,
+                                                       boolean isSelected,
+                                                       boolean hasFocus,
+                                                       int row,
+                                                       int column)
+        {
+            JLabel label = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            UIFieldFormatterIFace fmt = hash.get(value);
+            label.setText(fmt.getTitle());
+            return label;
+        }
+        
     }
     
     public class MyComboBoxRenderer extends JComboBox implements TableCellRenderer 
     {
         protected Hashtable<String, UIFieldFormatterIFace> hash;
         
-        public MyComboBoxRenderer(Vector<?> items,Hashtable<String, UIFieldFormatterIFace> hash) 
+        public MyComboBoxRenderer(final Vector<?> items, 
+                                  final Hashtable<String, UIFieldFormatterIFace> hash) 
         {
             super(items);
             setOpaque(true);
             this.hash = hash;
         }
     
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) 
+        public Component getTableCellRendererComponent(JTable table, 
+                                                       Object value,
+                                                       boolean isSelected, 
+                                                       boolean hasFocus, 
+                                                       int row, 
+                                                       int column) 
         {
             setEnabled(isSelected);
             
