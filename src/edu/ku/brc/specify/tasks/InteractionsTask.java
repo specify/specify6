@@ -1180,7 +1180,12 @@ public class InteractionsTask extends BaseTask
         infoRequest.initialize();
         
         RecordSetIFace recordSetFromDB = recordSetArg == null ? RecordSetTask.askForRecordSet(CollectionObject.getClassTableId()) : recordSetArg;
-        RecordSet      recordSet       = null;
+        if (recordSetFromDB == null)
+        {
+            recordSetFromDB = askForCatNumbersRecordSet();
+        }
+        
+        RecordSet recordSet = null;
         if (recordSetFromDB != null)
         {
             recordSet = RecordSetTask.copyRecordSet(recordSetFromDB);

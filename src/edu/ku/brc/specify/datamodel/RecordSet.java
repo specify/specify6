@@ -622,6 +622,8 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
         obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
         obj.timestampModified    = timestampCreated;
         
+        obj.items                = null;
+        
         return obj;
     }
 

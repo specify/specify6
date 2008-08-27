@@ -31,8 +31,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -811,6 +813,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             try
             {
                 RecordSet rs = (RecordSet)((RecordSet)recordSet).clone(); // shallow clone
+                
                 for (RecordSetItemIFace rsi : recordSet.getOrderedItems())
                 {
                     rs.addItem(rsi.getRecordId());
