@@ -38,6 +38,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.ExtendedTabbedPane;
+import edu.ku.brc.ui.ExtendedTabPanel;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -238,7 +239,17 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             panes.remove(pane.getPaneName());
             
             pane.setPaneName(newNameStr);
-            this.setTitleAt(indexOfComponent(pane.getUIComponent()), pane.getPaneName());
+            
+            int       index   = indexOfComponent(pane.getUIComponent());
+            Component tabComp = getTabComponentAt(index);
+            
+            if (tabComp instanceof ExtendedTabPanel)
+            {
+                ((ExtendedTabPanel)tabComp).setTitle(pane.getPaneName());
+            } else
+            {
+                this.setTitleAt(index, pane.getPaneName());
+            }
             
             //log.debug("Putting SubPane ["+newName+"] ");
             panes.put(pane.getPaneName(), pane);

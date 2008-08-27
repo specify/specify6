@@ -227,7 +227,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         addMouseListener(mouseInputAdapter);
         addMouseMotionListener(mouseInputAdapter);
     }
-    
+     
     /**
      * @return
      */
@@ -654,13 +654,18 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
      * @see javax.swing.JComponent#setEnabled(boolean)
      */
     @Override
-    public void setEnabled(boolean value)
+    public void setEnabled(boolean enabled)
     {
-        super.setEnabled(value);
+        super.setEnabled(enabled);
         
-    	mainBtn.setEnabled(value);
-    	arrowBtn.setEnabled(value);
-    	if (!value && isHovering)
+        if (!enabled)
+        {
+            setBorder(emptyBorder); 
+        }
+        
+    	mainBtn.setEnabled(enabled);
+    	arrowBtn.setEnabled(enabled);
+    	if (!enabled && isHovering)
     	{
         	isHovering = false;
         	repaint();

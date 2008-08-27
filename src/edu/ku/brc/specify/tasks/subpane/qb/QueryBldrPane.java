@@ -1498,17 +1498,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 {
                     this.setQueryIntoUI();
                 }   
-                else
-                {
-                    SubPaneMgr.getInstance().renamePane(this, query.getName());
-                }
+                
+                SubPaneMgr.getInstance().renamePane(this, query.getName());
             }
             else
             {
                 try
                 {
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance()
-                            .createSession();
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                     try
                     {
                         session.beginTransaction();
