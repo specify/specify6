@@ -60,6 +60,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxItemIFace;
@@ -204,29 +205,27 @@ public class WorkbenchTask extends BaseTask
             
             RolloverCommand roc = null;
             NavBox navBox = new NavBox(getResourceString("Actions"));
-            makeDnDNavBtn(navBox, getResourceString("WB_IMPORTDATA"), "Import", getResourceString("WB_IMPORTDATA_TT"), new CommandAction(WORKBENCH, IMPORT_DATA_FILE, wbTblId), null, false, false);// true means make it draggable
-            makeDnDNavBtn(navBox, getResourceString("WB_IMPORT_CARDS"),  "ImportImages", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false, false);// true means make it draggable
+            if (!UIHelper.isSecurityOn() || getPermissions().canAdd())
+            {
+                makeDnDNavBtn(navBox, getResourceString("WB_IMPORTDATA"), "Import", getResourceString("WB_IMPORTDATA_TT"), new CommandAction(WORKBENCH, IMPORT_DATA_FILE, wbTblId), null, false, false);// true means make it draggable
+                makeDnDNavBtn(navBox, getResourceString("WB_IMPORT_CARDS"),  "ImportImages", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false, false);// true means make it draggable
             
-            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),   "NewDataSet", getResourceString("WB_NEW_DATASET_TT"), new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),     null, false, false);// true means make it draggable
-            roc.addDropDataFlavor(DATASET_FLAVOR);
+                roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),   "NewDataSet", getResourceString("WB_NEW_DATASET_TT"), new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),     null, false, false);// true means make it draggable
+                roc.addDropDataFlavor(DATASET_FLAVOR);
+            }
 
-            //roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DS_FROM_TMPL"), "NewDataSet", getResourceString("WB_NEW_DS_FROM_TMPL"), new CommandAction(WORKBENCH, NEW_WORKBENCH_FROM_TEMPLATE, wbTblId), null, false, false);// true means make it draggable
-
-            
-            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_DATA"), "Export16", getResourceString("WB_EXPORT_DATA_TT"), new CommandAction(WORKBENCH, EXPORT_DATA_FILE, wbTblId), null, true, false);// true means make it draggable
-            roc.addDropDataFlavor(DATASET_FLAVOR);
-            roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
-            enableNavBoxList.add((NavBoxItemIFace)roc);
-            
-            //roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_UPLOAD"), "Export16", getResourceString("WB_UPLOAD_TT"), new CommandAction(WORKBENCH, UPLOAD, wbTblId), null, true, false);// true means make it draggable
-            //roc.addDropDataFlavor(DATASET_FLAVOR);
-            //roc.addDragDataFlavor(new DataFlavor(Workbench.class, UPLOAD));
-            //enableNavBoxList.add((NavBoxItemIFace)roc);
-
-            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_TEMPLATE"), "ExportExcel16", getResourceString("WB_EXPORT_TEMPLATE_TT"),new CommandAction(WORKBENCH, EXPORT_TEMPLATE, wbTblId), null, true, false);// true means make it draggable
-            roc.addDropDataFlavor(DATASET_FLAVOR);
-            roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_TEMPLATE));
-            enableNavBoxList.add((NavBoxItemIFace)roc);
+            if (!UIHelper.isSecurityOn() || getPermissions().canModify())
+            {
+                roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_DATA"), "Export16", getResourceString("WB_EXPORT_DATA_TT"), new CommandAction(WORKBENCH, EXPORT_DATA_FILE, wbTblId), null, true, false);// true means make it draggable
+                roc.addDropDataFlavor(DATASET_FLAVOR);
+                roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
+                enableNavBoxList.add((NavBoxItemIFace)roc);
+ 
+                roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_TEMPLATE"), "ExportExcel16", getResourceString("WB_EXPORT_TEMPLATE_TT"),new CommandAction(WORKBENCH, EXPORT_TEMPLATE, wbTblId), null, true, false);// true means make it draggable
+                roc.addDropDataFlavor(DATASET_FLAVOR);
+                roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_TEMPLATE));
+                enableNavBoxList.add((NavBoxItemIFace)roc);
+            }  
             
             navBoxes.add(navBox);
             
@@ -235,7 +234,7 @@ public class WorkbenchTask extends BaseTask
             try
             {
                 workbenchNavBox = new NavBox(getResourceString("WB_DATASETS"),false,true);
-                List<?> list    = session.getDataList("From Workbench where SpecifyUserID = "+AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId()+" order by name");
+                List<?> list    = session.getDataList("From Workbench where SpecifyUserID = " + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId()+" order by name");
                 dataSetCount    = list.size();
                 for (Object obj : list)
                 {
@@ -254,7 +253,7 @@ public class WorkbenchTask extends BaseTask
 
             
             // Then add
-            if (commands != null)
+            if (commands != null && (!UIHelper.isSecurityOn() || canViewReports()))
             {
                 NavBox reportsNavBox = new NavBox(getResourceString("Reports"));
                 
@@ -391,20 +390,38 @@ public class WorkbenchTask extends BaseTask
 
         rs.addItem(workbench.getWorkbenchId());
         cmd.setProperty("workbench", rs);
+        CommandAction deleteCmd = null;
+        if (!UIHelper.isSecurityOn() || getPermissions().canDelete())
+        {
+            deleteCmd = new CommandAction(WORKBENCH, DELETE_CMD_ACT, rs);
+        }
         final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(workbenchNavBox, workbench.getName(), "DataSet16", cmd, 
-                                                                   new CommandAction(WORKBENCH, DELETE_CMD_ACT, rs), 
+                                                                   deleteCmd, 
                                                                    true, true);// true means make it draggable
-        roc.setToolTip(getResourceString("WB_CLICK_EDIT_DATA_TT"));
+        if (!UIHelper.isSecurityOn() || getPermissions().canModify())
+        {
+            roc.setToolTip(getResourceString("WB_CLICK_EDIT_DATA_TT"));
+        }
         
         // Drag Flavors
-        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+        if (deleteCmd != null)
+        {
+            roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+        }
         roc.addDragDataFlavor(DATASET_FLAVOR);
         
         // Drop Flavors
-        roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
-        //roc.addDropDataFlavor(new DataFlavor(Workbench.class, UPLOAD));
-        roc.addDropDataFlavor(new DataFlavor(Workbench.class, "Report"));
-       
+        if (!UIHelper.isSecurityOn() || getPermissions().canModify())
+        {
+            roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
+        }
+        
+        if (canViewReports())
+        {
+            roc.addDropDataFlavor(new DataFlavor(Workbench.class, "Report"));
+        }
+        
+        
         JPopupMenu popupMenu = new JPopupMenu();
         String menuTitle = "WB_EDIT_PROPS";
         String mneu = "WB_EDIT_PROPS_MNEU";
@@ -430,36 +447,42 @@ public class WorkbenchTask extends BaseTask
             }
         });
 
-        popupMenu.addSeparator();
-        menuTitle = "Delete";
-        mneu = "DELETE_MNEU";
-        UIHelper.createlocalizedMenuItem(popupMenu, menuTitle, mneu, null, true, new ActionListener() {
-            @SuppressWarnings("synthetic-access")
-            public void actionPerformed(ActionEvent e)
-            {
-                //Workbench wb = getWorkbenchFromCmd(roc.getData(), "Workbench");
-                //if (wb != null)
-                //{
-                    UsageTracker.incrUsageCount("WB.DeletedWorkbench");
-                //}
-                Object cmdActionObj = roc.getData();
-                if (cmdActionObj != null && cmdActionObj instanceof CommandAction)
-                {
-                    CommandAction  subCmd    = (CommandAction)cmdActionObj;
-                    RecordSetIFace recordSet = (RecordSetIFace)subCmd.getProperty("workbench");
-                    if (recordSet != null)
+        if (!UIHelper.isSecurityOn() || getPermissions().canDelete())
+        {
+            popupMenu.addSeparator();
+            menuTitle = "Delete";
+            mneu = "DELETE_MNEU";
+            UIHelper.createlocalizedMenuItem(popupMenu, menuTitle, mneu, null, true,
+                    new ActionListener()
                     {
-                        deleteWorkbench(recordSet);
-                    }
-                }
-             }
-        });
-
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            UsageTracker.incrUsageCount("WB.DeletedWorkbench");
+                            Object cmdActionObj = roc.getData();
+                            if (cmdActionObj != null && cmdActionObj instanceof CommandAction)
+                            {
+                                CommandAction subCmd = (CommandAction) cmdActionObj;
+                                RecordSetIFace recordSet = (RecordSetIFace) subCmd
+                                        .getProperty("workbench");
+                                if (recordSet != null)
+                                {
+                                    deleteWorkbench(recordSet);
+                                }
+                            }
+                        }
+                    });
+        }
         roc.setPopupMenu(popupMenu);
 
         NavBox.refresh(workbenchNavBox);
         
         return roc;
+    }
+    
+    protected boolean canViewReports()
+    {
+        Taskable reportsTask = ContextMgr.getTaskByClass(ReportsTask.class);
+        return reportsTask != null && reportsTask.getPermissions().canView();
     }
     
     /**
@@ -675,8 +698,10 @@ public class WorkbenchTask extends BaseTask
      */
     public static boolean askUserForInfo(final String viewSetName, 
                                          final String dlgTitle,
-                                         final Workbench workbench)
+                                         final Workbench workbench,
+                                         final boolean isEdit)
     {
+        //XXX isEdit = true does not prevent editing in editorDlg.
         ViewBasedDisplayDialog editorDlg = new ViewBasedDisplayDialog(
                 (Frame)UIRegistry.getTopWindow(),
                 "Global",
@@ -686,7 +711,7 @@ public class WorkbenchTask extends BaseTask
                 getResourceString("OK"),
                 null, // className,
                 null, // idFieldName,
-                true, // isEdit,
+                isEdit, 
                 MultiView.HIDE_SAVE_BTN);
         
         editorDlg.preCreateUI();
@@ -718,6 +743,11 @@ public class WorkbenchTask extends BaseTask
         if (template != null)
         {
             mapper = new TemplateEditor((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString(titleKey), template);
+            if (UIHelper.isSecurityOn() && !getPermissions().canAdd())
+            {
+                //XXX OK to require add permission to modify props and structure?
+                mapper.setReadOnly(true);
+            }
         } else
         {
             mapper = new TemplateEditor((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString(titleKey), dataFileInfo);
@@ -1525,6 +1555,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             boolean   alwaysAsk   = true;
             Workbench foundWB     = null;
             boolean   shouldCheck = false;
+            boolean canEdit = !UIHelper.isSecurityOn() || getPermissions().canAdd(); //XXX OK to require Add permission to modify props and structure?
             do
             {
                 if (StringUtils.isEmpty(newWorkbenchName))
@@ -1548,7 +1579,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     alwaysAsk = false;
                     
                     // We found the same name and it must be unique
-                    if (askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench))
+                    if (askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench, canEdit) && canEdit)
                     {
                         newWorkbenchName = workbench.getName();
                         // This Part here needfs to be moved into an <enablerule/>
@@ -1753,7 +1784,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                              }
                          }
                          
-                         WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView);
+                         WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView, 
+                                     UIHelper.isSecurityOn() && !getPermissions().canModify());
                          addSubPaneToMgr(workbenchPane);
                          
                          if (convertedAnImage)
@@ -2384,10 +2416,22 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             
             QueryResultsHandlerIFace qrhi = new QueryResultsHandlerIFace()
             {
-                public void init(final QueryResultsListener listener, final java.util.List<QueryResultsContainerIFace> list){}
-                public void init(final QueryResultsListener listener, final QueryResultsContainerIFace qrc){}
-                public void startUp(){}
-                public void cleanUp(){}
+                public void init(final QueryResultsListener listener, final java.util.List<QueryResultsContainerIFace> list)
+                {
+                    //nothing to do.
+                }
+                public void init(final QueryResultsListener listener, final QueryResultsContainerIFace qrc)
+                {
+                    //nothing to do.
+                }
+                public void startUp()
+                {
+                    //nothing to do
+                }
+                public void cleanUp()
+                {
+                    //nothing to do
+                }
     
                 public java.util.List<Object> getDataObjects()
                 {
@@ -2789,7 +2833,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             if (workbenchArg == null) // meaning a new one was created
             {
                 // create a new WorkbenchPaneSS
-                workbenchPane = new WorkbenchPaneSS(workbench.getName(), this, importWB, false);
+                workbenchPane = new WorkbenchPaneSS(workbench.getName(), this, importWB, false, 
+                        (UIHelper.isSecurityOn() && !getPermissions().canModify()));
             }
             else
             {

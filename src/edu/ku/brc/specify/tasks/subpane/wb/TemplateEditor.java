@@ -131,6 +131,7 @@ public class TemplateEditor extends CustomDialog
     
     protected boolean                        isMappedToAFile;
     protected boolean                        isEditMode;
+    protected boolean                        isReadOnly = false;
     protected boolean                        ignoreMapListUpdate = false;
     
     protected ImageIcon                      blankIcon   = IconManager.getIcon("BlankIcon", IconManager.STD_ICON_SIZE);
@@ -1696,5 +1697,34 @@ public class TemplateEditor extends CustomDialog
         }
         
     }
+
+    /**
+     * @return the isReadOnly
+     */
+    public boolean isReadOnly()
+    {
+        return isReadOnly;
+    }
+
+    /**
+     * @param isReadOnly the isReadOnly to set
+     */
+    public void setReadOnly(final boolean isReadOnly)
+    {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                TemplateEditor.this.isReadOnly = isReadOnly;
+                mapToBtn.setVisible(!isReadOnly);
+                unmapBtn.setVisible(!isReadOnly);
+                btnPanel.setVisible(!isReadOnly);
+                upBtn.setVisible(!isReadOnly);
+                downBtn.setVisible(!isReadOnly);
+                getOkBtn().setVisible(!isReadOnly);
+                getCancelBtn().setText(getOkBtn().getText()); //XXX need to resize??
+            }
+        });
+    }
+    
     
 }

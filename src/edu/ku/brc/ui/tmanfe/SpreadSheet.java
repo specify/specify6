@@ -74,7 +74,7 @@ import edu.ku.brc.ui.UIHelper.OSTYPE;
  **************************************************************************************************/
 public class SpreadSheet  extends SearchableJXTable implements ActionListener
 {
-    private static final Logger log = Logger.getLogger(SpreadSheet.class);
+    protected static final Logger log = Logger.getLogger(SpreadSheet.class);
     
     /**
      * Set this field to true and recompile to get debug traces
@@ -104,6 +104,9 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
     // XXX Fix for Mac OS X Java 5 Bug
     protected int prevRowSelInx = -1;
     protected int prevColSelInx = -1;
+    
+    //no editing allowed when isReadOnly is true
+    protected boolean isReadOnly = false;
     
     /**
      * Constructor for Spreadsheet from model
@@ -442,7 +445,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
     @Override
     public boolean editCellAt(int row, int column, EventObject ev)
     {
-        return mouseDown ? false : super.editCellAt(row, column, ev);
+        return mouseDown ? false : isReadOnly ? false : super.editCellAt(row, column, ev);
     }
 
     /**
@@ -1188,6 +1191,23 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         {
             this.table = null;
         }
+    }
+
+
+    /**
+     * @return the isReadOnly
+     */
+    public boolean isReadOnly()
+    {
+        return isReadOnly;
+    }
+
+    /**
+     * @param isReadOnly the isReadOnly to set
+     */
+    public void setReadOnly(boolean isReadOnly)
+    {
+        this.isReadOnly = isReadOnly;
     }
 
 }

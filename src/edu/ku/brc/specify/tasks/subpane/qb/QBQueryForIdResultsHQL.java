@@ -412,7 +412,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#showProgress()
      */
-    //@Override
+    @Override
     public boolean showProgress()
     {
         //QueryBuilder sets up progress bar and status messages for itself.

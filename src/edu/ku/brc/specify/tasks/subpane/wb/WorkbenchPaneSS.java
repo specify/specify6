@@ -247,6 +247,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     // XXX PREF
     protected int                   mapSize                    = 500;
     
+    protected boolean               isReadOnly;
+    
     /**
      * Constructs the pane for the spreadsheet.
      * 
@@ -258,7 +260,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     public WorkbenchPaneSS(final String    name,
                            final Taskable  task,
                            final Workbench workbenchArg,
-                           final boolean   showImageView)
+                           final boolean   showImageView,
+                           final boolean isReadOnly)
     {
         super(name, task);
         
@@ -269,6 +272,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             return;
         }
         this.workbench = workbenchArg;
+        
+        this.isReadOnly = isReadOnly;
         
         headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(headers);
@@ -290,6 +295,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         model       = new GridTableModel(workbench);
         spreadSheet = new SpreadSheet(model);
+        spreadSheet.setReadOnly(isReadOnly);
         model.setSpreadSheet(spreadSheet);
         
         findPanel = spreadSheet.getFindReplacePanel();
@@ -387,26 +393,41 @@ public class WorkbenchPaneSS extends BaseSubPane
                 deleteRows();
             }
         });
-        deleteRowsBtn = createIconBtn("DelRec", "WB_DELETE_ROW", delAction);
-        selectionSensativeButtons.add(deleteRowsBtn);
-        spreadSheet.setDeleteAction(delAction);
-
-        clearCellsBtn = createIconBtn("Eraser", "WB_CLEAR_CELLS", new ActionListener()
+        
+        if (isReadOnly)
         {
-            public void actionPerformed(ActionEvent ae)
+            deleteRowsBtn = null;
+        }
+        else
+        {
+            deleteRowsBtn = createIconBtn("DelRec", "WB_DELETE_ROW", delAction);
+            selectionSensativeButtons.add(deleteRowsBtn);
+            spreadSheet.setDeleteAction(delAction);
+        }
+        
+        if (isReadOnly)
+        {
+            clearCellsBtn = null;
+        }
+        else
+        {
+            clearCellsBtn = createIconBtn("Eraser", "WB_CLEAR_CELLS", new ActionListener()
             {
-                spreadSheet.clearSorter();
-
-                if (spreadSheet.getCellEditor() != null)
+                public void actionPerformed(ActionEvent ae)
                 {
-                    spreadSheet.getCellEditor().stopCellEditing();
+                    spreadSheet.clearSorter();
+
+                    if (spreadSheet.getCellEditor() != null)
+                    {
+                        spreadSheet.getCellEditor().stopCellEditing();
+                    }
+                    int[] rows = spreadSheet.getSelectedRowModelIndexes();
+                    int[] cols = spreadSheet.getSelectedColumnModelIndexes();
+                    model.clearCells(rows, cols);
                 }
-                int[] rows = spreadSheet.getSelectedRowModelIndexes();
-                int[] cols = spreadSheet.getSelectedColumnModelIndexes();
-                model.clearCells(rows,cols);
-            }
-        });
-        selectionSensativeButtons.add(clearCellsBtn);
+            });
+            selectionSensativeButtons.add(clearCellsBtn);
+        }
         
         Action addAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_N, "AddRow", new AbstractAction()
         {
@@ -418,22 +439,37 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
             }
         });
-        addRowsBtn = createIconBtn("AddRec", "WB_ADD_ROW", addAction);
-        addRowsBtn.setEnabled(true);
-        addAction.setEnabled(true); 
-
-
-        carryForwardBtn = createIconBtn("CarryForward20x20", IconManager.IconSize.NonStd, "WB_CARRYFORWARD", false, new ActionListener()
+        
+        if (isReadOnly)
         {
-            public void actionPerformed(ActionEvent ae)
-            {
-                UsageTracker.getUsageCount("WBCarryForward");
+            addRowsBtn = null;
+        }
+        else
+        {
+            addRowsBtn = createIconBtn("AddRec", "WB_ADD_ROW", addAction);
+            addRowsBtn.setEnabled(true);
+            addAction.setEnabled(true); 
+        }
 
-                configCarryFoward();
-            }
-        });
-        carryForwardBtn.setEnabled(true);
+        if (isReadOnly)
+        {
+            carryForwardBtn = null;
+        }
+        else
+        {
+            carryForwardBtn = createIconBtn("CarryForward20x20", IconManager.IconSize.NonStd,
+                    "WB_CARRYFORWARD", false, new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            UsageTracker.getUsageCount("WBCarryForward");
 
+                            configCarryFoward();
+                        }
+                    });
+            carryForwardBtn.setEnabled(true);
+        }
+        
         toggleImageFrameBtn = createIconBtn("CardImage", IconManager.IconSize.NonStd, "WB_SHOW_IMG_WIN", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -452,101 +488,135 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         // enable or disable along with Google Earth and Geo Ref Convert buttons
         
-        exportKmlBtn = createIconBtn("GoogleEarth", IconManager.IconSize.NonStd, "WB_SHOW_IN_GOOGLE_EARTH", false, new ActionListener()
+        if (UIHelper.isSecurityOn() && !task.getPermissions().canModify())
         {
-            public void actionPerformed(ActionEvent ae)
-            {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run()
+            exportKmlBtn = null;
+        }
+        else
+        {
+            exportKmlBtn = createIconBtn("GoogleEarth", IconManager.IconSize.NonStd,
+                    "WB_SHOW_IN_GOOGLE_EARTH", false, new ActionListener()
                     {
-                        showRecordsInGoogleEarth();
-                    }
-                });
-            }
-        });
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            SwingUtilities.invokeLater(new Runnable()
+                            {
+                                public void run()
+                                {
+                                    showRecordsInGoogleEarth();
+                                }
+                            });
+                        }
+                    });
+        }
         // enable or disable along with Show Map and Geo Ref Convert buttons
         
-        biogeomancerBtn = createIconBtn("BioGeoMancer", IconManager.IconSize.NonStd, "WB_DO_BIOGEOMANCER_LOOKUP", false, new ActionListener()
+        if (isReadOnly)
         {
-            public void actionPerformed(ActionEvent ae)
-            {
-                spreadSheet.clearSorter();
-                
-                AppPreferences remotePrefs = AppPreferences.getRemote();
-                String tool = remotePrefs.get("georef_tool", "");
-                if (tool.equalsIgnoreCase("geolocate"))
-                {
-                    doGeoRef(new GeoCoordGeoLocateProvider(), "WB.GeoLocateRows");    
-                } else
-                {
-                    doGeoRef(new GeoCoordBGMProvider(), "WB.BioGeomancerRows");                   
-                }
-            }
-        });
-        // only enable it if the workbench has the proper columns in it
-        String[] missingColumnsForBG = getMissingButRequiredColumnsForBioGeomancer();
-        if (missingColumnsForBG.length > 0)
-        {
-            biogeomancerBtn.setEnabled(false);
-            String ttText = "<p>" + getResourceString("WB_ADDITIONAL_FIELDS_REQD") + ":<ul>";
-            for (String reqdField: missingColumnsForBG)
-            {
-                ttText += "<li>" + reqdField + "</li>";
-            }
-            ttText += "</ul>";
-            String origTT = biogeomancerBtn.getToolTipText();
-            biogeomancerBtn.setToolTipText("<html>" + origTT + ttText);
+            biogeomancerBtn = null;
         }
         else
         {
-            biogeomancerBtn.setEnabled(true);
-        }
-        
-        convertGeoRefFormatBtn = createIconBtn("ConvertGeoRef", IconManager.IconSize.NonStd, "WB_CONVERT_GEO_FORMAT", false, new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                showGeoRefConvertDialog();
-            }
-        });
-        
-        // now enable/disable the geo ref related buttons
-        String[] missingGeoRefFields = getMissingGeoRefFields();
-        if (missingGeoRefFields.length > 0)
-        {
-            convertGeoRefFormatBtn.setEnabled(false);
-            exportKmlBtn.setEnabled(false);
-            showMapBtn.setEnabled(false);
-            
-            String ttText = "<p>" + getResourceString("WB_ADDITIONAL_FIELDS_REQD") + ":<ul>";
-            for (String reqdField: missingGeoRefFields)
-            {
-                ttText += "<li>" + reqdField + "</li>";
-            }
-            ttText += "</ul>";
-            String origTT1 = convertGeoRefFormatBtn.getToolTipText();
-            convertGeoRefFormatBtn.setToolTipText("<html>" + origTT1 + ttText);
-            String origTT2 = exportKmlBtn.getToolTipText();
-            exportKmlBtn.setToolTipText("<html>" + origTT2 + ttText);
-            String origTT3 = showMapBtn.getToolTipText();
-            showMapBtn.setToolTipText("<html>" + origTT3 + ttText);
-        }
-        else
-        {
-            convertGeoRefFormatBtn.setEnabled(true);
-            exportKmlBtn.setEnabled(true);
-            showMapBtn.setEnabled(true);
-        }
-        
-        exportExcelCsvBtn = createIconBtn("Export", IconManager.IconSize.NonStd, "WB_EXPORT_DATA", false, new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                doExcelCsvExport();
-            }
-        });
-        exportExcelCsvBtn.setEnabled(true);
+            biogeomancerBtn = createIconBtn("BioGeoMancer", IconManager.IconSize.NonStd,
+                    "WB_DO_BIOGEOMANCER_LOOKUP", false, new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            spreadSheet.clearSorter();
 
+                            AppPreferences remotePrefs = AppPreferences.getRemote();
+                            String tool = remotePrefs.get("georef_tool", "");
+                            if (tool.equalsIgnoreCase("geolocate"))
+                            {
+                                doGeoRef(new GeoCoordGeoLocateProvider(), "WB.GeoLocateRows");
+                            }
+                            else
+                            {
+                                doGeoRef(new GeoCoordBGMProvider(), "WB.BioGeomancerRows");
+                            }
+                        }
+                    });
+            // only enable it if the workbench has the proper columns in it
+            String[] missingColumnsForBG = getMissingButRequiredColumnsForBioGeomancer();
+            if (missingColumnsForBG.length > 0)
+            {
+                biogeomancerBtn.setEnabled(false);
+                String ttText = "<p>" + getResourceString("WB_ADDITIONAL_FIELDS_REQD") + ":<ul>";
+                for (String reqdField : missingColumnsForBG)
+                {
+                    ttText += "<li>" + reqdField + "</li>";
+                }
+                ttText += "</ul>";
+                String origTT = biogeomancerBtn.getToolTipText();
+                biogeomancerBtn.setToolTipText("<html>" + origTT + ttText);
+            }
+            else
+            {
+                biogeomancerBtn.setEnabled(true);
+            }
+        }
+        
+        if (isReadOnly)
+        {
+            convertGeoRefFormatBtn = null;
+        }
+        else
+        {
+            convertGeoRefFormatBtn = createIconBtn("ConvertGeoRef", IconManager.IconSize.NonStd,
+                    "WB_CONVERT_GEO_FORMAT", false, new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            showGeoRefConvertDialog();
+                        }
+                    });
+
+            // now enable/disable the geo ref related buttons
+            String[] missingGeoRefFields = getMissingGeoRefFields();
+            if (missingGeoRefFields.length > 0)
+            {
+                convertGeoRefFormatBtn.setEnabled(false);
+                exportKmlBtn.setEnabled(false);
+                showMapBtn.setEnabled(false);
+
+                String ttText = "<p>" + getResourceString("WB_ADDITIONAL_FIELDS_REQD") + ":<ul>";
+                for (String reqdField : missingGeoRefFields)
+                {
+                    ttText += "<li>" + reqdField + "</li>";
+                }
+                ttText += "</ul>";
+                String origTT1 = convertGeoRefFormatBtn.getToolTipText();
+                convertGeoRefFormatBtn.setToolTipText("<html>" + origTT1 + ttText);
+                String origTT2 = exportKmlBtn.getToolTipText();
+                exportKmlBtn.setToolTipText("<html>" + origTT2 + ttText);
+                String origTT3 = showMapBtn.getToolTipText();
+                showMapBtn.setToolTipText("<html>" + origTT3 + ttText);
+            }
+            else
+            {
+                convertGeoRefFormatBtn.setEnabled(true);
+                exportKmlBtn.setEnabled(true);
+                showMapBtn.setEnabled(true);
+            }
+        }
+        
+        if (UIHelper.isSecurityOn() && !task.getPermissions().canModify())
+        {
+            exportExcelCsvBtn = null;
+        }
+        else
+        {
+            exportExcelCsvBtn = createIconBtn("Export", IconManager.IconSize.NonStd,
+                    "WB_EXPORT_DATA", false, new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            doExcelCsvExport();
+                        }
+                    });
+            exportExcelCsvBtn.setEnabled(true);
+        }
+        
         uploadDatasetBtn = createIconBtn("Upload", IconManager.IconSize.Std24, "WB_UPLOAD_DATA", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -624,11 +694,19 @@ public class WorkbenchPaneSS extends BaseSubPane
         // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] comps      = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, convertGeoRefFormatBtn, exportExcelCsvBtn, uploadDatasetBtn};
-        PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,4px,"+createDuplicateJGoodiesDef("p", "4px", comps.length)+",4px,", "c:p:g"));
+        JComponent[] allComps      = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, convertGeoRefFormatBtn, exportExcelCsvBtn, uploadDatasetBtn};
+        Vector<JComponent> availableComps = new Vector<JComponent>(allComps.length);
+        for (JComponent c : allComps)
+        {
+            if (c != null)
+            {
+                availableComps.add(c);
+            }
+        }
+        PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,4px,"+createDuplicateJGoodiesDef("p", "4px", availableComps.size())+",4px,", "c:p:g"));
         
         int x = 3;
-        for (JComponent c : comps)
+        for (JComponent c : availableComps)
         {
             spreadSheetControlBar.add(c, cc.xy(x,1));
             x += 2;
@@ -664,17 +742,67 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         JLabel sep1 = new JLabel(IconManager.getIcon("Separator"));
         JLabel sep2 = new JLabel(IconManager.getIcon("Separator"));
+        ssFormSwitcher = createSwitcher();
         
         // This works
         setLayout(new BorderLayout());
-        PanelBuilder    ctrlBtns   = new PanelBuilder(new FormLayout("p,4px,p,6px,6px,6px,p,7px,6px,p", "c:p:g"));
-        ctrlBtns.add(toggleImageFrameBtn, cc.xy(1,1));
-        ctrlBtns.add(carryForwardBtn,     cc.xy(3,1));
-        ctrlBtns.add(sep1,                cc.xy(5,1));
-        ctrlBtns.add(saveBtn,             cc.xy(7,1));
-        ctrlBtns.add(sep2,                cc.xy(9,1));
-        ssFormSwitcher = createSwitcher();
-        ctrlBtns.add(ssFormSwitcher,    cc.xy(10,1));
+        JComponent[] ctrlComps = {toggleImageFrameBtn, carryForwardBtn, sep1, saveBtn, sep2, ssFormSwitcher};
+        String layoutStr = "";
+        int compCount = 0;
+        for (int c = 0; c < ctrlComps.length; c++)
+        {
+            JComponent comp = ctrlComps[c];
+            if (comp != null)
+            {
+                if (comp == sep1 || comp == sep2) 
+                {
+                    if (compCount > 0)
+                    {
+                        if (!StringUtils.isEmpty(layoutStr))
+                        {
+                            layoutStr += ",";
+                        }
+                        layoutStr += "6px,6px";
+                        compCount = 0;
+                    }
+                    else //no need for separator
+                    {
+                        ctrlComps[c] = null;
+                    }
+                }
+                else
+                {
+                    if (!StringUtils.isEmpty(layoutStr))
+                    {
+                        layoutStr += ",";
+                    }
+                   layoutStr += "p";
+                    if (c < ctrlComps.length - 1)
+                    {
+                        layoutStr += ", 6px";
+                    }
+                    compCount++;
+                }                
+            }
+        }
+        PanelBuilder    ctrlBtns   = new PanelBuilder(new FormLayout(layoutStr, "c:p:g"));
+        int col = 1;
+        for (JComponent c : ctrlComps)
+        {
+            if (c != null)
+            {
+                ctrlBtns.add(c, cc.xy(Math.min(col, 10), 1));
+                col += 2;
+            }
+        }
+        
+        //PanelBuilder    ctrlBtns   = new PanelBuilder(new FormLayout("p,4px,p,6px,6px,6px,p,7px,6px,p", "c:p:g"));
+//        ctrlBtns.add(toggleImageFrameBtn, cc.xy(1,1));
+//        ctrlBtns.add(carryForwardBtn,     cc.xy(3,1));
+//        ctrlBtns.add(sep1,                cc.xy(5,1));
+//        ctrlBtns.add(saveBtn,             cc.xy(7,1));
+//        ctrlBtns.add(sep2,                cc.xy(9,1));
+//        ctrlBtns.add(ssFormSwitcher,    cc.xy(10,1));
         
         add(mainPanel, BorderLayout.CENTER);
         
@@ -770,8 +898,11 @@ public class WorkbenchPaneSS extends BaseSubPane
             btn.setEnabled(enable);
         }
         enable = workbench.getWorkbenchRows().size() < WorkbenchTask.MAX_ROWS;
-        addRowsBtn.setEnabled(enable);
-        resultsetController.getNewRecBtn().setEnabled(enable);
+        if (!isReadOnly)
+        {
+            addRowsBtn.setEnabled(enable);
+        }
+        resultsetController.getNewRecBtn().setEnabled(enable && !isReadOnly);
     }
     
     /**
@@ -1207,7 +1338,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         JComponent[] comps = { addRowsBtn, deleteRowsBtn, clearCellsBtn};
         for (JComponent c : comps)
         {
-            c.setVisible(isSpreadsheet);
+            if (c != null)
+            {
+                c.setVisible(isSpreadsheet);
+            }
         }
     }
     
