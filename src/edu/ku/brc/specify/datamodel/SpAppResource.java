@@ -438,32 +438,49 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
      */
     public void setDataAsString(final String dataStr)
     {
-        //if (fileName != null)
-        //{
-        //    //throw new RuntimeException("Not implemented!");
-        //}
-        
-        if (StringUtils.isNotEmpty(dataStr))
+        DataProviderSessionIFace session = null;
+        try
         {
-            SpAppResourceData ard;
-            if (spAppResourceDatas.size() == 0)
+            if (getId() != null)
             {
-                ard = new SpAppResourceData();
-                ard.initialize();
-                ard.setSpAppResource(this);
-                spAppResourceDatas.add(ard);
-                
-            } else
-            {
-                ard = spAppResourceDatas.iterator().next();
+                session = DataProviderFactory.getInstance().createSession();
+                session.attach(this);
             }
+            
+            if (StringUtils.isNotEmpty(dataStr))
+            {
+                SpAppResourceData ard;
+                if (spAppResourceDatas.size() == 0)
+                {
+                    ard = new SpAppResourceData();
+                    ard.initialize();
+                    ard.setSpAppResource(this);
+                    spAppResourceDatas.add(ard);
+                    
+                } else
+                {
+                    ard = spAppResourceDatas.iterator().next();
+                }
 
-            ard.setData(dataStr.getBytes());
+                ard.setData(dataStr.getBytes());
 
 
-        } else if (spAppResourceDatas.size() > 0)
+            } else if (spAppResourceDatas.size() > 0)
+            {
+                spAppResourceDatas.iterator().next().setData(null);
+            }
+            
+        } catch (Exception ex)
         {
-            spAppResourceDatas.iterator().next().setData(null);
+           log.error(ex);
+           ex.printStackTrace();
+           
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
         
         //setSpAppResourceDatas(spAppResourceDatas); // Must call this to make sure it knows we changed it

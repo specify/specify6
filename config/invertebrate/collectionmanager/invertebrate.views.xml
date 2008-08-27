@@ -97,10 +97,6 @@
     			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
     			    <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="name=PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
     			</row>
-     			<row>
-    				<cell type="separator" label="Determination" collapse="determinations" colspan="16"/>
-    			</row>
-
     			<row>
     			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="16" rows="5" initialize="noscrollbars=true;border=line;bordercolor=150,150,150;"/>
     			</row>
@@ -110,9 +106,6 @@
     		    <row>
                     <cell type="subview" id="7" viewname="SubCollectingEvent" name="collectingEvent" colspan="16"/>
     		    </row>  	
-    			<row>
-    			    <cell type="separator" label="Preparations" collapse="preparations" colspan="16"/>
-    			</row>
     			<row>
     			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="16"/>
     			</row>

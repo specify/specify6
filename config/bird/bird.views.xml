@@ -114,29 +114,14 @@
     		        <cell type="label" labelfor="5"/>
     		        <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
     		    </row>
-     			<row>
-    				<cell type="separator" label="Determination" collapse="determinations" colspan="12"/>
-    			</row>
-
     			<row>
     			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5" initialize="noscrollbars=true;border=line;bordercolor=150,150,150;"/>
     			</row>
-    		    <row>
-    		        <cell type="separator" label="Collecting Event" colspan="12" collapse="collectingEvent"/>
-    		    </row>
-    		    <row>
     		        <cell type="subview" id="26" name="collectingEvent" viewname="CollectingEventSub" colspan="12"/>
     		    </row>
-    		    
-    			<row>
-    			    <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
-    			</row>
     			<row>
     			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
     			</row>
-    		    <row>
-    		        <cell type="separator" label="Attributes" collapse="collectionObjectAttribute" colspan="12"/>
-    		    </row>
     		    <row>
     		        <cell type="subview" viewname="BirdAttributes" id="19" name="collectionObjectAttribute" colspan="12"/>
     		    </row>

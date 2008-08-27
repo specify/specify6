@@ -139,20 +139,10 @@
                     <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Determination" collapse="determinations" colspan="16"/>
-                </row>
-                
-                <row>
                     <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="16" rows="5"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Collecting Event" colspan="16" collapse="collectingEvent"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="CollectingEventSub" id="17" name="collectingEvent" colspan="16"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Preparations" collapse="preparations" colspan="16"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="16"/>

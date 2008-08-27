@@ -167,7 +167,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
                                       cellName, 
                                       formView, 
                                       isEdit ? AltViewIFace.CreationMode.EDIT : AltViewIFace.CreationMode.VIEW,
-                                      options, null);
+                                      options | MultiView.DONT_USE_EMBEDDED_SEP, null);
 
         } else
         {

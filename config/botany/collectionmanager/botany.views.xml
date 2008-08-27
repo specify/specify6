@@ -95,10 +95,6 @@
                     <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="name=PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
                 </row>
                 <row>
-                    <cell type="separator" label="Determination" collapse="determinations" colspan="18"/>
-                </row>
-                
-                <row>
                     <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="18" rows="5"/>
                 </row>
                 <row>
@@ -113,17 +109,11 @@
                     <cell type="field" id="18" name="description" uitype="textarea" colspan="16"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Collecting Event" colspan="18" collapse="collectingEvent"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="CollectingEventSub" name="collectingEvent" id="17" colspan="18"/>
                 </row>
                 <!--   <row>
                     <cell type="field" id="7" name="collectingEvent.locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="12"/>
                     </row>  -->	
-                <row>
-                    <cell type="separator" label="Preparations" collapse="preparations" colspan="18"/>
-                </row>
                 <row>
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="18"/>
                 </row>

@@ -198,6 +198,7 @@ public class TableViewObj implements Viewable,
     protected JButton                       editButton      = null;
     protected JButton                       newButton       = null;
     protected JButton                       deleteButton    = null;
+    protected JPanel                        sepController   = null;
 
     protected BusinessRulesIFace            businessRules   = null; 
 
@@ -220,7 +221,7 @@ public class TableViewObj implements Viewable,
     protected boolean                       doOrdering  = false;
     
     // Security
-    private PermissionSettings      perm = null;
+    private PermissionSettings              perm = null;
     
 
     /**
@@ -264,11 +265,6 @@ public class TableViewObj implements Viewable,
         isEditing                          = MultiView.isOptionOn(options, MultiView.IS_EDITTING) && altView.getMode() == AltViewIFace.CreationMode.EDIT;
         
         setValidator(formValidator);
-
-        scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
-
-
-        AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
 
         boolean addController = mvParent != null && view.getAltViews().size() > 1;
 
@@ -323,13 +319,8 @@ public class TableViewObj implements Viewable,
                 {
                     if (isEditing)
                     {
-                        String edtTTStr = ResultSetController.createTooltip("EditRecordTT",   view.getObjTitle());
-                        String newTTStr = ResultSetController.createTooltip("NewRecordTT",    view.getObjTitle());
                         String delTTStr = ResultSetController.createTooltip("RemoveRecordTT", view.getObjTitle());
-                        
-                        
-                        deleteButton = UIHelper.createButton("DeleteRecord", delTTStr, IconManager.IconSize.Std16, true);
-                        deleteButton.addActionListener(new ActionListener() {
+                        deleteButton = UIHelper.createIconBtnTT("DeleteRecord", IconManager.IconSize.Std16, delTTStr, false, new ActionListener() {
                             public void actionPerformed(ActionEvent e)
                             {
                                 deleteRow(table.getSelectedRow());
@@ -339,6 +330,7 @@ public class TableViewObj implements Viewable,
                         boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
                         if (addSearch)
                         {
+                            String srchTTStr = ResultSetController.createTooltip("SearchForRecordTT", view.getObjTitle());
                             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
                             if (tblInfo != null)
                             {
@@ -354,8 +346,7 @@ public class TableViewObj implements Viewable,
                                 log.error("Couldn't find TableInfo for class["+view.getClassName()+"]");
                             }
                             
-                            searchButton = UIHelper.createButton("Search", "SearchForRecordTT", IconManager.IconSize.Std16, true);
-                            searchButton.addActionListener(new ActionListener() {
+                            searchButton = UIHelper.createIconBtnTT("Search", IconManager.IconSize.Std16, srchTTStr, false, new ActionListener() {
                                 public void actionPerformed(ActionEvent e)
                                 {
                                     doSearch();
@@ -364,34 +355,29 @@ public class TableViewObj implements Viewable,
                             
                         } else
                         {
-                            editButton   = UIHelper.createButton("EditForm", edtTTStr, IconManager.IconSize.Std16, true);
-                            newButton    = UIHelper.createButton("CreateObj", newTTStr, IconManager.IconSize.Std16, true);
-                            
-                            editButton.addActionListener(new ActionListener() {
+                            String edtTTStr  = ResultSetController.createTooltip("EditRecordTT",   view.getObjTitle());
+                            String newTTStr  = ResultSetController.createTooltip("NewRecordTT",    view.getObjTitle());
+                            editButton   = UIHelper.createIconBtnTT("EditForm", IconManager.IconSize.Std16, edtTTStr, false, new ActionListener() {
                                 public void actionPerformed(ActionEvent e)
                                 {
                                     editRow(table.getSelectedRow(), false);
                                 }
                             });
-                            
-                            newButton.addActionListener(new ActionListener() {
+                            newButton    = UIHelper.createIconBtnTT("CreateObj", IconManager.IconSize.Std16, newTTStr, false, new ActionListener() {
                                 public void actionPerformed(ActionEvent e)
                                 {
                                     editRow(table.getSelectedRow(), true);
                                 }
                             });
+                            
                         }
+                        
+                        boolean isAbove = mvParent.getSeparator() != null;  
                         
                         int cnt = (deleteButton != null ? 1 : 0) + (searchButton != null ? 1 : 0) + (editButton != null ? 1 : 0) + (newButton != null ? 1 : 0);
                         
-                        PanelBuilder builder = new PanelBuilder(new FormLayout("f:1px:g,"+UIHelper.createDuplicateJGoodiesDef("p", "1px", cnt), "p"));
+                        PanelBuilder builder = new PanelBuilder(new FormLayout((isAbove ? "1px," : "f:1px:g,") +UIHelper.createDuplicateJGoodiesDef("p", "1px", cnt), "p"));
                         int x = 2;
-                        if (editButton != null)
-                        {
-                            builder.add(editButton, cc.xy(x,1));  
-                            x += 2;
-                        }
-                        
                         if (newButton != null)
                         {
                             builder.add(newButton, cc.xy(x,1));  
@@ -404,6 +390,12 @@ public class TableViewObj implements Viewable,
                             x += 2;
                         }
                         
+                        if (editButton != null)
+                        {
+                            builder.add(editButton, cc.xy(x,1));  
+                            x += 2;
+                        }
+                        
                         if (searchButton != null)
                         {
                             builder.add(searchButton, cc.xy(x,1));  
@@ -412,19 +404,20 @@ public class TableViewObj implements Viewable,
                         
                         builder.getPanel().setBackground(bgColor);
                         
-                        comps.add(builder.getPanel());
-
+                        if (isAbove)
+                        {
+                            sepController = builder.getPanel();
+                        } else
+                        {
+                            comps.add(builder.getPanel());
+                        }
+                        
                         if (saveBtn != null)
                         {
-                            // We want it on the left side of other buttons
-                            // so wee need to add it before the Save button
-                            //addValidationIndicator(comps);
-        
-                            //addSaveBtn();
-    
                             comps.add(saveBtn);
                             saveWasAdded = true;
                         }
+                        
                     } else
                     {
                          editButton = UIHelper.createButton("InfoIcon", getResourceString("ViewRecord"), IconManager.IconSize.Std16, true);
@@ -437,9 +430,10 @@ public class TableViewObj implements Viewable,
                          PanelBuilder builder = new PanelBuilder(new FormLayout("f:1px:g,p,10px", "p"));
                          builder.add(editButton, cc.xy(2,1));
                          comps.add(builder.getPanel());
-   
                     }
+                    
                     updateUI(false);
+                    
                     if (switcherUI != null)
                     {
                         comps.add(switcherUI);
@@ -1001,7 +995,7 @@ public class TableViewObj implements Viewable,
                                                   delBtnLabels[1]);
             if (rv == JOptionPane.YES_OPTION)
             {
-                parentDataObj.removeReference(dObj, dataSetFieldName);
+                parentDataObj.removeReference(dObj, dataSetFieldName, true);
                 dataObjList.remove(rowIndex);
                 
                 model.fireDataChanged();
@@ -1105,6 +1099,15 @@ public class TableViewObj implements Viewable,
     //-------------------------------------------------
     // Viewable
     //-------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#getControllerPanel()
+     */
+    @Override
+    public JComponent getControllerPanel()
+    {
+        return sepController;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getName()

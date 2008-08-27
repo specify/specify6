@@ -252,6 +252,8 @@ public interface Viewable
      */
     public abstract boolean isDataCompleteAndValid(boolean throwAwayOnDiscard);
     
+    public abstract JComponent getControllerPanel();
+    
     /**
      * Focus the appropriate UI element.
      */

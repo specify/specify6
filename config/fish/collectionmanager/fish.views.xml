@@ -92,10 +92,6 @@
                     <cell type="field" id="99" name="this" uitype="plugin" initialize="name=WebLinkButton;weblink=CatNum"/>
                 </row>
                 -->
-				<row>
-                    <cell type="separator" label="Determinations" collapse="determinations" colspan="12"/>
-                </row>
-                
                 <row>
                     <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5" initialize="noscrollbars=true;border=line;bordercolor=150,150,150;"/>
                 </row>
@@ -108,16 +104,9 @@
                     <cell type="field" id="20" name="appraisal" uitype="querycbx" initialize="name=Appraisal;title=Appraisal" colspan="12"/>
                 </row> -->
                 <row>
-                    <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
                 </row>
              <!--   
-                 
-                 <row>
-                    <cell type="separator" label="Conservator Description" colspan="12" collapse="conservDescriptions"/>
-                 </row>
                  <row>
                     <cell type="subview" viewname="ConservDescriptionSub" id="22" name="conservDescriptions" colspan="12"/>
                  </row>

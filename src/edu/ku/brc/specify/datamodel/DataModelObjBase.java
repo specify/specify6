@@ -438,6 +438,14 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
      */
     public void removeReference(FormDataObjIFace ref, String fieldName)
     {
+        removeReference(ref, fieldName, false);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.FormDataObjIFace#removeReference(edu.ku.brc.af.ui.forms.FormDataObjIFace, java.lang.String, boolean)
+     */
+    public void removeReference(FormDataObjIFace ref, String fieldName, final boolean doOtherSide)
+    {
         if (ref == null)
         {
             return;
@@ -491,11 +499,13 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
                             {
                                 removeFromCollection(ref, otherSide, parentDataObject);
                             }
-                            //else // rods 06/11/08 - add this code back in for deleting attachments.
-                            //{
-                            //  DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
-                            //  setter.setFieldValue(ref, otherSide, null);
-                            //}
+                            // rods 06/11/08 - this keeps deleting attachments from working
+                            // rods 08/21/08 - This is needed when removing CollectionObjects from Projects
+                            else if (doOtherSide)
+                            {
+                              DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
+                              setter.setFieldValue(ref, otherSide, null);
+                            }
                         }
         
                     } else

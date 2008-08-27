@@ -1945,67 +1945,29 @@ public final class UIHelper
                                         final boolean              withEmptyBorder,
                                         final ActionListener       al)
     {
-        /*JButton btn = new JButton(size != null ? IconManager.getIcon(iconName, size) : IconManager.getIcon(iconName));
-        btn.setOpaque(false);
-        
-        if (!withEmptyBorder)
-        {
-            btn.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e)
-                {
-                    if (((JButton)e.getSource()).isEnabled())
-                    {
-                        ((JButton)e.getSource()).setBorder(focusBorder);
-                    }
-                    super.mouseEntered(e);
-                }
-                @Override
-                public void mouseExited(MouseEvent e)
-                {
-                    if (((JButton)e.getSource()).isEnabled())
-                    {               
-                        ((JButton)e.getSource()).setBorder(emptyBorder);
-                    }
-                    super.mouseExited(e);
-                }
-                
-            });
-            btn.addFocusListener(new FocusListener() {
-                public void focusGained(FocusEvent e)
-                {
-                    if (((JButton)e.getSource()).isEnabled())
-                    {
-                        ((JButton)e.getSource()).setBorder(focusBorder);
-                    }
-                }
-                public void focusLost(FocusEvent e)
-                {
-                    if (((JButton)e.getSource()).isEnabled())
-                    {               
-                        ((JButton)e.getSource()).setBorder(emptyBorder);
-                    }
-                }
-                
-            });
-            btn.setBorder(emptyBorder);
-        }
-        if (StringUtils.isNotEmpty(toolTipTextKey))
-        {
-            btn.setToolTipText(getResourceString(toolTipTextKey));
-        }
-        if (al != null)
-        {
-            btn.addActionListener(al);
-        }
-        btn.setEnabled(false);
-        btn.setMargin(new Insets(0,0,0,0));
-        */
+        String ttText = toolTipTextKey != null ? getResourceString(toolTipTextKey) : null;
+        return createIconBtnTT(iconName, size, ttText, withEmptyBorder, al);
+    }
+
+    /**
+      * Creates an icon button with tooltip and action listener.
+     * @param iconName the name of the icon (use default size)
+     * @param toolTipTextKey the actual localized tooltip text 
+     * @param al the action listener
+     * @param withEmptyBorder set an empyt border
+     * @return the JButton icon button
+     */
+    public static JButton createIconBtnTT(final String               iconName, 
+                                          final IconManager.IconSize size,
+                                          final String               toolTipText, 
+                                          final boolean              withEmptyBorder,
+                                          final ActionListener       al)
+    {
         
         IconButton btn = new IconButton(size != null ? IconManager.getIcon(iconName, size) : IconManager.getIcon(iconName), withEmptyBorder);
-        if (StringUtils.isNotEmpty(toolTipTextKey))
+        if (StringUtils.isNotEmpty(toolTipText))
         {
-            btn.setToolTipText(getResourceString(toolTipTextKey));
+            btn.setToolTipText(toolTipText);
         }
         if (al != null)
         {

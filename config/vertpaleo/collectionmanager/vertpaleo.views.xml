@@ -148,46 +148,24 @@
                     <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="name=PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
                 </row>
                 <row>
-                    <cell type="separator" label="Determination" collapse="determinations" colspan="12"/>
-                </row>
-                
-                <row>
                     <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Collecting Event" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" id="20" viewname="CollectingEventSub" name="collectingEvent" colspan="12"/> 
                 </row>      
                 <row>
-                    <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Other Identifier" collapse="otherIdentifiers" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" id="17" name="otherIdentifiers" viewname="OtherIdentifier" colspan="12"/>
                 </row> 
                 <row>
-                    <cell type="separator" label="Stratigraphy" collapse="paleoContext" colspan="12"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="SubPaleoContext" id="9" name="paleoContext" defaulttype="table" colspan="12"/>
                 </row> 
                 <row>
-                    <cell type="separator" label="Collection Object Citation" colspan="12" collapse="collectionObjectCitations"/>
-                </row>
-                <row>
                     <cell type="subview" id="21" name="collectionObjectCitations" viewname="CollectionObjectCitation" colspan="12"/>                    
                 </row>
-             <!--   <row>
-                    <cell type="separator" label="Attributes" collapse="collectionObjectAttribute" colspan="12"/>
-                </row>
-                <row>
+             <!-- <row>
                     <cell type="subview" id="19" viewname="Attributes" name="collectionObjectAttribute" colspan="12"/>
                 </row> -->
                 <row>

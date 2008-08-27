@@ -645,24 +645,14 @@
                 	<cell type="field" id="16" name="remarks" uitype="textarea" cols="20" />
                 </row>-->
 
-
-                <row>
-                    <cell type="separator" id="99" label="Address Information" collapse="addresses" colspan="6"/>
-                </row>
 			    <row>
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="6"/>
                 </row>
                 <!-- 
                 <row>
-                    <cell type="separator" id="30" label="Groups" collapse="groups" colspan="6"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="GroupPerson" id="31" name="groups" defaulttype="table" colspan="6"/>
                 </row> -->
 
-                <row>
-                    <cell type="separator" id="100" label="Variant" collapse="variants" colspan="6"/>
-                </row>
 			    <row>
                     <cell type="subview" viewname="AgentVariant" id="10" name="variants" colspan="6"/>
                 </row>
@@ -702,9 +692,6 @@
                 <row>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="abbreviation" uitype="text" cols="20"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Address Information" collapse="addresses" colspan="4"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="4"/>

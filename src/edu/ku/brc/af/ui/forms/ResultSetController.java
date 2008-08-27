@@ -93,6 +93,7 @@ public class ResultSetController implements ValidationListener
     protected int     numRecords = 0;
     
     protected boolean isNewObj   = false;
+    protected boolean doLayoutBtns;
     
     // Global Key Actions
     private enum CommandType { First, Previous, Next, Last, Save, NewItem, DelItem}
@@ -130,10 +131,12 @@ public class ResultSetController implements ValidationListener
                                final boolean addDelBtn, 
                                final boolean addSearchBtn, 
                                final String  objTitle,
-                               final int     len)
+                               final int     len,
+                               final boolean doLayoutBtns)
     {
         this.formValidator = formValidator;
-       
+        this.doLayoutBtns  = doLayoutBtns;
+        
         if (formValidator != null)
         {
             formValidator.addValidationListener(this);
@@ -218,7 +221,7 @@ public class ResultSetController implements ValidationListener
         rowBuilder.add(recDisp, cc.xy(5,1));
         rowBuilder.add(nextBtn, cc.xy(7,1));
         rowBuilder.add(lastBtn, cc.xy(9,1));
-        int row = 11;
+        int col = 11;
         
         if (addNewBtn)
         {
@@ -278,8 +281,11 @@ public class ResultSetController implements ValidationListener
             newRecBtn.setMargin(insets);
             btnsHash.put(CommandType.NewItem, newRecBtn);
 
-            rowBuilder.add(newRecBtn, cc.xy(row,1));
-            row += 2;
+            if (doLayoutBtns)
+            {
+                rowBuilder.add(newRecBtn, cc.xy(col,1));
+                col += 2;
+            }
         }
         
         if (addDelBtn)
@@ -312,8 +318,11 @@ public class ResultSetController implements ValidationListener
             delRecBtn.setMargin(insets);
             btnsHash.put(CommandType.DelItem, delRecBtn);
             
-            rowBuilder.add(delRecBtn, cc.xy(row,1));
-            row += 2;
+            if (doLayoutBtns)
+            {
+                rowBuilder.add(delRecBtn, cc.xy(col,1));
+                col += 2;
+            }
         }
         
         if (addSearchBtn)
@@ -321,8 +330,12 @@ public class ResultSetController implements ValidationListener
             searchRecBtn = UIHelper.createIconBtn("Search", IconManager.IconSize.Std16, null, null);
             searchRecBtn.setToolTipText(createTooltip("SearchForRecordTT", objTitle));
             searchRecBtn.setMargin(insets);
-            rowBuilder.add(searchRecBtn, cc.xy(row,1));
-            row += 2;
+            
+            if (doLayoutBtns)
+            {
+                rowBuilder.add(searchRecBtn, cc.xy(col,1));
+                col += 2;
+            }
         }
         
  

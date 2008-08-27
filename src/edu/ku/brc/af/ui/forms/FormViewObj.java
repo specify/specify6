@@ -228,6 +228,7 @@ public class FormViewObj implements Viewable,
     protected boolean                       saveAndNew      = false;  
     protected boolean                       isAutoNumberOn  = true; 
     protected RestrictablePanel             restrictablePanel = null;
+    protected JPanel                        sepController   = null;
     
     
     protected String                        searchName      = null;
@@ -621,7 +622,7 @@ public class FormViewObj implements Viewable,
             {
                 boolean isSecurityModeOK = perm.getOptions() > 0 && ((perm.isViewOnly() && (mode == AltViewIFace.CreationMode.VIEW)) ||
                                                                      !perm.isViewOnly());
-                if (isSecurityModeOK && (av.getMode() == mode))
+                if (isSecurityModeOK && av.getMode() == mode)
                 {
                     altViewsListArg.add(av);
                 }
@@ -2581,46 +2582,6 @@ public class FormViewObj implements Viewable,
      */
     protected void removeObject()
     {
-        // Delete a child object by caching it in the Top Level MultiView
-        if (mvParent != null && !mvParent.isTopLevel())
-        {
-            boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
-            
-            removeFromParent(parentDataObj, cellName, dataObj);
-            
-            // We don't delete these type of objects from the database
-            // because were added as references only
-            if (!addSearch)
-            {
-                mvParent.getTopLevel().addDeletedItem(dataObj);
-            }
-
-            String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dataObj) : "";
-            UIRegistry.getStatusBar().setText(delMsg);
-            formValidator.setHasChanged(true);
-            formValidator.validateForm();
-
-            // We need to turn off the notifications when setting new data.
-            formValidator.setIgnoreValidationNotifications(true);
-            adjustRSControllerAfterRemove();
-            formValidator.setIgnoreValidationNotifications(false);
-            
-            mvParent.getTopLevel().getCurrentValidator().setHasChanged(true);
-            mvParent.getTopLevel().getCurrentValidator().validateForm();
-            
-            isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
-            if (rsController != null)
-            {
-                rsController.setNewObj(isNewlyCreatedDataObj);
-            }
-            if (formValidator != null)
-            {
-                formValidator.setNewObj(isNewlyCreatedDataObj);
-            }
-            
-            return;
-        }
-        
         // This shouldn't happen
         if (session != null)
         {
@@ -2632,13 +2593,61 @@ public class FormViewObj implements Viewable,
         
         try
         {
+            
             //log.info(hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
             if (session == null)
             {
                 return;
             }
             
+            // rods - 08/21/08 Needed to add this so could remove the other side of the relationship
+            // which might have failed from being lazy loaded.
+            
+            //session.attach(parentDataObj);
+            if (((FormDataObjIFace)dataObj).getId() != null)
+            {
+                session.attach(dataObj);
+            }
+            
             removeFromParent(parentDataObj, cellName, dataObj);
+            
+            // Delete a child object by caching it in the Top Level MultiView
+            if (mvParent != null && !mvParent.isTopLevel())
+            {
+                boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
+                
+                // We don't delete these type of objects from the database
+                // because were added as references only
+                if (!addSearch)
+                {
+                    mvParent.getTopLevel().addDeletedItem(dataObj);
+                }
+    
+                String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dataObj) : "";
+                UIRegistry.getStatusBar().setText(delMsg);
+                formValidator.setHasChanged(true);
+                formValidator.validateForm();
+    
+                // We need to turn off the notifications when setting new data.
+                formValidator.setIgnoreValidationNotifications(true);
+                adjustRSControllerAfterRemove();
+                formValidator.setIgnoreValidationNotifications(false);
+                
+                mvParent.getTopLevel().getCurrentValidator().setHasChanged(true);
+                mvParent.getTopLevel().getCurrentValidator().validateForm();
+                
+                isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
+                if (rsController != null)
+                {
+                    rsController.setNewObj(isNewlyCreatedDataObj);
+                }
+                if (formValidator != null)
+                {
+                    formValidator.setNewObj(isNewlyCreatedDataObj);
+                }
+                
+                return;
+            }
             
             String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dataObj) : "";
 
@@ -2932,7 +2941,8 @@ public class FormViewObj implements Viewable,
                                                    inEditMode && canDel,               // Add Delete
                                                    inEditMode && addSearch && canAdd,  // Add Search
                                                    view.getObjTitle(),                 // Object Title
-                                                   0);                                 // current length 
+                                                   0,                                  // current length
+                                                   false);                             // don't layout the btns
             rsController.getPanel().setBackground(bgColor);
             
             rsController.addListener(this);
@@ -2946,8 +2956,43 @@ public class FormViewObj implements Viewable,
             {
                 formValidator.addEnableItem(newRecBtn, FormValidator.EnableType.ValidItems);
             }
+            
             setAddDelListeners(newRecBtn, delRecBtn);
+            
+            if (mvParent.getSeparator() != null)
+            {
+                addControllerBtnsToSep();
+            }
         }
+    }
+    
+    /**
+     * Adds all the Control buttons to the separator.
+     */
+    protected void addControllerBtnsToSep()
+    {
+        JButton searchBtn = rsController.getSearchRecBtn();
+        int cnt = (newRecBtn != null ? 1 : 0) + (delRecBtn != null ? 1 : 0) + (searchBtn != null ? 1 : 0);
+        PanelBuilder pb = new PanelBuilder(new FormLayout(UIHelper.createDuplicateJGoodiesDef("p", "2px", cnt), "p"));
+        
+        int x = 1;
+        if (newRecBtn != null)
+        {
+            pb.add(newRecBtn, cc.xy(x, 1));
+            x += 2;
+        }
+        if (delRecBtn != null)
+        {
+            pb.add(delRecBtn, cc.xy(x, 1));
+            x += 2;
+        }
+        if (searchBtn != null)
+        {
+            pb.add(searchBtn, cc.xy(x, 1));
+            x += 2;
+        }
+        
+        sepController = pb.getPanel();
     }
     
     /**
@@ -4684,6 +4729,15 @@ public class FormViewObj implements Viewable,
                 }
             }
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#getControllerPanel()
+     */
+    @Override
+    public JComponent getControllerPanel()
+    {
+        return sepController == null || sepController.getComponentCount() == 0 ? null : sepController;
     }
 
     /* (non-Javadoc)

@@ -74,7 +74,7 @@ public class IconButton extends JButton
                 {
                     if (((JButton)e.getSource()).isEnabled())
                     {
-                        ((JButton)e.getSource()).setBorder(focusBorder);
+                        //((JButton)e.getSource()).setBorder(focusBorder);
                     }
                     super.mouseEntered(e);
                 }
@@ -86,6 +86,15 @@ public class IconButton extends JButton
                         ((JButton)e.getSource()).setBorder(emptyBorder);
                     }
                     super.mouseExited(e);
+                }
+                /* (non-Javadoc)
+                 * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
+                 */
+                @Override
+                public void mousePressed(MouseEvent e)
+                {
+                    super.mousePressed(e);
+                    //((JButton)e.getSource()).setBorder(focusBorder);
                 }
                 
             });
@@ -118,7 +127,7 @@ public class IconButton extends JButton
     {
         super.setEnabled(enable);
         
-        if (!enable && isEnabled())
+        if (!enable)
         {
             setBorder(emptyBorder);
             repaint();

@@ -975,7 +975,6 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected void doQuery(final String newEntryStr)
     {
         prevEnteredText = newEntryStr;
-        log.debug("PREV: ["+prevEnteredText+"]");
 
         if (hasNewText)
         {

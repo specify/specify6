@@ -82,7 +82,6 @@ import edu.ku.brc.specify.tasks.services.CollectingEventLocalityKMLGenerator;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -362,7 +361,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         Font font = titleLabel.getFont();
         titleLabel.setFont(new Font(font.getFontName(), Font.BOLD, font.getSize()+2));
 
-        recordSetController = new ResultSetController(null, false, false, false, null, collectingEvents.size());
+        recordSetController = new ResultSetController(null, false, false, false, null, collectingEvents.size(), true);
         recordSetController.addListener(this);
         recordSetController.getPanel().setBackground(Color.WHITE);
 

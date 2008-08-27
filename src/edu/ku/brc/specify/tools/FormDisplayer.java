@@ -134,11 +134,11 @@ public class FormDisplayer
      */
     public void generateFormImages()
     {
-        if (false)
+        if (true)
         {
             setup();
             createFormImagesIndexFile();
-            return;
+            //return;
         }
         
         int userChoice = JOptionPane.showConfirmDialog(getTopWindow(), 

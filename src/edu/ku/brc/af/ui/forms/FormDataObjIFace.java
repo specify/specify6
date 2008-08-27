@@ -102,6 +102,13 @@ public interface FormDataObjIFace
     public abstract void removeReference(FormDataObjIFace ref, String refName);
     
     /**
+     * @param ref
+     * @param fieldName
+     * @param doOtherSide
+     */
+    public abstract void removeReference(FormDataObjIFace ref, String fieldName, final boolean doOtherSide);
+    
+    /**
      * Gets the value of a foreign key reference for this object.  This method provides
      * a generic way to call other methods such as getAgent() or getLocalities().
      * 

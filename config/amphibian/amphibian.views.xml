@@ -146,27 +146,15 @@
                     <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent;editoncreate=true" isrequired="true"/>
                     <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="name=PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
                 </row>
-                <row>
-                    <cell type="separator" label="Determination" collapse="determinations" colspan="12"/>
-                </row>
                 
                 <row>
                     <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Collecting Event" colspan="12" collapse="collectingEvent"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="CollectingEventSub" id="21" name="collectingEvent" colspan="12" rows="5"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Attributes" collapse="collectionObjectAttribute" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" id="15" viewname="AmphibianAttributes" name="collectionObjectAttribute" colspan="12"/>

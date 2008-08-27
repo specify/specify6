@@ -593,25 +593,16 @@
                     <cell type="panel" id="16" name="outerPanel" coldef="p,5px,p" rowdef="p,4px,p" colspan="12">
                         <rows>
                             <row>
-                                <cell type="separator" label="Accession Agents" collapse="accessionAgents"/>
-                                <cell type="separator" label="Authorizations" collapse="accessionAuthorizations"/>
-                            </row>
-                            <row>
                                 <cell type="iconview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents"/>
                                 <cell type="subview" viewname="AccessionAuthorization" id="9" desc="Authorization" name="accessionAuthorizations"/>
                             </row>
                         </rows>
                     </cell>
                 </row>
-                 <row>
-                    <cell type="separator" label="Collection Objects" collapse="collectionObjects" colspan="12"/>
-                </row>
                 <row> 
-                    <cell type="subview" viewname="CollectionObjectSub" id="25" desc="Collection Object" name="collectionObjects" colspan="12"/>
+                    <cell type="subview" viewname="CollectionObjectSub" id="25" desc="Collection Object" name="collectionObjects" colspan="12" initialize="addsearch=true" />
                 </row>
-             <!--   <row>
-                    <cell type="separator" label="Appraisal" collapse="appraisals" colspan="12"/>
-                </row>
+             <!--   
                 <row>
                     <cell type="subview" viewname="Appraisal" id="15" name="appraisals" colspan="12"/>
                 </row>
@@ -1062,9 +1053,6 @@
                     <cell type="field" id="7" name="description" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Conservator Event" collapse="events" colspan="12"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="ConservEvent" id="9"  name="events" colspan="12" rows="5"/>   
                 </row>
                 <row>
@@ -1135,10 +1123,6 @@
                 <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="deaccessionDate" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
-                </row>
-
-                <row>
-                    <cell type="separator" label="Deaccession Agents" colspan="10" collapse="deaccessionAgents"/>
                 </row>
                 <row>
                     <cell type="iconview" viewname="Deaccession Agent" id="8" name="deaccessionAgents" desc="Agents" colspan="11"/>
@@ -1335,9 +1319,6 @@
                     <cell type="field" id="1" name="description" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Page Set" colspan="12" collapse="pageSets"/>
-                </row>
-                <row>
                     <cell type="subview" id="11" name="pageSets" viewname="FieldNotebookPageSet" defaulttype="table" colspan="12"/>
                 </row>
                 
@@ -1381,9 +1362,7 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="description" uitype="textarea" colspan="10"/>
                 </row>
-                <!--   <row>
-                    <cell type="separator" label="Collection Objects" collapse="collectionObjects" colspan="12"/>
-                    </row>
+                <!--   
                     <row>
                     <cell type="subview" id="5" name="collectionObjects" viewname="CollectionObjectSub" colspan="12"/>
                     </row> -->
@@ -1511,14 +1490,7 @@
                      <cell type="field" id="5" name="remarks" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Shipment" collapse="shipments" colspan="12"/>
-                </row>
-                
-                <row>
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Loan Preparations" colspan="12"/>
                 </row>
                 <row>
                      <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" colspan="12"/>

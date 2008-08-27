@@ -639,7 +639,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         // This panel contains just the ResultSetContoller, it's needed so the RSC gets centered
         PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
-        resultsetController  = new ResultSetController(null, true, true, false, getResourceString("Record"), model.getRowCount());
+        resultsetController  = new ResultSetController(null, true, true, false, getResourceString("Record"), model.getRowCount(), true);
         resultsetController.addListener(formPane);
         resultsetController.getDelRecBtn().addActionListener(delAction);
         rsPanel.add(resultsetController.getPanel(), cc.xy(1,1));

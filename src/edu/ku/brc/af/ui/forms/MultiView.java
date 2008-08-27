@@ -14,9 +14,11 @@
  */
 package edu.ku.brc.af.ui.forms;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -24,15 +26,18 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBTableChildIFace;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace;
@@ -64,16 +69,17 @@ public class MultiView extends JPanel
 {
     // These are the configuration Options for a View
     public static final int NO_OPTIONS             =   0; // Indicates there are no options
-    public static final int RESULTSET_CONTROLLER   =   1; // Add the ResultSet Controller with First,Previous,Next, Last
-    public static final int VIEW_SWITCHER          =   2; // Add a View Switch in the bottom right
-    public static final int IS_NEW_OBJECT          =   4; // Indicates the form will contain a brand new data object
-    public static final int HIDE_SAVE_BTN          =   8; // Hide the Save Button
-    public static final int IS_EDITTING            =  16; // Whether the MultiView is in Edit mode.
-    public static final int IS_SINGLE_OBJ          =  32; // Whether the data being passed into the MultiView is a Collection of Object or a single Object
-    public static final int NO_SCROLLBARS          =  64; // Whether the form should be scrollable
-    public static final int ADD_SEARCH_BTN         = 128; // Whether a special search btn should be added
-    public static final int DONT_ADD_ALL_ALTVIEWS  = 256; // Whether it is OK to add all the AltView to the Switcher
-    public static final int USE_ONLY_CREATION_MODE = 512; // Create only the AltViews that have the same creation mode
+    public static final int RESULTSET_CONTROLLER   =    1; // Add the ResultSet Controller with First,Previous,Next, Last
+    public static final int VIEW_SWITCHER          =    2; // Add a View Switch in the bottom right
+    public static final int IS_NEW_OBJECT          =    4; // Indicates the form will contain a brand new data object
+    public static final int HIDE_SAVE_BTN          =    8; // Hide the Save Button
+    public static final int IS_EDITTING            =   16; // Whether the MultiView is in Edit mode.
+    public static final int IS_SINGLE_OBJ          =   32; // Whether the data being passed into the MultiView is a Collection of Object or a single Object
+    public static final int NO_SCROLLBARS          =   64; // Whether the form should be scrollable
+    public static final int ADD_SEARCH_BTN         =  128; // Whether a special search btn should be added
+    public static final int DONT_ADD_ALL_ALTVIEWS  =  256; // Whether it is OK to add all the AltView to the Switcher
+    public static final int USE_ONLY_CREATION_MODE =  512; // Create only the AltViews that have the same creation mode
+    public static final int DONT_USE_EMBEDDED_SEP  = 1024; // use the internal embedded separator
 
     // Statics
     private static final Logger log = Logger.getLogger(MultiView.class);
@@ -84,6 +90,7 @@ public class MultiView extends JPanel
     protected Hashtable<String, Viewable>  viewMapByName        = new Hashtable<String, Viewable>();
     protected Object                       data                 = null;
     protected Object                       parentDataObj        = null;
+    protected JPanel                       cardPanel;
     protected CardLayout                   cardLayout           = new CardLayout();
     protected Viewable                     currentViewable      = null;
     protected FormValidator                currentValidator     = null;
@@ -106,6 +113,8 @@ public class MultiView extends JPanel
     protected boolean                      doingSelector        = false; // This keeps us from recursing into the selector forever
     
     protected Vector<Object>               deletedItems         = null;
+    
+    protected CollapsableSeparator         separator            = null;
     
     /**
      * Constructor - Note that createWithMode can be null and is passed in from parent ALWAYS.
@@ -180,15 +189,15 @@ public class MultiView extends JPanel
                      final int       options,
                      final Color     bgColor)
     {
-        setLayout(cardLayout);
-
         this.mvParent       = mvParent;
         this.cellName       = cellName;
         this.view           = view;
         this.createWithMode = createWithMode;
         this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.EDIT ? IS_EDITTING : 0);
         
-        isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
+        initializeCardPanel(options);
+        
+        this.isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
         
         if (bgColor != null)
         {
@@ -281,20 +290,20 @@ public class MultiView extends JPanel
      * @param createWithMode how the form should be created (Noe, Edit or View mode)
      * @param options the options needed for creating the form
      */
-    public MultiView(final MultiView mvParent,
-                     final String    cellName,
+    public MultiView(final MultiView      mvParent,
+                     final String         cellName,
                      final ViewIFace      view,
                      final AltViewIFace   altView,
                      final AltViewIFace.CreationMode createWithMode,
-                     final int       options)
+                     final int            options)
     {
-        setLayout(cardLayout);
-
         this.mvParent       = mvParent;
         this.cellName       = cellName;
         this.view           = view;
         this.createWithMode = createWithMode;
         this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.EDIT ? IS_EDITTING : NO_OPTIONS);
+        
+        initializeCardPanel(options);
         
         if (UIHelper.isSecurityOn())
         {
@@ -306,6 +315,37 @@ public class MultiView extends JPanel
         
         createViewable(altView != null ? altView : createDefaultViewable(null));
         showView(altView.getName());
+    }
+    
+    private void initializeCardPanel(final int options)
+    {
+        if (!isOptionOn(options, DONT_USE_EMBEDDED_SEP))
+        {
+            setLayout(new BorderLayout());
+            
+            String title = view.getTitle();
+            if (mvParent != null && StringUtils.isNotEmpty(cellName))
+            {
+                DBTableInfo parentTblInfo = DBTableIdMgr.getInstance().getByClassName(mvParent.getView().getClassName());
+                if (parentTblInfo != null)
+                {
+                    DBTableChildIFace childInfo = parentTblInfo.getItemByName(cellName);
+                    if (childInfo != null)
+                    {
+                        title = childInfo.getTitle();
+                    }
+                }
+            }
+            this.cardPanel = new JPanel(cardLayout);
+            this.separator = new CollapsableSeparator(title);
+            this.separator.setInnerComp(this.cardPanel);
+            
+            add(this.separator, BorderLayout.NORTH);
+            add(this.cardPanel, BorderLayout.CENTER);
+        } else
+        {
+            setLayout(cardLayout);
+        } 
     }
     
     /**
@@ -329,6 +369,14 @@ public class MultiView extends JPanel
     public PermissionSettings getPermissions()
     {
         return permissions;
+    }
+
+    /**
+     * @return the separator
+     */
+    public CollapsableSeparator getSeparator()
+    {
+        return separator;
     }
 
     /**
@@ -587,7 +635,7 @@ public class MultiView extends JPanel
 
     /**
      * Adds a viewable to the MultiView.
-     * @param viewable the viewablew to be added
+     * @param viewable the Viewable to be added
      * @param name the name of the view to be added
      * @return true if it was added, false if name conflicts
      */
@@ -602,7 +650,23 @@ public class MultiView extends JPanel
         // else
         viewable.setCellName(cellName);
         viewMapByName.put(name, viewable);
-        add(viewable.getUIComponent(), name);
+        
+        // CallapsablePanel
+        if (separator != null)
+        {
+            cardPanel.add(viewable.getUIComponent(), name);
+            
+            JComponent controllerPanel = viewable.getControllerPanel();
+            if (controllerPanel == null)
+            {
+                controllerPanel = new JPanel(); 
+                controllerPanel.setPreferredSize(new Dimension(0,0));
+            }
+            separator.addToSubPanel(controllerPanel, name);
+        } else
+        {
+            add(viewable.getUIComponent(), name);
+        }
         return true;
     }
     
@@ -700,8 +764,23 @@ public class MultiView extends JPanel
                 } 
             }
             
-            cardLayout.show(this, name);
-            
+            if (separator != null)
+            {
+                cardLayout.show(cardPanel, name);
+                
+                //if (viewMapByName.get(name).getAltView().getMode() != AltViewIFace.CreationMode.VIEW)
+                //{
+                    separator.showSubPanel(name);
+                    separator.setSubPanelVisible(true);
+                    
+                //} else
+                //{
+                //    separator.setSubPanelVisible(false);
+                //}
+            } else
+            {
+                cardLayout.show(this, name);
+            }
             
             if (currentValidator != null)
             {
@@ -1272,10 +1351,12 @@ public class MultiView extends JPanel
      */
     public boolean isOKToAddAllAltViews()
     {
-        if (permissions.isViewOnly())
+        if (UIHelper.isSecurityOn() && permissions.isViewOnly())
         {
             return false;
         }
+        printCreateOptions("", createOptions);
+        
         return !MultiView.isOptionOn(createOptions, MultiView.DONT_ADD_ALL_ALTVIEWS);
     }
 

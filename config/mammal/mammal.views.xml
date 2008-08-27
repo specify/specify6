@@ -110,22 +110,10 @@
                 </row>
                 
                 <row>
-                    <cell type="separator" label="Determination" collapse="determinations" colspan="12"/>
-                </row>
-                
-                <row>
                     <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Collecting Event" collapse="collectingEvent" colspan="12"/>
-                </row>
-                
-                <row>
                     <cell type="subview" viewname="CollectingEventSub" id="7" name="collectingEvent" colspan="12"/>
-                </row>
-                
-                <row>
-                    <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
@@ -133,7 +121,6 @@
                 <row>
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
-                
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObjectAttachment"/>
                 </row>

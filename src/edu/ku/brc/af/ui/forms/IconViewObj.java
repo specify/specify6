@@ -98,6 +98,8 @@ public class IconViewObj implements Viewable
     protected JButton                       editBtn           = null;
     protected JButton                       newBtn            = null;
     protected JButton                       delBtn            = null;
+    protected JPanel                        sepController     = null;
+    
     protected MenuSwitcherPanel             switcherUI;
     protected JButton                       validationInfoBtn = null;
     protected FormValidator                 validator         = null;
@@ -196,9 +198,14 @@ public class IconViewObj implements Viewable
     {
         if (isEditing)
         {
-            editBtn = UIHelper.createButton("EditForm", getResourceString("EditRecord"), IconManager.IconSize.Std16, true);
-            newBtn  = UIHelper.createButton("CreateObj", getResourceString("NewRecord"), IconManager.IconSize.Std16, true);
-            delBtn  = UIHelper.createButton("DeleteRecord", getResourceString("DeleteRecord"), IconManager.IconSize.Std16, true);
+            String delTTStr = ResultSetController.createTooltip("RemoveRecordTT", view.getObjTitle());
+            String edtTTStr = ResultSetController.createTooltip("EditRecordTT",   view.getObjTitle());
+            String newTTStr = ResultSetController.createTooltip("NewRecordTT",    view.getObjTitle());
+
+            editBtn = UIHelper.createIconBtnTT("EditForm",     IconManager.IconSize.Std16, edtTTStr, false, null);
+            newBtn  = UIHelper.createIconBtnTT("CreateObj",    IconManager.IconSize.Std16, newTTStr, false, null);
+            delBtn  = UIHelper.createIconBtnTT("DeleteRecord", IconManager.IconSize.Std16, delTTStr, false, null);
+            
             validationInfoBtn = FormViewObj.createValidationIndicator(mainComp, getValidator());
             
             editBtn.setEnabled(false);
@@ -206,9 +213,9 @@ public class IconViewObj implements Viewable
 
         } else
         {
-            viewBtn = UIHelper.createButton("InfoIcon", getResourceString("ShowRecordInfoTT"), IconManager.IconSize.Std16, true);
+            String srchTTStr = ResultSetController.createTooltip("ShowRecordInfoTT", view.getObjTitle());
+            viewBtn = UIHelper.createIconBtnTT("InfoIcon", IconManager.IconSize.Std16, srchTTStr, false, null);
             viewBtn.setEnabled(false);
-
         }
         
         altViewsList = new Vector<AltViewIFace>();
@@ -271,8 +278,10 @@ public class IconViewObj implements Viewable
             mainComp.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         }
         
+        boolean isAbove = mvParent.getSeparator() != null;
+        
         int             defCnt  = (isEditing ? 3 : 1) + (switcherUI != null ? 1 : 0) + (validationInfoBtn != null ? 1 : 0);
-        String          colDef  = "f:1px:g," + UIHelper.createDuplicateJGoodiesDef("p", "1px", defCnt);
+        String          colDef  = (isAbove ? "1px," : "f:1px:g,") + UIHelper.createDuplicateJGoodiesDef("p", "1px", defCnt);
         PanelBuilder    builder = new PanelBuilder(new FormLayout(colDef, "p"));
         CellConstraints cc      = new CellConstraints();
         
@@ -303,10 +312,19 @@ public class IconViewObj implements Viewable
             builder.add(switcherUI, cc.xy(x, 1));
             x += 2;
         }
-        southPanel = builder.getPanel();
+        
+        if (isAbove)
+        {
+            sepController = builder.getPanel();
+        } else
+        {
+            southPanel = builder.getPanel();
+            mainComp.add(southPanel,BorderLayout.SOUTH);
+        }
+        
 
         mainComp.add(iconTray,BorderLayout.CENTER);
-        mainComp.add(southPanel,BorderLayout.SOUTH);
+        
     }
     
     /* (non-Javadoc)
@@ -780,6 +798,15 @@ public class IconViewObj implements Viewable
         }
         ignoreChanges = false;
 
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.Viewable#getControllerPanel()
+     */
+    @Override
+    public JComponent getControllerPanel()
+    {
+        return sepController;
     }
 
     /* (non-Javadoc)

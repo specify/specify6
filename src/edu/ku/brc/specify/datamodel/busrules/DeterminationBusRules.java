@@ -134,6 +134,8 @@ public class DeterminationBusRules extends BaseBusRules
                 DeterminationStatus status = (DeterminationStatus)item.getValueObject();
                 if (status != null && status.getType().equals(DeterminationStatus.CURRENT))
                 {
+                    determination.setStatus(status);
+                    
                     CollectionObject colObj = determination.getCollectionObject();
                     if (colObj != null)
                     {
@@ -158,7 +160,7 @@ public class DeterminationBusRules extends BaseBusRules
      */
     protected boolean checkDeterminationStatus(final CollectionObject colObj, final Determination deter)
     {
-        if (deter.getStatus().getType().equals(DeterminationStatus.CURRENT))
+        if (deter.getStatus() != null && deter.getStatus().getType().equals(DeterminationStatus.CURRENT))
         {
             for (Determination det : colObj.getDeterminations())
             {

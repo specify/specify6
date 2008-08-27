@@ -87,10 +87,6 @@
                     <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="name=PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
                 </row>
                 <row>
-                    <cell type="separator" label="Determinations" collapse="determinations" colspan="12"/>
-                </row>
-                
-                <row>
                     <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5" initialize="noscrollbars=true;border=line;bordercolor=150,150,150;"/>
                 </row>
                 <row>
@@ -101,9 +97,6 @@
                     <cell type="label" labelfor="20"/>
                     <cell type="field" id="20" name="appraisal" uitype="querycbx" initialize="name=Appraisal;title=Appraisal" colspan="12"/>
                 </row> -->
-                <row>
-                    <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
-                </row>
                 <row>
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
                 </row>
