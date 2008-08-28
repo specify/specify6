@@ -238,7 +238,6 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             if (agent != null)
             {
                 final Component addrSubView = formViewObj.getCompById("9");
-                //Component addrSep     = formViewObj.getCompById("99");
 
                 boolean isVisible = addrSubView.isVisible();
                 
@@ -251,7 +250,6 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                     
                     boolean enable = agentType == Agent.ORG;
                     addrSubView.setVisible(enable);
-                    //addrSep.setVisible(enable);
                     
                 } else
                 {
@@ -270,7 +268,6 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                         });
                     }
                     addrSubView.setVisible(true);
-                    //addrSep.setVisible(true);
                 }
                 agent.setAgentType(agentType);
                 fixUpFormForAgentType(agent, true);
