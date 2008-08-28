@@ -335,54 +335,66 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
 
-        saveBtn = createButton(getResourceString("SAVE"));
-        saveBtn.setToolTipText(String.format(getResourceString("WB_SAVE_DATASET_TT"), new Object[] {workbench.getName()}));
-        saveBtn.setEnabled(false);
-        saveBtn.addActionListener(new ActionListener()
+        if (isReadOnly)
         {
-            public void actionPerformed(ActionEvent ae)
+            saveBtn = null;
+        }
+        else
+        {
+            saveBtn = createButton(getResourceString("SAVE"));
+            saveBtn.setToolTipText(String.format(getResourceString("WB_SAVE_DATASET_TT"),
+                    new Object[] { workbench.getName() }));
+            saveBtn.setEnabled(false);
+            saveBtn.addActionListener(new ActionListener()
             {
-                UsageTracker.incrUsageCount("WB.SaveDataSet");
-                
-                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), WorkbenchTask.GLASSPANE_FONT_SIZE);
-                
-                final SwingWorker worker = new SwingWorker()
+                public void actionPerformed(ActionEvent ae)
                 {
-                     @SuppressWarnings("synthetic-access")
-                    @Override
-                    public Object construct()
-                    {
-                         try
-                         {
-                             saveObject();
-                             
-                         } catch (Exception ex)
-                         {
-                             log.error(ex);
-                             return ex;
-                         }
-                        return null;
-                    }
+                    UsageTracker.incrUsageCount("WB.SaveDataSet");
 
-                    //Runs on the event-dispatching thread.
-                    @Override
-                    public void finished()
+                    UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_SAVING"),
+                            new Object[] { workbench.getName() }),
+                            WorkbenchTask.GLASSPANE_FONT_SIZE);
+
+                    final SwingWorker worker = new SwingWorker()
                     {
-                        Object retVal = get();
-                        if (retVal != null && retVal instanceof Exception)
+                        @SuppressWarnings("synthetic-access")
+                        @Override
+                        public Object construct()
                         {
-                            Exception ex = (Exception)retVal;
-                            UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
+                            try
+                            {
+                                saveObject();
+
+                            }
+                            catch (Exception ex)
+                            {
+                                log.error(ex);
+                                return ex;
+                            }
+                            return null;
                         }
-                        
-                        UIRegistry.clearGlassPaneMsg();
-                    }
-                };
-                worker.start();
 
-            }
-        });
+                        // Runs on the event-dispatching thread.
+                        @Override
+                        public void finished()
+                        {
+                            Object retVal = get();
+                            if (retVal != null && retVal instanceof Exception)
+                            {
+                                Exception ex = (Exception) retVal;
+                                UIRegistry.getStatusBar().setErrorMessage(
+                                        getResourceString("WB_ERROR_SAVING"), ex);
+                            }
 
+                            UIRegistry.clearGlassPaneMsg();
+                        }
+                    };
+                    worker.start();
+
+                }
+            });
+        }
+        
         // NOTE: This needs to be done after the creation of the saveBtn
         initColumnSizes(spreadSheet, saveBtn);
         
@@ -713,20 +725,30 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         // Create the Form Pane
-        formPane = new FormPane(this, workbench);
+        formPane = new FormPane(this, workbench, isReadOnly);
         
         // This panel contains just the ResultSetContoller, it's needed so the RSC gets centered
         PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
-        resultsetController  = new ResultSetController(null, true, true, false, getResourceString("Record"), model.getRowCount(), true);
+        resultsetController  = new ResultSetController(null, !isReadOnly, !isReadOnly, false, getResourceString("Record"), model.getRowCount(), true);
         resultsetController.addListener(formPane);
-        resultsetController.getDelRecBtn().addActionListener(delAction);
+        if (!isReadOnly)
+        {
+            resultsetController.getDelRecBtn().addActionListener(delAction);
+        }
+//        else
+//        {
+//            resultsetController.getDelRecBtn().setVisible(false);
+//        }
         rsPanel.add(resultsetController.getPanel(), cc.xy(1,1));
         
         // This panel is a single row containing the ResultSetContoller and the other controls for the Form Panel  
         PanelBuilder resultSetPanel = new PanelBuilder(new FormLayout("f:p:g, p, f:p:g, p", "c:p:g"));
         // Now put the two panel into the single row panel
         resultSetPanel.add(rsPanel.getPanel(), cc.xy(2,1));
-        resultSetPanel.add(formPane.getControlPropsBtn(), cc.xy(4,1));
+        if (!isReadOnly)
+        {
+            resultSetPanel.add(formPane.getControlPropsBtn(), cc.xy(4,1));
+        }
         
         // Create the main panel that uses card layout for the form and spreasheet
         mainPanel = new JPanel(cardLayout = new CardLayout());
@@ -746,53 +768,61 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         // This works
         setLayout(new BorderLayout());
-        JComponent[] ctrlComps = {toggleImageFrameBtn, carryForwardBtn, sep1, saveBtn, sep2, ssFormSwitcher};
+        JComponent[] ctrlCompArray = {toggleImageFrameBtn, carryForwardBtn, sep1, saveBtn, sep2, ssFormSwitcher};
+        Vector<Pair<JComponent, Integer>> ctrlComps = new Vector<Pair<JComponent, Integer>>();
+        for (JComponent c : ctrlCompArray)
+        {
+            ctrlComps.add(new Pair<JComponent, Integer>(c, null));
+        }
+        
         String layoutStr = "";
         int compCount = 0;
-        for (int c = 0; c < ctrlComps.length; c++)
+        int col = 1;
+        int pos = 0;            
+        for (Pair<JComponent, Integer> c : ctrlComps)
         {
-            JComponent comp = ctrlComps[c];
+            JComponent comp = c.getFirst();
             if (comp != null)
             {
-                if (comp == sep1 || comp == sep2) 
+                boolean addComp = !(comp == sep1 || comp == sep2) || compCount > 0;
+                if (!addComp)
                 {
-                    if (compCount > 0)
-                    {
-                        if (!StringUtils.isEmpty(layoutStr))
-                        {
-                            layoutStr += ",";
-                        }
-                        layoutStr += "6px,6px";
-                        compCount = 0;
-                    }
-                    else //no need for separator
-                    {
-                        ctrlComps[c] = null;
-                    }
+                    c.setFirst(null);
                 }
                 else
                 {
                     if (!StringUtils.isEmpty(layoutStr))
                     {
                         layoutStr += ",";
+                        col++;
+                        if (pos < ctrlComps.size() - 1)
+                        {
+                            //this works because we know ssFormSwitcher is last and always non-null.
+                            layoutStr += "6px,";
+                            col++;
+                        }
                     }
-                   layoutStr += "p";
-                    if (c < ctrlComps.length - 1)
+                    c.setSecond(col);
+                    if (comp == sep1 || comp == sep2) 
                     {
-                        layoutStr += ", 6px";
+                        layoutStr += "6px";
+                        compCount = 0;
                     }
-                    compCount++;
-                }                
+                    else
+                    {
+                        layoutStr += "p";
+                        compCount++;
+                    }   
+                }
             }
+            pos++;
         }
         PanelBuilder    ctrlBtns   = new PanelBuilder(new FormLayout(layoutStr, "c:p:g"));
-        int col = 1;
-        for (JComponent c : ctrlComps)
+        for (Pair<JComponent, Integer> c : ctrlComps)
         {
-            if (c != null)
+            if (c.getFirst() != null)
             {
-                ctrlBtns.add(c, cc.xy(Math.min(col, 10), 1));
-                col += 2;
+                ctrlBtns.add(c.getFirst(), cc.xy(c.getSecond(), 1));
             }
         }
         
@@ -895,14 +925,20 @@ public class WorkbenchPaneSS extends BaseSubPane
         boolean enable = spreadSheet.getSelectedRow() > -1;
         for (JButton btn: selectionSensativeButtons)
         {
-            btn.setEnabled(enable);
+           if (btn != null)
+           {
+               btn.setEnabled(enable);
+           }
         }
         enable = workbench.getWorkbenchRows().size() < WorkbenchTask.MAX_ROWS;
         if (!isReadOnly)
         {
             addRowsBtn.setEnabled(enable);
         }
-        resultsetController.getNewRecBtn().setEnabled(enable && !isReadOnly);
+        if (!isReadOnly)
+        {
+            resultsetController.getNewRecBtn().setEnabled(enable && !isReadOnly);
+        }
     }
     
     /**

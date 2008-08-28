@@ -127,19 +127,21 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     // This is necessary because CardLayout doesn't set visibility
     protected Dimension          initialSize       = null; 
     
+    protected boolean            readOnly;
     /**
      * Creates a Pane for editing a Workbench as a form.
      * @param workbenchPane the workbench pane to be parented into
      * @param workbench the workbench
      */
     public FormPane(final WorkbenchPaneSS workbenchPane, 
-                    final Workbench workbench)
+                    final Workbench workbench,
+                    final boolean readOnly)
     {
         setLayout(null);
         
         this.workbenchPane = workbenchPane;
         this.workbench     = workbench;
-        
+        this.readOnly      = readOnly;
         dropFlavors.add(InputPanel.INPUTPANEL_FLAVOR);
         
         buildUI();
@@ -620,13 +622,19 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         });
         
         
+        comp.setEnabled(!readOnly);
+        focusComp.setEnabled(!readOnly);
+        
         comp.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e)
             {
-                if ((e.isControlDown() || e.isMetaDown()) && e.getKeyCode() == KeyEvent.VK_N)
+                if (!readOnly)
                 {
-                    workbenchPane.addRowAfter();
+                    if ((e.isControlDown() || e.isMetaDown()) && e.getKeyCode() == KeyEvent.VK_N)
+                    {
+                        workbenchPane.addRowAfter();
+                    }
                 }
                 super.keyTyped(e);
             }
