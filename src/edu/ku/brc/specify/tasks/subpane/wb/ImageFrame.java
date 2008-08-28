@@ -148,7 +148,8 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
     /**
      * Constructor. 
      */
-    public ImageFrame(final int mapSize, final WorkbenchPaneSS wbPane, final Workbench workbench, final WorkbenchTask workbenchTask)
+    public ImageFrame(final int mapSize, final WorkbenchPaneSS wbPane, final Workbench workbench, final WorkbenchTask workbenchTask,
+                      final boolean isReadOnly)
     {
         this.wbPane           = wbPane;
         this.workbench        = workbench;
@@ -181,6 +182,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         
         builder.add(createLabel(getResourceString("WB_NO_IMAGE_ROW"), SwingConstants.CENTER), cc.xy(2, 2));
         builder.add(loadImgBtn, cc.xy(2, 4));
+        loadImgBtn.setVisible(!isReadOnly);
         
         noCardImageMessagePanel = builder.getPanel();
         noCardImageMessagePanel.setPreferredSize(minSize);
@@ -245,7 +247,18 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         title = "WB_IMPORT_CARDS_TO_DATASET";
         mneu = "WB_IMPORT_CARDS_MNEU";
         
-        JMenuItem importImagesMI  = UIHelper.createLocalizedMenuItem(fileMenu, title, mneu, "", true, null);
+        if (!isReadOnly)
+        {
+            JMenuItem importImagesMI  = UIHelper.createLocalizedMenuItem(fileMenu, title, mneu, "", true, null);
+            importImagesMI.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    
+                    importImages();
+                }
+            });
+        }
         
         title = "CLOSE";
         mneu = "CloseMneu";
@@ -311,56 +324,53 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         
         addPropertyChangeListener("alwaysOnTop", this);
         
-        importImagesMI.addActionListener(new ActionListener()
+        
+        if (!isReadOnly)
         {
-            public void actionPerformed(ActionEvent ae)
+            ActionListener deleteImg = new ActionListener()
             {
-                
-                importImages();
-            }
-        });
-        
-        ActionListener deleteImg = new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
+                public void actionPerformed(ActionEvent ae)
+                {
+                    deleteImage();
+                }
+            };
+
+            ActionListener replaceImg = new ActionListener()
             {
-                deleteImage();
-            }
-        };
-        
-        ActionListener replaceImg = new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
+                public void actionPerformed(ActionEvent ae)
+                {
+                    replaceImage();
+                }
+            };
+
+            ActionListener addImg = new ActionListener()
             {
-                replaceImage();
-            }
-        };
-        
-        ActionListener addImg = new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                addImages();
-            }
-        };
-        
-        title = "Image";
-        mneu = "ImageMneu";
-        imageMenu = UIHelper.createLocalizedMenu(menuBar, title, mneu);
-        
-        title = "WB_ADD_IMG";
-        mneu = "WB_ADD_IMG_MNEM";
-        addMI     = UIHelper.createLocalizedMenuItem(imageMenu, title, mneu, "", true, addImg);
-        
-        title = "WB_REPLACE_IMG";
-        mneu = "WB_REPLACE_IMG_MNEU";
-        replaceMI = UIHelper.createLocalizedMenuItem(imageMenu, title, mneu,  "", true, replaceImg);
-        
-        title = "WB_DEL_IMG_LINK";
-        mneu = "WB_DEL_IMG_LINK_MNEU";
-        deleteMI   = UIHelper.createLocalizedMenuItem(imageMenu, title, mneu, "", true, deleteImg);
-        
-        loadImgBtn.addActionListener(addImg);
+                public void actionPerformed(ActionEvent ae)
+                {
+                    addImages();
+                }
+            };
+
+            title = "Image";
+            mneu = "ImageMneu";
+            imageMenu = UIHelper.createLocalizedMenu(menuBar, title, mneu);
+
+            title = "WB_ADD_IMG";
+            mneu = "WB_ADD_IMG_MNEM";
+            addMI = UIHelper.createLocalizedMenuItem(imageMenu, title, mneu, "", true, addImg);
+
+            title = "WB_REPLACE_IMG";
+            mneu = "WB_REPLACE_IMG_MNEU";
+            replaceMI = UIHelper.createLocalizedMenuItem(imageMenu, title, mneu, "", true,
+                    replaceImg);
+
+            title = "WB_DEL_IMG_LINK";
+            mneu = "WB_DEL_IMG_LINK_MNEU";
+            deleteMI = UIHelper
+                    .createLocalizedMenuItem(imageMenu, title, mneu, "", true, deleteImg);
+
+            loadImgBtn.addActionListener(addImg);
+        }
         
         JMenu helpMenu = new JMenu(getResourceString("HELP"));
         menuBar.add(HelpMgr.createHelpMenuItem(helpMenu, getResourceString("WB_IMAGE_WINDOW")));
@@ -566,8 +576,14 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
      */
     protected void enableMenus(final boolean enable)
     {
-        deleteMI.setEnabled(enable);
-        replaceMI.setEnabled(enable);
+        if (deleteMI != null)
+        {
+            deleteMI.setEnabled(enable);
+        }
+        if (replaceMI != null)
+        {
+            replaceMI.setEnabled(enable);
+        }
         origMI.setEnabled(enable);
         reduceMI.setEnabled(enable);
     }

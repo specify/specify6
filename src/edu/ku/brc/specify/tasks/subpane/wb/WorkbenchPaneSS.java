@@ -646,7 +646,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         
         // setup the JFrame to show images attached to WorkbenchRows
-        imageFrame = new ImageFrame(mapSize, this, this.workbench, (WorkbenchTask)task);
+        imageFrame = new ImageFrame(mapSize, this, this.workbench, (WorkbenchTask)task, isReadOnly);
         
         setupWorkbenchRowChangeListener();
         
