@@ -19,7 +19,7 @@
 	<table name="Shipment">
 		<field name="numberOfPackages"/>
 	</table>
-	<table name="RepositoryAgreement"/>
+	<table name="RepositoryAgreement">
 		<field name="timeStampModified"/>
 	</table>
 </tables>
