@@ -210,7 +210,8 @@ public class IconViewObj implements Viewable
             
             editBtn.setEnabled(false);
             delBtn.setEnabled(false);
-
+            newBtn.setEnabled(true);
+            
         } else
         {
             String srchTTStr = ResultSetController.createTooltip("ShowRecordInfoTT", view.getObjTitle());

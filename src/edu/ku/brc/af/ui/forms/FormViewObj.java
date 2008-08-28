@@ -2935,6 +2935,8 @@ public class FormViewObj implements Viewable,
                 }
             }
             
+            boolean mvHasSeparator = mvParent.getSeparator() != null;
+            
             boolean inEditMode = altView.getMode() == AltViewIFace.CreationMode.EDIT;
             rsController = new ResultSetController(formValidator, 
                                                    inEditMode && !addSearch && canAdd, // Add New
@@ -2942,7 +2944,7 @@ public class FormViewObj implements Viewable,
                                                    inEditMode && addSearch && canAdd,  // Add Search
                                                    view.getObjTitle(),                 // Object Title
                                                    0,                                  // current length
-                                                   false);                             // don't layout the btns
+                                                   !mvHasSeparator);                    // don't layout the btns
             rsController.getPanel().setBackground(bgColor);
             
             rsController.addListener(this);
@@ -2959,7 +2961,7 @@ public class FormViewObj implements Viewable,
             
             setAddDelListeners(newRecBtn, delRecBtn);
             
-            if (mvParent.getSeparator() != null)
+            if (mvHasSeparator)
             {
                 addControllerBtnsToSep();
             }
