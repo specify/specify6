@@ -631,7 +631,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             whereSB.append(" LOWER("); //$NON-NLS-1$
             whereSB.append(tableInfo.getAbbrev() + "." + keyCol);
             whereSB.append(") LIKE '"); //$NON-NLS-1$
-            if (uiFieldFormatter.isNumeric())
+            if (uiFieldFormatter != null && uiFieldFormatter.isNumeric())
             {
                 whereSB.append("%"); //$NON-NLS-1$
             }
