@@ -859,7 +859,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 valState = UIValidatable.ErrorType.Valid;
                 final JTextField tf = textWithQuery.getTextField();
-                //tf.setText(newVal.toString());   // rods 08/18/08 - doesn't seem to be needed it is already set correctly
+                tf.setText(newVal.toString());   // rods 08/18/08 - doesn't seem to be needed it is already set correctly
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run()
                     {

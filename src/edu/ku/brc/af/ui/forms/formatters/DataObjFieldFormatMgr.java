@@ -38,6 +38,7 @@ import org.dom4j.Element;
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.DataObjectGettable;
@@ -45,7 +46,6 @@ import edu.ku.brc.af.ui.forms.DataObjectGettableFactory;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.UIHelper;
 
 
@@ -648,12 +648,6 @@ public class DataObjFieldFormatMgr
                     Object value = values != null ? values[0] : null;//getter.getFieldValue(dataObj, field.getName());
                     if (value != null)
                     {
-                        if (value instanceof Locality)
-                        {
-                            int x = 0;
-                            x++;
-                        }
-
                         if (UIHelper.isSecurityOn() && value instanceof FormDataObjIFace)
                         {
                             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(value.getClass().getSimpleName());
@@ -681,6 +675,16 @@ public class DataObjFieldFormatMgr
                         } else if (field.getUiFieldFormatterName() != null )
                         {
                             UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getInstance().getFormatter(field.getUiFieldFormatterName());
+                            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(dataObj.getClass().getSimpleName());
+                            if (tblInfo != null)
+                            {
+                                DBFieldInfo fi = tblInfo.getFieldByName(field.getName());
+                                if (fi != null && fi.getFormatter() != null)
+                                {
+                                    fmt = fi.getFormatter();
+                                }
+                            }
+                            
                             if (fmt != null)
                             {
                                 strBuf.append(fmt.formatToUI(value));
