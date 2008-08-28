@@ -406,6 +406,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
         if (hasSearchBtn && ((btnMask & CREATE_SEARCH_BTN) != 0) && (perm == null || (perm != null && perm.canAdd())))
         {
+            textWithQuery.setAddAddItem(false);
             searchBtn = createBtn("Search", "SearchForRecordTT", objTitle); 
             pb.add(searchBtn, cc.xy(x,1));
             x += 2;
@@ -858,7 +859,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 valState = UIValidatable.ErrorType.Valid;
                 final JTextField tf = textWithQuery.getTextField();
-                tf.setText(newVal.toString());
+                //tf.setText(newVal.toString());   // rods 08/18/08 - doesn't seem to be needed it is already set correctly
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run()
                     {

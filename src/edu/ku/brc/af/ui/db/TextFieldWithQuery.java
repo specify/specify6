@@ -101,6 +101,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected boolean              addAddItem     = false;
     
     protected DBTableInfo          tableInfo;
+    protected DBFieldInfo          fieldInfo;
     protected String               sql;
     protected String               displayColumns;
     protected String               format;
@@ -129,20 +130,25 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      * Constructor.
      */
     public TextFieldWithQuery(final DBTableInfo tableInfo,
-                              final String keyColumn,
-                              final String displayColumns,
-                              final String format,
-                              final String fieldFormatterName,
-                              final String sqlTemplate)
+                              final String      keyColumn,
+                              final String      displayColumns,
+                              final String      format,
+                              final String      fieldFormatterName,
+                              final String      sqlTemplate)
     {
         super();
         this.tableInfo          = tableInfo;
+        this.fieldInfo          = tableInfo.getFieldByName(keyColumn);
         this.displayColumns     = displayColumns != null ? displayColumns : keyColumn;
         this.format             = format;
         this.fieldFormatterName = fieldFormatterName;
         this.sqlTemplate        = sqlTemplate;
         
-        if (StringUtils.isNotEmpty(fieldFormatterName))
+        if (fieldInfo != null && fieldInfo.getFormatter() != null)
+        {
+            uiFieldFormatter = fieldInfo.getFormatter();
+            
+        } else if (StringUtils.isNotEmpty(fieldFormatterName))
         {
             uiFieldFormatter = UIFieldFormatterMgr.getInstance().getFormatter(fieldFormatterName);
         }
@@ -441,7 +447,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             ev.getKeyCode() == KeyEvent.VK_DOWN)
         {
             String text = textField.getText();
-            if (uiFieldFormatter != null)
+            if (uiFieldFormatter != null && !uiFieldFormatter.isNumeric())
             {
                 text = uiFieldFormatter.formatFromUI(text).toString();
             }
@@ -449,6 +455,9 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         }
     }
     
+    /**
+     * @param text
+     */
     public void setText(final String text)
     {
         if (uiFieldFormatter != null)
@@ -475,7 +484,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             if (!addAddItem || inx > 0)
             {
                 selectedId = idList.get(addAddItem ? inx-1 : inx);
-                textField.setText(selectedStr);
+                setText(selectedStr);
             }
             
             if (listSelectionListeners != null)
@@ -622,6 +631,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             whereSB.append(" LOWER("); //$NON-NLS-1$
             whereSB.append(tableInfo.getAbbrev() + "." + keyCol);
             whereSB.append(") LIKE '"); //$NON-NLS-1$
+            if (uiFieldFormatter.isNumeric())
+            {
+                whereSB.append("%"); //$NON-NLS-1$
+            }
             whereSB.append(newEntryStr.toLowerCase());
             whereSB.append("%' "); //$NON-NLS-1$
             cnt++;
@@ -772,7 +785,12 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     
                     if (numColumns == 1)
                     {
-                        list.addElement(array[0].toString());
+                        Object value = array[0].toString();
+                        if (uiFieldFormatter != null)
+                        {
+                            value = (String)uiFieldFormatter.formatToUI(value);
+                        }
+                        list.addElement(value.toString());
                         
                     } else
                     {
