@@ -352,6 +352,7 @@ public class TableViewObj implements Viewable,
                                     doSearch();
                                 }
                             });
+                            searchButton.setEnabled(true);
                             
                         } else
                         {
@@ -369,7 +370,6 @@ public class TableViewObj implements Viewable,
                                     editRow(table.getSelectedRow(), true);
                                 }
                             });
-                            
                         }
                         
                         boolean isAbove = mvParent.getSeparator() != null;  
@@ -521,7 +521,7 @@ public class TableViewObj implements Viewable,
                             
                             for (Object dObj : newDataObjects)
                             {
-                                parentDataObj.addReference((FormDataObjIFace)dObj, dataSetFieldName);
+                                parentDataObj.addReference((FormDataObjIFace)dObj, dataSetFieldName, false);
                             }
                             
                             if (rsController != null)
@@ -986,7 +986,7 @@ public class TableViewObj implements Viewable,
         if (dObj != null)
         {
             Object[] delBtnLabels = {getResourceString(addSearch ? "Remove" : "Delete"), getResourceString("CANCEL")};
-            int rv = JOptionPane.showOptionDialog(null, UIRegistry.getLocalizedMessage("ASK_DELETE", dObj.getIdentityTitle()),
+            int rv = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), UIRegistry.getLocalizedMessage("ASK_DELETE", dObj.getIdentityTitle()),
                                                   getResourceString("Delete"),
                                                   JOptionPane.YES_NO_OPTION,
                                                   JOptionPane.QUESTION_MESSAGE,
@@ -995,7 +995,7 @@ public class TableViewObj implements Viewable,
                                                   delBtnLabels[1]);
             if (rv == JOptionPane.YES_OPTION)
             {
-                parentDataObj.removeReference(dObj, dataSetFieldName, true);
+                parentDataObj.removeReference(dObj, dataSetFieldName, !addSearch);
                 dataObjList.remove(rowIndex);
                 
                 model.fireDataChanged();

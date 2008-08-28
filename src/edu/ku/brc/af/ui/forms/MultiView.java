@@ -233,13 +233,14 @@ public class MultiView extends JPanel
         {
             for (AltViewIFace av : view.getAltViews())
             {
+                System.err.println(" "+av.getMode()+"  "+mvParent);
                 if ((isUsingOnlyCreationMode  && av.getMode() == createWithMode) || 
                     (!isUsingOnlyCreationMode && (av.getMode() == createWithMode || mvParent == null)))
                 {
                     // temporarily set this for creation, because it gets asked via getMode()
                     this.createWithMode = av.getMode();
                     
-                    //log.debug("CREATING: createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
+                    log.debug("CREATING: createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
                     createViewable(av.getName());
                     
                 } else
@@ -866,7 +867,8 @@ public class MultiView extends JPanel
                 log.debug("--------------------------");
             }
 
-            Viewable viewable = ViewFactory.createFormView(this, newView, altView.getName(), data, createOptions, getBackground());
+            int tmpCreateOptions = createOptions | (createWithMode == AltViewIFace.CreationMode.EDIT ? (IS_EDITTING | RESULTSET_CONTROLLER) : 0);
+            Viewable viewable = ViewFactory.createFormView(this, newView, altView.getName(), data, tmpCreateOptions, getBackground());
             if (viewable != null)
             {
                 if (add(viewable, altView.getName()))

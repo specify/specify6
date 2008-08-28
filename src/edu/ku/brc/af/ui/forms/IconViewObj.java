@@ -535,7 +535,8 @@ public class IconViewObj implements Viewable
         if (dataObj != null)
         {
             Object[] delBtnLabels = {getResourceString("Delete"), getResourceString("CANCEL")};
-            int rv = JOptionPane.showOptionDialog(null, UIRegistry.getLocalizedMessage("ASK_DELETE", dataObj.getIdentityTitle()),
+            int rv = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                    UIRegistry.getLocalizedMessage("ASK_DELETE", dataObj.getIdentityTitle()),
                                                   getResourceString("Delete"),
                                                   JOptionPane.YES_NO_OPTION,
                                                   JOptionPane.QUESTION_MESSAGE,

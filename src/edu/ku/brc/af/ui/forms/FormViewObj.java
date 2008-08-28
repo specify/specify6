@@ -433,8 +433,8 @@ public class FormViewObj implements Viewable,
                         addSaveBtn();
                         comps.add(saveControl);
                         saveWasAdded = true;
-    
                     }
+                    
                     if (switcherUI != null)
                     {
                         comps.add(switcherUI);
@@ -478,7 +478,7 @@ public class FormViewObj implements Viewable,
         
         mainComp.add(builder.getPanel(), BorderLayout.CENTER);
             
-        if (comps.size() > 0 || addController || createResultSetController)
+        if (comps.size() > 0 || addController || createResultSetController) 
         {
             controlPanel = new ControlBarPanel(bgColor);
             controlPanel.addComponents(comps, false); // false -> right side
@@ -1515,7 +1515,7 @@ public class FormViewObj implements Viewable,
                 defaultRV = JOptionPane.CANCEL_OPTION;
             }
             
-            int rv = JOptionPane.showOptionDialog(null,
+            int rv = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(),
                         isNewAndComplete ? UIRegistry.getLocalizedMessage("DiscardChanges", title) : UIRegistry.getLocalizedMessage("SaveChanges", title),
                         isNewAndComplete ? getResourceString("DiscardChangesTitle") : getResourceString("SaveChangesTitle"),
                         dlgOptions,
@@ -2503,7 +2503,7 @@ public class FormViewObj implements Viewable,
         Object[] delBtnLabels = {getResourceString(addSearch ? "Remove" : "Delete"), getResourceString("CANCEL")};
         String title = dataObj instanceof FormDataObjIFace ? ((FormDataObjIFace)dataObj).getIdentityTitle() : tableInfo.getTitle();
         
-        int rv = JOptionPane.showOptionDialog(null, UIRegistry.getLocalizedMessage(addSearch ? "ASK_REMOVE" : "ASK_DELETE", title),
+        int rv = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), UIRegistry.getLocalizedMessage(addSearch ? "ASK_REMOVE" : "ASK_DELETE", title),
                                               getResourceString("Delete"),
                                               JOptionPane.YES_NO_OPTION,
                                               JOptionPane.QUESTION_MESSAGE,
@@ -3066,8 +3066,8 @@ public class FormViewObj implements Viewable,
                 // so we ask them if they want us to create one for them
                 // and then we hand it to them.
                 // Otherwise we just set the new object into the form.
-                List<Object>  newDataObjects = dlg.getSelectedObjects();
-                boolean doSetNewDataObj = true;
+                List<Object> newDataObjects  = dlg.getSelectedObjects();
+                boolean      doSetNewDataObj = true;
                 
                 if (businessRules != null && newDataObjects != null)
                 {
@@ -3095,6 +3095,24 @@ public class FormViewObj implements Viewable,
                 {
                     if (doSetNewDataObj)
                     {
+                        boolean doOtherSide = true;
+                        
+                        DBTableInfo parentTblInfo = DBTableIdMgr.getInstance().getByShortClassName(parentDataObj.getClass().getSimpleName());
+                        if (parentTblInfo != null)
+                        {
+                            DBTableChildIFace ci = parentTblInfo.getItemByName(cellName);
+                            if (ci instanceof DBRelationshipInfo)
+                            {
+                                DBRelationshipInfo ri = (DBRelationshipInfo)ci;
+                                doOtherSide = ri.getType() == DBRelationshipInfo.RelationshipType.OneToMany;
+                            }
+                        }
+                        
+                        for (Object obj : newDataObjects)
+                        {
+                            ((FormDataObjIFace)parentDataObj).addReference((FormDataObjIFace)obj, cellName, doOtherSide);
+                        }
+                        
                         if (list != null && origDataSet != null)
                         {
                             list.addAll(newDataObjects);
@@ -3107,6 +3125,9 @@ public class FormViewObj implements Viewable,
                         {
                             setDataObj(newDataObjects.get(0));
                         }
+                        
+                        mvParent.getTopLevel().getCurrentValidator().setHasChanged(true);
+                        mvParent.getTopLevel().getCurrentValidator().validateForm();
                     }
                 }
             }
@@ -3534,7 +3555,6 @@ public class FormViewObj implements Viewable,
      */
     protected void updateControllerUI()
     {
-        
         if (rsController != null)
         {
             rsController.updateUI();
@@ -3607,10 +3627,19 @@ public class FormViewObj implements Viewable,
             }
         }
 
-        
         if (srchRecBtn != null)
         {
-            srchRecBtn.setEnabled(enableNewBtn && StringUtils.isNotBlank(searchName));
+            boolean enable = enableNewBtn && StringUtils.isNotBlank(searchName);
+            srchRecBtn.setEnabled(enable);
+            if (switcherUI != null)
+            {
+                switcherUI.setEnabled(enable);
+            }
+        }
+        
+        if (rsController !=null && rsController.getSearchRecBtn() != null && switcherUI != null)
+        {
+            switcherUI.setEnabled(true);
         }
     }
 

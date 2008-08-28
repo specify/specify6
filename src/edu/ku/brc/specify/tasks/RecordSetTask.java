@@ -235,7 +235,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     @Override
     public List<NavBoxIFace> getNavBoxes()
     {
-        if (UIHelper.isSecurityOn() && !permissions.canView())
+        if (UIHelper.isSecurityOn() && permissions != null && !permissions.canView())
         {
             return null;
         }

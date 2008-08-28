@@ -87,9 +87,16 @@ public interface FormDataObjIFace
      * addLocality(Locality l).
      * 
      * @param ref the new foreign key record
-     * @param refName a String indicating the relationship to which the reference should be added
+     * @param fieldName a String indicating the relationship to which the reference should be added
      */
-    public abstract void addReference(FormDataObjIFace ref, String refName);
+    public abstract void addReference(FormDataObjIFace ref, String fieldName);
+    
+    /**
+     * @param ref the new foreign key record
+     * @param fieldName a String indicating the relationship to which the reference should be added
+     * @param doOtherSide should add the reverse side of the linkage
+     */
+    public abstract void addReference(FormDataObjIFace ref, String fieldName, boolean doOtherSide);
     
     /**
      * Removes a foreign key reference to this object.  This method provides
@@ -97,16 +104,16 @@ public interface FormDataObjIFace
      * removeLocality(Locality l).
      * 
      * @param ref the foreign key record to detach from this object
-     * @param refName a String indicating which relationship from which to remove the reference
+     * @param fieldName a String indicating which relationship from which to remove the reference
      */
-    public abstract void removeReference(FormDataObjIFace ref, String refName);
+    public abstract void removeReference(FormDataObjIFace ref, String fieldName);
     
     /**
-     * @param ref
-     * @param fieldName
-     * @param doOtherSide
+     * @param ref the foreign key record to detach from this object
+     * @param fieldName a String indicating which relationship from which to remove the reference
+     * @param doOtherSide should remove the reverse side of the linkage
      */
-    public abstract void removeReference(FormDataObjIFace ref, String fieldName, final boolean doOtherSide);
+    public abstract void removeReference(FormDataObjIFace ref, String fieldName, boolean doOtherSide);
     
     /**
      * Gets the value of a foreign key reference for this object.  This method provides

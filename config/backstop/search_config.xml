@@ -1105,7 +1105,7 @@
         <table id="122" tableid="87" name="CollectingTripSearch" priority="1" color="30, 144, 255">
             <detailView icon="CollectingTrip">
                 <sql>
-                    <![CDATA[SELECT CollectingTripID, CollectingTripName FROM collectingtrip WHERE DisciplineID = DSPLNID AND (%s)]]>
+                    <![CDATA[SELECT CollectingTripID, CollectingTripName, StartDate FROM collectingtrip WHERE DisciplineID = DSPLNID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="87" col="CollectingTripID" visible="false"/>

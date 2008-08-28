@@ -515,9 +515,6 @@
 
             <rows>
                 <row>
-                    <cell type="label" label="KU Accessions" icon="Accession" recordobj="true" colspan="12"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="accessionNumber" uitype="formattedtext" isrequired="true"/>
 
@@ -767,9 +764,6 @@
             <columnDef>110px,2px,100px,2px,p,2px,100px,2px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
-                <row>
-                    <cell type="label" label="Collecting Trip" icon="CollectingTrip" recordobj="true" colspan="12"/>
-                </row>
                 <row> 
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="collectingTripName" uitype="text"/>
@@ -797,9 +791,6 @@
             <columnDef>110px,2px,100px,2px,p,2px,100px,2px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
-                <row>
-                    <cell type="label" label="Collecting Trip" icon="CollectingTrip" recordobj="true" colspan="12"/>
-                </row>
                 <row> 
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="collectingTripName" uitype="text"/>
@@ -856,9 +847,6 @@
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
-                    <cell type="label" icon="Agent" recordobj="true" colspan="5"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="agent.lastName" uitype="text" cols="20"  isrequired="true" colspan="3"/>
                 </row>
@@ -888,9 +876,6 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
-                <row>
-                    <cell type="separator" label="KU Fish" colspan="12"/>
-                </row>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="catalogNumber" uitype="text"/>
@@ -1024,9 +1009,6 @@
             <columnDef>125px,2px,p,2px,100px,2px,p,2px,100px,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
-                <row>
-                    <cell type="separator" label="Conservator Description" colspan="12"/>
-                </row>
                 <row> 
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject;editbtn=false;newbtn=false" isrequired="true" colspan="5"/>
@@ -1114,9 +1096,6 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
-                <row>
-                    <cell type="label" label="KU Deaccessions" icon="Deaccession" recordobj="true" colspan="12"/>
-                </row>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="deaccessionNumber" uitype="formattedtext" isrequired="true" uifieldformatter="DeaccessionNumber"/>                                  </row>
@@ -1232,9 +1211,6 @@
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
-                    <cell type="separator" label="Division" icon="Division" recordobj="true" colspan="12"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text"/>
                     <cell type="label" labelfor="2"/>
@@ -1261,9 +1237,6 @@
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
-            	<row>
-            		<cell type="separator" label="DNA Sequence" colspan="12"/>
-            	</row>            	
             	<row>
             		<cell type="label" labelfor="2"/>
             		<cell type="field" id="2" name="geneName" uitype="text" isrequired="true"/>
@@ -1296,9 +1269,6 @@
             <columnDef>100px,2px,175px,2px,100px,2px,100px,2px,100px,2px,100px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
-                <row>
-                    <cell type="separator" label="Field Notebook" colspan="12"/>
-                </row>       
                 <row>
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="name" uitype="text" isrequired="true"/>
@@ -1432,9 +1402,6 @@
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
-                    <cell type="separator" label="Institution" colspan="12"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text"/>
                     <cell type="label" labelfor="4"/>
@@ -1469,9 +1436,6 @@
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
-                <row>
-                     <cell type="separator" label="Loan" colspan="12"/>
-                </row>
                 <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="loanDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
@@ -1591,9 +1555,6 @@
             
             <rows>
                 <row>
-                    <cell type="separator" label="Locality Information" colspan="12"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="localityName" uitype="text" isrequired="true" colspan="10"/>
                 </row>
@@ -1660,9 +1621,6 @@
             <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
-                <row>
-                    <cell type="separator" label="Locality Citation" colspan="12"/>
-                </row>
                 <!--   
                     <row>
                     <cell type="label" labelfor="3"/>
@@ -1735,9 +1693,6 @@
 
             <rows>
                 <row>
-                    <cell type="separator" label="Collecting Event Information" colspan="4"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="startDate"/>
                     <cell type="field" id="startDate" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
@@ -1778,9 +1733,6 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
-                <row>
-                    <cell type="label" label="Permit" icon="Permit" recordobj="true" colspan="12"/>
-                </row>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="permitNumber" uitype="text" isrequired="true"/>
@@ -1891,9 +1843,6 @@
             
             <rows>
                 <row>
-                    <cell type="separator" label="Project" colspan="12"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="projectName" uitype="text" isrequired="true"/>
                     <cell type="label" labelfor="6"/>
@@ -1929,11 +1878,8 @@
                     <cell type="field" id="7" name="remarks" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Collection Object" colspan="12"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="CollectionObjectSub" id="11" colspan="10" name="collectionObjects" initialize="addsearch=true"/>
-                </row> 
+                </row>
                 
             </rows>
         </viewdef>
@@ -2181,9 +2127,6 @@
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
-                    <cell type="separator" label="Treatment Event" colspan="12"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="treatmentNumber" uitype="text"/>
                     
@@ -2232,9 +2175,6 @@
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
-                    <cell type="separator" label="Treatment Event" colspan="12"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="treatmentNumber" uitype="text"/>
                     
@@ -2279,9 +2219,6 @@
             <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
-                <row>
-                    <cell type="separator" label="Treatment Event" colspan="12"/>
-                </row>
                 <row>
                     <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="treatmentNumber" uitype="text"/>
