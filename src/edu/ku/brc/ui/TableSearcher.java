@@ -456,7 +456,7 @@ public class TableSearcher
         {
             log.debug("searchTableForValue() - wrap is on, moving to start of table");
             isFirstPassOnTable = false;
-            TableSearcherCell matchCell = searchTableForValue( searchString,  0, 0,  isMatchCaseOn,  isForwardSearch,  isWrapOn);
+            TableSearcherCell matchCell = searchTableForValue( searchString,  0, 0,  isMatchCaseOn,  isForwardSearch,  false);
             return matchCell;
         }
         isFirstPassOnTable = true;
