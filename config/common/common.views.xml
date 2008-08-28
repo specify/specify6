@@ -265,8 +265,6 @@
             <altviews>
                 <altview name="FieldNotebookPageSet Edit" viewdef="FieldNotebookPageSet" label="Edit" mode="edit"/>
                 <altview name="FieldNotebookPageSet View" viewdef="FieldNotebookPageSet" label="View" mode="view" default="true"/>
-                <altview name="FieldNotebookPageSet Table View" viewdef="FieldNotebookPageSet Table" label="Grid" mode="view"/>
-                <altview name="FieldNotebookPageSet Table Edit" viewdef="FieldNotebookPageSet Table" label="Grid" mode="edit"/>
             </altviews>
         </view>
         
@@ -1296,7 +1294,7 @@
                     <cell type="field" id="1" name="description" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="subview" id="11" name="pageSets" viewname="FieldNotebookPageSet" defaulttype="table" colspan="12"/>
+                    <cell type="subview" id="11" name="pageSets" viewname="FieldNotebookPageSet" colspan="12"/>
                 </row>
                 
                 <row>
@@ -2048,11 +2046,8 @@
             
             <rows>
                 <row>
-                    <cell type="label" label="Repository Agreement" icon="RepositoryAgreement" recordobj="true" colspan="12"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="repositoryAgreementNumber" uitype="formattedtext" isrequired="true"/> 
+                    <cell type="field" id="1" name="repositoryAgreementNumber" uitype="text" isrequired="true"/> 
                     <cell type="label" labelfor="13"/>
                     <cell type="field" id="13" name="originator" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
                 </row>
