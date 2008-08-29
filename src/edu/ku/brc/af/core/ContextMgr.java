@@ -23,6 +23,8 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -212,8 +214,10 @@ public class ContextMgr implements CommandListener
         {
             instance.genericService.add(serviceInfo);
             
-        } else if (instance.services.get(serviceInfo.getHashKey()) == null)
+        } else 
         {
+            //if (instance.services.get(serviceInfo.getHashKey()) == null)
+            
             instance.services.put(serviceInfo.getHashKey(), serviceInfo);
             List<ServiceInfo> serviceList = instance.servicesByTable.get(tableId);
             if (serviceList == null)
@@ -252,8 +256,8 @@ public class ContextMgr implements CommandListener
      */
     public static void removeServicesByTask(final Taskable task)
     {
-        Collection<ServiceInfo> srvs = instance.services.values();
-        Vector<ServiceInfo>     list = new Vector<ServiceInfo>(srvs);
+        // Create a mutable list so we can remove items from the actual list
+        Vector<ServiceInfo>  list = new Vector<ServiceInfo>(instance.services.values());
         
         for (ServiceInfo service : list)
         {
@@ -319,10 +323,10 @@ public class ContextMgr implements CommandListener
      * @param tableId the table ID of the data to be serviced
      * @return the ServiceInfo object for a given service and the table it is to act upon.
      */
-    public static ServiceInfo checkForService(final String serviceName, final int tableId)
+    /*public static ServiceInfo checkForService(final String serviceName, final int tableId)
     {
         return instance.services.get(ServiceInfo.getHashKey(serviceName, tableId));
-    }
+    }*/
 
     /**
      * Returns a list of services for a table id, this will always return a list (empty list, never null).
@@ -366,6 +370,25 @@ public class ContextMgr implements CommandListener
                 {
                     srvInfo.resetPermissions();
                 }
+            }
+        }
+    }
+    
+    /**
+     * 
+     */
+    public static void dump()
+    {
+        for (Integer tableId : instance.servicesByTable.keySet())
+        {
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
+            System.out.println("------------------"+tableInfo.getTitle()+"------------------");
+            for (ServiceInfo s : instance.servicesByTable.get(tableId))
+            {
+                System.out.println("Name:      "+s.getName());
+                System.out.println("Task Name: "+s.getTask().getName());
+                System.out.println("Key:       "+s.getHashKey());
+                System.out.println("\n");
             }
         }
     }

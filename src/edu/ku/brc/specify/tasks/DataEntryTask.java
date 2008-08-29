@@ -509,13 +509,14 @@ public class DataEntryTask extends BaseTask
     }
     
     /**
-     * @param serviceList
+     * @param devList
      */
-    protected void buildFormNavBoxes(final Vector<DataEntryView> serviceList)
+    protected void buildFormNavBoxes(final Vector<DataEntryView> devList,
+                                     final boolean doRegister)
     {
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         
-        for (DataEntryView dev : serviceList)
+        for (DataEntryView dev : devList)
         {
             boolean isColObj = dev.getName().equals("Collection Object");
             
@@ -567,7 +568,10 @@ public class DataEntryTask extends BaseTask
                         //cmdAction.setProperty("viewset", dev.getViewSet());
                         cmdAction.setProperty("view",    dev.getView());
                         
-                        ContextMgr.registerService(10, dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
+                        if (doRegister)
+                        {
+                            ContextMgr.registerService(10, dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
+                        }
                         
                         if (dev.isSideBar())
                         {
@@ -721,7 +725,7 @@ public class DataEntryTask extends BaseTask
                 //initDataEntryViews(stdViews);
                 //initDataEntryViews(miscViews);
                 
-                buildNavBoxes(stdViews, miscViews);
+                buildNavBoxes(stdViews, miscViews, true);
                 
             } catch (Exception ex)
             {
@@ -737,9 +741,10 @@ public class DataEntryTask extends BaseTask
      * @param miscList
      */
     protected void buildNavBoxes(final Vector<DataEntryView> stdList,
-                                 final Vector<DataEntryView> miscList)
+                                 final Vector<DataEntryView> miscList,
+                                 final boolean doRegister)
     {
-        buildFormNavBoxes(stdList);
+        buildFormNavBoxes(stdList, doRegister);
         
         if (miscList != null && !miscList.isEmpty())
         {
@@ -917,8 +922,10 @@ public class DataEntryTask extends BaseTask
     @Override
     public void doConfigure()
     {
-        stdViews  = getStdViews();
-        miscViews = getMiscViews();
+        ContextMgr.dump();
+        
+        //stdViews  = getStdViews();
+        //miscViews = getMiscViews();
 
         Vector<TaskConfigItemIFace> stdList  = new Vector<TaskConfigItemIFace>();
         Vector<TaskConfigItemIFace> miscList = new Vector<TaskConfigItemIFace>();
@@ -946,24 +953,6 @@ public class DataEntryTask extends BaseTask
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
-            // Unregister all the exiting DataViewEntry Objects
-            // they will get registered.
-            for (DataEntryView entry : stdViews)
-            {
-                if (entry.getTableInfo() != null)
-                {
-                    ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, entry.getTableInfo().getTableId());
-                }
-            }
-            
-            for (DataEntryView entry : miscViews)
-            {
-                if (entry.getTableInfo() != null)
-                {
-                    ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, entry.getTableInfo().getTableId());  
-                }
-            }
-            
             // Clear the current lists
             stdViews.clear();
             miscViews.clear();
@@ -982,7 +971,7 @@ public class DataEntryTask extends BaseTask
             viewsNavBox.clear();
             
             // This re-registers the items
-            buildNavBoxes(stdViews, miscViews);
+            buildNavBoxes(stdViews, miscViews, false);
             
             viewsNavBox.validate();
             viewsNavBox.doLayout();

@@ -140,7 +140,7 @@ public class ServiceInfo implements Comparable<ServiceInfo>
      */
     public String getHashKey()
     {
-        return getHashKey(this.name, this.tableId);
+        return getHashKey(this.name, this.task, this.tableId);
     }
 
     public String getName()
@@ -228,9 +228,9 @@ public class ServiceInfo implements Comparable<ServiceInfo>
      * Returns the a string that includes the name and the table ID
      * @return Returns the a string that includes the name and the table ID
      */
-    public static String getHashKey(final String name, final int tableId)
+    public static String getHashKey(final String name, final Taskable task, final int tableId)
     {
-        return name + "_" + Integer.toString(tableId); //$NON-NLS-1$
+        return name + "_" + task.getName() + "_" + Integer.toString(tableId); //$NON-NLS-1$
     }
 
     
