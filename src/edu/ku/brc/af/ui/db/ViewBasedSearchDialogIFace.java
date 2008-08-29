@@ -34,45 +34,45 @@ public interface ViewBasedSearchDialogIFace
      * Returns the dialog object for this interface (usually returns 'this')
      * @return the dialog object for this interface (usually returns 'this')
      */
-    public JDialog getDialog();
+    public abstract JDialog getDialog();
     
     /**
      * Returns whether the dialog was cancelled
      * @return whether the dialog was cancelled
      */
-    public boolean isCancelled();
+    public abstract boolean isCancelled();
     
     /**
      * Return the selected object 
      * @return the selected object 
      */
-    public Object getSelectedObject();
+    public abstract Object getSelectedObject();
     
     /**
      * Return the selected objects (but only if setMultipleSelection is set to true).
      * @return the list of selected objects
      */
-    public List<Object> getSelectedObjects();
+    public abstract List<Object> getSelectedObjects();
     
     /**
      * Sets the title of the dialog.
      * @param title the title (already localized)
      */
-    public void setTitle(String title);
+    public abstract void setTitle(String title);
 
     /**
      * Registers an interface that can be asked for the Query string and the results info.
      * @param builder the builder object
      */
-    public void registerQueryBuilder(ViewBasedSearchQueryBuilderIFace builder);
+    public abstract void registerQueryBuilder(ViewBasedSearchQueryBuilderIFace builder);
     
     /**
      * @param helpContext
      */
-    public void setHelpContext(String helpContext);
+    public abstract void setHelpContext(String helpContext);
     
     /**
      * @param isMulti
      */
-    public void setMultipleSelection(boolean isMulti);
+    public abstract void setMultipleSelection(boolean isMulti);
 }

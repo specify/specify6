@@ -765,6 +765,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
      */
     public void propertyChange(final PropertyChangeEvent evt)
     {
+        // This gets called when all the results have been loaded
         rowCount = (Integer)evt.getNewValue();
         
         if (rowCount > 0)
@@ -774,6 +775,11 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
 //                {
                     setTitleBar();
                     esrPane.addTable(ESResultsTablePanel.this);
+                    
+                    if (propChangeListener != null) 
+                    {
+                        propChangeListener.propertyChange(new PropertyChangeEvent(this, "loaded", rowCount, rowCount));
+                    }
 //                }
 //            });
         }

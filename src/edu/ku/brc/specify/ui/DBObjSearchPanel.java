@@ -115,13 +115,13 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     protected Color          badSearchColor = new Color(255,235,235);
 
     protected Hashtable<String, ExpressResultsTableInfo> tables = new Hashtable<String, ExpressResultsTableInfo>();
-    protected ExpressResultsTableInfo   esTableInfo;
-    protected ESResultsTablePanelIFace  etrb = null;
+    protected ExpressResultsTableInfo          esTableInfo;
+    protected ESResultsTablePanelIFace         etrb = null;
 
-    protected List<Integer>  idList         = null;
-    protected String         sqlStr;
+    protected List<Integer>                    idList         = null;
+    protected String                           sqlStr;
 
-    protected Hashtable<String, Object> dataMap = new Hashtable<String, Object>();
+    protected Hashtable<String, Object>        dataMap = new Hashtable<String, Object>();
     
     protected ViewBasedSearchQueryBuilderIFace queryBuilder        = null;
     protected QueryForIdResultsIFace           queryForIdResults   = null;
@@ -658,6 +658,23 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         } else if (evt.getPropertyName().equals("doubleClick"))
         {
             okBtn.doClick();
+            
+        } else if (evt.getPropertyName().equals("loaded"))
+        {
+            // If there is only one returned, then select it and focus the OK defult btn
+            if (evt.getNewValue() != null && ((Integer)evt.getNewValue()) == 1)
+            {
+                ESResultsTablePanel etrbPanel = (ESResultsTablePanel)etrb;
+                etrbPanel.getTable().setRowSelectionInterval(0, 0);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        okBtn.requestFocus();
+                    }
+                });
+                
+            }
         }
     }
 
