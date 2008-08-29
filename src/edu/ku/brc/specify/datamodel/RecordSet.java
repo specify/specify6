@@ -67,7 +67,7 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 @org.hibernate.annotations.Table(appliesTo="recordset", indexes =
     {   @Index (name="RecordSetNameIDX", columnNames={"name"})
     })
-public class RecordSet extends DataModelObjBase implements java.io.Serializable, RecordSetIFace, Cloneable
+public class RecordSet extends CollectionMember implements java.io.Serializable, RecordSetIFace, Cloneable
 {
     public final static Byte GLOBAL    = 0;
     public final static Byte WB_UPLOAD = 1;

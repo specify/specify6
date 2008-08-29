@@ -92,6 +92,8 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	protected Integer				number2;
 	protected Date					timestampVersion;
 	protected Boolean				isCurrent;
+	protected String                guid;
+	
 	protected Set<Locality>			localities;
 	protected GeographyTreeDef		definition;
 	protected GeographyTreeDefItem	definitionItem;
@@ -138,6 +140,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		number2 = null;
 		timestampVersion = null;
 		isCurrent = null;
+		guid      = null;
 		localities = new HashSet<Locality>();
 		definition = null;
 		definitionItem = null;
@@ -449,6 +452,23 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
     public void setAcceptedChildren(Set<Geography> acceptedChildren)
     {
         this.acceptedChildren = acceptedChildren;
+    }
+    
+    /**
+     * @return the guid
+     */
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getGuid()
+    {
+        return guid;
+    }
+
+    /**
+     * @param guid the guid to set
+     */
+    public void setGuid(String guid)
+    {
+        this.guid = guid;
     }
 
     @ManyToOne

@@ -94,7 +94,8 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     protected String                long2text;  // The original value
     protected Integer               visibility;
     protected String                visibilitySetBy;
-     
+    protected String                guid;
+
     protected Geography               geography;
     protected Set<LocalityCitation>   localityCitations;
     protected Set<CollectingEvent>    collectingEvents;
@@ -151,6 +152,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         long1text = null;
         long2text = null;
         visibility = null;
+        guid       = null;
         
         //discipline          = AppContextMgr.getInstance().getClassObject(Discipline.class);
         geography           = null;
@@ -566,6 +568,23 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     public void setLong2text(String long2text)
     {
         this.long2text = long2text;
+    }
+
+    /**
+     * @return the guid
+     */
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getGuid()
+    {
+        return guid;
+    }
+
+    /**
+     * @param guid the guid to set
+     */
+    public void setGuid(String guid)
+    {
+        this.guid = guid;
     }
 
     /**

@@ -66,6 +66,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
@@ -145,9 +146,10 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
             
             //SQLExecutionProcessor sqlProc = new SQ
+            Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
             
             String sqlStr = "SELECT rs.RecordSetID, Type, rs.Name, TableID, rs.Remarks FROM recordset as rs INNER JOIN specifyuser ON rs.SpecifyUserID = specifyuser.SpecifyUserID" +
-                            " WHERE type = 0 AND specifyuser.specifyUserID = " + spUser.getId();
+                            " WHERE type = 0 AND specifyuser.specifyUserID = " + spUser.getId() + " AND CollectionMemberID = " + collection.getId();
             
             Connection connection = null;
             Statement stmt        = null;
