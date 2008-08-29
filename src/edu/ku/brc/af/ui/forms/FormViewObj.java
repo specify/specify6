@@ -1336,17 +1336,26 @@ public class FormViewObj implements Viewable,
      * Adds new child object to its parent to a Set
      * @param newDataObj the new object to be added to a Set
      */
-    protected static void removeFromParent(final Object parentDataObjArg, final String cellNameArg, final Object oldDataObj)
+    protected static void removeFromParent(final MultiView mvParent, 
+                                           final Object    parentDataObjArg, 
+                                           final String    cellNameArg, 
+                                           final Object    oldDataObj)
     {
         if (oldDataObj != null)
         {
             if (parentDataObjArg != null)
             {
                 log.debug("Removing "+oldDataObj+" "+oldDataObj.getClass().getSimpleName()+" from "+parentDataObjArg);
-                if (parentDataObjArg instanceof FormDataObjIFace &&
-                    oldDataObj instanceof FormDataObjIFace)
+                
+                if (parentDataObjArg instanceof FormDataObjIFace && oldDataObj instanceof FormDataObjIFace)
                 {
-                    ((FormDataObjIFace)parentDataObjArg).removeReference((FormDataObjIFace)oldDataObj, cellNameArg);
+                    boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
+                    
+                    ((FormDataObjIFace)parentDataObjArg).removeReference((FormDataObjIFace)oldDataObj, cellNameArg, addSearch);
+                    if (addSearch && mvParent != null && ((FormDataObjIFace)oldDataObj).getId() != null)
+                    {
+                        mvParent.getTopLevel().addToBeSavedItem(oldDataObj);
+                    }
                     
                 } else
                 {
@@ -2069,6 +2078,25 @@ public class FormViewObj implements Viewable,
     }
     
     /**
+     * This helper method is used to update/save those items that have been removed from a relationship
+     * @param localSession a session to use to delete
+     * @param toBeSavedItems the list of data objects
+     * @throws Exception
+     */
+    public static void saveItemsInToBeSavedList(final DataProviderSessionIFace localSession,
+                                                final Vector<Object> toBeSavedItems) throws Exception
+    {
+        for (Object obj : toBeSavedItems)
+        {
+            obj = localSession.merge(obj);
+            localSession.saveOrUpdate(obj);
+        }
+        toBeSavedItems.clear();
+    }
+
+    
+    
+    /**
      * This method enables us to loop when there is a duplicate key
      * @param dataObj the data object to be saved
      * @return the merged object, or null if there was an error.
@@ -2081,7 +2109,8 @@ public class FormViewObj implements Viewable,
         boolean tryAgain         = false;
         int     numTries         = 0;
         
-        Vector<Object> deletedItems = mvParent != null ? mvParent.getDeletedItems() : null;
+        Vector<Object> deletedItems   = mvParent != null ? mvParent.getDeletedItems() : null;
+        Vector<Object> toBeSavedItems = mvParent != null ? mvParent.getToBeSavedItems() : null;
 
         Object dObj = null;
         do
@@ -2125,6 +2154,11 @@ public class FormViewObj implements Viewable,
                 if (numTries == 1 && deletedItems != null)
                 {
                     deleteItemsInDelList(session, deletedItems);
+                }
+    
+                if (numTries == 1 && toBeSavedItems != null)
+                {
+                    saveItemsInToBeSavedList(session, toBeSavedItems);
                 }
     
                 if (businessRules != null)
@@ -2593,7 +2627,6 @@ public class FormViewObj implements Viewable,
         
         try
         {
-            
             //log.info(hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
             if (session == null)
             {
@@ -2609,7 +2642,7 @@ public class FormViewObj implements Viewable,
                 session.attach(dataObj);
             }
             
-            removeFromParent(parentDataObj, cellName, dataObj);
+            removeFromParent(mvParent, parentDataObj, cellName, dataObj);
             
             // Delete a child object by caching it in the Top Level MultiView
             if (mvParent != null && !mvParent.isTopLevel())
@@ -2646,6 +2679,12 @@ public class FormViewObj implements Viewable,
                     formValidator.setNewObj(isNewlyCreatedDataObj);
                 }
                 
+                if (session != null)
+                {
+                    session.close();
+                    setSession(null);
+                }
+                
                 return;
             }
             
@@ -2660,7 +2699,6 @@ public class FormViewObj implements Viewable,
                 {
                     mvParent.getDeletedItems().clear();
                 }
-                
                 
                 FormDataObjIFace fdo   = (FormDataObjIFace)dataObj;
                 Integer          objId = fdo.getId();

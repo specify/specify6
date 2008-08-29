@@ -492,6 +492,7 @@ public final class FormHelper
         if (StringUtils.isNotEmpty(defFormName))
         {
             int     opts = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | MultiView.HIDE_SAVE_BTN;
+            opts &= ~MultiView.RESULTSET_CONTROLLER; // Clear Bit first
             String  title   = (isNewObject && isEditMode) ? getResourceString("EDIT") : dataObj.getIdentityTitle();
             ViewBasedDisplayIFace dialog = getViewbasedFactory().createDisplay(UIHelper.getWindow(mainComp),
                                                                         defFormName,

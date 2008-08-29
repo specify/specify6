@@ -934,6 +934,7 @@ public class TableViewObj implements Viewable,
                 {
                     if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getCurrentValidator() != null)
                     {
+                        mvParent.getCurrentValidator().setHasChanged(true);
                         mvParent.getMultiViewParent().getCurrentValidator().validateForm();
                     }
                 }
@@ -995,7 +996,21 @@ public class TableViewObj implements Viewable,
                                                   delBtnLabels[1]);
             if (rv == JOptionPane.YES_OPTION)
             {
-                parentDataObj.removeReference(dObj, dataSetFieldName, !addSearch);
+                boolean doOtherSide = true;
+                
+                DBTableInfo parentTblInfo = DBTableIdMgr.getInstance().getByShortClassName(parentDataObj.getClass().getSimpleName());
+                if (parentTblInfo != null)
+                {
+                    DBTableChildIFace ci = parentTblInfo.getItemByName(cellName);
+                    if (ci instanceof DBRelationshipInfo)
+                    {
+                        DBRelationshipInfo ri = (DBRelationshipInfo)ci;
+                        doOtherSide = ri.getType() == DBRelationshipInfo.RelationshipType.OneToMany;
+                        log.debug(ri.getType());
+                    }
+                }
+                doOtherSide = false;
+                parentDataObj.removeReference(dObj, dataSetFieldName, doOtherSide);
                 dataObjList.remove(rowIndex);
                 
                 model.fireDataChanged();
@@ -1011,6 +1026,12 @@ public class TableViewObj implements Viewable,
                 
                 table.getSelectionModel().clearSelection();
                 updateUI(false);
+                
+                mvParent.getTopLevel().getCurrentValidator().setHasChanged(true);
+                mvParent.getTopLevel().getCurrentValidator().validateForm();
+                
+                mvParent.getCurrentValidator().setHasChanged(true);
+                mvParent.getMultiViewParent().getCurrentValidator().validateForm();
                 
                 if (!addSearch)
                 {

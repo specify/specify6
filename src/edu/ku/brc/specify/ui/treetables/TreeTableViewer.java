@@ -123,7 +123,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	private static final boolean debugFind = false;
 	
-	private enum NODE_DROPTYPE {MOVE_NODE, SYNONIMIZE_NODE, CANCEL_DROP};
+	private enum NODE_DROPTYPE {MOVE_NODE, SYNONIMIZE_NODE, CANCEL_DROP}
 	
 	/** Status message display widget. */
 	protected JStatusBar statusBar;
@@ -1217,7 +1217,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
     
-	protected void scrollToShowNode(final TreeNode node, final int listIndex)
+	protected void scrollToShowNode(@SuppressWarnings("unused") final TreeNode node, 
+	                                @SuppressWarnings("unused") final int listIndex)
 	{
 //	    int nodeIndex = listModel.indexOf(node);
 //	    if (nodeIndex != -1)
@@ -1693,6 +1694,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                                 }
                                 
                                 FormViewObj.deleteItemsInDelList(session, deletedItems);
+                            }
+                            
+                            Vector<Object> toBeSavedItems = mvParent != null ? mvParent.getToBeSavedItems() : null;
+                            if (toBeSavedItems != null)
+                            {
+                                FormViewObj.saveItemsInToBeSavedList(session, toBeSavedItems);
                             }
                             
                             session.saveOrUpdate(mergedNode);

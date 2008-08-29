@@ -114,6 +114,7 @@ public class MultiView extends JPanel
     protected boolean                      doingSelector        = false; // This keeps us from recursing into the selector forever
     
     protected Vector<Object>               deletedItems         = null;
+    protected Vector<Object>               toBeSavedItems       = null;
     
     protected CollapsableSeparator         separator            = null;
     
@@ -866,7 +867,7 @@ public class MultiView extends JPanel
                 log.debug("--------------------------");
             }
 
-            int tmpCreateOptions = createOptions | (createWithMode == AltViewIFace.CreationMode.EDIT ? (IS_EDITTING | RESULTSET_CONTROLLER) : 0);
+            int tmpCreateOptions = createOptions | (createWithMode == AltViewIFace.CreationMode.EDIT ? (IS_EDITTING) : 0);
             Viewable viewable = ViewFactory.createFormView(this, newView, altView.getName(), data, tmpCreateOptions, getBackground());
             if (viewable != null)
             {
@@ -1360,7 +1361,6 @@ public class MultiView extends JPanel
         {
             return false;
         }
-        printCreateOptions("", createOptions);
         
         return !MultiView.isOptionOn(createOptions, MultiView.DONT_ADD_ALL_ALTVIEWS);
     }
@@ -1387,6 +1387,27 @@ public class MultiView extends JPanel
     }
     
     /**
+     * Adds an item to be deleted to a list.
+     * @param toBeSavedItem the item to be deleted.
+     */
+    public void addToBeSavedItem(final Object toBeSavedItem)
+    {
+        if (toBeSavedItems == null)
+        {
+            toBeSavedItems = new Vector<Object>();
+        }
+        boolean addToList = true;
+        if (toBeSavedItem instanceof FormDataObjIFace && ((FormDataObjIFace)toBeSavedItem).getId() == null)
+        {
+            addToList = false;
+        }
+        if (addToList)
+        {
+            toBeSavedItems.add(toBeSavedItem);
+        }
+    }
+    
+    /**
      * Returns a list of items to be deleted, it may return null.
      * @return a list of items to be deleted, it may return null.
      */
@@ -1395,6 +1416,14 @@ public class MultiView extends JPanel
         return deletedItems;
     }
     
+    /**
+     * @return
+     */
+    public Vector<Object> getToBeSavedItems()
+    {
+        return toBeSavedItems;
+    }
+
     /**
      * Asks the Viewable to get the data from the UI and transfer the changes (really all the fields) to
      * the DB object.
