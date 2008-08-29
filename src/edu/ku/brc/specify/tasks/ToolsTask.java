@@ -47,7 +47,6 @@ import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.TableModel2Excel;
 import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.rstools.RecordSetToolsIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -223,10 +222,14 @@ public class ToolsTask extends BaseTask
                         NavBoxItemIFace nbi = makeDnDNavBtn(navBox, tool.getName(), tool.getIconName(), cmdAction, null, true, false); // true means make it draggable
                         RolloverCommand roc = (RolloverCommand)nbi;
                         
-                        for (Integer tableId : tool.getTableIds())
-                        {
-                            roc.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RecordSetTask", tableId));
-                        }
+                        //for (Integer tableId : tool.getTableIds())
+                        //{
+                        //    roc.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "Record_Set", tableId));
+                        //}
+                        
+                        DataFlavorTableExt df = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
+                                                                       RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), tool.getTableIds());
+                        roc.addDropDataFlavor(df);
                         
                         toolsNavBoxList.add(nbi);
                     }
@@ -367,10 +370,9 @@ public class ToolsTask extends BaseTask
                                final RecordSetIFace      recordSet, 
                                final Properties          requestParams)
     {
-        RecordSet rs = (RecordSet)recordSet;
         try
         {
-            tool.processRecordSet(rs, requestParams);
+            tool.processRecordSet(recordSet, requestParams);
         }
         catch (Exception e)
         {
@@ -458,7 +460,7 @@ public class ToolsTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         String label    = getResourceString("Tools");
-        String iconName = "Tools";
+        //String iconName = "Tools";
         String hint     = getResourceString("export_hint");
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         

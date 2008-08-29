@@ -70,9 +70,6 @@
             <columnDef>100px,2px,p,2px,100px,2px,p,2px,p,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
-    		    <row>
-    		        <cell type="label" label="Invertebrate" icon="CollectionObject" recordobj="true" colspan="16"/>
-    		    </row>
     			<row>
     			    <cell type="label" labelfor="1"/>
     			    <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
@@ -145,9 +142,6 @@
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
-                <row>
-                    <cell type="label" label="Collecting Event" icon="CollectingEvent" recordobj="true" colspan="12"/>
-                </row>
                 <row>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>

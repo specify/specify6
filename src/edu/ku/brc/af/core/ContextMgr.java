@@ -212,7 +212,7 @@ public class ContextMgr implements CommandListener
         {
             instance.genericService.add(serviceInfo);
             
-        } else
+        } else if (instance.services.get(serviceInfo.getHashKey()) == null)
         {
             instance.services.put(serviceInfo.getHashKey(), serviceInfo);
             List<ServiceInfo> serviceList = instance.servicesByTable.get(tableId);
@@ -221,10 +221,10 @@ public class ContextMgr implements CommandListener
                 serviceList = new ArrayList<ServiceInfo>();
                 instance.servicesByTable.put(tableId, serviceList);
             }
-            
             serviceList.add(serviceInfo);
+            return serviceInfo;
         }
-        return serviceInfo;
+        return null;
     }
     
     /**

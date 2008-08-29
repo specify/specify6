@@ -24,6 +24,8 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordServiceProviderIFace;
@@ -32,8 +34,6 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.RecordSetItem;
 
 /**
  * Implements the RecordSetToolsIFace for GeoReferenceing with BioGeomancer.
@@ -96,9 +96,9 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.exporters.RecordSetExporterIFace#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet, java.util.Properties)
+     * @see edu.ku.brc.specify.rstools.RecordSetToolsIFace#processRecordSet(edu.ku.brc.dbsupport.RecordSetIFace, java.util.Properties)
      */
-    public abstract void processRecordSet(final RecordSet recordSet, 
+    public abstract void processRecordSet(final RecordSetIFace recordSet, 
                                           final Properties requestParams) throws Exception;
     
     /**
@@ -107,7 +107,7 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
      * @param geoRefService
      * @throws Exception
      */
-    public void processRecordSet(final RecordSet recordSet, 
+    public void processRecordSet(final RecordSetIFace recordSet, 
                                  final Properties requestParams,
                                  final GeoCoordServiceProviderIFace geoRefService) throws Exception
     {
@@ -124,7 +124,7 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
             
         } else if (recordSet.getDbTableId() == Locality.getClassTableId())
         {
-            for (RecordSetItem rsi : recordSet.getRecordSetItems())
+            for (RecordSetItemIFace rsi : recordSet.getItems())
             {
                 ids.add(rsi.getRecordId());
             }
@@ -226,9 +226,9 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetToolsIFace#getTableIds()
      */
-    public Integer[] getTableIds()
+    public int[] getTableIds()
     {
-        return new Integer[] {1, 2, 10};
+        return new int[] {1, 2, 10};
     }
     
     //----------------------------------------------------------------------

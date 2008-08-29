@@ -9,6 +9,7 @@ import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.IconManager;
@@ -27,9 +28,9 @@ public class DiGIRExporter implements RecordSetToolsIFace
     public static final String NAME = "DiGIR";
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.exporters.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet, java.util.Properties)
+     * @see edu.ku.brc.specify.rstools.RecordSetToolsIFace#processRecordSet(edu.ku.brc.dbsupport.RecordSetIFace, java.util.Properties)
      */
-    public void processRecordSet(RecordSet data, Properties reqParams)
+    public void processRecordSet(RecordSetIFace data, Properties reqParams)
     {
         JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         Icon icon = IconManager.getIcon(NAME);
@@ -90,7 +91,7 @@ public class DiGIRExporter implements RecordSetToolsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetToolsIFace#getTableIds()
      */
-    public Integer[] getTableIds()
+    public int[] getTableIds()
     {
         return null;
     }

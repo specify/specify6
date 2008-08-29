@@ -57,9 +57,6 @@
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
-                    <cell type="label" label="Fish" icon="CollectionObject" recordobj="true" colspan="12"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
                     
@@ -133,9 +130,6 @@
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
-                <row>
-                    <cell type="label" label="Collecting Event" icon="CollectingEvent" recordobj="true" colspan="12"/>
-                </row>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="stationFieldNumber" uitype="text"/>

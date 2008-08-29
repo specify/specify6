@@ -31,10 +31,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -1084,8 +1082,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     {
         if (appPrefs == AppPreferences.getRemote())
         {
-            String    iconName  = appPrefs.get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject");
-            ImageIcon iconImage = IconManager.getIcon(iconName, IconManager.STD_ICON_SIZE);
+            String    iconNameStr = appPrefs.get(FormattingPrefsPanel.getDisciplineImageName(), "CollectionObject");
+            ImageIcon iconImage   = IconManager.getIcon(iconNameStr, IconManager.STD_ICON_SIZE);
             if (iconImage != null)
             {
                 for (NavBoxIFace nb : navBoxes)

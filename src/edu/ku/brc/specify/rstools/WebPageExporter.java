@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Properties;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Taxon;
 
@@ -26,9 +27,9 @@ import edu.ku.brc.specify.datamodel.Taxon;
 public class WebPageExporter implements RecordSetToolsIFace
 {
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.exporters.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet)
+     * @see edu.ku.brc.specify.rstools.RecordSetToolsIFace#processRecordSet(edu.ku.brc.dbsupport.RecordSetIFace, java.util.Properties)
      */
-    public void processRecordSet(RecordSet data, Properties reqParams) throws Exception
+    public void processRecordSet(RecordSetIFace data, Properties reqParams) throws Exception
     {
         int taxonTableId = DBTableIdMgr.getInstance().getIdByClassName(Taxon.class.getName());
         int dataTableId = data.getDbTableId();
@@ -94,7 +95,7 @@ public class WebPageExporter implements RecordSetToolsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetToolsIFace#getTableIds()
      */
-    public Integer[] getTableIds()
+    public int[] getTableIds()
     {
         return null;
     }

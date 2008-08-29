@@ -151,9 +151,6 @@
 
             <rows>
                 <row>
-                	<cell type="label" label="KU Accessions" icon="Accession" recordobj="true" colspan="12"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="1" label="Number"/>
                     <cell type="field" id="1" name="accessionNumber" isrequired="true" uitype="formattedtext" uifieldformatter="AccessionNumber" valtype="Focus"/>
 
@@ -182,21 +179,7 @@
                 </row>
                 
                 <row>
-                    <cell type="separator" label="Accession Agent" colspan="12"/>
-                </row>
-
-
-<!--
-                <row>
-                    <cell type="subview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="12"/>
-                </row>
--->
-                <row>
                     <cell type="iconview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="12"/>
-                </row>
-
-                <row>
-                    <cell type="separator" label="Authorizations" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="AccessionAuthorization" id="9" desc="Authorizations" name="accessionAuthorizations" colspan="12"/>
@@ -344,16 +327,6 @@
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
 
             <rows>
-                <row>
-                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="16px,1px,f:p:g" rowdef="p" colspan="12">
-                        <rows>
-                            <row>
-                                <cell type="label" icon="Permit" recordobj="true"/>
-                                <cell type="separator" label="Permit"/>
-                            </row>
-                        </rows>
-                    </cell>
-                </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
                     <cell type="field" id="1" name="permitNumber" uitype="text" isrequired="true"/>

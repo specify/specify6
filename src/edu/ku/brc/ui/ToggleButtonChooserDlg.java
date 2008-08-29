@@ -124,7 +124,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
         panel.setOkBtn(okBtn);
         panel.createUI();
         
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(14, 14, 6, 14));
         mainPanel.add(panel.getUIComponent(), BorderLayout.CENTER);
         
         pack();

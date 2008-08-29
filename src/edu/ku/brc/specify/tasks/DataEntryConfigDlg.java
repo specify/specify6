@@ -12,6 +12,7 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -110,6 +111,8 @@ public class DataEntryConfigDlg extends TaskConfigureDlg
                                           JOptionPane.INFORMATION_MESSAGE); 
             return;
         }
+        
+        Collections.sort(uniqueList);
         
         ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(),
                 getResourceString("DET_AVAIL_VIEWS"), uniqueList);

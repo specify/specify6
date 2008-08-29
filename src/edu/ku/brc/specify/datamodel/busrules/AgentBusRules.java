@@ -203,8 +203,6 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         enableFieldAndLabel("5", isPerson, doSetOtherValues ? agent.getFirstName() : null);       // First Name
         enableFieldAndLabel("4", isPerson, doSetOtherValues ? agent.getMiddleInitial() : null);       // First Name
         
-
-        
         // Last Name
         String lbl = UIRegistry.getResourceString(isPerson ? "AG_LASTNAME" : "AG_NAME");
         lastLabel.setText(lbl + ":");
@@ -307,6 +305,25 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             JTextField typeTxt = (JTextField)typeComp;
             typeTxt.setText(typeTitles[agentType]);
         }
+        
+        boolean shouldBeVisible = agentType == Agent.PERSON || agentType == Agent.ORG;
+        final Component addrSubView = formViewObj.getCompById("9");
+        boolean isVisible = addrSubView.isVisible();
+        if (!isVisible != shouldBeVisible)
+        {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    Component topComp = UIHelper.getWindow(addrSubView);
+                    Component topMost = UIRegistry.getTopWindow();
+                    if (topComp != topMost)
+                    {
+                        ((Window)topComp).pack();
+                    }
+                }
+            });
+        }
+        addrSubView.setVisible(shouldBeVisible);
     }
 
     /* (non-Javadoc)

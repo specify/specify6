@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -64,9 +65,9 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
     }
     
 	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.tasks.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet)
+	 * @see edu.ku.brc.specify.rstools.RecordSetToolsIFace#processRecordSet(edu.ku.brc.dbsupport.RecordSetIFace, java.util.Properties)
 	 */
-	public void processRecordSet(final RecordSet data, final Properties reqParams)
+	public void processRecordSet(final RecordSetIFace data, final Properties reqParams)
     {
 	    String description = JOptionPane.showInputDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("GE_ENTER_DESC"));
         
@@ -167,7 +168,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
      * @param recordSet the RecordSet
      */
     protected void exportCollectionObjectRecordSet(final String description,
-                                                   final RecordSet recordSet)
+                                                   final RecordSetIFace recordSet)
     {
         List<Object> ceList  = new Vector<Object>();
         List<Object> records = RecordSetLoader.loadRecordSet(recordSet);
@@ -203,7 +204,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
      * @param recordSet the RecordSet
      */
     protected void exportLocalityRecordSet(final String description,
-                                           final RecordSet recordSet)
+                                           final RecordSetIFace recordSet)
     {
         List<Object> list    = new Vector<Object>();
         List<Object> records = RecordSetLoader.loadRecordSet(recordSet);
@@ -643,8 +644,8 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetToolsIFace#getTableIds()
      */
-    public Integer[] getTableIds()
+    public int[] getTableIds()
     {
-        return new Integer[] {1, 2, 10};
+        return new int[] {1, 2, 10};
     }
 }

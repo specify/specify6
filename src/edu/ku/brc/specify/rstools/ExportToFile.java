@@ -12,7 +12,7 @@ import java.util.Properties;
 
 import org.apache.commons.io.FilenameUtils;
 
-import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.CSVExport;
 import edu.ku.brc.specify.tasks.subpane.wb.ConfigureCSV;
 import edu.ku.brc.specify.tasks.subpane.wb.ConfigureXLS;
@@ -29,11 +29,18 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class ExportToFile implements RecordSetToolsIFace
 {    
+    /**
+     * 
+     */
     public ExportToFile()
     {
         
     }
     
+    /**
+     * @param reqParams
+     * @return
+     */
     protected DataExport buildExporter(Properties reqParams)
     {
         String mimeType = reqParams.getProperty("mimetype");
@@ -79,9 +86,9 @@ public class ExportToFile implements RecordSetToolsIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.exporters.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet)
+     * @see edu.ku.brc.specify.rstools.RecordSetToolsIFace#processRecordSet(edu.ku.brc.dbsupport.RecordSetIFace, java.util.Properties)
      */
-    public void processRecordSet(RecordSet data, Properties reqParams) throws Exception
+    public void processRecordSet(RecordSetIFace data, Properties reqParams) throws Exception
     {
         // TODO Auto-generated method stub
     }
@@ -129,8 +136,8 @@ public class ExportToFile implements RecordSetToolsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetToolsIFace#getTableIds()
      */
-    public Integer[] getTableIds()
+    public int[] getTableIds()
     {
-        return new Integer[] {79};
+        return new int[] {79};
     }
 }

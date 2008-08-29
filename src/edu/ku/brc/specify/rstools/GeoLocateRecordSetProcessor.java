@@ -9,10 +9,10 @@ package edu.ku.brc.specify.rstools;
 import java.util.List;
 import java.util.Properties;
 
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordGeoLocateProvider;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
-import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -52,9 +52,9 @@ public class GeoLocateRecordSetProcessor extends GeoRefRecordSetProcessorBase im
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.exporters.RecordSetExporterIFace#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet, java.util.Properties)
+     * @see edu.ku.brc.specify.rstools.GeoRefRecordSetProcessorBase#processRecordSet(edu.ku.brc.dbsupport.RecordSetIFace, java.util.Properties)
      */
-    public void processRecordSet(final RecordSet recordSet, 
+    public void processRecordSet(final RecordSetIFace recordSet, 
                                  final Properties requestParams) throws Exception
     {
         processRecordSet(recordSet, requestParams, new GeoCoordGeoLocateProvider());

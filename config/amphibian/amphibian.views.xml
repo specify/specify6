@@ -125,9 +125,6 @@
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
-                    <cell type="label" label="Amphibian" icon="CollectionObject" recordobj="true" colspan="12"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
                     
@@ -192,9 +189,6 @@
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
-                <row>
-                    <cell type="label" label="Collecting Event" icon="CollectingEvent" recordobj="true" colspan="12"/>
-                </row>
                 <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="method" uitype="combobox" picklist="Method"/>
@@ -332,9 +326,6 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
-                <row>
-                    <cell type="separator" label="Locality Information" colspan="12"/>
-                </row>
                 <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="localityName" uitype="text" isrequired="true" colspan="10"/>

@@ -569,9 +569,6 @@
 
             <rows>
                 <row>
-                    <cell type="separator" label="Agent Info" colspan="6"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="0"/>
                     <cell type="field" id="0" name="agentType" uitype="combobox" ignore="true"/>
                 </row>
@@ -683,9 +680,6 @@
 			
             <rows>
                 <row>
-                    <cell type="separator" label="Organization Info" colspan="4"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="lastName" uitype="text" cols="30" isrequired="true"/>
                 </row>
@@ -789,9 +783,6 @@
             
             <rows>
                 <row>
-                    <cell type="separator" label="Locality Information" colspan="12"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="localityName" uitype="text" isrequired="true" colspan="10"/>
                 </row>
@@ -857,9 +848,6 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
-                <row>
-                    <cell type="label" label="Permit" icon="Permit" recordobj="true" colspan="12"/>                    
-                </row>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="permitNumber" uitype="text" isrequired="true"/>
@@ -1095,16 +1083,10 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
-                    <cell type="separator" label="Journal" icon="Journal" recordobj="true" colspan="7"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="journalName" uitype="text"/>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="journalAbbreviation" uitype="text" cols="3"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Reference Work" colspan="7"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="ReferenceWorkSub" id="3" name="referenceWorks" colspan="7"/>
@@ -1122,9 +1104,6 @@
             <columnDef>140px,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
-                <row>
-                    <cell type="separator" label="Reference Work" icon="ReferenceWork" recordobj="true" colspan="12"/>
-                </row>
                 <row>
                     <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="referenceWorkType" uitype="combobox" picklist="ReferenceWorkType" colspan="10"/>
@@ -1156,9 +1135,6 @@
                 <row>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="libraryNumber" uitype="text"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Journal" colspan="12"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="18"/>
@@ -1333,9 +1309,6 @@
             
             <rows>
                 <row>
-                	<cell type="label" label="TAXON" icon="Taxon" recordobj="true" colspan="5"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="name"/>
                     <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/>
                     <cell type="field" id="WebLink" name="this" uitype="plugin" initialize="name=WebLinkButton;weblink=FishBase;icon=FishBase"/>
@@ -1406,13 +1379,7 @@
                 	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent2" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="separator" label="CHILDREN" colspan="5"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="TaxonSubform" id="children" name="children" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="separator" label="SYNONYMS" colspan="5"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="TaxonSubform" id="acceptedChildren" name="acceptedChildren" colspan="5"/>
@@ -1451,9 +1418,6 @@
 
             <rows>
                 <row>
-                	<cell type="label" label="GEOGRAPHY" icon="Geography" recordobj="true" colspan="3"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="name"/>
                     <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/> 
                 </row>
@@ -1476,9 +1440,6 @@
                 <row>
                 	<cell type="label" labelfor="acceptedParent" label="ACCEPTEDPARENT"/>
                 	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false" name="acceptedParent"/>
-                </row>
-                <row>
-                    <cell type="separator" label="CHILDREN" colspan="3"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="GeographySubform" id="children" name="children" colspan="3"/>
@@ -1504,9 +1465,6 @@
 
             <rows>
                 <row>
-                	<cell type="label" label="STORAGE" icon="Storage" recordobj="true" colspan="3"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="name"/>
                     <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/> 
                 </row>
@@ -1531,9 +1489,6 @@
                 	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Storage;title=Storage;editbtn=false;newbtn=false" name="acceptedParent"/>
                 </row>
                 <row>
-                    <cell type="separator" label="CHILDREN" colspan="3"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="StorageSubform" id="children" name="children" colspan="3"/>
                 </row>
             </rows>
@@ -1555,9 +1510,6 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
-                <row>
-                	<cell type="label" label="GEOLOGICTIMEPERIOD" icon="GeologicTimePeriod" recordobj="true" colspan="7"/>
-                </row>
                 <row>
                     <cell type="label" labelfor="name"/>
                     <cell type="field" id="name" uitype="text" cols="16" name="name" colspan="5" isrequired="true"/> 
@@ -1591,9 +1543,6 @@
                     <cell type="field" id="isBioStrat" uitype="checkbox" label="##" name="isBioStrat"/>
                 </row>                
                 <row>
-                    <cell type="separator" label="CHILDREN" colspan="7"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="GeographySubform" id="children" name="children" colspan="7"/>
                 </row>
             </rows>
@@ -1615,9 +1564,6 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
-                <row>
-                	<cell type="label" label="LITHOSTRAT" icon="LithoStrat" recordobj="true" colspan="7"/>
-                </row>
                 <row>
                     <cell type="label" labelfor="name"/>
                     <cell type="field" id="name" uitype="text" cols="16" name="name" colspan="5" isrequired="true"/> 

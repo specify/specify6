@@ -9,6 +9,7 @@ package edu.ku.brc.specify.rstools;
 import java.util.List;
 import java.util.Properties;
 
+import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 
 /**
@@ -57,7 +58,7 @@ public interface RecordSetToolsIFace
 	 * @param requestParams configuration parameters used by the tool
 	 * @throws Exception an error occurrred while exporting the {@link RecordSet}
 	 */
-	public abstract void processRecordSet(RecordSet recordSet, Properties requestParams) throws Exception;
+	public abstract void processRecordSet(RecordSetIFace recordSet, Properties requestParams) throws Exception;
     
     /**
      * Exports the given {@link List}.
@@ -76,5 +77,5 @@ public interface RecordSetToolsIFace
     /**
      * @return returns a list of table ids that this tool can work on.
      */
-    public Integer[] getTableIds();
+    public int[] getTableIds();
 }
