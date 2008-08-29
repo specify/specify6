@@ -32,9 +32,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
 
@@ -289,7 +292,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	protected void initTreeDefEditorComponent(final D treeDef)
 	{
 		Set<I> defItems = treeDef.getTreeDefItems();
-		tableModel = new TreeDefEditorTableModel<T,D,I>(defItems);
+		tableModel    = new TreeDefEditorTableModel<T,D,I>(defItems);
 		defItemsTable = new JTable(tableModel);
         defItemsTable.addMouseListener(new MouseAdapter()
         {
@@ -305,6 +308,13 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         });
 		defItemsTable.setRowHeight(24);
 
+		// Center the boolean Columns
+        DefaultTableCellRenderer dcr = new DefaultTableCellRenderer();
+        dcr.setHorizontalAlignment(SwingConstants.CENTER);
+		TableColumn tc = defItemsTable.getColumnModel().getColumn(2);
+		tc.setCellRenderer(dcr);
+        tc = defItemsTable.getColumnModel().getColumn(3);
+        tc.setCellRenderer(dcr);
 		if (isEditMode)
 		{
 		    defItemsTable.setRowSelectionAllowed(true);

@@ -41,6 +41,9 @@ public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
     public static final int TEXT_BEFORE_COL = 4;
     public static final int TEXT_AFTER_COL  = 5;
     public static final int SEPARATOR_COL   = 6;
+    
+    public static final String YES = getResourceString("YES");
+    public static final String NO  = getResourceString("NO");
 	
 	/** A Vector of TreeDefItemIface objects holding the table data. */
 	protected Vector<I> tableData;
@@ -82,7 +85,7 @@ public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
 		{
 			case NAME_COL:
 			{
-				return row.getName();
+				return row.getName().toString();
 			}
 			case REMARKS_COL:
 			{
@@ -90,11 +93,11 @@ public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
 			}
 			case FULLNAME_COL:
 			{
-				return row.getIsInFullName();
+				return row.getIsInFullName()  ? YES : NO;
 			}
 			case ENFORCED_COL:
 			{
-				return row.getIsEnforced();
+				return row.getIsEnforced() ? YES : NO;
 			}
             case TEXT_BEFORE_COL:
             {
@@ -165,23 +168,7 @@ public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
 	@Override
 	public Class<?> getColumnClass(int columnIndex)
 	{
-		switch(columnIndex)
-		{
-			case NAME_COL:
-			case REMARKS_COL:
-            case TEXT_BEFORE_COL:
-            case TEXT_AFTER_COL:
-            case SEPARATOR_COL:
-			{
-				return String.class;
-			}
-			case FULLNAME_COL:
-			case ENFORCED_COL:
-			{
-				return Boolean.class;
-			}
-		}
-		return null;
+	    return String.class;
 	}
 
 	/* (non-Javadoc)
