@@ -169,14 +169,13 @@
         
         <view name="Author"
             class="edu.ku.brc.specify.datamodel.Author"
-            isinternal="false"
             resourcelabels="false">
-            <desc><![CDATA[The appraisal subform.]]></desc>
+            <desc><![CDATA[The Author subform for Reference Work form.]]></desc>
             <altviews>
-                <altview name="Author View" viewdef="Author" label="View" mode="view" default="true"/>
-                <altview name="Author Edit" viewdef="Author" label="Edit" mode="edit"/>
+            <!--    <altview name="Author View" viewdef="Author" label="View" mode="view" default="true"/>
+                <altview name="Author Edit" viewdef="Author" label="Edit" mode="edit"/> -->
                 <altview name="Author Table View" viewdef="Author Table" label="Grid" mode="view"/>
-                <altview name="Author Table Edit" viewdef="Author Table" label="Grid" mode="edit"/>
+                <altview name="Author Table Edit" viewdef="Author Table" label="Grid" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -1187,7 +1186,7 @@
                     <cell type="field" id="18" name="journal" uitype="querycbx" initialize="name=Journal;title=Journal" colspan="10"/>
                 </row> 
                 <row>
-                    <cell type="subview" id="10" name="authors" viewname="Author" colspan="12" defaulttype="table"/>
+                    <cell type="subview" id="10" name="authors" viewname="Author" colspan="12"/>
                 </row>
             </rows>
         </viewdef> 

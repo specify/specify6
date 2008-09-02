@@ -29,6 +29,7 @@
     <dialog type="display" view="AgentVariant"       name="AgentVariant"             class="edu.ku.brc.specify.datamodel.AgentVariant"/>
     <dialog type="display" view="Appraisal"          name="AppraisalDisplay"         class="edu.ku.brc.specify.datamodel.Appraisal"/>
     <dialog type="display" view="AttachmentsForm"    name="AttachmentsForm"          class="edu.ku.brc.specify.datamodel.Attachment"/>
+    <dialog type="display" view="Author"             name="AuthorDisplay"            class="edu.ku.brc.specify.datamodel.Author"/>
     <dialog type="display" view="GeologicTimePeriod" name="BioStratDisplay"          class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
     <dialog type="display" view="Collector"          name="CollectorDisplay"         class="edu.ku.brc.specify.datamodel.Collector"/>
     <dialog type="display" view="CollectionObject"   name="CollectionObject"         class="edu.ku.brc.specify.datamodel.CollectionObject"/>
