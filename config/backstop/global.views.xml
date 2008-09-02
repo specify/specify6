@@ -167,6 +167,19 @@
             </altviews>
         </view>
         
+        <view name="Author"
+            class="edu.ku.brc.specify.datamodel.Author"
+            isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[The appraisal subform.]]></desc>
+            <altviews>
+                <altview name="Author View" viewdef="Author" label="View" mode="view" default="true"/>
+                <altview name="Author Edit" viewdef="Author" label="Edit" mode="edit"/>
+                <altview name="Author Table View" viewdef="Author Table" label="Grid" mode="view"/>
+                <altview name="Author Table Edit" viewdef="Author Table" label="Grid" mode="edit"/>
+            </altviews>
+        </view>
+        
         <view name="Journal"
             class="edu.ku.brc.specify.datamodel.Journal"
             isinternal="false"
@@ -1073,6 +1086,39 @@
         </viewdef>
         
         <viewdef
+            type="formtable"
+            name="Author Table"
+            class="edu.ku.brc.specify.datamodel.Author"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Author subform for Reference Work.]]></desc>
+            <definition>Author</definition>
+        </viewdef>
+        
+        <viewdef 
+            type="form"
+            name="Author"
+            class="edu.ku.brc.specify.datamodel.Author"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Author subform for Reference Work]]></desc>
+            
+            <columnDef>100px,2px,p,2px,125px,2px,125px,2px,125px,2px,125px,p:g</columnDef>
+            <rowDef auto="true" sep="2px" cell="p"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="10"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
             type="form"
             name="Journal"
             class="edu.ku.brc.specify.datamodel.Journal"
@@ -1140,6 +1186,9 @@
                     <cell type="label" labelfor="18"/>
                     <cell type="field" id="18" name="journal" uitype="querycbx" initialize="name=Journal;title=Journal" colspan="10"/>
                 </row> 
+                <row>
+                    <cell type="subview" id="10" name="authors" viewname="Author" colspan="12" defaulttype="table"/>
+                </row>
             </rows>
         </viewdef> 
         
