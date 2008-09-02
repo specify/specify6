@@ -445,7 +445,7 @@ public class DataEntryTask extends BaseTask
         if (UIHelper.isSecurityOn())
         {
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
-            if (!tblInfo.getPermissions().hasNoPerm())
+            if (tblInfo.getPermissions().hasNoPerm())
             {
                 return null;
             }
