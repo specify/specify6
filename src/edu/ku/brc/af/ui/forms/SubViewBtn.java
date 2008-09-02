@@ -356,7 +356,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         multiView = frame.getMultiView();
         
         
-        if (parentObj != null && parentObj.getId() != null)
+        // Only get the data from the parent the first time.
+        if (parentObj != null && parentObj.getId() != null && dataObj == null)
         {
             DataProviderSessionIFace sessionLocal = null;
             try
