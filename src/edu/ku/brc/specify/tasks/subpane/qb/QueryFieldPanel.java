@@ -352,7 +352,8 @@ public class QueryFieldPanel extends JPanel
         {
             return new SpQueryField.OperatorType[] {
                     SpQueryField.OperatorType.EQUALS,
-                    SpQueryField.OperatorType.IN};
+                    SpQueryField.OperatorType.IN,
+                    SpQueryField.OperatorType.EMPTY};
         }
         if (fieldQRI instanceof TreeLevelQRI)
         {
@@ -381,19 +382,22 @@ public class QueryFieldPanel extends JPanel
         {
             return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.LIKE,
                     SpQueryField.OperatorType.EQUALS,
-                    SpQueryField.OperatorType.IN};
+                    SpQueryField.OperatorType.IN,
+                    SpQueryField.OperatorType.EMPTY};
         }
         else if (classObj.equals(Boolean.class))
         {
             return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.DONTCARE,
                     SpQueryField.OperatorType.TRUE,
-                    SpQueryField.OperatorType.FALSE};
+                    SpQueryField.OperatorType.FALSE,
+                    SpQueryField.OperatorType.EMPTY};
         }
         else if (classObj.equals(java.sql.Timestamp.class))
         {
             return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.GREATERTHAN,
                     SpQueryField.OperatorType.LESSTHAN,
-                    SpQueryField.OperatorType.BETWEEN};
+                    SpQueryField.OperatorType.BETWEEN,
+                    SpQueryField.OperatorType.EMPTY};
         }
         // else
         return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.EQUALS,
@@ -402,7 +406,8 @@ public class QueryFieldPanel extends JPanel
                 SpQueryField.OperatorType.GREATERTHANEQUALS,
                 SpQueryField.OperatorType.LESSTHANEQUALS,
                 SpQueryField.OperatorType.BETWEEN,
-                SpQueryField.OperatorType.IN};
+                SpQueryField.OperatorType.IN,
+                SpQueryField.OperatorType.EMPTY};
     }
     
     /**
@@ -620,6 +625,12 @@ public class QueryFieldPanel extends JPanel
                                      final List<Pair<String, Object>> paramList)
             throws ParseException
     {
+        if (operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.EMPTY))
+        {
+            //No support for empty for TreeLevelQRI as of yet.
+            return fieldQRI.getSQLFldSpec(ta, true) + (isNotCheckbox.isSelected() ? " is not " : " is ") + "null";
+        }
+        
         if (hasCriteria())
         {
             Object[] criteriaStrs = parseCriteria(getCriteriaText(true).trim());
@@ -869,6 +880,17 @@ public class QueryFieldPanel extends JPanel
         isNotCheckbox.addFocusListener(focusListener);
         operatorCBX = createComboBox(comparators);
         operatorCBX.addFocusListener(focusListener);
+        operatorCBX.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e)
+            {
+                if (e.getStateChange() == ItemEvent.SELECTED)
+                {
+                    criteria.setVisible(!operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.EMPTY));
+                }
+            }
+        });
+        
         if (pickList == null)
         {
             criteria = createTextField();
