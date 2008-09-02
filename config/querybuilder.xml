@@ -69,7 +69,7 @@
     </table>
     
     <table name="CollectingTrip">
-        <alias name="CollectingEvent"/>
+        <alias name="CollectingEvent" field="collectingEvents"/>
         <alias name="Agent" field="createdByAgent" />
         <alias name="Agent" field="modifiedByAgent" />
     </table>
