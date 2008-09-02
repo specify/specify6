@@ -359,7 +359,8 @@ public class QueryFieldPanel extends JPanel
         {
             return new SpQueryField.OperatorType[] {
                 SpQueryField.OperatorType.EQUALS,
-                SpQueryField.OperatorType.IN};
+                SpQueryField.OperatorType.IN,
+                SpQueryField.OperatorType.EMPTY};
         }
         //CatalogNumber needs special treatment - works better as a number.
         //And other fields? Not sure how to tell. Maybe the formatter?????
@@ -627,7 +628,6 @@ public class QueryFieldPanel extends JPanel
     {
         if (operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.EMPTY))
         {
-            //No support for empty for TreeLevelQRI as of yet.
             return fieldQRI.getSQLFldSpec(ta, true) + (isNotCheckbox.isSelected() ? " is not " : " is ") + "null";
         }
         
