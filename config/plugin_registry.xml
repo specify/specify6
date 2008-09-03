@@ -47,6 +47,8 @@
 		
 		<plugin class="edu.ku.brc.af.tasks.VersionCheckerTask" addui="true"/>
 		
+		<plugin class="edu.ku.brc.af.tasks.BackupTask" addui="true"/>
+		
 	</core>
 	
 	<uiplugins>

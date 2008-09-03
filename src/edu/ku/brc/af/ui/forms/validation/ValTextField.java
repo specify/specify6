@@ -161,6 +161,14 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     }
 
     /**
+     * @param limit
+     */
+    public void setLimit(final int limit)
+    {
+        ((ValPlainTextDocument)getDocument()).setLimit(limit);
+    }
+    
+    /**
      * Helper method for validation scripting to see if the text field is empty
      * @return whether the text field is empty or not
      */

@@ -262,17 +262,31 @@ public class ViewFactory
 
             txtField = textField;
             textField.setEditable(!cellField.isReadOnly());
+            
+            if (fieldInfo.getLength() > -1)
+            {
+                textField.setLimit(fieldInfo.getLength());
+            }
 
         } else if (adapter != null)
         {
             ValTextField textField = new ValTextField(cellField.getTxtCols(), adapter);
-
+            if (fieldInfo.getLength() > -1)
+            {
+                textField.setLimit(fieldInfo.getLength());
+            }
+            
             txtField = textField;
             textField.setEditable(false);
 
         } else
         {
-            txtField = new ValTextField(cellField.getTxtCols());
+            ValTextField textField = new ValTextField(cellField.getTxtCols());
+            if (fieldInfo.getLength() > -1)
+            {
+                textField.setLimit(fieldInfo.getLength());
+            }
+            txtField = textField;
         }
         return txtField;
     }

@@ -210,14 +210,20 @@ public class ContextMgr implements CommandListener
                                               final boolean       isDefault)
     {
         ServiceInfo serviceInfo = new ServiceInfo(priority, serviceName, tableId, command, task, iconName, tooltip, isDefault);
+        log.debug("REG: "+serviceInfo.getHashKey());
+        
+        if (serviceInfo.getHashKey().equals("Project_Record_Set_66"))
+        {
+            int x = 0;
+            x++;
+        }
+        
         if (tableId == -1)
         {
             instance.genericService.add(serviceInfo);
             
         } else 
         {
-            //if (instance.services.get(serviceInfo.getHashKey()) == null)
-            
             instance.services.put(serviceInfo.getHashKey(), serviceInfo);
             List<ServiceInfo> serviceList = instance.servicesByTable.get(tableId);
             if (serviceList == null)

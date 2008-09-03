@@ -15,6 +15,8 @@
 package edu.ku.brc.af.ui.forms.validation;
 
 import javax.swing.event.DocumentEvent;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 /**
@@ -28,7 +30,7 @@ import javax.swing.text.PlainDocument;
 public class ValPlainTextDocument extends PlainDocument
 {
     protected boolean ignoreNotify = false;
-
+    protected int     limit        = -1;
 
     /**
      * Creates a simle PlainDocument
@@ -38,6 +40,11 @@ public class ValPlainTextDocument extends PlainDocument
         super();
     }
     
+    public void setLimit(int limit)
+    {
+        this.limit = limit;
+    }
+
     public boolean isIgnoreNotify()
     {
         return ignoreNotify;
@@ -75,5 +82,20 @@ public class ValPlainTextDocument extends PlainDocument
         }
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.text.Document#insertString(int, java.lang.String, javax.swing.text.AttributeSet)
+     */
+    @Override
+    public void insertString(final int offset, final String strArg, final AttributeSet attr) throws BadLocationException
+    {
+        if (limit == -1)
+        {
+            super.insertString(offset, strArg, attr);
+           
+        } else if (strArg != null && strArg.length() + this.getLength() <= limit)
+        {
+            super.insertString(offset, strArg, attr);
+        }
+    }
     
 }
