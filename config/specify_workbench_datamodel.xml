@@ -57,7 +57,7 @@
   </table>
 
   <table classname="edu.ku.brc.specify.datamodel.CollectingEventAttribute" table="collectingeventattribute" tableid="92" lazy="true" query="false">
-    <field column="Remarks (CollectingEvent Attribute)" name="collectingEventAttributeRemarks" type="java.lang.String" length="1073741823"/>
+    <field column="Remarks (CollectingEvent Attribute)" name="collectingEventAttributeRemarks" type="java.lang.String" length="4096"/>
     <field column="Number 1 (CollectingEvent Attribute)" name="collectingEventAttributeNumber1" type="java.lang.Float" length="24"/>
     <field column="Number 2 (CollectingEvent Attribute)" name="collectingEventAttributeNumber2" type="java.lang.Float" length="24"/>
     <field column="Number 3 (CollectingEvent Attribute)" name="collectingEventAttributeNumber3" type="java.lang.Float" length="24"/>
@@ -206,9 +206,6 @@
     <field column="Species 1"               	name="species1" type="java.lang.String" length="64"/>
     <field column="Subspecies 1"            	name="subspecies1" type="java.lang.String" length="64"/>
     <field column="Variety 1"               	name="variety1" type="java.lang.String" length="64"/>
-    <field column="Species Qualifier 1"     	name="speciesQualifier1" type="java.lang.String" length="50"/>
-    <!-- field column="Subspecies Qualifier 1"  	name="subspeciesQualifier1" type="java.lang.String" length="50"/-->
-    <!-- field column="Variety Qualifier 1"     	name="varietyQualifier1" type="java.lang.String" length="50"/-->
     <field column="Species Author First Name 1" name="speciesAuthorFirstName1" type="java.lang.String" length="50"/>
     <field column="Species Author Last Name 1"  name="speciesAuthorLastName1" type="java.lang.String" length="50"/>
     <!-- field column="Infra Author First Name 1"   name="infraAuthorFirstName1" type="java.lang.String" length="50"/-->
@@ -223,9 +220,6 @@
     <field column="Species 2"               	name="species2" type="java.lang.String" length="64"/>
     <field column="Subspecies 2"            	name="subspecies2" type="java.lang.String" length="64"/>
     <field column="Variety 2"               	name="variety2" type="java.lang.String" length="64"/>
-    <!-- field column="Species Qualifier 2"     	name="speciesQualifier2" type="java.lang.String" length="50"/-->
-    <!-- field column="Subspecies Qualifier 2"  	name="subspeciesQualifier2" type="java.lang.String" length="50"/-->
-    <!-- field column="Variety Qualifier 2"     	name="varietyQualifier2" type="java.lang.String" length="50"/-->
     <field column="Species Author First Name 2" name="speciesAuthorFirstName2" type="java.lang.String" length="50"/>
     <field column="Species Author Last Name 2"  name="speciesAuthorLastName2" type="java.lang.String" length="50"/>
     <!--field column="Infra Author First Name 2"   name="infraAuthorFirstName2" type="java.lang.String" length="50"/-->
