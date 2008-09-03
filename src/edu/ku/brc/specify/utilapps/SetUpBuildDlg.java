@@ -661,7 +661,7 @@ class SetUpBuildDlg extends CustomDialog
                     break;
                     
                 case 4 :
-                    choice.setCatalogNumberingFmtName(((UIFieldFormatterIFace)value).getName());
+                    choice.setAccessionNumberingFmtName(((UIFieldFormatterIFace)value).getName());
                     if (choice.getAccNumberFormatter().getAutoNumber() == null)
                     {
                         choice.setAccNumGroup(accNumGrpList.get(0));
@@ -803,9 +803,12 @@ class SetUpBuildDlg extends CustomDialog
                                                        int row,
                                                        int column)
         {
-            JLabel label = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            UIFieldFormatterIFace fmt = hash.get(value);
-            label.setText(fmt.getTitle());
+            JLabel                label = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            UIFieldFormatterIFace fmt   = hash.get(value);
+            if (fmt != null)
+            {
+                label.setText(fmt.getTitle());
+            }
             return label;
         }
         
