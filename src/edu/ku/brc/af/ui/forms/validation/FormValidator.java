@@ -597,15 +597,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
         fields.put(id, comp);
 
         UIValidator uiv = null;
-        if (!changeListenerOnly)
+        if (StringUtils.isEmpty(valStr))
         {
-            if (isNotEmpty(valStr))
-            {
-                uiv = createValidator(comp, valType, valStr);
-            } else
-            {
-                uiv = createValidator(comp, valType);
-            }
+            uiv = createValidator(comp, valType);
+        } else
+        {
+            uiv = changeListenerOnly ? null : createValidator(comp, valType, valStr);
         }
         DataChangeNotifier dcn = new DataChangeNotifier(id, comp, uiv);
         dcn.addDataChangeListener(this);
