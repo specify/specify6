@@ -41,21 +41,27 @@
             </altviews> 
         </view>
 
-       <view name="GroupPerson"
+       <view name="GroupPersons"
             class="edu.ku.brc.specify.datamodel.GroupPerson"
             busrules="edu.ku.brc.specify.datamodel.busrules.GroupPersonBusRules"
             resourcelabels="false">
             <desc><![CDATA[GroupPerson form.]]></desc>
             <altviews>
-                <!-- Additional Business Rules need to be written in GroupPersonBusRules in order
-                     to allow additions by form instead just the grid 
-                <altview name="GroupPerson View" viewdef="GroupPerson" label="View" mode="view"/>
-                <altview name="GroupPerson Edit" viewdef="GroupPerson" label="Edit" mode="edit" default="true"/>
-                -->
-                <altview name="GroupPerson Table View" viewdef="GroupPerson Table"   label="Grid" mode="view"/>
-                <altview name="GroupPerson Table Edit" viewdef="GroupPerson Table"   label="Grid" mode="edit"/>
+                <altview name="GroupPersons Table View" viewdef="GroupPersons Table"   label="Grid" mode="view"/>
+                <altview name="GroupPersons Table Edit" viewdef="GroupPersons Table"   label="Grid" mode="edit"/>
             </altviews>
-        </view>
+       </view>
+        
+        <view name="GroupPerson"
+            class="edu.ku.brc.specify.datamodel.GroupPerson"
+            busrules="edu.ku.brc.specify.datamodel.busrules.GroupPersonBusRules"
+            resourcelabels="false">
+            <desc><![CDATA[GroupPerson subform for Agent.]]></desc>
+            <altviews>
+                <altview name="GroupPerson View" viewdef="GroupPerson" label="View" mode="view"/>
+                <altview name="GroupPerson Edit" viewdef="GroupPerson" label="Edit" mode="edit" default="true"/> 
+            </altviews> 
+        </view> 
 
         
         <view name="Permit"
@@ -171,15 +177,25 @@
             </altviews>
         </view>
         
-        <view name="Author"
+        <view name="Authors"
             class="edu.ku.brc.specify.datamodel.Author"
             resourcelabels="false">
             <desc><![CDATA[The Author subform for Reference Work form.]]></desc>
             <altviews>
             <!--    <altview name="Author View" viewdef="Author" label="View" mode="view" default="true"/>
                 <altview name="Author Edit" viewdef="Author" label="Edit" mode="edit"/> -->
-                <altview name="Author Table View" viewdef="Author Table" label="Grid" mode="view"/>
-                <altview name="Author Table Edit" viewdef="Author Table" label="Grid" mode="edit" default="true"/>
+                <altview name="Authors Table View" viewdef="Authors Table" label="Grid" mode="view"/>
+                <altview name="Authors Table Edit" viewdef="Authors Table" label="Grid" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
+        <view name="Author"
+            class="edu.ku.brc.specify.datamodel.Author"
+            resourcelabels="false">
+            <desc><![CDATA[The Author subform for Reference Work form.]]></desc>
+            <altviews>
+                    <altview name="Author View" viewdef="Author" label="View" mode="view" default="true"/>
+                    <altview name="Author Edit" viewdef="Author" label="Edit" mode="edit"/> 
             </altviews>
         </view>
         
@@ -662,7 +678,7 @@
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="6"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="GroupPerson" id="31" name="groups" defaulttype="table" colspan="6"/>
+                    <cell type="subview" viewname="GroupPersons" id="31" name="groups" defaulttype="table" colspan="6"/>
                 </row>
 			    <row>
                     <cell type="subview" viewname="AgentVariant" id="10" name="variants" colspan="6"/>
@@ -749,7 +765,7 @@
         </viewdef> 
 
         <viewdef
-            name="GroupPerson Table"
+            name="GroupPersons Table"
             type="formtable"
             class="edu.ku.brc.specify.datamodel.GroupPerson"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
@@ -757,6 +773,30 @@
             
             <desc><![CDATA[GroupPerson subform table for Agent form.]]></desc>
             <definition>GroupPerson</definition>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="GroupPersons"
+            class="edu.ku.brc.specify.datamodel.GroupPerson"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Group Person form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>60px,2px,p:g,2px</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="member" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
+                </row>              
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="2"/>
+                </row>
+            </rows>
         </viewdef>
         
         <viewdef
@@ -1088,13 +1128,35 @@
         
         <viewdef
             type="formtable"
-            name="Author Table"
+            name="Authors Table"
             class="edu.ku.brc.specify.datamodel.Author"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Author subform for Reference Work.]]></desc>
             <definition>Author</definition>
+        </viewdef>
+        
+        <viewdef 
+            type="form"
+            name="Authors"
+            class="edu.ku.brc.specify.datamodel.Author"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Author subform for Reference Work]]></desc>
+            
+            <columnDef>100px,2px,p,2px,125px,2px,125px,2px,125px,2px,125px,p:g</columnDef>
+            <rowDef auto="true" sep="2px" cell="p"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="10"/>
+                </row>
+            </rows>
         </viewdef>
         
         <viewdef 
@@ -1188,7 +1250,7 @@
                     <cell type="field" id="18" name="journal" uitype="querycbx" initialize="name=Journal;title=Journal" colspan="10"/>
                 </row> 
                 <row>
-                    <cell type="subview" id="10" name="authors" viewname="Author" colspan="12"/>
+                    <cell type="subview" id="10" name="authors" viewname="Authors" colspan="12"/>
                 </row>
             </rows>
         </viewdef> 
