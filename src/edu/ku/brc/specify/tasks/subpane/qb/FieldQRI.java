@@ -90,7 +90,7 @@ public class FieldQRI extends BaseQRI
     {
         return ta.getAbbreviation(table.getTableTree()) + "." + getFieldName();
     }
-    
+        
     public Class<?> getDataClass()
     {
         if (fi != null)

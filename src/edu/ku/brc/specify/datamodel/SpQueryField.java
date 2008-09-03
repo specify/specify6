@@ -92,7 +92,8 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
             UIRegistry.getResourceString("WB_FALSE"),
             " ", UIRegistry.getResourceString("QB_BETWEEN"),
             UIRegistry.getResourceString("QB_IN"),
-            UIRegistry.getResourceString("QB_CONTAINS")};
+            UIRegistry.getResourceString("QB_CONTAINS"),
+            UIRegistry.getResourceString("QB_EMPTY")};
 
         public  byte getOrdinal()         { return ord; }
         public  void set(final byte  ord) { this.ord = ord; }
