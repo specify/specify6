@@ -822,6 +822,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 {
                     selectedId = idList.elementAt(0);
                     textField.setText(list.get(0));
+                    notifyListenersOfChange(textField);
                         
                 } else if (returnCount > popupDlgThreshold)
                 {
@@ -839,7 +840,21 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             
             duplicatehash.clear();
         }
-        
+    }
+    
+    /**
+     * @param source
+     */
+    private void notifyListenersOfChange(final Object source)
+    {
+        if (listSelectionListeners != null)
+        {
+            ListSelectionEvent lse = new ListSelectionEvent(source, 0, 0, false);
+            for (ListSelectionListener l : listSelectionListeners)
+            {
+                l.valueChanged(lse);
+            }
+        }
     }
     
     /**
@@ -932,14 +947,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 textField.setText(list.get(inx));
             }
             
-            if (listSelectionListeners != null)
-            {
-                ListSelectionEvent lse = new ListSelectionEvent(listBox, 0, 0, false);
-                for (ListSelectionListener l : listSelectionListeners)
-                {
-                    l.valueChanged(lse);
-                }
-            }
+            notifyListenersOfChange(listBox);
+            
         } else
         {
             textField.setText(""); //$NON-NLS-1$
