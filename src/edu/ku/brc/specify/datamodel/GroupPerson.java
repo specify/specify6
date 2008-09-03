@@ -40,6 +40,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.util.Orderable;
@@ -228,7 +229,27 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
     {
         orderNumber = (short)order;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+        String name = "";
+        if (member != null)
+        {
+            name = member.getIdentityTitle();
+        }
 
+        if (StringUtils.isNotEmpty(name))
+        {
+            return name;
+        }
+        
+        return super.getIdentityTitle();
+    }
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */

@@ -210,17 +210,25 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         // Agent Variants
         boolean useAgentVariant = AppPreferences.getRemote().getBoolean("Agent.Use.Variants."+AppContextMgr.getInstance().getClassObject(Discipline.class).getName(),
                 Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany));
-        Component agentVarSep = formViewObj.getCompById("100");
-        if (agentVarSep != null)
-        {
-            agentVarSep.setVisible(useAgentVariant);
-        }
+        // I don't think this is needed anymore
+        //Component agentVarSep = formViewObj.getCompById("100");
+        //if (agentVarSep != null)
+        //{
+        //    agentVarSep.setVisible(useAgentVariant);
+        //}
 
         Component agentVarSubView = formViewObj.getCompById("10");
         if (agentVarSubView != null)
         {
             agentVarSubView.setVisible(useAgentVariant);
         }
+        
+        Component groupPersonSubForm = formViewObj.getCompById("31");
+        if (groupPersonSubForm != null)
+        {
+            groupPersonSubForm.setVisible(agent.getAgentType() == Agent.GROUP);
+        }
+
 
     }
     
@@ -316,7 +324,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                 {
                     Component topComp = UIHelper.getWindow(addrSubView);
                     Component topMost = UIRegistry.getTopWindow();
-                    if (topComp != topMost)
+                    if (topComp != topMost && topComp != null)
                     {
                         ((Window)topComp).pack();
                     }

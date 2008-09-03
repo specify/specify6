@@ -79,7 +79,8 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         DONTCARE(8),
         BETWEEN(9),
         IN(10),
-        CONTAINS(11);
+        CONTAINS(11),
+        EMPTY(12);
         
         OperatorType(final int ord)
         { 

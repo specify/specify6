@@ -43,11 +43,15 @@
 
        <view name="GroupPerson"
             class="edu.ku.brc.specify.datamodel.GroupPerson"
+            busrules="edu.ku.brc.specify.datamodel.busrules.GroupPersonBusRules"
             resourcelabels="false">
             <desc><![CDATA[GroupPerson form.]]></desc>
             <altviews>
+                <!-- Additional Business Rules need to be written in GroupPersonBusRules in order
+                     to allow additions by form instead just the grid 
                 <altview name="GroupPerson View" viewdef="GroupPerson" label="View" mode="view"/>
                 <altview name="GroupPerson Edit" viewdef="GroupPerson" label="Edit" mode="edit" default="true"/>
+                -->
                 <altview name="GroupPerson Table View" viewdef="GroupPerson Table"   label="Grid" mode="view"/>
                 <altview name="GroupPerson Table Edit" viewdef="GroupPerson Table"   label="Grid" mode="edit"/>
             </altviews>
@@ -657,11 +661,9 @@
 			    <row>
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="6"/>
                 </row>
-                <!-- 
                 <row>
                     <cell type="subview" viewname="GroupPerson" id="31" name="groups" defaulttype="table" colspan="6"/>
-                </row> -->
-
+                </row>
 			    <row>
                     <cell type="subview" viewname="AgentVariant" id="10" name="variants" colspan="6"/>
                 </row>
@@ -763,7 +765,7 @@
             class="edu.ku.brc.specify.datamodel.GroupPerson"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The Accession form.]]></desc>
+            <desc><![CDATA[The Group Person form.]]></desc>
             <enableRules/>
             
             <columnDef>60px,2px,p:g,2px</columnDef>

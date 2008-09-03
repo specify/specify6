@@ -211,6 +211,9 @@ public class Collector extends CollectionMember implements java.io.Serializable,
         this.agent = agent;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
     @Override
     @Transient
     public String getIdentityTitle()
