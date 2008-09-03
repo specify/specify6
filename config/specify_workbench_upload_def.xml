@@ -39,6 +39,46 @@
     <field table="CollectingEvent" name="collectorLastName8" onetomanysequence="7" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="lastName"/>
 	<field table="CollectingEvent" name="collectingEventRemarks" actualname="Remarks"/>
 
+  	<!-- collectingeventattribute -->
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeRemarks" actualname="Remarks" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeNumber1" actualname="Number1" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeNumber2" actualname="Number2" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeNumber3" actualname="Number3" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeNumber4" actualname="Number4" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeNumber5" actualname="Number5" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeNumber6" actualname="Number6" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeNumber7" actualname="Number7" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeNumber8" actualname="Number8" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeNumber9" actualname="Number9" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeNumber10" actualname="Number10" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeNumber11" actualname="Number11" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeNumber12" actualname="Number12" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeNumber13" actualname="Number13" />
+
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText1" actualname="Text1" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText2" actualname="Text2" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText3" actualname="Text3" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText4" actualname="Text4" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText5" actualname="Text5" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText6" actualname="Text6" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText7" actualname="Text7" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText8" actualname="Text8" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText9" actualname="Text9" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText10" actualname="Text10" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText11" actualname="Text11" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText12" actualname="Text12" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText13" actualname="Text13" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText14" actualname="Text14" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText15" actualname="Text15" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText16" actualname="Text16" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeText17" actualname="Text17" />
+
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeYesNo1" actualname="YesNo1" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeYesNo2" actualname="YesNo2" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeYesNo3" actualname="YesNo3" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeYesNo4" actualname="YesNo4" />
+    <field table="CollectingEventAttribute"  name="collectingEventAttributeYesNo5" actualname="YesNo5" />
+
 	<!-- collectingtrip -->
 	<field table="CollectingTrip" name="collectingTripRemarks" actualname="Remarks"/>
 	
@@ -54,7 +94,7 @@
     <field table="CollectionObject" name="catalogerLastName" relationshipname="cataloger" relatedfieldname="lastName"/>
     <field table="CollectionObject" name="collectionObjectCitation" onetomanysequence="0" actualtable="CollectionObjectCitation" relationshipname="referenceWork" relatedfieldname="title"/>
 
-	<!-- collectionobjectattributes -->
+	<!-- collectionobjectattribute -->
     <field table="CollectionObjectAttribute" name="colObjAttributeRemarks" actualname="Remarks"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeNumber1" actualname="Number1"/>
     <field table="CollectionObjectAttribute" name="colObjAttributeNumber2" actualname="Number2"/>

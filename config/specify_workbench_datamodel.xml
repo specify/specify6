@@ -55,6 +55,48 @@
     <field column="Collector First Name 8" name="collectorFirstName8" type="java.lang.String" length="50"/>
     <field column="Collector Last Name 8"  name="collectorLastName8" type="java.lang.String" length="50"/>
   </table>
+
+  <table classname="edu.ku.brc.specify.datamodel.CollectingEventAttribute" table="collectingeventattribute" tableid="92" lazy="true" query="false">
+    <field column="Remarks (CollectingEvent Attribute)" name="collectingEventAttributeRemarks" type="java.lang.String" length="1073741823"/>
+    <field column="Number 1 (CollectingEvent Attribute)" name="collectingEventAttributeNumber1" type="java.lang.Float" length="24"/>
+    <field column="Number 2 (CollectingEvent Attribute)" name="collectingEventAttributeNumber2" type="java.lang.Float" length="24"/>
+    <field column="Number 3 (CollectingEvent Attribute)" name="collectingEventAttributeNumber3" type="java.lang.Float" length="24"/>
+    <field column="Number 4 (CollectingEvent Attribute)" name="collectingEventAttributeNumber4" type="java.lang.Float" length="24"/>
+    <field column="Number 5 (CollectingEvent Attribute)" name="collectingEventAttributeNumber5" type="java.lang.Float" length="24"/>
+    <field column="Number 6 (CollectingEvent Attribute)" name="collectingEventAttributeNumber6" type="java.lang.Float" length="24"/>
+    <field column="Number 7 (CollectingEvent Attribute)" name="collectingEventAttributeNumber7" type="java.lang.Float" length="24"/>
+    <field column="Number 8 (CollectingEvent Attribute)" name="collectingEventAttributeNumber8" type="java.lang.Float" length="24"/>
+    <field column="Number 9 (CollectingEvent Attribute)" name="collectingEventAttributeNumber9" type="java.lang.Float" length="24"/>
+    <field column="Number 10 (CollectingEvent Attribute)" name="collectingEventAttributeNumber10" type="java.lang.Float" length="24"/>
+    <field column="Number 11 (CollectingEvent Attribute)" name="collectingEventAttributeNumber11" type="java.lang.Float" length="24"/>
+    <field column="Number 12 (CollectingEvent Attribute)" name="collectingEventAttributeNumber12" type="java.lang.Float" length="24"/>
+    <field column="Number 13 (CollectingEvent Attribute)" name="collectingEventAttributeNumber13" type="java.lang.Float" length="24"/>
+
+    <field column="Text 1 (CollectingEvent Attribute)" name="collectingEventAttributeText1" type="java.lang.String" length="300"/>
+    <field column="Text 2 (CollectingEvent Attribute)" name="collectingEventAttributeText2" type="java.lang.String" length="300"/>
+    <field column="Text 3 (CollectingEvent Attribute)" name="collectingEventAttributeText3" type="java.lang.String" length="300"/>
+    <field column="Text 4 (CollectingEvent Attribute)" name="collectingEventAttributeText4" type="java.lang.String" length="100"/>
+    <field column="Text 5 (CollectingEvent Attribute)" name="collectingEventAttributeText5" type="java.lang.String" length="100"/>
+    <field column="Text 6 (CollectingEvent Attribute)" name="collectingEventAttributeText6" type="java.lang.String" length="50"/>
+    <field column="Text 7 (CollectingEvent Attribute)" name="collectingEventAttributeText7" type="java.lang.String" length="50"/>
+    <field column="Text 8 (CollectingEvent Attribute)" name="collectingEventAttributeText8" type="java.lang.String" length="50"/>
+    <field column="Text 9 (CollectingEvent Attribute)" name="collectingEventAttributeText9" type="java.lang.String" length="50"/>
+    <field column="Text 10 (CollectingEvent Attribute)" name="collectingEventAttributeText10" type="java.lang.String" length="50"/>
+    <field column="Text 11 (CollectingEvent Attribute)" name="collectingEventAttributeText11" type="java.lang.String" length="50"/>
+    <field column="Text 12 (CollectingEvent Attribute)" name="collectingEventAttributeText12" type="java.lang.String" length="50"/>
+    <field column="Text 13 (CollectingEvent Attribute)" name="collectingEventAttributeText13" type="java.lang.String" length="50"/>
+    <field column="Text 14 (CollectingEvent Attribute)" name="collectingEventAttributeText14" type="java.lang.String" length="50"/>
+    <field column="Text 15 (CollectingEvent Attribute)" name="collectingEventAttributeText15" type="java.lang.String" length="50"/>
+    <field column="Text 16 (CollectingEvent Attribute)" name="collectingEventAttributeText16" type="java.lang.String" length="50"/>
+    <field column="Text 17 (CollectingEvent Attribute)" name="collectingEventAttributeText17" type="java.lang.String" length="50"/>
+
+    <field column="YesNo 1 (CollectingEvent Attribute)" name="collectingEventAttributeYesNo1" type="boolean"/>
+    <field column="YesNo 2 (CollectingEvent Attribute)" name="collectingEventAttributeYesNo2" type="boolean"/>
+    <field column="YesNo 3 (CollectingEvent Attribute)" name="collectingEventAttributeYesNo3" type="boolean"/>
+    <field column="YesNo 4 (CollectingEvent Attribute)" name="collectingEventAttributeYesNo4" type="boolean"/>
+    <field column="YesNo 5 (CollectingEvent Attribute)" name="collectingEventAttributeYesNo5" type="boolean"/>
+  </table>
+
   <table classname="edu.ku.brc.specify.datamodel.CollectingTrip" table="collectingtrip" tableid="87" lazy="true" >
     <field column="Start Date" name="startDate" type="calendar_date"/>
     <field column="Start Date Precision" name="startDatePrecision" type="java.lang.Short"/>
@@ -210,47 +252,7 @@
     <field column="Remarks (Geologic Time Period)" name="geologicTimePeriodRemarks" type="java.lang.String" length="4096"/>
   </table-->
   
-  <!--
-  <table classname="edu.ku.brc.specify.datamodel.HabitatAttributes" table="habitatattributes" tableid="92" lazy="true" query="false">
-    <field column="Air Temp Celcius" name="airTempC" type="java.lang.Float" length="24"/>
-    <field column="Water Temp Celcius" name="waterTempC" type="java.lang.Float" length="24"/>
-    <field column="Water pH" name="waterpH" type="java.lang.Float" length="24"/>
-    <field column="Turbidity" name="turbidity" type="java.lang.String" length="50"/>
-    <field column="Clarity" name="clarity" type="java.lang.String" length="50"/>
-    <field column="Salinity" name="salinity" type="java.lang.String" length="50"/>
-    <field column="Slope" name="slope" type="java.lang.String" length="50"/>
-    <field column="Vegetation" name="vegetation" type="java.lang.String" length="50"/>
-    <field column="Habitat Type" name="habitatType" type="java.lang.String" length="50"/>
-    <field column="Minimum Depth" name="minDepth" type="java.lang.Float" length="24"/>
-    <field column="Maximum Depth" name="maxDepth" type="java.lang.Float" length="24"/>
-    <field column="Remarks (Habitat Attributes)" name="habitatAttributeRemarks" type="java.lang.String" length="1073741823"/>
-    <field column="Number 1 (Habitat Attributes)" name="habitatAttributeNumber1" type="java.lang.Float" length="24"/>
-    <field column="Number 2 (Habitat Attributes)" name="habitatAttributeNumber2" type="java.lang.Float" length="24"/>
-    <field column="Number 3 (Habitat Attributes)" name="habitatAttributeNumber3" type="java.lang.Float" length="24"/>
-    <field column="Number 4 (Habitat Attributes)" name="habitatAttributeNumber4" type="java.lang.Float" length="24"/>
-    <field column="Number 5 (Habitat Attributes)" name="habitatAttributeNumber5" type="java.lang.Float" length="24"/>
-    <field column="Number 6 (Habitat Attributes)" name="habitatAttributeNumber6" type="java.lang.Float" length="24"/>
-    <field column="Number 7 (Habitat Attributes)" name="habitatAttributeNumber7" type="java.lang.Float" length="24"/>
-    <field column="Number 8 (Habitat Attributes)" name="habitatAttributeNumber8" type="java.lang.Float" length="24"/>
-    <field column="Text 1 (Habitat Attributes)" name="habitatAttributeText1" type="java.lang.String" length="300"/>
-    <field column="Text 2 (Habitat Attributes)" name="habitatAttributeText2" type="java.lang.String" length="300"/>
-    <field column="Text 3 (Habitat Attributes)" name="habitatAttributeText3" type="java.lang.String" length="300"/>
-    <field column="Text 4 (Habitat Attributes)" name="habitatAttributeText4" type="java.lang.String" length="100"/>
-    <field column="Text 5 (Habitat Attributes)" name="habitatAttributeText5" type="java.lang.String" length="100"/>
-    <field column="Text 6 (Habitat Attributes)" name="habitatAttributeText6" type="java.lang.String" length="50"/>
-    <field column="Text 7 (Habitat Attributes)" name="habitatAttributeText7" type="java.lang.String" length="50"/>
-    <field column="Text 8 (Habitat Attributes)" name="habitatAttributeText8" type="java.lang.String" length="50"/>
-    <field column="Text 9 (Habitat Attributes)" name="habitatAttributeText9" type="java.lang.String" length="50"/>
-    <field column="Text 10 (Habitat Attributes)" name="habitatAttributeText10" type="java.lang.String" length="50"/>
-    <field column="Text 11 (Habitat Attributes)" name="habitatAttributeText11" type="java.lang.String" length="50"/>
-    <field column="YesNo 1 (Habitat Attributes)" name="habitatAttributeYesNo1" type="boolean"/>
-    <field column="YesNo 2 (Habitat Attributes)" name="habitatAttributeYesNo2" type="boolean"/>
-    <field column="YesNo 3 (Habitat Attributes)" name="habitatAttributeYesNo3" type="boolean"/>
-    <field column="YesNo 4 (Habitat Attributes)" name="habitatAttributeYesNo4" type="boolean"/>
-    <field column="YesNo 5 (Habitat Attributes)" name="habitatAttributeYesNo5" type="boolean"/>
-  </table>
-  -->
-
+  
 	<table classname="edu.ku.brc.specify.datamodel.Loan" table="loan" tableid="52" lazy="true" >
       	<field column="LoanDate" name="loanDate" type="java.util.Calendar" />
       	<field column="LoanNumber" name="loanNumber" type="java.lang.String" length="50" />
@@ -413,7 +415,7 @@
   </table-->
   
   <table classname="edu.ku.brc.specify.datamodel.ReferenceWork" table="referencework" tableid="69" lazy="true" >
-    <field column="Reference Work Type" name="referenceWorkType" type="byte" length="3"/>
+    <field column="Reference Work Type" name="referenceWorkType" type="byte" length="24"/>
     <field column="Title" name="title" type="java.lang.String" length="255"/>
     <field column="Publisher" name="publisher" type="java.lang.String" length="50"/>
     <field column="Place Of Publication" name="placeOfPublication" type="java.lang.String" length="50"/>

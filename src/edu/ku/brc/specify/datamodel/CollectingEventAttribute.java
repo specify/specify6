@@ -105,8 +105,8 @@ public class CollectingEventAttribute extends CollectionMember
         return number9;
     }
 
-    @Column(name = "Clarity", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String text16()
+    @Column(name = "Text16", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getText16()
     {
         return text16;
     }

@@ -149,6 +149,10 @@ public class UploadField
      */
     public String getValue()
     {
+        if (StringUtils.isEmpty(value))
+        {
+            return null;
+        }
         return value;
     }
 
