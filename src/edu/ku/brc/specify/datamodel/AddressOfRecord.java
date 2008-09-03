@@ -24,6 +24,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 /**
  * @author rod
  *
@@ -226,7 +229,8 @@ public class AddressOfRecord extends DataModelObjBase
     /**
      * @return the accessions
      */
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "addressOfRecord")
+    @OneToMany( mappedBy = "addressOfRecord")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Accession> getAccessions()
     {
         return accessions;
@@ -243,7 +247,8 @@ public class AddressOfRecord extends DataModelObjBase
     /**
      * @return the repositoryAgreements
      */
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "addressOfRecord")
+    @OneToMany( mappedBy = "addressOfRecord")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<RepositoryAgreement> getRepositoryAgreements()
     {
         return repositoryAgreements;
@@ -260,7 +265,8 @@ public class AddressOfRecord extends DataModelObjBase
     /**
      * @return the loans
      */
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "addressOfRecord")
+    @OneToMany( mappedBy = "addressOfRecord")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Loan> getLoans()
     {
         return loans;

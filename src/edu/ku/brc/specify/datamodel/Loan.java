@@ -28,9 +28,6 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -53,8 +50,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
-
-import edu.ku.brc.dbsupport.DBConnection;
 
 /**
  * @author rod
@@ -169,35 +164,6 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
         loanAttachments = new HashSet<LoanAttachment>();
         division        = null;
         addressOfRecord = null;
-
-        if (false)
-        {
-            // XXX For Demo
-            try
-            {
-                Connection conn = DBConnection.getInstance().createConnection();
-                if (conn != null)
-                {
-                    Statement  stmt = conn.createStatement();
-                    ResultSet  rs   = stmt.executeQuery("select LoanNumber from loan order by LoanNumber desc");
-                    if (rs.next())
-                    {
-                        String numStr = rs.getString(1);
-                        int num = Integer.parseInt(numStr.substring(6,8));
-                        num++;
-                        loanNumber = String.format("2007-%03d", new Object[] {num});
-                    } else
-                    {
-                        loanNumber = "2007-001";
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-
     }
     // End Initializer
 
@@ -558,7 +524,7 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
     /**
      * @return the addressOfRecord
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AddressOfRecordID", unique = false, nullable = true, insertable = true, updatable = true)
     public AddressOfRecord getAddressOfRecord()
     {

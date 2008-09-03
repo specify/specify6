@@ -536,7 +536,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     /**
      * @return the addressOfRecord
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AddressOfRecordID", unique = false, nullable = true, insertable = true, updatable = true)
     public AddressOfRecord getAddressOfRecord()
     {

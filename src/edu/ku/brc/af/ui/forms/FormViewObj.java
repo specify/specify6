@@ -1422,7 +1422,7 @@ public class FormViewObj implements Viewable,
      * it should have the children walk there children (a deep recurse).
      * that the form is new
      * @param parentMV the parent MultiView
-     * @param isNewForm wheather the form is now in "new data input" mode
+     * @param isNewForm whether the form is now in "new data input" mode
      * @param traverseKids whether the MultiView should traverse into the children MultiViews (deep recurse)
      */
     protected void traverseToSetModified(final MultiView parentMV)
@@ -1434,8 +1434,14 @@ public class FormViewObj implements Viewable,
                 FormValidator fv = v.getValidator();
                 if (fv != null && fv.hasChanged())
                 {
-                    //System.out.println(parentMV.getData().getClass().getSimpleName());
+                    //System.out.println(parentMV.getData());
+                    //System.out.println(v.getDataObj());
+                    // They might be different because of a previous save or merge
                     FormHelper.updateLastEdittedInfo(parentMV.getData());
+                    if (parentMV.getData() != v.getDataObj())
+                    {
+                        FormHelper.updateLastEdittedInfo(v.getDataObj());
+                    }
                 }
             }
             
@@ -1824,6 +1830,12 @@ public class FormViewObj implements Viewable,
             int len = list.size();
             rsController.setLength(len);
             rsController.setIndex(len-1, false);
+            
+        } else if (mvParent.getMultiViewParent() != null)
+        {
+            // NOTE: This is primarily for single objects that are in a sub-form.
+            // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
+            traverseToToSetAsNew(mvParent.getMultiViewParent(), true, false); // don't traverse deeper than our immediate children
         }
         
         if (recordSetItemList != null)
@@ -3087,7 +3099,12 @@ public class FormViewObj implements Viewable,
             }
             
             rowBuilder.getPanel().setOpaque(false);
-            controlPanel.addController(rowBuilder.getPanel());
+            // This is the Old way
+            //controlPanel.addController(rowBuilder.getPanel());
+            
+            // This is the new way
+            sepController = rowBuilder.getPanel();
+            
             setAddDelListeners(newRecBtn, delRecBtn);
         }
             
