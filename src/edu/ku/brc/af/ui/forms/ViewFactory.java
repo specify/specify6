@@ -263,7 +263,7 @@ public class ViewFactory
             txtField = textField;
             textField.setEditable(!cellField.isReadOnly());
             
-            if (fieldInfo.getLength() > -1)
+            if (fieldInfo != null && fieldInfo.getLength() > -1)
             {
                 textField.setLimit(fieldInfo.getLength());
             }
@@ -282,7 +282,7 @@ public class ViewFactory
         } else
         {
             ValTextField textField = new ValTextField(cellField.getTxtCols());
-            if (fieldInfo.getLength() > -1)
+            if (fieldInfo != null && fieldInfo.getLength() > -1)
             {
                 textField.setLimit(fieldInfo.getLength());
             }
