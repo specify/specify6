@@ -312,6 +312,22 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                     {
                         fmtCardLayout.show(formatterPanel, item);
                         webLinkCombo.setEnabled(item.equals(SL_WEBLINK));
+                        
+                        if (formatSwitcherCombo.getSelectedIndex() == 0)
+                        {
+                            if (webLinkCombo.getModel().getSize() > 0)
+                            {
+                                webLinkCombo.setSelectedIndex(0);
+                            }
+                            if (formatCombo.getModel().getSize() > 0)
+                            {
+                                formatCombo.setSelectedIndex(0);
+                            }
+                            if (pickListCBX.getModel().getSize() > 0)
+                            {
+                                pickListCBX.setSelectedIndex(0);
+                            }
+                        }
                     }
                 }
             };
