@@ -772,7 +772,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[GroupPerson subform table for Agent form.]]></desc>
-            <definition>GroupPerson</definition>
+            <definition>GroupPersons</definition>
         </viewdef>
         
         <viewdef
@@ -1134,7 +1134,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Author subform for Reference Work.]]></desc>
-            <definition>Author</definition>
+            <definition>Authors</definition>
         </viewdef>
         
         <viewdef 
@@ -1150,11 +1150,16 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+                    <cell type="field" id="3" name="agent.lastName" uitype="text" cols="20"  isrequired="true" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="10"/>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="agent.firstName" uitype="text" cols="20" isrequired="true" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="agent.email" uitype="text" cols="32"/>
+                    <cell type="field" id="mailto" name="agent" uitype="plugin" initialize="name=WebLinkLauncherButton;url=mailto:$email$;label=Send Mail"/>
                 </row>
             </rows>
         </viewdef>
