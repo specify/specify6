@@ -1762,6 +1762,7 @@ public class FormViewObj implements Viewable,
             FormHelper.addToParent(parentDataObj, obj);
         }
         
+        boolean doingCarryForward = false;
         if (doCarryForward && carryFwdDataObj != null  && carryFwdInfo != null)
         {
             // We don't need a Session when we are not cloning sets.
@@ -1777,6 +1778,7 @@ public class FormViewObj implements Viewable,
                     sessionLocal = DataProviderFactory.getInstance().createSession();
                     sessionLocal.attach(carryFwdDataObj);
                     carryFwdInfo.carryForward(businessRules, carryFwdDataObj, obj);
+                    doingCarryForward = true;
                     
                 } catch (Exception ex)
                 {
@@ -1920,6 +1922,15 @@ public class FormViewObj implements Viewable,
         if (isManyToOne)
         {
             mvParent.setDataIntoParent(dataObj);
+        }
+        
+        // Make the save button enabled
+        if (doingCarryForward && formValidator != null)
+        {
+            formValidator.setHasChanged(true);
+            formValidator.updateSaveUIEnabledState();
+            formValidator.validateForm();
+            updateControllerUI();
         }
         
         if (mvParent.isTopLevel())
@@ -3698,7 +3709,7 @@ public class FormViewObj implements Viewable,
             }
         }
         
-        if (rsController !=null && rsController.getSearchRecBtn() != null && switcherUI != null)
+        if (rsController != null && rsController.getSearchRecBtn() != null && switcherUI != null)
         {
             switcherUI.setEnabled(true);
         }
