@@ -58,6 +58,12 @@ public class SimpleGlassPane extends JPanel
         
         Dimension size = getSize();
         
+        JStatusBar statusBar = UIRegistry.getStatusBar();
+        if (statusBar != null)
+        {
+            size.height -= statusBar.getSize().height;
+        }
+        
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(new Color(255, 255, 255, 128));
         g2.fillRect(0, 0, size.width, size.height);

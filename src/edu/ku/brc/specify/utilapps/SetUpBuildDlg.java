@@ -811,7 +811,6 @@ class SetUpBuildDlg extends CustomDialog
             }
             return label;
         }
-        
     }
     
     public class MyComboBoxRenderer extends JComboBox implements TableCellRenderer 

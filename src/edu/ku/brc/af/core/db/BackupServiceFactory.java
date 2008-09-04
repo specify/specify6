@@ -19,10 +19,7 @@ package edu.ku.brc.af.core.db;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
-import java.beans.PropertyChangeListener;
 import java.security.AccessController;
-
-import edu.ku.brc.af.core.Taskable;
 
 /**
  * @author rods
@@ -88,12 +85,18 @@ public abstract class BackupServiceFactory
     /**
      * @return
      */
-    public abstract void doBackUp(PropertyChangeListener listener);
+    public abstract void doBackUp();
 
     /**
      * @return
      */
-    public abstract void doRestore(PropertyChangeListener listener);
+    public abstract void doRestore();
+    
+    /**
+     * @param doSendAppExit whether it should send an applications exit command
+     * @return true if it is doing a backup
+     */
+    public abstract boolean checkForBackUp(boolean doSendAppExit);
     
 }
 

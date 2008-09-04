@@ -94,6 +94,7 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -186,7 +187,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  * @author rods
  */
 @SuppressWarnings("serial") //$NON-NLS-1$
-public class Specify extends JPanel implements DatabaseLoginListener
+public class Specify extends JPanel implements DatabaseLoginListener, CommandListener
 {
     private static final boolean isRelease          = false;
     private static final Logger  log                = Logger.getLogger(Specify.class);
@@ -481,6 +482,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
             //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
         }
         adjustLocaleFromPrefs();
+        
+        CommandDispatcher.register(BaseTask.APP_CMD_TYPE, this);
+        
         dbLoginPanel = UIHelper.doLogin(SecurityMgr.getInstance().getEmbeddedUserName(), 
                                         SecurityMgr.getInstance().getEmbeddedPwd(), 
                                         true, false, false, this, "SpecifyLargeIcon", getTitle(), null); // true means do auto login if it can, second bool means use dialog instead of frame
@@ -510,6 +514,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         System.setProperty(RecordSetFactory.factoryName,                "edu.ku.brc.specify.config.SpecifyRecordSetFactory");          // Needed for Searching //$NON-NLS-1$
         System.setProperty(DBTableIdMgr.factoryName,                    "edu.ku.brc.specify.config.SpecifyDBTableIdMgr");              // Needed for Tree Field Names //$NON-NLS-1$
         System.setProperty(SecurityMgr.factoryName,                     "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");              // Needed for Tree Field Names //$NON-NLS-1$
+        System.setProperty(BackupServiceFactory.factoryName,            "edu.ku.brc.af.core.db.MySQLBackupService");                   // Needed for Backup and Restore //$NON-NLS-1$
     }
 
     /**
@@ -1775,26 +1780,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         dlg.setVisible(true);
         if (dlg.hasChanged())
         {
-            UIRegistry.writeGlassPaneMsg(getResourceString("Specify.RESET_ENV"), 24);
-            
-            SwingWorker workerThread = new SwingWorker()
-            {
-                @Override
-                public Object construct()
-                {
-                    restartApp(null, databaseName, userName, false, false);
-                    return null;
-                }
-                
-                @Override
-                public void finished()
-                {
-                    UIRegistry.clearGlassPaneMsg();
-                }
-            };
-            
-            // start the background task
-            workerThread.start();
+            CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_RESTART));
         }
     }
 
@@ -1842,48 +1828,58 @@ public class Specify extends JPanel implements DatabaseLoginListener
             okToShutdown = SubPaneMgr.getInstance().aboutToShutdown();
             if (okToShutdown)
             {
-        		log.info("Application shutdown"); //$NON-NLS-1$
-        		
-                Rectangle r = topFrame.getBounds();
-                AppPreferences.getLocalPrefs().putInt("APP.X", r.x);
-                AppPreferences.getLocalPrefs().putInt("APP.Y", r.y);
-                AppPreferences.getLocalPrefs().putInt("APP.W", r.width);
-                AppPreferences.getLocalPrefs().putInt("APP.H", r.height);
-
-        
-                AppPreferences.shutdownLocalPrefs();
-                
-         		// save the long term cache mapping info
-        		try
-        		{
-        			UIRegistry.getLongTermFileCache().saveCacheMapping();
-        			log.info("Successfully saved long term cache mapping"); //$NON-NLS-1$
-        		}
-        		catch( IOException ioe )
-        		{
-        			log.warn("Error while saving long term cache mapping.",ioe); //$NON-NLS-1$
-        		}
-                
-                // clear the contents of the short term cache
-                log.info("Clearing the short term cache"); //$NON-NLS-1$
-                UIRegistry.getShortTermFileCache().clear();
-        
-                // save the forms cache mapping info
-                try
+                // Returns false if it isn't doing a backup.
+                // passing true tells it to send an App exit command
+                if (!BackupServiceFactory.getInstance().checkForBackUp(true))
                 {
-                    UIRegistry.getFormsCache().saveCacheMapping();
-                    log.info("Successfully saved forms cache mapping"); //$NON-NLS-1$
-                }
-                catch( IOException ioe )
-                {
-                    log.warn("Error while saving forms cache mapping.",ioe); //$NON-NLS-1$
-                }
                 
-                if (topFrame != null)
+            		log.info("Application shutdown"); //$NON-NLS-1$
+            		
+                    Rectangle r = topFrame.getBounds();
+                    AppPreferences.getLocalPrefs().putInt("APP.X", r.x);
+                    AppPreferences.getLocalPrefs().putInt("APP.Y", r.y);
+                    AppPreferences.getLocalPrefs().putInt("APP.W", r.width);
+                    AppPreferences.getLocalPrefs().putInt("APP.H", r.height);
+    
+            
+                    AppPreferences.shutdownLocalPrefs();
+                    
+             		// save the long term cache mapping info
+            		try
+            		{
+            			UIRegistry.getLongTermFileCache().saveCacheMapping();
+            			log.info("Successfully saved long term cache mapping"); //$NON-NLS-1$
+            		}
+            		catch( IOException ioe )
+            		{
+            			log.warn("Error while saving long term cache mapping.",ioe); //$NON-NLS-1$
+            		}
+                    
+                    // clear the contents of the short term cache
+                    log.info("Clearing the short term cache"); //$NON-NLS-1$
+                    UIRegistry.getShortTermFileCache().clear();
+            
+                    // save the forms cache mapping info
+                    try
+                    {
+                        UIRegistry.getFormsCache().saveCacheMapping();
+                        log.info("Successfully saved forms cache mapping"); //$NON-NLS-1$
+                    }
+                    catch( IOException ioe )
+                    {
+                        log.warn("Error while saving forms cache mapping.",ioe); //$NON-NLS-1$
+                    }
+                    
+                    if (topFrame != null)
+                    {
+                        topFrame.setVisible(false);
+                    }
+                    QueryExecutor.shutdown();
+                    
+                } else
                 {
-                    topFrame.setVisible(false);
+                    okToShutdown = false;
                 }
-                QueryExecutor.shutdown();
             }
             
         } catch (Exception ex)
@@ -2242,7 +2238,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     {
         String dbName = databaseName + (AppContextMgr.getInstance().getClassObject(Collection.class) != null ? " : "+AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName() :""); //$NON-NLS-1$ //$NON-NLS-2$
         statusField.setSectionText(1, dbName);
-  
+        AppPreferences.getLocalPrefs().put("CURRENT_DB", databaseName);
     }
 
     /* (non-Javadoc)
@@ -2279,9 +2275,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             Locale.setDefault(Locale.ENGLISH);
             UIRegistry.setResourceLocale(Locale.ENGLISH);
         }
-        
     }
-
 
     /**
      * @return the appVersion
@@ -2299,6 +2293,45 @@ public class Specify extends JPanel implements DatabaseLoginListener
         return appBuildVersion;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(final CommandAction cmdAction)
+    {
+        if (cmdAction.isType(BaseTask.APP_CMD_TYPE))
+        {
+            if (cmdAction.isAction(BaseTask.APP_REQ_RESTART))
+            {
+                UIRegistry.writeGlassPaneMsg(getResourceString("Specify.RESET_ENV"), 24);
+                
+                SwingWorker workerThread = new SwingWorker()
+                {
+                    @Override
+                    public Object construct()
+                    {
+                        restartApp(null, databaseName, userName, false, false);
+                        return null;
+                    }
+                    
+                    @Override
+                    public void finished()
+                    {
+                        UIRegistry.clearGlassPaneMsg();
+                    }
+                };
+                
+                // start the background task
+                workerThread.start();
+                
+            } else if (cmdAction.isAction(BaseTask.APP_REQ_EXIT))
+            {
+                doExit(true);
+            }
+        }
+    }
+
+
     // *******************************************************
     // *****************   Static Methods  *******************
     // *******************************************************

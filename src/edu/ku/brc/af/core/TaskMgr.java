@@ -275,7 +275,7 @@ public class TaskMgr implements CommandListener
             List<MenuItemDesc> menuItems = plugin.getMenuItems();
             if (menuItems != null)
             {
-                for (MenuItemDesc menuItem : plugin.getMenuItems())
+                for (MenuItemDesc menuItem : menuItems)
                 {
                     String[] menuPath = split(menuItem.getMenuPath(), "/"); //$NON-NLS-1$
                     buildMenuTree(menuBar, menuItem, menuPath, 0);
@@ -333,7 +333,7 @@ public class TaskMgr implements CommandListener
             {
                 Container menuComp = ((JMenu)parent).getPopupMenu();
                 boolean found     = false;
-                int     insertPos = -1;
+                int     insertPos = menuComp.getComponentCount();
                 
                 JMenu menu = (JMenu)parent;
                 if (menuItemDesc.getPosition() != MenuItemDesc.Position.None)
@@ -363,7 +363,7 @@ public class TaskMgr implements CommandListener
                     menu.add((JMenuItem)me);
                 } else
                 {
-                    menu.add((JMenuItem)me, menuItemDesc.getPosition() == MenuItemDesc.Position.Before ? insertPos : insertPos + 1);    
+                    menu.add((JMenuItem)me, menuItemDesc.getPosition() == MenuItemDesc.Position.Before ? insertPos : insertPos);    
                 }
                 
                 insertPos++;

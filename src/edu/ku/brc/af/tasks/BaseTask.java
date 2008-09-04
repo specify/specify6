@@ -94,18 +94,20 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     
     private static final String  securityPrefix    = "Task."; //$NON-NLS-1$
     
-    protected static final String APP_CMD_TYPE      = "App"; //$NON-NLS-1$
-    protected static final String APP_START_ACT     = "StartUp"; //$NON-NLS-1$
-    protected static final String APP_RESTART_ACT   = "AppRestart"; //$NON-NLS-1$
-    protected static final String APP_SHUTDOWN_ACT  = "Shutdown"; //$NON-NLS-1$
-    protected static final String DB_CMD_TYPE       = "Database"; //$NON-NLS-1$
+    public static final String APP_CMD_TYPE      = "App"; //$NON-NLS-1$
+    public static final String APP_START_ACT     = "StartUp"; //$NON-NLS-1$
+    public static final String APP_RESTART_ACT   = "AppRestart"; //$NON-NLS-1$
+    public static final String APP_SHUTDOWN_ACT  = "Shutdown"; //$NON-NLS-1$
+    public static final String DB_CMD_TYPE       = "Database"; //$NON-NLS-1$
+    public static final String APP_REQ_RESTART   = "AppReqRestart"; //$NON-NLS-1$
+    public static final String APP_REQ_EXIT      = "AppReqExit"; //$NON-NLS-1$
 
     
-    protected static final String SAVE_CMD_ACT      = "Save"; //$NON-NLS-1$
-    protected static final String INSERT_CMD_ACT    = "Insert"; //$NON-NLS-1$
-    protected static final String DELETE_CMD_ACT    = "Delete"; //$NON-NLS-1$
-    protected static final String UPDATE_CMD_ACT    = "Update"; //$NON-NLS-1$
-    protected static final String OPEN_FORM_CMD_ACT = "OPEN_FORM"; //$NON-NLS-1$
+    public static final String SAVE_CMD_ACT      = "Save"; //$NON-NLS-1$
+    public static final String INSERT_CMD_ACT    = "Insert"; //$NON-NLS-1$
+    public static final String DELETE_CMD_ACT    = "Delete"; //$NON-NLS-1$
+    public static final String UPDATE_CMD_ACT    = "Update"; //$NON-NLS-1$
+    public static final String OPEN_FORM_CMD_ACT = "OPEN_FORM"; //$NON-NLS-1$
 
     protected static Font         toolbarBtnFont = null;
 

@@ -14,17 +14,10 @@
  */
 package edu.ku.brc.ui;
 
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Frame;
-import java.awt.Graphics2D;
 import java.awt.KeyboardFocusManager;
-import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -49,9 +42,7 @@ import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -1226,6 +1217,9 @@ public class UIRegistry
         Component mainComp = get(MAINPANE);
         if (mainComp != null && glassPane != null)
         {
+            glassPane.setMsgText(msg, pointSize);
+            
+            /*
             JFrame frame = (JFrame)get(FRAME);
             frameRect = frame.getBounds();
             
@@ -1276,13 +1270,14 @@ public class UIRegistry
             glassPane.setImage(buffer);
             glassPane.setPoint(new Point(0,0), GhostGlassPane.ImagePaintMode.ABSOLUTE);
             glassPane.setOffset(new Point(0,0));
-            
+            */
             glassPane.setVisible(true);
-            mainComp.setVisible(false);
+            //mainComp.setVisible(false);
             //Using paintImmediately fixes problems with glass pane not showing, such as for workbench saves initialed
             //during workbench or app shutdown. Don't know if there is a better way to fix it.
             //glassPane.repaint();
             glassPane.paintImmediately(glassPane.getBounds());
+            
         }
     }
     
@@ -1295,11 +1290,13 @@ public class UIRegistry
         if (mainComp != null && getGlassPane() != null && getGlassPane().isVisible())
         {
             getGlassPane().setVisible(false);
-            mainComp.setVisible(true);
-            mainComp.repaint();
+            getGlassPane().clearMsgText();
             
-            Frame frame = (JFrame)get(FRAME);
-            frame.setBounds(frameRect);
+            //mainComp.setVisible(true);
+            //mainComp.repaint();
+            
+            //Frame frame = (JFrame)get(FRAME);
+            //frame.setBounds(frameRect);
         }  
     }
     

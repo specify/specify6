@@ -1,7 +1,10 @@
 package edu.ku.brc.ui.dnd;
 
 import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -10,17 +13,23 @@ import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.ui.DataFlavorTableExt;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Implements a transparent glass pane for the app so images can be dragged across
@@ -47,6 +56,10 @@ public class GhostGlassPane extends JPanel
     
     protected FadeOutAnimation fadeOutAnimation = null;
     protected Timer            fadeOutTimer     = null;
+    
+    protected boolean          isInMessageMode  = false;
+    protected String           msgText          = null;
+    protected int              msgPointSize     = 24;
 
     protected BufferedImage dragged     = null;
     protected Point         location    = new Point(0, 0);
@@ -74,6 +87,11 @@ public class GhostGlassPane extends JPanel
     protected GhostGlassPane()
     {
         setOpaque(false);
+        
+        MouseAdapter ma = new MouseAdapter() {};
+        addMouseListener(ma);
+        addMouseMotionListener(ma);
+        addMouseWheelListener(ma);
     }
     
     /**
@@ -93,6 +111,30 @@ public class GhostGlassPane extends JPanel
         setImage(dragged, dragged == null ? 0 : dragged.getWidth());
     }
 
+    /**
+     * @param msgTxt
+     * @param msgPointSz
+     */
+    public void setMsgText(String msgTxt, final int msgPointSz)
+    {
+        this.msgText         = msgTxt;
+        this.msgPointSize    = msgPointSz;
+        this.isInMessageMode = StringUtils.isNotEmpty(msgText);
+        
+        setBackground(new Color(0, 0, 0, 220));
+    }
+    
+    /**
+     * 
+     */
+    public void clearMsgText()
+    {
+        this.isInMessageMode = false;
+        this.msgText         = null;
+        setBackground(Color.WHITE);
+    }
+
+    
     /**
      * Sets image with a specific width used for animation zooming
      * @param dragged the image
@@ -222,7 +264,7 @@ public class GhostGlassPane extends JPanel
     @Override
     protected void paintComponent(Graphics g)
     {
-        if (dragged == null || !isVisible())
+        if (dragged == null || !isVisible() || isInMessageMode)
         {
             return;
         }
@@ -257,6 +299,53 @@ public class GhostGlassPane extends JPanel
         g2.drawImage(dragged, newPnt.x, newPnt.y, (int)widthZoom, (int)heightZoom, null);
         g2.dispose();
     }
+    
+    @Override
+    public void paint(Graphics g)
+    {
+        super.paintComponent(g);
+        
+        if (isInMessageMode)
+        {
+            Graphics2D    g2     = (Graphics2D)g;
+            
+            Dimension size = getSize();
+            
+            JStatusBar statusBar = UIRegistry.getStatusBar();
+            if (statusBar != null)
+            {
+                size.height -= statusBar.getSize().height;
+            }
+            
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(new Color(255, 255, 255, 128));
+            g2.fillRect(0, 0, size.width, size.height);
+            
+            
+            g2.setFont(new Font((new JLabel()).getFont().getName(), Font.BOLD, msgPointSize));
+            FontMetrics fm = g2.getFontMetrics();
+            
+            int tw = fm.stringWidth(msgText);
+            int th = fm.getHeight();
+            int tx = (size.width - tw) / 2;
+            int ty = (size.height - th) / 2;
+            
+            int expand = 20;
+            int arc    = expand * 2;
+            g2.setColor(Color.WHITE);
+            g2.fillRoundRect(tx-(expand / 2), ty-fm.getAscent()-(expand / 2), tw+expand, th+expand, arc, arc);
+            
+            g2.setColor(Color.DARK_GRAY);
+            g2.drawRoundRect(tx-(expand / 2), ty-fm.getAscent()-(expand / 2), tw+expand, th+expand, arc, arc);
+            
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            
+            g2.setColor(Color.BLACK);
+            g2.drawString(msgText, tx, ty);
+            g2.dispose();
+        }
+    }
+
 
     /**
      * Set the alpha to a custmo value

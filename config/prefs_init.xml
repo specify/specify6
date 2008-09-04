@@ -25,5 +25,8 @@
         <pref title="GoogleEarth" icon="GoogleEarth" panelClass="edu.ku.brc.af.prefs.GenericPrefsPanel" viewsetname="Preferences" viewname="GoogleEarth" help="PrefsGoogleEarth"/>
     </section>
    
+    <section title="MySQL">
+        <pref title="MySQL" icon="SystemSetup" panelClass="edu.ku.brc.specify.prefs.MySQLPrefs" viewsetname="Preferences" viewname="MySQLBckRstrOptions" help="PrefsMySQLBkRs"/>
+    </section>
     
 </prefs>

@@ -56,6 +56,15 @@
             </altviews>
         </view>
 
+        <view
+            name="MySQLBckRstrOptions"
+            class="java.util.prefs.Preferences">
+            <desc><![CDATA[Backup Restore Options Preference Form.]]></desc>
+            <altviews>
+                <altview name="MySQLBckRstrOptions" viewdef="MySQLBckRstrOptions" label="BCKRSTR_OPTIONS" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
     </views>
 
     <!-- ***************************************************************************************** -->
@@ -479,5 +488,39 @@
                 </row>
             </rows>
         </viewdef>
+        
+        <viewdef
+            type="form"
+            name="MySQLBckRstrOptions"
+            class="java.util.prefs.Preferences"
+            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+            useresourcelabels="true">
+
+            <desc><![CDATA[Backup and Restore Preference Form.]]></desc>
+
+            <columnDef>p,2px,p,p:g,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+
+            <rows>
+                <row>
+                    <cell type="separator" label="BCKRSTR_OPTIONS" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="MYS_DUMP_PATH"/>
+                    <cell type="field" id="1" name="mysqldump.location" cols="30" uitype="browse" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="MYS_RESTR_PATH"/>
+                    <cell type="field" id="2" name="mysql.location" cols="30" uitype="browse" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="MYS_RESTR_PATH"/>
+                    <cell type="field" id="3" name="backup.location" cols="30" uitype="browse" colspan="3"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        
     </viewdefs>
 </viewset>

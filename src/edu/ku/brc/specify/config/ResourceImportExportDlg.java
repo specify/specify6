@@ -428,7 +428,7 @@ public class ResourceImportExportDlg extends CustomDialog
 
             if (StringUtils.isNotEmpty(data))
             {
-                FileDialog fileDlg = new FileDialog(this, "Export Resource", FileDialog.SAVE);
+                FileDialog fileDlg = new FileDialog(this, "Export Resource", FileDialog.SAVE); // I18N
                 fileDlg.setFile(fileName);
                 fileDlg.setVisible(true);
                 
