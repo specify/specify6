@@ -396,17 +396,18 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             x += 2;
         }
 
-        if (((btnMask & CREATE_NEW_BTN) != 0) && (perm == null || (perm != null && perm.canAdd())))
+        boolean hasAddBtn = (btnMask & CREATE_NEW_BTN) != 0;
+        
+        if (hasAddBtn && (perm == null || (perm != null && perm.canAdd())))
         {
             createBtn = createBtn("CreateObj", "NewRecordTT", objTitle); 
             pb.add(createBtn, cc.xy(x,1));
             x += 2;
         }
 
-
         if (hasSearchBtn && ((btnMask & CREATE_SEARCH_BTN) != 0) && (perm == null || (perm != null && perm.canAdd())))
         {
-            textWithQuery.setAddAddItem(false);
+            textWithQuery.setAddAddItem(hasAddBtn); // set to true if there is an add btn
             searchBtn = createBtn("Search", "SearchForRecordTT", objTitle); 
             pb.add(searchBtn, cc.xy(x,1));
             x += 2;

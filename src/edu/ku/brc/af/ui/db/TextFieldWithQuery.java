@@ -98,7 +98,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected boolean              ignoreFocusLost = false;
     protected boolean              tabOutSearch   = false;
     
-    protected boolean              addAddItem     = false;
+    protected boolean              doAddAddItem   = false;
     
     protected DBTableInfo          tableInfo;
     protected DBFieldInfo          fieldInfo;
@@ -373,7 +373,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      */
     public void setAddAddItem(boolean addAddItem)
     {
-        this.addAddItem = addAddItem;
+        this.doAddAddItem = addAddItem;
     }
 
     /**
@@ -481,9 +481,9 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         int inx = popupMenu.getComponentIndex(mi);
         if (inx > -1)
         {
-            if (!addAddItem || inx > 0)
+            if (!doAddAddItem || inx > 0)
             {
-                selectedId = idList.get(addAddItem ? inx-1 : inx);
+                selectedId = idList.get(doAddAddItem ? inx-1 : inx);
                 setText(selectedStr);
             }
             
@@ -548,7 +548,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 }
             });
             
-            if (addAddItem)
+            if (doAddAddItem)
             {
                 JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("TFWQ_ADD_LABEL")); //$NON-NLS-1$
                 setControlSize(mi);
@@ -755,7 +755,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         List<?> dataObjList =  customQuery.getDataObjects();
         if (dataObjList == null || dataObjList.size() == 0)
         {
-            if (addAddItem)
+            if (doAddAddItem)
             {
                 showPopup();
             }
@@ -767,7 +767,6 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             for (Object obj : dataObjList)
             {
                 Object[] array = (Object[])obj;
-                
                 
                 if (isFirst)
                 {
@@ -788,7 +787,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                         Object value = array[0].toString();
                         if (uiFieldFormatter != null)
                         {
-                            value = (String)uiFieldFormatter.formatToUI(value);
+                            value = uiFieldFormatter.formatToUI(value);
                         }
                         list.addElement(value.toString());
                         
@@ -863,7 +862,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected void showDialog()
     {
         DefaultListModel model = new DefaultListModel();
-        if (addAddItem)
+        if (doAddAddItem)
         {
             model.addElement(UIRegistry.getResourceString("TFWQ_ADD_LABEL")); //$NON-NLS-1$
         }
@@ -925,7 +924,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             {
                 if (visible)
                 {
-                    listBox.setSelectedIndex(addAddItem ? 1 : 0);
+                    listBox.setSelectedIndex(doAddAddItem ? 1 : 0);
                 }
                 super.setVisible(visible);
             }
@@ -937,9 +936,9 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         if (!dlg.isCancelled())
         {
             int     inx        = listBox.getSelectedIndex();
-            boolean isDoingAdd = inx == 0 && addAddItem;
+            boolean isDoingAdd = inx == 0 && doAddAddItem;
             
-            inx = addAddItem ? inx-1 : inx;
+            inx = doAddAddItem ? inx-1 : inx;
 
             if (!isDoingAdd)
             {
