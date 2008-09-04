@@ -201,15 +201,10 @@ public class WebLinkConfigDlg extends CustomDialog
         {
             if (dlg.hasChanged())
             {
-                //if (tableInfo != null)
+                if (isTableMode && tableInfo != null)
                 {
-                    if (isTableMode)
-                    {
-                        wld.setTableName(tableInfo.getName());
-                    } else
-                    {
-                        wld.getUsedByList().add(new WebLinkUsedBy(tableInfo.getName()));  
-                    }
+                    wld.setTableName(tableInfo.getName());
+                    wld.getUsedByList().add(new WebLinkUsedBy(tableInfo.getName())); 
                 }
                 
                 ((DefaultListModel)list.getModel()).addElement(wld);
