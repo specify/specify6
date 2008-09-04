@@ -314,7 +314,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
                 
             } catch (Exception ex)
             {
-                
+                //ignore
             }
         }
         
@@ -512,9 +512,16 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         return false;
     }
     
-    public QueryIFace createQuery(final String hql)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#createQuery(java.lang.String)
+     */
+    public QueryIFace createQuery(final String query, boolean isSql)
     {
-        return new HibernateQuery(hql);
+        if (isSql)
+        {
+            return new HibernateSQLQuery(query);
+        }
+        return new HibernateQuery(query);
     }
 
     
@@ -651,6 +658,11 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         protected Query queryDelegate;
         
+        protected HibernateQuery()
+        {
+            //nuthin
+        }
+        
         public HibernateQuery(String hql)
         {
             //log.debug("hql["+hql+"]");
@@ -685,7 +697,19 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         }
     }
     
-    
+    public class HibernateSQLQuery extends HibernateQuery
+    {
+        public HibernateSQLQuery(String sql)
+        {
+            queryDelegate = session.createSQLQuery(sql);
+            if (queryDelegate == null)
+            {
+                log.error("queryDelegate is null for query for sql["+sql+"]");
+            }
+            
+        }
+    }
+
     
     public class HibernateCriteria implements CriteriaIFace
     {

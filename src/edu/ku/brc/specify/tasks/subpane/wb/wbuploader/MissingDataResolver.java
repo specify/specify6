@@ -233,7 +233,7 @@ public class MissingDataResolver implements ActionListener
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();        
         try
         {
-            Iterator<?> it = session.createQuery(hql.toString()).list().iterator();
+            Iterator<?> it = session.createQuery(hql.toString(), false).list().iterator();
             while (it.hasNext())
             {
                 DataModelObjBase nextObj = (DataModelObjBase)it.next();
@@ -358,7 +358,7 @@ public class MissingDataResolver implements ActionListener
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 try
                 {
-                    Iterator<?> it = session.createQuery("from picklistitem where picklistid = 15").list().iterator();
+                    Iterator<?> it = session.createQuery("from picklistitem where picklistid = 15", false).list().iterator();
                     while (it.hasNext())
                     {
                         Object nextOne = it.next();

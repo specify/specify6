@@ -205,7 +205,7 @@ public class UserPrincipalHibernateService
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         String qStr = "DELETE FROM specifyuser_spprincipal WHERE SpecifyUserID = " + user.getId() //$NON-NLS-1$
                 + " AND SpPrincipalID=" + group.getId(); //$NON-NLS-1$
-        session.createQuery(qStr).executeUpdate();
+        session.createQuery(qStr, false).executeUpdate();
         session.close();
         return true;
     }

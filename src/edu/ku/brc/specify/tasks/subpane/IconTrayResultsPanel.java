@@ -118,7 +118,7 @@ public class IconTrayResultsPanel extends IconTray implements ESResultsTablePane
             queryString.append(")");
             
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            QueryIFace query = session.createQuery(queryString.toString());
+            QueryIFace query = session.createQuery(queryString.toString(), false);
             List<?> resultRecords = query.list();
             
             for (Object o: resultRecords)

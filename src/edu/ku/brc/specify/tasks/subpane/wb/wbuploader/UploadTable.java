@@ -76,6 +76,11 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
  */
 public class UploadTable implements Comparable<UploadTable>
 {
+    private static boolean                          debugging               = false;
+    //if true then 'Undos' are accomplished with delete statements. This is safe
+    //if modification to the database is prevented while uploading.
+    private static boolean                          doRawDeletes            = true;
+    
     /**
      * The 'underlying' table being uploaded to. Could be an artificial table added to represent a
      * level in a tree (eg. TaxonFamily).
@@ -355,7 +360,7 @@ public class UploadTable implements Comparable<UploadTable>
                 {
                     if (!fldInDataset(col.name()))
                     {
-                        log.debug("adding required field: " + tblClass.getName() + " - "
+                        logDebug("adding required field: " + tblClass.getName() + " - "
                                 + m.getName());
                         Method setter = getSetterForGetter(m);
                         String fldName = col.name();
@@ -437,16 +442,16 @@ public class UploadTable implements Comparable<UploadTable>
             if (a != null)
             {
                 javax.persistence.JoinColumn jc = (javax.persistence.JoinColumn) a;
-                System.out.println(jc.columnDefinition());
+                logDebug(jc.columnDefinition());
                 if (!jc.nullable())
                 {
-                    log.debug("adding required class: " + tblClass.getName() + " - " + m.getName());
+                    logDebug("adding required class: " + tblClass.getName() + " - " + m.getName());
                     javax.persistence.ManyToOne mto = m.getAnnotation(javax.persistence.ManyToOne.class);
                     if (mto != null)
                     {
                         CascadeType[] ct = mto.cascade();
                         for (int c=0; c<ct.length; c++)
-                            System.out.println(ct[c]);
+                            logDebug(ct[c]);
                     }
                     Method setter = getSetterForGetter(m);
                     String fldName = jc.referencedColumnName();
@@ -1117,12 +1122,12 @@ public class UploadTable implements Comparable<UploadTable>
     {
         boolean result = true;
         DataModelObjBase match = getCurrentRecord(recNum);
-        log.debug("Checking to see if children match:" + tblClass.toString() + "=" + match.getId());
+        logDebug("Checking to see if children match:" + tblClass.toString() + "=" + match.getId());
         if (tblClass.equals(CollectingEvent.class))
         {
             for (UploadTable child : matchChildren)
             {
-                log.debug(child.getTable().getName());
+                logDebug(child.getTable().getName());
                 if (child.getTblClass().equals(Collector.class))
                 {
                     DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
@@ -1131,7 +1136,7 @@ public class UploadTable implements Comparable<UploadTable>
                     {
                         QueryIFace matchesQ = matchSession
                                 .createQuery("from Collector where collectingeventid = "
-                                        + match.getId() + " order by orderNumber");
+                                        + match.getId() + " order by orderNumber", false);
                         List<?> matches = matchesQ.list();
                         child.loadFromDataSet();
                         if (matches.size() > child.getUploadFields().size())
@@ -1181,7 +1186,7 @@ public class UploadTable implements Comparable<UploadTable>
         {
             for (UploadTable child : matchChildren)
             {
-                log.debug(child.getTable().getName());
+                logDebug(child.getTable().getName());
                 if (child.getTblClass().equals(AccessionAgent.class))
                 {
                     DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
@@ -1190,7 +1195,7 @@ public class UploadTable implements Comparable<UploadTable>
                     {
                         QueryIFace matchesQ = matchSession
                                 .createQuery("from AccessionAgent where accessionid = "
-                                        + match.getId());
+                                        + match.getId(), false);
                         List<?> matches = matchesQ.list();
                         child.loadFromDataSet();
                         if (matches.size() != child.getUploadFields().size())
@@ -1229,7 +1234,7 @@ public class UploadTable implements Comparable<UploadTable>
                     {
                         QueryIFace matchesQ = matchSession
                                 .createQuery("from AccessionAuthorization where accessionid = "
-                                        + match.getId());
+                                        + match.getId(), false);
                         List<?> matches = matchesQ.list();
                         child.loadFromDataSet();
                         if (matches.size() != child.getUploadFields().size())
@@ -1293,7 +1298,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         // temporary fix. Really should determine based on cascade rules and the fields in the
         // dataset.
-        log.debug("need to add more child classes");
+        logDebug("need to add more child classes");
         if (tblClass.equals(Accession.class)) { return childClass.equals(AccessionAgent.class)
                 || childClass.equals(AccessionAuthorization.class); }
         if (tblClass.equals(CollectingEvent.class)) { return childClass.equals(Collector.class); }
@@ -1852,7 +1857,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected void writeRowOrNot(boolean doNotWrite, boolean skipMatch) throws UploaderException
     {
         int recNum = 0;
-        //log.debug("writeRowOrNot: " + this.table.getName());
+        //logDebug("writeRowOrNot: " + this.table.getName());
         for (Vector<UploadField> seq : uploadFields)
         {
             try
@@ -2105,6 +2110,19 @@ public class UploadTable implements Comparable<UploadTable>
         deleteObjects(uploadedRecs.iterator(), showProgress);
     }
 
+    
+    protected Vector<QueryIFace> getQueriesForRawDeletes(final DataProviderSessionIFace session)
+    {
+        Vector<QueryIFace> result = new Vector<QueryIFace>();
+        if (tblClass.equals(Agent.class))
+        {
+            result.add(session.createQuery("delete from agent_discipline where AgentID =:theKey", true));
+        }
+        result.add(session.createQuery("delete from " + getWriteTable().getName().toLowerCase() + " where " 
+                + getWriteTable().getTableInfo().getIdColumnName() + "=:theKey", true));
+        return result;
+    }
+    
     /**
      * @param objs - an iterator of object ids.
      * 
@@ -2112,9 +2130,19 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected void deleteObjects(Iterator<UploadedRecordInfo> objs, final boolean showProgress) throws UploaderException
     {
+        
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        String hql = "from " + getWriteTable().getName() + " where id =:theKey";
-        QueryIFace q = session.createQuery(hql);
+        Vector<QueryIFace> q;
+        if (doRawDeletes)
+        {
+            q = getQueriesForRawDeletes(session);
+        }
+        else
+        {
+            q = new Vector<QueryIFace>(1);
+            String hql = "from " + getWriteTable().getName() + " where id =:theKey";
+            q.add(session.createQuery(hql, false));
+        }
         Runnable progShower = null;        
         if (showProgress)
         {
@@ -2137,30 +2165,47 @@ public class UploadTable implements Comparable<UploadTable>
                     boolean opened = false;
                     try
                     {
-                        q.setParameter("theKey", key);
-                        DataModelObjBase obj = (DataModelObjBase) q.uniqueResult();
-                        if (obj != null)
+                        for (QueryIFace qFace : q)
                         {
-                            session.beginTransaction();
-                            BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(tblClass);
-                            opened = true;
-                            if (busRule != null)
+                            qFace.setParameter("theKey", key);
+                        }
+                        if (doRawDeletes)
+                        {
+                            for (QueryIFace qFace : q)
                             {
-                                busRule.beforeDelete(obj, session);
+                                session.beginTransaction();
+                                opened = true;
+                                qFace.executeUpdate();
+                                session.commit();
+                                committed = true;
                             }
-                            session.delete(obj);
-                            if (busRule != null)
-                            {
-                                busRule.beforeDeleteCommit(obj, session);
-                            }
-                            session.commit();
-                            committed = true;
                         }
                         else
                         {
-                            if (!isOneToOneChild())
+                            DataModelObjBase obj = (DataModelObjBase) q.get(0).uniqueResult();
+                            if (obj != null)
                             {
-                                log.error(tblClass.getSimpleName() + ": record with key " + key + " does not exist.");
+                                session.beginTransaction();
+                                BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(tblClass);
+                                opened = true;
+                                if (busRule != null)
+                                {
+                                    busRule.beforeDelete(obj, session);
+                                }
+                                session.delete(obj);
+                                if (busRule != null)
+                                {
+                                    busRule.beforeDeleteCommit(obj, session);
+                                }
+                                session.commit();
+                                committed = true;
+                            }
+                            else
+                            {
+                                if (!isOneToOneChild())
+                                {
+                                    log.error(tblClass.getSimpleName() + ": record with key " + key + " does not exist.");
+                                }
                             }
                         }
                     }
@@ -2241,7 +2286,7 @@ public class UploadTable implements Comparable<UploadTable>
         try
         {
             String hql = "from " + tblClass.getSimpleName() + " obj where id=:theKey";
-            QueryIFace qif = session.createQuery(hql);
+            QueryIFace qif = session.createQuery(hql, false);
             boolean wroteHeaders = false;
             for (Object key : uploadedRecs)
             {
@@ -2499,4 +2544,13 @@ public class UploadTable implements Comparable<UploadTable>
     {
         this.skipMatching = skipMatching;
     }
+    
+    private void logDebug(Object toLog)
+    {
+        if (debugging)
+        {
+            log.debug(toLog);
+        }
+    }
+
 }

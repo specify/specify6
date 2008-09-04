@@ -86,7 +86,7 @@ public interface DataProviderSessionIFace
     //---------------------------
     // Query Methods
     //---------------------------
-    public abstract QueryIFace createQuery(String hql);
+    public abstract QueryIFace createQuery(String query, boolean isSql);
     /**
      * !NOTE!: Hibernate specific. Added, primarily, to deal with null value difficulties.
      */

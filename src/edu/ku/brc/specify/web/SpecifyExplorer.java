@@ -2219,7 +2219,7 @@ public class SpecifyExplorer extends HttpServlet
             }
             
             //out.println("SQL ["+sql + "]");
-            List<?> list = session.createQuery(sql.toString()).list();
+            List<?> list = session.createQuery(sql.toString(), false).list();
                 
             
             if (list == null || list.size() == 0)
@@ -2459,7 +2459,7 @@ public class SpecifyExplorer extends HttpServlet
                         try
                         {
                             session = DataProviderFactory.getInstance().createSession();
-                            FormDataObjIFace fdi = (FormDataObjIFace)session.createQuery("from "+className+" where id = "+id).list().get(0);
+                            FormDataObjIFace fdi = (FormDataObjIFace)session.createQuery("from "+className+" where id = "+id, false).list().get(0);
                             if (fdi != null)
                             {
                                 String title = fdi.getIdentityTitle();
@@ -2843,7 +2843,7 @@ public class SpecifyExplorer extends HttpServlet
                 }
     
                 //String title = "";
-                Locality locality = (Locality)session.createQuery("from Locality WHERE id = "+points[i]).list().get(0);
+                Locality locality = (Locality)session.createQuery("from Locality WHERE id = "+points[i], false).list().get(0);
                 if (locality != null)
                 {
                     StringBuilder sb = new StringBuilder();
@@ -2853,7 +2853,7 @@ public class SpecifyExplorer extends HttpServlet
                         //System.out.println("co["+id+"]");
                         if (StringUtils.isNotEmpty(id))
                         {
-                            CollectionObject co = (CollectionObject)session.createQuery("from CollectionObject WHERE id = "+id).list().get(0);
+                            CollectionObject co = (CollectionObject)session.createQuery("from CollectionObject WHERE id = "+id, false).list().get(0);
                             if (co != null)
                             {
                                 CollectingEvent ce = co.getCollectingEvent();
@@ -3626,7 +3626,7 @@ public class SpecifyExplorer extends HttpServlet
             try
             {
                 session = DataProviderFactory.getInstance().createSession();
-                Object      dataObj = session.createQuery("FROM "+className+" WHERE id = "+idStr).list().get(0);
+                Object      dataObj = session.createQuery("FROM "+className+" WHERE id = "+idStr, false).list().get(0);
                 System.out.println(dataObj);
                 if (dataObj != null)
                 {
@@ -3916,7 +3916,7 @@ public class SpecifyExplorer extends HttpServlet
         {
             session = DataProviderFactory.getInstance().createSession();
             //RecordSet rs = (RecordSet)session.createQuery("from RecordSet where name = \"Beanii RS\"").list().get(0);
-            RecordSet rs = (RecordSet)session.createQuery("from RecordSet where id = 1").list().get(0);
+            RecordSet rs = (RecordSet)session.createQuery("from RecordSet where id = 1", false).list().get(0);
             if (rs != null)
             {
                 Properties params = new Properties();
@@ -4077,7 +4077,7 @@ public class SpecifyExplorer extends HttpServlet
                 try
                 {
                     session = DataProviderFactory.getInstance().createSession();
-                    Object dataObj = session.createQuery("from "+className+" where id = "+idStr).list().get(0);
+                    Object dataObj = session.createQuery("from "+className+" where id = "+idStr, false).list().get(0);
                     if (dataObj != null)
                     {
                         processDataObj(out, (FormDataObjIFace)dataObj, true);

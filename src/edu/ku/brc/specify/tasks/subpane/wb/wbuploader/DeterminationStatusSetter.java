@@ -130,7 +130,7 @@ class DeterminationStatusSetter extends RelatedClassSetter
                 hql += String.valueOf(DeterminationStatus.NOTCURRENT);
             }
             hql += " and disciplineID = " + AppContextMgr.getInstance().getClassObject(Discipline.class).getId();
-            QueryIFace q = session.createQuery(hql);
+            QueryIFace q = session.createQuery(hql, false);
             List<?> result = q.list();
             if (result.size() == 0)
             {

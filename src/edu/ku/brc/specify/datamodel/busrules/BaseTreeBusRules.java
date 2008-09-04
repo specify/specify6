@@ -173,7 +173,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         {
             session = DataProviderFactory.getInstance().createSession();
             String queryStr = "SELECT n.id FROM " + node.getClass().getName() + " n WHERE n.nodeNumber <= :highChild AND n.nodeNumber > :nodeNum ORDER BY n.rankId DESC";
-            QueryIFace query = session.createQuery(queryStr);
+            QueryIFace query = session.createQuery(queryStr, false);
             query.setParameter("highChild", node.getHighestChildNodeNumber());
             query.setParameter("nodeNum", node.getNodeNumber());
             childIDs = (List<Integer>)query.list();

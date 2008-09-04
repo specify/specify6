@@ -390,7 +390,7 @@ public class QueryReportHandler
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            RecordSet rs = (RecordSet)session.createQuery("from RecordSet where id = 1").list().get(0);
+            RecordSet rs = (RecordSet)session.createQuery("from RecordSet where id = 1", false).list().get(0);
             if (rs != null)
             {
                 Properties params = new Properties();

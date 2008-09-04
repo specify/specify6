@@ -33,7 +33,6 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
 
 /**
  * @author timbo
@@ -276,7 +275,7 @@ public class UploadTableTree extends UploadTable
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         QueryIFace q = session.createQuery("from " + tblClass.getName() + " where rankId=" + parentDefItem.getRankId().toString()
-                + " and name='" + getDefaultParentName() + "'");
+                + " and name='" + getDefaultParentName() + "'", false);
         try
         {
             Treeable result = (Treeable)q.uniqueResult();
@@ -355,7 +354,7 @@ public class UploadTableTree extends UploadTable
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            QueryIFace q = session.createQuery(hql);
+            QueryIFace q = session.createQuery(hql, false);
             treeRoot = (Treeable)q.list().get(0);
         }
         finally

@@ -82,6 +82,8 @@ import edu.ku.brc.util.Pair;
  */
 public class Uploader implements ActionListener, KeyListener
 {
+    protected static boolean                          debugging               = false;
+    
     // Phases in the upload process...
     protected final static String                   INITIAL_STATE            = "WB_UPLOAD_INITIAL_STATE";
     protected final static String                   CHECKING_REQS            = "WB_UPLOAD_CHECKING_REQS";
@@ -391,6 +393,14 @@ public class Uploader implements ActionListener, KeyListener
         }
     }
 
+    protected void logDebug(Object toLog)
+    {
+        if (debugging)
+        {
+            log.debug(toLog);
+        }
+    }
+    
     /**
      * @param mapping
      * @throws UploaderException
@@ -404,7 +414,7 @@ public class Uploader implements ActionListener, KeyListener
             Field fld = db.getSchema().getField(mapping.getTable(), mapping.getSequenceFld());
             if (fld == null)
             {
-                log.debug("could not find field in db: " + mapping.getTable() + "."
+                logDebug("could not find field in db: " + mapping.getTable() + "."
                         + mapping.getField());
             }
             UploadField newFld = new UploadField(fld, -1, mapping.getWbFldName(), null);
@@ -419,7 +429,7 @@ public class Uploader implements ActionListener, KeyListener
             Field dbFld = t1.getField(fld.getFieldName());
             if (dbFld == null)
             {
-                log.debug("could not find field in db: " + t1.getName() + "." + fld.getFieldName());
+                logDebug("could not find field in db: " + t1.getName() + "." + fld.getFieldName());
             }
             UploadField newFld = new UploadField(dbFld, fld.getFldIndex(), fld.getWbFldName(), null);
             newFld.setSequence(mapping.getSequence());
@@ -488,7 +498,7 @@ public class Uploader implements ActionListener, KeyListener
                 Field fld = this.db.getSchema().getField(m.getTable(), m.getField());
                 if (fld == null)
                 {
-                    log.debug("could not find field in db: " + m.getTable() + "." + m.getField());
+                    logDebug("could not find field in db: " + m.getTable() + "." + m.getField());
                 }
                 UploadField newFld = new UploadField(fld, m.getIndex(), m.getWbFldName(), null);
                 uploadFields.add(newFld);
@@ -712,7 +722,7 @@ public class Uploader implements ActionListener, KeyListener
                 {
                     private boolean isAncestorOf(UploadTable t1, UploadTable t2)
                     {
-                        log.debug("isAncestorOf(" + t1 + ", " + t2 + ")");
+                        logDebug("isAncestorOf(" + t1 + ", " + t2 + ")");
                         if (t1.equals(t2)) { return true; }
                         for (Vector<ParentTableEntry> ptes : t2.getParentTables())
                         {
@@ -792,7 +802,7 @@ public class Uploader implements ActionListener, KeyListener
         }
         catch (DirectedGraphException e)
         {
-            log.debug(e);
+            logDebug(e);
             throw new UploaderException(e, UploaderException.ABORT_IMPORT);
         }
     }
@@ -2609,7 +2619,7 @@ public class Uploader implements ActionListener, KeyListener
                            + getResourceString("WB_UPLOAD_OBJECT_COUNT") + ".";
                    if (killer != null)
                    {
-                       log.debug("Hey. Wait a minute. The operation succeeded while dead. Is that not creepy?");
+                       logDebug("Hey. Wait a minute. The operation succeeded while dead. Is that not creepy?");
                    }
                }
                else if (op.equals(Uploader.FAILURE) && killer != null)
@@ -2807,7 +2817,7 @@ public class Uploader implements ActionListener, KeyListener
                         {
                             break;
                         }
-                        log.debug("uploading row " + String.valueOf(rowUploading));
+                        logDebug("uploading row " + String.valueOf(rowUploading));
                         setCurrentOpProgress(rowUploading + 1, false);
                         for (UploadTable t : uploadTables)
                         {
@@ -2823,7 +2833,7 @@ public class Uploader implements ActionListener, KeyListener
                             {
                                 if (ex.getStatus() == UploaderException.ABORT_ROW)
                                 {
-                                    log.debug(ex.getMessage());
+                                    logDebug(ex.getMessage());
                                     abortRow(ex, rowUploading);
                                     break;
                                 }
@@ -2891,7 +2901,7 @@ public class Uploader implements ActionListener, KeyListener
 
     protected synchronized void abortRow(UploaderException cause, int row)
     {
-        log.debug("NOT undoing writes which have already occurred while processing aborted row");
+        logDebug("NOT undoing writes which have already occurred while processing aborted row");
         SkippedRow sr = new SkippedRow(cause, row + 1);
         skippedRows.add(sr);
         newMessages.add(sr);
@@ -2915,32 +2925,8 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected List<UploadTable> reorderUploadTablesForUndo()
     {
-        /*Actually, regardless of order, it seems impossible to undo coherently with the current
-         * strange cascade definition on the many side of the CollectionObjectAttribute/CollectionObjects relationship.
-         * 
-         * So just leaving the ordering alone
-         */
-//        Vector<UploadTable> result = new Vector<UploadTable>(uploadTables.size());
-      Vector<UploadTable> result = uploadTables;
-//        for (UploadTable ut : uploadTables)
-//        {
-//            if (ut.getTable().getName().endsWith("Attribute"))
-//            {
-//                result.insertElementAt(ut, 0);
-//            }
-//            else
-//            {
-//                result.add(ut);
-//            }
-//
-//        }
-        
-        for (UploadTable ut : result)
-        {
-            System.out.println(ut);
-        }
-
-        return result;
+        //It is currently not necessary to do any re-ordering.
+        return uploadTables;
     }
     
     /**
@@ -3027,6 +3013,7 @@ public class Uploader implements ActionListener, KeyListener
                             for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
                             {
                                 //setCurrentOpProgress(fixedUp.size() - ut, false);
+                                logDebug("undoing " + fixedUp.get(ut).getTable().getName());
                                 fixedUp.get(ut).undoUpload(true);
                             }
                             success = true;
@@ -3151,7 +3138,7 @@ public class Uploader implements ActionListener, KeyListener
             currentTask = null;
             done = true;
             endTime = System.nanoTime();
-            log.debug("UploaderTask time elapsed: " + Long.toString((endTime-startTime)/1000000000L));
+            logDebug("UploaderTask time elapsed: " + Long.toString((endTime-startTime)/1000000000L));
         }
         
         public synchronized boolean isDone()
@@ -3284,7 +3271,6 @@ public class Uploader implements ActionListener, KeyListener
     {
         for (UploadField field : uploadFields)
         {
-            System.out.println(field.getField());
             if (field.getField().getTable().equals(t.getTable()))
             {
                 if (field.getIndex() != -1)
@@ -3299,7 +3285,7 @@ public class Uploader implements ActionListener, KeyListener
         }
         catch (UploaderException ex)
         {
-            log.debug(ex.getMessage() + " (" + t.getTable().getName() + ", row "
+            logDebug(ex.getMessage() + " (" + t.getTable().getName() + ", row "
                     + Integer.toString(row) + ")");
             throw ex;
         }

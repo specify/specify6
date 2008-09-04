@@ -127,7 +127,7 @@ public class MainFrameSpecify extends MainFrame
             // XXX Added userId condition to be consistent with QueryTask, but, Users will probably want to share queries??
             String sqlStr = "From SpQuery where specifyUserId = "
                     + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId();
-            List<?> qs = session.createQuery(sqlStr).list();
+            List<?> qs = session.createQuery(sqlStr, false).list();
             Collections.sort(qs, new Comparator<Object>() {
 
                 /* (non-Javadoc)

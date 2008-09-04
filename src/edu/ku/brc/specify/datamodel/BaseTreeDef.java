@@ -65,16 +65,16 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     {
         String hql = "select n." + UploadTable.deCapitalize(rootObj.getDataClass().getSimpleName()) + "Id from " 
             + rootObj.getDataClass().getSimpleName() + " n where parentID=:parent";
-        childrenQ = this.nodeUpdateSession.createQuery(hql);
+        childrenQ = this.nodeUpdateSession.createQuery(hql, false);
 
         hql = "update " + rootObj.getDataClass().getSimpleName() 
             + " set nodeNumber=:node where " + UploadTable.deCapitalize(rootObj.getDataClass().getSimpleName()) + "Id=:id";
-        nodeQ = this.nodeUpdateSession.createQuery(hql);
+        nodeQ = this.nodeUpdateSession.createQuery(hql, false);
         
         hql = "update " + rootObj.getDataClass().getSimpleName() 
             + " set highestChildNodeNumber=:node where " 
             + UploadTable.deCapitalize(rootObj.getDataClass().getSimpleName()) + "ID=:id";
-        highestNodeQ = this.nodeUpdateSession.createQuery(hql);
+        highestNodeQ = this.nodeUpdateSession.createQuery(hql, false);
     }
     
     /* (non-Javadoc)
