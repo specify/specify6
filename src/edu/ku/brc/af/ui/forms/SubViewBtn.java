@@ -335,7 +335,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                         String   msgKey  = isNew ? "MV_INCOMPLETE_DATA_NEW" : "MV_INCOMPLETE_DATA";
                         String   btnKey  = isNew ? "MV_REMOVE_ITEM" : "MV_DISCARD_ITEM";
                         Object[] optionLabels = { getResourceString(btnKey), getResourceString("CANCEL") };
-                        int rv = JOptionPane.showOptionDialog(null, 
+                        int rv = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
                                     getResourceString(msgKey),
                                     getResourceString("MV_INCOMPLETE_DATA_TITLE"),
                                     JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
@@ -437,13 +437,16 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                     }
                 } 
                 updateBtnText();
-                //if (fvo.getValidator() != null)
-                //{
+                
+                mvParent.getCurrentValidator().validateRoot();
+                
+                /*if (fvo.getValidator() != null)
+                {
                     //fvo.getValidator().setFormValidationState(UIValidatable.ErrorType.Valid);
-                   // fvo.getValidator().validateForm();
-                    //multiView.validate();
-                    //fvo.getValidator().wasValidated(null);
-                //}
+                    fvo.getValidator().validateForm();
+                    multiView.validate();
+                    fvo.getValidator().wasValidated(null);
+                }*/
             }
         } else
         {
