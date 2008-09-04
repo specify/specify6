@@ -93,11 +93,11 @@ public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
 			}
 			case FULLNAME_COL:
 			{
-				return row.getIsInFullName()  ? YES : NO;
+				return row.getIsInFullName() != null && row.getIsInFullName() ? YES : NO;
 			}
 			case ENFORCED_COL:
 			{
-				return row.getIsEnforced() ? YES : NO;
+				return row.getIsEnforced()  != null && row.getIsEnforced() ? YES : NO;
 			}
             case TEXT_BEFORE_COL:
             {
