@@ -29,7 +29,6 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -253,29 +252,33 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                 session.attach(dataObj);
     
                 CollectionObject colObj = (CollectionObject)dataObj;
-                for (Preparation prep : colObj.getPreparations())
+                
+                /*if (colObj.getAccession() != null)
                 {
-                    if (!prep.getLoanPreparations().isEmpty())
+                    isOK = false;
+                    addDeleteReason(Accession.getClassTableId());
+                }*/
+                
+                if (isOK)
+                {
+                    for (Preparation prep : colObj.getPreparations())
                     {
-                        isOK = false;
-                        addDeleteReason(LoanPreparation.getClassTableId());
-                    }
-                    
-                    if (!prep.getDeaccessionPreparations().isEmpty())
-                    {
-                        isOK = false;
-                        addDeleteReason(DeaccessionPreparation.getClassTableId());
-                    }
-                    
-                    if (colObj.getAccession() != null)
-                    {
-                        isOK = false;
-                        addDeleteReason(Accession.getClassTableId());
-                    }
-                    
-                    if (!isOK)
-                    {
-                        break;
+                        if (!prep.getLoanPreparations().isEmpty())
+                        {
+                            isOK = false;
+                            addDeleteReason(LoanPreparation.getClassTableId());
+                        }
+                        
+                        if (!prep.getDeaccessionPreparations().isEmpty())
+                        {
+                            isOK = false;
+                            addDeleteReason(DeaccessionPreparation.getClassTableId());
+                        }
+                        
+                        if (!isOK)
+                        {
+                            break;
+                        }
                     }
                 }
             } catch (Exception ex)
