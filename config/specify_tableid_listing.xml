@@ -200,7 +200,7 @@
             <display view="Institution"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Journal" abbrev="jn" id="51" searchable="true">
-            <display view="Journal" searchdlg="JournalSearch" newobjdlg="JournalDisplay"/>
+            <display view="JournalForm" searchdlg="JournalSearch" newobjdlg="JournalDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.LithoStrat" abbrev="ls" id="100" workbench="true" searchable="true">
             <display view="LithoStrat" dataobjformatter="" searchdlg="LithoStratSearch" newobjdlg="LithoStratDisplay"/>
