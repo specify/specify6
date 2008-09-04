@@ -71,8 +71,8 @@ public class MySQLBackupService extends BackupServiceFactory
     private final String MYSQL_LOC      = "mysql.location";
     private final String MYSQLBCK_LOC   = "backup.location";
     
-    private int                    numTables;
-    private String                 errorMsg      = null;
+    private int    numTables;
+    private String errorMsg      = null;
     
     /**
      * 
@@ -645,10 +645,11 @@ public class MySQLBackupService extends BackupServiceFactory
                 mysqldumpLoc = "/usr/local/mysql/bin/mysqldump";
                 break;
                 
-            case Windows : 
+            case Linux :
+                mysqldumpLoc = "/usr/bin/mysqldump";
                 break;
                 
-            case Linux : 
+            default:
                 break;
         }
         return mysqldumpLoc;
@@ -666,11 +667,13 @@ public class MySQLBackupService extends BackupServiceFactory
                 mysqlLoc = "/usr/local/mysql/bin/mysql";
                 break;
                 
-            case Windows : 
+            case Linux : 
+                mysqlLoc = "/usr/bin/mysql";
                 break;
                 
-            case Linux : 
-                break;
+            default:
+                break;                
+                
         }
         return mysqlLoc;
     }
