@@ -199,9 +199,19 @@
             </altviews>
         </view>
         
-        <view name="Journal"
+        <view name="JournalForm"
             class="edu.ku.brc.specify.datamodel.Journal"
             isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[The Journal Form.]]></desc>
+            <altviews>
+                <altview name="JournalForm View" viewdef="JournalForm" label="View" mode="view" validated="false" default="true"/>                
+                <altview name="JournalForm Edit" viewdef="JournalForm" label="Edit" mode="edit" validated="true"/>                
+            </altviews>
+        </view>
+        
+        <view name="Journal"
+            class="edu.ku.brc.specify.datamodel.Journal"
             resourcelabels="false">
             <desc><![CDATA[The Journal Form.]]></desc>
             <altviews>
@@ -267,6 +277,16 @@
             <desc><![CDATA[The Workbench Form.]]></desc>
             <altviews>
                 <altview name="Query Edit" viewdef="Query" label="Edit" mode="edit" validated="true" default="true"/>                
+            </altviews>
+        </view>
+        
+        <view name="TaxonCitation"
+            class="edu.ku.brc.specify.datamodel.TaxonCitation"
+            resourcelabels="false">
+            <desc><![CDATA[Taxon data entry form.]]></desc>
+            <altviews>
+                <altview name="TaxonCitation View" viewdef="TaxonCitation" label="View" mode="view"/>
+                <altview name="TaxonCitation Edit" viewdef="TaxonCitation" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
   
@@ -1188,7 +1208,7 @@
         
         <viewdef
             type="form"
-            name="Journal"
+            name="JournalForm"
             class="edu.ku.brc.specify.datamodel.Journal"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
@@ -1207,6 +1227,25 @@
                 </row>
             </rows>
         </viewdef> 
+        
+        <viewdef
+            type="form"
+            name="Journal"
+            class="edu.ku.brc.specify.datamodel.Journal"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Journal form]]></desc>
+            <columnDef>p,2px,p:g,5px,p,2px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="journalName" uitype="text"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="journalAbbreviation" uitype="text" cols="3"/>
+                </row>
+            </rows>
+        </viewdef>
         
         <viewdef
             type="form"
@@ -1407,6 +1446,27 @@
         </viewdef>
         
         <viewdef
+            name="TaxonCitation"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.TaxonCitation"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The ReferenceWork form]]></desc>
+            <columnDef>140px,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="referenceWork"/>
+                    <cell type="field" id="referenceWork" uitype="querycbx" initialize="name=ReferenceWork" name="referenceWork"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="remarks"/>
+                    <cell type="field" id="remarks" name="remarks" uitype="textarea" colspan="10"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
             name="Taxon"
             type="form"
             class="edu.ku.brc.specify.datamodel.Taxon"
@@ -1507,6 +1567,9 @@
                 </row>
                 <row>
                     <cell type="subview" viewname="CommonNameTx" id="commonNames" name="commonNames" colspan="5"/>
+                </row> 
+                <row>
+                    <cell type="subview" viewname="TaxonCitation" id="taxonCitations" name="taxonCitations" colspan="5"/>
                 </row> -->
 		        <row>
 			        <cell type="separator" label="ATTACHMENTS" colspan="5"/>
