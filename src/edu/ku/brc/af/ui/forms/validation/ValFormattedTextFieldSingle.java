@@ -928,7 +928,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
     public class JFormattedDoc extends ValPlainTextDocument
     {
-        protected int                     limit;
+        protected int                     docLimit;
         protected ValFormattedTextFieldSingle   textField;
         protected UIFieldFormatterIFace   docFormatter;
         protected UIFieldFormatterField[] docFields;
@@ -947,7 +947,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             super();
             this.textField    = textField;
             this.docFormatter = formatter;
-            this.limit        = limit;
+            this.docLimit        = limit;
             this.docFields    = new UIFieldFormatterField[limit];
             int inx = 0;
             for (UIFieldFormatterField f : docFormatter.getFields())
@@ -1013,7 +1013,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
          */
         protected boolean okToInsertText(final String str)
         {
-            int len = Math.min(str.length(), limit);
+            int len = Math.min(str.length(), docLimit);
             for (int i=0;i<len;i++)
             {
                 char c = str.charAt(i);
@@ -1079,8 +1079,8 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             {
                 if (!doSetText)
                 {
-                    int len = Math.min(str.length(), limit);
-                    if (len < limit && docFields[len-1].isIncrementer())
+                    int len = Math.min(str.length(), docLimit);
+                    if (len < docLimit && docFields[len-1].isIncrementer())
                     {
                         return;
                     }
@@ -1107,7 +1107,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             }
 
             int len = getLength() + str.length();
-            if (len <= limit)
+            if (len <= docLimit)
             {
                 UIFieldFormatterField field =  docFields[offset];
                 if (!isCharOK(field, str))
@@ -1154,7 +1154,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                 super.insertString(offset, str, attr);
                 
                 String text = textField.getText();
-                if (text != null && text.length() < limit)
+                if (text != null && text.length() < docLimit)
                 {
                     int inx =  text.length();
                     field   = docFields[inx];
@@ -1177,7 +1177,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                                 inx += field.getSize();
                             }
                             
-                            if (inx < limit)
+                            if (inx < docLimit)
                             {
                                 field = docFields[inx];
                             } else

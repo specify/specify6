@@ -1096,7 +1096,7 @@ s     * @param isViewOnly
     
     public class JFormattedDoc extends ValPlainTextDocument
     {
-        protected int                       limit;
+        protected int                       docLimit;
         protected JTextField                textField;
         protected UIFieldFormatterIFace     docFormatter;
         protected UIFieldFormatterField     docField;
@@ -1116,7 +1116,7 @@ s     * @param isViewOnly
             this.textField    = textField;
             this.docFormatter = formatter;
             this.docField     = docField;
-            this.limit        = docField.getSize();
+            this.docLimit        = docField.getSize();
         }
 
         /**
@@ -1153,11 +1153,11 @@ s     * @param isViewOnly
             String contentStr = textField.getText();
             int    newLen     = contentStr.length() + str.length();
             
-            if (newLen == limit && str.charAt(0) == autoNumberChar)
+            if (newLen == docLimit && str.charAt(0) == autoNumberChar)
             {
                 return true;
             }
-            return newLen <= limit && isCharOK(docField, str);
+            return newLen <= docLimit && isCharOK(docField, str);
         }
 
         /* (non-Javadoc)
@@ -1177,7 +1177,7 @@ s     * @param isViewOnly
                 super.insertString(offset, str, attr);
             }
             
-            if (getLength() == limit)
+            if (getLength() == docLimit)
             {
                 int inx = 0;
                 for (UIFieldFormatterField f : fields)
