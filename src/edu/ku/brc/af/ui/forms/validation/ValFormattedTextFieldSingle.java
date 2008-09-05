@@ -382,6 +382,21 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         }
 
         setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        
+        // rods - 09/05/08 - (Bug 5858) need to hide the default value when disabled
+        if (enabled)
+        {
+            if (origValue == null && defaultValue != null)
+            {
+                setText(defaultValue, false);
+            }
+        } else
+        {
+            if (origValue == null && defaultValue != null)
+            {
+                setText("", false);
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -817,7 +832,11 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             // and it was just set to " (empty). But for Dates we need to use the default
             // so I tested checking for "isDate" and it worked now let's try when
             // it isn't an AutoNumber.
-            data = StringUtils.isNotEmpty(defaultValue) && formatter.getAutoNumber() == null ? defaultValue : "";
+            //
+            // rods - 09/05/08 - (Bug 5858) need to hide the default value when disabled
+            // so I added 'isEnabled()' below
+            //
+            data = isEnabled() && StringUtils.isNotEmpty(defaultValue) && formatter.getAutoNumber() == null ? defaultValue : "";
             needsUpdating = true;
         }
         
