@@ -44,6 +44,9 @@
 	<!-- Search Help -->
 	<mapID target="CBXQSearch"              url="SpecifyHelp/Search/CBXQSearch.html"/>
 	
+	<!-- RecordSets -->
+	<mapID target="ChooseRecordSet"         url="SpecifyHelp/Interactions/ChooseRecordSet.html" />
+	
 	<!-- System Tools -->
 	<mapID target="SL_HELP_CONTEXT"         url="SpecifyHelp/System/SchemaLoc.html"/>
 	<mapID target="SL_TOOLS_HELP_CONTEXT"   url="SpecifyHelp/System/SchemaLocTools.html"/>

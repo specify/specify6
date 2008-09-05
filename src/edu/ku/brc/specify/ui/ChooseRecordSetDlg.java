@@ -32,6 +32,7 @@ import javax.swing.ListModel;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -67,6 +68,8 @@ public class ChooseRecordSetDlg extends CustomDialog
         super((Frame)UIRegistry.getTopWindow(), getResourceString("RECORDSET_CHOOSE"), true, OKCANCELHELP, null);
         
         initialize(tableId);
+        
+        this.helpContext = "ChooseRecordSet";
     }
 
     /**
@@ -79,14 +82,25 @@ public class ChooseRecordSetDlg extends CustomDialog
         DataProviderSessionIFace session = null;
         try
         {
-            String sql = "FROM recordset in class RecordSet WHERE type = 0";
+            String sql = "FROM RecordSet rs INNER JOIN rs.specifyUser spu WHERE rs.type = 0 AND rs.collectionMemberId = COLLID AND spu.specifyUserId = SPECIFYUSERID";
+            sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+            
             session = DataProviderFactory.getInstance().createSession();
-            if (tableId == -1)
+            if (tableId > -1)
             {
-                recordSets = (List<RecordSetIFace>)session.getDataList(sql);
-            } else
+                sql += " AND rs.dbTableId = " + tableId;
+            }
+            sql += " ORDER BY rs.name";
+            
+            List<?> rvList = session.getDataList(sql);
+            if (rvList.size() > 0)
             {
-                recordSets = (List<RecordSetIFace>)session.getDataList(sql + " AND recordset.dbTableId = " + tableId);
+                recordSets = new Vector<RecordSetIFace>();
+                for (Object row : rvList)
+                {
+                    Object[] rowData = (Object[])row;
+                    recordSets.add((RecordSetIFace)rowData[0]);
+                }                
             }
 
         } catch (Exception ex)
@@ -140,7 +154,7 @@ public class ChooseRecordSetDlg extends CustomDialog
         
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(UIHelper.createScrollPane(list), BorderLayout.CENTER);
-        panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
         contentPanel = panel;
         mainPanel.add(contentPanel, BorderLayout.CENTER);

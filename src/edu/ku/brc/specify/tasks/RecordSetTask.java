@@ -54,6 +54,7 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
@@ -928,8 +929,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                SpecifyUser spu = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-                String sql = String.format("SELECT count(*) FROM RecordSet rs INNER JOIN rs.specifyUser spu WHERE rs.name = '%s' AND spu.specifyUserId = %s", rsName, spu.getId().toString());
+                String sql = String.format("SELECT count(*) FROM RecordSet rs INNER JOIN rs.specifyUser spu WHERE rs.name = '%s' AND rs.collectionMemberId = COLLID AND spu.specifyUserId = SPECIFYUSERID", rsName);
+                sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
                 Object obj = session.getData(sql);
                 if (obj instanceof Integer)
                 {
@@ -938,6 +939,9 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                         UIRegistry.displayStatusBarText("");
                         return rsName;
                     }
+                    
+                } else
+                {
                     throw new RuntimeException("Return value should have been an Integer!");
                 }
                 UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("RecordSetTask.RS_NAME_DUP"), rsName));

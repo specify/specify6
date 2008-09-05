@@ -149,7 +149,7 @@ public class InteractionsTask extends BaseTask
     
     public static final  String   IS_USING_INTERACTIONS_PREFNAME = "Interactions.Using.Interactions.";
 
-    enum ASK_TYPE { Cancel, EnterCats, ChooseRSIR}
+    enum ASK_TYPE { Cancel, EnterCats, ChooseRS}
     
     protected static final String InfoRequestName      = "InfoRequest";
     protected static final String NEW_LOAN             = "NEW_LOAN";
@@ -876,14 +876,62 @@ public class InteractionsTask extends BaseTask
             
         } else if (userChoice == JOptionPane.YES_OPTION)
         {
-            return ASK_TYPE.ChooseRSIR;
+            return ASK_TYPE.ChooseRS;
         }
         return ASK_TYPE.Cancel;
     }
     
     /**
+     * Asks where the source of the COs should come from.
+     * @return the source enum
+     */
+    protected ASK_TYPE askSourceOfInfoReqColObj()
+    {
+        Object[] options = { 
+                getResourceString("NEW_IR_USE_RS"), 
+                getResourceString("NEW_IR_ENTER_CATNUM") 
+              };
+        int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                     getResourceString("NEW_IR_CHOOSE_RSOPT"), 
+                                                     getResourceString("NEW_IR_CHOOSE_RSOPT_TITLE"), 
+                                                     JOptionPane.YES_NO_CANCEL_OPTION,
+                                                     JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        if (userChoice == JOptionPane.NO_OPTION)
+        {
+            return ASK_TYPE.EnterCats;
+            
+        } else if (userChoice == JOptionPane.YES_OPTION)
+        {
+            return ASK_TYPE.ChooseRS;
+        }
+        return ASK_TYPE.Cancel;
+    }
+
+    
+    /**
+     * @return returns a list of RecordSets of InfoRequests
+     */
+    protected Vector<RecordSetIFace> getInfoReqRecordSetsFromSideBar()
+    {
+        Vector<RecordSetIFace> rsList = new Vector<RecordSetIFace>();
+        for (NavBoxItemIFace nbi : infoRequestNavBox.getItems())
+        {
+            Object obj = nbi.getData();
+            if (obj instanceof CommandActionForDB)
+            {
+                CommandActionForDB cmdAction = (CommandActionForDB)obj;
+                RecordSetIFace     rs       = RecordSetFactory.getInstance().createRecordSet(nbi.getTitle(), cmdAction.getTableId(), RecordSet.GLOBAL);
+                rs.addItem(cmdAction.getId());
+                rsList.add(rs);
+            }
+        }
+        return rsList;
+    }
+    
+    /**
      * Creates a new loan from a RecordSet.
-     * @param recordSets the recordset to use to create the loan
+     * @param infoRequest a info request
+     * @param recordSetArg the recordset to use to create the loan
      */
     @SuppressWarnings("unchecked")
     protected void createLoan(final InfoRequest infoRequest, final RecordSetIFace recordSetArg)
@@ -892,21 +940,9 @@ public class InteractionsTask extends BaseTask
         if (infoRequest == null && recordSet == null)
         {
             // Get a List of InfoRequest RecordSets
-            Vector<RecordSetIFace> rsList = new Vector<RecordSetIFace>();
-            for (NavBoxItemIFace nbi : infoRequestNavBox.getItems())
-            {
-                Object obj = nbi.getData();
-                if (obj instanceof CommandActionForDB)
-                {
-                    CommandActionForDB cmdAction = (CommandActionForDB)obj;
-                    RecordSetIFace     rs       = RecordSetFactory.getInstance().createRecordSet(nbi.getTitle(), cmdAction.getTableId(), RecordSet.GLOBAL);
-                    rs.addItem(cmdAction.getId());
-                    rsList.add(rs);
-                }
-            }
-            
-            RecordSetTask        rsTask       = (RecordSetTask)TaskMgr.getTask(RecordSetTask.RECORD_SET);
-            List<RecordSetIFace> colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
+            Vector<RecordSetIFace> rsList       = getInfoReqRecordSetsFromSideBar();
+            RecordSetTask          rsTask       = (RecordSetTask)TaskMgr.getTask(RecordSetTask.RECORD_SET);
+            List<RecordSetIFace>   colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
             
             // If the List is empty then
             if (rsList.size() == 0 && colObjRSList.size() == 0)
@@ -916,7 +952,7 @@ public class InteractionsTask extends BaseTask
             } else 
             {
                 ASK_TYPE rv = askSourceOfLoanPreps(rsList.size() > 0, colObjRSList.size() > 0);
-                if (rv == ASK_TYPE.ChooseRSIR)
+                if (rv == ASK_TYPE.ChooseRS)
                 {
                     recordSet = RecordSetTask.askForRecordSet(CollectionObject.getClassTableId(), rsList);
                     
@@ -928,12 +964,12 @@ public class InteractionsTask extends BaseTask
                 {
                     return;
                 }
-                
-                if (recordSet == null)
-                {
-                    return;
-                }
             }
+        }
+        
+        if (recordSet == null)
+        {
+            return;
         }
         
         DBTableIdMgr.getInstance().getInClause(recordSet);
@@ -1014,6 +1050,11 @@ public class InteractionsTask extends BaseTask
         }
     }
    
+    /**
+     * @param availColObjList
+     * @param infoRequest
+     * @param session
+     */
     protected void loanPrepsLoaded(final ArrayList<CollectionObject> availColObjList,
                                    final InfoRequest                 infoRequest,
                                    final DataProviderSessionIFace    session)
@@ -1170,16 +1211,32 @@ public class InteractionsTask extends BaseTask
         InfoRequest infoRequest = new InfoRequest();
         infoRequest.initialize();
         
-        RecordSetIFace recordSetFromDB = recordSetArg == null ? RecordSetTask.askForRecordSet(CollectionObject.getClassTableId()) : recordSetArg;
+        RecordSetTask          rsTask       = (RecordSetTask)TaskMgr.getTask(RecordSetTask.RECORD_SET);
+        List<RecordSetIFace>   colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
+
+        RecordSetIFace recordSetFromDB = recordSetArg;
         if (recordSetFromDB == null)
         {
-            recordSetFromDB = askForCatNumbersRecordSet();
+            if (colObjRSList.size() > 0)
+            {
+                ASK_TYPE rv = askSourceOfInfoReqColObj();
+                if (rv == ASK_TYPE.ChooseRS)
+                {
+                    recordSetFromDB = recordSetArg == null ? RecordSetTask.askForRecordSet(CollectionObject.getClassTableId()) : recordSetArg;
+                
+                } else if (rv == ASK_TYPE.EnterCats)
+                {
+                    recordSetFromDB = askForCatNumbersRecordSet();
+                }
+            } else
+            {
+                recordSetFromDB = askForCatNumbersRecordSet();
+            }
         }
         
-        RecordSet recordSet = null;
         if (recordSetFromDB != null)
         {
-            recordSet = RecordSetTask.copyRecordSet(recordSetFromDB);
+            RecordSet recordSet = RecordSetTask.copyRecordSet(recordSetFromDB);
             if (recordSet == null)
             {
                 UIRegistry.showLocalizedError("ERROR_COPYING_RS");
