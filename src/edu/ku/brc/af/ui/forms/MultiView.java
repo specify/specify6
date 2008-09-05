@@ -668,6 +668,7 @@ public class MultiView extends JPanel
                 controllerPanel.setPreferredSize(new Dimension(0,0));
             }
             separator.addToSubPanel(controllerPanel, name);
+            
         } else
         {
             add(viewable.getUIComponent(), name);
@@ -772,16 +773,8 @@ public class MultiView extends JPanel
             if (separator != null)
             {
                 cardLayout.show(cardPanel, name);
+                separator.showSubPanel(name);
                 
-                //if (viewMapByName.get(name).getAltView().getMode() != AltViewIFace.CreationMode.VIEW)
-                //{
-                    separator.showSubPanel(name);
-                    separator.setSubPanelVisible(true);
-                    
-                //} else
-                //{
-                //    separator.setSubPanelVisible(false);
-                //}
             } else
             {
                 cardLayout.show(this, name);

@@ -19,6 +19,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -56,6 +57,8 @@ public class CollapsableSeparator extends JPanel
     protected CardLayout   cardLayout       = new CardLayout();
     protected PanelBuilder panelBldr;
     protected boolean      includeMore;
+    
+    protected Hashtable<String, Component> compsHash = new Hashtable<String, Component>();
 
     /**
      * Create a collapsable panel where there is a "more" button that indicates whether the pane
@@ -134,12 +137,14 @@ public class CollapsableSeparator extends JPanel
             CellConstraints cc = new CellConstraints();
             panelBldr.add(subPanel, cc.xy(includeMore ? 3 : 2, 1));
             
+            
             if (((Container)comp).getComponentCount() > 0)
             {
                 subPanel.setBorder(BorderFactory.createEmptyBorder(1,3,1,3));
             }
         }
         subPanel.add(comp, key);
+        compsHash.put(key, comp);
     }
     
     /**
@@ -148,16 +153,10 @@ public class CollapsableSeparator extends JPanel
     public void showSubPanel(final String key)
     {
         cardLayout.show(subPanel, key);
+        
+        subPanel.setVisible(((Container)compsHash.get(key)).getComponentCount() > 0);
     }
     
-    /**
-     * @param visible
-     */
-    public void setSubPanelVisible(final boolean visible)
-    {
-        subPanel.setVisible(visible);
-    }
-
     /**
      * Sets the component that will be hidden or collapsed.
      * @param innerComp the component
