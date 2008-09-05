@@ -56,7 +56,7 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
     @Override
     public Object processValue(Object value)
     {
-        if (pickList instanceof RecordTypeCode)
+        if (value != null && pickList instanceof RecordTypeCode)
         {
             PickListItemIFace item = ((RecordTypeCode )pickList).getItemByValue(value);
             if (item != null)
