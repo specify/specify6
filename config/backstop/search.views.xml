@@ -683,7 +683,7 @@ Good: <cell type="field" name="FieldNum" ...>
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="title" isrequired="false" uitype="text"/>
+                    <cell type="field" id="1" name="Title" isrequired="false" uitype="text"/>
                 </row>
             </rows>
         </viewdef>

@@ -1093,7 +1093,7 @@
         <table id="121" tableid="69" name="ReferenceWorkSearch" priority="1" color="30, 144, 255">
             <detailView icon="ReferenceWork">
                 <sql>
-                    <![CDATA[SELECT ReferenceWorkID, Title FROM referencework WHERE DisciplineID = DSPLNID AND (%s)]]>
+                    <![CDATA[SELECT ReferenceWorkID, Title FROM referencework WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="69" col="ReferenceWorkID" visible="false"/>

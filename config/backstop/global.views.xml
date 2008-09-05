@@ -1223,7 +1223,7 @@
                     <cell type="field" id="2" name="journalAbbreviation" uitype="text" cols="3"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="ReferenceWorkSub" id="3" name="referenceWorks" colspan="7"/>
+                    <cell type="subview" viewname="ReferenceWorkSub" id="3" name="referenceWorks" colspan="7" initialize="addsearch=true"/>
                 </row>
             </rows>
         </viewdef> 
