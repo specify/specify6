@@ -36,6 +36,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -46,6 +47,8 @@ import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.routines.BigDecimalValidator;
+import org.apache.commons.validator.routines.CurrencyValidator;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -109,6 +112,9 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     protected Point                       pnt                 = null;
     protected Color                       textColor           = new Color(200,200,200);
     protected Insets                      inner;
+    
+    protected BigDecimalValidator         bdValidator         = null;
+
     
     /**
      * Constructor
@@ -736,9 +742,28 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     
             } else if (cls == BigDecimal.class)
             {
-                // XXX This needs to be redone
-                Double val  = Double.parseDouble(value);
-                return !isMinMaxOK(val) || (val > Double.MAX_VALUE || val < Double.MIN_VALUE) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                if (bdValidator == null)
+                {
+                    bdValidator = CurrencyValidator.getInstance();
+                }
+                
+                Number maxVal = formatter.getMaxValue();
+                Number minVal = formatter.getMinValue();
+
+                BigDecimal fooAmount = bdValidator.validate(value, Locale.getDefault());  // XXX RELEASE
+                if (fooAmount == null) 
+                {
+                    // error...not a valid currency amount
+                    return UIValidatable.ErrorType.Error;
+                }
+
+                if (!bdValidator.minValue(fooAmount, minVal) || !bdValidator.maxValue(fooAmount, maxVal))
+                {
+                    // valid...in the specified range
+                    return UIValidatable.ErrorType.Error;
+                }
+                
+                return  UIValidatable.ErrorType.Valid;
     
             } else
             {

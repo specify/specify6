@@ -20,6 +20,8 @@ import static org.apache.commons.lang.StringUtils.isAlphanumeric;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -312,6 +314,14 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
      */
     public Number getMaxValue()
     {
+        if (maxValue == null && dataClass == BigDecimal.class)
+        {
+            // This is kind lame, but it works
+            String nines = "99999999999999999999";
+            String mask = nines.substring(0, precision-scale)+"."+nines.substring(0, scale);
+            System.err.println(mask);
+            maxValue = new BigDecimal(Double.parseDouble(mask));
+        }
         return maxValue;
     }
 
@@ -320,6 +330,10 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
      */
     public Number getMinValue()
     {
+        if (minValue == null && dataClass == BigDecimal.class)
+        {
+            minValue = 0;
+        }
         return minValue;
     }
 

@@ -414,7 +414,7 @@ public class UIFieldFormatterMgr
                     String  fieldName = XMLHelper.getAttr(formatElement, "fieldname", "*");
                     String  dataClassName = formatElement .attributeValue("class");
                     int     precision = XMLHelper.getAttr(formatElement, "precision", 12);
-                    int     scale     = XMLHelper.getAttr(formatElement, "scale", 10);
+                    int     scale     = XMLHelper.getAttr(formatElement, "scale", 2);
                     boolean isDefault = XMLHelper.getAttr(formatElement, "default", false);
                     boolean isSystem  = XMLHelper.getAttr(formatElement, "system", false);
 
