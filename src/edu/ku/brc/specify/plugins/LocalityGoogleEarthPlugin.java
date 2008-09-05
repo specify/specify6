@@ -33,7 +33,7 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIPluginable;
-import edu.ku.brc.ui.UIRegistry;
+import static edu.ku.brc.ui.UIRegistry.*;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -98,18 +98,18 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
             }
         }
         
-        JStatusBar statusBar = UIRegistry.getStatusBar();
+        JStatusBar statusBar = getStatusBar();
         if (items.size() > 0)
         {
             CommandAction command = new CommandAction(ToolsTask.TOOLS,ToolsTask.EXPORT_LIST);
             command.setData(items);
             command.setProperty("tool", GoogleEarthExporter.class);
-            statusBar.setText(UIRegistry.getResourceString("WB_OPENING_GOOGLE_EARTH"));
+            statusBar.setText(getResourceString("WB_OPENING_GOOGLE_EARTH"));
             CommandDispatcher.dispatch(command);
             
         } else
         {
-            statusBar.setErrorMessage(UIRegistry.getResourceString("GE_NO_POINTS"));
+            statusBar.setErrorMessage(getResourceString("GE_NO_POINTS"));
         }
     }
     
@@ -199,7 +199,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     public void initialize(final Properties properties, final boolean isViewMode)
     {
         setIcon(IconManager.getIcon("GoogleEarth16"));
-        setText("Display in GoogleEarth");  // I18N
+        setText(getResourceString("GE_DSP_IN_GE"));
     }
 
     /* (non-Javadoc)
@@ -249,7 +249,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
             this.iconURL     = iconURL;
             
             DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
-            title = scrDateFormat.format(ce.getStartDate());
+            title = ce.getStartDate() != null ? scrDateFormat.format(ce.getStartDate()) : getResourceString("GE_NO_START_DATE");
         }
         
         /**
