@@ -220,6 +220,9 @@ public class GhostGlassPane extends JPanel
         return new Rectangle(x, y, w, h).union(new Rectangle(x2, y2, w, h));
     }
     
+    /**
+     * 
+     */
     protected void calcPoints()
     {
         double widthZoom  = width * zoom;
@@ -303,7 +306,7 @@ public class GhostGlassPane extends JPanel
     @Override
     public void paint(Graphics g)
     {
-        super.paintComponent(g);
+        super.paint(g);
         
         if (isInMessageMode)
         {
