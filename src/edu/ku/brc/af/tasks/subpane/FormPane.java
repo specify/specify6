@@ -46,6 +46,7 @@ public class FormPane extends DroppableTaskPane
 
     protected String         cacheDesc     = null;
     protected ImageIcon      icon          = null;
+    protected boolean        isNewObj;
 
     /**
      * Creates a form pane for a task.
@@ -157,6 +158,12 @@ public class FormPane extends DroppableTaskPane
                     {
                         ResultSetController.setBackStopRS(null);
                     }
+                }
+                
+                // rods - 09/05/08 - This is needed so the "+' (Add) btn is disable for forms with new Objects
+                if (isNewObj)
+                {
+                    multiView.setIsNewForm(true, false);
                 }
             }
         }
@@ -324,6 +331,8 @@ public class FormPane extends DroppableTaskPane
             multiView = new MultiView(null, null, view, mode, opts);
             if (multiView != null)
             {
+                isNewObj = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
+                
                 this.data = dataArg;
                 this.removeAll();
 
@@ -337,7 +346,7 @@ public class FormPane extends DroppableTaskPane
                 
                 if (data != null)
                 {
-                    if (MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT))
+                    if (isNewObj)
                     {
                         Object newDataObj = data;
                         if (data instanceof Collection<?>)
@@ -366,7 +375,7 @@ public class FormPane extends DroppableTaskPane
 
                 // Tells it is is a new form and all the validator painting should be supressed
                 // on required fields until the user inputs something
-                if (MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT))
+                if (isNewObj)
                 {
                     multiView.setIsNewForm(true, false); // traverse immediate children only
                 }

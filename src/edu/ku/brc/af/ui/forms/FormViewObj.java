@@ -2825,6 +2825,7 @@ public class FormViewObj implements Viewable,
      */
     public void setHasNewData(final boolean isNewForm)
     {
+        isNewlyCreatedDataObj = isNewForm; // rods - 09/05/08 - added so "+" can be disabled for new forms with data
         updateControllerUI();
     }
 
