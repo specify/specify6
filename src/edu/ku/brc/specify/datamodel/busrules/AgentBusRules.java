@@ -285,10 +285,31 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
      * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @Override
-    public void afterFillForm(final Object dataObj)
+    public void afterFillForm(final Object dataObjArg)
     {
+        Object dataObj = dataObjArg;
         if (!(viewable instanceof FormViewObj) || !(dataObj instanceof Agent))
         {
+            if (dataObj == null)
+            {
+                Component agentVarSubView = formViewObj.getCompById("10");
+                if (agentVarSubView != null)
+                {
+                    agentVarSubView.setVisible(false);
+                }
+                
+                Component groupPersonSubForm = formViewObj.getCompById("31");
+                if (groupPersonSubForm != null)
+                {
+                    groupPersonSubForm.setVisible(false);
+                }
+                
+                Component addrSubView = formViewObj.getCompById("9");
+                if (addrSubView != null)
+                {
+                    addrSubView.setVisible(false);
+                }
+            }
             return;
         }
         
