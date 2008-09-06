@@ -596,7 +596,7 @@ public class DataEntryTask extends BaseTask
                                 nbb.addDragDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "Data_Entry", tableInfo.getTableId()));
                         
                                 // When something is dropped on it
-                                nbb.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RecordSetTask", tableInfo.getTableId()));//RecordSetTask.RECORDSET_FLAVOR);
+                                nbb.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, RecordSetTask.RECORD_SET, tableInfo.getTableId()));//RecordSetTask.RECORDSET_FLAVOR);
                             }
         
                             viewsNavBox.add(nbi);
@@ -778,7 +778,7 @@ public class DataEntryTask extends BaseTask
                 NavBoxButton roc = (NavBoxButton)nbi;
                 for (DataEntryView dev : availMiscViews)
                 {
-                    roc.addDropDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "RecordSetTask", dev.getTableInfo().getTableId()));
+                    roc.addDropDataFlavor(new DataFlavorTableExt(DataEntryTask.class, RecordSetTask.RECORD_SET, dev.getTableInfo().getTableId()));
                 }
                 viewsNavBox.add(nbi);
             }

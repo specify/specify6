@@ -2,7 +2,7 @@
   <entry name="accession" table="accession" view="Accession" type="Data_Entry" action="OpenNewView" icon="Accession" isonleft="true" order="0">
     <draggableFlavors/>
     <droppableFlavors>
-      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
           <int>7</int>
         </tableIds>
@@ -12,7 +12,7 @@
   <entry name="permit" table="permit" view="Permit" type="Data_Entry" action="OpenNewView" icon="Permit" isonleft="true" order="0">
     <draggableFlavors/>
     <droppableFlavors>
-      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
           <int>6</int>
         </tableIds>
@@ -22,7 +22,7 @@
   <entry name="loan" table="loan" view="Loan" type="Interactions" action="NEW_LOAN" icon="Loan" isonleft="true" order="0">
     <draggableFlavors/>
     <droppableFlavors>
-      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
           <int>52</int>
           <int>1</int>
@@ -39,7 +39,7 @@
   <entry name="gift" table="gift" view="Gift" type="OPEN_FORM" action="NEW_GIFT" icon="Gift" isonleft="true" order="0">
     <draggableFlavors/>
     <droppableFlavors>
-      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
           <int>131</int>
         </tableIds>
@@ -49,7 +49,7 @@
   <entry name="exchangein" table="exchangein" view="ExchangeIn" type="OPEN_FORM" action="NEW_EXCHANGE_IN" icon="ExchangeIn" isonleft="true" order="0">
     <draggableFlavors/>
     <droppableFlavors>
-      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
           <int>39</int>
         </tableIds>
@@ -59,7 +59,7 @@
   <entry name="exchangeout" table="exchangeout" view="ExchangeOut" type="OPEN_FORM" action="NEW_EXCHANGE_OUT" icon="ExchangeOut" isonleft="true" order="0">
     <draggableFlavors/>
     <droppableFlavors>
-      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
           <int>40</int>
         </tableIds>
@@ -69,7 +69,7 @@
   <entry name="inforequest" table="inforequest" type="Interactions" action="Specify Info Request" icon="InfoRequest" isonleft="true" order="0">
     <draggableFlavors/>
     <droppableFlavors>
-      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
           <int>39</int>
           <int>40</int>
@@ -87,7 +87,7 @@
   <entry name="printloan" table="loan" label="PRINT_LOANINVOICE" type="Interactions" action="PRINT_LOAN" icon="Reports" isonleft="true" order="0">
     <draggableFlavors/>
     <droppableFlavors>
-      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="RECORD_SET">
+      <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">
         <tableIds>
           <int>52</int>
         </tableIds>

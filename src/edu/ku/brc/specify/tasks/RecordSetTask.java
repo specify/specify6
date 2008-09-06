@@ -99,7 +99,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     public static final String RECORD_SET     = "Record_Set";
     public static final String SAVE_RECORDSET = "Save";
     
-    public static final DataFlavor RECORDSET_FLAVOR = new DataFlavor(RecordSetTask.class, "RECORD_SET");
+    public static final DataFlavor RECORDSET_FLAVOR = new DataFlavor(RecordSetTask.class, RECORD_SET);
     
     protected Vector<DataFlavor> draggableFlavors = new Vector<DataFlavor>();
     protected Vector<DataFlavor> droppableFlavors = new Vector<DataFlavor>();
@@ -253,7 +253,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     {
         //NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), recordSet);
         
-        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, recordSet.getName(), "Record_Set", null, 
+        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, recordSet.getName(), RECORD_SET, null, 
                                                                    new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), 
                                                                    true, true);// true means make it draggable
         roc.setData(recordSet);
@@ -271,8 +271,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             }
         }
         
-        roc.addDragDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", recordSet.getDbTableId()));
-        roc.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", recordSet.getDbTableId()));
+        roc.addDragDataFlavor(new DataFlavorTableExt(RecordSetTask.class, RECORD_SET, recordSet.getDbTableId()));
+        roc.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, RECORD_SET, recordSet.getDbTableId()));
         
         addDraggableDataFlavors(nbi);
         addDroppableDataFlavors(nbi);

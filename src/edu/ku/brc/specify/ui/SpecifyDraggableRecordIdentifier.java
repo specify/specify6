@@ -28,7 +28,7 @@ public class SpecifyDraggableRecordIdentifier extends DraggableRecordIdentifier
 {
     protected RecordSet          recordSet     = null;
     protected RecordSetItem      recordSetItem = null;
-    protected DataFlavorTableExt dataFlavor    = new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", -1);
+    protected DataFlavorTableExt dataFlavor    = new DataFlavorTableExt(RecordSetTask.class, "Record_Set", -1);
     
     /**
      * Constructor with icon and label.

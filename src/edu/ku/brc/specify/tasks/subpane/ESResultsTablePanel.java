@@ -858,7 +858,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         {
             super();
             
-            dataFlovars.add(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", results.getTableId()));
+            dataFlovars.add(new DataFlavorTableExt(RecordSetTask.class, "Record_Set", results.getTableId()));
             createMouseInputAdapter();
         }
 

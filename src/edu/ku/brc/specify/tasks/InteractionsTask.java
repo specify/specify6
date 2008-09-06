@@ -214,39 +214,41 @@ public class InteractionsTask extends BaseTask
             String D = DataEntryTask.DATA_ENTRY;
             String OPEN_NEW_VIEW = DataEntryTask.OPEN_NEW_VIEW;
             
+            String RECORD_SET = "Record_Set";
+            
             InteractionEntry entry;
             //                                 name          table       lblKey    View         Type    Action      Icon         isOn
             entry = new InteractionEntry("accession",   "accession",   null,  "Accession",   D,   OPEN_NEW_VIEW,    "Accession");
-            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {Accession.getClassTableId()});
+            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {Accession.getClassTableId()});
             entries.add(entry);
             
             entry = new InteractionEntry("permit",      "permit",      null,  "Permit",      D,   OPEN_NEW_VIEW,    "Permit");
-            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {Permit.getClassTableId()});
+            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {Permit.getClassTableId()});
             entries.add(entry);
             
             entry = new InteractionEntry("loan",        "loan",        null,  "Loan",        I,   NEW_LOAN,         "Loan");
-            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {Loan.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
+            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {Loan.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
             entries.add(entry);
             
             entry = new InteractionEntry("gift",        "gift",        null,  "Gift",        F,   NEW_GIFT,         "Gift");
-            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {Gift.getClassTableId()});
+            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {Gift.getClassTableId()});
             entries.add(entry);
             
             entry = new InteractionEntry("exchangein",  "exchangein",  null,  "ExchangeIn",  F,   NEW_EXCHANGE_IN,  "ExchangeIn");
-            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {ExchangeIn.getClassTableId()});
+            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {ExchangeIn.getClassTableId()});
             entries.add(entry);
             
             entry = new InteractionEntry("exchangeout", "exchangeout", null,  "ExchangeOut", F,   NEW_EXCHANGE_OUT, "ExchangeOut");
-            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {ExchangeOut.getClassTableId()});
+            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {ExchangeOut.getClassTableId()});
             entries.add(entry);
             
             entry = new InteractionEntry("inforequest", "inforequest", null,  null,          I,   INFO_REQ_MESSAGE, "InfoRequest");
-            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
+            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
             entry.addDroppable(InfoRequest.class, "InfoRequest", new int[] {InfoRequest.getClassTableId()});
             entries.add(entry);
             
             entry = new InteractionEntry("printloan",   "loan",        "PRINT_LOANINVOICE",  null, I,   PRINT_LOAN, "Reports");
-            entry.addDroppable(RecordSetTask.class, "RECORD_SET", new int[] {Loan.getClassTableId()});
+            entry.addDroppable(RecordSetTask.class, RECORD_SET, new int[] {Loan.getClassTableId()});
             entries.add(entry);
             
             try

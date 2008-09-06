@@ -419,19 +419,30 @@ public class GhostGlassPane extends JPanel
                 }
                 System.out.println();
             }
-            System.out.println("***********\n\ndropActionable "+dropActionable);
+            System.out.println("***********\n\ndropActionable: "+dropActionable);
         }
         if (dragList != null)
         {
             for (DataFlavor dragFlavor : dragList)
             {
-                if (DEBUG) System.out.println("------ dragFlavor "+dragFlavor.getHumanPresentableName()+" ---------- Num Drop Flavs: "+dropActionable.getDropDataFlavors().size());
+                if (DEBUG) 
+                {
+                    System.out.print("------ dragFlavor "+dragFlavor.getHumanPresentableName()+" ---------- Num Drop Flavs: "+dropActionable.getDropDataFlavors().size() +"  TBLIDS: ");
+                    if (dragFlavor instanceof DataFlavorTableExt)
+                    {
+                        for (Integer id : ((DataFlavorTableExt)dragFlavor).getTableIds())
+                        {
+                            System.out.print(id+" ");
+                        }
+                    }
+                    System.out.println();
+                }
                 for (DataFlavor dropFlavor : dropActionable.getDropDataFlavors())
                 {
                     if (DEBUG) 
                     {
                         System.out.println("Drag["+dragFlavor.getHumanPresentableName()+"] drop["+dropFlavor.getHumanPresentableName()+"] Can DROP["+dragFlavor.equals(dropFlavor)+"]");
-                        System.out.print("Drag iof DFTE ["+(dragFlavor instanceof DataFlavorTableExt)+"] drop iof DFTE ["+(dropFlavor instanceof DataFlavorTableExt)+"] ");
+                        System.out.print("Drag iof DFTE ["+(dragFlavor instanceof DataFlavorTableExt)+"] drop iof DFTE ["+(dropFlavor instanceof DataFlavorTableExt)+"] Drop TBLIDS: ");
                         if (dropFlavor instanceof DataFlavorTableExt)
                         {
                             for (Integer id : ((DataFlavorTableExt)dropFlavor).getTableIds())
