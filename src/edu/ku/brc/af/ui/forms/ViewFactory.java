@@ -1746,7 +1746,13 @@ public class ViewFactory
                     
                     evcsp.set(editCompReg, editCompAdd, viewCompReg, viewCompAdd);
                 }
-
+                
+                if (!bi.isRequired &&
+                        ((childInfo != null && childInfo.isRequired()) || 
+                         (cell instanceof FormCellFieldIFace && ((FormCellFieldIFace)cell).isRequired())))
+                {
+                    bi.isRequired = true;
+                }
             }
             
             if  (bi.isRequired || bi.isDerivedLabel)
