@@ -201,8 +201,8 @@ public class QueryTask extends BaseTask
     
     /**
      * Creates a new Query Data Object.
-     * @param wbName
-     * @return
+     * @param tableInfo the table information
+     * @return the query
      */
     protected SpQuery createNewQueryDataObj(final DBTableInfo tableInfo)
     {
@@ -669,9 +669,9 @@ public class QueryTask extends BaseTask
         
         if (extraList != null && !extraList.isEmpty())
         {
-            NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("QY_EXTRA_QUERIES"),
-                                                         "MoreQueries", 
-                                                         getResourceString("QY_EXTRA_QUERIES_TT"), 
+            NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("QY_EXTRA_TABLES"),
+                                                         "MoreTables", 
+                                                         getResourceString("QY_EXTRA_TABLES_TT"), 
                                                          IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
@@ -713,7 +713,7 @@ public class QueryTask extends BaseTask
                 
             }
             ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(), 
-                    "QY_EXTRA_QUERIES", 
+                    "QY_EXTRA_TABLES", 
                     names, 
                     ToggleButtonChooserPanel.Type.RadioButton);
             dlg.setUseScrollPane(true);
@@ -894,6 +894,7 @@ public class QueryTask extends BaseTask
                 "Query", null,
                 canDelete ? new CommandAction(QUERY, DELETE_CMD_ACT, recordSet) : null, 
                 true, true);
+        roc.setToolTip(getResourceString("QY_CLICK2EDIT"));
         roc.setData(recordSet);
         roc.addActionListener(new ActionListener()
         {

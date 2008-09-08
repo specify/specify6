@@ -26,7 +26,7 @@
     <icon name="Record_Set"       file="RecordSet32x32.png" sizes="all"/>
     <icon name="Series"           file="series.gif" sizes="all"/>
     <icon name="Query"            file="Query32x32.png" sizes="all"/>
-    <icon name="MoreQueries"      file="MoreQueries32x32.png" sizes="all"/>
+    <icon name="MoreTables"       file="more_tables.png" sizes="all"/>
     <icon name="Search"           file="Search32x32.png" sizes="all"/>
     <icon name="SystemSetup"      file="System32x32.png" sizes="all"/>
     <icon name="PlaceHolder"      file="specify32faded.png" sizes="32"/>
