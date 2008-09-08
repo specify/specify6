@@ -563,28 +563,35 @@ public class ExpressSearchConfigDlg extends CustomDialog
     protected void tableSelected()
     {
         SearchTableConfig stc = (SearchTableConfig)tableList.getSelectedValue();
-        
-        Collections.sort(stc.getDisplayFields());
-        
-        displayList.setItems(stc.getDisplayFields());
-        
-        searchFieldsTableModel.add(stc.getSearchFields());
-        searchFieldsTable.getSelectionModel().clearSelection();
-        
-        for (SearchFieldConfig sfc : stc.getSearchFields())
+        if (stc != null)
         {
-            if (sfc.isInUse())
+            Collections.sort(stc.getDisplayFields());
+            
+            displayList.setItems(stc.getDisplayFields());
+            
+            searchFieldsTableModel.add(stc.getSearchFields());
+            searchFieldsTable.getSelectionModel().clearSelection();
+            
+            for (SearchFieldConfig sfc : stc.getSearchFields())
             {
-                autoSelectDisplayListField(sfc, true);
+                if (sfc.isInUse())
+                {
+                    autoSelectDisplayListField(sfc, true);
+                }
             }
-        }
-       
-        for (DisplayFieldConfig dfc : stc.getDisplayFields())
+           
+            for (DisplayFieldConfig dfc : stc.getDisplayFields())
+            {
+                if (dfc.isInUse())
+                {
+                    displayList.setSelectedObj(dfc);
+                }
+            }
+        } else
         {
-            if (dfc.isInUse())
-            {
-                displayList.setSelectedObj(dfc);
-            }
+            displayList.setItems(null);
+            searchFieldsTableModel.add(null);
+            searchFieldsTable.getSelectionModel().clearSelection();
         }
     }
     
@@ -691,7 +698,6 @@ public class ExpressSearchConfigDlg extends CustomDialog
         protected Vector<SearchFieldConfig>  fields    = new Vector<SearchFieldConfig>();
         protected Class<?>[]                 classes   = {Boolean.class, String.class, String.class};
         
-        
         /**
          * 
          */
@@ -706,14 +712,22 @@ public class ExpressSearchConfigDlg extends CustomDialog
         
         public void add(final Vector<SearchFieldConfig> flds)
         {
-            fields.clear();
-            fields.addAll(flds);
-            int i = 0;
-            for (SearchFieldConfig sfc : fields)
+            fields = flds;
+            
+            if (fields != null)
             {
-                sfc.setOrder(i++);
+                
+                int i = 0;
+                for (SearchFieldConfig sfc : fields)
+                {
+                    sfc.setOrder(i++);
+                }
+                fireTableRowsInserted(0, flds.size());
+            } else
+            {
+                fireTableDataChanged();
             }
-            fireTableRowsInserted(0, flds.size());
+            
         }
         
         public void moveRowUp(final int index)
@@ -774,7 +788,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         //@Override
         public int getRowCount()
         {
-            return fields.size();
+            return fields == null ? 0 : fields.size();
         }
 
         /* (non-Javadoc)
@@ -783,20 +797,23 @@ public class ExpressSearchConfigDlg extends CustomDialog
         //@Override
         public Object getValueAt(int rowIndex, int columnIndex)
         {
-            SearchFieldConfig sfc = fields.get(rowIndex);
-            if (sfc != null)
+            if (fields != null)
             {
-                switch (columnIndex)
+                SearchFieldConfig sfc = fields.get(rowIndex);
+                if (sfc != null)
                 {
-                    case 0 : return sfc.isInUse();
-                    case 1 : return sfc.toString();
-                    case 2 : 
+                    switch (columnIndex)
                     {
-                        if (!sfc.getIsSortable())
+                        case 0 : return sfc.isInUse();
+                        case 1 : return sfc.toString();
+                        case 2 : 
                         {
-                            return NONE;
+                            if (!sfc.getIsSortable())
+                            {
+                                return NONE;
+                            }
+                            return sfc.getIsAscending() ? ASCENDING : DESCENDING;
                         }
-                        return sfc.getIsAscending() ? ASCENDING : DESCENDING;
                     }
                 }
             }

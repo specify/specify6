@@ -198,7 +198,7 @@
     <icon name="AgentSpecialty"         alias="agentspecialty"/>
     <icon name="AgentVariant"           alias="agentvariant"/>
     <icon name="Appraisal"              alias="appraisal"/>
-    <icon name="Attachment"             alias="attributedefinition"/>
+    <icon name="Attachment"             alias="attachment"/>
     <icon name="AttributeDef"           alias="attributedef"/>
     <icon name="Author"                 alias="author"/>
     <icon name="Borrow"                 alias="borrow"/>

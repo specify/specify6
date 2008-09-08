@@ -338,17 +338,13 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
     }
 
     /**
-     * @param items the items to set
+     * @param itemsArg the items to set
      */
-    public void setItems(final List<T> items)
+    public void setItems(final List<T> itemsArg)
     {
         if (group != null)
         {
-            //group.clearSelection();        // Java 6
-            for (JToggleButton tb : buttons) // Java 5
-            {
-                tb.setSelected(false);
-            }
+            group.clearSelection();        // Java 6
         }
         
         this.items.clear();
@@ -357,11 +353,11 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         unusedButtons.addAll(buttons);
         buttons.clear();
         
-        if (items != null)
+        if (itemsArg != null)
         {
-            this.items.addAll(items);
+            this.items.addAll(itemsArg);
             
-            for (int i=0;i<items.size();i++)
+            for (int i=0;i<itemsArg.size();i++)
             {
                 JToggleButton tb;
                 if (unusedButtons.size() > 0)
@@ -373,7 +369,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
                     tb = createBtn(" ");
                 }
                 buttons.add(tb);
-                tb.setText(items.get(i).toString());
+                tb.setText(itemsArg.get(i).toString());
                 tb.setSelected(false);
                 tb.setEnabled(true);
                 listPanel.add(tb);
