@@ -319,7 +319,7 @@ public class Borrow extends CollectionMember implements java.io.Serializable {
     /**
      * * False until all material has been returned
      */
-    @Column(name = "IsClosed", unique = false, nullable = true, insertable = true, updatable = false)
+    @Column(name = "IsClosed", unique = false, nullable = true, updatable = true, insertable = true)
     public Boolean getIsClosed()
     {
         return this.isClosed;
