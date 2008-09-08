@@ -326,6 +326,9 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         entry.isOnLeft  = isOnLeft;
         entry.order     = order;
         
+        entry.draggableFlavors = new Vector<EntryFlavor>();
+        entry.droppableFlavors = new Vector<EntryFlavor>();
+
         for (EntryFlavor ef : draggableFlavors)
         {
             entry.draggableFlavors.add((EntryFlavor)ef.clone());
