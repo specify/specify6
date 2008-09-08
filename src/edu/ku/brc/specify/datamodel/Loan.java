@@ -364,7 +364,7 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
     /**
      *      * 'No' until all preparations in the loan have been returned/resolved.
      */
-    @Column(name="IsClosed", unique=false, nullable=true, insertable=true, updatable=false)
+    @Column(name="IsClosed", unique = false, nullable = true, updatable = true, insertable = true)
     public Boolean getIsClosed() {
         return this.isClosed;
     }
