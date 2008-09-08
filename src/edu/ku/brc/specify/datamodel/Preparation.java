@@ -238,6 +238,10 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         return cnt - getLoanQuantityOut();
     }
 
+    /**
+     * calculates the number of preparations already loaned out.
+     * @return the (calculated) number of preps out on loan.
+     */
     @Transient
     public int getLoanQuantityOut()
     {

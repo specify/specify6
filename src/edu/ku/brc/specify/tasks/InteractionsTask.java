@@ -62,7 +62,6 @@ import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
-import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -161,6 +160,8 @@ public class InteractionsTask extends BaseTask
     protected static final String PRINT_LOAN           = "PRINT_LOAN";
     protected static final String INFO_REQ_MESSAGE     = "Specify Info Request";
     protected static final String CREATE_MAILMSG       = "CreateMailMsg";
+    protected static final String ADD_TO_LOAN          = "AddToLoan";
+    
     
     protected static final int    loanTableId;
     protected static final int    infoRequestTableId;
@@ -826,7 +827,7 @@ public class InteractionsTask extends BaseTask
         
         if (rs != null)
         {
-            createLoan(infoRequest, rs);
+            createOrAddToLoan(null, infoRequest, rs);
         }
     }
     
@@ -932,11 +933,14 @@ public class InteractionsTask extends BaseTask
     
     /**
      * Creates a new loan from a RecordSet.
+     * @param currentLoan an existing loan that needs additional Preps
      * @param infoRequest a info request
      * @param recordSetArg the recordset to use to create the loan
      */
     @SuppressWarnings("unchecked")
-    protected void createLoan(final InfoRequest infoRequest, final RecordSetIFace recordSetArg)
+    protected void createOrAddToLoan(final Loan           currentLoan, 
+                                     final InfoRequest    infoRequest, 
+                                     final RecordSetIFace recordSetArg)
     {
         RecordSetIFace recordSet = recordSetArg;
         if (infoRequest == null && recordSet == null)
@@ -997,7 +1001,7 @@ public class InteractionsTask extends BaseTask
                         InfoRequest infoReq = session.get(InfoRequest.class, item.getRecordId().intValue());
                         if (infoReq != null)
                         {
-                            createLoan(infoReq, infoReq.getRecordSets().iterator().next());
+                            createOrAddToLoan(null, infoReq, infoReq.getRecordSets().iterator().next());
                             
                         } else
                         {
@@ -1027,7 +1031,7 @@ public class InteractionsTask extends BaseTask
                 statusBar.setIndeterminate("LoanLoader", true);
                 
                 UIRegistry.writeGlassPaneMsg(getResourceString("InteractionsTask.LOAD_LOAN_PREP"), 24);
-                LoanPrepLoader loader = new LoanPrepLoader(this, session, sqlStr, infoRequest);
+                LoanPrepLoader loader = new LoanPrepLoader(this, session, sqlStr, currentLoan, infoRequest);
                 loader.addPropertyChangeListener(
                         new PropertyChangeListener() {
                             public  void propertyChange(PropertyChangeEvent evt) {
@@ -1054,16 +1058,18 @@ public class InteractionsTask extends BaseTask
    
     /**
      * @param availColObjList
+     * @param loan
      * @param infoRequest
      * @param session
      */
     protected void loanPrepsLoaded(final ArrayList<CollectionObject> availColObjList,
+                                   final Loan                        loan,
                                    final InfoRequest                 infoRequest,
                                    final DataProviderSessionIFace    session)
     {
         try
         {
-            final LoanSelectPrepsDlg loanSelectPrepsDlg = new LoanSelectPrepsDlg(availColObjList);
+            final LoanSelectPrepsDlg loanSelectPrepsDlg = new LoanSelectPrepsDlg(availColObjList, loan);
             loanSelectPrepsDlg.createUI();
             
             if (!loanSelectPrepsDlg.hasAvaliblePrepsToLoan())
@@ -1080,7 +1086,6 @@ public class InteractionsTask extends BaseTask
                 return;
             }
 
-            final Taskable thisTask = this;
             final Hashtable<Preparation, Integer> prepsHash = loanSelectPrepsDlg.getPreparationCounts();
             if (prepsHash.size() > 0)
             {
@@ -1091,59 +1096,11 @@ public class InteractionsTask extends BaseTask
                     {
                         JStatusBar statusBar = UIRegistry.getStatusBar();
                         statusBar.setIndeterminate(INTERACTIONS, true);
+                        
                         statusBar.setText(getResourceString("CreatingLoan"));
                         
-                        Loan loan = new Loan();
-                        loan.initialize();
+                        InteractionsTask.this.addPrepsToLoan(loan, infoRequest, prepsHash);
                         
-                        Calendar dueDate = Calendar.getInstance();
-                        dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
-                        loan.setCurrentDueDate(dueDate);
-                        
-                        Shipment shipment = new Shipment();
-                        shipment.initialize();
-                        
-                        // Get Defaults for Certain fields
-                        //SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-                        
-                        // Comment out defaults for now until we can manage them
-                        //PickListItemIFace    defShipmentMethod = appContextMgr.getDefaultPickListItem("ShipmentMethod", getResourceString("SHIPMENT_METHOD"));
-                        //if (defShipmentMethod != null)
-                        //{
-                        //     shipment.setShipmentMethod(defShipmentMethod.getValue());
-                        //}
-                        
-                        //FormDataObjIFace shippedBy = appContextMgr.getDefaultObject(Agent.class, "ShippedBy", getResourceString("SHIPPED_BY"), true, false);
-                        //if (shippedBy != null)
-                        //{
-                        //    shipment.setShippedBy((Agent)shippedBy);
-                        //}
-                        
-                        if (infoRequest != null && infoRequest.getAgent() != null)
-                        {
-                            shipment.setShippedTo(infoRequest.getAgent());
-                        }
-                        
-                        loan.addReference(shipment, "shipments");
-                        
-                        for (Preparation prep : prepsHash.keySet())
-                        {
-                            Integer count = prepsHash.get(prep);
-                            
-                            LoanPreparation lpo = new LoanPreparation();
-                            lpo.initialize();
-                            lpo.setPreparation(prep);
-                            lpo.setQuantity(count);
-                            lpo.setLoan(loan);
-                            loan.getLoanPreparations().add(lpo);
-                        }
-                        
-                        DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
-                        if (dataEntryTask != null)
-                        {
-                            DBTableInfo loanTableInfo = DBTableIdMgr.getInstance().getInfoById(loan.getTableId());
-                            dataEntryTask.openView(thisTask, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
-                        }
                         return null;
                     }
 
@@ -1169,6 +1126,104 @@ public class InteractionsTask extends BaseTask
             {
                 session.close();
             }
+        }
+    }
+    
+    /**
+     * @param existingLoan
+     * @param infoRequest
+     * @param prepsHash
+     */
+    protected void addPrepsToLoan(final Loan        existingLoan, 
+                                  final InfoRequest infoRequest,
+                                  final Hashtable<Preparation, Integer> prepsHash)
+    {
+        Loan loan;
+        
+        if (existingLoan == null)
+        {
+            loan = new Loan();
+            loan.initialize();
+            
+            Calendar dueDate = Calendar.getInstance();
+            dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
+            loan.setCurrentDueDate(dueDate);
+            
+            Shipment shipment = new Shipment();
+            shipment.initialize();
+            
+            // Get Defaults for Certain fields
+            //SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+            
+            // Comment out defaults for now until we can manage them
+            //PickListItemIFace    defShipmentMethod = appContextMgr.getDefaultPickListItem("ShipmentMethod", getResourceString("SHIPMENT_METHOD"));
+            //if (defShipmentMethod != null)
+            //{
+            //     shipment.setShipmentMethod(defShipmentMethod.getValue());
+            //}
+            
+            //FormDataObjIFace shippedBy = appContextMgr.getDefaultObject(Agent.class, "ShippedBy", getResourceString("SHIPPED_BY"), true, false);
+            //if (shippedBy != null)
+            //{
+            //    shipment.setShippedBy((Agent)shippedBy);
+            //}
+            
+            if (infoRequest != null && infoRequest.getAgent() != null)
+            {
+                shipment.setShippedTo(infoRequest.getAgent());
+            }
+            
+            loan.addReference(shipment, "shipments");
+        } else
+        {
+            loan = existingLoan;
+        }
+        
+        Hashtable<Integer, LoanPreparation> prepToLoanPrepHash = null;
+        if (existingLoan != null)
+        {
+            prepToLoanPrepHash = new Hashtable<Integer, LoanPreparation>();
+            for (LoanPreparation lp : existingLoan.getLoanPreparations())
+            {
+                prepToLoanPrepHash.put(lp.getPreparation().getId(), lp);
+            }
+        }
+        
+        for (Preparation prep : prepsHash.keySet())
+        {
+            Integer count = prepsHash.get(prep);
+            if (prepToLoanPrepHash != null)
+            {
+                LoanPreparation lp = prepToLoanPrepHash.get(prep.getId());
+                if (lp != null)
+                {
+                    int lpCnt = lp.getQuantity();
+                    lpCnt += count;
+                    lp.setQuantity(lpCnt);
+                    //System.err.println("Adding "+count+"  to "+lp.hashCode());
+                    continue;
+                }
+            }
+            
+            LoanPreparation lpo = new LoanPreparation();
+            lpo.initialize();
+            lpo.setPreparation(prep);
+            lpo.setQuantity(count);
+            lpo.setLoan(loan);
+            loan.getLoanPreparations().add(lpo);
+        }
+        
+        if (existingLoan == null)
+        {
+            DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+            if (dataEntryTask != null)
+            {
+                DBTableInfo loanTableInfo = DBTableIdMgr.getInstance().getInfoById(loan.getTableId());
+                dataEntryTask.openView(this, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
+            }
+        } else 
+        {
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_LOAN_PREPS", null));
         }
     }
     
@@ -1857,7 +1912,7 @@ public class InteractionsTask extends BaseTask
             if (cmdAction.getData() == cmdAction)
             {
                 // We get here when a user clicks on a Loan NB action 
-                createLoan(null, null);
+                createOrAddToLoan(null, null, null);
                 
             } else if (cmdAction.getData() instanceof RecordSetIFace)
             {
@@ -1866,7 +1921,7 @@ public class InteractionsTask extends BaseTask
                 {
                     if (cmdAction.isAction(NEW_LOAN))
                     {    
-                        createLoan(null, rs);
+                        createOrAddToLoan(null, null, rs);
                     }
                 } else
                 {
@@ -1882,8 +1937,12 @@ public class InteractionsTask extends BaseTask
                 CommandActionForDB cmdActionDB = (CommandActionForDB)cmdAction.getData();
                 RecordSetIFace     rs          = RecordSetFactory.getInstance().createRecordSet("", cmdActionDB.getTableId(), RecordSet.GLOBAL);
                 rs.addItem(cmdActionDB.getId());
-                createLoan(null, rs);
+                createOrAddToLoan(null, null, rs);
             }
+            
+        } else if (cmdAction.isAction(ADD_TO_LOAN))
+        {
+            createOrAddToLoan((Loan)cmdAction.getData(), null, null);
             
         } else if (cmdAction.isAction(INFO_REQ_MESSAGE))
         {
@@ -1969,6 +2028,7 @@ public class InteractionsTask extends BaseTask
         private DataProviderSessionIFace session;
         private String                   sqlStr;
         private InfoRequest              infoRequest;
+        private Loan                     loan;
                
         private ArrayList<CollectionObject> availColObjList = new ArrayList<CollectionObject>();
         private ArrayList<CollectionObject> noCurrDetList   = new ArrayList<CollectionObject>();
@@ -1977,11 +2037,13 @@ public class InteractionsTask extends BaseTask
         public LoanPrepLoader(final InteractionsTask         task, 
                               final DataProviderSessionIFace session,
                               final String                   sqlStr,
+                              final Loan                     loan,
                               final InfoRequest              infoRequest)
         {
             this.task        = task;
             this.session     = session;
             this.sqlStr      = sqlStr;
+            this.loan        = loan;
             this.infoRequest = infoRequest;
         }
 
@@ -2043,8 +2105,7 @@ public class InteractionsTask extends BaseTask
             super.done();
             UIRegistry.getStatusBar().setProgressDone("LoanLoader");
             UIRegistry.clearGlassPaneMsg();
-            task.loanPrepsLoaded(availColObjList, infoRequest, session);
-            
+            task.loanPrepsLoaded(availColObjList, loan, infoRequest, session);
         }
         
     }

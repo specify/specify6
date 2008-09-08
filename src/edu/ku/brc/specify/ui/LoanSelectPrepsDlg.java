@@ -17,7 +17,8 @@ package edu.ku.brc.specify.ui;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
-import static edu.ku.brc.ui.UIRegistry.*;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -92,18 +93,21 @@ public class LoanSelectPrepsDlg extends CustomDialog
 {
     protected ColorWrapper           requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     protected List<CollectionObject> colObjs;
+    protected Loan                   loan;
     protected List<ColObjPanel>      colObjPanels = new Vector<ColObjPanel>();
     protected JLabel                 summaryLabel;
     protected int                    totalCntLoanablePreps = 0;
+    Hashtable<Integer, LoanPreparation> prepToLoanPrepHash = new Hashtable<Integer, LoanPreparation>();
     
     /**
      * @param colObjs
      */
-    public LoanSelectPrepsDlg(List<CollectionObject> colObjs)
+    public LoanSelectPrepsDlg(final List<CollectionObject> colObjs, final Loan loan)
     {
         super((Frame)UIRegistry.getTopWindow(), getResourceString("LoanSelectPrepsDlg.CREATE_LN_FR_PREP"),//$NON-NLS-1$
                 true, OKCANCELAPPLYHELP, null);
         this.colObjs = colObjs;
+        this.loan    = loan;
     }
         
     /* (non-Javadoc)
@@ -115,6 +119,15 @@ public class LoanSelectPrepsDlg extends CustomDialog
         applyLabel = getResourceString("SELECTALL");//$NON-NLS-1$
         
         super.createUI();
+        
+        if (loan != null)
+        {
+            prepToLoanPrepHash = new Hashtable<Integer, LoanPreparation>();
+            for (LoanPreparation lp : loan.getLoanPreparations())
+            {
+                prepToLoanPrepHash.put(lp.getPreparation().getId(), lp);
+            }
+        }
         
         Vector<CollectionObject> availCOsToLoan = new Vector<CollectionObject>();
         for (CollectionObject co : colObjs)
@@ -452,6 +465,7 @@ public class LoanSelectPrepsDlg extends CustomDialog
         protected int         maxValue = 0;
         protected boolean     unknownQuantity;
 
+        
         /**
          * @param prep
          */
@@ -471,14 +485,17 @@ public class LoanSelectPrepsDlg extends CustomDialog
             pbuilder.add(label = createLabel(prep.getPrepType().getName()), cc.xy(1,1));
             label.setOpaque(false);
             
-            if (prep.getCount() !=  null)
+            if (prep.getCount() != null)
             {
                 int count       = prep.getCount() == null ? 0 : prep.getCount();
-                int quantityOut = prep.getLoanQuantityOut();  
+                int quantityOut = getLoanQuantityOut(prep);
                 
                 int quantityAvailable = count - quantityOut;
                 if (quantityAvailable > 0)
                 {
+                    
+
+
                     maxValue = quantityAvailable;
                     
                     SpinnerModel model = new SpinnerNumberModel(0, //initial value
@@ -519,6 +536,53 @@ public class LoanSelectPrepsDlg extends CustomDialog
             //pbuilder.add(contentPanel, cc.xy(1,3));
         }
         
+        /**
+         * @param preparation
+         * @return
+         */
+        public int getLoanQuantityOut(final Preparation preparation)
+        {
+            LoanPreparation loanPrepObj = prepToLoanPrepHash.get(preparation.getId());
+            if (loanPrepObj != null)
+            {
+                int x = 0;
+                x++;
+            }
+            
+            int stillOut = 0;
+            for (LoanPreparation lp : preparation.getLoanPreparations())
+            {
+                LoanPreparation lpo = loanPrepObj != null && loanPrepObj.getId() != null && loanPrepObj.getId().equals(lp.getId()) ? loanPrepObj : lp; 
+                
+                stillOut += calcStillOut(lpo);
+                System.err.println(lp.getId()+"  "+ stillOut);
+            }
+            
+            if (loanPrepObj != null && loanPrepObj.getId() == null)
+            {
+                stillOut += calcStillOut(loanPrepObj);
+            }
+            
+            return stillOut;
+        }
+        
+        /**
+         * @param lpo
+         * @return
+         */
+        protected int calcStillOut(final LoanPreparation lpo)
+        {
+            int quantityLoaned   = lpo.getQuantity() != null ? lpo.getQuantity() : 0;
+            int quantityReturned = lpo.getQuantityReturned() != null ? lpo.getQuantityReturned() : 0;
+            
+            System.err.println("  "+ quantityLoaned+"  "+quantityReturned);
+            
+            return (quantityLoaned - quantityReturned);
+        }
+        
+        /**
+         * @param spin
+         */
         protected void fixBGOfJSpinner(final JSpinner spin)
         {
             JComponent edComp = spin.getEditor();
@@ -532,6 +596,9 @@ public class LoanSelectPrepsDlg extends CustomDialog
             }
         }
         
+        /**
+         * @return
+         */
         public boolean isUnknownQuantity()
         {
             return unknownQuantity;
