@@ -266,7 +266,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                             {
                                 Component topComp = UIHelper.getWindow(addrSubView);
                                 Component topMost = UIRegistry.getTopWindow();
-                                if (topComp != topMost)
+                                if (topComp != topMost && topComp != null)
                                 {
                                     ((Window)topComp).pack();
                                 }

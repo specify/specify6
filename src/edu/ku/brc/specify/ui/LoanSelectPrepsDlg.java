@@ -555,7 +555,6 @@ public class LoanSelectPrepsDlg extends CustomDialog
                 LoanPreparation lpo = loanPrepObj != null && loanPrepObj.getId() != null && loanPrepObj.getId().equals(lp.getId()) ? loanPrepObj : lp; 
                 
                 stillOut += calcStillOut(lpo);
-                System.err.println(lp.getId()+"  "+ stillOut);
             }
             
             if (loanPrepObj != null && loanPrepObj.getId() == null)

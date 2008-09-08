@@ -445,7 +445,7 @@ public class FormViewObj implements Viewable,
                 // rods - 07/21/08 for disabling the switcher when the form is invalid 
                 if (formValidator != null && switcherUI != null)
                 {
-                    formValidator.addEnableItem(switcherUI, FormValidator.EnableType.ValidItems);
+                    formValidator.addEnableItem(switcherUI, FormValidator.EnableType.ValidAndChangedItems);
                 }
             }
             
@@ -1951,6 +1951,12 @@ public class FormViewObj implements Viewable,
         if (selectorCBX != null)
         {
             selectorCBX.setEnabled(true);
+        }
+        
+        // rods - 09/08/08 - this is to disable the MenuSwitcher when a new item is created
+        if (switcherUI != null)
+        {
+            switcherUI.setEnabled(false);
         }
     }
     
