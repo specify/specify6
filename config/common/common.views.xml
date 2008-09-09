@@ -265,6 +265,8 @@
             <altviews>
                 <altview name="FieldNotebookPage Edit" viewdef="FieldNotebookPage" label="Edit" mode="edit"/>
                 <altview name="FieldNotebookPage View" viewdef="FieldNotebookPage" label="View" mode="view" default="true"/>
+                <altview name="FieldNotebookPage Table View" viewdef="FieldNotebookPage Table" label="Grid" mode="view"/>
+                <altview name="FieldNotebookPage Table Edit" viewdef="FieldNotebookPage Table" label="Grid" mode="edit"/>
             </altviews>
         </view>
 
@@ -1357,6 +1359,17 @@
             </rows>
         </viewdef>
         
+        <viewdef
+            type="formtable"
+            name="FieldNotebookPage Table"
+            class="edu.ku.brc.specify.datamodel.FieldNotebookPage"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Determination subform table for Collection Object form.]]></desc>
+            <definition>FieldNotebookPage</definition>
+        </viewdef>
+        
         <viewdef 
             type="form" 
             name="FieldNotebookPage" 
@@ -1391,17 +1404,6 @@
             </rows>
         </viewdef>
         
-        <viewdef
-            name="FieldNotebookPageSet Table"
-            type="formtable"
-            class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[FieldNotebookPageSet subform table for FieldNotebook form.]]></desc>
-            <definition>FieldNotebookPageSet</definition>
-        </viewdef>
-        
         <viewdef 
             type="form" 
             name="FieldNotebookPageSet" 
@@ -1424,10 +1426,7 @@
                     <cell type="field" id="1" name="description" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Pages" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="subview" id="6" name="pages" viewname="FieldNotebookPage" colspan="12"/>
+                    <cell type="subview" id="6" name="pages" viewname="FieldNotebookPage" defaulttype="table" colspan="12"/>
                 </row>
                 
                 <!--     <row>
