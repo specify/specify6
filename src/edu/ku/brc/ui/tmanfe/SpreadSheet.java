@@ -559,6 +559,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 }
             });
         }
+        pMenu.setInvoker(this);
         return pMenu;
     }
 
