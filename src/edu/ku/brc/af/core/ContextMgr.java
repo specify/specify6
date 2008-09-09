@@ -209,18 +209,19 @@ public class ContextMgr implements CommandListener
                                               final String        tooltip,
                                               final boolean       isDefault)
     {
-        ServiceInfo serviceInfo = new ServiceInfo(priority, serviceName, tableId, command, task, iconName, tooltip, isDefault);
-        log.debug("REG: "+serviceInfo.getHashKey());
-        
-        if (serviceInfo.getHashKey().equals("Project_Record_Set_66"))
+        String hashName = ServiceInfo.getHashKey(serviceName, task, tableId);
+        if (instance.services.get(hashName) != null)
         {
-            int x = 0;
-            x++;
+            return null;
         }
+        
+        ServiceInfo serviceInfo = new ServiceInfo(priority, serviceName, tableId, command, task, iconName, tooltip, isDefault);
+        //log.debug("REG: "+serviceInfo.getHashKey());
         
         if (tableId == -1)
         {
             instance.genericService.add(serviceInfo);
+            instance.services.put(serviceInfo.getHashKey(), serviceInfo);
             
         } else 
         {
@@ -235,6 +236,32 @@ public class ContextMgr implements CommandListener
             return serviceInfo;
         }
         return null;
+    }
+    
+    /**
+     * @param name
+     */
+    public static void unregisterService(final String name)
+    {
+        ServiceInfo srvInfo = instance.services.get(name);
+        if (srvInfo != null)
+        {
+            instance.services.remove(name);
+            if (srvInfo.getTableId() > -1)
+            {
+                List<ServiceInfo> serviceList = instance.servicesByTable.get(srvInfo.getTableId());
+                if (serviceList != null)
+                {
+                    serviceList.remove(srvInfo);
+                }
+            } else
+            {
+                instance.genericService.remove(srvInfo);
+            }
+        } else
+        {
+            log.error("Couldn't find service ["+name+"]");
+        }
     }
     
     /**

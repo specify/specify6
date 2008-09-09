@@ -43,6 +43,7 @@ import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
+import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
@@ -82,9 +83,14 @@ import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.Trash;
 
 /**
- * This task controls the data entry forms.
+ * This task controls the data entry forms. 
+ * 
+ * NOTE: The doConfigure method and the dialog it uses still has a problem in that: 
+ * When a form is moved from the hidden (but registered) list it doesn't get from from 
+ * the hidden list so it gets register with the ContextMgr twice. The ContextMgr throws away the second
+ * registration so that is ok for now. But the this does need to be fixed at some point.
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * @author rods
  *
@@ -618,7 +624,8 @@ public class DataEntryTask extends BaseTask
      * Initializes the TableInfo data member.
      * @param list the list of DataEntryView
      */
-    protected void initDataEntryViews(final Vector<DataEntryView> list)
+    protected void initDataEntryViews(final Vector<DataEntryView> list,
+                                      final boolean doRegister)
     {
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         for (DataEntryView dev : list)
@@ -632,7 +639,10 @@ public class DataEntryTask extends BaseTask
                 CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);
                 cmdAction.setProperty("view", dev.getView());
                 
-                ContextMgr.registerService(10, dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
+                if (doRegister)
+                {
+                    ContextMgr.registerService(10, dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
+                }
 
             } else
             {
@@ -768,7 +778,7 @@ public class DataEntryTask extends BaseTask
 
             if (availMiscViews.size() > 0)
             {
-                initDataEntryViews(availMiscViews);
+                initDataEntryViews(availMiscViews, doRegister);
                 
                 NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("DET_MISC_FORMS"),
                                                              name, 
@@ -970,8 +980,28 @@ public class DataEntryTask extends BaseTask
             
             viewsNavBox.clear();
             
+            // unregister all
+            
+            for (DataEntryView dev : stdViews)
+            {
+                if (dev.getTableInfo() != null)
+                {
+                    String srvName = ServiceInfo.getHashKey(dev.getName(), this, dev.getTableInfo().getTableId());
+                    ContextMgr.unregisterService(srvName);
+                }
+            }
+            
+            for (DataEntryView dev : miscViews)
+            {
+                if (dev.getTableInfo() != null)
+                {
+                    String srvName = ServiceInfo.getHashKey(dev.getName(), this, dev.getTableInfo().getTableId());
+                    ContextMgr.unregisterService(srvName);
+                }
+            }
+            
             // This re-registers the items
-            buildNavBoxes(stdViews, miscViews, false);
+            buildNavBoxes(stdViews, miscViews, true);
             
             viewsNavBox.validate();
             viewsNavBox.doLayout();

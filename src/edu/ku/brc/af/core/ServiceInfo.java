@@ -230,7 +230,7 @@ public class ServiceInfo implements Comparable<ServiceInfo>
      */
     public static String getHashKey(final String name, final Taskable task, final int tableId)
     {
-        return name + "_" + task.getName() + "_" + Integer.toString(tableId); //$NON-NLS-1$
+        return name + "_" + (task != null ? task.getName() : "") + "_" + (tableId != -1 ? Integer.toString(tableId) : ""); //$NON-NLS-1$
     }
 
     
