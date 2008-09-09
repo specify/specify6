@@ -851,7 +851,10 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
             }
         }
         
-        generateThumbnailsInBackground(rowImagesNeedingThumbnails);
+        if (rowImagesNeedingThumbnails.size() > 0)
+        {
+            generateThumbnailsInBackground(rowImagesNeedingThumbnails);
+        }
         
         // set the index so the first image is displayed
         imageIndex = 0;

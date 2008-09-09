@@ -362,18 +362,18 @@ public class GraphicsUtils
                                                   final boolean higherQuality)
     {
         int type = (img.getTransparency() == Transparency.OPAQUE) ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
-        BufferedImage ret = img;
+        BufferedImage temp = img;
 
-        BufferedImage tmp = new BufferedImage(targetWidth, targetHeight, type);
-        Graphics2D g2 = tmp.createGraphics();
+        BufferedImage result = new BufferedImage(targetWidth, targetHeight, type);
+        Graphics2D g2 = result.createGraphics();
         if (higherQuality)
         {
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         }
-        g2.drawImage(ret, 0, 0, targetWidth, targetHeight, null);
+        g2.drawImage(temp, 0, 0, targetWidth, targetHeight, null);
         g2.dispose();
 
-        return ret;
+        return result;
     }
     
     /**
