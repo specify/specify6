@@ -30528,7 +30528,7 @@
         <isHidden>false</isHidden>
         <version>0</version>
       </item>
-      <item name="startDate">
+      <item isRequired="true" name="startDate">
         <names>
           <str language="en">
             <text>Start Date</text>
