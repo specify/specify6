@@ -1,14 +1,26 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author Ricardo
@@ -36,6 +48,67 @@ public class ObjectPermissionEditor extends PermissionEditor
 		super(permissionTable, typeSwitcherCBX, listener, enumerator);
 	}
 
+	public ObjectPermissionEditor(final JTable                     permissionTable, 
+								  final JComboBox                  typeSwitcherCBX,
+			                      final ChangeListener             listener, 
+			                      final ObjectPermissionEnumerator enumerator,
+			                      final boolean                    readOnly)
+	{
+		//	we can only create instances of this class providing the right enumerator class
+		super(permissionTable, typeSwitcherCBX, listener, enumerator, readOnly);
+	}
+
+    protected static PermissionEditor createObjectPermissionsEditor(
+    		final JTable         table,
+            final JComboBox      typeSwitcherCBX,
+            final ChangeListener listener) 
+    {
+    	return createObjectPermissionsEditor(table, typeSwitcherCBX, listener, false);
+    }
+
+    /**
+     * A factory for the ObjectPermissionEditor
+     * 
+     * @param table
+     * @param listener
+     * @return
+     */
+    protected static PermissionEditor createObjectPermissionsEditor(final JTable         table,
+                                                                    final JComboBox      typeSwitcherCBX,
+                                                                    final ChangeListener listener,
+                                                                    final boolean        readOnly)
+    {
+        return new ObjectPermissionEditor(table, typeSwitcherCBX, listener, new ObjectPermissionEnumerator(), readOnly);
+    }
+
+    public static JPanel createObjectPermissionsPanel(JTable objectPermissionsTable, JComboBox objTypeSwitcher, EditorPanel infoPanel) {
+    	// create object permission table
+    	final CellConstraints cc = new CellConstraints();
+
+    	JPanel objectPermissionsPanel = new JPanel(new BorderLayout());
+    	UIHelper.makeTableHeadersCentered(objectPermissionsTable, false);
+
+    	PanelBuilder otPB            = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
+    	otPB.add(objTypeSwitcher, cc.xy(2, 1));
+
+    	JPanel innerPanel = new JPanel(new BorderLayout());
+    	innerPanel.add(otPB.getPanel(), BorderLayout.NORTH);
+    	innerPanel.add(new JScrollPane(objectPermissionsTable), BorderLayout.CENTER);
+    	objectPermissionsPanel.add(innerPanel, BorderLayout.CENTER);
+
+    	final PermissionEditor objectsPermissionEditor = ObjectPermissionEditor.
+    	createObjectPermissionsEditor(objectPermissionsTable, objTypeSwitcher, infoPanel);
+    	objTypeSwitcher.addActionListener(new ActionListener() {
+    		@Override
+    		public void actionPerformed(ActionEvent e)
+    		{
+    			objectsPermissionEditor.fillWithType();
+    		}
+    	});
+    	
+    	return objectPermissionsPanel;
+    }    
+    
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditor#addColumnHeaders(javax.swing.table.DefaultTableModel)
 	 */

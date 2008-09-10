@@ -52,6 +52,7 @@ public class PermissionEditor
 	protected PermissionEnumerator 	enumerator;
 	protected SpPrincipal 			principal;
 	protected ChangeListener        listener;
+	protected boolean               readOnly;
 	
 	protected DefaultTableModel     model;
 	protected ImageIcon             icon;
@@ -79,12 +80,36 @@ public class PermissionEditor
 		this.enumerator 		= enumerator;
 		this.principal 			= null;
 		this.listener           = listener;
+		this.readOnly           = false;
+	}
+
+	/**
+	 * @param permissionTable
+	 * @param enumerator
+	 */
+	public PermissionEditor(final JTable               permissionTable,
+                            final JComboBox            typeSwitcherCBX,
+                            final ChangeListener       listener, 
+	                        final PermissionEnumerator enumerator,
+	                        final boolean              readOnly)
+	{
+        this.permissionTable    = permissionTable;
+        this.typeSwitcherCBX    = typeSwitcherCBX;
+		this.enumerator 		= enumerator;
+		this.principal 			= null;
+		this.listener           = listener;
+		this.readOnly           = readOnly;
 	}
 	
 	// TODO: overruling principal (nor the three-state checkbox) feature have been implemented yet
 	
 	public void fillWithType()
 	{
+		if (model == null) 
+		{
+			return;
+		}
+		
         while (model.getRowCount() > 0)
         {
             model.removeRow(0);
@@ -126,7 +151,7 @@ public class PermissionEditor
 			
 			public boolean isCellEditable(int row, int column) 
 			{
-				return (column >= 2);
+				return !readOnly && (column >= 2);
 			}
 		};
 		

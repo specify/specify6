@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 
@@ -32,6 +33,7 @@ import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.tasks.subpane.security.SecurityAdminPane;
+import edu.ku.brc.specify.tasks.subpane.security.SecuritySummaryDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIHelper;
@@ -81,28 +83,45 @@ public class SecurityAdminTask extends BaseTask
      */
     public List<MenuItemDesc> getMenuItems()
     {
-        // check whether user can see the security admin panel
-        // other permissions will be checked when the panel is created 
-        if (!SecurityMgr.getInstance().checkPermission("Task." + SECURITY_ADMIN, BasicSpPermission.view)) //$NON-NLS-1$
-        {
-        	return null;
-        }
-        
         menuItems = new Vector<MenuItemDesc>();
         
-        String menuTitle = "SecurityAdminTask.SECURITY_TOOLS_MENU"; //$NON-NLS-1$
-        String mneu      = "SecurityAdminTask.SECURITY_TOOLS_MNEU"; //$NON-NLS-1$
-        String desc      = "SecurityAdminTask.SECURITY_TOOLS_DESC"; //$NON-NLS-1$
+        // show security summary menu item
+    	// no need to check security as everyone can see their own summary... besides it's read only
+        String menuTitle = "SecurityAdminTask.SHOW_SECURITY_SUMMARY_MENU"; //$NON-NLS-1$
+        String mneu      = "SecurityAdminTask.SHOW_SECURITY_SUMMARY_MNEU"; //$NON-NLS-1$
+        String desc      = "SecurityAdminTask.SHOW_SECURITY_SUMMARY_DESC"; //$NON-NLS-1$
         JMenuItem mi     = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null); // I18N
         mi.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
-                SecurityAdminTask.this.requestContext();
+            	SecuritySummaryDlg dlg = new SecuritySummaryDlg(null);
+            	dlg.setVisible(true);
             }
         });
         String menuDesc = "AdvMenu/SystemMenu";
-        menuItems.add(new MenuItemDesc(mi, menuDesc ));
+        menuItems.add(new MenuItemDesc(mi, menuDesc));
+
+        // check whether user can see the security admin panel
+        // other permissions will be checked when the panel is created 
+        if (SecurityMgr.getInstance().checkPermission("Task." + SECURITY_ADMIN, BasicSpPermission.view)) //$NON-NLS-1$
+        {
+            // security tools menu item
+            menuTitle = "SecurityAdminTask.SECURITY_TOOLS_MENU"; //$NON-NLS-1$
+            mneu      = "SecurityAdminTask.SECURITY_TOOLS_MNEU"; //$NON-NLS-1$
+            desc      = "SecurityAdminTask.SECURITY_TOOLS_DESC"; //$NON-NLS-1$
+            mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null); // I18N
+            mi.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    SecurityAdminTask.this.requestContext();
+                }
+            });
+            menuDesc = "AdvMenu/SystemMenu";
+            menuItems.add(new MenuItemDesc(mi, menuDesc));
+        }
+        
         return menuItems;
 
     }  

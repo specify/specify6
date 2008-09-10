@@ -42,7 +42,6 @@ import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -922,53 +921,21 @@ public class SecurityAdminPane extends BaseSubPane
         final EditorPanel infoPanel = new EditorPanel(this);
         final CellConstraints cc = new CellConstraints();
 
-        // create general permission table
-        JPanel generalPermissionsPanel = new JPanel(new BorderLayout());
+        // create general permission table and panel
+        JComboBox genTypeSwitcher = UIHelper.createComboBox(new DefaultComboBoxModel());
         JTable generalPermissionsTable = new JTable();
-        UIHelper.makeTableHeadersCentered(generalPermissionsTable, false);
+        JPanel generalPermissionsPanel = GeneralPermissionEditor.createGeneralPermissionsPanel(
+        		generalPermissionsTable, genTypeSwitcher, infoPanel);
+        final PermissionEditor generalPermissionEditor = GeneralPermissionEditor.
+        	createGeneralPermissionEditor(generalPermissionsTable, genTypeSwitcher, infoPanel);
         
-        JComboBox    genTypeSwitcher = UIHelper.createComboBox(new DefaultComboBoxModel());
-        PanelBuilder pb             = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
-        pb.add(genTypeSwitcher, cc.xy(2, 1));
-        
-        JComboBox    objTypeSwitcher = UIHelper.createComboBox(new DefaultComboBoxModel());
-        PanelBuilder otPB            = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
-        otPB.add(objTypeSwitcher, cc.xy(2, 1));
-        
-        JPanel innerPanel = new JPanel(new BorderLayout());
-        innerPanel.add(pb.getPanel(), BorderLayout.NORTH);
-        innerPanel.add(new JScrollPane(generalPermissionsTable), BorderLayout.CENTER);
-        generalPermissionsPanel.add(innerPanel, BorderLayout.CENTER);
-        
-        final PermissionEditor generalPermissionsEditor = createGeneralPermissionsEditor(generalPermissionsTable, genTypeSwitcher, infoPanel);
-        genTypeSwitcher.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                generalPermissionsEditor.fillWithType();
-            }
-        });
-
-
-        // create object permission table
-        JPanel objectPermissionsPanel = new JPanel(new BorderLayout());
-        JTable objectPermissionsTable = new JTable();
-        UIHelper.makeTableHeadersCentered(objectPermissionsTable, false);
-        
-        innerPanel = new JPanel(new BorderLayout());
-        innerPanel.add(otPB.getPanel(), BorderLayout.NORTH);
-        innerPanel.add(new JScrollPane(objectPermissionsTable), BorderLayout.CENTER);
-        objectPermissionsPanel.add(innerPanel, BorderLayout.CENTER);
-        
-        final PermissionEditor objectsPermissionEditor = createObjectPermissionsEditor(objectPermissionsTable, objTypeSwitcher, infoPanel);
-        objTypeSwitcher.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                objectsPermissionEditor.fillWithType();
-            }
-        });
-
+        // create object permission table and panel
+    	JComboBox    objTypeSwitcher = UIHelper.createComboBox(new DefaultComboBoxModel());
+    	JTable objectPermissionsTable = new JTable();
+        JPanel objectPermissionsPanel  = ObjectPermissionEditor.createObjectPermissionsPanel(
+        		objectPermissionsTable, objTypeSwitcher, infoPanel);
+        final PermissionEditor objectPermissionEditor = ObjectPermissionEditor.
+        	createObjectPermissionsEditor(objectPermissionsTable, genTypeSwitcher, infoPanel);
 
         // create user form
         ViewBasedDisplayPanel panel = createViewBasedDisplayPanelForUser(infoPanel);
@@ -1000,8 +967,8 @@ public class SecurityAdminPane extends BaseSubPane
         infoCards.add(infoPanel, className);
         
         AdminInfoSubPanelWrapper subPanel = new AdminInfoSubPanelWrapper(panel);
-        subPanel.addPermissionEditor(generalPermissionsEditor);
-        subPanel.addPermissionEditor(objectsPermissionEditor);
+        subPanel.addPermissionEditor(generalPermissionEditor);
+        subPanel.addPermissionEditor(objectPermissionEditor);
         infoSubPanels.put(className, subPanel);
         editorPanels.put(className, infoPanel);
     }
@@ -1018,7 +985,8 @@ public class SecurityAdminPane extends BaseSubPane
         JTable table = new JTable();
         UIHelper.makeTableHeadersCentered(table, false);
         JComboBox              typeSwitcher = UIHelper.createComboBox(new DefaultComboBoxModel());
-        final PermissionEditor editor       = createGeneralPermissionsEditor(table, typeSwitcher, infoPanel);
+        final PermissionEditor editor       = GeneralPermissionEditor.
+        	createGeneralPermissionEditor(table, typeSwitcher, infoPanel);
         ViewBasedDisplayPanel  panel        = createViewBasedDisplayPanelForGroup(infoPanel);
         typeSwitcher.addActionListener(new ActionListener() {
             @Override
@@ -1104,36 +1072,6 @@ public class SecurityAdminPane extends BaseSubPane
         }
     }
     
-    /**
-     * @param table
-     * @param listener
-     * @return
-     */
-    protected static PermissionEditor createGeneralPermissionsEditor(final JTable table,
-                                                                     final JComboBox typeSwitcherCBX,
-                                                                     final ChangeListener listener)
-    {
-        //PermissionEnumerator e1 = new FormPermissionEnumerator();
-        PermissionEnumerator e1 = new DataObjPermissionEnumerator();
-        PermissionEnumerator e2 = new TaskPermissionEnumerator();
-        CompositePermissionEnumerator enumerator = new CompositePermissionEnumerator();
-        enumerator.addEnumerator(e1);
-        enumerator.addEnumerator(e2);
-        return new PermissionEditor(table, typeSwitcherCBX, listener, enumerator);
-    }
-
-    /**
-     * @param table
-     * @param listener
-     * @return
-     */
-    protected static PermissionEditor createObjectPermissionsEditor(final JTable         table,
-                                                                    final JComboBox      typeSwitcherCBX,
-                                                                    final ChangeListener listener)
-    {
-        return new ObjectPermissionEditor(table, typeSwitcherCBX, listener, new ObjectPermissionEnumerator());
-    }
-
     /**
      * @return
      */
