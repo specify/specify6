@@ -781,7 +781,7 @@ public class DataEntryTask extends BaseTask
                 initDataEntryViews(availMiscViews, doRegister);
                 
                 NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("DET_MISC_FORMS"),
-                                                             name, 
+                                                             "MoreForms", 
                                                              getResourceString("DET_CHOOSE_TT"), 
                                                              IconManager.STD_ICON_SIZE, createMiscActionListener());
                 
