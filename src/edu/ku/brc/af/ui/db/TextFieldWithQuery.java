@@ -803,7 +803,15 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                             }
                             Formatter formatter = new Formatter();
                             formatter.format(format, values);
-                            list.addElement(formatter.toString());
+                            
+                            // Minor hack for Bug 5824 for names with no first name
+                            // In the future we may want to do a strip of spaces form the end first
+                            String valStr = formatter.toString();
+                            if (valStr.endsWith(", "))
+                            {
+                                valStr = valStr.substring(0, valStr.length()-2);
+                            }
+                            list.addElement(valStr);
     
                         } catch (java.util.IllegalFormatConversionException ex)
                         {
