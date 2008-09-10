@@ -535,7 +535,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     public void setText(final String text)
     {
         ignoreDocChange = true;
-        if (uiFieldFormatter != null)
+        if (uiFieldFormatter != null && StringUtils.isNotEmpty(text))
         {
             textField.setText(uiFieldFormatter.formatToUI(text).toString());
         } else
@@ -557,9 +557,9 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         int inx = popupMenu.getComponentIndex(mi);
         if (inx > -1)
         {
-            if (!doAddAddItem || inx > 0)
+            if (idList.size() > 0 && (!doAddAddItem || inx > 0))
             {
-                selectedId = idList.get(doAddAddItem ? inx-1 : inx);
+                selectedId =  idList.get(doAddAddItem ? inx-1 : inx);
                 setText(selectedStr);
             }
             
@@ -616,7 +616,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     {
                         setText(""); //$NON-NLS-1$
                     }
-                    textField.requestFocus();
+                    //textField.requestFocus();
                 }
 
                 public void popupMenuWillBecomeVisible(PopupMenuEvent e)
