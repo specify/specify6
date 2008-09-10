@@ -110,8 +110,7 @@ public class CollectionAutoNumber extends AutoNumberGeneric
             Connection    conn = null;
             Statement     stmt = null;
             
-            sb.append(fieldName);
-            sb.append(" FROM collectionobject INNER JOIN collection ON collectionobject.CollectionMemberID = collection.userGroupScopeId ");
+            sb.append("CollectionObjectID FROM collectionobject INNER JOIN collection ON collectionobject.CollectionMemberID = collection.userGroupScopeId ");
             sb.append("WHERE collection.userGroupScopeId IN (");
             for (int i=0;i<ids.size();i++)
             {
@@ -141,7 +140,11 @@ public class CollectionAutoNumber extends AutoNumberGeneric
                 }
                 
                 sb.setLength(0);
-                sb.append("FROM "+classObj.getSimpleName()+" WHERE "+fieldName+" = \'"+idStr+"\'");
+                sb.append("FROM ");
+                sb.append(classObj.getSimpleName());
+                sb.append(" WHERE id = ");
+                sb.append(idStr);
+                
                 log.debug(sb.toString());
                 Query query = session.createQuery(sb.toString());
                 
@@ -157,6 +160,7 @@ public class CollectionAutoNumber extends AutoNumberGeneric
                 {
                     if (conn != null)  conn.close();
                     if (stmt != null)  stmt.close(); 
+                    
                 } catch (SQLException e)
                 {
                     log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
