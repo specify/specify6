@@ -484,13 +484,13 @@ public class JComboBoxFromQuery extends JComboBox
                 fillBox(str);
                 lookForMatch();
                 
-                SwingUtilities.invokeLater(new Runnable()
+                /*SwingUtilities.invokeLater(new Runnable()
                 {
                     public void run()
                     {
                         //showPopup();
                     }
-                });
+                });*/
             }
         } else
         {
