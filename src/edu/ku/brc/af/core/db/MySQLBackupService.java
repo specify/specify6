@@ -150,7 +150,7 @@ public class MySQLBackupService extends BackupServiceFactory
      */
     private boolean doBackUp(final boolean isMonthly, final boolean doSendAppExit)
     {
-        AppPreferences remotePrefs = AppPreferences.getLocalPrefs();
+        AppPreferences remotePrefs = AppPreferences.getRemote();
         
         final String mysqldumpLoc = remotePrefs.get(MYSQLDUMP_LOC, getDefaultMySQLDumpLoc());
         final String backupLoc    = remotePrefs.get(MYSQLBCK_LOC,  getDefaultBackupLoc());
@@ -191,25 +191,23 @@ public class MySQLBackupService extends BackupServiceFactory
                 {
                     Thread.sleep(100);
                     
-                    Process process = Runtime.getRuntime().exec(mysqldumpLoc+" -u Specify -p " + databaseName);// XXX RELEASE
+                    String cmdLine = mysqldumpLoc + " -u Specify --password=Specify " + databaseName;// XXX RELEASE
+                    String[] args = StringUtils.split(cmdLine, ' ');
+                    Process process = Runtime.getRuntime().exec(args);
                     
-                    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-                    
-                    // wait as long it takes till the other process has prompted.
-                    Thread.sleep(100);
-                    out.write("Specify"); // XXX RELEASE
-                    out.write("\n");
-                    out.flush();
-                    out.close();
-                    
+                    // Create output file
                     SimpleDateFormat sdf      = new SimpleDateFormat("yyyy_MM_dd_kk_mm_ss");
                     String           fileName = sdf.format(Calendar.getInstance().getTime()) + (isMonthly ? "_monthly" : "") + ".sql";
                     backupOut = new BufferedWriter(new FileWriter(backupLoc + File.separator + fileName));
                     
+                    String        line = null;
+                    StringBuilder sb   = new StringBuilder();
+
                     BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                    String line = null;
+                    line = null;
                     while ((line = in.readLine()) != null)
                     {
+                    	//System.err.println(line);
                         if (line != null)
                         {
                             if (line.length() > 0 && line.charAt(0) == 'C' && line.startsWith("CREATE TABLE"))
@@ -223,11 +221,13 @@ public class MySQLBackupService extends BackupServiceFactory
                     }
                     setProgress(100);
                     
-                    in = new BufferedReader(new InputStreamReader(process.getErrorStream()));
                     line = null;
-                    StringBuilder sb = new StringBuilder();
-                    while ((line = in.readLine()) != null)
+                    sb   = new StringBuilder();
+                    
+                    BufferedReader errIn = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                    while ((line = errIn.readLine()) != null)
                     {
+                    	System.err.println(line);
                         if (line.startsWith("ERR"))
                         {
                             sb.append(line);
@@ -307,9 +307,9 @@ public class MySQLBackupService extends BackupServiceFactory
     @Override
     public void doRestore()
     {
-        AppPreferences remotePrefs = AppPreferences.getLocalPrefs();
-        final String mysqlLoc     = remotePrefs.get(MYSQL_LOC,     getDefaultMySQLLoc());
-        final String backupLoc    = remotePrefs.get(MYSQLBCK_LOC,  getDefaultBackupLoc());
+        AppPreferences remotePrefs  = AppPreferences.getRemote();
+        final String   mysqlLoc     = remotePrefs.get(MYSQL_LOC,     getDefaultMySQLLoc());
+        final String   backupLoc    = remotePrefs.get(MYSQLBCK_LOC,  getDefaultBackupLoc());
         
         if (!(new File(mysqlLoc)).exists())
         {
@@ -357,28 +357,28 @@ public class MySQLBackupService extends BackupServiceFactory
                 int count = 0;
                 try
                 {
-                    Thread.sleep(100);
+                	String   cmdLine = mysqlLoc+" -u Specify --password=Specify " + databaseName; // XXX RELEASE
+                	String[] args    = StringUtils.split(cmdLine, ' ');
+                    Process  process = Runtime.getRuntime().exec(args); 
                     
-                    Process process = Runtime.getRuntime().exec(mysqlLoc+" -u Specify -p " + databaseName); // XXX RELEASE
+                    Thread.sleep(100);
                     
                     BufferedWriter out = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
                     
                     // wait as long it takes till the other process has prompted.
-                    Thread.sleep(100);
                     try 
                     {
-                        out.write("Specify"); // XXX RELEASE
-                        out.write("\n");
-                        out.flush();
-                        
                         input = new BufferedReader(new FileReader(path));
                         try 
                         {
                             String line = null; //not declared within while loop
                             while (( line = input.readLine()) != null)
                             {
-                                out.write(line);
-                                out.write("\n");
+                            	if (line != null)
+                            	{
+                            		out.write(line);
+                            		out.newLine();
+                            	}
                                 
                                 if (line.length() > 0 && line.charAt(0) == 'C' && line.startsWith("CREATE TABLE"))
                                 {
