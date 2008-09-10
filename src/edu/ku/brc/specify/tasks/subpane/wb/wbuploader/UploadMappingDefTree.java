@@ -23,7 +23,7 @@ public class UploadMappingDefTree extends UploadMappingDef
 	/**
 	 * TreeMapElements on the ranks being uploaded.
 	 */
-	protected Vector<Vector<TreeMapElement>> levels;
+	protected UploadMappingDefTreeLevels levels;
 	/**
 	 * The name of the field which serves as the parent pointer in the tree.
 	 */
@@ -40,19 +40,20 @@ public class UploadMappingDefTree extends UploadMappingDef
 	 * @param root
 	 * @param levels
 	 */
-	public UploadMappingDefTree(String tableName, String fieldName, String parentField, String root, Vector<Vector<TreeMapElement>> levels, String wbFldName)
+	public UploadMappingDefTree(String tableName, String fieldName, String parentField, String root, 
+	                            Vector<Vector<TreeMapElement>> levels, String wbFldName) throws Exception
 	{
 		super(tableName, fieldName);
 		this.parentField = parentField;
 		this.root = root;
-		this.levels = levels;	
+		this.levels = new UploadMappingDefTreeLevels(levels);	
         this.wbFldName = wbFldName; //actually just using tree name for wbFldName for now.
 	}
 		
 	/**
 	 * @return the levels
 	 */
-	public Vector<Vector<TreeMapElement>> getLevels()
+	public UploadMappingDefTreeLevels getLevels()
 	{
 		return levels;
 	}
@@ -80,11 +81,12 @@ public class UploadMappingDefTree extends UploadMappingDef
     public String toString()
     {
         StringBuilder result = new StringBuilder(super.toString() + " (");
-        for (Vector<TreeMapElement> level : levels)
+        for (int l = 0; l < levels.size(); l++)
         {
-            for (TreeMapElement rank : level)
+            TreeMapElements level = levels.get(l);
+            for (int r = 0; r < level.size(); r++)
             {
-                result.append("(" + rank + ") ");
+                result.append("(" + level.getElement(r) + ") ");
             }
         }
         return result.toString();

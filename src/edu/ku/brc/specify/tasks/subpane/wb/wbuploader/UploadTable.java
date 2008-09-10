@@ -76,7 +76,7 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
  */
 public class UploadTable implements Comparable<UploadTable>
 {
-    private static boolean                          debugging               = false;
+    private static boolean                          debugging               = true;
     //if true then 'Undos' are accomplished with delete statements. This is safe
     //if modification to the database is prevented while uploading.
     private static boolean                          doRawDeletes            = true;
@@ -369,32 +369,33 @@ public class UploadTable implements Comparable<UploadTable>
                             fldName = "collectionMemberId";
                         }
                         DefaultFieldEntry dfe;
+                        // Now find UploadField corresponding to field and set Required to true.
+                        UploadField uploadField = null;
+                        for (Vector<UploadField> ufs : uploadFields)
+                        {
+                            for (UploadField uf : ufs)
+                            {
+                                if (uf.getField().getName().equalsIgnoreCase(col.name()))
+                                {
+                                    uf.setRequired(true);
+                                    uploadField = uf;
+                                }
+                            }
+                        }
                         if (table.getName().equalsIgnoreCase("collector") && fldName.equalsIgnoreCase("isprimary"))
                         {
                             //Creating a new DefaultFieldEntry class makes it possible to handle
                             //the conditional/parameterized default behavior of isPrimary without spreading these
                             //cheezy field by field conditions to code that is not yet infected.by cheezy fld by fld conditions.
                             dfe = new DefaultIsPrimaryEntry(this, m.getReturnType(),
-                                    setter, fldName);
+                                    setter, fldName, uploadField);
                         }
                         else
                         {
                             dfe = new DefaultFieldEntry(this, m.getReturnType(),
-                                    setter, fldName);
+                                    setter, fldName, uploadField);
                         }
                         missingRequiredFlds.add(dfe);
-                    }
-                    // Now setRequired for the corresponding UploadField to true. (Very
-                    // inefficiently)
-                    for (Vector<UploadField> ufs : uploadFields)
-                    {
-                        for (UploadField uf : ufs)
-                        {
-                            if (uf.getField().getName().equalsIgnoreCase(col.name()))
-                            {
-                                uf.setRequired(true);
-                            }
-                        }
                     }
                 }
             }
@@ -643,7 +644,7 @@ public class UploadTable implements Comparable<UploadTable>
         {
             if (!f.getField().isForeignKey()) //Foreign Keys get assigned later in process...
             {
-                if ((f.getValue() == null || f.getValue().trim().equals("")) && f.isRequired()) 
+                if (StringUtils.isEmpty(f.getValue()) && f.isRequired()) 
                 { 
                     return false; 
                 }
@@ -1713,68 +1714,72 @@ public class UploadTable implements Comparable<UploadTable>
                         name, seq+1))));
     }
     
+    protected void validateRowValues(int row, UploadData uploadData, Vector<UploadTableInvalidValue> invalidValues)
+    {
+        int seq = 0;
+        boolean gotABlank = false;
+        int blankSeq = 0;
+        UploadField blankFirstFld = null;
+        for (Vector<UploadField> flds : uploadFields)
+        {
+            boolean isBlank = true;
+            UploadField currFirstFld = null;
+            for (UploadField fld : flds)
+            {
+                if (fld.getIndex() != -1)
+                {
+                    if (currFirstFld == null)
+                    {
+                        currFirstFld = fld;
+                    }
+                    fld.setValue(uploadData.get(row, fld.getIndex()));
+                    isBlank &= isBlankVal(fld, seq, row, uploadData);
+                    try
+                    {
+                        if (invalidNull(fld, uploadData, row, seq)) 
+                        { 
+                            throw new Exception(
+                                getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA")); 
+                        }                
+                        if (!pickListCheck(fld))
+                        {
+                            throw new Exception(getInvalidPicklistValErrMsg(fld));
+                        }
+                        getArgForSetter(fld);
+                    }
+                    catch (Exception e)
+                    {
+                        invalidValues.add(new UploadTableInvalidValue(null, this, fld, row, e));
+                    }
+                }
+            }
+            if (isBlank && !gotABlank && currFirstFld != null)
+            /* 
+             * Disallow situations where 1-many lists have 'holes' - eg. CollectorLastName2 is blank but CollectorLastName1 and -3 are not.
+             * 
+             */
+            {
+                gotABlank = true;
+                blankSeq = seq;
+                if (blankFirstFld == null)
+                {
+                    blankFirstFld = currFirstFld;
+                }
+            }
+            else if (gotABlank)
+            {
+                addInvalidValueMsgForOneToManySkip(invalidValues, blankFirstFld, toString(), row, blankSeq);
+            }
+                
+            seq++;
+        }
+    }
     public Vector<UploadTableInvalidValue> validateValues(final UploadData uploadData)
     {
         Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
         for (int row = 0; row < uploadData.getRows(); row++)
         {
-            int seq = 0;
-            boolean gotABlank = false;
-            int blankSeq = 0;
-            UploadField blankFirstFld = null;
-            for (Vector<UploadField> flds : uploadFields)
-            {
-                boolean isBlank = true;
-                UploadField currFirstFld = null;
-                for (UploadField fld : flds)
-                {
-                    if (fld.getIndex() != -1)
-                    {
-                        if (currFirstFld == null)
-                        {
-                            currFirstFld = fld;
-                        }
-                        fld.setValue(uploadData.get(row, fld.getIndex()));
-                        isBlank &= isBlankVal(fld, seq, row, uploadData);
-                        try
-                        {
-                            if (invalidNull(fld, uploadData, row, seq)) 
-                            { 
-                                throw new Exception(
-                                    getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA")); 
-                            }                
-                            if (!pickListCheck(fld))
-                            {
-                                throw new Exception(getInvalidPicklistValErrMsg(fld));
-                            }
-                            getArgForSetter(fld);
-                        }
-                        catch (Exception e)
-                        {
-                            result.add(new UploadTableInvalidValue(null, this, fld, row, e));
-                        }
-                    }
-                }
-                if (isBlank && !gotABlank && currFirstFld != null)
-                /* 
-                 * Disallow situations where 1-many lists have 'holes' - eg. CollectorLastName2 is blank but CollectorLastName1 and -3 are not.
-                 * 
-                 */
-                {
-                    gotABlank = true;
-                    blankSeq = seq;
-                    if (blankFirstFld == null)
-                    {
-                        blankFirstFld = currFirstFld;
-                    }
-                }
-                else if (gotABlank)
-                {
-                    addInvalidValueMsgForOneToManySkip(result, blankFirstFld, toString(), row, blankSeq);
-                }
-                    
-                seq++;
-            }
+            validateRowValues(row, uploadData, result);
         }
         if (tblClass.equals(DeterminationStatus.class))
         {
@@ -1857,7 +1862,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected void writeRowOrNot(boolean doNotWrite, boolean skipMatch) throws UploaderException
     {
         int recNum = 0;
-        //logDebug("writeRowOrNot: " + this.table.getName());
+        logDebug("writeRowOrNot: " + this.table.getName());
         for (Vector<UploadField> seq : uploadFields)
         {
             try

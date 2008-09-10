@@ -17,7 +17,11 @@ public class TreeMapElement
 	/**
 	 * The index in the workbench being uploaded.
 	 */
-	protected int index;
+	protected int index;	
+	/**
+	 * The name of the field mapped to.
+	 */
+	protected String fldName;
     /**
      * The caption for the rank in the workbench.
      */
@@ -36,10 +40,11 @@ public class TreeMapElement
 	 * @param sequence
 	 * @param required
 	 */
-	public TreeMapElement(int index, String wbFldName, int rank, Integer sequence, boolean required)
+	public TreeMapElement(int index, String fldName, String wbFldName, int rank, Integer sequence, boolean required)
 	{
 		super();
 		this.index = index;
+		this.fldName = fldName;
         this.wbFldName = wbFldName;
 		this.rank = rank;
 		this.sequence = sequence;
@@ -84,7 +89,7 @@ public class TreeMapElement
 	 */
 	public Integer getSequence()
 	{
-		return sequence;
+		return sequence != null ? sequence : 0;
 	}
     /**
      * @param sequence the sequence to set
@@ -120,6 +125,20 @@ public class TreeMapElement
 //            return sequence == ((TreeMapElement)obj).sequence && rank == 
 //        }
 //    }
+    /**
+     * @return the fldName
+     */
+    public String getFldName()
+    {
+        return fldName;
+    }
+    /**
+     * @param fldName the fldName to set
+     */
+    public void setFldName(String fldName)
+    {
+        this.fldName = fldName;
+    }
     
     
 }

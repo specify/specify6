@@ -82,7 +82,7 @@ import edu.ku.brc.util.Pair;
  */
 public class Uploader implements ActionListener, KeyListener
 {
-    protected static boolean                          debugging               = false;
+    protected static boolean                          debugging               = true;
     
     // Phases in the upload process...
     protected final static String                   INITIAL_STATE            = "WB_UPLOAD_INITIAL_STATE";
@@ -627,6 +627,7 @@ public class Uploader implements ActionListener, KeyListener
         processTreeMaps();
         for (UploadTable ut : uploadTables)
         {
+            logDebug("assigningFldSetters: " + ut.getTable().getName());
             ut.assignFldSetters();
         }
         orderUploadTables();
@@ -815,7 +816,7 @@ public class Uploader implements ActionListener, KeyListener
     protected String getTreeTableName(final UploadMappingDefTree treeMap, final int level)
     {
         return treeMap.getTable()
-                + Integer.toString(treeMap.getLevels().get(level).get(0).getRank());
+                + Integer.toString(treeMap.getLevels().get(level).getRank());
     }
 
     /**
@@ -832,6 +833,7 @@ public class Uploader implements ActionListener, KeyListener
         UploadTableTree parentImpTbl = null;
         for (int level = 0; level < treeMap.getLevels().size(); level++)
         {
+            logDebug(treeMap.getLevels().get(level).getWbFldName());
             // add new table to import graph for rank
             Table rankTbl = new Table(getTreeTableName(treeMap, level), baseTbl);
             try
@@ -853,30 +855,43 @@ public class Uploader implements ActionListener, KeyListener
             // create UploadTable for new table
 
             UploadTableTree it = new UploadTableTree(rankTbl, baseTbl, parentImpTbl, treeMap
-                    .getLevels().get(level).get(0).isRequired(), treeMap.getLevels().get(level)
-                    .get(0).getRank(), treeMap.getLevels().get(level).get(0).getWbFldName());
+                    .getLevels().get(level).isRequired(), treeMap.getLevels().get(level)
+                    .getRank(), treeMap.getLevels().get(level).getWbFldName());
             it.init();
 
             // add ImportFields for new table
-            for (int seq = 0; seq < treeMap.getLevels().get(level).size(); seq++)
+            //for (int seq = 0; seq < treeMap.getLevels().get(level).size(); seq++)
+            int prevSeq = -1;
+            //for (TreeMapElement item : treeMap.getLevels().get(level))
+            for (int i = 0; i < treeMap.getLevels().get(level).size(); i++) 
             {
-                Field fld = rankTbl.getField(treeMap.getField());
-                int fldIdx = treeMap.getLevels().get(level).get(seq).getIndex();
-                String wbFldName = treeMap.getLevels().get(level).get(seq).getWbFldName();
+                TreeMapElement item = treeMap.getLevels().get(level).getElement(i);
+                int seq = item.getSequence();
+                Field fld = rankTbl.getField(item.getFldName());
+                int fldIdx = item.getIndex();
+                String wbFldName = item.getWbFldName();
                 UploadField newFld1 = new UploadField(fld, fldIdx, wbFldName, null);
-                newFld1.setRequired(true);
+                newFld1.setRequired(item.isRequired());
                 newFld1.setSequence(seq);
                 uploadFields.add(newFld1);
-                UploadField newFld2 = new UploadField(rankTbl.getField("rankId"), -1, null, null);
-                newFld2.setRequired(true);
-                newFld2.setValue(Integer.toString(treeMap.getLevels().get(level).get(0).getRank()));
-                newFld2.setSequence(seq);
-                uploadFields.add(newFld2);
-
-                // add UploadTable for new table
+                
+                UploadField newFld2 = null;
+                if (prevSeq != seq)
+                {
+                    newFld2 = new UploadField(rankTbl.getField("rankId"), -1, null, null);
+                    newFld2.setRequired(true);
+                    newFld2.setValue(Integer.toString(item.getRank()));
+                    newFld2.setSequence(seq);
+                    uploadFields.add(newFld2);
+                }
 
                 it.addField(newFld1);
-                it.addField(newFld2);
+                if (newFld2 != null)
+                {
+                    it.addField(newFld2);
+                }
+                
+                prevSeq = seq;
             }
             uploadTables.add(it);
             parentImpTbl = it;
@@ -1603,18 +1618,96 @@ public class Uploader implements ActionListener, KeyListener
                 errors.add(new InvalidStructure(msg, this));
             }
         }
+        
+        Vector<DefaultFieldEntry> undefinedDfes = new Vector<DefaultFieldEntry>();
         for (DefaultFieldEntry dfe : missingRequiredFields)
         {
             if (!dfe.isDefined())
             {
-                // see note above for missignRequiredClasses iteration
-                // another very vague message...
-                String msg = getResourceString("WB_UPLOAD_MISSING_DBDATA") + ": "
-                        + dfe.getUploadTbl().getTable().getTableInfo().getTitle() + "."
-                        + dfe.getFldName(); // i18n (dfe.getFldName() is not using title nor wb
-                                            // column header)
-                errors.add(new InvalidStructure(msg, this));
+                undefinedDfes.add(dfe);
             }
+        }
+        //now remove possibly confusing or redundant dfes.
+        Collections.sort(undefinedDfes, new Comparator<DefaultFieldEntry>(){
+
+            /* (non-Javadoc)
+             * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+             */
+            @Override
+            public int compare(DefaultFieldEntry o1, DefaultFieldEntry o2)
+            {
+                int result = o1.getUploadTbl().getTable().getName().compareTo(o2.getUploadTbl().getTable().getName());
+                if (result != 0)
+                {
+                    return result;
+                }
+                boolean o1IsUserFld = o1.getUploadFld() == null || o1.getUploadFld().getIndex() != -1;
+                boolean o2IsUserFld = o2.getUploadFld() == null || o2.getUploadFld().getIndex() != -1;
+                if (o1IsUserFld == o2IsUserFld)
+                {
+                    return (o1.getFldName().compareTo(o2.getFldName()));
+                }
+                if (o1IsUserFld)
+                {
+                    return -1;
+                }
+                return 1;
+            }
+            
+        });
+        UploadTable currentTbl = null;
+        Vector<DefaultFieldEntry> dfes4Tbl = new Vector<DefaultFieldEntry>();
+        Vector<DefaultFieldEntry> dfes2Remove = new Vector<DefaultFieldEntry>();
+        for (DefaultFieldEntry dfe : undefinedDfes)
+        {
+            if (dfe.getUploadTbl() != currentTbl)
+            {
+                if (dfes4Tbl.size() > 1)
+                {
+                    boolean gotAUserFld = false;
+                    for (DefaultFieldEntry tblDfe : dfes4Tbl)
+                    {
+                        boolean isAUserFld = tblDfe.getUploadFld() == null || tblDfe.getUploadFld().getIndex() != -1;
+                        gotAUserFld = gotAUserFld || isAUserFld;
+                        if (!isAUserFld && gotAUserFld)
+                        {
+                            //remove weird fields if there are other non-weird fields from the table
+                            dfes2Remove.add(tblDfe);
+                        }
+                    }
+                }
+                dfes4Tbl.clear();
+                currentTbl = dfe.getUploadTbl();                            
+            }
+            dfes4Tbl.add(dfe);
+        }
+        if (dfes4Tbl.size() > 1)
+        {
+            boolean gotAUserFld = false;
+            for (DefaultFieldEntry tblDfe : dfes4Tbl)
+            {
+                boolean isAUserFld = tblDfe.getUploadFld() == null || tblDfe.getUploadFld().getIndex() != -1;
+                gotAUserFld = gotAUserFld || isAUserFld;
+                if (!isAUserFld && gotAUserFld)
+                {
+                    //remove weird fields if there are other non-weird(or weird) fields from the table
+                    dfes2Remove.add(tblDfe);
+                }
+            }
+        }
+        for (DefaultFieldEntry dfe : dfes2Remove)
+        {
+            undefinedDfes.remove(dfe);
+        }
+        for (DefaultFieldEntry dfe : undefinedDfes)
+        {
+            // see note above for missignRequiredClasses iteration
+            // another very vague message...
+            String msg = getResourceString("WB_UPLOAD_MISSING_DBDATA") + ": "
+                    + dfe.getUploadTbl().getTable().getTableInfo().getTitle() + "."
+                    + dfe.getFldName(); // i18n (dfe.getFldName() is not using title nor wb
+                                        // column header)
+            errors.add(new InvalidStructure(msg, this));
         }
 
         for (UploadTable t : uploadTables)
@@ -1640,68 +1733,63 @@ public class Uploader implements ActionListener, KeyListener
         // Since, right now, tax trees are the only trees that require this test.
         // Non-tree 1-manys like Collector are ok (but possibly not desirable?) if inconsistent:
         // [FirstName 1, LastName 1, LastName 2] works.
-        Vector<TreeMapElement> maxTaxSeqLevel = null;
+        TreeMapElements maxTaxSeqLevel = null;
         for (int m = 0; m < uploadData.getCols(); m++)
         {
             if (uploadData.getMapping(m).getTable().equalsIgnoreCase("taxon"))
             {
                 UploadMappingDefTree tmap = (UploadMappingDefTree) uploadData.getMapping(m);
                 boolean seqSizeInconsistent = false;
-                for (Vector<TreeMapElement> tmes : tmap.getLevels())
+                for (int l = 0; l < tmap.getLevels().size(); l++)
                 {
-                    if (tmes.size() > 1
-                            || (maxTaxSeqLevel != null && maxTaxSeqLevel.get(0).getRank() < tmes
-                                    .get(0).getRank()))
+                    TreeMapElements tmes = tmap.getLevels().get(l); 
+                    if (tmes.getMaxSeq() > 0 || maxTaxSeqLevel != null && maxTaxSeqLevel.getRank() < tmes.getRank())
                     {
                         if (maxTaxSeqLevel == null)
                         {
                             maxTaxSeqLevel = tmes;
                         }
-                        else if (maxTaxSeqLevel.size() != tmes.size())
+                        else if (maxTaxSeqLevel.getMaxSeq() != tmes.getMaxSeq())
                         {
                             seqSizeInconsistent = true;
-                            if (maxTaxSeqLevel.size() < tmes.size())
+                            if (maxTaxSeqLevel.getMaxSeq() < tmes.getMaxSeq())
                             {
                                 maxTaxSeqLevel = tmes;
                             }
+                        }
+                        
+                    }
+                    
+                    boolean[] seqs = tmes.getSeqs();
+                    for (int s = 0; s < seqs.length; s++)
+                    {
+                        if (!seqs[s])
+                        {
+                            String msg = String.format(getResourceString("WB_UPLOAD_MISSING_SEQ"),  tmes.getWbFldName());
+                            result.add(new InvalidStructure(msg, null));
                         }
                     }
                 }
 
                 if (seqSizeInconsistent && maxTaxSeqLevel != null)
                 {
-                    for (Vector<TreeMapElement> tmes : tmap.getLevels())
+                    for (int l = 0; l < tmap.getLevels().size(); l++)
                     {
-                        if (tmes.get(0).getRank() > maxTaxSeqLevel.get(0).getRank()
-                                && tmes.size() < maxTaxSeqLevel.size())
+                        TreeMapElements tmes = tmap.getLevels().get(l); 
+                        if (tmes.getRank() > maxTaxSeqLevel.getRank()
+                                && tmes.getMaxSeq() < maxTaxSeqLevel.getMaxSeq())
                         {
-                            boolean[] seqsPresent = new boolean[maxTaxSeqLevel.size()];
-                            for (int b = 0; b < seqsPresent.length; b++)
-                                seqsPresent[b] = false;
-                            for (TreeMapElement tme : tmes)
+                            for (int s = tmes.getMaxSeq() + 1; s <= maxTaxSeqLevel.getMaxSeq(); s++)
                             {
-                                seqsPresent[tme.getSequence()] = true;
-                            }
-                            for (int s = 0; s < seqsPresent.length; s++)
-                            {
-                                if (!seqsPresent[s])
-                                {
-                                    String levelName = tmes.get(0).getWbFldName();
-                                    // strip off trailing number (assuming we will never allow it to
-                                    // be > 10) and trim.
-                                    levelName = levelName.substring(0, levelName.length() - 2)
-                                            .trim();
-                                    String msg = getResourceString("WB_UPLOAD_MISSING_FLD") + ": "
-                                            + levelName + " " + Integer.toString(s + 1);
+                                    String msg = String.format(getResourceString("WB_UPLOAD_MISSING_SEQ"), tmes.getWbFldName());
                                     result.add(new InvalidStructure(msg, null));
-                                }
                             }
                         }
                     }
                 }
             }
         }
-
+        
         if (maxTaxSeqLevel != null && maxTaxSeqLevel.size() > 1)
         {
             // check to see if Determination.isCurrent is either not present or always present.

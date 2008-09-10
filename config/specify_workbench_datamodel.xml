@@ -206,10 +206,10 @@
     <field column="Species 1"               	name="species1" type="java.lang.String" length="64"/>
     <field column="Subspecies 1"            	name="subspecies1" type="java.lang.String" length="64"/>
     <field column="Variety 1"               	name="variety1" type="java.lang.String" length="64"/>
-    <field column="Species Author First Name 1" name="speciesAuthorFirstName1" type="java.lang.String" length="50"/>
-    <field column="Species Author Last Name 1"  name="speciesAuthorLastName1" type="java.lang.String" length="50"/>
-    <!-- field column="Infra Author First Name 1"   name="infraAuthorFirstName1" type="java.lang.String" length="50"/-->
-    <!-- field column="Infra Author Last Name 1"    name="infraAuthorLastName1" type="java.lang.String" length="50"/-->
+    <field column="Genus Author 1" 			    name="genusAuthor1" type="java.lang.String" length="128"/>
+    <field column="Species Author 1" 			name="speciesAuthor1" type="java.lang.String" length="128"/>
+    <field column="Subspecies Author 1" 		name="subspeciesAuthor1" type="java.lang.String" length="128"/>
+    <field column="Variety Author 1" 			name="varietyAuthor1" type="java.lang.String" length="128"/>
     <field column="Type Status Name 1"          name="typeStatusName1" type="java.lang.String" length="50"/>
     
     <field column="Determined Date 2"       	name="determinedDate2" type="calendar_date"/>
@@ -220,10 +220,10 @@
     <field column="Species 2"               	name="species2" type="java.lang.String" length="64"/>
     <field column="Subspecies 2"            	name="subspecies2" type="java.lang.String" length="64"/>
     <field column="Variety 2"               	name="variety2" type="java.lang.String" length="64"/>
-    <field column="Species Author First Name 2" name="speciesAuthorFirstName2" type="java.lang.String" length="50"/>
-    <field column="Species Author Last Name 2"  name="speciesAuthorLastName2" type="java.lang.String" length="50"/>
-    <!--field column="Infra Author First Name 2"   name="infraAuthorFirstName2" type="java.lang.String" length="50"/-->
-    <!--field column="Infra Author Last Name 2"    name="infraAuthorLastName2" type="java.lang.String" length="50"/-->
+    <field column="Genus Author 2" 			    name="genusAuthor2" type="java.lang.String" length="128"/>
+    <field column="Species Author 2" 			name="speciesAuthor2" type="java.lang.String" length="128"/>
+    <field column="Subspecies Author 2" 		name="subspeciesAuthor2" type="java.lang.String" length="128"/>
+    <field column="Variety Author 2" 			name="varietyAuthor2" type="java.lang.String" length="128"/>
     <field column="TypeStatusName 2"            name="typeStatusName2" type="java.lang.String" length="50"/> 
   </table>
   
@@ -464,25 +464,77 @@
   
   <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxon" tableid="4">
     <field column="Kingdom" name="kingdom" type="java.lang.String" length="64"/>
+    <field column="Kingdom Author" name="kingdomAuthor" type="java.lang.String" length="128"/>
+    <field column="Kingdom Common Name" name="kingdomCommonName" type="java.lang.String" length="128"/>
+
     <field column="Subkingdom" name="subkingdom" type="java.lang.String" length="64"/>
+    <field column="Subkingdom Author" name="subkingdomAuthor" type="java.lang.String" length="128"/>
+    <field column="Subkingdom Common Name" name="subkingdomCommonName" type="java.lang.String" length="128"/>
+
     <field column="Division" name="division" type="java.lang.String" length="64"/>
+    <field column="Division Author" name="divisionAuthor" type="java.lang.String" length="128"/>
+    <field column="Division Common Name" name="divisionCommonName" type="java.lang.String" length="128"/>
+
     <field column="Phylum" name="phylum" type="java.lang.String" length="64"/>
+    <field column="Phylum Author" name="phylumAuthor" type="java.lang.String" length="128"/>
+    <field column="Phylum Common Name" name="phylumCommonName" type="java.lang.String" length="128"/>
+
     <field column="Subphylum" name="subphylum" type="java.lang.String" length="64"/>
+    <field column="Subphylum Author" name="subphylumAuthor" type="java.lang.String" length="128"/>
+    <field column="Subphylum Common Name" name="subphylumCommonName" type="java.lang.String" length="128"/>
+
     <field column="Superclass" name="superclass" type="java.lang.String" length="64"/>
+    <field column="Superclass Author" name="superclassAuthor" type="java.lang.String" length="128"/>
+    <field column="Superclass CommonName" name="superclassCommonName" type="java.lang.String" length="128"/>
+
     <field column="Class" name="class" type="java.lang.String" length="64"/>
+    <field column="Class Author" name="classAuthor" type="java.lang.String" length="128"/>
+    <field column="Class CommonName" name="classCommonName" type="java.lang.String" length="128"/>
+
     <field column="Subclass" name="subclass" type="java.lang.String" length="64"/>
+    <field column="Subclass Author" name="subclassAuthor" type="java.lang.String" length="128"/>
+    <field column="Subclass CommonName" name="subclassCommonName" type="java.lang.String" length="128"/>
+
     <field column="Infraclass" name="infraclass" type="java.lang.String" length="64"/>
+    <field column="Infraclass Author" name="infraclassAuthor" type="java.lang.String" length="128"/>
+    <field column="Infraclass CommonName" name="infraclassyCommonName" type="java.lang.String" length="128"/>
+
     <field column="Superorder" name="superorder" type="java.lang.String" length="64"/>
+    <field column="Superorder Author" name="superorderAuthor" type="java.lang.String" length="128"/>
+    <field column="Superorder CommonName" name="superorderCommonName" type="java.lang.String" length="128"/>
+
     <field column="Order" name="order" type="java.lang.String" length="64"/>
+    <field column="Order Author" name="orderAuthor" type="java.lang.String" length="128"/>
+    <field column="Order CommonName" name="orderCommonName" type="java.lang.String" length="128"/>
+
     <field column="Suborder" name="suborder" type="java.lang.String" length="64"/>
+    <field column="Suborder Author" name="suborderAuthor" type="java.lang.String" length="128"/>
+    <field column="Suborder CommonName" name="suborderCommonName" type="java.lang.String" length="128"/>
+
     <field column="Infraorder" name="infraorder" type="java.lang.String" length="64"/>
+    <field column="Infraorder Author" name="infraorderAuthor" type="java.lang.String" length="128"/>
+    <field column="Infraorder CommonName" name="infraorderCommonName" type="java.lang.String" length="128"/>
+
     <field column="Superfamily" name="superfamily" type="java.lang.String" length="64"/>
+    <field column="Superfamily Author" name="superfamilyAuthor" type="java.lang.String" length="128"/>
+    <field column="Superfamily CommonName" name="superfamilyCommonName" type="java.lang.String" length="128"/>
+
     <field column="Family" name="family" type="java.lang.String" length="64"/>
+    <field column="Family Author" name="familyAuthor" type="java.lang.String" length="128"/>
+    <field column="Family CommonName" name="familyCommonName" type="java.lang.String" length="128"/>
+
     <field column="Subfamily" name="subfamily" type="java.lang.String" length="64"/>
-    <!--<field column="CommonName" name="commonName" type="java.lang.String" length="128"/>-->
-    <!--
+    <field column="Subfamily Author" name="subfamilyAuthor" type="java.lang.String" length="128"/>
+    <field column="Subfamily CommonName" name="subfamilyCommonName" type="java.lang.String" length="128"/>
+
     <field column="Tribe" name="tribe" type="java.lang.String" length="64"/>
+    <field column="Tribe Author" name="tribeAuthor" type="java.lang.String" length="128"/>
+    <field column="Tribe CommonName" name="tribeCommonName" type="java.lang.String" length="128"/>
+    
     <field column="Subtribe" name="subtribe" type="java.lang.String" length="64"/>
+    <field column="Subtribe Author" name="subtribeAuthor" type="java.lang.String" length="128"/>
+    <field column="Subtribe CommonName" name="subtribeCommonName" type="java.lang.String" length="128"/>
+    <!--
     <field column="Genus" name="genus" type="java.lang.String" length="64"/>
     <field column="Subgenus" name="subgenus" type="java.lang.String" length="64"/>
     <field column="Section" name="section" type="java.lang.String" length="64"/>
@@ -497,34 +549,116 @@
   </table>
   <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxon" tableid="4000">
     <field column="Kingdom" name="kingdom" type="java.lang.String" length="64"/>
+    <field column="Kingdom Author" name="kingdomAuthor" type="java.lang.String" length="128"/>
+    <field column="Kingdom Common Name" name="kingdomCommonName" type="java.lang.String" length="128"/>
+
     <field column="Subkingdom" name="subkingdom" type="java.lang.String" length="64"/>
+    <field column="Subkingdom Author" name="subkingdomAuthor" type="java.lang.String" length="128"/>
+    <field column="Subkingdom Common Name" name="subkingdomCommonName" type="java.lang.String" length="128"/>
+
     <field column="Division" name="division" type="java.lang.String" length="64"/>
+    <field column="Division Author" name="divisionAuthor" type="java.lang.String" length="128"/>
+    <field column="Division Common Name" name="divisionCommonName" type="java.lang.String" length="128"/>
+
     <field column="Phylum" name="phylum" type="java.lang.String" length="64"/>
+    <field column="Phylum Author" name="phylumAuthor" type="java.lang.String" length="128"/>
+    <field column="Phylum Common Name" name="phylumCommonName" type="java.lang.String" length="128"/>
+
     <field column="Subphylum" name="subphylum" type="java.lang.String" length="64"/>
+    <field column="Subphylum Author" name="subphylumAuthor" type="java.lang.String" length="128"/>
+    <field column="Subphylum Common Name" name="subphylumCommonName" type="java.lang.String" length="128"/>
+
     <field column="Superclass" name="superclass" type="java.lang.String" length="64"/>
+    <field column="Superclass Author" name="superclassAuthor" type="java.lang.String" length="128"/>
+    <field column="Superclass CommonName" name="superclassCommonName" type="java.lang.String" length="128"/>
+
     <field column="Class" name="class" type="java.lang.String" length="64"/>
+    <field column="Class Author" name="classAuthor" type="java.lang.String" length="128"/>
+    <field column="Class CommonName" name="classCommonName" type="java.lang.String" length="128"/>
+
     <field column="Subclass" name="subclass" type="java.lang.String" length="64"/>
+    <field column="Subclass Author" name="subclassAuthor" type="java.lang.String" length="128"/>
+    <field column="Subclass CommonName" name="subclassCommonName" type="java.lang.String" length="128"/>
+
     <field column="Infraclass" name="infraclass" type="java.lang.String" length="64"/>
+    <field column="Infraclass Author" name="infraclassAuthor" type="java.lang.String" length="128"/>
+    <field column="Infraclass CommonName" name="infraclassCommonName" type="java.lang.String" length="128"/>
+
     <field column="Superorder" name="superorder" type="java.lang.String" length="64"/>
+    <field column="Superorder Author" name="superorderAuthor" type="java.lang.String" length="128"/>
+    <field column="Superorder CommonName" name="superorderCommonName" type="java.lang.String" length="128"/>
+
     <field column="Order" name="order" type="java.lang.String" length="64"/>
+    <field column="Order Author" name="orderAuthor" type="java.lang.String" length="128"/>
+    <field column="Order CommonName" name="orderCommonName" type="java.lang.String" length="128"/>
+
     <field column="Suborder" name="suborder" type="java.lang.String" length="64"/>
+    <field column="Suborder Author" name="suborderAuthor" type="java.lang.String" length="128"/>
+    <field column="Suborder CommonName" name="suborderCommonName" type="java.lang.String" length="128"/>
+
     <field column="Infraorder" name="infraorder" type="java.lang.String" length="64"/>
+    <field column="Infraorder Author" name="infraorderAuthor" type="java.lang.String" length="128"/>
+    <field column="Infraorder CommonName" name="infraorderCommonName" type="java.lang.String" length="128"/>
+
     <field column="Superfamily" name="superfamily" type="java.lang.String" length="64"/>
+    <field column="Superfamily Author" name="superfamilyAuthor" type="java.lang.String" length="128"/>
+    <field column="Superfamily CommonName" name="superfamilyCommonName" type="java.lang.String" length="128"/>
+
     <field column="Family" name="family" type="java.lang.String" length="64"/>
+    <field column="Family Author" name="familyAuthor" type="java.lang.String" length="128"/>
+    <field column="Family CommonName" name="familyCommonName" type="java.lang.String" length="128"/>
+
     <field column="Subfamily" name="subfamily" type="java.lang.String" length="64"/>
-    <field column="CommonName" name="commonName" type="java.lang.String" length="128"/>
+    <field column="Subfamily Author" name="subfamilyAuthor" type="java.lang.String" length="128"/>
+    <field column="Subfamily CommonName" name="subfamilyCommonName" type="java.lang.String" length="128"/>
+
     <field column="Tribe" name="tribe" type="java.lang.String" length="64"/>
+    <field column="Tribe Author" name="tribeAuthor" type="java.lang.String" length="128"/>
+    <field column="Tribe CommonName" name="tribeCommonName" type="java.lang.String" length="128"/>
+    
     <field column="Subtribe" name="subtribe" type="java.lang.String" length="64"/>
+    <field column="Subtribe Author" name="subtribeAuthor" type="java.lang.String" length="128"/>
+    <field column="Subtribe CommonName" name="subtribeCommonName" type="java.lang.String" length="128"/>
+
     <field column="Genus" name="genus" type="java.lang.String" length="64"/>
+    <field column="Genus Author" name="genusAuthor" type="java.lang.String" length="128"/>
+    <field column="Genus CommonName" name="genusCommonName" type="java.lang.String" length="128"/>
+    
     <field column="Subgenus" name="subgenus" type="java.lang.String" length="64"/>
+    <field column="Subgenus Author" name="subgenusAuthor" type="java.lang.String" length="128"/>
+    <field column="subgenus CommonName" name="subgenusCommonName" type="java.lang.String" length="128"/>
+    
     <field column="Section" name="section" type="java.lang.String" length="64"/>
+    <field column="Section Author" name="sectionAuthor" type="java.lang.String" length="128"/>
+    <field column="Section CommonName" name="sectionCommonName" type="java.lang.String" length="128"/>
+    
     <field column="Subsection" name="subsection" type="java.lang.String" length="64"/>
+    <field column="Subsection Author" name="subsectionAuthor" type="java.lang.String" length="128"/>
+    <field column="Subsection CommonName" name="subsectionCommonName" type="java.lang.String" length="128"/>
+    
     <field column="Species" name="species" type="java.lang.String" length="64"/>
+    <field column="Species Author" name="speciesAuthor" type="java.lang.String" length="128"/>
+    <field column="Species CommonName" name="speciesCommonName" type="java.lang.String" length="128"/>
+    
     <field column="Subspecies" name="subspecies" type="java.lang.String" length="64"/>
+    <field column="Subspecies Author" name="subspeciesAuthor" type="java.lang.String" length="128"/>
+    <field column="Subspecies CommonName" name="subspeciesCommonName" type="java.lang.String" length="128"/>
+    
     <field column="Variety" name="variety" type="java.lang.String" length="64"/>
+    <field column="Variety Author" name="varietyAuthor" type="java.lang.String" length="128"/>
+    <field column="Variety CommonName" name="varietyCommonName" type="java.lang.String" length="128"/>
+   
     <field column="Subvariety" name="subvariety" type="java.lang.String" length="64"/>
+    <field column="Subvariety Author" name="subvarietyAuthor" type="java.lang.String" length="128"/>
+    <field column="Subvariety CommonName" name="subvarietyCommonName" type="java.lang.String" length="128"/>
+    
     <field column="Forma" name="forma" type="java.lang.String" length="64"/>
+    <field column="Forma Author" name="formaAuthor" type="java.lang.String" length="128"/>
+    <field column="Forma CommonName" name="formaCommonName" type="java.lang.String" length="128"/>
+    
     <field column="Subforma" name="subforma" type="java.lang.String" length="64"/>
+    <field column="Subforma Author" name="subformaAuthor" type="java.lang.String" length="128"/>
+    <field column="Subforma CommonName" name="subformaCommonName" type="java.lang.String" length="128"/>
   </table>
   
 </database>

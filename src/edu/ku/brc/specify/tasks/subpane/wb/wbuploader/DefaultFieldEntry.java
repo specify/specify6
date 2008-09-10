@@ -21,6 +21,11 @@ public class DefaultFieldEntry
      * The upload table that created this entry.
      */
     protected final UploadTable uploadTbl;
+    
+    /**
+     * The uploadField for this entry. (may not exist)
+     */
+    protected final UploadField uploadFld;
     /**
      * The Java class of the field being uploaded to.
      */
@@ -45,7 +50,7 @@ public class DefaultFieldEntry
      * @param fldName
      */
     public DefaultFieldEntry(final UploadTable uploadTbl, Class<?> fldClass, Method setter,
-            String fldName)
+            String fldName, final UploadField uploadFld)
     {
         super();
         this.uploadTbl = uploadTbl;
@@ -54,6 +59,7 @@ public class DefaultFieldEntry
         this.defaultValue = new Object[1];
         defaultValue[0] = null;
         this.fldName = fldName;
+        this.uploadFld = uploadFld;
     }
 
     /**
@@ -109,4 +115,13 @@ public class DefaultFieldEntry
     {
         return uploadTbl;
     }
+
+    /**
+     * @return the uploadFld
+     */
+    public UploadField getUploadFld()
+    {
+        return uploadFld;
+    }
+    
 }

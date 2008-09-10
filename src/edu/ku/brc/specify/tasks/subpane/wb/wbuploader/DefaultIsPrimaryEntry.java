@@ -22,9 +22,9 @@ public class DefaultIsPrimaryEntry extends DefaultFieldEntry
 {
 
     public DefaultIsPrimaryEntry(final UploadTable uploadTbl, Class<?> fldClass, Method setter,
-            String fldName)
+            String fldName, final UploadField uploadFld)
     {
-        super(uploadTbl, fldClass, setter, fldName);
+        super(uploadTbl, fldClass, setter, fldName, uploadFld);
     }
 
     /* (non-Javadoc)

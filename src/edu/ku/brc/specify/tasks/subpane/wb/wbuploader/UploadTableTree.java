@@ -20,6 +20,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.NonUniqueResultException;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -32,6 +33,7 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 
 /**
@@ -778,4 +780,91 @@ public class UploadTableTree extends UploadTable
             kid = kid.child;
         }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#validateRowValues(int, edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData, java.util.Vector)
+     */
+    @Override
+    protected void validateRowValues(int row,
+                                     UploadData uploadData,
+                                     Vector<UploadTableInvalidValue> invalidValues)
+    {
+        super.validateRowValues(row, uploadData, invalidValues);
+        //check that the "name" (currently the 'main' field for all specify trees) is not blank or that all other fields are.
+        for (Vector<UploadField> flds : uploadFields)
+        {
+            boolean nameBlank = true;
+            boolean allBlank = true;
+            UploadField mainFld = null;
+            for (UploadField fld : flds)
+            {
+                if (fld.getField().getName().equalsIgnoreCase("name"))
+                {
+                    mainFld = fld;
+                }
+                if (fld.getIndex() != -1)
+                {
+                    if (!StringUtils.isEmpty(uploadData.get(row, fld.getIndex())))
+                    {
+                        allBlank = false;
+                        if (fld == mainFld)
+                        {
+                            nameBlank = false;
+                        }
+                    }
+                }
+            }
+            if (nameBlank && !allBlank)
+            {
+                invalidValues.add(new UploadTableInvalidValue(null,
+                        this, mainFld, row, new Exception(getResourceString("WB_UPLOAD_INVALID_EMPTY_CELL"))));
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#requiredLocalFldsArePresent()
+     */
+    @Override
+    protected boolean requiredLocalFldsArePresent()
+    {
+        //apparently this is not necessary
+        if (!super.requiredLocalFldsArePresent())
+        {
+            return false;
+        }
+        //this works because the 'main' content field for all Specify treeables is named "name".
+        for (Vector<UploadField> flds : uploadFields)
+        {
+           boolean gotName = false;
+           for (UploadField fld : flds)
+            {
+                if (fld.getField().getName().equalsIgnoreCase("name"))
+                {
+                    gotName = true;
+                    break;
+                }
+            }
+            if (!gotName)
+            {
+                return false;
+            }
+        }
+        return true;
+        //return super.requiredLocalFldsArePresent();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getMissingReqLocalFlds()
+     */
+    @Override
+    protected Vector<Field> getMissingReqLocalFlds()
+    {
+        Vector<Field> result = super.getMissingReqLocalFlds();
+        result.add(table.getField("name"));
+        return result;
+    }
+    
+    
+    
 }

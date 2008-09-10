@@ -45,7 +45,8 @@ import edu.ku.brc.util.DatamodelHelper;
 
 public class WorkbenchUploadMapper
 {
-
+    protected static boolean           debugging = true;
+    
     protected static final Logger      log         = Logger.getLogger(WorkbenchUploadMapper.class);
 
     protected final WorkbenchTemplate  wbt;
@@ -129,14 +130,19 @@ public class WorkbenchUploadMapper
         protected Integer sequence;
         protected int index;
         protected String wbFldName;
-
-        public TreeLevelInfo(int rank, boolean required, Integer sequence)
+        protected String fldName;
+        
+        public TreeLevelInfo(int rank, boolean required, Integer sequence, String fldName)
         {
             this.rank = rank;
             this.required = required;
             this.sequence = sequence;
+            this.fldName = fldName;
         }
         
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
         public int compareTo(TreeLevelInfo info)
         {
             if (this.rank < info.rank)
@@ -144,6 +150,14 @@ public class WorkbenchUploadMapper
                 return -1;
             }
             if (this.rank > info.rank)
+            {
+                return 1;
+            }
+            if (this.index < info.index)
+            {
+                return -1;
+            }
+            if (this.index > info.index)
             {
                 return 1;
             }
@@ -209,6 +223,14 @@ public class WorkbenchUploadMapper
         {
             this.wbFldName = wbFldName;
         }
+
+        /**
+         * @return the fldName
+         */
+        public String getFldName()
+        {
+            return fldName;
+        }
     }
 
     /**
@@ -267,8 +289,8 @@ public class WorkbenchUploadMapper
             {
                 if (treeName.equals(def.treeName))
                 {
-                    System.out.println(def.name);
-                    result.put(def.name, new TreeLevelInfo(def.rankId, getTreeLevelEnforcement(def.treeName, def.name), def.oneToManySequence));
+                    //System.out.println(def.name);
+                    result.put(def.name, new TreeLevelInfo(def.rankId, getTreeLevelFieldRequirement(def), def.oneToManySequence, def.mapToField));
                 }
             }
             return result;
@@ -277,15 +299,13 @@ public class WorkbenchUploadMapper
     }
 
     /**
-     * @param treeName - table name
-     * @param fldName - rank name
-     * @return level enforcement defined in relevant XXXXTreeDef table
+     * @param fldName
+     * @return the default isRequired status for the treelevel field defined by defInfo 
      */
-    @SuppressWarnings("unused")
-    protected boolean getTreeLevelEnforcement(final String treeName, final String fldName)
+    protected boolean getTreeLevelFieldRequirement(final DefInfo defInfo)
     {
-        // not looking up in TreeDef tables yet.
-        return false;
+        //this works because the 'main' field for all Specify treeables is named "name".
+        return defInfo.mapToField.equalsIgnoreCase("name");
     }
 
     /**
@@ -320,10 +340,21 @@ public class WorkbenchUploadMapper
     public Vector<UploadMappingDef> getImporterMapping() throws UploaderException
     {
         //mapAttachments();
-        mapTrees();
-        mapRelationships();
-        mapLeftovers();
-        return maps;
+        try
+        {
+            mapTrees();
+            mapRelationships();
+            mapLeftovers();
+            return maps;
+        }
+        catch (Exception ex)
+        {
+            if (ex instanceof UploaderException)
+            {
+                throw (UploaderException )ex;
+            }
+            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+        }
     }
     
     /**
@@ -482,7 +513,7 @@ public class WorkbenchUploadMapper
     /**
      * processes columns that are levels in 'trees', such as taxon and geography.
      */
-    protected void mapTrees()
+    protected void mapTrees() throws Exception
     {
         Vector<WorkbenchTemplateMappingItem> taxTreeItems = new Vector<WorkbenchTemplateMappingItem>();
         Vector<WorkbenchTemplateMappingItem> geoTreeItems = new Vector<WorkbenchTemplateMappingItem>();
@@ -510,7 +541,7 @@ public class WorkbenchUploadMapper
      * 
      * @param treeItems - the columns in this.wbt that are taxon levels
      */
-    protected void mapTaxTreeItems(Vector<WorkbenchTemplateMappingItem> treeItems)
+    protected void mapTaxTreeItems(Vector<WorkbenchTemplateMappingItem> treeItems) throws Exception
     {
 /*        log.debug("taxTreeItems:");
         for (WorkbenchTemplateMappingItem wbi : treeItems)
@@ -549,7 +580,7 @@ public class WorkbenchUploadMapper
      * 
      * @param treeItems - the columns in this.wbt that are geography levels
      */
-    protected void mapGeoTreeItems(Vector<WorkbenchTemplateMappingItem> treeItems)
+    protected void mapGeoTreeItems(Vector<WorkbenchTemplateMappingItem> treeItems) throws Exception
     {
         log.debug("geoTreeItems:");
         for (WorkbenchTemplateMappingItem wbi : treeItems)
@@ -568,6 +599,14 @@ public class WorkbenchUploadMapper
         }
     }
 
+    protected void logDebug(Object toDebug)
+    {
+        if (debugging)
+        {
+            log.debug(toDebug);
+        }
+    }
+    
     /**
      * @param treeItems WorkbenchTemplateMappingItems corresponding to levels in tree
      * @param levels defined for the tree
@@ -580,6 +619,7 @@ public class WorkbenchUploadMapper
         SortedSet<TreeLevelInfo> levels = new TreeSet<TreeLevelInfo>();
         for (WorkbenchTemplateMappingItem wbi : treeItems)
         {
+            logDebug(wbi.getCaption() + ", " + wbi.getFieldName());
             TreeLevelInfo levelInfo = ranks.get(wbi.getFieldName());
             levelInfo.setIndex(wbi.getViewOrder());
             levelInfo.setWbFldName(wbi.getCaption());
@@ -593,13 +633,14 @@ public class WorkbenchUploadMapper
         while (levelsIter.hasNext())
         {
             TreeLevelInfo level = levelsIter.next();
+            logDebug(level.getWbFldName() + ", " + level.getIndex() + ", " + level.getRank());
             if (currentElement == null || level.getRank() != currentRank)
             {
                 currentElement = new Vector<TreeMapElement>();
                 result.add(currentElement);
                 currentRank = level.getRank();
             }
-            currentElement.add(new TreeMapElement(level.getIndex(), level.getWbFldName(), level.getRank(), level
+            currentElement.add(new TreeMapElement(level.getIndex(), level.getFldName(), level.getWbFldName(), level.getRank(), level
                     .getSequence(), level.isRequired()));
         }
         return result;
@@ -614,7 +655,7 @@ public class WorkbenchUploadMapper
                                                Map<String, TreeLevelInfo> levels)
     {
         TreeLevelInfo level = levels.get(wbi.getFieldName());
-        TreeMapElement result = new TreeMapElement(wbi.getViewOrder(), wbi.getCaption(), level.getRank(), level.getSequence(),
+        TreeMapElement result = new TreeMapElement(wbi.getViewOrder(), wbi.getFieldName(), wbi.getCaption(), level.getRank(), level.getSequence(),
                 level.isRequired());
         return result;
     }
