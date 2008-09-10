@@ -114,17 +114,7 @@ public class TreeMapElement
     {
         return wbFldName + "(" + String.valueOf(index) + ") " + String.valueOf(rank) + ", " + String.valueOf(sequence);
     }
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-//    @Override
-//    public boolean equals(Object obj)
-//    {
-//        if (obj instanceof TreeMapElement)
-//        {
-//            return sequence == ((TreeMapElement)obj).sequence && rank == 
-//        }
-//    }
+ 
     /**
      * @return the fldName
      */

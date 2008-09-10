@@ -16,11 +16,18 @@ import java.util.Vector;
  *
  * @code_status Alpha
  *
+ * This class manages lists of TreeMapElements used in Tree mappings for the uploader.
+ * 
+ * It allows easy access to properties which are stored in individual TreeMapElement objects, but which
+ * should be equal for all objects in a TreeMapElements instance.
  */
 public class TreeMapElements
 {
     final Vector<TreeMapElement> elements;
     
+    /**
+     * @return true if all members have the same rank. Otherwise, return false.
+     */
     protected boolean validateRank()
     {
         if (size() > 0)
@@ -38,6 +45,10 @@ public class TreeMapElements
     }
     
     
+    /**
+     * @param elements
+     * @throws Exception
+     */
     public TreeMapElements(Vector<TreeMapElement> elements) throws Exception
     {
         this.elements = elements;
@@ -47,16 +58,26 @@ public class TreeMapElements
         }
     }
     
+    /**
+     * @param index
+     * @return the TreeMapElement at index.
+     */
     public TreeMapElement getElement(int index)
     {
         return elements.get(index);
     }
     
+    /**
+     * @return the number elements contained.
+     */
     public int size()
     {
         return elements != null ? elements.size() : 0;
     }
     
+    /**
+     * @return the maximum one-to-many 'sequence' (e.g. Genus 1, Genus 2) value.
+     */
     public int getMaxSeq()
     {
         if (size() == 0)
@@ -75,6 +96,9 @@ public class TreeMapElements
         return result;
     }
     
+    /**
+     * @return rank of TreeMapElements contained.
+     */
     public int getRank()
     {
         if (size() == 0)
@@ -85,6 +109,9 @@ public class TreeMapElements
         return elements.get(0).getRank();
     }
     
+    /**
+     * @return the column header for the workbench column that 'triggered' the creation of this object.
+     */
     public String getWbFldName()
     {
         if (size() == 0)
@@ -95,6 +122,10 @@ public class TreeMapElements
         return elements.get(0).getWbFldName();
     }
     
+    /**
+     * @return an boolean array of size getMaxSeq() with each element corresponding to a sequence and having
+     * a value of true iff this object contains TreeMapElements of that sequence.     
+     */
     public boolean[] getSeqs()
     {
         if (size() == 0)
@@ -114,6 +145,9 @@ public class TreeMapElements
         return result;
     }
     
+    /**
+     * @return the isRequired for TreeMapElements contained.
+     */
     public boolean isRequired()
     {
         if (size() == 0)
