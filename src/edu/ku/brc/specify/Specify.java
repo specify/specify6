@@ -723,55 +723,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         //--------------------------------------------------------------------
         JMenu menu = UIHelper.createLocalizedMenu(mb, "Specify.FILE_MENU", "Specify.FILE_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        String ttle = "Specify.LOGIN_MENU";//$NON-NLS-1$ 
-        String mneu = "Specify.LOGIN_MNEU";//$NON-NLS-1$ 
-        String desc = "Specify.LOGIN_DESC";//$NON-NLS-1$ 
-        mi = UIHelper.createLocalizedMenuItem(menu, ttle, mneu, desc, true, null); 
-        mi.addActionListener(new ActionListener()
-                {
-                    @SuppressWarnings("synthetic-access") //$NON-NLS-1$
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        class DBListener implements DatabaseLoginListener
-                        {
-                            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
-                            public void loggedIn(final Window window, final String databaseNameArg, final String userNameArg)
-                            {
-                                specifyApp.loggedIn(window, databaseNameArg, userNameArg);
-                            }
-
-                            public void cancelled()
-                            {
-                                // Do not call this it will exit the application
-                                //specifyApp.cancelled();
-                            }
-                        }
-
-                        if (SubPaneMgr.getInstance().aboutToShutdown())
-                        {
-                            // Make sure the prefs are saved before logging out and loggin back in.
-                            try
-                            {
-                                AppPreferences.getLocalPrefs().flush();
-                                AppPreferences.getRemote().flush();
-                                
-                            } catch (BackingStoreException ex)
-                            {
-                                log.error(ex);
-                            }
-                            
-                            AppPreferences.setConnectedToDB(false);
-                            adjustLocaleFromPrefs();
-                            //JaasContext jassEm = new JaasContext();
-                            UIHelper.doLogin(SecurityMgr.getInstance().getEmbeddedUserName(), 
-                                             SecurityMgr.getInstance().getEmbeddedPwd(), 
-                                             false, true, true, new DBListener(), "SpecifyLargeIcon"); // true means do auto login if it can, second bool means use dialog instead of frame
-                            //dbLoginPanel = UIHelper.doLogin(true, false, false, new DBListener(), jassEm); // true means do auto login if it can, second bool means use dialog instead of frame
-                        }
-                    }
-                });
-        mi.setEnabled(!isWorkbenchOnly);
-        
         if (!isWorkbenchOnly)
         {
             // Add Menu for switching Collection
@@ -1094,9 +1045,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         if (!isRelease)
         {
             menu = UIHelper.createLocalizedMenu(mb, "Specify.DEBUG_MENU", "Specify.DEBUG_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
-            ttle =  "Specify.SHOW_LOC_PREFS";//$NON-NLS-1$ 
-            mneu = "Specify.SHOW_LOC_PREF_MNEU";//$NON-NLS-1$ 
-            desc = "Specify.SHOW_LOC_PREFS";//$NON-NLS-1$ 
+            String ttle =  "Specify.SHOW_LOC_PREFS";//$NON-NLS-1$ 
+            String mneu = "Specify.SHOW_LOC_PREF_MNEU";//$NON-NLS-1$ 
+            String desc = "Specify.SHOW_LOC_PREFS";//$NON-NLS-1$ 
             mi = UIHelper.createLocalizedMenuItem(menu,ttle, mneu, desc, true, null); 
             mi.addActionListener(new ActionListener()
             {
@@ -1335,9 +1286,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         HelpMgr.createHelpMenuItem(helpMenu, "Specify"); //$NON-NLS-1$
         helpMenu.addSeparator();
         
-        ttle = "Specify.LOG_SHOW_FILES";//$NON-NLS-1$ 
-        mneu = "Specify.LOG_SHOW_FILES_MNEU";//$NON-NLS-1$ 
-        desc = "Specify.LOG_SHOW_FILES";//$NON-NLS-1$      
+        String ttle = "Specify.LOG_SHOW_FILES";//$NON-NLS-1$ 
+        String mneu = "Specify.LOG_SHOW_FILES_MNEU";//$NON-NLS-1$ 
+        String desc = "Specify.LOG_SHOW_FILES";//$NON-NLS-1$      
         mi = UIHelper.createLocalizedMenuItem(helpMenu, ttle , mneu, desc,  true, null);
         helpMenu.addSeparator();
         mi.addActionListener(new ActionListener()
