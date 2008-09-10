@@ -622,7 +622,6 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 public void popupMenuWillBecomeVisible(PopupMenuEvent e)
                 {
                     isPopupShowing = true;
-                    textField.requestFocus();
                 }
             });
             
