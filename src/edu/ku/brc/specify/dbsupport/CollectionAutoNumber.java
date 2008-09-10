@@ -24,8 +24,6 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
-import sun.org.mozilla.javascript.internal.IdScriptableObject;
-
 import edu.ku.brc.af.auth.specify.policy.DatabaseService;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.AutoNumberGeneric;
