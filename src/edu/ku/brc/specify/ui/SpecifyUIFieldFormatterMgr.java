@@ -24,12 +24,15 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -195,7 +198,33 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
                     }
                 } else 
                 {
+                    //Session    tmpSession = null;
                     Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+                    /*
+                    try
+                    {
+                        tmpSession = HibernateUtil.getNewSession();
+                        Query q = tmpSession.createQuery("FROM Collection WHERE id = "+collection.getId());
+                        List<?> colList = q.list();
+                        if (colList != null && colList.size() == 1)
+                        {
+                            collection = (Collection)colList.get(0);
+                            collection.getNumberingSchemes().size();
+                        }
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                        throw new RuntimeException(ex);
+                        
+                    } finally
+                    {
+                        if (tmpSession != null)
+                        {
+                            tmpSession.close();
+                        }
+                    }
+                    */
                     AutoNumberingScheme cns = collection != null ? collection.getNumberingSchemesByType(CollectionObject.getClassTableId()) : null;
                     if (cns != null)
                     {

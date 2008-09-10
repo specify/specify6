@@ -45,14 +45,14 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "autonumberingscheme")
-@org.hibernate.annotations.Table(appliesTo="catalognumberingscheme", indexes =
+@org.hibernate.annotations.Table(appliesTo="autonumberingscheme", indexes =
     {   @Index (name="SchemeNameIDX", columnNames={"SchemeName"})
     })
 public class AutoNumberingScheme extends DataModelObjBase implements java.io.Serializable
 {
-    protected Integer         catalogNumberingSchemeId;
+    protected Integer         autoNumberingSchemeId;
 
-    protected Integer          tableNumber; // Table Id number that matched DBTableIDMgr
+    protected Integer         tableNumber; // Table Id number that matched DBTableIDMgr
     protected String          schemeName;
     protected String          schemeClassName;
     protected Boolean         isNumericOnly;
@@ -67,9 +67,9 @@ public class AutoNumberingScheme extends DataModelObjBase implements java.io.Ser
     }
     
     /** constructor with id */
-    public AutoNumberingScheme(Integer catalogNumberingSchemeId) 
+    public AutoNumberingScheme(Integer autoNumberingSchemeId) 
     {
-        this.catalogNumberingSchemeId = catalogNumberingSchemeId;
+        this.autoNumberingSchemeId = autoNumberingSchemeId;
     }
 
     // Initializer
@@ -78,7 +78,7 @@ public class AutoNumberingScheme extends DataModelObjBase implements java.io.Ser
     {
         super.init();
         
-        catalogNumberingSchemeId = null;
+        autoNumberingSchemeId = null;
         schemeName           = null;
         schemeClassName      = null;
         collections          = new HashSet<Collection>();
@@ -95,20 +95,20 @@ public class AutoNumberingScheme extends DataModelObjBase implements java.io.Ser
     @Override
     public Integer getId()
     {
-        return this.catalogNumberingSchemeId;
+        return this.autoNumberingSchemeId;
     }
     
     @Id
     @GeneratedValue
-    @Column(name = "CatalogNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getCatalogNumberingSchemeId()
+    @Column(name = "AutoNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getAutoNumberingSchemeId()
     {
-        return catalogNumberingSchemeId;
+        return autoNumberingSchemeId;
     }
 
-    public void setCatalogNumberingSchemeId(Integer catalogNumberingSchemeId)
+    public void setAutoNumberingSchemeId(Integer autoNumberingSchemeId)
     {
-        this.catalogNumberingSchemeId = catalogNumberingSchemeId;
+        this.autoNumberingSchemeId = autoNumberingSchemeId;
     }
 
     @Column(name = "SchemeName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)

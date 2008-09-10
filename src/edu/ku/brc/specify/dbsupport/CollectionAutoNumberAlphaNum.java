@@ -69,7 +69,7 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
         }
 
         StringBuilder sb = new StringBuilder(" From CollectionObject c Join c.collection col Join col.numberingScheme cns WHERE cns.numberingSchemeId = ");
-        sb.append(currCollection.getNumberingSchemesByType(CollectionObject.getClassTableId()).getCatalogNumberingSchemeId());
+        sb.append(currCollection.getNumberingSchemesByType(CollectionObject.getClassTableId()).getAutoNumberingSchemeId());
         
         if (yearVal != null)
         {
@@ -84,7 +84,6 @@ public class CollectionAutoNumberAlphaNum extends AutoNumberGeneric
             if (yearPos != null)
             {
                 sb.append(" substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+") desc");
-                
             }
             
             if (pos != null)

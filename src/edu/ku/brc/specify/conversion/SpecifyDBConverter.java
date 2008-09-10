@@ -310,9 +310,11 @@ public class SpecifyDBConverter
         System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI
         System.setProperty(CustomQueryFactory.factoryName,              "edu.ku.brc.specify.dbsupport.SpecifyCustomQueryFactory");
         System.setProperty(UIFieldFormatterMgr.factoryName,             "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumberign
-        System.setProperty(QueryAdjusterForDomain.factoryName,        "edu.ku.brc.specify.dbsupport.SpecifyExpressSearchSQLAdjuster");    // Needed for ExpressSearch
+        System.setProperty(QueryAdjusterForDomain.factoryName,          "edu.ku.brc.specify.dbsupport.SpecifyExpressSearchSQLAdjuster");    // Needed for ExpressSearch
         System.setProperty(SchemaI18NService.factoryName,               "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema
-        
+        System.setProperty(SecurityMgr.factoryName,                     "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");
+
+        AppContextMgr.getInstance().setHasContext(true);
     }
 
     /**
@@ -334,7 +336,7 @@ public class SpecifyDBConverter
         System.out.println("From "+databaseNameSource+" to "+databaseNameDest);
         System.out.println("************************************************************");
 
-        HibernateUtil.shutdown();    
+        HibernateUtil.shutdown(); 
         
         Properties initPrefs = BuildSampleDatabase.getInitializePrefs(databaseNameDest);
         
@@ -464,9 +466,9 @@ public class SpecifyDBConverter
         try
         {
         	GenericDBConversion.setShouldCreateMapTables(startfromScratch);
-            GenericDBConversion.setShouldDeleteMapTables(true);
+            GenericDBConversion.setShouldDeleteMapTables(false);
             
-            frame.setOverall(0, 19);
+            frame.setOverall(0, 18);
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
@@ -615,7 +617,12 @@ public class SpecifyDBConverter
                 
                 frame.incOverall();
 
-                conversion.convertDivision();
+                Integer institutionId = conversion.createInstitution("Natural History Museum");
+                if (institutionId == null)
+                {
+                    throw new RuntimeException("Problem with creating institution, the Id came back null");
+                }
+                conversion.convertDivision("fish", institutionId);
                 frame.incOverall();
                 
                 ///////////////////////////////
@@ -878,15 +885,6 @@ public class SpecifyDBConverter
                     frame.incOverall();
                 }
                 
-                frame.setDesc("Creating Storage");
-                log.info("Creating Storage");
-                boolean doStorage = false;
-                if (doStorage || doAll )
-                {
-                    conversion.buildSampleStorageTreeDef();
-                }
-                frame.incOverall();
-                
                 frame.setDesc("Converting Taxonomy");
                 log.info("Converting Taxonomy");
                 boolean doTaxonomy = false;
@@ -920,7 +918,7 @@ public class SpecifyDBConverter
                     q = session.createQuery("FROM TaxonTreeDefItem");
                     List<?> allTTDIs = q.list();
                     HibernateUtil.beginTransaction();
-                    for(Object o: allTTDIs)
+                    for(Object o : allTTDIs)
                     {
                         TaxonTreeDefItem ttdi = (TaxonTreeDefItem)o;
                         ttdi.setFullNameSeparator(" ");
@@ -935,7 +933,7 @@ public class SpecifyDBConverter
                         log.error("Error while setting the fullname separator of taxonomy tree definition items.");
                     }
                     
-                	conversion.copyTaxonRecords();
+                	conversion.convertTaxonRecords();
                 }
                 frame.incOverall();
                 

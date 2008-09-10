@@ -125,7 +125,10 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 CommandDispatcher.register(commandTypeString,this);
             }
             
-            shortDesc = getResourceString("TASK.SHRTDESC." + currentDef.getClass().getSimpleName());
+            if (currentDef != null)
+            {
+                shortDesc = getResourceString("TASK.SHRTDESC." + currentDef.getClass().getSimpleName());
+            }
         }
 	}
     

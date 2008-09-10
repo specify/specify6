@@ -35,6 +35,7 @@ public class IdTableMapper extends IdHashMapper
     //protected static final Logger log = Logger.getLogger(IdTableMapper.class);
 
     protected String idName;
+    protected IdMapperIndexIncrementerIFace indexIncremeter = null;
 
     /**
      * Creates a Mapper for a table and the name of the primary or foreign key.
@@ -67,6 +68,14 @@ public class IdTableMapper extends IdHashMapper
         this.sql = sql;
         log.debug("IdTableMapper created for table[" + tableName +"] idName[" + idName + "] ");
         log.debug("IdTableMapper using sql: " + sql );
+    }
+
+    /**
+     * @param indexIncremeter
+     */
+    public void setIndexIncremeter(IdMapperIndexIncrementerIFace indexIncremeter)
+    {
+        this.indexIncremeter = indexIncremeter;
     }
 
     /**
@@ -106,7 +115,15 @@ public class IdTableMapper extends IdHashMapper
                 {
                     int oldIndex = rs.getInt(1);
                     //log.debug("map "+mapTableName+" old[" + oldIndex + "] new [" + newIndex +"]");
-                    put(oldIndex, newIndex++);
+                    
+                    if (indexIncremeter != null)
+                    {
+                        newIndex = indexIncremeter.getNextIndex();
+                    }
+                    
+                    put(oldIndex, newIndex);
+                    
+                    newIndex++; // incrementing doesn't matter when there is an indexIncremeter
                     
                     if (frame != null)
                     {

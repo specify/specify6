@@ -67,7 +67,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      protected Set<Agent>    technicalContacts;
      protected Set<Agent>    contentContacts;
      protected Set<Division> divisions;
-     protected StorageTreeDef            storageTreeDef;
+     protected StorageTreeDef storageTreeDef;
 
     // Constructors
 

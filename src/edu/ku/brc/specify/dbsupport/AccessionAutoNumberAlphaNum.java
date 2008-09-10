@@ -69,7 +69,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
         }
 
         StringBuilder sb = new StringBuilder(" From Accession c Join c.division dv Join dv.numberingSchemes ans WHERE ans.id = ");
-        sb.append(currDivision.getNumberingSchemesByType(Accession.getClassTableId()).getCatalogNumberingSchemeId());
+        sb.append(currDivision.getNumberingSchemesByType(Accession.getClassTableId()).getAutoNumberingSchemeId());
         sb.append(" AND dv.id = ");
         sb.append(currDivision.getId());
         
