@@ -36,6 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.IconManager;
@@ -532,7 +533,7 @@ public class NavBox extends JPanel implements NavBoxIFace
                                                   final ActionListener al)
     {
         NavBoxItemIFace nbi = createBtn(label, iconName, iconSize, al);
-        if (toolTip != null)
+        if (StringUtils.isNotEmpty(toolTip))
         {
             nbi.setToolTip(toolTip);
         }
