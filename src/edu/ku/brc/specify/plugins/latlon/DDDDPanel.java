@@ -8,7 +8,7 @@
 package edu.ku.brc.specify.plugins.latlon;
 
 import static edu.ku.brc.ui.UIHelper.createComboBox;
-import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -183,11 +183,11 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             lonDir = longitudeDir;
         }
 
-        builder.add(latLabel = createLabel("Latitude:", SwingConstants.RIGHT), cc.xy(1, 1)); // I18N
+        builder.add(latLabel = createI18NFormLabel("Latitude", SwingConstants.RIGHT), cc.xy(1, 1));
         builder.add(latitudeDD, cc.xy(3, 1));
         builder.add(latDir, cc.xy(cbxIndex, 1));
         
-        builder.add(lonLabel = createLabel("Longitude:", SwingConstants.RIGHT), cc.xy(1, 3)); // I18N
+        builder.add(lonLabel = createI18NFormLabel("Longitude", SwingConstants.RIGHT), cc.xy(1, 3));
         builder.add(longitudeDD, cc.xy(3, 3));
         builder.add(lonDir, cc.xy(cbxIndex, 3));
      
