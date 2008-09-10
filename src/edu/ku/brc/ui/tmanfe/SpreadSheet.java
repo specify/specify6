@@ -27,6 +27,7 @@ import java.util.EventObject;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -310,9 +311,23 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         KeyStroke copy  = KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false);
         KeyStroke paste = KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false);
         
-        registerKeyboardAction(this, "Cut",   cut,   JComponent.WHEN_FOCUSED);
-        registerKeyboardAction(this, "Copy",  copy,  JComponent.WHEN_FOCUSED);
-        registerKeyboardAction(this, "Paste", paste, JComponent.WHEN_FOCUSED);
+        Action ssAction = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                SpreadSheet.this.actionPerformed(e);
+            }
+        };
+        
+        getInputMap().put(cut, "Cut");
+        getActionMap().put("Cut", ssAction);
+        
+        getInputMap().put(copy, "Copy");
+        getActionMap().put("Copy", ssAction);
+
+        getInputMap().put(paste, "Paste");
+        getActionMap().put("Paste", ssAction);
         
         ((JMenuItem)UIRegistry.get(UIRegistry.COPY)).addActionListener(this);
         ((JMenuItem)UIRegistry.get(UIRegistry.CUT)).addActionListener(this);
@@ -678,8 +693,10 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         //
         // The code in this method was tken from a JavaWorld Example
         //
-        boolean isCut = e.getActionCommand().compareTo("Cut") == 0;
-        if (e.getActionCommand().compareTo("Copy") == 0 || isCut)
+        boolean isCut = e.getActionCommand().compareTo("Cut") == 0 || e.getActionCommand().equals("x");
+        if (e.getActionCommand().compareTo("Copy") == 0 ||
+            e.getActionCommand().equals("c")|| 
+            isCut)
         {
             StringBuffer sbf = new StringBuffer();
             // Check to ensure we have selected only a contiguous block of
@@ -719,7 +736,8 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             Clipboard       sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             sysClipboard.setContents(stsel, stsel);
             
-        } else if (e.getActionCommand().compareTo("Paste") == 0)
+        } else if (e.getActionCommand().compareTo("Paste") == 0 ||
+                   e.getActionCommand().equals("v"))
         {
             //System.out.println("Trying to Paste");
             int[] rows = getSelectedRows();

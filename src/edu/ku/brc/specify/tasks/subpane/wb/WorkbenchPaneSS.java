@@ -326,12 +326,15 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 UIRegistry.enableCutCopyPaste(true);
                 UIRegistry.enableFind(findPanel, true);
+                
+                UIRegistry.getAction(UIRegistry.PASTE).setEnabled(true);
             }
             @Override
             public void focusLost(FocusEvent e)
             {
-                UIRegistry.enableCutCopyPaste(true);
-                UIRegistry.enableFind(findPanel, true);
+                UIRegistry.enableCutCopyPaste(false);
+                UIRegistry.enableFind(findPanel, false);
+                UIRegistry.getAction(UIRegistry.PASTE).setEnabled(true);
             }
         });
 
