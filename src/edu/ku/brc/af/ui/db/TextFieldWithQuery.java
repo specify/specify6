@@ -572,7 +572,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             }
         }
         
-        if (popupMenu != null)
+        if (popupMenu != null && (list.size() > 0 || doAddAddItem))
         {
             UIHelper.addSpecialKeyListenerForPopup(popupMenu);
             
@@ -586,6 +586,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 public void run()
                 {
                     ignoreFocusLost = true;
+                    popupMenu.setInvoker(TextFieldWithQuery.this);
                     popupMenu.show(TextFieldWithQuery.this, location.x, location.y+size.height);
                     popupMenu.requestFocus();
                 }
