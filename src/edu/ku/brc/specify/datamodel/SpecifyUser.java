@@ -27,6 +27,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -66,6 +67,9 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     protected String                    email;
     protected String                    password;
     protected String                    userType;
+    protected Boolean                   isLoggedIn;
+    protected Timestamp                 loginOutTime;
+    
     //protected Short                     privLevel;
     protected Set<RecordSet>            recordSets;
     protected Set<Workbench>            workbenches;
@@ -102,13 +106,16 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         specifyUserId      = null;
         name               = null;
         email              = null;
+        isLoggedIn         = false;
+        loginOutTime       = null;
+        
         //privLevel          = null;
         recordSets         = new HashSet<RecordSet>();
         workbenches        = new HashSet<Workbench>();
         workbenchTemplates = new HashSet<WorkbenchTemplate>();
-        spAppResources = new HashSet<SpAppResource>();
-        spPrincipalGroups = new HashSet<SpPrincipal>();
-        spAppResourceDirs = new HashSet<SpAppResourceDir>();
+        spAppResources     = new HashSet<SpAppResource>();
+        spPrincipalGroups  = new HashSet<SpPrincipal>();
+        spAppResourceDirs  = new HashSet<SpAppResourceDir>();
         spQuerys           = new HashSet<SpQuery>();
         agents             = new HashSet<Agent>();
         taskSemaphores     = new HashSet<SpTaskSemaphore>();
@@ -252,6 +259,40 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
 //        this.privLevel = privLevel;
 //    }
 
+    /**
+     * @return the loginOutTime
+     */
+    @Column(name = "LoginOutTime", unique = false, nullable = true, insertable = true, updatable = true)
+    public Timestamp getLoginOutTime()
+    {
+        return loginOutTime;
+    }
+
+    /**
+     * @param loginOutTime the loginOutTime to set
+     */
+    public void setLoginOutTime(Timestamp loginOutTime)
+    {
+        this.loginOutTime = loginOutTime;
+    }
+
+    /**
+     * @return the isLoggedIn
+     */
+    @Column(name = "IsLoggedIn", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsLoggedIn()
+    {
+        return isLoggedIn;
+    }
+
+    /**
+     * @param isLoggedIn the isLoggedIn to set
+     */
+    public void setIsLoggedIn(Boolean isLoggedIn)
+    {
+        this.isLoggedIn = isLoggedIn;
+    }
+    
     /**
      * 
      */
@@ -555,5 +596,4 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         // else
         return timestampCreated.compareTo(obj.timestampCreated);
     }
-
 }

@@ -36,6 +36,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -89,6 +91,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UnhandledExceptionDialog;
 import edu.ku.brc.util.Pair;
 
@@ -1029,6 +1032,37 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 user.getAgents(); // makes sure the Agent is not lazy loaded
                 session.evict( user.getAgents());
                 AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
+                
+                if (user.getIsLoggedIn())
+                {
+                    Object[] options = { getResourceString("SpecifyAppContextMgr.OVERRIDE"),  //$NON-NLS-1$
+                                         getResourceString("SpecifyAppContextMgr.CONTINUE")  //$NON-NLS-1$
+                          };
+                    int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                                 getResourceString("SpecifyAppContextMgr.LOGGED_IN"),
+                                                                 getResourceString("SpecifyAppContextMgr.LOGGED_IN_TITLE"),  //$NON-NLS-1$
+                                                                 JOptionPane.YES_NO_OPTION,
+                                                                 JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                    if (userChoice == JOptionPane.NO_OPTION)
+                    {
+                        //CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit"));
+                        System.exit(0);
+                    }
+                }
+                
+                user.setIsLoggedIn(true);
+                user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
+                
+                try
+                {
+                    session.beginTransaction();
+                    session.saveOrUpdate(user);
+                    session.commit();
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                }
     
             } else
             {

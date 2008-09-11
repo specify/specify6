@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
@@ -117,6 +118,7 @@ import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.QueryExecutor;
@@ -149,6 +151,7 @@ import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
@@ -1779,6 +1782,42 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             okToShutdown = SubPaneMgr.getInstance().aboutToShutdown();
             if (okToShutdown)
             {
+                try
+                {
+                    DataProviderSessionIFace session     = null;
+                    SpecifyUser              currentUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                    if (currentUser != null)
+                    {
+                        session = DataProviderFactory.getInstance().createSession();
+                        
+                        SpecifyUser user = session.getData(SpecifyUser.class, "id", currentUser.getId(), DataProviderSessionIFace.CompareType.Equals);
+                        user.setIsLoggedIn(false);
+                        user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
+                        
+                        try
+                        {
+                            session.beginTransaction();
+                            session.saveOrUpdate(user);
+                            session.commit();
+                            
+                        } catch (Exception ex)
+                        {
+                            log.error(ex);
+                            
+                        } finally
+                        {
+                            if (session != null)
+                            {
+                                session.close();
+                            }
+                        }
+                    }
+                    
+                } catch (Exception ex)
+                {
+                    
+                }
+                
                 // Returns false if it isn't doing a backup.
                 // passing true tells it to send an App exit command
                 if (!BackupServiceFactory.getInstance().checkForBackUp(true))
