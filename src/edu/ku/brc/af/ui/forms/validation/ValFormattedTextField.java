@@ -984,7 +984,7 @@ s     * @param isViewOnly
                 return formatter.formatFromUI(getText());
             }
         }
-        return val;
+        return val != null && val.isEmpty() ? null : val;
     }
     
     /**

@@ -513,7 +513,7 @@ public class InfoRequestTask extends BaseTask
             Object data = cmdAction.getData();
             if (data instanceof RecordSetIFace)
             {
-                // XXX DEMO Code
+                // XXX DEMO Code RELEASE
                 InfoRequest infoRequest = new InfoRequest();
                 infoRequest.setEmail("rods@ku.edu");
                 infoRequest.setFirstName("Rod");

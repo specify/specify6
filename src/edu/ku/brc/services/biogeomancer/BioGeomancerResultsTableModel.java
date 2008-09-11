@@ -12,8 +12,6 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-import edu.ku.brc.ui.UIRegistry;
-
 /**
  * An implementation of {@link TableModel} for use in presenting an array of {@link BioGeomancerResultStruct}s
  * for display in a {@link JTable}.
