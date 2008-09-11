@@ -3271,9 +3271,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                             if (rs.getObject(inx) != null)
                             {
-                                Integer newRecId = (Integer)getMappedId(rs.getInt(1),
-                                        "biologicalobjectattributes",
-                                        "BiologicalObjectAttributesID");
+                                Integer newRecId = (Integer)getMappedId(rs.getInt(1), "biologicalobjectattributes", "BiologicalObjectAttributesID");
 
                                 Object data = getData(rs, inx, attrTypes[attrDef.getDataType()], md);
                                 boolean isStr = data instanceof String;
@@ -3322,8 +3320,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                                 if (recordCount % 2000 == 0)
                                 {
-                                    log.info("CollectionObjectAttr Records Processed: "
-                                            + recordCount);
+                                    log.info("CollectionObjectAttr Records Processed: " + recordCount);
                                 }
                                 recordCount++;
                             }
@@ -4509,7 +4506,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             BasicSQLUtils.removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
                         }
                         // updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
-                        if (count < 50) System.err.println(str.toString());
+                        //if (count < 50) System.err.println(str.toString());
                         
                         updateStatement.executeUpdate(str.toString());
                         updateStatement.clearBatch();
@@ -5681,7 +5678,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "ModifiedByAgentID", 
                 "CollectionMemberID",
                 "ShortName", 
-                "DisciplineID"};
+                "DisciplineID",
+                "GUID"};
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(fieldsToIgnore);
 
         errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for LocalityID

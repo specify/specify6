@@ -62,6 +62,7 @@ import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -572,7 +573,7 @@ public class InteractionsTask extends BaseTask
                               final Class<?>   dataClass,
                               final DataFlavor dragFlav)
     {
-        DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
+        DBTableInfo ti = DBTableIdMgr.getInstance().getByShortClassName(dataClass.getSimpleName());
         DataProviderSessionIFace session = null;
         try
         {
@@ -582,12 +583,20 @@ public class InteractionsTask extends BaseTask
             List<?> list = session.getDataList(QueryAdjusterForDomain.getInstance().adjustSQL(sql));
             for (Iterator<?> iter=list.iterator();iter.hasNext();)
             {
-                FormDataObjIFace dataObj = (FormDataObjIFace)iter.next();
+                FormDataObjIFace   dataObj = (FormDataObjIFace)iter.next();
                 
-                CommandActionForDB delCmd = new CommandActionForDB(INTERACTIONS, DELETE_CMD_ACT, ti.getTableId(), dataObj.getId());
-                NavBoxItemIFace    nbi    = makeDnDNavBtn(navBox, dataObj.getIdentityTitle(), ti.getShortClassName(), null, delCmd, true, true);
-                RolloverCommand    roc = (NavBoxButton)nbi;
-                nbi.setData(new CommandActionForDB(INTERACTIONS, "InfoRequest", ti.getTableId(), dataObj.getId()));
+                RecordSet rs = new RecordSet();
+                rs.initialize();
+                rs.set("", ti.getTableId(), RecordSet.HIDDEN);
+                rs.addItem(dataObj.getId());
+                
+                CommandAction      cmd     = new CommandAction("Data_Entry", "Edit", rs);
+                cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
+                
+                CommandActionForDB delCmd  = new CommandActionForDB(INTERACTIONS, DELETE_CMD_ACT, ti.getTableId(), dataObj.getId());
+                NavBoxItemIFace    nbi     = makeDnDNavBtn(navBox, dataObj.getIdentityTitle(), ti.getShortClassName(), cmd, delCmd, true, true);
+                RolloverCommand    roc     = (NavBoxButton)nbi;
+                nbi.setData(rs);
                 roc.addDragDataFlavor(dragFlav);
                 roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
             }      

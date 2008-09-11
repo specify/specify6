@@ -329,8 +329,9 @@ public class SpecifyDBConverter
                               final DatabaseConnectionProperties sourceDbProps,
                               final DatabaseConnectionProperties destDbProps) throws Exception
     {
-        boolean doAll            = true; 
-        boolean startfromScratch = true; 
+        boolean doAll               = true; 
+        boolean startfromScratch    = true; 
+        boolean deleteMappingTables = true;
         
         System.out.println("************************************************************");
         System.out.println("From "+databaseNameSource+" to "+databaseNameDest);
@@ -394,7 +395,7 @@ public class SpecifyDBConverter
         log.debug("databaseHostDest: " + databaseHostDest);
 
         driverInfoSource = DatabaseDriverInfo.getDriver(driverNameSource);
-        driverInfoDest = DatabaseDriverInfo.getDriver(driverNameDest);
+        driverInfoDest   = DatabaseDriverInfo.getDriver(driverNameDest);
         
         if (driverInfoSource == null)
         {
@@ -466,7 +467,7 @@ public class SpecifyDBConverter
         try
         {
         	GenericDBConversion.setShouldCreateMapTables(startfromScratch);
-            GenericDBConversion.setShouldDeleteMapTables(false);
+            GenericDBConversion.setShouldDeleteMapTables(deleteMappingTables);
             
             frame.setOverall(0, 18);
             SwingUtilities.invokeLater(new Runnable() {

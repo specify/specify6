@@ -154,6 +154,11 @@ public interface FormDataObjIFace
     public abstract boolean isChangeNotifier();
     
     /**
+     * Asks the object to force load any children object while in the context of a session.
+     */
+    public abstract void forceLoad();
+    
+    /**
      * @return
      */
     public abstract Object clone() throws CloneNotSupportedException;

@@ -4068,6 +4068,7 @@ public class FormViewObj implements Viewable,
                     try
                     {
                         session.attach(dataObj);
+                        //((FormDataObjIFace)dataObj).forceLoad();
                     }
                     catch (HibernateException ex)
                     {

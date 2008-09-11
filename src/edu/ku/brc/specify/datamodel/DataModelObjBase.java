@@ -695,12 +695,20 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
         }
         changes.removePropertyChangeListener(propertyName, listener);
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.FormDataObjIFace#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        
+    }
     
     //-------------------------------------------------------------------
     //-- WebLinkProviderIFace
     //-------------------------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.weblink.WebLinkDataProviderIFace#getWebLinkData(java.lang.String)
      */

@@ -901,7 +901,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                     if (doDebug) log.debug("*** 1 Adding id["+colObj+"]");
                                 } else
                                 {
-                                    log.error("First Column must be Integer id! ["+colObj+"]");
+                                    //log.error("First Column must be Integer id! ["+colObj+"]");
                                     row.add(cols.next().processValue(colObj));
                                 }
                             } else

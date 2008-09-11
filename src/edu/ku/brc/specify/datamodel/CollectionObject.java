@@ -1161,11 +1161,21 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         return collectionObjectAttachments;
     }
 
-
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        determinations.size();
+        preparations.size();
+    }
+    
     //----------------------------------------------------------------------
     //-- Comparable Interface
     //----------------------------------------------------------------------
-    
+
+
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */

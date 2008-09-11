@@ -883,13 +883,6 @@ public class DatabaseLoginPanel extends JPanel
                 isLoggingIn = false;
                 statusBar.setProgressDone(getClass().getName());
 
-                enableUI(true);
-
-                if (isAutoClose)
-                {
-                    updateUIControls();
-                }
-
                 if (timeOK)
                 {
                     elapsedTime = eTime;
@@ -914,6 +907,14 @@ public class DatabaseLoginPanel extends JPanel
                 {
                     loginOK();
                 }
+                
+                enableUI(true);
+
+                if (isAutoClose)
+                {
+                    updateUIControls();
+                }
+
             }
         };
         worker.start();

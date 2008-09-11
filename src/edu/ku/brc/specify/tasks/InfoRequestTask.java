@@ -45,6 +45,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
+import edu.ku.brc.af.ui.db.CommandActionForDB;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
@@ -147,8 +148,17 @@ public class InfoRequestTask extends BaseTask
      */
     protected void addInfoRequest(final InfoRequest infoRequest)
     {           
-        NavBoxItemIFace nbi = addNavBoxItem(navBox, infoRequest.getIdentityTitle(), infoReqIconName, new CommandAction(INFOREQUEST, DELETE_CMD_ACT, infoRequest), infoRequest);
-        setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR, InteractionsTask.LOAN_FLAVOR}, new NavBoxAction("Data_Entry", "Edit"));
+        
+        NavBoxItemIFace nbi = makeDnDNavBtn(navBox, 
+                                            infoRequest.getIdentityTitle(), 
+                                            infoReqIconName, 
+                                            null, //ToolTip
+                                            new CommandActionForDB("Data_Entry", "Edit", InfoRequest.getClassTableId(), infoRequest.getId()),
+                                            new CommandAction(INFOREQUEST, DELETE_CMD_ACT, infoRequest),
+                                            true,
+                                            true);
+        setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, InteractionsTask.LOAN_FLAVOR}, new NavBoxAction("Data_Entry", "Edit"));
+        
         //setUpDraggable(nbi, new DataFlavor[]{InteractionsTask.LOAN_FLAVOR}, null);//new NavBoxAction(InteractionsTask.INTERACTIONS, InteractionsTask.NEW_LOAN));
     }
     

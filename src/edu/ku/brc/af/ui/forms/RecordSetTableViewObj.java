@@ -164,6 +164,12 @@ public class RecordSetTableViewObj extends TableViewObj
         if (StringUtils.isNotBlank(sqlStr))
         {
             dataObjList.addAll(tempSession.getDataList(sqlStr));
+            
+            for (Object obj : dataObjList)
+            {
+                FormDataObjIFace fdi = (FormDataObjIFace)obj;
+                fdi.forceLoad();
+            }
         }
     }
     
