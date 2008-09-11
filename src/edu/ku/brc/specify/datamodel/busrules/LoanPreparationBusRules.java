@@ -51,7 +51,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
     {
         super.initialize(viewableArg);
         
-        if (formViewObj != null)
+        if (formViewObj != null && formViewObj.getRsController() != null)
         {
             JButton newBtn = formViewObj.getRsController().getNewRecBtn();
             if (newBtn != null)

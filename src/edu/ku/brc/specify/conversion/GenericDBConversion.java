@@ -4116,6 +4116,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     public boolean convertCollectionObjects(final boolean useNumericCatNumbers,
                                             final boolean usePrefix)
     {
+        final String ZEROES = "000000000";
         
         UIFieldFormatterIFace formatter0 = UIFieldFormatterMgr.getInstance().getFormatter("CatalogNumber");
         System.out.println(formatter0);
@@ -4327,7 +4328,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                         if (useNumericCatNumbers)
                         {
-                            catalogNumber = "\"" + String.format("%09d", rs.getInt(catNumInx + 1)) + "\"";
+                            catalogNumber = rs.getString(catNumInx + 1);
+                            
+                            catalogNumber = "\"" + ZEROES.substring(catalogNumber.length()) + catalogNumber + "\"";
 
                         } else
                         {
