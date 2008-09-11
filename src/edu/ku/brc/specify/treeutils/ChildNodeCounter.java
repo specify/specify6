@@ -115,14 +115,16 @@ public class ChildNodeCounter implements SQLExecutionListener, CustomQueryListen
             case 1:
             {
                 List<Object> row = ((List<List<Object>>)data).get(0);
-                
-                //int treeDefId  = (Integer)row.get(0);
-                int topNodeNum = (Integer)row.get(1);
-                int botNodenum = (Integer)row.get(2);
-                
-                if (topNodeNum < botNodenum)
+                if (row != null && row.size() > 2)
                 {
-                    return String.format(countQuery, topNodeNum, botNodenum);
+                    //int treeDefId  = (Integer)row.get(0);
+                    int topNodeNum = (Integer)row.get(1);
+                    int botNodenum = (Integer)row.get(2);
+                    
+                    if (topNodeNum < botNodenum)
+                    {
+                        return String.format(countQuery, topNodeNum, botNodenum);
+                    }
                 }
             }
         }
