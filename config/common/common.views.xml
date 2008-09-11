@@ -308,6 +308,8 @@
             resourcelabels="false">
             <desc><![CDATA[Loan display form]]></desc>
             <altviews>
+                <altview name="LoanItems Table View" viewdef="LoanItems Table" label="Grid" mode="view"/>
+                <altview name="LoanItems Table Edit" viewdef="LoanItems Table" label="Grid" mode="edit"/>
                 <altview name="LoanItems View" viewdef="LoanItems" label="View" mode="view" default="true"/>
                 <altview name="LoanItems Edit" viewdef="LoanItems" label="Edit" mode="edit"/>
             </altviews>
@@ -1508,7 +1510,7 @@
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="12"/>
                 </row>
                 <row>
-                     <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" colspan="12"/>
+                     <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" defaulttype="table" colspan="12"/>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="12"/>
@@ -1528,6 +1530,17 @@
                     </cell>
                 </row>
             </rows>
+        </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="LoanItems Table"
+            class="edu.ku.brc.specify.datamodel.LoanPreparation"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Preparation subform table for Collection Object form.]]></desc>
+            <definition>LoanItems</definition>
         </viewdef>
         
         <viewdef
