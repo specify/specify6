@@ -17,6 +17,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -749,7 +750,9 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 try
                 {
                     Clipboard sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                    String trstring = (String) (sysClipboard.getContents(this).getTransferData(DataFlavor.stringFlavor));
+                    Transferable contents = sysClipboard.getContents(null);
+                    String trstring = (String)contents.getTransferData(DataFlavor.stringFlavor);
+                    //String trstring = (String) (sysClipboard.getContents(this).getTransferData(DataFlavor.stringFlavor));
                     //System.out.println("String is: [" + trstring+"]");
                     StringTokenizer st1 = new StringTokenizer(trstring, "\n\r");
                     for (int i = 0; st1.hasMoreTokens(); i++)

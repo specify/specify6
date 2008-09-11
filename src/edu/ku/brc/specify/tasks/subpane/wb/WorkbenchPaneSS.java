@@ -48,6 +48,7 @@ import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -184,7 +185,8 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
  */
 public class WorkbenchPaneSS extends BaseSubPane
 {
-    private static final Logger log = Logger.getLogger(WorkbenchPaneSS.class);
+    private static boolean          debugging = false;
+    private static final Logger     log = Logger.getLogger(WorkbenchPaneSS.class);
     
     private enum PanelType {Spreadsheet, Form}
     
@@ -326,15 +328,12 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 UIRegistry.enableCutCopyPaste(true);
                 UIRegistry.enableFind(findPanel, true);
-                
-                UIRegistry.getAction(UIRegistry.PASTE).setEnabled(true);
             }
             @Override
             public void focusLost(FocusEvent e)
             {
-                UIRegistry.enableCutCopyPaste(false);
-                UIRegistry.enableFind(findPanel, false);
-                UIRegistry.getAction(UIRegistry.PASTE).setEnabled(true);
+                UIRegistry.enableCutCopyPaste(true);
+                UIRegistry.enableFind(findPanel, true);
             }
         });
 
@@ -2491,21 +2490,33 @@ public class WorkbenchPaneSS extends BaseSubPane
         WorkbenchBackupMgr.backupWorkbench(workbench.getId(), (WorkbenchTask) task);
     }
     
+    protected void logDebug(Object toLog)
+    {
+        if (debugging)
+        {
+            log.debug(toLog);
+        }
+    }
     /**
      * Save the Data. 
      */
     protected void saveObject()
     {
         //backup current database contents for workbench
+        logDebug("backupObject(): " + System.nanoTime());
         backupObject();
+        logDebug("---------" + System.nanoTime());
         
+        logDebug("checkCurrentEditState: " + System.nanoTime());
         checkCurrentEditState();
+        logDebug("---------" + System.nanoTime());
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         /* committed prevents null transaction exceptions occuring in catch blocks below.
          * DataProviderSessionIFace needs methods to access transaction status??
          */
         boolean committed = false; 
+        boolean opened = false;
         try
         {
             FormHelper.updateLastEdittedInfo(workbench);
@@ -2528,7 +2539,6 @@ public class WorkbenchPaneSS extends BaseSubPane
                 session = DataProviderFactory.getInstance().createSession();
             }
             
-            session.beginTransaction();
 
             // DEBUG
             /*for (WorkbenchRow row : workbench.getWorkbenchRowsAsList())
@@ -2539,40 +2549,85 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
             }*/
             
+            
+            logDebug("merging and saving: " + System.nanoTime());
+            // For some reason, when a wb contains a lot of newly added rows AND they have been
+            // pasted into,
+            // The previously used "Workbench dObj = session.merge(workbench)"
+            // would take about ten minutes to execute when a 1500x4 block had been pasted into the
+            // dataset.
+          
+            // So. Store the rows; remove them from the workbench; and merge the workbench without the
+            // rows...
+            Set<WorkbenchRow> rows = workbench.getWorkbenchRows();
+            workbench.setWorkbenchRows(null);
+            // reassign the rows.
             Workbench dObj = session.merge(workbench);
-            
-            
-            /*// DEBUG
-            for (WorkbenchRow row : ((Workbench)dObj).getWorkbenchRowsAsList())
+
+            // Now, iterate through the rows, only merging those that have ids. For some reason this
+            // is much much faster.
+            dObj.setWorkbenchRows(rows);
+            DataProviderSessionIFace rowSession = DataProviderFactory.getInstance().createSession();
+            try
             {
-                for (WorkbenchDataItem item : row.getWorkbenchDataItems())
+                Vector<Pair<WorkbenchRow, WorkbenchRow>> mergedRows = new Vector<Pair<WorkbenchRow, WorkbenchRow>>();
+                for (WorkbenchRow row : dObj.getWorkbenchRows())
                 {
-                    System.out.println("["+item.getCellData()+"]");
+                    if (row.getWorkbenchRowId() != null)
+                    {
+                        mergedRows.add(new Pair<WorkbenchRow, WorkbenchRow>(row, rowSession
+                                .merge(row)));
+                    }
                 }
-            }*/
+                for (Pair<WorkbenchRow, WorkbenchRow> merger : mergedRows)
+                {
+                    if (merger.getFirst() != merger.getSecond())
+                    {
+                        dObj.getWorkbenchRows().remove(merger.getFirst());
+                        dObj.getWorkbenchRows().add(merger.getSecond());
+                    }
+                }
+            }
+            finally
+            {
+                rowSession.close();
+                rowSession = null;
+            }
+
+            session.beginTransaction();
+            opened = true;
+
+            /*
+             * // DEBUG for (WorkbenchRow row : ((Workbench)dObj).getWorkbenchRowsAsList()) { for
+             * (WorkbenchDataItem item : row.getWorkbenchDataItems()) {
+             * System.out.println("["+item.getCellData()+"]"); } }
+             */
+            
             session.saveOrUpdate(dObj);
             session.commit();
             committed = true;
             session.flush();
             workbench = dObj;
             workbench.forceLoad();
-            
+
             model.setWorkbench(workbench);
             formPane.setWorkbench(workbench);
             if (imageFrame != null)
             {
                 imageFrame.setWorkbench(workbench);
             }
-            
-            log.info("Session Saved[ and Flushed "+session.hashCode()+"]");
-           
+
+            log.info("Session Saved[ and Flushed " + session.hashCode() + "]");
+            logDebug("-------- " + System.nanoTime());
+
             hasChanged = false;
-            String msg = String.format(getResourceString("WB_SAVED"), new Object[] { workbench.getName()} );
+            String msg = String.format(getResourceString("WB_SAVED"), new Object[] { workbench
+                    .getName() });
             UIRegistry.getStatusBar().setText(msg);
         }
         catch (StaleObjectException ex) // was StaleObjectStateException
         {
-            if (!committed)
+            if (opened && !committed)
             {
                 session.rollback();
             }
@@ -2586,7 +2641,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             log.error("******* " + ex);
             ex.printStackTrace();
-            if (!committed)
+            if (opened && !committed)
             {
                 session.rollback();
             }
@@ -2594,7 +2649,11 @@ public class WorkbenchPaneSS extends BaseSubPane
             UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(ex);
             dlg.setVisible(true);
         }
-        
+        finally
+        {
+            session.close();
+            session = null;
+        }
         if (saveBtn != null)
         {
             saveBtn.setEnabled(false);
@@ -2604,9 +2663,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             datasetUploader.refresh();
         }
         updateUploadBtnState();
-
-        session.close();
-        session = null;
     }
     
     /* (non-Javadoc)

@@ -123,13 +123,28 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
         {
             return DataObjFieldFormatMgr.getInstance().aggregate(getList(key), relationship.getDataClass());
         }
-        return DataObjFieldFormatMgr.getInstance().format(getObject(key), relationship.getDataClass());
+        Object value = lookupKey(key);
+        if (value == null)
+        {
+            value = DataObjFieldFormatMgr.getInstance().format(getObject(key), relationship.getDataClass());
+            addKey(key, value);
+        }
+        return value;
     }
     
+    protected Object lookupKey(final Object key)
+    {
+        return null;
+    }
+
+    protected void addKey(final Object key, final Object value)
+    {
+        // nuthin yet.
+    }
     /**
      * @param value
-     * @return List of related of objects if value is a key, or
-     * value cast to a collection if it is not a key.
+     * @return List of related of objects if value is a key, or value cast to a collection if it is
+     *         not a key.
      */
     protected Collection<?> getList(final Object value)
     {
