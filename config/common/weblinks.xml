@@ -1,13 +1,14 @@
 <vector>
   <weblinkdef>
     <name>MailTo</name>
+    <tableName>agent</tableName>
     <desc>Launches an email message window for sending an email.</desc>
-    <baseURLStr>mailto:[email]</baseURLStr>
+    <baseURLStr><![CDATA[mailto:<email>]]></baseURLStr>
     <args>
       <weblinkdefarg>
         <name>email</name>
         <title>EMail</title>
-        <prompt>true</prompt>
+        <prompt>false</prompt>
       </weblinkdefarg>
     </args>
     <usedByList>
@@ -20,7 +21,7 @@
   <weblinkdef>
     <name>FishBase</name>
     <desc>Displays a FishBase page for the Genus and Species</desc>
-    <baseURLStr>http://www.fishbase.org/Summary/speciesSummary.php?genusname=[genus]AMPspeciesname=[species]</baseURLStr>
+    <baseURLStr><![CDATA[http://www.fishbase.org/Summary/speciesSummary.php?genusname=<genus>AMPspeciesname=<species>]]></baseURLStr>
     <args>
       <weblinkdefarg>
         <name>genus</name>
@@ -39,7 +40,7 @@
     <name>WEBLINK</name>
     <tableName></tableName>
     <desc></desc>
-    <baseURLStr>http://specify6-test.nhm.ku.edu/echo.php?text1=[this]</baseURLStr>
+    <baseURLStr><![CDATA[http://specify6-test.nhm.ku.edu/echo.php?text1=<this>]]></baseURLStr>
     <args>
       <weblinkdefarg>
         <name>this</name>
@@ -52,7 +53,7 @@
     <name>AccessionNumber</name>
     <tableName>accession</tableName>
     <desc></desc>
-    <baseURLStr>http://specify6-test.nhm.ku.edu/echo.php?text1=[accessionNumber]</baseURLStr>
+    <baseURLStr><![CDATA[http://specify6-test.nhm.ku.edu/echo.php?text1=<accessionNumber>]]></baseURLStr>
     <args>
       <weblinkdefarg>
         <name>accessionNumber</name>

@@ -8,6 +8,7 @@ package edu.ku.brc.af.ui.weblink;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.io.Writer;
 import java.security.AccessController;
 import java.util.Vector;
 
@@ -15,6 +16,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.core.util.QuickWriter;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
+import com.thoughtworks.xstream.io.xml.XppDriver;
 
 import edu.ku.brc.af.core.db.DBTableInfo;
 
@@ -197,8 +202,26 @@ public class WebLinkMgr
      */
     protected String convertToXML()
     {
-        XStream xstream = new XStream();
+        //XStream xstream = new XStream();
+        XStream xstream = new XStream(
+                new XppDriver() 
+                {
+                    public HierarchicalStreamWriter createWriter(Writer out) 
+                    {
+                        return new PrettyPrintWriter(out) 
+                        {
+                            protected void writeText(QuickWriter writer, String text) 
+                            {
+                                writer.write("<![CDATA[");
+                                writer.write(text);
+                                writer.write("]]>");
+                            }
+                        };
+                    }
+                }
+            );
         config(xstream);
+
         return xstream.toXML(webLinkDefs);
     }
     
