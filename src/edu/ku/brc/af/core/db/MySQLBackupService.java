@@ -268,7 +268,7 @@ public class MySQLBackupService extends BackupServiceFactory
                 
                 UIRegistry.getStatusBar().setProgressDone(STATUSBAR_NAME);
                 
-                UIRegistry.clearGlassPaneMsg();
+                UIRegistry.clearSimpleGlassPaneMsg();
                 
                 if (StringUtils.isNotEmpty(errorMsg))
                 {
@@ -285,7 +285,7 @@ public class MySQLBackupService extends BackupServiceFactory
         final JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setProgressRange(STATUSBAR_NAME, 0, 100);
         
-        UIRegistry.writeGlassPaneMsg(getLocalizedMessage("MySQLBackupService.BACKINGUP", databaseName), 24);
+        UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("MySQLBackupService.BACKINGUP", databaseName), 24);
         
         backupWorker.addPropertyChangeListener(
                 new PropertyChangeListener() {
@@ -446,7 +446,7 @@ public class MySQLBackupService extends BackupServiceFactory
                 
                 UIRegistry.getStatusBar().setProgressDone(STATUSBAR_NAME);
                 
-                UIRegistry.clearGlassPaneMsg();
+                UIRegistry.clearSimpleGlassPaneMsg();
                 
                 if (StringUtils.isNotEmpty(errorMsg))
                 {
@@ -462,7 +462,7 @@ public class MySQLBackupService extends BackupServiceFactory
         final JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setProgressRange(STATUSBAR_NAME, 0, 100);
         
-        UIRegistry.writeGlassPaneMsg(getLocalizedMessage("MySQLBackupService.RESTORING", databaseName), 24);
+        UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("MySQLBackupService.RESTORING", databaseName), 24);
         
         backupWorker.addPropertyChangeListener(
                 new PropertyChangeListener() {

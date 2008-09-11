@@ -72,6 +72,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.exceptions.UIException;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.util.FileCache;
 
@@ -118,6 +119,7 @@ public class UIRegistry
     private static final Logger       log       = Logger.getLogger(UIRegistry.class);
     protected static final UIRegistry instance  = new UIRegistry();
     protected static Rectangle        frameRect = null;
+    protected static GhostGlassPane   oldGlassPane = null;    
 
 
     // Data Members
@@ -1301,6 +1303,30 @@ public class UIRegistry
             Frame frame = (JFrame)get(FRAME);
             frame.setBounds(frameRect);
         }  
+    }
+    
+    /**
+     * @param msg
+     * @param pointSize
+     */
+    public static void writeSimpleGlassPaneMsg(final String msg, final int pointSize)
+    {
+        SimpleGlassPane glassPane = new SimpleGlassPane(msg, 24);
+        
+        oldGlassPane = UIRegistry.getGlassPane();
+        
+        ((JFrame)UIRegistry.getTopWindow()).setGlassPane(glassPane);
+        glassPane.setVisible(true);
+    }
+    
+    /**
+     * 
+     */
+    public static void clearSimpleGlassPaneMsg()
+    {
+        ((JFrame)UIRegistry.getTopWindow()).setGlassPane(oldGlassPane);
+        oldGlassPane.setVisible(false);
+        oldGlassPane = null;
     }
     
     public static void setJavaDBDir(final String path)
