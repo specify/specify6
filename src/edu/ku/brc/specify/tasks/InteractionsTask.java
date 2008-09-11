@@ -482,6 +482,7 @@ public class InteractionsTask extends BaseTask
             
             infoRequestNavBox  = new NavBox(getResourceString("InfoRequest"));
             loadNavBox(infoRequestNavBox, InfoRequest.class, INFOREQUEST_FLAVOR);
+            
         }
         isShowDefault = true;
     }
@@ -584,21 +585,7 @@ public class InteractionsTask extends BaseTask
             for (Iterator<?> iter=list.iterator();iter.hasNext();)
             {
                 FormDataObjIFace   dataObj = (FormDataObjIFace)iter.next();
-                
-                RecordSet rs = new RecordSet();
-                rs.initialize();
-                rs.set("", ti.getTableId(), RecordSet.HIDDEN);
-                rs.addItem(dataObj.getId());
-                
-                CommandAction      cmd     = new CommandAction("Data_Entry", "Edit", rs);
-                cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
-                
-                CommandActionForDB delCmd  = new CommandActionForDB(INTERACTIONS, DELETE_CMD_ACT, ti.getTableId(), dataObj.getId());
-                NavBoxItemIFace    nbi     = makeDnDNavBtn(navBox, dataObj.getIdentityTitle(), ti.getShortClassName(), cmd, delCmd, true, true);
-                RolloverCommand    roc     = (NavBoxButton)nbi;
-                nbi.setData(rs);
-                roc.addDragDataFlavor(dragFlav);
-                roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+                createNavBtn(navBox, dragFlav, dataObj, ti);
             }      
             navBoxes.add(navBox);
             
@@ -613,6 +600,28 @@ public class InteractionsTask extends BaseTask
                 session.close();
             }
         }
+    }
+    
+    protected NavBoxItemIFace createNavBtn(final NavBox     navBox, 
+                                           final DataFlavor dragFlav,
+                                           final FormDataObjIFace dataObj, 
+                                           final DBTableInfo ti)
+    {
+        RecordSet rs = new RecordSet();
+        rs.initialize();
+        rs.set(dataObj.getIdentityTitle(), ti.getTableId(), RecordSet.HIDDEN);
+        rs.addItem(dataObj.getId());
+        
+        CommandAction      cmd     = new CommandAction("Data_Entry", "Edit", rs);
+        cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
+        
+        CommandActionForDB delCmd  = new CommandActionForDB(INTERACTIONS, DELETE_CMD_ACT, ti.getTableId(), dataObj.getId());
+        NavBoxItemIFace    nbi     = makeDnDNavBtn(navBox, dataObj.getIdentityTitle(), ti.getShortClassName(), cmd, delCmd, true, true);
+        RolloverCommand    roc     = (NavBoxButton)nbi;
+        nbi.setData(rs);
+        roc.addDragDataFlavor(dragFlav);
+        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+        return nbi;
     }
 
     /**
@@ -929,13 +938,13 @@ public class InteractionsTask extends BaseTask
         for (NavBoxItemIFace nbi : infoRequestNavBox.getItems())
         {
             Object obj = nbi.getData();
-            if (obj instanceof CommandActionForDB)
-            {
-                CommandActionForDB cmdAction = (CommandActionForDB)obj;
-                RecordSetIFace     rs       = RecordSetFactory.getInstance().createRecordSet(nbi.getTitle(), cmdAction.getTableId(), RecordSet.GLOBAL);
-                rs.addItem(cmdAction.getId());
-                rsList.add(rs);
-            }
+            //if (obj instanceof CommandActionForDB)
+            //{
+                //CommandActionForDB cmdAction = (CommandActionForDB)obj;
+                //RecordSetIFace     rs       = RecordSetFactory.getInstance().createRecordSet(nbi.getTitle(), cmdAction.getTableId(), RecordSet.GLOBAL);
+                //rs.addItem(cmdAction.getId());
+                rsList.add((RecordSet)obj);
+            //}
         }
         return rsList;
     }
@@ -1820,8 +1829,7 @@ public class InteractionsTask extends BaseTask
                 if (cmdAction.isAction(INSERT_CMD_ACT))
                 {
                     InfoRequest infoRequest = (InfoRequest)cmdAction.getData();
-                    NavBoxItemIFace nbi = addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), "InfoRequest", new CommandAction(INTERACTIONS, DELETE_CMD_ACT, infoRequest), infoRequest);
-                    setUpDraggable(nbi, new DataFlavor[] {Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction(INTERACTIONS, INFO_REQ_MESSAGE));
+                    createNavBtn(infoRequestNavBox, INFOREQUEST_FLAVOR, infoRequest, DBTableIdMgr.getInstance().getInfoById(InfoRequest.getClassTableId()));
                 }
             }
         }

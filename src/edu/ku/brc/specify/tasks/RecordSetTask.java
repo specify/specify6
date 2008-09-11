@@ -1242,7 +1242,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             }
             // else
             dlg.setVisible(true); // modal (waits for answer here)
-            return dlg.getSelectedRecordSet();
+            return dlg.isCancelled() ? null : dlg.getSelectedRecordSet();
         }
         
         // else
