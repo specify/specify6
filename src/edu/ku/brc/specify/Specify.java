@@ -1677,13 +1677,14 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             try
             {
                 textArea.setText(FileUtils.readFileToString(logFile));
-                textArea.setEditable(false);
+                
             } catch (Exception ex) {} // no catch on purpose
             
         } else
         {
             textArea.setText(doError ? getResourceString("Specify.LOG_NO_ERRORS") : getResourceString("Specify.LOG_EMPTY")); //$NON-NLS-1$ //$NON-NLS-2$
         }
+        textArea.setEditable(false);
             
         return new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     }
@@ -1699,20 +1700,23 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             logFilePath = "";  //$NON-NLS-1$
             logFile     = new File("specify.log"); //$NON-NLS-1$
+            
+            if (!logFile.exists())
+            {
+                logFile = new File(logFilePath + "error.log"); //$NON-NLS-1$
+                if (logFile != null)
+                {
+                    logFilePath = "";  //$NON-NLS-1$
+                    logFile     = new File("error.log"); //$NON-NLS-1$
+                }
+            }
         }
         
         if (logFile != null && logFile.exists())
         {
-            JTextArea textArea = new JTextArea();
-            try
-            {
-                textArea.setText(FileUtils.readFileToString(logFile));
-                textArea.setEditable(false);
-            } catch (Exception ex) {}
-            
             JTabbedPane tabPane = new JTabbedPane();
             tabPane.add(getResourceString("Specify.ERROR"), getLogFilePanel(logFilePath, true)); //$NON-NLS-1$
-            tabPane.add("Specify", getLogFilePanel(logFilePath, false)); //$NON-NLS-1$
+            tabPane.add("Specify",                          getLogFilePanel(logFilePath, false)); //$NON-NLS-1$
             
             String title = getResourceString("Specify.LOG_FILES_TITLE");//$NON-NLS-1$
             CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), title, true, CustomDialog.OK_BTN, tabPane); 
