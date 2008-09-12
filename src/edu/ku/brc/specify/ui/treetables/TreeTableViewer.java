@@ -116,7 +116,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 								implements DragDropCallback, DualViewSearchable
 {
     /** Logger for all messages emitted. */
-    private static final Logger log = Logger.getLogger(TreeTableViewer.class);
+    protected static final Logger log = Logger.getLogger(TreeTableViewer.class);
     
 	private static final int SINGLE_VIEW_MODE = 0;
 	private static final int DUAL_VIEW_MODE = 1;
@@ -2046,7 +2046,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             {
                 if (isSynonymizeOK)
                 {
-                    dlg.setApplyLabel(getResourceString("TreeTableView.MOVE_NODE"));                 
+                    dlg.setApplyLabel(getResourceString("TreeTableView.MOVE_NODE"));   
+                    dlg.setCloseOnApplyClk(true);
                 } else
                 {
                     dlg.setOkLabel(getResourceString("TreeTableView.MOVE_NODE"));
@@ -2055,9 +2056,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             
             dlg.setVisible(true);
             
-            if (!dlg.isCancelled())
+            int btn = dlg.getBtnPressed();
+            if (!dlg.isCancelled() && btn != CustomDialog.HELP_BTN)
             {
-                int btn = dlg.getBtnPressed();
                 if (isSynonymizeOK)
                 {
                     if (isMoveOK)

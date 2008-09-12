@@ -97,6 +97,8 @@ public class CustomDialog extends JDialog
 
     protected ImageIcon         icon             = null;
     protected boolean           isCancelled      = true;
+    protected boolean           closeOnApplyClk  = false;
+    protected boolean           closeOnHelpClk   = false;
     protected int               btnPressed       = NONE_BTN;
     
     protected JPanel            mainPanel;
@@ -385,12 +387,20 @@ public class CustomDialog extends JDialog
     }
 
     /**
-     * Performs help action.
+     * If helpContext has not been set, performs help action.
      */
     protected void helpButtonPressed()
     {
-        isCancelled = false;
+        if (closeOnHelpClk)
+        {
+            isCancelled = false;
+        }
         btnPressed  = HELP_BTN;
+        HelpMgr.getHelpForContext();        
+        if (closeOnHelpClk)
+        {
+            setVisible(false);
+        }
     }
 
     /**
@@ -400,6 +410,10 @@ public class CustomDialog extends JDialog
     {
         isCancelled = false;
         btnPressed  = APPLY_BTN;
+        if (closeOnApplyClk)
+        {
+            setVisible(false);
+        }
     }
 
     /**
@@ -459,6 +473,14 @@ public class CustomDialog extends JDialog
     }
 
     /**
+     * @param closeOnApplyClk
+     */
+    public void setCloseOnApplyClk(boolean closeOnApplyClk)
+    {
+        this.closeOnApplyClk = closeOnApplyClk;
+    }
+    
+    /**
      * @param helpContext
      */
     public void setHelpContext(String helpContext)
@@ -479,6 +501,14 @@ public class CustomDialog extends JDialog
         }
     }
 
+    /**
+     * @param closeOnHelpClk
+     */
+    public void setCloseOnHelpClk(boolean closeOnHelpClk)
+    {
+        this.closeOnHelpClk = closeOnHelpClk;
+    }
+    
     /*
      * (non-Javadoc)
      * @see java.awt.Dialog#setVisible(boolean)
