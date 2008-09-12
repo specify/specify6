@@ -26,21 +26,6 @@
             </altviews>
         </view>
 
-        <view name="Determination"
-            class="edu.ku.brc.specify.datamodel.Determination"
-            busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationBusRules"
-            resourcelabels="false">
-            <desc><![CDATA[Subform within the Collection Object form.]]></desc>
-            <altviews>
-                <altview name="Determination View"       viewdef="Determination" label="View" mode="view"/>
-                <altview name="Determination Edit"       viewdef="Determination" label="Edit" mode="edit" default="true"/>
-                <!-- 
-                <altview name="Determination Table View" viewdef="Determination Table" label="Grid" mode="view"/>
-                <altview name="Determination Table Edit" viewdef="Determination Table" label="Grid" mode="edit"/>
-                 -->
-            </altviews> 
-        </view>
-
        <view name="GroupPersons"
             class="edu.ku.brc.specify.datamodel.GroupPerson"
             busrules="edu.ku.brc.specify.datamodel.busrules.GroupPersonBusRules"
@@ -61,19 +46,6 @@
                 <altview name="GroupPerson View" viewdef="GroupPerson" label="View" mode="view"/>
                 <altview name="GroupPerson Edit" viewdef="GroupPerson" label="Edit" mode="edit" default="true"/> 
             </altviews> 
-        </view> 
-
-        
-        <view name="Permit"
-            class="edu.ku.brc.specify.datamodel.Permit"
-            busrules="edu.ku.brc.specify.datamodel.busrules.PermitBusRules"
-            isinternal="false"
-            resourcelabels="false">
-            <desc><![CDATA[Permit subform within the Accession form.]]></desc>
-            <altviews  defaultmode="view">
-                <altview name="Permit View" viewdef="Permit" label="View" mode="view" validated="false"/>
-                <altview name="Permit Edit" viewdef="Permit" label="Edit" mode="edit" validated="true"/>
-            </altviews>
         </view>
 
         <view name="Address"
@@ -109,30 +81,6 @@
             </altviews>
         </view>
         
-        <view name="CollectorsIconView"
-            class="edu.ku.brc.specify.datamodel.Collector"
-            busrules="edu.ku.brc.specify.datamodel.busrules.CollectorBusRules"
-            resourcelabels="false">
-            <desc><![CDATA[The Attachments Icon View.]]></desc>
-            <altviews>
-                <altview name="Collectors Icon View" viewdef="CollectorsIconView" label="IconView" mode="view" validated="false" default="true"/>                
-                <altview name="Collectors Icon Edit" viewdef="CollectorsIconView" label="IconEdit" mode="edit" validated="true"/>                
-            </altviews>
-        </view>
-        
-        
-        <view name="Locality"
-            class="edu.ku.brc.specify.datamodel.Locality"
-            busrules="edu.ku.brc.specify.datamodel.busrules.LocalityBusRules"
-            isinternal="false"
-            resourcelabels="false">
-            <desc><![CDATA[Locality form.]]></desc>
-            <altviews>
-                <altview name="Locality View" viewdef="Locality" label="View" mode="view"/>
-                <altview name="Locality Edit" viewdef="Locality" label="Edit" mode="edit" default="true"/>
-            </altviews>
-        </view>
-
         <view name="AttachmentsForm"
             class="edu.ku.brc.specify.datamodel.Attachment"
             busrules="edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules"
@@ -141,17 +89,6 @@
             <altviews>
                 <altview name="Attachment View" viewdef="Attachment" label="View" mode="view" validated="false" default="true"/>                
                 <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" validated="true"/>                
-            </altviews>
-        </view>
-        
-        <view name="Collector"
-            class="edu.ku.brc.specify.datamodel.Collector"
-            busrules="edu.ku.brc.specify.datamodel.busrules.CollectorBusRules"
-            resourcelabels="false">
-            <desc><![CDATA[The Collectors Form.]]></desc>
-            <altviews>
-                <altview name="Collector View" viewdef="Collector" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="Collector Edit" viewdef="Collector" label="Edit" mode="edit" validated="true"/>                
             </altviews>
         </view>
         
@@ -584,31 +521,6 @@
         
         <viewdef
             type="form"
-            name="Collector"
-            class="edu.ku.brc.specify.datamodel.Collector"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The Collector form.]]></desc>
-            <enableRules/>
-            
-            <columnDef>100px,3dlu,p,p:g</columnDef>
-            <rowDef>p,2dlu,p:g,2dlu,p:g</rowDef>
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="2" cols="40"/>
-                </row>
-                
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
             name="Agent"
             class="edu.ku.brc.specify.datamodel.Agent"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
@@ -744,47 +656,6 @@
         </viewdef>
 
         <viewdef
-            name="Determination"
-            type="form"
-            class="edu.ku.brc.specify.datamodel.Determination"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
-            <enableRules/>
-            
-            <columnDef>90px,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
-            
-            <rowDef auto="true" cell="p" sep="2px"/>
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=true" colspan="5"/>
-                    
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="status" uitype="combobox" picklist="DeterminationStatus" isrequired="true"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
-                    
-                    <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="typeStatusName" uitype="text"/>
-                    
-                    <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-                    
-                    <cell type="field" id="7" name="yesNo1" uitype="checkbox" label="In Question"/>
-                </row>
-                
-                <row>
-                    <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="remarks" uitype="textarea" colspan="14" cols="50"/>
-                </row>
-            </rows>
-        </viewdef> 
-
-        <viewdef
             name="GroupPersons Table"
             type="formtable"
             class="edu.ku.brc.specify.datamodel.GroupPerson"
@@ -840,129 +711,6 @@
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="remarks" uitype="textarea" colspan="2"/>
                 </row>
-            </rows>
-        </viewdef>
-
-        
-         <viewdef
-            type="form"
-            name="Locality"
-            class="edu.ku.brc.specify.datamodel.Locality"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Locality]]></desc>
-            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="localityName" uitype="text" isrequired="true" colspan="10"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="namedPlace" uitype="text" colspan="5"/>
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="relationToNamedPlace" uitype="text"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography" isrequired="true" colspan="10"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="this" uitype="plugin" initialize="name=LatLonUI" colspan="10"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Elevation" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="minElevation" uitype="text" cols="20"/>
-                    <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="maxElevation" uitype="text" cols="20"/>
-                    <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="elevationMethod" uitype="text" cols="1"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Tools" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="p,f:p:g,p,f:p:g,p,f:p:g" rowdef="p" colspan="12">
-                        <rows>
-                            <row>
-                                <cell type="label" label=" "/>
-                                <cell type="field" id="23" name="this" uitype="plugin" initialize="name=LocalityGeoRef;title=Geo Ref" colspan="1"/>
-                                <cell type="field" id="24" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth" colspan="1"/>
-                            </row>
-                        </rows>
-                    </cell>
-                </row>
-                <row>
-                    <cell type="separator" label="Attachments" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12" initialize="btn=true;icon=LocalityAttachment"/>
-                </row>
-            </rows>
-        </viewdef>       
-        
-        <viewdef
-            type="form"
-            name="Permit"
-            class="edu.ku.brc.specify.datamodel.Permit"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Permit subform for Acessions.]]></desc>
-            <enableRules/>
-            
-            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="permitNumber" uitype="text" isrequired="true"/>
-                    
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="type" uitype="combobox" picklist="PermitType" isrequired="true"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="issuedBy" uitype="querycbx" initialize="name=Agent;title=Issuer Agent" isrequired="true"/>
-                    
-                    <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="issuedTo" uitype="querycbx" initialize="name=Agent;title=Issuee Agent" isrequired="true"/>
-                </row>
-                
-                <row>
-                    <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="issuedDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    
-                    <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="renewalDate" uitype="formattedtext" uifieldformatter="Date"/>
-                </row>
-                
-                <row>
-                    <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    
-                    <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
-                </row>
-                
-                <row>
-                    <cell type="label" labelfor="9"/>
-                    <cell type="field" id="9" name="remarks" uitype="textarea" colspan="10"/>
-                </row>
-                <!--
-                <row>
-                    <cell type="label" labelfor="10"/>
-                    <cell type="subview" viewname="AttachmentsIconView" id="10" name="attachments" colspan="10"/>
-                </row>
-                -->
             </rows>
         </viewdef>
 
@@ -1097,17 +845,7 @@
                 </row>
             </rows>
         </viewdef>
-        
-        <viewdef
-            type="iconview"
-            name="CollectorsIconView"
-            class="edu.ku.brc.specify.datamodel.Attachment"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The Attachments Icon Viewer]]></desc>
-        </viewdef>
-        
-        
+          
         <viewdef
             type="form"
             name="PrepType"
