@@ -186,8 +186,8 @@ class SetUpBuildDlg extends CustomDialog
         }
         
         databaseNameTxt     = createTextField(databaseName);
-        usernameTxtFld      = createTextField("rods");
-        passwdTxtFld        = createPasswordField("rods");
+        usernameTxtFld      = createTextField("Specify");
+        passwdTxtFld        = createPasswordField("Specify");
         extraCollectionsChk = createCheckBox("Create Extra Collections");
         extraCollectionsChk.setSelected(true);
         

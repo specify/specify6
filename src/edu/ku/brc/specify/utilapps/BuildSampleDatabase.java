@@ -411,7 +411,7 @@ public class BuildSampleDatabase
         persist(institution);
         persist(division);
         
-        SpecifyUser      user             = createSpecifyUser(config.getUsername(), config.getEmail(),  config.getPassword(), config.getUserType());
+        SpecifyUser  user= createSpecifyUser(config.getUsername(), config.getEmail(),  config.getPassword(), config.getUserType());
         persist(user);
         
         SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(user);
@@ -826,11 +826,11 @@ public class BuildSampleDatabase
         // Create the really high-level stuff
         ////////////////////////////////
         String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
-        String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
-        String           lastName         = initPrefs.getProperty("useragent.lastname", "Spears");
-        String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
-        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
-        String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
+        String           firstName        = initPrefs.getProperty("useragent.firstname", "Test");
+        String           lastName         = initPrefs.getProperty("useragent.lastname", "User");
+        String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
+        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "tu");
+        String           email            = initPrefs.getProperty("useragent.email", "testuser@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
         //String           password         = initPrefs.getProperty("useragent.password", "rods");
         
@@ -1629,11 +1629,11 @@ public class BuildSampleDatabase
         // Create the really high-level stuff
         ////////////////////////////////
         String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
-        String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
-        String           lastName         = initPrefs.getProperty("useragent.lastname", "Spears");
-        String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
-        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
-        String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
+        String           firstName        = initPrefs.getProperty("useragent.firstname", "Test");
+        String           lastName         = initPrefs.getProperty("useragent.lastname", "User");
+        String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
+        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "tu");
+        String           email            = initPrefs.getProperty("useragent.email", "testuser@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
         
         System.out.println("----- User Agent -----");
@@ -2075,11 +2075,11 @@ public class BuildSampleDatabase
         // Create the really high-level stuff
         ////////////////////////////////
         String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
-        String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
-        String           lastName         = initPrefs.getProperty("useragent.lastname", "Spears");
-        String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
-        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
-        String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
+        String           firstName        = initPrefs.getProperty("useragent.firstname", "Test");
+        String           lastName         = initPrefs.getProperty("useragent.lastname", "User");
+        String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
+        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "tu");
+        String           email            = initPrefs.getProperty("useragent.email", "testuser@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
         
         System.out.println("----- User Agent -----");
@@ -3138,11 +3138,11 @@ public class BuildSampleDatabase
         // Create the really high-level stuff
         ////////////////////////////////
         String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
-        String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
-        String           lastName         = initPrefs.getProperty("useragent.lastname", "Spears");
-        String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
-        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
-        String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
+        String           firstName        = initPrefs.getProperty("useragent.firstname", "Test");
+        String           lastName         = initPrefs.getProperty("useragent.lastname", "User");
+        String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
+        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "tu");
+        String           email            = initPrefs.getProperty("useragent.email", "testuser@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
         
         System.out.println("----- User Agent -----");
@@ -4202,11 +4202,11 @@ public class BuildSampleDatabase
         // Create the really high-level stuff
         ////////////////////////////////
         String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
-        String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
-        String           lastName         = initPrefs.getProperty("useragent.lastname", "Spears");
-        String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
-        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
-        String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
+        String           firstName        = initPrefs.getProperty("useragent.firstname", "Test");
+        String           lastName         = initPrefs.getProperty("useragent.lastname", "User");
+        String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
+        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "tu");
+        String           email            = initPrefs.getProperty("useragent.email", "testuser@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
         
         System.out.println("----- User Agent -----");
@@ -4636,7 +4636,7 @@ public class BuildSampleDatabase
             agents.add(createAgent("Mr.", "David", "D", "Smith", "ds", "ds@whitehouse.gov"));
             agents.add(createAgent("Mr.", "Robert", "H", "Burk", "rb", "beach@net.edu"));
             agents.add(createAgent("Mrs.", "Margaret", "H", "Johnson", "jm", "jm@net.edu"));
-            agents.add(createAgent("Mr.", "Kip", "C", "Spencer", "kcs", "rods@ku.edu"));
+            agents.add(createAgent("Mr.", "Kip", "C", "Spencer", "kcs", "kip@ku.edu"));
             agents.add(johnByrn);
             agents.add(createAgent("Sir", "Dudley", "X", "Thompson", "dxt", ""));
             agents.add(createAgent("Mr.", "Joe", "A", "Campbell", "jb", ""));
@@ -5546,10 +5546,10 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        String           username         = initPrefs.getProperty("initializer.username", usernameArg);
-        String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
+        String           username         = initPrefs.getProperty("initializer.username", "testuser");
+        String           email            = initPrefs.getProperty("useragent.email", "ku@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
-        String           password         = initPrefs.getProperty("useragent.password", passwordArg);
+        String           password         = initPrefs.getProperty("useragent.password", "testuser");
         
         System.out.println("----- User Agent -----");
         System.out.println("Userame:   "+username);
@@ -6998,7 +6998,8 @@ public class BuildSampleDatabase
         newItem.setPickListName(memoryItem.getPickListName());
         newItem.setWebLinkName(memoryItem.getWebLinkName());
         newItem.setIsHidden(memoryItem.getIsHidden());
-        
+        newItem.setIsRequired(memoryItem.getIsRequired());
+
         if (fieldsToHideHash.get(itemName) != null || 
             itemName.startsWith("text") ||
             itemName.startsWith("number") ||
@@ -7056,6 +7057,7 @@ public class BuildSampleDatabase
         newContainer.setPickListName(newContainer.getPickListName());
         newContainer.setWebLinkName(newContainer.getWebLinkName());
         newContainer.setIsHidden(newContainer.getIsHidden());
+
         
         boolean isColObj = memoryContainer.getName().equals("collectionobject");
         
