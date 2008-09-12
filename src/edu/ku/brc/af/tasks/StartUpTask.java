@@ -98,10 +98,19 @@ public class StartUpTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
+        for (SubPaneIFace sb : SubPaneMgr.getInstance().getSubPanes())
+        {
+            if (sb.getTask() == this)
+            {
+                return sb;
+            }
+        }
+        
         if (starterPane == null)
         {
             starterPane = new StatsPane(title, this, "StartUpPanel", true, null, createSplashPanel()); //$NON-NLS-1$
         }
+        
         return starterPane;
     }
 

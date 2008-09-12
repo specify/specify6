@@ -556,18 +556,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             toolBar.setVisible(false);
         }
-        
-        TaskMgr.requestInitalContext();
-        
-        
-        if (!isRelease)
-        {
-            DebugLoggerDialog dialog = new DebugLoggerDialog(null);
-            dialog.configureLoggers();
-        }
-
-        showApp();
-    }
+     }
 
     /**
      * Determines if this is an applet or application
@@ -2129,6 +2118,17 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         }
         
         CommandDispatcher.dispatch(new CommandAction("App", firstTime ? "StartUp" : "AppRestart", null)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        
+        TaskMgr.requestInitalContext();
+        
+        if (!isRelease)
+        {
+            DebugLoggerDialog dialog = new DebugLoggerDialog(null);
+            dialog.configureLoggers();
+        }
+
+        showApp();
+
         
         if (dbLoginPanel != null)
         {

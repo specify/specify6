@@ -38,6 +38,8 @@ import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.Project;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -361,7 +363,22 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             {
                 if (co.getId().equals(colObj.getId()))
                 {
-                    reasonList.add("Collection Object is a duplicate."); // I18N
+                    reasonList.add(UIRegistry.getLocalizedMessage("CO_DUP", colObj.getIdentityTitle()));
+                    return false;
+                }
+            }
+        } else if (parentdataObj instanceof Project)
+        {
+            reasonList.clear();
+            
+            Project          prj    = (Project)parentdataObj;
+            CollectionObject colObj = (CollectionObject)dataObjectFromSearch;
+            
+            for (CollectionObject co : prj.getCollectionObjects())
+            {
+                if (co.getId().equals(colObj.getId()))
+                {
+                    reasonList.add(UIRegistry.getLocalizedMessage("CO_DUP", colObj.getIdentityTitle()));
                     return false;
                 }
             }

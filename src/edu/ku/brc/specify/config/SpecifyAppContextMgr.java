@@ -1038,35 +1038,38 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 session.evict( user.getAgents());
                 AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
                 
-                if (user.getIsLoggedIn())
+                if (!startingOver)
                 {
-                    Object[] options = { getResourceString("SpecifyAppContextMgr.OVERRIDE"),  //$NON-NLS-1$
-                                         getResourceString("SpecifyAppContextMgr.CONTINUE")  //$NON-NLS-1$
-                          };
-                    int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                                 getResourceString("SpecifyAppContextMgr.LOGGED_IN"),
-                                                                 getResourceString("SpecifyAppContextMgr.LOGGED_IN_TITLE"),  //$NON-NLS-1$
-                                                                 JOptionPane.YES_NO_OPTION,
-                                                                 JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                    if (userChoice == JOptionPane.NO_OPTION)
+                    if (user.getIsLoggedIn())
                     {
-                        //CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit"));
-                        System.exit(0);
+                        Object[] options = { getResourceString("SpecifyAppContextMgr.OVERRIDE"),  //$NON-NLS-1$
+                                             getResourceString("SpecifyAppContextMgr.CONTINUE")  //$NON-NLS-1$
+                              };
+                        int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                                     getResourceString("SpecifyAppContextMgr.LOGGED_IN"),
+                                                                     getResourceString("SpecifyAppContextMgr.LOGGED_IN_TITLE"),  //$NON-NLS-1$
+                                                                     JOptionPane.YES_NO_OPTION,
+                                                                     JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                        if (userChoice == JOptionPane.NO_OPTION)
+                        {
+                            //CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit"));
+                            System.exit(0);
+                        }
                     }
-                }
-                
-                user.setIsLoggedIn(true);
-                user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
-                
-                try
-                {
-                    session.beginTransaction();
-                    session.saveOrUpdate(user);
-                    session.commit();
                     
-                } catch (Exception ex)
-                {
-                    log.error(ex);
+                    user.setIsLoggedIn(true);
+                    user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
+                    
+                    try
+                    {
+                        session.beginTransaction();
+                        session.saveOrUpdate(user);
+                        session.commit();
+                        
+                    } catch (Exception ex)
+                    {
+                        log.error(ex);
+                    }
                 }
     
             } else
