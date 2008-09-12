@@ -62,7 +62,6 @@ import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
-import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -1048,7 +1047,7 @@ public class InteractionsTask extends BaseTask
                 final JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setIndeterminate("LoanLoader", true);
                 
-                UIRegistry.writeGlassPaneMsg(getResourceString("InteractionsTask.LOAD_LOAN_PREP"), 24);
+                UIRegistry.writeSimpleGlassPaneMsg(getResourceString("InteractionsTask.LOAD_LOAN_PREP"), 24);
                 LoanPrepLoader loader = new LoanPrepLoader(this, session, sqlStr, currentLoan, infoRequest);
                 loader.addPropertyChangeListener(
                         new PropertyChangeListener() {
@@ -1241,7 +1240,7 @@ public class InteractionsTask extends BaseTask
             }
         } else 
         {
-            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_LOAN_PREPS", null));
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_LOAN_PREPS", loan));
         }
     }
     
@@ -1521,7 +1520,12 @@ public class InteractionsTask extends BaseTask
                                                                        password, 
                                                                        emailPrefs.get("email"), 
                                                                        emailPrefs.get("to"), 
-                                                                       emailPrefs.get("subject"), text, EMailHelper.HTML_TEXT, excelFile);
+                                                                       emailPrefs.get("subject"), 
+                                                                       text, 
+                                                                       EMailHelper.HTML_TEXT, 
+                                                                       emailPrefs.get("port"), 
+                                                                       emailPrefs.get("security"), 
+                                                                       excelFile);
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run()
                                 {
@@ -2121,7 +2125,7 @@ public class InteractionsTask extends BaseTask
         {
             super.done();
             UIRegistry.getStatusBar().setProgressDone("LoanLoader");
-            UIRegistry.clearGlassPaneMsg();
+            UIRegistry.clearSimpleGlassPaneMsg();
             task.loanPrepsLoaded(availColObjList, loan, infoRequest, session);
         }
         

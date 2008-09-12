@@ -1390,7 +1390,7 @@ public class MultiView extends JPanel
             toBeSavedItems = new Vector<Object>();
         }
         boolean addToList = true;
-        if (toBeSavedItem instanceof FormDataObjIFace && ((FormDataObjIFace)toBeSavedItem).getId() == null)
+        if (!(toBeSavedItem instanceof FormDataObjIFace))// && ((FormDataObjIFace)toBeSavedItem).getId() == null)
         {
             addToList = false;
         }
@@ -1415,6 +1415,17 @@ public class MultiView extends JPanel
     public Vector<Object> getToBeSavedItems()
     {
         return toBeSavedItems;
+    }
+    
+    /**
+     * Clears the list.
+     */
+    public void clearItemsToBeSaved()
+    {
+        if (toBeSavedItems != null)
+        {
+            toBeSavedItems.clear();
+        }
     }
 
     /**

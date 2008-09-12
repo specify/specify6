@@ -382,7 +382,7 @@ public class InfoRequestTask extends BaseTask
     {
         AppPreferences appPrefs = AppPreferences.getLocalPrefs();
         boolean allOK = true;
-        String[] emailPrefNames = { "servername", "username", "password", "email"};
+        String[] emailPrefNames = { "servername", "username", "password", "email", "port", "security"};
         for (String pName : emailPrefNames)
         {
             String value = appPrefs.get("settings.email."+pName, null);
@@ -483,11 +483,16 @@ public class InfoRequestTask extends BaseTask
                         if (sendEMail)
                         {
                             final boolean status = EMailHelper.sendMsg(emailPrefs.get("servername"), 
-                                                                    emailPrefs.get("username"), 
-                                                                    Encryption.decrypt(emailPrefs.get("password")), 
-                                                                    emailPrefs.get("email"), 
-                                                                    values.get("to"), 
-                                                                    values.get("subject"), text, EMailHelper.HTML_TEXT, excelFile);
+                                                                       emailPrefs.get("username"), 
+                                                                       Encryption.decrypt(emailPrefs.get("password")), 
+                                                                       emailPrefs.get("email"), 
+                                                                       values.get("to"), 
+                                                                       values.get("subject"), 
+                                                                       text, 
+                                                                       EMailHelper.HTML_TEXT, 
+                                                                       emailPrefs.get("port"), 
+                                                                       emailPrefs.get("security"), 
+                                                                       excelFile);
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run()
                                 {

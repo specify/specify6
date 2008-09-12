@@ -29,6 +29,7 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -341,6 +342,31 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                                                                 "collectionObjectId");
         
         return duplicateNumberStatus;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToAssociateSearchObject(java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public boolean isOkToAssociateSearchObject(Object parentdataObj, Object dataObjectFromSearch)
+    {
+        if (parentdataObj instanceof Accession)
+        {
+            reasonList.clear();
+            
+            Accession        acc    = (Accession)parentdataObj;
+            CollectionObject colObj = (CollectionObject)dataObjectFromSearch;
+            
+            for (CollectionObject co : acc.getCollectionObjects())
+            {
+                if (co.getId().equals(colObj.getId()))
+                {
+                    reasonList.add("Collection Object is a duplicate."); // I18N
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }

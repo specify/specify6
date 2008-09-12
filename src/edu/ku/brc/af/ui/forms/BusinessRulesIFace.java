@@ -209,6 +209,14 @@ public interface BusinessRulesIFace
     public abstract boolean doesSearchObjectRequireNewParent();
     
     /**
+     * Check to see if it is OK to add the search object to the parent. Some rule need to check for duplicates.
+     * @param newParentDataObj the parent data object
+     * @param dataObjectFromSearch the object being added.
+     * @return true if it can be added. (the default is true);
+     */
+    public abstract boolean isOkToAssociateSearchObject(Object newParentDataObj, Object dataObjectFromSearch);
+    
+    /**
      * Asks the business rules to associate the optional new parent data object and the search object.
      * @param newParentDataObj the new parent object (is null if doesSearchObjectRequireNewParent return false)
      * @param dataObjectFromSearch the new object found from the search.

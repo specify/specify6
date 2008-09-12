@@ -57,7 +57,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
 {
     private static final Logger log = Logger.getLogger(FormValidator.class);
     
-    public enum EnableType { ValidItems, ValidAndChangedItems}
+    public enum EnableType { ValidItems, ValidAndChangedItems, ValidNotNew}
 
     private String name = ""; // Optional for debugging
 
@@ -75,8 +75,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected Hashtable<String, Component>          fields      = new Hashtable<String, Component>();
     protected Hashtable<String, JLabel>             labels      = new Hashtable<String, JLabel>();
     
-    protected Vector<Component>                     enableItemsValid   = new Vector<Component>();
-    protected Vector<Component>                     enableItemsChanged = new Vector<Component>();
+    protected Hashtable<EnableType, Vector<Component>> enableHash = new Hashtable<EnableType, Vector<Component>>();
     protected JComponent                            saveComp           = null;
     protected EnableType                            saveEnableType     = EnableType.ValidAndChangedItems;
 
@@ -107,6 +106,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
         
         jc  = JexlHelper.createContext();
         addRuleObjectMapping("form", this );
+        
+        for (EnableType type : EnableType.values())
+        {
+            enableHash.put(type, new Vector<Component>());
+        }
     }
 
     /**
@@ -147,6 +151,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         this.isNewObj = isNewObj;
         enableUIItems(getState() == UIValidatable.ErrorType.Valid && !isNewObj, EnableType.ValidItems);
+        enableUIItems(getState() == UIValidatable.ErrorType.Valid && !isNewObj, EnableType.ValidNotNew);
         updateValidationBtnUIState();
     }
 
@@ -195,13 +200,9 @@ public class FormValidator implements ValidationListener, DataChangeListener
     public void addEnableItem(final Component comp, 
                               final EnableType type)
     {
-        if (type == EnableType.ValidItems)
-        {
-            enableItemsValid.add(comp);
-        } else
-        {
-            enableItemsChanged.add(comp);
-        }
+        
+        Vector<Component> list = enableHash.get(type);
+        list.add(comp);
         comp.setEnabled(false);
     }
     
@@ -211,14 +212,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void removeEnabledItem(final Component comp, final EnableType type)
     {
-        
-        if (type == EnableType.ValidItems)
-        {
-            enableItemsValid.remove(comp);
-        } else
-        {
-            enableItemsChanged.remove(comp);
-        }
+        Vector<Component> list = enableHash.get(type);
+        list.remove(comp);
     }
     
     /**
@@ -811,6 +806,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         boolean isValid = getState() == UIValidatable.ErrorType.Valid;
         enableUIItems(isValid && hasChanged, EnableType.ValidAndChangedItems);
         enableUIItems(isValid, EnableType.ValidItems);
+        enableUIItems(isValid && !isNewObj, EnableType.ValidNotNew);
         
         //log.debug(">>>>>> isValid: "+isValid+" hasCHanged: "+hasChanged+" Val & New: "+(isValid && !isNewObj));
         
@@ -935,6 +931,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
             boolean isValid = isFormValid();
             enableUIItems(hasChanged && isValid, EnableType.ValidAndChangedItems);
             enableUIItems(isValid, EnableType.ValidItems);
+            enableUIItems(isValid && !isNewObj, EnableType.ValidNotNew);
             
             updateValidationBtnUIState();
             
@@ -1054,8 +1051,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
         formRules.clear();
 
-        enableItemsValid.clear();
-        enableItemsChanged.clear();
+        for (Vector<Component> list : enableHash.values())
+        {
+            list.clear();
+        }
         dcListeners.clear();
         valListeners.clear();
     }
@@ -1232,10 +1231,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected void enableUIItems(final boolean itsOKToEnable, final EnableType type)
     {
         //log.debug(name+" hasChanged ["+hasChanged+"]     itsOKToEnable ["+itsOKToEnable+ "]    enableItems: [" + type+"]");
-        List<Component> list = type == EnableType.ValidItems ? enableItemsValid : enableItemsChanged;
-        //log.debug(this.hashCode()+"  "+hasChanged+"  "+itsOKToEnable);
 
-        for (Component comp : list)
+        for (Component comp : enableHash.get(type))
         {
             comp.setEnabled(itsOKToEnable);
         }
@@ -1360,6 +1357,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         enableUIItems(hasChanged && isValid, EnableType.ValidAndChangedItems);
         //enableUIItems(isValid && !isNewObj, EnableType.ValidItems);
         enableUIItems(isValid, EnableType.ValidItems);
+        enableUIItems(isValid && !isNewObj, EnableType.ValidNotNew);
 
         
         updateValidationBtnUIState();

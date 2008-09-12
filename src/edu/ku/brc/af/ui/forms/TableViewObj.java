@@ -193,7 +193,7 @@ public class TableViewObj implements Viewable,
     protected MenuSwitcherPanel             switcherUI;
     protected JComboBox                     selectorCBX     = null;
     protected int                           mainCompRowInx  = 1;
-    
+    protected boolean                       addSearch;
     protected JButton                       searchButton    = null;
     protected JButton                       editButton      = null;
     protected JButton                       newButton       = null;
@@ -251,11 +251,6 @@ public class TableViewObj implements Viewable,
         dataGetter       = altView.getViewDef().getDataGettable();
         this.formViewDef = (FormViewDefIFace)altView.getViewDef();
         
-        if (businessRules != null)
-        {
-            businessRules.initialize(this);
-        }
-        
         scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
         AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
@@ -263,6 +258,13 @@ public class TableViewObj implements Viewable,
         boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
         boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
         isEditing                          = MultiView.isOptionOn(options, MultiView.IS_EDITTING) && altView.getMode() == AltViewIFace.CreationMode.EDIT;
+        
+        addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
+        if (addSearch)
+        {
+            isEditing = false;
+        }
+                
         
         setValidator(formValidator);
 
@@ -298,7 +300,7 @@ public class TableViewObj implements Viewable,
                 // so it thinks we are in edit mode (at this time Tables are ALWAYS in View mode)
                 // so we temporarily set the mode of the Table's AltViewIFace to Edit create the switcher
                 // and then set it back to View.
-                boolean overrideViewMode = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT) || MultiView.isOptionOn(options, MultiView.IS_EDITTING);
+                boolean overrideViewMode = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT) || isEditing;
                 
                 AltViewIFace.CreationMode tempMode = null;
                 //if (isNewObj && altView.getMode() == AltViewIFace.CreationMode.View)
@@ -317,7 +319,7 @@ public class TableViewObj implements Viewable,
                 
                 if (altViewsList.size() > 0)
                 {
-                    if (isEditing)
+                    if (isEditing || addSearch)
                     {
                         String delTTStr = ResultSetController.createTooltip("RemoveRecordTT", view.getObjTitle());
                         deleteButton = UIHelper.createIconBtnTT("DeleteRecord", IconManager.IconSize.Std16, delTTStr, false, new ActionListener() {
@@ -327,7 +329,6 @@ public class TableViewObj implements Viewable,
                             }
                         });
                         
-                        boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
                         if (addSearch)
                         {
                             String srchTTStr = ResultSetController.createTooltip("SearchForRecordTT", view.getObjTitle());
@@ -457,7 +458,12 @@ public class TableViewObj implements Viewable,
                 }
             }
         }
-
+        
+        if (businessRules != null)
+        {
+            businessRules.initialize(this);
+        }
+        
         if (comps.size() > 0 || addController)
         {
             controlPanel = new ControlBarPanel(bgColor);
@@ -467,6 +473,23 @@ public class TableViewObj implements Viewable,
         }
     }
     
+    /**
+     * @return the newButton
+     */
+    public JButton getNewButton()
+    {
+        return newButton;
+    }
+
+
+    /**
+     * @return the mvParent
+     */
+    public MultiView getMVParent()
+    {
+        return mvParent;
+    }
+
     /**
      * 
      */
@@ -498,6 +521,11 @@ public class TableViewObj implements Viewable,
                     
                     for (Object dObj : newDataObjects)
                     {
+                        if (!businessRules.isOkToAssociateSearchObject(parentDataObj, dObj))
+                        {
+                            UIRegistry.showLocalizedError(businessRules.getMessagesAsString());
+                            return;
+                        }
                         businessRules.processSearchObject(!doSetNewDataObj ? dataObj : null, dObj);
                     }
 
@@ -521,7 +549,14 @@ public class TableViewObj implements Viewable,
                             
                             for (Object dObj : newDataObjects)
                             {
-                                parentDataObj.addReference((FormDataObjIFace)dObj, dataSetFieldName, false);
+                                // rods - 09/12/08 - Changed the arg to true from false because 
+                                // when adding searched items they weren't getting the parent object
+                                // might need to have it true only for search items
+                                parentDataObj.addReference((FormDataObjIFace)dObj, dataSetFieldName, true);
+                                if (addSearch && mvParent != null && ((FormDataObjIFace)dObj).getId() != null)
+                                {
+                                    mvParent.getTopLevel().addToBeSavedItem(dObj);
+                                }
                             }
                             
                             if (rsController != null)
@@ -532,6 +567,7 @@ public class TableViewObj implements Viewable,
                             }
                             model.fireDataChanged();
                             tellMultiViewOfChange();
+                            formValidator.validateRoot();
                             
                         } else 
                         {
@@ -981,8 +1017,6 @@ public class TableViewObj implements Viewable,
      */
     protected void deleteRow(final int rowIndex)
     {
-        boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
-        
         FormDataObjIFace dObj = (FormDataObjIFace)dataObjList.get(rowIndex);
         if (dObj != null)
         {
@@ -1011,6 +1045,10 @@ public class TableViewObj implements Viewable,
                 }
                 doOtherSide = false;
                 parentDataObj.removeReference(dObj, dataSetFieldName, doOtherSide || addSearch);
+                if (addSearch && mvParent != null && ((FormDataObjIFace)dObj).getId() != null)
+                {
+                    mvParent.getTopLevel().addToBeSavedItem(dObj);
+                }
                 
                 // 'addSearch' is used in FormViewObj, but here maybe we need to use 'doOtherSide'
                 if (addSearch && mvParent != null && ((FormDataObjIFace)dObj).getId() != null)
@@ -1094,6 +1132,12 @@ public class TableViewObj implements Viewable,
         }
     }
     
+    public void refreshDataList()
+    {
+        dataObjList.clear();
+        dataObjList.addAll(origDataSet);
+        model.fireDataChanged();
+    }
     /**
      * Returns the JTable.
      * @return the JTable.

@@ -828,7 +828,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 UIFieldFormatterIFace uiFieldFormatter = textWithQuery.getUiFieldFormatter();
                 if (uiFieldFormatter != null)
                 {
-                    newVal = uiFieldFormatter.formatFromUI(val[0]).toString();
+                    if (val != null && val.length > 0 && val[0] != null)
+                    {
+                        newVal = uiFieldFormatter.formatFromUI(val[0]).toString();
+                    } else
+                    {
+                        newVal = null;
+                    }
                 } else
                 {
                     

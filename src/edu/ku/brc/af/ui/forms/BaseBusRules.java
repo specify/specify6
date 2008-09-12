@@ -702,6 +702,15 @@ public class BaseBusRules implements BusinessRulesIFace
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BusinessRulesIFace#isOkToAssociateSearchObject(java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public boolean isOkToAssociateSearchObject(Object newParentDataObj, Object dataObjectFromSearch)
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processSearchObject(java.lang.Object, java.lang.Object)
      */
     public Object processSearchObject(final Object parentdataObj, final Object dataObjectFromSearch)

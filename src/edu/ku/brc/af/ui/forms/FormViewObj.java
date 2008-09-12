@@ -308,8 +308,13 @@ public class FormViewObj implements Viewable,
 
         
         businessRules    = view.createBusinessRule();
-        isEditing       = altView.getMode() == AltViewIFace.CreationMode.EDIT;
-
+        isEditing        = altView.getMode() == AltViewIFace.CreationMode.EDIT;
+        
+        boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
+        if (addSearch)
+        {
+            isEditing = false;
+        }
         this.formViewDef = (FormViewDef)altView.getViewDef();
         
         // Figure columns
@@ -445,7 +450,7 @@ public class FormViewObj implements Viewable,
                 // rods - 07/21/08 for disabling the switcher when the form is invalid 
                 if (formValidator != null && switcherUI != null)
                 {
-                    formValidator.addEnableItem(switcherUI, FormValidator.EnableType.ValidAndChangedItems);
+                    formValidator.addEnableItem(switcherUI, FormValidator.EnableType.ValidNotNew);
                 }
             }
             
@@ -489,7 +494,6 @@ public class FormViewObj implements Viewable,
 
         if (createResultSetController)
         {
-            boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
             addRSController(addSearch);
             
             if (addSearch)
@@ -2124,10 +2128,7 @@ public class FormViewObj implements Viewable,
             obj = localSession.merge(obj);
             localSession.saveOrUpdate(obj);
         }
-        toBeSavedItems.clear();
     }
-
-    
     
     /**
      * This method enables us to loop when there is a duplicate key
@@ -2216,6 +2217,11 @@ public class FormViewObj implements Viewable,
                 }
                 session.commit();
                 session.flush();
+                
+                if (mvParent != null)
+                {
+                    mvParent.clearItemsToBeSaved();
+                }
                 
                 if (numTries == 1 && deletedItems != null)
                 {
@@ -3158,6 +3164,11 @@ public class FormViewObj implements Viewable,
                     
                     for (Object dObj : newDataObjects)
                     {
+                        if (!businessRules.isOkToAssociateSearchObject(parentDataObj, dObj))
+                        {
+                            UIRegistry.showLocalizedError(businessRules.getMessagesAsString());
+                            return;
+                        }
                         businessRules.processSearchObject(!doSetNewDataObj ? dataObj : null, dObj);
                     }
 

@@ -14,6 +14,7 @@ import javax.swing.JButton;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.TableViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
@@ -75,6 +76,31 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                     }
                 });
             }
+        } else if (viewableArg instanceof TableViewObj)
+        {
+            final TableViewObj tvo = (TableViewObj)viewableArg;
+            JButton newBtn = tvo.getNewButton();
+            if (newBtn != null)
+            {
+                // Remove all ActionListeners, there should only be one
+                for (ActionListener al : newBtn.getActionListeners())
+                {
+                    newBtn.removeActionListener(al);
+                }
+                
+                newBtn.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        MultiView loanMV = tvo.getMVParent().getMultiViewParent();
+                        if (loanMV != null)
+                        {
+                            //formViewObj.getDataFromUI();
+                            CommandDispatcher.dispatch(new CommandAction(CMDTYPE, "AddToLoan", loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
+                        }
+                    }
+                });
+            }
         }
     }
     
@@ -129,15 +155,23 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
     {
         if (cmdAction.isType(CMDTYPE) && cmdAction.isAction("REFRESH_LOAN_PREPS"))
         {
-            MultiView loanMV = formViewObj.getMVParent().getMultiViewParent();
-            if (loanMV != null)
+            if (formViewObj != null)
             {
-                if (formViewObj.getValidator() != null)
+                MultiView loanMV = formViewObj.getMVParent().getMultiViewParent();
+                if (loanMV != null)
                 {
-                    formViewObj.getValidator().setHasChanged(true);
-                    formViewObj.setDataIntoUI();
-                    formViewObj.getValidator().validateRoot();
+                    if (formViewObj.getValidator() != null)
+                    {
+                        formViewObj.getValidator().setHasChanged(true);
+                        formViewObj.setDataIntoUI();
+                        formViewObj.getValidator().validateRoot();
+                    }
                 }
+
+            } else if (viewable instanceof TableViewObj)
+            {
+                TableViewObj tvo = (TableViewObj)viewable;
+                tvo.refreshDataList();
             }
         }
     }

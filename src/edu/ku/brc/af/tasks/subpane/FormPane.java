@@ -46,7 +46,9 @@ public class FormPane extends DroppableTaskPane
 
     protected String         cacheDesc     = null;
     protected ImageIcon      icon          = null;
+    
     protected boolean        isNewObj;
+    protected boolean        firstTimeShown = true;
 
     /**
      * Creates a form pane for a task.
@@ -161,8 +163,9 @@ public class FormPane extends DroppableTaskPane
                 }
                 
                 // rods - 09/05/08 - This is needed so the "+' (Add) btn is disable for forms with new Objects
-                if (isNewObj)
+                if (isNewObj && visible && firstTimeShown)
                 {
+                    firstTimeShown = false;
                     multiView.setIsNewForm(true, false);
                 }
             }

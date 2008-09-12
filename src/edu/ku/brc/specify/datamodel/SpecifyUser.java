@@ -69,6 +69,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     protected String                    userType;
     protected Boolean                   isLoggedIn;
     protected Timestamp                 loginOutTime;
+    protected Long                      accumMinLoggedIn;
     
     //protected Short                     privLevel;
     protected Set<RecordSet>            recordSets;
@@ -258,6 +259,23 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
 //    {
 //        this.privLevel = privLevel;
 //    }
+
+    /**
+     * @return the accumMinLoggedIn
+     */
+    @Column(name = "AccumMinLoggedIn", unique = false, nullable = true, insertable = true, updatable = true)
+    public Long getAccumMinLoggedIn()
+    {
+        return accumMinLoggedIn;
+    }
+
+    /**
+     * @param accumMinLoggedIn the accumMinLoggedIn to set
+     */
+    public void setAccumMinLoggedIn(Long accumMinLoggedIn)
+    {
+        this.accumMinLoggedIn = accumMinLoggedIn;
+    }
 
     /**
      * @return the loginOutTime
