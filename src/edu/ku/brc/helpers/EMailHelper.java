@@ -24,6 +24,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Frame;
 import java.io.File;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -38,8 +39,10 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.Transport;
 import javax.mail.URLName;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -117,24 +120,65 @@ public class EMailHelper
                                   final String subject,
                                   final String bodyText,
                                   final String mimeType,
+                                  final String port,
+                                  final String security,
                                   final File   fileAttachment)
     {
         String userName = uName;
         String password = pWord;
         
-        if (isGmailEmail())
-        {
-            return sendMsgAsGMail(host, userName, password, fromEMailAddr, toEMailAddr, subject, bodyText, mimeType, fileAttachment);
-        }
+        //if (isGmailEmail())
+        //{
+        //    return sendMsgAsGMail(host, userName, password, fromEMailAddr, toEMailAddr, subject, bodyText, mimeType, port, security, fileAttachment);
+        //}
         
         Boolean fail = false;
         ArrayList<String> userAndPass = new ArrayList<String>();
         
+        boolean isSSL = security.equals("SSL");
+        
         Properties props = System.getProperties();
         props.put("mail.smtp.host", host); //$NON-NLS-1$
-        props.put( "mail.smtp.auth", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        Session session = Session.getInstance(props, null);
+        if (StringUtils.isNotEmpty(port) && StringUtils.isNumeric(port))
+        {
+            props.put("mail.smtp.port", port); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        
+        if (StringUtils.isNotEmpty(security))
+        {
+            if (security.equals("TTL"))
+            {
+                props.put( "mail.smtp.auth", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+                props.put("mail.smtp.starttls.enable", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+                
+            } else if (isSSL)
+            {
+                props.put( "mail.smtp.auth", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+                
+                String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
+                props.put("mail.smtp.socketFactory.port", port);
+                props.put("mail.smtp.socketFactory.class", SSL_FACTORY);
+                props.put("mail.smtp.socketFactory.fallback", "false");
+            }
+        }
+        
+        Session session = null;
+        if (isSSL)
+        {
+            Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+            session = Session.getInstance(props, new javax.mail.Authenticator() 
+            {
+                protected PasswordAuthentication getPasswordAuthentication() 
+                {
+                    return new PasswordAuthentication(uName, pWord);
+                }
+                });
+
+        } else
+        {
+            session = Session.getInstance(props, null);
+        }
 
         session.setDebug(instance.isDebugging);
         if (instance.isDebugging)
@@ -145,11 +189,13 @@ public class EMailHelper
             log.debug("From:     " + fromEMailAddr); //$NON-NLS-1$
             log.debug("To:       " + toEMailAddr); //$NON-NLS-1$
             log.debug("Subject:  " + subject); //$NON-NLS-1$
+            log.debug("Port:     " + port); //$NON-NLS-1$
+            log.debug("Security: " + security); //$NON-NLS-1$
         }
-
 
         try
         {
+            
             // create a message
             MimeMessage msg = new MimeMessage(session);
 
@@ -167,7 +213,7 @@ public class EMailHelper
                 msg.setRecipients(Message.RecipientType.TO, address);
             } else
             {
-                InternetAddress[] address = {new InternetAddress(toEMailAddr)};
+                InternetAddress[] address = {new InternetAddress("rods@ku.edu")};
                 msg.setRecipients(Message.RecipientType.TO, address);
             }
             msg.setSubject(subject);
@@ -212,20 +258,27 @@ public class EMailHelper
             do
             {
                 cnt++;
-                SMTPTransport t = (SMTPTransport)session.getTransport("smtp"); //$NON-NLS-1$
-                try {
-                    t.connect(host, userName, password);
-    
-                    t.sendMessage(msg, msg.getAllRecipients());
+                SMTPTransport t = isSSL ? null : (SMTPTransport)session.getTransport("smtp"); //$NON-NLS-1$
+                try 
+                {
+                    if (isSSL)
+                    {
+                        Transport.send(msg);
+                        
+                    } else
+                    {
+                        t.connect(host, userName, password);
+                        t.sendMessage(msg, msg.getAllRecipients());
+                    }
                     
                     fail = false;
     
-                } catch (MessagingException mex)
+                } catch (Exception mex)
                 {
                     instance.lastErrorMsg = mex.toString();
                     
                     Exception ex = null;
-                    if ((ex = mex.getNextException()) != null) 
+                    if (mex instanceof MessagingException && (ex = ((MessagingException)mex).getNextException()) != null) 
                     {
                       ex.printStackTrace();
                       instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString(); //$NON-NLS-1$
@@ -244,30 +297,31 @@ public class EMailHelper
                         userName = userAndPass.get(0);
                         password = userAndPass.get(1);
                     }
+                
                 } finally
                 {
-                     log.debug("Response: " + t.getLastServerResponse()); //$NON-NLS-1$
-                     t.close();
+                     if (t != null)
+                     {
+                         log.debug("Response: " + t.getLastServerResponse()); //$NON-NLS-1$
+                         t.close();
+                     }
                 }
                 
             } while (fail && cnt < 6);
 
-        } catch (MessagingException mex)
+        } catch (Exception mex)
         {
             instance.lastErrorMsg = mex.toString();
             
             mex.printStackTrace();
             Exception ex = null;
-            if ((ex = mex.getNextException()) != null) 
+            if (mex instanceof MessagingException && (ex = ((MessagingException)mex).getNextException()) != null) 
             {
               ex.printStackTrace();
               instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString(); //$NON-NLS-1$
             }
             return false;
             
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
         }
         
         if (fail)
@@ -371,40 +425,26 @@ public class EMailHelper
      */
     public static boolean isEMailPrefsOK(final Hashtable<String, String> emailPrefs)
     {
-        AppPreferences appPrefs       = AppPreferences.getRemote();
+        AppPreferences remotePrefs    = AppPreferences.getRemote();
         boolean        allOK          = true;
-        String[]       emailPrefNames = { "servername", "username", "password", "email"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        String[]       emailPrefNames = { "servername", "username", "password", "email", "port", "security"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         
         for (String pName : emailPrefNames)
         {
             String key   = "settings.email."+pName; //$NON-NLS-1$
-            String value = appPrefs.get(key, ""); //$NON-NLS-1$
+            String value = remotePrefs.get(key, ""); //$NON-NLS-1$
             if (StringUtils.isNotEmpty(value) || pName.equals("password")) //$NON-NLS-1$
             {
                 emailPrefs.put(pName, value);
                 
-            } else
+            } else if (!key.equals("port") && !key.equals("security"))
             {
                 log.info("Key["+key+"] is empty"); //$NON-NLS-1$ //$NON-NLS-2$
                 allOK = false;
-                
-                // XXX For Demo
-                if (true)
-                {
-                    emailPrefs.put("accountname", "IMAP"); //$NON-NLS-1$ //$NON-NLS-2$
-                    emailPrefs.put("servername",  "imap.ku.edu"); //$NON-NLS-1$ //$NON-NLS-2$
-                    emailPrefs.put("username",    "rods"); //$NON-NLS-1$ //$NON-NLS-2$
-                    emailPrefs.put("password",    appPrefs.get("settings.email.password", "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    emailPrefs.put("email",       "rods@ku.edu"); //$NON-NLS-1$ //$NON-NLS-2$
-                    for (String n : emailPrefs.keySet())
-                    {
-                        appPrefs.put("settings.email."+n, emailPrefs.get(n)); //$NON-NLS-1$
-                    }
-                    allOK = true;
-                }
                 break;
             }
         }
+        
         return allOK;
     }
 
@@ -695,6 +735,8 @@ public class EMailHelper
                                          final String subject,
                                          final String bodyText,
                                          final String mimeType,
+                                         final String port,
+                                         final String security,
                                          final File   fileAttachment)
     {
         String  userName = uName;
@@ -730,7 +772,6 @@ public class EMailHelper
             log.debug("To:       " + toEMailAddr); //$NON-NLS-1$
             log.debug("Subject:  " + subject); //$NON-NLS-1$
         }
-
 
         try
         {

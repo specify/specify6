@@ -81,16 +81,18 @@
                 <desc><![CDATA[EMail Preference Form.]]></desc>
 
                 <enableRules>
+                <!--  
                     <rule id="localmailbox"><![CDATA[accounttype.getSelectedIndex() == 1]]></rule>
-
                     <rule id="accountname"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
                     <rule id="servername"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
                     <rule id="smtp"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
                     <rule id="username"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
                     <rule id="password"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
                     <rule id="email"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
+                    <rule id="port"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
+                    <rule id="security"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
                     <rule id="testconnection"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
-
+                  -->
                 </enableRules>
 
             <columnDef>p,2dlu,p,5dlu,p,2dlu,p</columnDef>
@@ -100,6 +102,7 @@
                 <row>
                     <cell type="separator" label="EMAIL_ACCT_SETTINGS" colspan="7"/>
                 </row>
+                <!--  
                 <row>
                     <cell type="label" name="accounttypeLabel" labelfor="accounttype" label="ACCT_TYPE"/>
                     <cell type="field" uitype="combobox" id="accounttype" name="settings.email.accounttype" isrequired="true" initialize="data=Not in use, POP3, IMAP"/>
@@ -120,7 +123,26 @@
                     <cell type="field" id="localmailbox" name="settings.email.localmailbox" cols="20" colspan="5" uitype="browse" isrequired="true" validation="obj.isNotEmpty()"/>
                 </row>
                 <row>
+                    <cell type="label" name="portLabel" labelfor="port" label="PORT"/>
+                    <cell type="field" id="port" name="settings.email.port" uitype="text" cols="6" isrequired="false"/>
+
+                    <cell type="label" name="securityLabel" labelfor="security" label="EMAILSECURITY"/>
+                    <cell type="field" id="security" name="settings.email.security" uitype="combobox" initialize="data=None,TTL,SSL"/>
+                </row>
+                <row>
                     <cell type="separator" label="USER_INFO" colspan="7"/>
+                </row>
+                -->
+                <row>
+                    <cell type="label" name="smtpLabel" labelfor="smtp" label="SMTP"/>
+                    <cell type="field" uitype="text" cols="20" id="smtp" name="settings.email.smtp" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" name="portLabel" labelfor="port" label="PORT"/>
+                    <cell type="field" id="port" name="settings.email.port" uitype="text" cols="6" isrequired="false"/>
+
+                    <cell type="label" name="securityLabel" labelfor="security" label="EMAILSECURITY"/>
+                    <cell type="field" id="security" name="settings.email.security" uitype="combobox" initialize="data=None,TTL,SSL"/>
                 </row>
                 <row>
                     <cell type="label" name="usernameLabel" labelfor="username" label="USERNAME"/>

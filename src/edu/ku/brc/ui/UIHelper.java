@@ -1755,6 +1755,8 @@ public final class UIHelper
                             "UnhandledException", 
                             sb.toString(), 
                             EMailHelper.PLAIN_TEXT, 
+                            "", // port 
+                            "", // SSL
                             (File)null);
                     return null;
                 }

@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -38,6 +39,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
 import edu.ku.brc.helpers.EMailHelper;
@@ -99,12 +101,13 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
 
         if (formView != null & form != null && form.getUIComponent() != null)
         {
-            ValComboBox cbx = (ValComboBox)form.getCompById("accounttype");
+            /*ValComboBox cbx = (ValComboBox)form.getCompById("accounttype");
             if (cbx.getComboBox().getSelectedIndex() == -1)
             {
                 cbx.getComboBox().setSelectedIndex(0);
             }
             form.getValidator().validateForm();
+            */
 
             CommandDispatcher.register("EmailPref", this);
         }
@@ -116,11 +119,16 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
      */
     protected boolean simpleTestSettings()
     {
+        //((FormViewObj)formView).getDataFromUI();
+        
         // -- this use IDs instead of names
         String usernameStr     = (String)form.getDataFromUIComp("username");
         String passwordStr     = (String)form.getDataFromUIComp("password");
         String smtpStr         = (String)form.getDataFromUIComp("smtp");
         String emailStr        = (String)form.getDataFromUIComp("email");
+        String portStr         = (String)form.getDataFromUIComp("port");
+        String securityStr     = (String)form.getDataFromUIComp("security");
+        
         //String serverNameStr   = (String)form.getDataFromUIComp("servername");
         //String acctTypeStr     = (String)form.getDataFromUIComp("accounttype");
         //String localMailBoxStr = (String)form.getDataFromUIComp("localmailbox");
@@ -134,7 +142,8 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         }
 
         String htmlMsg = "<html><body>" + testMessage + "</body></html>";
-        return EMailHelper.sendMsg(smtpStr, usernameStr, passwordStr, emailStr, emailStr, testMessage, htmlMsg, EMailHelper.HTML_TEXT, null);
+        return EMailHelper.sendMsg(smtpStr, usernameStr, passwordStr, emailStr, emailStr, 
+                                   testMessage, htmlMsg, EMailHelper.HTML_TEXT, portStr, securityStr, null);
     }
 
     /**
@@ -407,6 +416,8 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         checkerDialog.doLayout();
         //checkerDialog.setPreferredSize(checkerDialog.getPreferredSize());
         checkerDialog.setSize(checkerDialog.getPreferredSize());
+        
+        checkerDialog.setSize(new Dimension(400, 200));
 
         emailCheckerRunnable = new EMailCheckerRunnable(checkerDialog);
         emailCheckerRunnable.start();
