@@ -858,6 +858,7 @@ public class ReportsBaseTask extends BaseTask
                 {
                     SpAppResource res = (SpAppResource)cmdAction.getProperty("appresource");
                     Integer resOrRepId = null;
+                    Integer repId = null;
                     if (res != null)
                     {
                         resOrRepId = res.getId();
@@ -867,10 +868,11 @@ public class ReportsBaseTask extends BaseTask
                         RecordSetItemIFace item = recordSet.getOnlyItem();
                         if (item != null)
                         {
-                            resOrRepId = item.getRecordId();
+                            repId = item.getRecordId();
+                            resOrRepId = repId;
                         }
                     }
-                    deleteReportAndResource(recordSet, (AppResourceIFace)cmdAction.getProperty("appresource"));
+                    deleteReportAndResource(repId, (AppResourceIFace)cmdAction.getProperty("appresource"));
                     deleteReportFromUI(theTitle);
                     if (resOrRepId != null)
                     {
@@ -888,25 +890,23 @@ public class ReportsBaseTask extends BaseTask
     /**
      * @param recordSet
      */
-    protected void deleteReportAndResource(final RecordSetIFace recordSet, final AppResourceIFace appRes)
+    public static void deleteReportAndResource(final Integer reportId, final AppResourceIFace appRes)
     {
         SpAppResource resource = null;
 
-        if (recordSet == null)
+        if (reportId == null)
         {
             resource = (SpAppResource) appRes;
         }
         else
         {
-            RecordSetItemIFace item = recordSet.getOnlyItem();
-            if (item == null) { return; }
+            if (reportId == null) { return; }
 
-            Object id = item.getRecordId();
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             boolean transOpen = false;
             try
             {
-                SpReport rep = (SpReport) session.getData("from SpReport where id = " + id);
+                SpReport rep = (SpReport) session.getData("from SpReport where id = " + reportId);
                 if (rep != null)
                 {
                     resource = rep.getAppResource();

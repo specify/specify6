@@ -19,6 +19,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
@@ -102,7 +104,7 @@ public class QueryFieldPanel extends JPanel
     protected JCheckBox        isNotCheckbox;
     protected JComboBox        operatorCBX;
     protected JComponent       criteria;
-    protected JComboBox        criteriaList; 
+    //protected JComboBox        criteriaList; 
     protected MultiStateIconButon sortCheckbox;
     protected JCheckBox        isDisplayedCkbx;
     protected JCheckBox        isPromptCkbx;
@@ -194,7 +196,7 @@ public class QueryFieldPanel extends JPanel
         
         boolean createAsHeader = StringUtils.isEmpty(columnDefStr);
         
-        int[] widths = buildControlLayout(iconSize, createAsHeader);
+        int[] widths = buildControlLayout(iconSize, createAsHeader, saveBtn);
         if (createAsHeader)
         {
             removeAll();
@@ -792,9 +794,24 @@ public class QueryFieldPanel extends JPanel
         return textField;
     }
     
-    protected PickListCriteriaCombo createPickList()
+    protected PickListCriteriaCombo createPickList(final Component saveBtn)
     {
         PickListCriteriaCombo result = new PickListCriteriaCombo(pickList);
+        result.addActionListener(new ActionListener() {
+
+            /* (non-Javadoc)
+             * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+             */
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (e.getID() == 1001/*ComboBoxChanged*/)
+                {
+                    saveBtn.setEnabled(true);
+                }
+            }
+            
+        });
         return result;
     }
     
@@ -820,7 +837,7 @@ public class QueryFieldPanel extends JPanel
      * @return
      */
     protected int[] buildControlLayout(final IconManager.IconSize iconSize,
-                                       final boolean returnWidths)
+                                       final boolean returnWidths, final Component saveBtn)
     {
 
         FocusListener focusListener = new FocusListener()
@@ -897,7 +914,7 @@ public class QueryFieldPanel extends JPanel
         }
         else
         {
-            criteria = createPickList();
+            criteria = createPickList(saveBtn);
             ((PickListCriteriaCombo) criteria).setCurrentOp((SpQueryField.OperatorType) operatorCBX.getModel().getElementAt(0));
             operatorCBX.addItemListener(new ItemListener()
             {

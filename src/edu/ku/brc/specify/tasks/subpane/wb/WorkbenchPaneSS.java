@@ -2551,6 +2551,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             
             
             logDebug("merging and saving: " + System.nanoTime());
+            Workbench dObj = null;
             // For some reason, when a wb contains a lot of newly added rows AND they have been
             // pasted into,
             // The previously used "Workbench dObj = session.merge(workbench)"
@@ -2560,13 +2561,19 @@ public class WorkbenchPaneSS extends BaseSubPane
             // So. Store the rows; remove them from the workbench; and merge the workbench without the
             // rows...
             Set<WorkbenchRow> rows = workbench.getWorkbenchRows();
-            workbench.setWorkbenchRows(null);
-            // reassign the rows.
-            Workbench dObj = session.merge(workbench);
-
+            try
+            {
+                workbench.setWorkbenchRows(null);
+                // reassign the rows.
+                dObj = session.merge(workbench);
+            }
+            finally
+            {
+                dObj.setWorkbenchRows(rows);
+                
+            }
             // Now, iterate through the rows, only merging those that have ids. For some reason this
             // is much much faster.
-            dObj.setWorkbenchRows(rows);
             DataProviderSessionIFace rowSession = DataProviderFactory.getInstance().createSession();
             try
             {

@@ -68,12 +68,14 @@ import edu.ku.brc.specify.datamodel.SpAppResourceData;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceConnection;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.UnhandledExceptionDialog;
 
 /**
  * @author timbo
@@ -539,6 +541,7 @@ public class MainFrameSpecify extends MainFrame
     {
         RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, "Report", tableId == null, rep);
         boolean goodProps = false;
+        SpAppResource match = null;
         CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
                 UIRegistry.getResourceString("REP_PROPS_DLG_TITLE"),
                 true,
@@ -558,7 +561,7 @@ public class MainFrameSpecify extends MainFrame
             //XXX - more 'Collection' dir hard-coding
             else 
             {
-            	SpAppResource match = (SpAppResource )AppContextMgr.getInstance().getResourceFromDir("Collection", propPanel.getNameTxt().getText());
+            	match = (SpAppResource )AppContextMgr.getInstance().getResourceFromDir("Collection", propPanel.getNameTxt().getText());
             	if (match != null)
             	{
             		if (appRes == null || !((SpAppResource )appRes).getId().equals(match.getId()))
@@ -588,6 +591,39 @@ public class MainFrameSpecify extends MainFrame
         }    
         if (goodProps /*just in case*/)
         {
+            if (match != null)
+            {
+                //user has chosen to overwrite an identically named report
+                //XXX - Is it possible that another user created the matching report?
+                
+                //first close design frame for match if one exists.
+                /*
+                 * Actually, never mind, too hard to do in this method.
+                 * Let the user deal with it.
+                 */
+                
+                //delete match
+                Integer matchId = null;
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                try
+                {
+                    SpReport matchRep = session.getData(SpReport.class, "appResource", match, DataProviderSessionIFace.CompareType.Equals);
+                    if (matchRep == null)
+                    {
+                        JOptionPane.showMessageDialog(null, String.format(UIRegistry.getResourceString("REP_UNABLE_TO_OVERWRITE"), match.getName()), 
+                                UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                        return null;
+                    }
+                    matchId = matchRep.getId();
+                }
+                finally
+                {
+                    session.close();
+                    session = null;
+                }
+                ReportsBaseTask.deleteReportAndResource(matchId, match);
+            }
+            
             AppResourceIFace modifiedRes = null;
             if (appRes == null)
             {

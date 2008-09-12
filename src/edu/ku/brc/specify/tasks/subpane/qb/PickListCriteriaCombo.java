@@ -43,33 +43,13 @@ public class PickListCriteriaCombo extends JComboBox
     public PickListCriteriaCombo(final PickListDBAdapterIFace items)
     {
         super();
-//        if (items != null && items.getType() != PickListIFace.Type.Item
-//                && items.getType() != PickListIFace.Type.Table) 
-//        { 
-//            throw new RuntimeException(
-//                "unsupported PickListType: " + items.getType()); 
-//        }
         this.items = items;
-        enlistItems();
+        setupItems();
     }
 
-    protected void enlistItems()
+    protected void setupItems()
     {
-        if (items != null)
-        {
-            setModel((ComboBoxModel)items);
-        }
-        else
-        {
-            throw new RuntimeException("A picklist was not provided.");
-//            DefaultComboBoxModel selModel = new DefaultComboBoxModel();
-//            selModel.addElement(new String("gear"));
-//            selModel.addElement(new String("explosive"));
-//            selModel.addElement(new String("ichthyocide"));
-//            selModel.addElement(new String("harpoon"));
-//            selModel.addElement(new String("noodle"));
-//            setModel(selModel);
-        }
+        setModel((ComboBoxModel)items);
         
         addActionListener(new ActionListener(){
 
