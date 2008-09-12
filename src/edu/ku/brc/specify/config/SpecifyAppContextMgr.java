@@ -23,6 +23,10 @@ import static edu.ku.brc.ui.UIRegistry.showLocalizedError;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,6 +64,7 @@ import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewLoader;
 import edu.ku.brc.af.ui.forms.persist.ViewSet;
 import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.exceptions.ConfigurationException;
@@ -2363,6 +2368,114 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
        return null; 
+    }
+    
+    /**
+     * Returns a list of pre-formatted Agent names of those that are logged in.
+     * Note: the current logged in person is not added to the list.
+     * @param discipline the current discipline
+     * @return null on error, an empty list if no one else iis logged in, or a populated list
+     */
+    public List<String> getAgentListLoggedIn(final Discipline discipline)
+    {
+        SpecifyUser spu = getClassObject(SpecifyUser.class);
+        Vector<Integer> ids = new Vector<Integer>();
+
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("SELECT specifyuser.SpecifyUserID ");
+        sb.append("FROM specifyuser INNER JOIN specifyuser_spprincipal ON specifyuser.SpecifyUserID = specifyuser_spprincipal.SpecifyUserID ");
+        sb.append("INNER JOIN spprincipal ON specifyuser_spprincipal.SpPrincipalID = spprincipal.SpPrincipalID ");
+        sb.append("WHERE spprincipal.userGroupScopeID = ");
+        sb.append(discipline.getId());
+        sb.append(" AND specifyuser.IsLoggedIn <> 0");
+        
+        Connection conn = null;        
+        Statement  stmt = null;
+        try
+        {
+            conn = DBConnection.getInstance().createConnection();
+            stmt = conn.createStatement();
+
+            ResultSet rs = stmt.executeQuery(sb.toString());
+            if (rs.next())
+            {
+                int id = rs.getInt(1);
+                if (id != spu.getId())
+                {
+                    ids.add(id);
+                }
+            }
+            rs.close();
+
+        } 
+        catch (SQLException ex)
+        {
+            log.error("SQLException: " + ex.toString()); //$NON-NLS-1$
+            log.error(ex.getMessage());
+            
+            return null;
+            
+        } finally
+        {
+            try 
+            {
+                if (stmt != null)
+                {
+                    stmt.close();
+                }
+                if (conn != null)
+                {
+                    conn.close();
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        
+        List<String> names = new Vector<String>();
+        if (ids.size() > 0)
+        {
+            sb.setLength(0);
+            sb.append("SELECT ag FROM SpecifyUser spu INNER JOIN spu.agents ag INNER JOIN ag.division dv INNER JOIN dv.disciplines dsp WHERE dsp.id = ");
+            sb.append(discipline.getId());
+            sb.append(" AND ag.id in (");
+            for (int i=0;i<ids.size();i++)
+            {
+                if (i > 0) sb.append(",");
+                sb.append(ids.get(i));
+            }
+            sb.append(")");
+            
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                
+                List<?> dataRows = session.getDataList(sb.toString());
+                for (Object obj : dataRows)
+                {
+                    String name = ((Agent)obj).getIdentityTitle();
+                    names.add(name);
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                return null;
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+        }
+  
+        return names;
     }
     
 }
