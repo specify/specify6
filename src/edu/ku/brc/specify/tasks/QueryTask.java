@@ -801,7 +801,7 @@ public class QueryTask extends BaseTask
                 .getByShortClassName(shortClassName);
         actionNavBox.add(NavBox.createBtnWithTT(String.format(
                 getResourceString("QB_CREATE_NEWQUERY"), tableInfo.getTitle()), tableInfo
-                .getTitle(),
+                .getName(),
                 // name,
                 getResourceString("QB_CREATE_NEWQUERY_TT"), IconManager.STD_ICON_SIZE,
                 new ActionListener()
