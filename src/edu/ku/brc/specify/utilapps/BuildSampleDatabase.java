@@ -5534,8 +5534,8 @@ public class BuildSampleDatabase
      * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
-    public void createDisciplines(final String           usernameArg,
-                                  final String           passwordArg)
+    public void createDisciplines(final String usernameArg,
+                                  final String passwordArg)
     {
         int createStep = 0;
         
@@ -5549,7 +5549,12 @@ public class BuildSampleDatabase
         String           username         = initPrefs.getProperty("initializer.username", "testuser");
         String           email            = initPrefs.getProperty("useragent.email", "ku@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
-        String           password         = initPrefs.getProperty("useragent.password", "testuser");
+        String           password         = initPrefs.getProperty("useragent.password", null);
+        
+        if (StringUtils.isEmpty(password))
+        {
+            password = initPrefs.getProperty("initializer.password", "testuser");
+        }
         
         System.out.println("----- User Agent -----");
         System.out.println("Userame:   "+username);
@@ -6730,8 +6735,8 @@ public class BuildSampleDatabase
             initPrefs = backstopPrefs;
         }
         
-        String userName     = initPrefs.getProperty("initializer.username", username);
-        String password     = initPrefs.getProperty("initializer.password", passwordStr);
+        String userName     = username;
+        String password     = passwordStr;
         String databaseHost = initPrefs.getProperty("initializer.host",     "localhost");
         
         frame.setTitle("Building -> Database: "+ dbName + " Driver: "+ driverName + " User: "+userName);
