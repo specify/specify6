@@ -1116,8 +1116,7 @@ public class TemplateEditor extends CustomDialog
                         throw new RuntimeException("Couldn't find table info for fieldinfo.");
                     }
 
-                    FieldMappingPanel fmp = map(null, colInfo, tblInfo, fieldInfo, null);
-                    fmp.setIcon(IconManager.getIcon(fieldInfo.getTableinfo().getTitle(), IconManager.STD_ICON_SIZE));
+                    map(null, colInfo, tblInfo, fieldInfo, null);
 
                 } else
                 {
