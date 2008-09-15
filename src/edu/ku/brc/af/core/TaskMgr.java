@@ -321,7 +321,6 @@ public class TaskMgr implements CommandListener
                                      final String[]     menuPath,
                                      final int          currIndex)
     {
-
         if (currIndex == menuPath.length)
         {
             MenuElement me   = menuItemDesc.getMenuItem();
@@ -335,6 +334,11 @@ public class TaskMgr implements CommandListener
                 boolean found     = false;
                 int     insertPos = menuComp.getComponentCount();
                 
+                if (menuItemDesc.getPosition() == MenuItemDesc.Position.Top)
+                {
+                    insertPos = 0;
+                }
+                
                 JMenu menu = (JMenu)parent;
                 if (menuItemDesc.getPosition() != MenuItemDesc.Position.None)
                 {
@@ -344,7 +348,7 @@ public class TaskMgr implements CommandListener
                         Component c = menuComp.getComponent(i);
                         if (c instanceof JMenuItem && ((JMenuItem)c).getText().equals(menuItemDesc.getPosMenuItemName()))
                         {
-                            insertPos = inx;
+                            insertPos = inx+1;
                             found     = true;
                             break;
                         }

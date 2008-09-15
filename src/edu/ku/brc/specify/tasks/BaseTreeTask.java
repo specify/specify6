@@ -334,7 +334,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         Vector<MenuItemDesc> menus = new Vector<MenuItemDesc>();
         subMenu = new JMenu(menuItemText);
         
-        MenuItemDesc treeSubMenuMI = new MenuItemDesc(subMenu, "AdvMenu");
+        MenuItemDesc treeSubMenuMI = new MenuItemDesc(subMenu, "AdvMenu/SystemMenu");
+        treeSubMenuMI.setPosition(MenuItemDesc.Position.Bottom);
         menus.add(treeSubMenuMI);
         
         boolean hasPermissionToEdit = true;
@@ -411,7 +412,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
      * @return the editor
      */
     @SuppressWarnings("unchecked")
-    protected TreeDefinitionEditor<T,D,I> createDefEditor(final String titleArg)
+    protected TreeDefinitionEditor<T,D,I> createDefEditor(@SuppressWarnings("unused") final String titleArg)
 	{
         DataProviderSessionIFace session = null;
         try

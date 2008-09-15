@@ -100,7 +100,9 @@ public class SecurityAdminTask extends BaseTask
             }
         });
         String menuDesc = "AdvMenu/SystemMenu";
-        menuItems.add(new MenuItemDesc(mi, menuDesc));
+        
+        MenuItemDesc showSummaryMenuDesc = new MenuItemDesc(mi, menuDesc);
+        showSummaryMenuDesc.setPosition(MenuItemDesc.Position.After, getResourceString("SecurityAdminTask.SECURITY_TOOLS_MENU"));
 
         // check whether user can see the security admin panel
         // other permissions will be checked when the panel is created 
@@ -119,7 +121,12 @@ public class SecurityAdminTask extends BaseTask
                 }
             });
             menuDesc = "AdvMenu/SystemMenu";
-            menuItems.add(new MenuItemDesc(mi, menuDesc));
+            MenuItemDesc mid = new MenuItemDesc(mi, menuDesc);
+            mid.setPosition(MenuItemDesc.Position.After, getResourceString("SystemSetupTask.COLL_CONFIG"));
+            mid.setSepPosition(MenuItemDesc.Position.After);
+            
+            menuItems.add(mid);
+            menuItems.add(showSummaryMenuDesc);
         }
         
         return menuItems;
@@ -138,7 +145,7 @@ public class SecurityAdminTask extends BaseTask
         } 
     }
    
-    private void processAdminCommands(CommandAction cmdAction)
+    private void processAdminCommands(@SuppressWarnings("unused") CommandAction cmdAction)
     {
         log.error("not implemented");         //$NON-NLS-1$
     }

@@ -10,6 +10,7 @@ import java.awt.Component;
 
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.TableCellRenderer;
 
 /**
@@ -25,7 +26,7 @@ public class TristateRenderer extends TriStateCheckBox implements TableCellRende
 {
 	TristateRenderer()
 	{
-		this.setHorizontalAlignment(JLabel.CENTER);
+		this.setHorizontalAlignment(SwingConstants.CENTER);
 	}
 
 	public Component getTableCellRendererComponent(JTable table, Object value, 

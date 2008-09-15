@@ -598,8 +598,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         menuItems = new Vector<MenuItemDesc>();
         
-        String titleArg = "SystemSetupTask.SYS_TOOLS_MENU"; 
-        String mneu     = "SystemSetupTask.SYS_TOOLS_MNEU"; 
+        String titleArg = "SystemSetupTask.COLL_CONFIG"; 
+        String mneu     = "SystemSetupTask.COLL_CONFIG_MNEU"; 
         String desc     = ""; 
         
         JMenuItem mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, desc, true, null);
@@ -611,7 +611,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             }
         }); 
         String menuDesc = "AdvMenu/SystemMenu";
-        menuItems.add(new MenuItemDesc(mi, menuDesc));
+        menuItems.add(new MenuItemDesc(mi, menuDesc, MenuItemDesc.Position.Top));
         return menuItems;
 
     }

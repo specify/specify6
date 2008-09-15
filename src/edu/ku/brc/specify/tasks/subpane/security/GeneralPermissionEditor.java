@@ -1,10 +1,7 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -26,8 +23,8 @@ import edu.ku.brc.ui.UIHelper;
 public class GeneralPermissionEditor
 {
     public static PermissionEditor createGeneralPermissionEditor(final JTable table,
-            final JComboBox typeSwitcherCBX,
-            final ChangeListener listener)
+                                                                 final JComboBox typeSwitcherCBX,
+                                                                 final ChangeListener listener)
     {
     	return createGeneralPermissionEditor(table, typeSwitcherCBX, listener, false);
     }
@@ -40,9 +37,9 @@ public class GeneralPermissionEditor
      * @return
      */
     public static PermissionEditor createGeneralPermissionEditor(final JTable table,
-            final JComboBox typeSwitcherCBX,
-            final ChangeListener listener,
-            final boolean readOnly) 
+                                                                 final JComboBox typeSwitcherCBX,
+                                                                 final ChangeListener listener,
+                                                                 final boolean readOnly) 
     {
         //PermissionEnumerator e1 = new FormPermissionEnumerator();
         PermissionEnumerator e1 = new DataObjPermissionEnumerator();
@@ -53,7 +50,10 @@ public class GeneralPermissionEditor
         return new PermissionEditor(table, typeSwitcherCBX, listener, enumerator, readOnly);
     }
     
-    public static JPanel createGeneralPermissionsPanel(JTable generalPermissionsTable, JComboBox genTypeSwitcher, EditorPanel infoPanel) {
+    public static JPanel createGeneralPermissionsPanel(final JTable generalPermissionsTable, 
+                                                       final JComboBox genTypeSwitcher, 
+                                                       final EditorPanel infoPanel) 
+    {
     	// create general permission table
     	final CellConstraints cc = new CellConstraints();
 

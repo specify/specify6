@@ -63,6 +63,10 @@
 	<mapID target="DOA_LIST_EDITOR"         url="SpecifyHelp/System/DataObjAggListEditor.html"/>
 	<mapID target="DOA_EDITOR"              url="SpecifyHelp/System/DataObjAggEditor.html"/>
 	
+	<!-- Security -->
+	<mapID target="SECURITY_SUMMARY"        url="SpecifyHelp/System/SecuritySummary.html"/>
+	
+	
 	<!-- Workbench -->
 	
 	<mapID target="Workbench"                  url="SpecifyHelp/Workbench/Overview.html"/>

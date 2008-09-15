@@ -3,14 +3,21 @@ package edu.ku.brc.specify.tasks.subpane.security;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -23,10 +30,25 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 
+/**
+ * @author ricardo
+ *
+ * @code_status Alpha
+ *
+ * Created Date: Sep 10, 2008
+ *
+ */
 public class SecuritySummaryDlg extends CustomDialog
 {
-    public SecuritySummaryDlg(final CustomDialog parentDlg) {
+    /**
+     * @param parentDlg
+     */
+    public SecuritySummaryDlg(final CustomDialog parentDlg) 
+    {
         super(parentDlg, getResourceString("SecuritySummaryDlg.DLG_TITLE"), true, OKHELP, null);
+        helpContext = "SECURITY_SUMMARY";
+        
+        okLabel = getResourceString("CLOSE");
     }
     
     /* (non-Javadoc)
@@ -43,7 +65,7 @@ public class SecuritySummaryDlg extends CustomDialog
         JComboBox genTypeSwitcher = UIHelper.createComboBox(new DefaultComboBoxModel());
         JTable generalPermissionsTable = new JTable();
         JPanel generalPermissionsPanel = GeneralPermissionEditor.createGeneralPermissionsPanel(
-        		generalPermissionsTable, genTypeSwitcher, infoPanel);
+        		                             generalPermissionsTable, genTypeSwitcher, infoPanel);
         final PermissionEditor generalPermissionsEditor = GeneralPermissionEditor.
         	createGeneralPermissionEditor(generalPermissionsTable, genTypeSwitcher, infoPanel, true);
         
@@ -58,7 +80,7 @@ public class SecuritySummaryDlg extends CustomDialog
     	JComboBox    objTypeSwitcher = UIHelper.createComboBox(new DefaultComboBoxModel());
     	JTable objectPermissionsTable = new JTable();
         JPanel objectPermissionsPanel  = ObjectPermissionEditor.createObjectPermissionsPanel(
-        		objectPermissionsTable, objTypeSwitcher, infoPanel);
+        		                             objectPermissionsTable, objTypeSwitcher, infoPanel);
         
         final PermissionEditor objectPermissionsEditor = ObjectPermissionEditor.
         	createObjectPermissionsEditor(objectPermissionsTable, objTypeSwitcher, infoPanel, true);
@@ -92,7 +114,56 @@ public class SecuritySummaryDlg extends CustomDialog
         generalPermissionsEditor.updateTable(principal, null);
         objectPermissionsEditor.updateTable(principal, null);
         
+        YesNoCellRenderer yesNoRenderer = new YesNoCellRenderer();
+        TableColumnModel tblModel = generalPermissionsTable.getColumnModel();
+        for (int i=2;i<tblModel.getColumnCount();i++)
+        {
+            tblModel.getColumn(i).setCellRenderer(yesNoRenderer);
+        }
+        
         pack();
+    }
+    
+    class YesNoCellRenderer extends DefaultTableCellRenderer
+    {
+        public final String YES = getResourceString("YES");
+        public final String NO  = getResourceString("NO");
+        
+        public Font boldFont  = null;
+        public Font normalFont = null;
+        
+        /**
+         * 
+         */
+        public YesNoCellRenderer()
+        {
+            super();
+            setHorizontalAlignment(SwingConstants.CENTER);
+            
+            normalFont = getFont();
+            boldFont   = normalFont.deriveFont(Font.BOLD);
+        }
+
+
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table,
+                                                       Object value,
+                                                       boolean isSelected,
+                                                       boolean hasFocus,
+                                                       int row,
+                                                       int column)
+        {
+            JLabel label = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (value instanceof Boolean)
+            {
+                label.setForeground(((Boolean)value) ? Color.BLACK : Color.LIGHT_GRAY);
+                label.setFont(((Boolean)value) ? boldFont : normalFont);
+                label.setText(((Boolean)value) ? YES : NO);
+            }
+            return label;
+        }
+        
     }
 }
 

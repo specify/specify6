@@ -27,7 +27,7 @@ import javax.swing.MenuElement;
  */
 public class MenuItemDesc
 {
-    public enum Position {None, Before, After}
+    public enum Position {None, Top, Before, After, Bottom}
     
     protected MenuElement menuItem;
     protected String      menuPath;
@@ -44,14 +44,30 @@ public class MenuItemDesc
      */
     public MenuItemDesc(final MenuElement menuItem, final String menuPath)
     {
-        this.menuItem = menuItem;
-        this.menuPath = menuPath;
+        this(menuItem, menuPath, Position.None);
     }
     
-    public void setPosition(final Position position, final String menuItemName)
+    /**
+     * Construct the info oject with the menuitem component
+     * @param menuItem the menuitem
+     * @param menuPath the path to the item
+     * @param position the position
+     */
+    public MenuItemDesc(final MenuElement menuItem, final String menuPath, final Position position)
+    {
+        this.menuItem = menuItem;
+        this.menuPath = menuPath;
+        this.position = position;
+    }
+    
+    /**
+     * @param position
+     * @param posMenuItemName
+     */
+    public void setPosition(final Position position, final String posMenuItemName)
     {
         this.position        = position;
-        this.posMenuItemName = menuItemName;
+        this.posMenuItemName = posMenuItemName;
     }
 
     /**
@@ -76,6 +92,11 @@ public class MenuItemDesc
     public Position getPosition()
     {
         return position;
+    }
+
+    public void setPosition(Position position)
+    {
+        this.position = position;
     }
 
     /**

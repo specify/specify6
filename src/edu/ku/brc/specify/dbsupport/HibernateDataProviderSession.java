@@ -620,6 +620,12 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         {
             closesCounts++;
             log.info("*Creates: "+createsCounts+"  Closes: "+closesCounts+" Dif: "+(createsCounts-closesCounts));
+            if (closesCounts == 3)
+            {
+                int x= 0;
+                x++;
+            }
+
         }
         
         if (session != null)
