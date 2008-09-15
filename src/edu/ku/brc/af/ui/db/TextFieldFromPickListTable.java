@@ -45,14 +45,15 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
     
     protected Object                 dataObj    = null;
     protected PickListDBAdapterIFace adapter;
+    protected Integer                nullIndex  = null;
 
     /**
      * Constructor.
      * @param adapter the PickListTableAdapter
      */
-    public TextFieldFromPickListTable(final PickListDBAdapterIFace adapter)
+    public TextFieldFromPickListTable(final PickListDBAdapterIFace adapter, final int cols)
     {
-        super();
+        super(Math.max(cols, 10));
         
         setControlSize(this);
 
@@ -137,6 +138,37 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
             }
 
             repaint();
+        } else
+        {
+            if (nullIndex == null)
+            {
+                if (adapter != null)
+                {
+                    int inx = 0;
+                    for (PickListItemIFace item : adapter.getList())
+                    {
+                        if (item.getValue().equals("|null|"))
+                        {
+                            nullIndex = inx;
+                            setText(item.getTitle());
+                            break;
+                        }
+                        inx++;
+                    }
+                    if (nullIndex == null)
+                    {
+                        nullIndex = -1;
+                    }
+                }
+            } else if (nullIndex > -1)
+            {
+                PickListItemIFace item = adapter.getList().get(nullIndex);
+                if (item != null)
+                {
+                    setText(item.getTitle());
+                }
+                return;
+            }
         }
     }
 

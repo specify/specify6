@@ -453,7 +453,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         pickListMoreBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                PickListEditorDlg dlg = new PickListEditorDlg(localizableIO);
+                PickListEditorDlg dlg = new PickListEditorDlg(localizableIO.hasUpdatablePickLists() ? null : localizableIO);
                 dlg.setVisible(true);
             }
         });

@@ -31,9 +31,13 @@ import java.util.Set;
  */
 public interface PickListIFace
 {
-    public static final int PL_WITH_ITEMS  = 0;
-    public static final int PL_WHOLE_TABLE = 1;
-    public static final int PL_TABLE_FIELD = 2;
+    public static final byte PL_WITH_ITEMS  = 0;
+    public static final byte PL_WHOLE_TABLE = 1;
+    public static final byte PL_TABLE_FIELD = 2;
+    
+    public static final byte PL_NO_SORT      = 0;
+    public static final byte PL_TITLE_SORT   = 1;
+    public static final byte PL_ORDINAL_SORT = 2;
     
     /**
      * @return
@@ -78,12 +82,12 @@ public interface PickListIFace
     /**
      * @return
      */
-    public abstract Integer getType();
+    public abstract Byte getType();
 
     /**
      * @param type
      */
-    public abstract void setType(Integer type);
+    public abstract void setType(Byte type);
 
     /**
      * @return
@@ -169,5 +173,10 @@ public interface PickListIFace
      * @param item
      */
     public abstract void removeItem(final PickListItemIFace item);
+    
+    /**
+     * Reorders list if it is orderable.
+     */
+    public abstract void reorder();
 
 }

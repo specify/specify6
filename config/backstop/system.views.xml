@@ -9,7 +9,7 @@
             <desc><![CDATA[The PickList form.]]></desc>
             <altviews>
                 <altview name="Pick List View" viewdef="PickList" label="View" mode="view" validated="false"/>
-                <altview name="Pick List Edit" viewdef="PickList" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="Pick List Edit" viewdef="PickList" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -20,6 +20,8 @@
             <altviews>
                 <altview name="PickListItem View" viewdef="PickListItem" label="View" mode="view" validated="false"/>
                 <altview name="PickListItem Edit" viewdef="PickListItem" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="PickListItem Tbl View" viewdef="PickListItem Table" label="Grid" mode="view" validated="false"/>
+                <altview name="PickListItem Tbl Edit" viewdef="PickListItem Table" label="Grid" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -220,7 +222,18 @@
           </rows>
         </viewdef>
         
-         <viewdef
+        <viewdef
+            type="formtable"
+            name="PickListItem Table"
+            class="edu.ku.brc.specify.datamodel.PickListItem"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[PickListItem grid view for PickList form.]]></desc>
+            <definition>PickListItem</definition>
+        </viewdef>
+        
+        <viewdef
             type="form"
             name="PickListItem"
             class="edu.ku.brc.specify.datamodel.PickListItem"

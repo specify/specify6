@@ -125,18 +125,20 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
     protected EditDeleteAddPanel configureList(final JList list, final boolean isSystemPL)
     {
         
-        ActionListener addAL = new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                addPL(list);
-            }
-            
-        };
-        
+        ActionListener addAL = null;
         ActionListener delAL = null;
+        
         if (!isSystemPL)
         {
+            addAL = new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    addPL(list);
+                }
+                
+            };
+            
             delAL = new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
@@ -154,7 +156,10 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         };
         
         final EditDeleteAddPanel arePnl = new EditDeleteAddPanel(edtAL, delAL, addAL);
-        arePnl.getAddBtn().setEnabled(true);
+        if (arePnl.getAddBtn() != null)
+        {
+            arePnl.getAddBtn().setEnabled(true);
+        }
         
         List<PickList> items = null;
         
@@ -180,6 +185,8 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 }
                 items = plItems;
             }
+            
+            java.util.Collections.sort(items);
             
             collection = AppContextMgr.getInstance().getClassObject(Collection.class);
             collection = (Collection)session.getData("FROM Collection WHERE collectionId = "+collection.getId());

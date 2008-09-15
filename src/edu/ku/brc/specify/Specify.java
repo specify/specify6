@@ -118,7 +118,6 @@ import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.QueryExecutor;
@@ -129,6 +128,7 @@ import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -156,7 +156,6 @@ import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
-import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.tools.FormDisplayer;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -288,6 +287,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             remotePrefs.getColor("Treeeditor.TreeColColor1."+className, new Color(202, 238, 255), true); //$NON-NLS-1$
             remotePrefs.getColor("Treeeditor.TreeColColor2."+className, new Color(151, 221, 255), true); //$NON-NLS-1$
+            remotePrefs.getColor("Treeeditor.SynonymyColor."+className, Color.BLUE, true); //$NON-NLS-1$
             remotePrefs.getInt("TreeEditor.Rank.Threshold."+className, ranks[i], true); //$NON-NLS-1$
             i++;
         }
@@ -2530,6 +2530,26 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
           }
           return;
       }*/
+      /*
+      try
+      {
+          List<String> lines = (List<String>)FileUtils.readLines(new File("/Users/rod/Downloads/types.html"));
+          for (String line : lines)
+          {
+              if (StringUtils.contains(line, "//rs.tdwg.org/ontology/voc/"))
+              {
+                  int inx  = line.indexOf('>');
+                  int eInx = line.indexOf('<', inx);
+                  String name = line.substring(inx+1, eInx);
+                  System.out.println("      <picklistitem title=\""+UIHelper.makeNamePretty(name)+"\" value=\""+name+"\"/>");
+              }
+          }
+          
+      } catch (Exception ex)
+      {
+          
+      }
+      if (true) return;*/
       
       log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       boolean doingConfig = false;

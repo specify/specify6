@@ -48,7 +48,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
     
     // Data Members        
     protected Vector<PickListItemIFace> items    = new Vector<PickListItemIFace>(); // Make this Vector because the combobox can use it directly
-    protected PickListIFace             pickList = null;
+    protected PickList                  pickList = null;
     
     protected Object                    selectedObject = null;
      
@@ -175,13 +175,15 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
             
             PickListItem item = new PickListItem(title, value, new Timestamp(System.currentTimeMillis()));
             items.add(item);
-            Collections.sort(items);
             
             if (pickList != null)
             {
                 pickList.addItem(item);
                 item.setPickList(pickList);
+                pickList.reorder();
             }
+            
+            Collections.sort(items);
 
             save();
 
@@ -312,8 +314,17 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
         
         if (anObject instanceof PickListItemIFace)
         {
-            items.add((PickListItemIFace)anObject);
+            PickListItemIFace item = (PickListItemIFace)anObject;
+            items.add(item);
+            item.setPickList(pickList);
+            if (pickList != null)
+            {
+                pickList.addItem(item);
+                pickList.reorder();
+            }
+            
             Collections.sort(items);
+            
             
         } else if (anObject instanceof String)
         {
@@ -337,7 +348,15 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
     {
         if (obj instanceof PickListItemIFace)
         {
+            PickListItemIFace item = (PickListItemIFace)obj;
+            
             items.insertElementAt((PickListItemIFace)obj, index);
+            item.setPickList(pickList);
+            if (pickList != null)
+            {
+                pickList.addItem(item);
+                pickList.reorder();
+            }
             
         } else if (obj instanceof String)
         {
@@ -360,6 +379,11 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
         {
             removeElementAt(index);
         }
+        
+        if (pickList != null)
+        {
+            pickList.reorder();
+        }
     }
 
     /* (non-Javadoc)
@@ -369,12 +393,19 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
     {
         if ( getElementAt( index ) == selectedObject ) 
         {
+            PickListItemIFace item = (PickListItemIFace)selectedObject;
+            
             if ( index == 0 ) 
             {
                 setSelectedItem( getSize() == 1 ? null : getElementAt( index + 1 ) );
             } else 
             {
                 setSelectedItem( getElementAt( index - 1 ) );
+            }
+            
+            if (pickList != null)
+            {
+                pickList.removeItem(item);
             }
         }
 

@@ -44,6 +44,12 @@ public interface PickListItemIFace extends Comparable<PickListItemIFace>
 
     public abstract void setTimestampCreated(Timestamp createdDate);
     
+    public abstract void setOrdinal(Integer ordinal);
+    
+    public abstract Integer getOrdinal();
+    
+    public abstract void SetPickList(PickListIFace pickList);
+    
     // Non-Presisted Field
     
     public abstract Object getValueObject();

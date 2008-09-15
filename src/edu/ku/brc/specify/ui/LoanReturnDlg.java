@@ -566,7 +566,7 @@ public class LoanReturnDlg extends JDialog
                     {
                         fmtStr = quantityReturned == 0 ? getResourceString("LOANRET_NOTHING_RET") : 
                             String.format(getResourceString("LOANRET_NUM_ITEMS_RET_FMT"), quantityReturned);
-                        prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon"));
+                        prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon", IconManager.IconSize.Std16));
                         //prepInfoBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
                         pbuilder.add(prepInfoBtn, cc.xy(7, 1));
                     }
@@ -593,7 +593,7 @@ public class LoanReturnDlg extends JDialog
                     String fmtStr = lastReturnDate == null ? getResourceString("LOANRET_ALL_RETURNED") :
                                  String.format(getResourceString("LOANRET_ALL_RETURNED_ON_FMT"), 
                                                scrDateFormat.format(lastReturnDate));
-                    prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon"));
+                    prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon", IconManager.IconSize.Std16));
                     pbuilder.add(prepInfoBtn, cc.xywh(3, 1, 7, 1));
                     allReturned = true;
                 }

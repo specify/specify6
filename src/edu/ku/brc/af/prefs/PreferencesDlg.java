@@ -469,9 +469,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         for (PrefsPanelIFace pp : prefPanelsHash.values())
         {
             // but check all the forms
-            if (!pp.isFormValid())
+            if (!pp.isFormValid() && pp.getValidator().hasChanged())
             {
-                //log.debug("false="+pp.getValidator().getName()); //$NON-NLS-1$
+                log.debug("false="+pp.getValidator().getName()); //$NON-NLS-1$
                 okToEnable = false;
                 break;
             }

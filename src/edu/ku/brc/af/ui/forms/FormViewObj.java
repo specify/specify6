@@ -4285,11 +4285,6 @@ public class FormViewObj implements Viewable,
                             
                         } else
                         {
-                            if (cellField.getIdent().equals("3"))
-                            {
-                                int x = 0;
-                                x++;
-                            }
                             values = UIHelper.getFieldValues(cellField, dataObj, dg);
                         }
 

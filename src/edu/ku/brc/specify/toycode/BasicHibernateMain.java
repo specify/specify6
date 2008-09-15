@@ -18,7 +18,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
-import edu.ku.brc.specify.tests.SpecifyAppPrefs;
+import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;

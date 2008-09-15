@@ -113,7 +113,6 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
             // Always keep the list sorted
             Collections.sort(items);
         }
-
     }
 
     
@@ -193,12 +192,14 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
             item.setTitle(title);
             item.setValue(value);
             items.add(item);
-            Collections.sort(items);
             
             if (pickList != null)
             {
                 pickList.addItem(item);
+                item.setPickList(pickList);
+                pickList.reorder();
             }
+            Collections.sort(items);
 
             save();
 

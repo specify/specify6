@@ -140,6 +140,31 @@ public class RecordTypeCodeItem extends Pair<String, Number> implements PickList
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.PickListItemIFace#getOrdinal()
+     */
+    @Override
+    public Integer getOrdinal()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.PickListItemIFace#setOrdinal(java.lang.Integer)
+     */
+    @Override
+    public void setOrdinal(Integer ordinal)
+    {
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.PickListItemIFace#SetPickList(edu.ku.brc.af.ui.db.PickListIFace)
+     */
+    @Override
+    public void SetPickList(PickListIFace pickList)
+    {
+    }
+
+    /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override

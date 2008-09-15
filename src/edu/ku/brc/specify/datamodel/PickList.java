@@ -73,7 +73,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
 
     protected Integer           pickListId;
     protected String            name;
-    protected Integer           type;  // see PickListDBAdapterIFace.Type
+    protected Byte              type;  // see PickListDBAdapterIFace.Type
     protected String            tableName;
     protected String            fieldName;
     protected String            filterFieldName;
@@ -82,6 +82,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     protected Boolean           readOnly;
     protected Integer           sizeLimit;
     protected Boolean           isSystem; 
+    protected Byte              sortType;
     protected Set<PickListItem> pickListItems;
     protected Collection        collection;
     
@@ -126,6 +127,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
         isSystem   = false;
         filterFieldName = null;
         filterValue     = null;
+        sortType   = PL_TITLE_SORT;
         
         collection = AppContextMgr.getInstance() == null || !AppContextMgr.getInstance().hasContext() ? null : AppContextMgr.getInstance().getClassObject(Collection.class);
         
@@ -291,15 +293,15 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
      * @see edu.ku.brc.ui.db.PickListIFace#getType()
      */
     @Column(name = "Type", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getType()
+    public Byte getType()
     {
         return type;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.PickListIFace#setType(java.lang.Short)
+     * @see edu.ku.brc.ui.db.PickListIFace#setType(java.lang.Byte)
      */
-    public void setType(Integer type)
+    public void setType(Byte type)
     {
         this.type = type;
     }
@@ -365,6 +367,23 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
         this.isSystem = isSystem;
     }
     
+    /**
+     * @return the sortType
+     */
+    @Column(name = "SortType", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getSortType()
+    {
+        return sortType;
+    }
+
+    /**
+     * @param sortType the sortType to set
+     */
+    public void setSortType(Byte sortType)
+    {
+        this.sortType = sortType;
+    }
+
     /**
      * @return the collection
      */
@@ -440,17 +459,26 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListIFace#addItem(java.lang.String, java.lang.String)
      */
-    public PickListItemIFace addItem(final String title, final String value)
+    public PickListItemIFace addItem(final String title, final String value, final Integer ordinal)
     {
         if (items == null)
         {
             items = new HashSet<PickListItemIFace>();
         }
         PickListItem pli = new PickListItem(title, value, new Timestamp(System.currentTimeMillis()));
+        pli.setOrdinal(ordinal);
         items.add(pli);
         pickListItems.add(pli);
         pli.setPickList(this);
         return pli;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#addItem(java.lang.String, java.lang.String)
+     */
+    public PickListItemIFace addItem(final String title, final String value)
+    {
+        return addItem(title, value, null);
     }
     
     /* (non-Javadoc)
@@ -482,6 +510,22 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
         items.add(item);
         pickListItems.add((PickListItem)item);
         return item;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.PickListIFace#reorder()
+     */
+    @Override
+    public void reorder()
+    {
+        if (sortType.equals(PL_ORDINAL_SORT))
+        {
+            int order = 0;
+            for (PickListItemIFace item : getItems())
+            {
+                item.setOrdinal(order++);
+            }
+        }
     }
 
     /* (non-Javadoc)

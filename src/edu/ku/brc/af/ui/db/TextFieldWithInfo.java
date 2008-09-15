@@ -289,7 +289,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
 
         if (StringUtils.isNotEmpty(displayInfoDialogName))
         {
-            infoBtn = new JButton(IconManager.getIcon("InfoIcon")); //$NON-NLS-1$
+            infoBtn = new JButton(IconManager.getIcon("InfoIcon", IconManager.IconSize.Std16)); //$NON-NLS-1$
             infoBtn.setToolTipText(String.format(getResourceString("ShowRecordInfoTT"), new Object[] {objTitle})); //$NON-NLS-1$
             infoBtn.setFocusable(false);
             infoBtn.setMargin(new Insets(1,1,1,1));

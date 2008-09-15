@@ -11,20 +11,6 @@ package edu.ku.brc.specify.config.init;
 
 import java.sql.Timestamp;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
-import edu.ku.brc.af.ui.db.PickListIFace;
-import edu.ku.brc.af.ui.db.PickListItemIFace;
-import edu.ku.brc.specify.datamodel.PickList;
-
 /**
  * @author rod
  *
@@ -38,6 +24,7 @@ public class BldrPickListItem
     // Fields
     private String title;
     private String value;
+    private Integer ordinal;
 
     // Constructors
 
@@ -87,6 +74,22 @@ public class BldrPickListItem
         this.value = value;
     }
     
+    /**
+     * @return the ordinal
+     */
+    public Integer getOrdinal()
+    {
+        return ordinal;
+    }
+
+    /**
+     * @param ordinal the ordinal to set
+     */
+    public void setOrdinal(Integer ordinal)
+    {
+        this.ordinal = ordinal;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

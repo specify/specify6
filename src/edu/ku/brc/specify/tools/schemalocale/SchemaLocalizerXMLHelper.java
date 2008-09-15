@@ -1116,7 +1116,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         {
             PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
                                                pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
-                                               pl.getSizeLimit(), pl.getIsSystem());
+                                               pl.getSizeLimit(), pl.getIsSystem(), pl.getSortType());
             for (BldrPickListItem item : pl.getItems())
             {
                 pickList.addItem(item.getTitle(), item.getValue());

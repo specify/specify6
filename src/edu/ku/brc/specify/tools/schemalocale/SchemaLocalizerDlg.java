@@ -851,7 +851,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                     PickList pl = new PickList();
                     pl.initialize();
                     pl.setName((String)data[0]);
-                    pl.setType((Integer)data[1]);
+                    pl.setType((Byte)data[1]);
                     pl.setTableName((String)data[2]);
                     pl.setFieldName((String)data[3]);
                     pl.setPickListId((Integer)data[4]);

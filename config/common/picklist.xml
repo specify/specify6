@@ -137,4 +137,46 @@
         <picklistitem title="CO2" value="CO2"/>
       </items>
     </picklist>  
+    <picklist name="TypeStatus" issystem="true" type="0" readonly="true" sizelimit="-1" sort="2">
+      <items>
+	      <picklistitem title="None" value="|null|"/>
+	      <picklistitem title="Allolectotype" value="Allolectotype"/>
+	      <picklistitem title="Alloneotype" value="Alloneotype"/>
+	      <picklistitem title="Allotype" value="Allotype"/>
+	      <picklistitem title="Cotype" value="Cotype"/>
+	      <picklistitem title="Epitype" value="Epitype"/>
+	      <picklistitem title="Ex Epitype" value="ExEpitype"/>
+	      <picklistitem title="Ex Holotype" value="ExHolotype"/>
+	      <picklistitem title="Ex Isotype" value="ExIsotype"/>
+	      <picklistitem title="Ex Lectotype" value="ExLectotype"/>
+	      <picklistitem title="Ex Neotype" value="ExNeotype"/>
+	      <picklistitem title="Ex Paratype" value="ExParatype"/>
+	      <picklistitem title="Ex Syntype" value="ExSyntype"/>
+	      <picklistitem title="Ex Type" value="ExType"/>
+	      <picklistitem title="Hapantotype" value="Hapantotype"/>
+	      <picklistitem title="Holotype" value="Holotype"/>
+	      <picklistitem title="Iconotype" value="Iconotype"/>
+	      <picklistitem title="Isolectotype" value="Isolectotype"/>
+	      <picklistitem title="Isoneotype" value="Isoneotype"/>
+	      <picklistitem title="Isosyntype" value="Isosyntype"/>
+	      <picklistitem title="Isotype" value="Isotype"/>
+	      <picklistitem title="Lectotype" value="Lectotype"/>
+	      <picklistitem title="Neotype" value="Neotype"/>
+	      <picklistitem title="Paralectotype" value="Paralectotype"/>
+	      <picklistitem title="Paraneotype" value="Paraneotype"/>
+	      <picklistitem title="Paratype" value="Paratype"/>
+	      <picklistitem title="Plastoholotype" value="Plastoholotype"/>
+	      <picklistitem title="Plastoisotype" value="Plastoisotype"/>
+	      <picklistitem title="Plastolectotype" value="Plastolectotype"/>
+	      <picklistitem title="Plastoneotype" value="Plastoneotype"/>
+	      <picklistitem title="Plastoparatype" value="Plastoparatype"/>
+	      <picklistitem title="Plastosyntype" value="Plastosyntype"/>
+	      <picklistitem title="Plastotype" value="Plastotype"/>
+	      <picklistitem title="Secondary Type" value="SecondaryType"/>
+	      <picklistitem title="Supplementary Type" value="SupplementaryType"/>
+	      <picklistitem title="Syntype" value="Syntype"/>
+	      <picklistitem title="Topotype" value="Topotype"/>
+	      <picklistitem title="Type" value="Type"/>
+      </items>
+    </picklist>  
 </list>

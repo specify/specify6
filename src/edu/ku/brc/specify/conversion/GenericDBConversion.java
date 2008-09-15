@@ -2532,7 +2532,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 pl.setSizeLimit(-1);
                 pl.setIsSystem(true);
                 pl.setTableName("preptype");
-                pl.setType(1);
+                pl.setType((byte)1);
                 
             } else
             {

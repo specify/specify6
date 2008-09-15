@@ -104,7 +104,7 @@ public class EditDeleteAddPanel extends JPanel
             addBtn = UIHelper.createIconBtn("PlusSign", addTTKey, addAL);
         }
         
-        int numBtns = (addAL != null ? 1 : 0) + (delAL != null ? 1 : 0) + (addAL != null ? 1 : 0);
+        int numBtns = (addAL != null ? 1 : 0) + (delAL != null ? 1 : 0) + (editAL != null ? 1 : 0);
         
         CellConstraints cc = new CellConstraints();
         

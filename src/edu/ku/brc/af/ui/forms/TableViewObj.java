@@ -762,7 +762,7 @@ public class TableViewObj implements Viewable,
             Object item = dataObjList.get(inx);
             dataObjList.remove(inx);
             dataObjList.insertElementAt(item, inx-1);
-            reorderItems(inx);
+            reorderItems(inx-1);
         }
         table.getSelectionModel().setSelectionInterval(inx-1, inx-1);
         tellMultiViewOfChange();

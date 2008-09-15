@@ -274,7 +274,7 @@
                     <cell type="field" id="3" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
                     
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="typeStatusName" uitype="text"/>
+                    <cell type="field" id="4" name="typeStatusName" uitype="combobox" picklist="TypeStatus"/>
                     
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>

@@ -682,13 +682,13 @@ public class BuildSampleDatabase
                 
                 PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
                                                    pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
-                                                   pl.getSizeLimit(), pl.getIsSystem());
+                                                   pl.getSizeLimit(), pl.getIsSystem(), pl.getSortType());
                 pickList.setCollection(collection);
                 collection.getPickLists().add(pickList);
                 
                 for (BldrPickListItem item : pl.getItems())
                 {
-                    pickList.addItem(item.getTitle(), item.getValue());
+                    pickList.addItem(item.getTitle(), item.getValue(), item.getOrdinal());
                 }
                 
                 if (localSession != null)

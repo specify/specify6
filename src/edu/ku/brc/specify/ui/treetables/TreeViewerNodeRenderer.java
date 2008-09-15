@@ -30,8 +30,6 @@ import javax.swing.Icon;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
@@ -69,6 +67,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     
     protected Stroke lineStroke;
     protected Color  lineColor;
+    protected Color  synonymyColor;
     
     protected TreeTableViewer<?,?,?> treeViewer;
     
@@ -79,18 +78,21 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
      * @param model
      * @param bgColors
      * @param lineColor
+     * @param synonymyColor
      */
     public TreeViewerNodeRenderer(final TreeTableViewer<?,?,?> ttv, 
                                   final TreeViewerListModel model, 
                                   final Color[] bgColors, 
-                                  final Color lineColor)
+                                  final Color lineColor,
+                                  final Color synonymyColor)
     {
-        this.model = model;
+        this.model      = model;
         this.treeViewer = ttv;
         
         bgs = new Color[2];
         bgs[0] = bgColors[0];
         bgs[1] = bgColors[1];
+        this.synonymyColor = synonymyColor;
     
         open   = IconManager.getIcon("Down",    IconManager.IconSize.NonStd);
         closed = IconManager.getIcon("Forward", IconManager.IconSize.NonStd);
@@ -637,9 +639,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             Color startingColor = g.getColor();
             if (treeNode.getAcceptedParentFullName() != null)
             {
-                UIDefaults uid = UIManager.getLookAndFeelDefaults();
-                Color disabledTextColor = uid.getColor("textInactiveText");
-                g.setColor(disabledTextColor);
+                g.setColor(synonymyColor);
             }
             Graphics2D    g2d         = (Graphics2D)g;
             FontMetrics   fm          = g.getFontMetrics();
@@ -650,7 +650,8 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             int stringStartX = stringBounds.getFirst();
             int stringEndX   = stringBounds.getSecond();
             int stringLength = stringEndX - stringStartX;
-            int stringY = baselineAdj;
+            int stringY      = baselineAdj;
+            
             if( selected )
             {
                 g2d.setColor(list.getSelectionBackground());

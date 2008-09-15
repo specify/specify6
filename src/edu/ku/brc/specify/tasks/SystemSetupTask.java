@@ -351,11 +351,11 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     
     /**
      * @param clazz
-     * @param iconName
+     * @param iconNameArg
      * @param viewName
      */
     protected void startEditor(final Class<?> clazz, 
-                               final String iconName, 
+                               final String iconNameArg, 
                                final String viewName)
     {
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(clazz.getName());
@@ -434,13 +434,13 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      * @param clazz
      * @param fieldName
      * @param value
-     * @param iconName
+     * @param iconNameArg
      * @param viewName
      */
     protected void startEditor(final Class<?> clazz, 
                                final String   fieldName, 
                                final String   value, 
-                               final String   iconName, 
+                               final String   iconNameArg, 
                                final String   viewName)
     {
         String plTitle = value == null ? getResourceString("PL_NEWPICKLIST") : value;
@@ -467,7 +467,6 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             {
                 PickList pl = new PickList();
                 pl.initialize();
-                pl.setType(0);
                 dataObj = pl;
             }
             
@@ -479,7 +478,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                             "edit", 
                             dataObj, 
                             MultiView.NO_OPTIONS,
-                            IconManager.getIcon(iconName, IconManager.IconSize.Std16),
+                            IconManager.getIcon(iconNameArg, IconManager.IconSize.Std16),
                             this);
             starterPane = null;
         } 

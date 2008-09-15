@@ -85,6 +85,7 @@
                     <rule id="localmailbox"><![CDATA[accounttype.getSelectedIndex() == 1]]></rule>
                     <rule id="accountname"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
                     <rule id="servername"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
+                  -->
                     <rule id="smtp"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
                     <rule id="username"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
                     <rule id="password"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
@@ -92,7 +93,7 @@
                     <rule id="port"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
                     <rule id="security"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
                     <rule id="testconnection"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
-                  -->
+
                 </enableRules>
 
             <columnDef>p,2dlu,p,5dlu,p,2dlu,p</columnDef>
@@ -101,6 +102,10 @@
             <rows>
                 <row>
                     <cell type="separator" label="EMAIL_ACCT_SETTINGS" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" name="accounttypeLabel" labelfor="accounttype" label="ACCT_TYPE"/>
+                    <cell type="field" uitype="combobox" id="accounttype" name="settings.email.accounttype" isrequired="true" initialize="data=Not in use, In Use"/>
                 </row>
                 <!--  
                 <row>
@@ -407,7 +412,7 @@
                 </row>
                 
                 <row>
-	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
+	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
 	                    <rows>
 			                <row>
 			                    <cell type="separator" label="TAXON_TREE" colspan="5"/>
@@ -424,9 +429,13 @@
 			                    <cell type="label" labelfor="TreeColColor2.Taxon" label="TT_COL_CLR_2"/>
 			                    <cell type="field" uitype="colorchooser" id="TreeColColor2.Taxon" name="Treeeditor.TreeColColor2.Taxon"/>
 			                </row>
+			                <row>
+			                    <cell type="label" labelfor="SynonymyColor.Taxon" label="TT_SYN_CLR"/>
+			                    <cell type="field" uitype="colorchooser" id="SynonymyColor.Taxon" name="Treeeditor.SynonymyColor.Taxon"/>
+			                </row>
 			            </rows>
 			        </cell>
-	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
+	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
 	                    <rows>
 			                <row>
 			                    <cell type="separator" label="GEO_TREE" colspan="5"/>
@@ -443,12 +452,16 @@
 			                    <cell type="label" labelfor="TreeColColor2.Geography" label="GT_COL_CLR_2"/>
 			                    <cell type="field" uitype="colorchooser" id="TreeColColor2.Geography" name="Treeeditor.TreeColColor2.Geography"/>
 			                </row>
+			                <row>
+			                    <cell type="label" labelfor="SynonymyColor.Geography" label="GT_SYN_CLR"/>
+			                    <cell type="field" uitype="colorchooser" id="SynonymyColor.Geography" name="Treeeditor.SynonymyColor.Geography"/>
+			                </row>
 			            </rows>
 			        </cell>
 			    </row>
 			                
                 <row>
-	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
+	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
 	                    <rows>
 			                <row>
 			                    <cell type="separator" label="LITHO_TREE" colspan="5"/>
@@ -465,9 +478,13 @@
 			                    <cell type="label" labelfor="TreeColColor2.LithoStrat" label="LT_COL_CLR_2"/>
 			                    <cell type="field" uitype="colorchooser" id="TreeColColor2.LithoStrat" name="Treeeditor.TreeColColor2.LithoStrat"/>
 			                </row>
+			                <row>
+			                    <cell type="label" labelfor="SynonymyColor.LithoStrat" label="LT_SYN_CLR"/>
+			                    <cell type="field" uitype="colorchooser" id="SynonymyColor.LithoStrat" name="Treeeditor.SynonymyColor.LithoStrat"/>
+			                </row>
 			            </rows>
 			        </cell>
-	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
+	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
 	                    <rows>
 			              <row>
 			                    <cell type="separator" label="GEO_PERIOD_TREE" colspan="5"/>
@@ -484,11 +501,15 @@
 			                    <cell type="label" labelfor="TreeColColor2.GeologicTimePeriod" label="GP_COL_CLR_2"/>
 			                    <cell type="field" uitype="colorchooser" id="TreeColColor2.GeologicTimePeriod" name="Treeeditor.TreeColColor2.GeologicTimePeriod"/>
 			                </row>
+			                <row>
+			                    <cell type="label" labelfor="SynonymyColor.GeologicTimePeriod" label="GP_SYN_CLR"/>
+			                    <cell type="field" uitype="colorchooser" id="SynonymyColor.GeologicTimePeriod" name="Treeeditor.SynonymyColor.GeologicTimePeriod"/>
+			                </row>
 			            </rows>
 			        </cell>
 			    </row>
                 <row>
-                    <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
+                    <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p,2px,p">
                         <rows>
                             <row>
                                 <cell type="separator" label="STORAGE_TREE" colspan="5"/>
@@ -505,6 +526,10 @@
                                 <cell type="label" labelfor="TreeColColor2.Storage" label="ST_COL_CLR_2"/>
                                 <cell type="field" uitype="colorchooser" id="TreeColColor2.Storage" name="Treeeditor.TreeColColor2.Storage"/>
                             </row>
+			                <row>
+			                    <cell type="label" labelfor="SynonymyColor.Storage" label="ST_SYN_CLR"/>
+			                    <cell type="field" uitype="colorchooser" id="SynonymyColor.Storage" name="Treeeditor.SynonymyColor.Storage"/>
+			                </row>
                         </rows>
                     </cell>
                 </row>

@@ -1380,7 +1380,7 @@ public class ViewFactory
                     break;
 
                 case textpl:
-                    JTextField txt = new TextFieldFromPickListTable(adapter);
+                    JTextField txt = new TextFieldFromPickListTable(adapter, cellField.getTxtCols());
                     changeTextFieldUIForDisplay(txt, cellField.getPropertyAsBoolean("transparent", false));
                     bi.compToAdd = txt;
                     break;

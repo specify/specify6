@@ -26,6 +26,13 @@ import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.ui.UIHelper;
 
+/**
+ * @author timo
+ *
+ * @code_status Alpha
+ *
+ *
+ */
 public class PickListCriteriaCombo extends JComboBox
 {
     protected static final Logger log = Logger.getLogger(QueryFieldPanel.class);

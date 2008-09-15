@@ -126,7 +126,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         {
             explainPanel = new JPanel(new BorderLayout());
             explainPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-            JButton btn = UIHelper.createButton(UIRegistry.getResourceString("EXPRESSSEARCH_TELL_ME_MORE"), IconManager.getIcon("InfoIcon"));
+            JButton btn = UIHelper.createButton(UIRegistry.getResourceString("EXPRESSSEARCH_TELL_ME_MORE"), IconManager.getIcon("InfoIcon", IconManager.IconSize.Std16));
             btn.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
             btn.setFocusable(false);
             btn.setForeground(Color.GRAY);

@@ -25,6 +25,7 @@ import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -871,13 +872,14 @@ public class DataBuilder
      * @return
      */
     public static PickList createPickList(final String  name,
-                                          final Integer type,
+                                          final Byte    type,
                                           final String  tableName,
                                           final String  fieldName,
                                           final String  formatter,
                                           final boolean readOnly, 
                                           final int     sizeLimit,
-                                          final Boolean isSystem)
+                                          final Boolean isSystem,
+                                          final Byte    sortType)
     {
         PickList pickList = new PickList();
         pickList.initialize();
@@ -889,6 +891,7 @@ public class DataBuilder
         pickList.setReadOnly(readOnly);
         pickList.setSizeLimit(sizeLimit);
         pickList.setIsSystem(isSystem);
+        pickList.setSortType(sortType);
         
         Collection collection = AppContextMgr.getInstance().hasContext() ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
         if (collection != null)
@@ -898,82 +901,6 @@ public class DataBuilder
         }
         
         persist(pickList);
-        return pickList;
-    }
-    
-    /**
-     * @param name
-     * @param readOnly
-     * @return
-     */
-    public static PickList createPickList(final String name, boolean readOnly, boolean isSystem)
-    {
-        return createPickList(name, 0, null, null, null, readOnly, -1, isSystem);
-    }
-    
-    /**
-     * @param name
-     * @param readOnly
-     * @param values
-     * @return
-     */
-    public static PickList createPickList(final String name,
-                                          boolean readOnly, 
-                                          String[] values,
-                                          boolean isSystem)
-    {
-        PickList pickList = createPickList(name, 0, null, null, null, readOnly, values.length, isSystem);
-
-        for (String value: values)
-        {
-            pickList.addItem(value, value);
-        }
-        return pickList;
-    }
-    
-    /**
-     * @param name
-     * @param readOnly
-     * @param values
-     * @param maxSize
-     * @return
-     */
-    public static PickList createPickList(final String name,
-                                          boolean readOnly, 
-                                          String[] values,
-                                          int maxSize,
-                                          boolean isSystem)
-    {
-        PickList pickList = createPickList(name, 0, null, null, null, readOnly, maxSize, isSystem);
-
-        for (String value: values)
-        {
-            pickList.addItem(value, value);
-        }
-        return pickList;
-    }
-    
-    /**
-     * @param name
-     * @param readOnly
-     * @param titles
-     * @param values
-     * @param maxSize
-     * @return
-     */
-    public static PickList createPickList(final String name,
-                                          boolean readOnly, 
-                                          String[] titles,
-                                          String[] values,
-                                          int maxSize,
-                                          boolean isSystem)
-    {
-        PickList pickList = createPickList(name, 0, null, null, null, readOnly, maxSize, isSystem);
-
-        for (int i=0;i<titles.length;i++)
-        {
-            pickList.addItem(titles[i], values[i]);
-        }
         return pickList;
     }
     
@@ -2706,15 +2633,18 @@ public class DataBuilder
         xstream.useAttributeFor(BldrPickList.class, "formatter");
         xstream.useAttributeFor(BldrPickList.class, "name");
         xstream.useAttributeFor(BldrPickList.class, "isSystem");
+        xstream.useAttributeFor(BldrPickList.class, "sortType");
         
         xstream.useAttributeFor(BldrPickListItem.class, "title");
         xstream.useAttributeFor(BldrPickListItem.class, "value");
+        xstream.useAttributeFor(BldrPickListItem.class, "ordinal");
         
         xstream.aliasAttribute("readonly",  "readOnly");
         xstream.aliasAttribute("tablename", "tableName");
         xstream.aliasAttribute("fieldname", "fieldName");
         xstream.aliasAttribute("sizelimit", "sizeLimit");
         xstream.aliasAttribute("issystem",  "isSystem");
+        xstream.aliasAttribute("sort",      "sortType");
         
         String[] omit = {"changes","timestampCreated","timestampModified","createdByAgent","modifiedByAgent","version","valueObject",};
         for (String fld : omit)
@@ -2732,7 +2662,29 @@ public class DataBuilder
             if (pickListFile.exists())
             {
                 //System.out.println(FileUtils.readFileToString(pickListFile));
-                return (List<BldrPickList>)xstream.fromXML(FileUtils.readFileToString(pickListFile));
+                List<BldrPickList> list = (List<BldrPickList>)xstream.fromXML(FileUtils.readFileToString(pickListFile));
+                
+                for (BldrPickList pl : list)
+                {
+                    if (pl.getSortType() == null)
+                    {
+                        pl.setSortType(PickListIFace.PL_TITLE_SORT);
+                    } else
+                    {
+                        int x =  0;
+                        x++;
+                    }
+                    
+                    if (pl.getSortType().equals(PickListIFace.PL_ORDINAL_SORT))
+                    {
+                        int order = 0;
+                        for (BldrPickListItem item : pl.getItems())
+                        {
+                            item.setOrdinal(order++);
+                        }
+                    }
+                }
+                return list;
             }
             //System.out.println("Couldn't find picklist.xml ["+pickListFile.getCanonicalPath()+"]");
             
@@ -2753,7 +2705,8 @@ public class DataBuilder
             for (BldrPickList pl : list)
             {
                 PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(), pl.getFieldName(), 
-                                                   pl.getFormatter(), pl.getReadOnly(), pl.getSizeLimit(), pl.getIsSystem());
+                                                   pl.getFormatter(), pl.getReadOnly(), pl.getSizeLimit(), 
+                                                   pl.getIsSystem(), pl.getSortType());
                 for (BldrPickListItem item : pl.getItems())
                 {
                     pickList.addItem(item.getTitle(), item.getValue());

@@ -357,9 +357,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		Color[] bgs = new Color[2];
 		bgs[0] = remotePrefs.getColor("Treeeditor.TreeColColor1."+clazz.getSimpleName(), new Color(202, 238, 255));
 		bgs[1] = remotePrefs.getColor("Treeeditor.TreeColColor2."+clazz.getSimpleName(), new Color(151, 221, 255));
+		Color synonomyColor = remotePrefs.getColor("Treeeditor.SynonymyColor."+clazz.getSimpleName(), Color.BLUE);
 		
         Color lineColor = new Color(0x00, 0x00, 0x00, 0x66);
-		listCellRenderer = new TreeViewerNodeRenderer(this, listModel, bgs, lineColor);
+		listCellRenderer = new TreeViewerNodeRenderer(this, listModel, bgs, lineColor, synonomyColor);
 		ListSelectionListener listSelListener = new ListSelectionListener()
 		{
 			@SuppressWarnings("unchecked")

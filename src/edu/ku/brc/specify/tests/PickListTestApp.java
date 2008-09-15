@@ -56,6 +56,7 @@ import edu.ku.brc.af.ui.db.JAutoCompTextField;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.ui.UIHelper;

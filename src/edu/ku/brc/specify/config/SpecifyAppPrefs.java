@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.tests;
+package edu.ku.brc.specify.config;
 
 import java.awt.Color;
 
@@ -25,7 +25,7 @@ import edu.ku.brc.ui.ColorWrapper;
  * One stop shopping for prefs, this is the one place that initializes all the prefs for any Specify application
  * 
  *
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *
@@ -66,8 +66,5 @@ public class SpecifyAppPrefs
        
         ColorWrapper viewFieldColor = new ColorWrapper(250, 250, 250);
         AppPrefsCache.register(viewFieldColor, "ui", "formatting", "viewfieldcolor");
-       
     }
-    
-
 }

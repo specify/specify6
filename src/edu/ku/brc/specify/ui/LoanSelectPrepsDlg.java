@@ -511,7 +511,7 @@ public class LoanSelectPrepsDlg extends CustomDialog
                     if (quantityOut > 0)
                     {
                         fmtStr = getLocalizedMessage("LoanSelectPrepsDlg.OF_QUANT_OUT", quantityOut); //$NON-NLS-1$
-                        prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon")); //$NON-NLS-1$
+                        prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon", IconManager.IconSize.Std16)); //$NON-NLS-1$
                         //prepInfoBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
                         pbuilder.add(prepInfoBtn, cc.xy(7, 1));
                     }

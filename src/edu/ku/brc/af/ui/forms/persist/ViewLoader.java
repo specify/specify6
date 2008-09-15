@@ -854,7 +854,7 @@ public class ViewLoader
                                     break;
                                     
                                 case combobox:
-                                    dspUITypeStr = getAttr(cellElement, "dspuitype", "dsptextfield");
+                                    dspUITypeStr = getAttr(cellElement, "dspuitype", "textpl");
                                     break;
                                     
                                 default:
