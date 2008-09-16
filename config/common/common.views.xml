@@ -94,6 +94,17 @@
                 <altview name="CollectingTripForm Edit" viewdef="CollectingTripForm" label="Edit" mode="edit"/>
             </altviews>
         </view>
+
+<view name="Collector"
+            class="edu.ku.brc.specify.datamodel.Collector"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectorBusRules"
+            resourcelabels="false">
+            <desc><![CDATA[The Collectors Form.]]></desc>
+            <altviews>
+                <altview name="Collector View" viewdef="Collector" label="View" mode="view" validated="false" default="true"/>                
+                <altview name="Collector Edit" viewdef="Collector" label="Edit" mode="edit" validated="true"/>                
+            </altviews>
+        </view>
         
         <view name="Collectors"
             class="edu.ku.brc.specify.datamodel.Collector"
@@ -864,6 +875,31 @@
                 </row>
                 <row>
                     <cell type="subview" id="3" name="collectingEvents" viewname="CollectingEventSubform" colspan="12"/>
+                </row>
+                
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="Collector"
+            class="edu.ku.brc.specify.datamodel.Collector"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Collector form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>100px,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p:g,2dlu,p:g</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="2" cols="40"/>
                 </row>
                 
             </rows>
