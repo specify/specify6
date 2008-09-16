@@ -1966,7 +1966,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                                            final TreeNode draggedNode)
     {
         boolean isSynonymizeOK = isSynonymizeOK(droppedOnNode, draggedNode, treeDef.getSynonymizedLevel());
-        boolean isMoveOK      = TreeHelper.canChildBeReparentedToNode(draggedNode.getRank(), droppedOnNode.getRank(), treeDef);
+        boolean isMoveOK      = isMoveOK(droppedOnNode, draggedNode);
         
         if (treeDef.getSynonymizedLevel() == -1)
         {
@@ -2222,6 +2222,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	{
 	    if (droppedOnNode.getAcceptedParentId() == null)
         {
+	        if (draggedNode.isHasChildren())
+	        {
+	            return false;
+	        }
+	        
 	        int draggedRankId = draggedNode.getRank();
 	        int droppedRankId = droppedOnNode.getRank();
 	        //System.out.println("draggedRankId "+draggedRankId+"  droppedRankId "+droppedRankId+"  rankLevel "+rankLevel);
@@ -2243,6 +2248,18 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             } 
         }
 	    return false;
+	}
+	
+	/**
+	 * @param droppedOnNode
+	 * @param draggedNode
+	 * @return
+	 */
+	private boolean isMoveOK(final TreeNode droppedOnNode, final TreeNode draggedNode)
+	{
+	    return 
+	        TreeHelper.canChildBeReparentedToNode(draggedNode.getRank(), droppedOnNode.getRank(), treeDef)
+	        && draggedNode.getParentId() != droppedOnNode.getId();
 	}
 	
     /* (non-Javadoc)
@@ -2295,7 +2312,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		//log.debug("Synonymization request IS NOT acceptable.  Drop target is not an accepted name.");
 
 		// Check to see if it can be moved
-		if (TreeHelper.canChildBeReparentedToNode(draggedNode.getRank(), droppedOnNode.getRank(), treeDef))
+		if (isMoveOK(droppedOnNode, draggedNode))
 		{
         	//log.debug("Reparent request IS acceptable.");
     		listModel.setDropLocationNode(droppedOn);
