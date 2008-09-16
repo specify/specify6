@@ -53,6 +53,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
@@ -1233,7 +1234,9 @@ public class UIRegistry
             
             int      y        = 0;
             JMenuBar menuBar  = null;
-            Dimension size    = mainComp.getSize();
+            Dimension size    = mainComp instanceof GlassPaneUnderLay ? 
+                    ((GlassPaneUnderLay)mainComp).getUnderLaySize() :
+                    mainComp.getSize();
             if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
             {
                 menuBar = frame.getJMenuBar();
@@ -1280,7 +1283,14 @@ public class UIRegistry
             glassPane.setOffset(new Point(0,0));
             
             glassPane.setVisible(true);
-            mainComp.setVisible(false);
+            if (mainComp instanceof GlassPaneUnderLay)
+            {
+                ((GlassPaneUnderLay)mainComp).cover();
+            }
+            else
+            {
+                mainComp.setVisible(false);
+            }
             //Using paintImmediately fixes problems with glass pane not showing, such as for workbench saves initialed
             //during workbench or app shutdown. Don't know if there is a better way to fix it.
             //glassPane.repaint();
@@ -1297,7 +1307,14 @@ public class UIRegistry
         if (mainComp != null && getGlassPane() != null && getGlassPane().isVisible())
         {
             getGlassPane().setVisible(false);
-            mainComp.setVisible(true);
+            if (mainComp instanceof GlassPaneUnderLay)
+            {
+                ((GlassPaneUnderLay)mainComp).unCover();
+            }
+            else
+            {
+                mainComp.setVisible(true);
+            }
             mainComp.repaint();
             
             Frame frame = (JFrame)get(FRAME);

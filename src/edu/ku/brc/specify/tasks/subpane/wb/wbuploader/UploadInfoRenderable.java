@@ -6,8 +6,10 @@
      */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
-import java.util.Vector;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
+import java.util.Vector;
+
 import edu.ku.brc.af.core.expresssearch.TableNameRendererIFace;
 
 public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<UploadInfoRenderable>

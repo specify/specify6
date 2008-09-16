@@ -1745,8 +1745,24 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                          {
                              finiSession.attach(workbench);
                          }
+                         final int rowCount = workbench.getWorkbenchRows().size() + 1;
+                         SwingUtilities.invokeLater(new Runnable() {
+                             public void run()
+                             {
+                                 UIRegistry.getStatusBar().setProgressRange(workbench.getName(), 0, rowCount);
+                                 UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), false);
+                             }
+                         });
                          
-                         workbench.forceLoad();
+                         //force load the workbench here instead of calling workbench.forceLoad() because
+                         //is so time-consuming and needs progress bar.
+                         workbench.getWorkbenchTemplate().forceLoad();
+                         UIRegistry.getStatusBar().incrementValue(workbench.getName());
+                         for (WorkbenchRow row : workbench.getWorkbenchRows())
+                         {
+                             row.forceLoad();
+                             UIRegistry.getStatusBar().incrementValue(workbench.getName());
+                         }
                          
                          // do the conversion code right here!
                          boolean convertedAnImage = false;
@@ -1836,6 +1852,12 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 public void finished()
                 {
                     UIRegistry.clearGlassPaneMsg();
+//                    SwingUtilities.invokeLater(new Runnable() {
+//                        public void run()
+//                        {
+                            UIRegistry.getStatusBar().setProgressDone(workbench.getName());
+//                        }
+//                    });
                 }
             };
             worker.start();
