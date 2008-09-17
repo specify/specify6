@@ -391,7 +391,7 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
     @Transient
     public int getSynonymizedLevel()
     {
-        return TaxonTreeDef.SPECIES;
+        return TaxonTreeDef.GENUS;
     }    
     
 }
