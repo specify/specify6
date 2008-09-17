@@ -75,7 +75,6 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.UnhandledExceptionDialog;
 
 /**
  * @author timbo
@@ -310,7 +309,7 @@ public class MainFrameSpecify extends MainFrame
             String xmlString = xml.toString();
             if (rep != null)
             {
-            	xmlString = modifyXMLForSaving(xmlString, rep);
+                xmlString = modifyXMLForSaving(xmlString, rep);
             }
             appRes.setDataAsString(xmlString);
             AppContextMgr.getInstance().saveResource(appRes);
@@ -541,6 +540,7 @@ public class MainFrameSpecify extends MainFrame
     {
         RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, "Report", tableId == null, rep);
         boolean goodProps = false;
+        boolean overwrite = false;
         SpAppResource match = null;
         CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
                 UIRegistry.getResourceString("REP_PROPS_DLG_TITLE"),
@@ -570,6 +570,7 @@ public class MainFrameSpecify extends MainFrame
                         if (chc == JOptionPane.OK_OPTION)
                         {
                         	goodProps = true;
+                        	overwrite = true;
                         }
                         else if (chc != JOptionPane.NO_OPTION)
                         {
@@ -591,7 +592,7 @@ public class MainFrameSpecify extends MainFrame
         }    
         if (goodProps /*just in case*/)
         {
-            if (match != null)
+            if (match != null && overwrite)
             {
                 //user has chosen to overwrite an identically named report
                 //XXX - Is it possible that another user created the matching report?
