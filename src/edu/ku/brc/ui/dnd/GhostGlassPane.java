@@ -10,6 +10,9 @@ import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
@@ -74,6 +77,82 @@ public class GhostGlassPane extends JPanel
     protected GhostGlassPane()
     {
         setOpaque(false);
+        
+        addMouseListener(new MouseAdapter() {
+
+            /* (non-Javadoc)
+             * @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent)
+             */
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                e.consume();
+            }
+
+            /* (non-Javadoc)
+             * @see java.awt.event.MouseAdapter#mouseDragged(java.awt.event.MouseEvent)
+             */
+            @Override
+            public void mouseDragged(MouseEvent e)
+            {
+                e.consume();
+            }
+
+            /* (non-Javadoc)
+             * @see java.awt.event.MouseAdapter#mouseEntered(java.awt.event.MouseEvent)
+             */
+            @Override
+            public void mouseEntered(MouseEvent e)
+            {
+                e.consume();
+            }
+
+            /* (non-Javadoc)
+             * @see java.awt.event.MouseAdapter#mouseExited(java.awt.event.MouseEvent)
+             */
+            @Override
+            public void mouseExited(MouseEvent e)
+            {
+                e.consume();
+            }
+
+            /* (non-Javadoc)
+             * @see java.awt.event.MouseAdapter#mouseMoved(java.awt.event.MouseEvent)
+             */
+            @Override
+            public void mouseMoved(MouseEvent e)
+            {
+                e.consume();
+            }
+
+            /* (non-Javadoc)
+             * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
+             */
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                e.consume();
+            }
+
+            /* (non-Javadoc)
+             * @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
+             */
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+                e.consume();
+            }
+
+            /* (non-Javadoc)
+             * @see java.awt.event.MouseAdapter#mouseWheelMoved(java.awt.event.MouseWheelEvent)
+             */
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e)
+            {
+                e.consume();
+            }
+        });
+
     }
     
     /**
