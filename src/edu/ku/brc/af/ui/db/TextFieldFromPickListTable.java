@@ -90,7 +90,7 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
         
         if (value != null)
         {
-            if (adapter.isTabledBased())
+            if (adapter != null && adapter.isTabledBased())
             {
                 String data = null;
     
