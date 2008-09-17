@@ -21,7 +21,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
@@ -41,8 +40,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
@@ -168,7 +165,6 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DefaultClassActionHandler;
-import edu.ku.brc.ui.GlassPaneUnderLay;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
@@ -193,56 +189,8 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  * @author rods
  */
 @SuppressWarnings("serial") //$NON-NLS-1$
-public class Specify extends JPanel implements DatabaseLoginListener, CommandListener, GlassPaneUnderLay
+public class Specify extends JPanel implements DatabaseLoginListener, CommandListener
 {
-    protected List<Component> compsToUncover = null;
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.GlassPaneUnderLay#cover()
-     */
-    @Override
-    public void cover()
-    {
-      for (Component c : getComponents())
-      {
-          compsToUncover = new LinkedList<Component>();
-          if (c != statusField && c.isVisible())
-          {
-              c.setVisible(false);
-              compsToUncover.add(c);
-          }
-      }        
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.GlassPaneUnderLay#getUnderLaySize()
-     */
-    @Override
-    public Dimension getUnderLaySize()
-    {
-        Dimension result = getSize();
-        result.height -= statusField.getHeight();
-        return result;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.GlassPaneUnderLay#unCover()
-     */
-    @Override
-    public void unCover()
-    {
-        if (compsToUncover != null)
-        {
-            for (Component c : compsToUncover)
-            {
-                c.setVisible(true);
-            }
-            compsToUncover = null;
-        }
-        else
-        {
-            log.error("unCover called but compsToUncover was null");
-        }
-    }
 
     private static final boolean isRelease          = false;
     private static final Logger  log                = Logger.getLogger(Specify.class);
