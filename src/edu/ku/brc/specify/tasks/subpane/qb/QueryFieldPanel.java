@@ -797,21 +797,24 @@ public class QueryFieldPanel extends JPanel
     protected PickListCriteriaCombo createPickList(final Component saveBtn)
     {
         PickListCriteriaCombo result = new PickListCriteriaCombo(pickList);
-        result.addActionListener(new ActionListener() {
+        if (!ownerQuery.isPromptMode())
+        {
+            result.addActionListener(new ActionListener() {
 
-            /* (non-Javadoc)
-             * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-             */
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                if (e.getID() == 1001/*ComboBoxChanged*/)
+                /* (non-Javadoc)
+                 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+                 */
+                @Override
+                public void actionPerformed(ActionEvent e)
                 {
-                    saveBtn.setEnabled(true);
+                    if (e.getID() == 1001/*ComboBoxChanged*/)
+                    {
+                        saveBtn.setEnabled(true);
+                    }
                 }
-            }
             
-        });
+            });
+        }
         return result;
     }
     
@@ -915,7 +918,10 @@ public class QueryFieldPanel extends JPanel
         else
         {
             criteria = createPickList(saveBtn);
-            ((PickListCriteriaCombo) criteria).setCurrentOp((SpQueryField.OperatorType) operatorCBX.getModel().getElementAt(0));
+            if (!ownerQuery.isPromptMode())
+            {
+                ((PickListCriteriaCombo) criteria).setCurrentOp((SpQueryField.OperatorType) operatorCBX.getModel().getElementAt(0));
+            }
             operatorCBX.addItemListener(new ItemListener()
             {
 
