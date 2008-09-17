@@ -844,11 +844,14 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
     {
         super.beforeDelete(dataObj, session);
-        Treeable<?, ?, ?> node = (Treeable<?,?,?> )dataObj;
-        if (node.getAcceptedParent() != null)
+        if (dataObj instanceof Treeable<?,?,?>)
         {
-            node.getAcceptedParent().getAcceptedChildren().remove(node);
-            node.setAcceptedParent(null);
+            Treeable<?, ?, ?> node = (Treeable<?,?,?> )dataObj;
+            if (node.getAcceptedParent() != null)
+            {
+                node.getAcceptedParent().getAcceptedChildren().remove(node);
+                node.setAcceptedParent(null);
+            }
         }
     }
 

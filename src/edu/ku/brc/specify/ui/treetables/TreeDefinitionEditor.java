@@ -59,6 +59,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -151,8 +152,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         }
         
 		displayedDef = treeDef;
+		
         businessRules = DBTableIdMgr.getInstance().getBusinessRule(treeDef.getNodeClass());
-        
         UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Loading"), 24); //$NON-NLS-1$
 		initUI();
         
@@ -623,6 +624,25 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
     }
     
     /**
+     * Gets latest version of displatedDef.
+     * This is necessary to ensure that requests for Collection info from AppContextMgr 
+     * (e.g "(SpecifyAppContextMgr )AppContextMgr.getInstance()).getTreeDefForClass()") reflect all edits. 
+     */
+    @SuppressWarnings("unchecked")
+    protected void refreshDef()
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            displayedDef = (D )session.get(displayedDef.getClass(), displayedDef.getTreeDefId());
+        }
+        finally
+        {
+            session.close();
+        }
+        
+    }
+    /**
      * @param editItem
      * 
      * 
@@ -630,6 +650,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
     protected void notifyApplication(Object editItem, int action)
     {
         //Make sure AppContextMgr has updated class object for the tree definition (could also make SpecifyAppContextMgr a CommandListener????)
+        //AppContextMgr.getInstance().setClassObject(displayedDef.getClass(), displayedDef);
+        refreshDef();
         AppContextMgr.getInstance().setClassObject(displayedDef.getClass(), displayedDef);
         
         //notify command listeners that tree was edited.
