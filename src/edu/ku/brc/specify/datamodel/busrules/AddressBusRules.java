@@ -40,7 +40,7 @@ public class AddressBusRules extends BaseBusRules
      * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @Override
-    public void afterFillForm(Object dataObj)
+    public void afterFillForm(final Object dataObj)
     {
         super.afterFillForm(dataObj);
         
@@ -48,26 +48,29 @@ public class AddressBusRules extends BaseBusRules
         {
             address = (Address)formViewObj.getDataObj();
             
-            Component comp = formViewObj.getControlByName("isPrimary");
-            if (comp instanceof ValCheckBox)
+            if (isEditMode())
             {
-                if (addrAL == null)
+                Component comp = formViewObj.getControlByName("isPrimary");
+                if (comp instanceof ValCheckBox)
                 {
-                    addrAL = new ActionListener() 
+                    if (addrAL == null)
                     {
-                        //@Override
-                        public void actionPerformed(final ActionEvent e)
+                        addrAL = new ActionListener() 
                         {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                 //@Override
-                                 public void run()
-                                 {
-                                     primaryAddressSelected(e);
-                                 }
-                             });
-                        }
-                    };
-                    ((ValCheckBox)comp).addActionListener(addrAL);
+                            //@Override
+                            public void actionPerformed(final ActionEvent e)
+                            {
+                                SwingUtilities.invokeLater(new Runnable() {
+                                     //@Override
+                                     public void run()
+                                     {
+                                         primaryAddressSelected(e);
+                                     }
+                                 });
+                            }
+                        };
+                        ((ValCheckBox)comp).addActionListener(addrAL);
+                    }
                 }
             }
         }

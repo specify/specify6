@@ -446,6 +446,38 @@ public class BaseBusRules implements BusinessRulesIFace
     }
     
     /**
+     * @return whether the form is in edit mode
+     */
+    protected boolean isEditMode()
+    {
+        if (formViewObj != null)
+        {
+            MultiView mvParent = formViewObj.getMVParent();
+            if (mvParent != null)
+            {
+                return mvParent.isEditable();
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * @return whether the data object is new
+     */
+    protected boolean isNewObject()
+    {
+        if (formViewObj != null)
+        {
+            MultiView mvParent = formViewObj.getMVParent();
+            if (mvParent != null)
+            {
+                return MultiView.isOptionOn(mvParent.getOptions(), MultiView.IS_NEW_OBJECT);
+            }
+        }
+        return false;
+    }
+    
+    /**
      * @param skipTableNames
      * @param tableInfo
      * @return
