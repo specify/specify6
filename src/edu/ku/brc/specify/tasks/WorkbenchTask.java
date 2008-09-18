@@ -1721,7 +1721,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     {
         if (workbench != null)
         {
-            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
+            UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
             
             // Make sure we have a session but use an existing one if it is passed in
             DataProviderSessionIFace tmpSession = session;
@@ -1851,7 +1851,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 @Override
                 public void finished()
                 {
-                    UIRegistry.clearGlassPaneMsg();
+                    UIRegistry.clearSimpleGlassPaneMsg();
 //                    SwingUtilities.invokeLater(new Runnable() {
 //                        public void run()
 //                        {

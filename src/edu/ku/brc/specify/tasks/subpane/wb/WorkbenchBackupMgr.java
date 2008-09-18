@@ -132,7 +132,7 @@ public class WorkbenchBackupMgr
             Properties props = new Properties();
             props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
             props.setProperty("fileName", backupName);
-
+ 
             CommandAction command = new CommandAction(ToolsTask.TOOLS, ToolsTask.EXPORT_LIST);
             command.setProperty("tool", ExportToFile.class);
             command.setData(workbench.getWorkbenchRowsAsList());
