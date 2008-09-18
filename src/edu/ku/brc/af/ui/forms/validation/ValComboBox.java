@@ -583,11 +583,17 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
                     int inx = 0;
                     for (PickListItemIFace item : adapter.getList())
                     {
-                        if (item.getValue().equals("|null|"))
+                        if (item != null && item.getValue() != null)
                         {
-                            nullIndex = inx;
-                            comboBox.setSelectedIndex(nullIndex);
-                            break;
+                            if (item.getValue().equals("|null|"))
+                            {
+                                nullIndex = inx;
+                                comboBox.setSelectedIndex(nullIndex);
+                                break;
+                            }
+                        } else
+                        {
+                            System.err.println("PickList item's value was null and it can't be.");
                         }
                         inx++;
                     }
