@@ -63,11 +63,10 @@ public class TaskSemaphoreMgr
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            SpecifyUser user      = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
             Discipline discipline = scope == SCOPE.Discipline ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
             Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
 
-            SpTaskSemaphore semaphore = getSemaphore(session, name, scope, user, discipline, collection);
+            SpTaskSemaphore semaphore = getSemaphore(session, name, scope, discipline, collection);
             
             if (semaphore == null)
             {
@@ -304,7 +303,6 @@ public class TaskSemaphoreMgr
      */
     private static String buildSQL(final String name, 
                                    final SCOPE  scope,
-                                   final SpecifyUser specifyUser,
                                    final Discipline discipline,
                                    final Collection collection)
     {
@@ -324,9 +322,9 @@ public class TaskSemaphoreMgr
             joins.append("INNER JOIN ts.collection c ");
         }
         
-        where.append(" AND spu.specifyUserId = ");
-        where.append(specifyUser.getId());
-        joins.append("INNER JOIN ts.owner spu ");
+        //where.append(" AND spu.specifyUserId = ");
+        //where.append(specifyUser.getId());
+        //joins.append("INNER JOIN ts.owner spu ");
         
         StringBuilder sb = new StringBuilder("FROM SpTaskSemaphore ts ");
         sb.append(joins);
@@ -352,50 +350,13 @@ public class TaskSemaphoreMgr
     private static SpTaskSemaphore getSemaphore(final DataProviderSessionIFace session,
                                                 final String name, 
                                                 final SCOPE  scope,
-                                                final SpecifyUser specifyUser,
                                                 final Discipline discipline,
                                                 final Collection collection) throws Exception
     {
-        String sql = buildSQL(name, scope, specifyUser, discipline, collection);
+        String sql = buildSQL(name, scope, discipline, collection);
         //System.err.println(sql);
         Object[] cols = (Object[])session.getData(sql);
         return cols != null && cols.length > 0 ? (SpTaskSemaphore)cols[0] : null;
-    }
-    
-    /**
-     * @param name
-     * @param context
-     * @param scope
-     * @return
-     */
-    public static SpTaskSemaphore getSemaphore(final String name, 
-                                               final String context,
-                                               final SCOPE  scope)
-    {
-        DataProviderSessionIFace session = null;
-        try
-        {
-            session = DataProviderFactory.getInstance().createSession();
-
-            SpecifyUser user      = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-            Discipline discipline = scope == SCOPE.Discipline ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
-            Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
-    
-            return getSemaphore(session, name, scope, user, discipline, collection);
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            //log.error(ex);
-            
-        } finally 
-        {
-             if (session != null)
-             {
-                 session.close();
-             }
-        }
-        return null;
     }
     
     /**
@@ -426,7 +387,7 @@ public class TaskSemaphoreMgr
         discipline = discipline != null ? session.getData(Discipline.class, "id", discipline.getId(), DataProviderSessionIFace.CompareType.Equals) : null;
         collection = collection != null ? session.getData(Collection.class, "id", collection.getId(), DataProviderSessionIFace.CompareType.Equals) : null;
 
-        SpTaskSemaphore semaphore = getSemaphore(session, name, scope, user, discipline, collection);
+        SpTaskSemaphore semaphore = getSemaphore(session, name, scope, discipline, collection);
         
         if (semaphore != null)
         {
