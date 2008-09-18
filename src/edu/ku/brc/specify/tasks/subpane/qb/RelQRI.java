@@ -112,7 +112,20 @@ public class RelQRI extends FieldQRI
     {
         if (relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.OneToMany) /*What about ManyToMany?? And some OneToOnes???*/)
         {
-            return ta.getAbbreviation(table.getTableTree().getParent()) + "." + relationshipInfo.getOtherSide() + "Id";
+            String name;
+            if (StringUtils.isEmpty(relationshipInfo.getColName()) /*It should always be empty*/)
+            {
+                name = table.getTableTree().getParent().getTableInfo().getIdFieldName();
+            }
+            else //something is probably wrong but try this...
+            {
+                name = deCapitalize(relationshipInfo.getColName());
+                if (name.endsWith("ID"))
+                {
+                    name = name.substring(0, name.length()-2) + "Id";
+                }
+            }
+            return ta.getAbbreviation(table.getTableTree().getParent()) + "." + name;
         }
         //else ManyToOnes.   Is this OK for all OneToOnes too?
         return ta.getAbbreviation(table.getTableTree()) + "." + deCapitalize(table.getTableInfo().getClassObj().getSimpleName()) + "Id";

@@ -12,6 +12,8 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import java.util.Collection;
 
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
@@ -31,6 +33,10 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 public class ERTICaptionInfoRel extends ERTICaptionInfoQB
 {
     protected final DBRelationshipInfo relationship;
+    /**
+     * hql to retrieve list of related objects for one-to-many relationships.
+     */
+    protected final String listHql;
     
     public ERTICaptionInfoRel(String  colName, 
                            String  colLabel, 
@@ -42,6 +48,19 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
     {
         super(colName, colLabel, isVisible, uiFieldFormatter, posIndex, colStringId, null);
         this.relationship = relationship;
+        if (relationship.getType() == DBRelationshipInfo.RelationshipType.OneToMany)
+        {
+            DBTableInfo otherSideTbl = DBTableIdMgr.getInstance().getByClassName(relationship.getClassName());
+            DBRelationshipInfo otherSideRel = otherSideTbl.getRelationshipByName(relationship.getOtherSide());
+            String otherSideCol = otherSideRel.getColName();
+            otherSideCol = otherSideCol.substring(0, 1).toLowerCase().concat(otherSideCol.substring(1));
+            otherSideCol = otherSideCol.substring(0, otherSideCol.length()-2) + "Id";
+            listHql = "from " + relationship.getDataClass().getName() + " where " + otherSideCol + " = ";
+        }
+        else
+        {
+            listHql = null;
+        }
     }
     
     /* (non-Javadoc)
@@ -132,11 +151,19 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
         return value;
     }
     
+    /**
+     * @param key
+     * @return
+     */
     protected Object lookupKey(final Object key)
     {
         return null;
     }
 
+    /**
+     * @param key
+     * @param value
+     */
     protected void addKey(final Object key, final Object value)
     {
         // nuthin yet.
@@ -166,10 +193,7 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                return session.getDataList("from " + relationship.getDataClass().getName() + " where "
-                        + (relationship.getColName() != null ? relationship.getColName() 
-                                : relationship.getOtherSide() + "Id")
-                        + " = " + key.toString());
+                return session.getDataList(listHql + key);
             }
             finally
             {
