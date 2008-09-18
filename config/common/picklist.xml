@@ -22,39 +22,39 @@
   </picklist>
   <picklist name="PermitType" issystem="true" type="0" readonly="true" sizelimit="5">
     <items>
-      <picklistitem title="US Dept Wildlife" value="US Dept Wildlife"/>
-      <picklistitem title="State" value="State"/>
-      <picklistitem title="International" value="International"/>
-      <picklistitem title="Federal" value="Federal"/>
-      <picklistitem title="&lt;no data&gt;" value="&lt;no data&gt;"/>
+      <picklistitem title="US Dept Wildlife" value="udw"/>
+      <picklistitem title="State" value="state"/>
+      <picklistitem title="International" value="int"/>
+      <picklistitem title="Federal" value="fed"/>
+      <picklistitem title="no data" value="no data"/>
     </items>
   </picklist>
   <picklist name="LoanAgentRole" issystem="true" type="0" readonly="true" sizelimit="2">
     <items>
-      <picklistitem title="Borrower" value="Borrower"/>
-      <picklistitem title="Receiver" value="Receiver"/>
+      <picklistitem title="Borrower" value="borrower"/>
+      <picklistitem title="Receiver" value="receiver"/>
     </items>
   </picklist>
   <picklist name="AccessionStatus" issystem="true" type="0" readonly="true" sizelimit="3">
     <items>
-      <picklistitem title="&lt;no data&gt;" value="&lt;no data&gt;"/>
-      <picklistitem title="In Process" value="In Process"/>
-      <picklistitem title="Complete" value="Complete"/>
+      <picklistitem title="nodata" value="nodata"/>
+      <picklistitem title="In Process" value="inprocess"/>
+      <picklistitem title="Complete" value="complete"/>
     </items>
   </picklist>
   <picklist name="ShipmentMethod" issystem="true" type="0" readonly="true" sizelimit="5">
     <items>
-      <picklistitem title="DHL" value="DHL"/>
-      <picklistitem title="FedEx" value="FedEx"/>
-      <picklistitem title="By Hand" value="By Hand"/>
-      <picklistitem title="UPS" value="UPS"/>
-      <picklistitem title="USPS" value="USPS"/>
+      <picklistitem title="DHL" value="dhl"/>
+      <picklistitem title="Fed Ex" value="fedex"/>
+      <picklistitem title="By Hand" value="hand"/>
+      <picklistitem title="UPS" value="ups"/>
+      <picklistitem title="USPS" value="usps"/>
     </items>
   </picklist>
   <picklist name="AccessionType" issystem="true" type="0" readonly="true" sizelimit="2">
     <items>
-      <picklistitem title="Gift" value="Gift"/>
-      <picklistitem title="Collection" value="Collection"/>
+      <picklistitem title="Gift" value="gift"/>
+      <picklistitem title="Collection" value="cln"/>
     </items>
   </picklist>
   <picklist name="AgentVariant" issystem="true" type="0" readonly="true" sizelimit="-1">
@@ -68,20 +68,20 @@
   </picklist>
   <picklist name="AccessionRole" issystem="true" type="0" readonly="true" sizelimit="5">
     <items>
-      <picklistitem title="Collector" value="Collector"/>
-      <picklistitem title="Staff" value="Staff"/>
-      <picklistitem title="Donor" value="Donor"/>
-      <picklistitem title="Reviewer" value="Reviewer"/>
-      <picklistitem title="Receiver" value="Receiver"/>
+      <picklistitem title="Collector" value="collector"/>
+      <picklistitem title="Staff" value="staff"/>
+      <picklistitem title="Donor" value="donor"/>
+      <picklistitem title="Reviewer" value="reviewer"/>
+      <picklistitem title="Receiver" value="receiver"/>
     </items>
   </picklist>
   <picklist name="DeaccessionRole" issystem="true" type="0" readonly="true" sizelimit="5">
     <items>
-      <picklistitem title="Collector" value="Collector"/>
-      <picklistitem title="Staff" value="Staff"/>
-      <picklistitem title="Donor" value="Donor"/>
-      <picklistitem title="Reviewer" value="Reviewer"/>
-      <picklistitem title="Receiver" value="Receiver"/>
+      <picklistitem title="Collector" value="collector"/>
+      <picklistitem title="Staff" value="staff"/>
+      <picklistitem title="Donor" value="donor"/>
+      <picklistitem title="Reviewer" value="reviewer"/>
+      <picklistitem title="Receiver" value="receiver"/>
     </items>
   </picklist>
   <picklist name="ReferenceWorkType" issystem="true" type="0" readonly="true" sizelimit="6">
@@ -106,77 +106,77 @@
   <picklist name="AgentTitle" issystem="true" type="0" readonly="true" sizelimit="50">
     <items>
       <picklistitem title="Asst. Director" value="Asst. Director"/>
-      <picklistitem title="Curator" value="Curator"/>
-      <picklistitem title="Dr." value="Dr."/>
-      <picklistitem title="Mr." value="Mr."/>
-      <picklistitem title="Mrs." value="Mrs."/>
-      <picklistitem title="Ms." value="Ms."/>
+      <picklistitem title="Curator" value="curator"/>
+      <picklistitem title="Dr." value="dr"/>
+      <picklistitem title="Mr." value="mr"/>
+      <picklistitem title="Mrs." value="mrs"/>
+      <picklistitem title="Ms." value="ms"/>
     </items>
   </picklist>
   <picklist name="AgentTitles" issystem="true" type="0" readonly="true" sizelimit="6">
     <items>
-      <picklistitem title="Asst. Director" value="Asst. Director"/>
-      <picklistitem title="Curator" value="Curator"/>
-      <picklistitem title="Mr." value="Mr."/>
-      <picklistitem title="Mrs." value="Mrs."/>
-      <picklistitem title="Ms." value="Ms."/>
-      <picklistitem title="Dr." value="Dr."/>
+      <picklistitem title="Asst. Director" value="asstdir"/>
+      <picklistitem title="Curator" value="curator"/>
+      <picklistitem title="Mr." value="mr"/>
+      <picklistitem title="Mrs." value="mrs"/>
+      <picklistitem title="Ms." value="ms"/>
+      <picklistitem title="Dr." value="dr"/>
     </items>
   </picklist>
   <picklist name="Languages" issystem="true" type="0" readonly="true" sizelimit="10">
     <items>
       <picklistitem title="English" value="English"/>
       <picklistitem title="Spanish" value="Spanish"/>
-      <picklistitem title="German" value="German"/>
+      <picklistitem title="German" value="Spanish"/>
       <picklistitem title="Portuguese" value="Portuguese"/>
     </items>
    </picklist>
     <picklist name="TreatmentType" issystem="true" type="0" readonly="true" sizelimit="10">
       <items>
-        <picklistitem title="Bug Room" value="Bug Room"/>
-        <picklistitem title="CO2" value="CO2"/>
+        <picklistitem title="Bug Room" value="bugroom"/>
+        <picklistitem title="CO2" value="co2"/>
       </items>
     </picklist>  
     <picklist name="TypeStatus" issystem="true" type="0" readonly="true" sizelimit="-1" sort="2">
       <items>
 	      <picklistitem title="None" value="|null|"/>
-	      <picklistitem title="Allolectotype" value="Allolectotype"/>
-	      <picklistitem title="Alloneotype" value="Alloneotype"/>
-	      <picklistitem title="Allotype" value="Allotype"/>
-	      <picklistitem title="Cotype" value="Cotype"/>
-	      <picklistitem title="Epitype" value="Epitype"/>
-	      <picklistitem title="Ex Epitype" value="ExEpitype"/>
-	      <picklistitem title="Ex Holotype" value="ExHolotype"/>
-	      <picklistitem title="Ex Isotype" value="ExIsotype"/>
-	      <picklistitem title="Ex Lectotype" value="ExLectotype"/>
-	      <picklistitem title="Ex Neotype" value="ExNeotype"/>
-	      <picklistitem title="Ex Paratype" value="ExParatype"/>
-	      <picklistitem title="Ex Syntype" value="ExSyntype"/>
-	      <picklistitem title="Ex Type" value="ExType"/>
-	      <picklistitem title="Hapantotype" value="Hapantotype"/>
-	      <picklistitem title="Holotype" value="Holotype"/>
-	      <picklistitem title="Iconotype" value="Iconotype"/>
-	      <picklistitem title="Isolectotype" value="Isolectotype"/>
-	      <picklistitem title="Isoneotype" value="Isoneotype"/>
-	      <picklistitem title="Isosyntype" value="Isosyntype"/>
-	      <picklistitem title="Isotype" value="Isotype"/>
-	      <picklistitem title="Lectotype" value="Lectotype"/>
-	      <picklistitem title="Neotype" value="Neotype"/>
-	      <picklistitem title="Paralectotype" value="Paralectotype"/>
-	      <picklistitem title="Paraneotype" value="Paraneotype"/>
-	      <picklistitem title="Paratype" value="Paratype"/>
-	      <picklistitem title="Plastoholotype" value="Plastoholotype"/>
-	      <picklistitem title="Plastoisotype" value="Plastoisotype"/>
-	      <picklistitem title="Plastolectotype" value="Plastolectotype"/>
-	      <picklistitem title="Plastoneotype" value="Plastoneotype"/>
-	      <picklistitem title="Plastoparatype" value="Plastoparatype"/>
-	      <picklistitem title="Plastosyntype" value="Plastosyntype"/>
-	      <picklistitem title="Plastotype" value="Plastotype"/>
-	      <picklistitem title="Secondary Type" value="SecondaryType"/>
-	      <picklistitem title="Supplementary Type" value="SupplementaryType"/>
-	      <picklistitem title="Syntype" value="Syntype"/>
-	      <picklistitem title="Topotype" value="Topotype"/>
-	      <picklistitem title="Type" value="Type"/>
+	      <picklistitem title="Allolectotype" value="allolectotype"/>
+	      <picklistitem title="Alloneotype" value="alloneotype"/>
+	      <picklistitem title="Allotype" value="allotype"/>
+	      <picklistitem title="Cotype" value="cotype"/>
+	      <picklistitem title="Epitype" value="epitype"/>
+	      <picklistitem title="Ex Epitype" value="exepitype"/>
+	      <picklistitem title="Ex Holotype" value="exholotype"/>
+	      <picklistitem title="Ex Isotype" value="isotype"/>
+	      <picklistitem title="Ex Lectotype" value="exlectotype"/>
+	      <picklistitem title="Ex Neotype" value="exneotype"/>
+	      <picklistitem title="Ex Paratype" value="exparatype"/>
+	      <picklistitem title="Ex Syntype" value="exsyntype"/>
+	      <picklistitem title="Ex Type" value="extype"/>
+	      <picklistitem title="Hapantotype" value="hapantotype"/>
+	      <picklistitem title="Holotype" value="holotype"/>
+	      <picklistitem title="Iconotype" value="iconotype"/>
+	      <picklistitem title="Isolectotype" value="isolectotype"/>
+	      <picklistitem title="Isoneotype" value="isoneotype"/>
+	      <picklistitem title="Isosyntype" value="isosyntype"/>
+	      <picklistitem title="Isotype" value="isotype"/>
+	      <picklistitem title="Lectotype" value="lectotype"/>
+	      <picklistitem title="Neotype" value="neotype"/>
+	      <picklistitem title="Paralectotype" value="paralectotype"/>
+	      <picklistitem title="Paraneotype" value="paraneotype"/>
+	      <picklistitem title="Paratype" value="paratype"/>
+	      <picklistitem title="Plastoholotype" value="plastoholotype"/>
+	      <picklistitem title="Plastoisotype" value="plastoisotype"/>
+	      <picklistitem title="Plastolectotype" value="plastolectotype"/>
+	      <picklistitem title="Plastoneotype" value="plastoneotype"/>
+	      <picklistitem title="Plastoparatype" value="plastoparatype"/>
+	      <picklistitem title="Plastosyntype" value="plastosyntype"/>
+	      <picklistitem title="Plastotype" value="plastotype"/>
+	      <picklistitem title="Secondary Type" value="decondaryyype"/>
+	      <picklistitem title="Supplementary Type" value="supplementaryyype"/>
+	      <picklistitem title="Syntype" value="syntype"/>
+	      <picklistitem title="Topotype" value="topotype"/>
+	      <picklistitem title="Type" value="type"/>
       </items>
     </picklist>  
 </list>
