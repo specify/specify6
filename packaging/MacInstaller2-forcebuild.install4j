@@ -201,6 +201,12 @@
                   <string>../InstallerFiles/specify32.png</string>
                 </object>
               </void>
+              <void property="frameHeight">
+                <int>500</int>
+              </void>
+              <void property="frameWidth">
+                <int>600</int>
+              </void>
               <void property="useCustomIcon">
                 <boolean>true</boolean>
               </void>
