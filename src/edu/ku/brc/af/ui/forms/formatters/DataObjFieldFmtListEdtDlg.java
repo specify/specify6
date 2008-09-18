@@ -98,7 +98,7 @@ public class DataObjFieldFmtListEdtDlg extends FmtListEditorDlgBase
     @Override
     protected void addItem()
     {
-        DataObjSwitchFormatter newFmt = new DataObjSwitchFormatter(null, null, true, true, tableInfo.getClassObj(), "");
+        DataObjSwitchFormatter newFmt = new DataObjSwitchFormatter(null, null, true, false, tableInfo.getClassObj(), "");
         editItem(newFmt, true);
     }
 

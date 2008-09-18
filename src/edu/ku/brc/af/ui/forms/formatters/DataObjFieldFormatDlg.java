@@ -196,7 +196,6 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
                     isInError = false;
                 }
                 
-                dataObjFormatter.setTitle(titleText.getText());
                 dataObjFormatter.setName(name);
                 
                 setHasChanged(true);
@@ -226,6 +225,14 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
         updateUIEnabled();
     }
 
+    @Override
+    protected void okButtonPressed()
+    {
+        dataObjFormatter.setTitle(titleText.getText());
+
+        super.okButtonPressed();
+    }
+
     /**
      * @return
      */
@@ -247,6 +254,9 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
         return fmtrs;
     }
 
+    /**
+     * 
+     */
     protected void packWithLargestPanel()
     {
         fmtSingleEditingPanel.setVisible(true);
@@ -258,6 +268,9 @@ public class DataObjFieldFormatDlg extends CustomDialog implements ChangeListene
         setVisibleFormatPanel((singleDisplayBtn.isSelected()) ? singleDisplayBtn : multipleDisplayBtn);
     }
 
+    /**
+     * 
+     */
     protected void addDisplayTypeRadioButtonListeners()
     {
         ActionListener displayTypeRadioBtnL = new ActionListener()
