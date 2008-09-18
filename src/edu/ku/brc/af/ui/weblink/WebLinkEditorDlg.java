@@ -574,11 +574,12 @@ public class WebLinkEditorDlg extends CustomDialog
             WebLinkDefArg arg = args.get(row);
             boolean canPrompt = arg.isPrompt() && !arg.isField();
             
+            // Turns out, I don't think the prompt should ever be editable.
             switch (column)
             {
                 case 0 : return false;
                 case 1 : return canPrompt;
-                case 2 : return !arg.isField() && tableInfo == null && !arg.getName().equals("this");
+                case 2 : return false;//!arg.isField() && tableInfo == null && !arg.getName().equals("this");
             }
             throw new RuntimeException("Missing case!");
         }
