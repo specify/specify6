@@ -3808,8 +3808,6 @@ public class FormViewObj implements Viewable,
             }
         }
         
-        boolean isDataValueNew = objToCheck instanceof FormDataObjIFace && ((FormDataObjIFace)objToCheck).getId() == null;
-
         for (FVOFieldInfo fieldInfo : controlsById.values())
         {
             if (fieldInfo.isOfType(FormCellIFace.CellType.subview) ||
@@ -3826,9 +3824,7 @@ public class FormViewObj implements Viewable,
                 }
             }
             
-            if (isEditing && 
-                //!alreadyInTheList && 
-                fieldInfo.getComp() instanceof EditViewCompSwitcherPanel)
+            /*if (isEditing &&  fieldInfo.getComp() instanceof EditViewCompSwitcherPanel)
             {
                 if (isDataValueNew)
                 {
@@ -3837,7 +3833,7 @@ public class FormViewObj implements Viewable,
                 {
                     ((EditViewCompSwitcherPanel)fieldInfo.getComp()).putIntoViewMode();
                 }
-            }
+            }*/
         }
 
         // if we do have a list then get the first object or null
@@ -4378,6 +4374,18 @@ public class FormViewObj implements Viewable,
                     } else if (fieldInfo.getComp() instanceof MultiView)
                     {
                         ((MultiView)fieldInfo.getComp()).setData(data);
+                    }
+                }
+                
+                if (fieldInfo.getComp() instanceof EditViewCompSwitcherPanel)
+                {
+                    boolean isOK = !(dataObj instanceof FormDataObjIFace) || ((FormDataObjIFace)dataObj).getId() == null;
+                    if (isEditing && isOK)
+                    {
+                        ((EditViewCompSwitcherPanel)fieldInfo.getComp()).putIntoEditMode();
+                    } else
+                    {
+                        ((EditViewCompSwitcherPanel)fieldInfo.getComp()).putIntoViewMode();
                     }
                 }
             }
