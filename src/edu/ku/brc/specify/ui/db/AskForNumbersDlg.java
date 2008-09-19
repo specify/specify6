@@ -34,6 +34,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -157,7 +158,8 @@ public class AskForNumbersDlg extends CustomDialog
                     
                     if (StringUtils.isNotEmpty(catNumForDB))
                     {
-                        Integer colObjId = (Integer)session.getData("SELECT id FROM "+ti.getClassName()+" WHERE "+fieldName+" = '"+catNumForDB+"'");
+                        String sql = QueryAdjusterForDomain.getInstance().adjustSQL("SELECT id FROM "+ti.getClassName()+" WHERE "+fieldName+" = '"+catNumForDB+"' AND CollectionmemberID = COLLID");
+                        Integer colObjId = (Integer)session.getData(sql);
                         
                         if (colObjId != null)
                         {
