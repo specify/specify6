@@ -323,7 +323,7 @@ public class ToolsTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        StringBuilder htmlDesc = new StringBuilder("<h3>Welcome to the Specify Data Exporter</h3>");
+        StringBuilder htmlDesc = new StringBuilder("<h3>Welcome to the Specify Plugins</h3>"); //I18N
         htmlDesc.append("<p>Tools installed:<ul>");
         for (RecordSetToolsIFace tool: loadedToolsList)
         {
@@ -482,10 +482,10 @@ public class ToolsTask extends BaseTask
     {
         menuItems = new Vector<MenuItemDesc>();
         
-        JMenuItem exporter = new JMenuItem(getResourceString("EXPORTERS_MENU"));
-        menuItems.add(new MenuItemDesc(exporter, "ToolsMenu"));
+        JMenuItem menu = new JMenuItem(getResourceString("PluginsMenu"));
+        menuItems.add(new MenuItemDesc(menu, "TOOLS_MENU"));
         
-        exporter.addActionListener(new ActionListener()
+        menu.addActionListener(new ActionListener()
         {
             @SuppressWarnings("synthetic-access")
             public void actionPerformed(ActionEvent ae)
