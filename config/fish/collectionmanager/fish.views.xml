@@ -107,6 +107,9 @@
                  <row>
                     <cell type="subview" viewname="ConservDescriptionSub" id="22" name="conservDescriptions" colspan="12"/>
                  </row>
+                 <row> 
+                 <cell type="subview" viewname="ProjectSub" id="25" name="projects" colspan="12" initialize="addsearch=true" />
+                 </row>
                  <row>
                     <cell type="subview" viewname="TreatmentEventForCollObj" id="23" name="treatmentEvents" initialize="btn=true"/>
                     
