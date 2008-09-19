@@ -42,6 +42,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemStandardEntry;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
@@ -411,6 +412,18 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         String viewName = formViewObj.getView().getName();
         if (StringUtils.contains(viewName, "TreeDef"))
         {
+//            if (!viewName.equals("TaxonTreeDefItem"))
+//            {
+//                return;
+//            }
+//            //disabling editing of name and rank for standard levels.
+//            final I nodeInForm = (I)formViewObj.getDataObj();
+//            List<TreeDefItemStandardEntry> stds = nodeInForm.getTreeDef().getStandardLevels();
+//            boolean isStandardLevel = false;
+//            for (TreeDefItemStandardEntry std : stds)
+//            {
+//                if (std.getName().equals(nodeInForm.getName() && std.getRank() == nodeInForm.getRankId()))
+//            }
             return;
         }
         
@@ -444,7 +457,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery)formViewObj.getControlByName("acceptedParent");
             if (acceptedCheckBox != null && acceptedParentWidget != null)
             {
-                if (acceptedCheckBox.isSelected())
+                if (acceptedCheckBox.isSelected() && nodeInForm.getTreeId() != null)
                 {
                     //disable if necessary
                     boolean canSynonymize = nodeInForm.getDefinition().getSynonymizedLevel() <= nodeInForm.getRankId()
