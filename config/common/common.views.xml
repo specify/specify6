@@ -412,6 +412,19 @@
             </altviews>
         </view>
         
+        <view name="ProjectSub"
+            class="edu.ku.brc.specify.datamodel.Project"
+            isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[Project form.]]></desc>
+            <altviews>
+                <altview name="ProjectSub Table Edit" viewdef="ProjectSub Table" label="Grid" mode="edit"/>
+                <altview name="ProjectSub Table View" viewdef="ProjectSub Table" label="View" mode="view"/>
+                <altview name="ProjectSub View" viewdef="ProjectSub" label="View" mode="view" default="true"/>
+                <altview name="ProjectSub Edit" viewdef="ProjectSub" label="Edit" mode="edit"/>
+            </altviews>
+        </view>
+        
 
         <view name="InfoRequest"
             class="edu.ku.brc.specify.datamodel.InfoRequest"
@@ -1984,6 +1997,44 @@
             </rows>
         </viewdef>
         
+        <viewdef
+            type="formtable"
+            name="ProjectSub Table"
+            class="edu.ku.brc.specify.datamodel.Project"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Project Subform for Collection Object.]]></desc>
+            <definition>ProjectSub</definition>
+        </viewdef>
+        
+        <viewdef 
+            type="form" 
+            name="ProjectSub" 
+            class="edu.ku.brc.specify.datamodel.Project" 
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Form For Project]]></desc>
+            <columnDef>100px,2px,p,2px,100px,2px,p,2px,100px,2px,100px,p:g</columnDef>
+            <rowDef auto="true" sep="2px" cell="p"/>
+                
+             <rows>
+                 <row>
+                     <cell type="label" labelfor="5"/>
+                     <cell type="field" id="5" name="projectName" uitype="text" isrequired="true" colspan="9"/>
+                 </row>
+                 <row>
+                      <cell type="label" labelfor="6"/>
+                      <cell type="field" id="6" name="projectNumber" uitype="text"/>
+                      <cell type="label" labelfor="8"/>
+                      <cell type="field" id="8" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>                   
+                      <cell type="label" labelfor="1"/>
+                      <cell type="field" id="1" name="endDate" uitype="formattedtext"  uifieldformatter="Date" />
+                 </row>
+                
+            </rows>
+        </viewdef>
         
         <viewdef
             type="form"
