@@ -147,6 +147,17 @@
         </view>
         
         <view 
+            name="ProjectSearch"
+            class="edu.ku.brc.specify.datamodel.Project"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The Project Form]]></desc>
+            <altviews>
+                <altview name="ProjectSearch" viewdef="ProjectSearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view 
             name="BioStratSearch"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
             usedefbusrule="false"
@@ -539,6 +550,30 @@ Good: <cell type="field" name="FieldNum" ...>
                     <cell type="field" id="8" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
                
+            </rows>
+        </viewdef>
+        
+        <viewdef type="form"
+            name="ProjectSearch"
+            class="edu.ku.brc.specify.datamodel.Project"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Project Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="ProjectName"/>
+                    <cell type="field" id="1" name="ProjectName" isrequired="true" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="ProjectNumber"/>
+                    <cell type="field" id="2" name="ProjectNumber" isrequired="true" uitype="text"/>
+                </row>
             </rows>
         </viewdef>
         

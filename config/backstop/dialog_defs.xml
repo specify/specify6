@@ -20,6 +20,7 @@
     <dialog type="search" viewset="Search" view="PaleoContextSearch"       name="PaleoContextSearch"       class="edu.ku.brc.specify.datamodel.PaleoContext"   idfield="paleoContextId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="PermitSearch"             name="PermitSearch"             class="edu.ku.brc.specify.datamodel.Permit"         idfield="permitId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="PrepTypeSearch"           name="PrepTypeSearch"           class="edu.ku.brc.specify.datamodel.PrepType"       idfield="prepTypeId" helpcontext="CBXQSearch"/>
+    <dialog type="search" viewset="Search" view="ProjectSearch"            name="ProjectSearch"            class="edu.ku.brc.specify.datamodel.Project"        idfield="projectId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="ReferenceWorkSearch"      name="ReferenceWorkSearch"      class="edu.ku.brc.specify.datamodel.ReferenceWork"  idfield="referenceWorkId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="TaxonSearch"              name="TaxonSearch"              class="edu.ku.brc.specify.datamodel.Taxon"          idfield="taxonId" helpcontext="CBXQSearch"/>
     
@@ -48,6 +49,7 @@
     <dialog type="display" view="Storage"            name="StorageDisplay"           class="edu.ku.brc.specify.datamodel.Storage"/>
     <dialog type="display" view="Permit"             name="PermitDisplay"            class="edu.ku.brc.specify.datamodel.Agent"/>
     <dialog type="display" view="Preparation"        name="PreparationDisplay"       class="edu.ku.brc.specify.datamodel.Preparation"/>
+    <dialog type="display" view="ProjectSub"         name="ProjectSubDisplay"        class="edu.ku.brc.specify.datamodel.Project"/>
     <dialog type="display" view="ReferenceWork"      name="ReferenceWorkDisplay"     class="edu.ku.brc.specify.datamodel.ReferenceWork"/>
     <dialog type="display" view="Taxon"              name="TaxonDisplay"             class="edu.ku.brc.specify.datamodel.Taxon"/>
 
