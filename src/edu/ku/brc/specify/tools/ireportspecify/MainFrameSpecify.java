@@ -403,7 +403,7 @@ public class MainFrameSpecify extends MainFrame
         //concurrently running instance of Specify. 
         ((SpecifyAppContextMgr )AppContextMgr.getInstance()).setContext(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
-                false, false);
+                true, false);
 
         if (UIHelper.isSecurityOn())
         {
