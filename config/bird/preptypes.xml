@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <vector>
-    <preptype name="Egg" isloanable="false"/>
+    <preptype name="Egg" isloanable="true"/>
     <preptype name="Feather" isloanable="false"/>
     <preptype name="Misc" isloanable="false"/>
     <preptype name="Mounted" isloanable="false"/>
