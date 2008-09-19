@@ -851,6 +851,12 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         dialog.setModal(true);
         dialog.setData(newItem);
         dialog.preCreateUI();
+        if (stdLevel != null)
+        {
+            //don't force edits to standard level before enabling save button.
+            //This is kind of cheap, but, currently, for new items, saveBtn is the same as the okBtn.
+            dialog.getOkBtn().setEnabled(true);
+        }
         dialog.setVisible(true);
 
         // the dialog has been dismissed by the user

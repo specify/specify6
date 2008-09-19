@@ -37,6 +37,7 @@ import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.af.ui.forms.validation.UIValidator;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
@@ -412,18 +413,38 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         String viewName = formViewObj.getView().getName();
         if (StringUtils.contains(viewName, "TreeDef"))
         {
-//            if (!viewName.equals("TaxonTreeDefItem"))
-//            {
-//                return;
-//            }
-//            //disabling editing of name and rank for standard levels.
-//            final I nodeInForm = (I)formViewObj.getDataObj();
-//            List<TreeDefItemStandardEntry> stds = nodeInForm.getTreeDef().getStandardLevels();
-//            boolean isStandardLevel = false;
-//            for (TreeDefItemStandardEntry std : stds)
-//            {
-//                if (std.getName().equals(nodeInForm.getName() && std.getRank() == nodeInForm.getRankId()))
-//            }
+            if (!viewName.equals("TaxonTreeDefItem"))
+            {
+                return;
+            }
+            //disabling editing of name and rank for standard levels.
+            final I nodeInForm = (I)formViewObj.getDataObj();
+            if (nodeInForm != null)
+            {
+                List<TreeDefItemStandardEntry> stds = nodeInForm.getTreeDef().getStandardLevels();
+                boolean isStandardLevel = false;
+                for (TreeDefItemStandardEntry std : stds)
+                {
+                    if (std.getName().equals(nodeInForm.getName()) && std.getRank() == nodeInForm.getRankId())
+                    {
+                        isStandardLevel = true;
+                        break;
+                    }
+                }
+                if (isStandardLevel)
+                {
+                    ValTextField nameCtrl = (ValTextField )formViewObj.getControlByName("name");
+                    Component rankCtrl = formViewObj.getControlByName("rankId");
+                    if (nameCtrl != null)
+                    {
+                        nameCtrl.setEnabled(false);
+                    }
+                    if (rankCtrl != null)
+                    {
+                        rankCtrl.setEnabled(false);
+                    }
+                }
+            }
             return;
         }
         
@@ -457,7 +478,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery)formViewObj.getControlByName("acceptedParent");
             if (acceptedCheckBox != null && acceptedParentWidget != null)
             {
-                if (acceptedCheckBox.isSelected() && nodeInForm.getTreeId() != null)
+                if (acceptedCheckBox.isSelected() && nodeInForm != null && nodeInForm.getDefinition() != null)
                 {
                     //disable if necessary
                     boolean canSynonymize = nodeInForm.getDefinition().getSynonymizedLevel() <= nodeInForm.getRankId()
