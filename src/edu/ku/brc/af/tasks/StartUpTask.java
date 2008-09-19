@@ -106,12 +106,7 @@ public class StartUpTask extends BaseTask
             }
         }
         
-        if (starterPane == null)
-        {
-            starterPane = new StatsPane(title, this, "StartUpPanel", true, null, createSplashPanel()); //$NON-NLS-1$
-        }
-        
-        return starterPane;
+        return new StatsPane(title, this, "StartUpPanel", true, null, createSplashPanel()); //$NON-NLS-1$
     }
 
     //-------------------------------------------------------
