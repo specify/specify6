@@ -213,7 +213,7 @@ public class EMailHelper
                 msg.setRecipients(Message.RecipientType.TO, address);
             } else
             {
-                InternetAddress[] address = {new InternetAddress("rods@ku.edu")};
+                InternetAddress[] address = {new InternetAddress(fromEMailAddr)};
                 msg.setRecipients(Message.RecipientType.TO, address);
             }
             msg.setSubject(subject);
