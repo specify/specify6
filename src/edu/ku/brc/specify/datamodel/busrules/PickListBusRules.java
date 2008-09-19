@@ -368,6 +368,8 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
                 }
                 
                 typeSelected(formViewObj);
+                
+                typesCBX.setEnabled(!pickList.getIsSystem());
             }
         }
     }

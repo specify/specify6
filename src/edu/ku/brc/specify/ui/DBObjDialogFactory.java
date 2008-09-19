@@ -204,6 +204,9 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             if (view != null)
             {
                 viewSetName = view.getViewSetName();
+            } else
+            {
+                throw new RuntimeException("Couldn't find view ["+viewName+"]");
             }
             
             if (type == ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME)

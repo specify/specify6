@@ -825,7 +825,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
+        String           title            = initPrefs.getProperty("useragent.title",    "mr");
         String           firstName        = initPrefs.getProperty("useragent.firstname", "Test");
         String           lastName         = initPrefs.getProperty("useragent.lastname", "User");
         String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
@@ -853,7 +853,7 @@ public class BuildSampleDatabase
         persist(user);
 
         // Tester
-        Agent testerAgent = createAgent("Mr.", "Bob", "", "Botony", "", "botanyuser@ku.edu");
+        Agent testerAgent = createAgent("mr", "Bob", "", "Botony", "", "botanyuser@ku.edu");
         testerAgent.setDivision(division);
         SpecifyUser testerUser          = createSpecifyUser("botanyuser", "botanyuser@ku.edu", /*(short) 0,*/ "botanyuser", disciplineGroup, "Guest");
         SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
@@ -1025,16 +1025,16 @@ public class BuildSampleDatabase
         List<Agent>    agents      = new Vector<Agent>();
         
         lastName = userAgent.getLastName();
-        Agent steveBoyd = createAgent("Mr.", "Steve", "D", "Boyd", "jb", "jb@net.edu");
-        if (!lastName.equals("Cooper")) agents.add(createAgent("Mr.", "Peter", "D", "Cooper", "ds", "ds@whitehouse.gov"));
-        if (!lastName.equals("Peck")) agents.add(createAgent("Mr.", "David", "H", "Peck", "rb", "beach@net.edu"));
-        if (!lastName.equals("Appleton")) agents.add(createAgent("Mrs.", "Sally", "H", "Appleton", "jm", "jm@net.edu"));
-        if (!lastName.equals("Brown")) agents.add(createAgent("Mr.", "Taylor", "C", "Brown", "kcs", "taylor.brown@ku.edu"));
+        Agent steveBoyd = createAgent("mr", "Steve", "D", "Boyd", "jb", "jb@net.edu");
+        if (!lastName.equals("Cooper")) agents.add(createAgent("mr", "Peter", "D", "Cooper", "ds", "ds@whitehouse.gov"));
+        if (!lastName.equals("Peck")) agents.add(createAgent("mr", "David", "H", "Peck", "rb", "beach@net.edu"));
+        if (!lastName.equals("Appleton")) agents.add(createAgent("mrs", "Sally", "H", "Appleton", "jm", "jm@net.edu"));
+        if (!lastName.equals("Brown")) agents.add(createAgent("mr", "Taylor", "C", "Brown", "kcs", "taylor.brown@ku.edu"));
         if (!lastName.equals("Boyd")) agents.add(steveBoyd);
         if (!lastName.equals("Thomas")) agents.add(createAgent("Mr", "James", "X", "Thomas", "dxt", ""));
-        if (!lastName.equals("Peterson")) agents.add(createAgent("Mr.", "Pete", "A", "Peterson", "jb", ""));
-        if (!lastName.equals("Guttenburg")) agents.add(createAgent("Mr.", "Mitch", "A", "Guttenburg", "jb", ""));
-        if (!lastName.equals("Ford")) agents.add(createAgent("Mr.", "Daniel", "A", "Ford", "mas", "mas@ku.edu"));
+        if (!lastName.equals("Peterson")) agents.add(createAgent("mr", "Pete", "A", "Peterson", "jb", ""));
+        if (!lastName.equals("Guttenburg")) agents.add(createAgent("mr", "Mitch", "A", "Guttenburg", "jb", ""));
+        if (!lastName.equals("Ford")) agents.add(createAgent("mr", "Daniel", "A", "Ford", "mas", "mas@ku.edu"));
         agents.add(userAgent);
         
         Agent ku = new Agent();
@@ -1071,8 +1071,8 @@ public class BuildSampleDatabase
         if (true)
         {
             startTx();
-            Agent gm1 = createAgent("Mr.", "John", "A", "Lyon", "jal", "jal@group.edu");
-            Agent gm2 = createAgent("Mr.", "Dave", "D", "Jones", "ddj", "ddj@group.edu");
+            Agent gm1 = createAgent("mr", "John", "A", "Lyon", "jal", "jal@group.edu");
+            Agent gm2 = createAgent("mr", "Dave", "D", "Jones", "ddj", "ddj@group.edu");
             persist(gm1);
             persist(gm2);
             commitTx();
@@ -1628,7 +1628,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
+        String           title            = initPrefs.getProperty("useragent.title",    "mr");
         String           firstName        = initPrefs.getProperty("useragent.firstname", "Test");
         String           lastName         = initPrefs.getProperty("useragent.lastname", "User");
         String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
@@ -1799,16 +1799,16 @@ public class BuildSampleDatabase
         List<Agent>    agents      = new Vector<Agent>();
         
         lastName = userAgent.getLastName();
-        Agent steveBoyd = createAgent("Mr.", "Steve", "D", "Boyd", "jb", "jb@net.edu");
-        if (!lastName.equals("Cooper")) agents.add(createAgent("Mr.", "Peter", "D", "Cooper", "ds", "ds@whitehouse.gov"));
-        if (!lastName.equals("Peck")) agents.add(createAgent("Mr.", "David", "H", "Peck", "rb", "beach@net.edu"));
-        if (!lastName.equals("Appleton")) agents.add(createAgent("Mrs.", "Sally", "H", "Appleton", "jm", "jm@net.edu"));
-        if (!lastName.equals("Brown")) agents.add(createAgent("Mr.", "Taylor", "C", "Brown", "kcs", "taylor.brown@ku.edu"));
+        Agent steveBoyd = createAgent("mr", "Steve", "D", "Boyd", "jb", "jb@net.edu");
+        if (!lastName.equals("Cooper")) agents.add(createAgent("mr", "Peter", "D", "Cooper", "ds", "ds@whitehouse.gov"));
+        if (!lastName.equals("Peck")) agents.add(createAgent("mr", "David", "H", "Peck", "rb", "beach@net.edu"));
+        if (!lastName.equals("Appleton")) agents.add(createAgent("mrs", "Sally", "H", "Appleton", "jm", "jm@net.edu"));
+        if (!lastName.equals("Brown")) agents.add(createAgent("mr", "Taylor", "C", "Brown", "kcs", "taylor.brown@ku.edu"));
         if (!lastName.equals("Boyd")) agents.add(steveBoyd);
         if (!lastName.equals("Thomas")) agents.add(createAgent("Mr", "James", "X", "Thomas", "dxt", ""));
-        if (!lastName.equals("Peterson")) agents.add(createAgent("Mr.", "Pete", "A", "Peterson", "jb", ""));
-        if (!lastName.equals("Guttenburg")) agents.add(createAgent("Mr.", "Mitch", "A", "Guttenburg", "jb", ""));
-        if (!lastName.equals("Ford")) agents.add(createAgent("Mr.", "Daniel", "A", "Ford", "mas", "mas@ku.edu"));
+        if (!lastName.equals("Peterson")) agents.add(createAgent("mr", "Pete", "A", "Peterson", "jb", ""));
+        if (!lastName.equals("Guttenburg")) agents.add(createAgent("mr", "Mitch", "A", "Guttenburg", "jb", ""));
+        if (!lastName.equals("Ford")) agents.add(createAgent("mr", "Daniel", "A", "Ford", "mas", "mas@ku.edu"));
         agents.add(userAgent);
         
         Agent ku = new Agent();
@@ -1845,8 +1845,8 @@ public class BuildSampleDatabase
         if (true)
         {
             startTx();
-            Agent gm1 = createAgent("Mr.", "John", "A", "Lyon", "jal", "jal@group.edu");
-            Agent gm2 = createAgent("Mr.", "Dave", "D", "Jones", "ddj", "ddj@group.edu");
+            Agent gm1 = createAgent("mr", "John", "A", "Lyon", "jal", "jal@group.edu");
+            Agent gm2 = createAgent("mr", "Dave", "D", "Jones", "ddj", "ddj@group.edu");
             persist(gm1);
             persist(gm2);
             commitTx();
@@ -2074,7 +2074,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
+        String           title            = initPrefs.getProperty("useragent.title",    "mr");
         String           firstName        = initPrefs.getProperty("useragent.firstname", "Test");
         String           lastName         = initPrefs.getProperty("useragent.lastname", "User");
         String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
@@ -2097,7 +2097,7 @@ public class BuildSampleDatabase
         user.addUserToSpPrincipalGroup(disciplineGroup);
         
         // Tester
-        Agent testerAgent = createAgent("Mr.", "Joe", "", "InvertPaleo", "", "InvertPaleo@ku.edu");
+        Agent testerAgent = createAgent("mr", "Joe", "", "InvertPaleo", "", "InvertPaleo@ku.edu");
         testerAgent.setDivision(division);
         SpecifyUser testerUser          = createSpecifyUser("ivpuser", "InvertPaleo@ku.edu", /*(short) 0,*/ "ivpuser", disciplineGroup, "Guest");
         SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
@@ -2292,16 +2292,16 @@ public class BuildSampleDatabase
         List<Agent>    agents      = new Vector<Agent>();
         
         lastName = userAgent.getLastName();
-        Agent steveBoyd = createAgent("Mr.", "Steve", "D", "Boyd", "jb", "jb@net.edu");
-        if (!lastName.equals("Cooper")) agents.add(createAgent("Mr.", "Peter", "D", "Cooper", "ds", "ds@whitehouse.gov"));
-        if (!lastName.equals("Peck")) agents.add(createAgent("Mr.", "David", "H", "Peck", "rb", "beach@net.edu"));
-        if (!lastName.equals("Appleton")) agents.add(createAgent("Mrs.", "Sally", "H", "Appleton", "jm", "jm@net.edu"));
-        if (!lastName.equals("Brown")) agents.add(createAgent("Mr.", "Taylor", "C", "Brown", "kcs", "taylor.brown@ku.edu"));
+        Agent steveBoyd = createAgent("mr", "Steve", "D", "Boyd", "jb", "jb@net.edu");
+        if (!lastName.equals("Cooper")) agents.add(createAgent("mr", "Peter", "D", "Cooper", "ds", "ds@whitehouse.gov"));
+        if (!lastName.equals("Peck")) agents.add(createAgent("mr", "David", "H", "Peck", "rb", "beach@net.edu"));
+        if (!lastName.equals("Appleton")) agents.add(createAgent("mrs", "Sally", "H", "Appleton", "jm", "jm@net.edu"));
+        if (!lastName.equals("Brown")) agents.add(createAgent("mr", "Taylor", "C", "Brown", "kcs", "taylor.brown@ku.edu"));
         if (!lastName.equals("Boyd")) agents.add(steveBoyd);
         if (!lastName.equals("Thomas")) agents.add(createAgent("Mr", "James", "X", "Thomas", "dxt", ""));
-        if (!lastName.equals("Peterson")) agents.add(createAgent("Mr.", "Pete", "A", "Peterson", "jb", ""));
-        if (!lastName.equals("Guttenburg")) agents.add(createAgent("Mr.", "Mitch", "A", "Guttenburg", "jb", ""));
-        if (!lastName.equals("Ford")) agents.add(createAgent("Mr.", "Daniel", "A", "Ford", "mas", "mas@ku.edu"));
+        if (!lastName.equals("Peterson")) agents.add(createAgent("mr", "Pete", "A", "Peterson", "jb", ""));
+        if (!lastName.equals("Guttenburg")) agents.add(createAgent("mr", "Mitch", "A", "Guttenburg", "jb", ""));
+        if (!lastName.equals("Ford")) agents.add(createAgent("mr", "Daniel", "A", "Ford", "mas", "mas@ku.edu"));
         agents.add(userAgent);
         
         Agent ku = new Agent();
@@ -2338,8 +2338,8 @@ public class BuildSampleDatabase
         if (true)
         {
             startTx();
-            Agent gm1 = createAgent("Mr.", "John", "A", "Lyon", "jal", "jal@group.edu");
-            Agent gm2 = createAgent("Mr.", "Dave", "D", "Jones", "ddj", "ddj@group.edu");
+            Agent gm1 = createAgent("mr", "John", "A", "Lyon", "jal", "jal@group.edu");
+            Agent gm2 = createAgent("mr", "Dave", "D", "Jones", "ddj", "ddj@group.edu");
             persist(gm1);
             persist(gm2);
             commitTx();
@@ -3137,7 +3137,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
+        String           title            = initPrefs.getProperty("useragent.title",    "mr");
         String           firstName        = initPrefs.getProperty("useragent.firstname", "Test");
         String           lastName         = initPrefs.getProperty("useragent.lastname", "User");
         String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
@@ -3377,16 +3377,16 @@ public class BuildSampleDatabase
         List<Agent>    agents      = new Vector<Agent>();
         
         lastName = userAgent.getLastName();
-        Agent steveBoyd = createAgent("Mr.", "Steve", "D", "Boyd", "jb", "jb@net.edu");
-        if (!lastName.equals("Cooper")) agents.add(createAgent("Mr.", "Peter", "D", "Cooper", "ds", "ds@whitehouse.gov"));
-        if (!lastName.equals("Peck")) agents.add(createAgent("Mr.", "David", "H", "Peck", "rb", "beach@net.edu"));
-        if (!lastName.equals("Appleton")) agents.add(createAgent("Mrs.", "Sally", "H", "Appleton", "jm", "jm@net.edu"));
-        if (!lastName.equals("Brown")) agents.add(createAgent("Mr.", "Taylor", "C", "Brown", "kcs", "taylor.brown@ku.edu"));
+        Agent steveBoyd = createAgent("mr", "Steve", "D", "Boyd", "jb", "jb@net.edu");
+        if (!lastName.equals("Cooper")) agents.add(createAgent("mr", "Peter", "D", "Cooper", "ds", "ds@whitehouse.gov"));
+        if (!lastName.equals("Peck")) agents.add(createAgent("mr", "David", "H", "Peck", "rb", "beach@net.edu"));
+        if (!lastName.equals("Appleton")) agents.add(createAgent("mrs", "Sally", "H", "Appleton", "jm", "jm@net.edu"));
+        if (!lastName.equals("Brown")) agents.add(createAgent("mr", "Taylor", "C", "Brown", "kcs", "taylor.brown@ku.edu"));
         if (!lastName.equals("Boyd")) agents.add(steveBoyd);
         if (!lastName.equals("Thomas")) agents.add(createAgent("Mr", "James", "X", "Thomas", "dxt", ""));
-        if (!lastName.equals("Peterson")) agents.add(createAgent("Mr.", "Pete", "A", "Peterson", "jb", ""));
-        if (!lastName.equals("Guttenburg")) agents.add(createAgent("Mr.", "Mitch", "A", "Guttenburg", "jb", ""));
-        if (!lastName.equals("Ford")) agents.add(createAgent("Mr.", "Daniel", "A", "Ford", "mas", "mas@ku.edu"));
+        if (!lastName.equals("Peterson")) agents.add(createAgent("mr", "Pete", "A", "Peterson", "jb", ""));
+        if (!lastName.equals("Guttenburg")) agents.add(createAgent("mr", "Mitch", "A", "Guttenburg", "jb", ""));
+        if (!lastName.equals("Ford")) agents.add(createAgent("mr", "Daniel", "A", "Ford", "mas", "mas@ku.edu"));
         agents.add(userAgent);
         
         Agent ku = new Agent();
@@ -3424,8 +3424,8 @@ public class BuildSampleDatabase
         if (true)
         {
             startTx();
-            Agent gm1 = createAgent("Mr.", "John", "A", "Lyon", "jal", "jal@group.edu");
-            Agent gm2 = createAgent("Mr.", "Dave", "D", "Jones", "ddj", "ddj@group.edu");
+            Agent gm1 = createAgent("mr", "John", "A", "Lyon", "jal", "jal@group.edu");
+            Agent gm2 = createAgent("mr", "Dave", "D", "Jones", "ddj", "ddj@group.edu");
             persist(gm1);
             persist(gm2);
             commitTx();
@@ -4201,7 +4201,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
+        String           title            = initPrefs.getProperty("useragent.title",    "mr");
         String           firstName        = initPrefs.getProperty("useragent.firstname", "Test");
         String           lastName         = initPrefs.getProperty("useragent.lastname", "User");
         String           midInit          = initPrefs.getProperty("useragent.midinit", "A");
@@ -4632,16 +4632,16 @@ public class BuildSampleDatabase
         
         if (isVoucherCol)
         {
-            johnByrn = createAgent("Mr.", "John", "D", "Byrn", "jb", "jb@net.edu");
-            agents.add(createAgent("Mr.", "David", "D", "Smith", "ds", "ds@whitehouse.gov"));
-            agents.add(createAgent("Mr.", "Robert", "H", "Burk", "rb", "beach@net.edu"));
-            agents.add(createAgent("Mrs.", "Margaret", "H", "Johnson", "jm", "jm@net.edu"));
-            agents.add(createAgent("Mr.", "Kip", "C", "Spencer", "kcs", "kip@ku.edu"));
+            johnByrn = createAgent("mr", "John", "D", "Byrn", "jb", "jb@net.edu");
+            agents.add(createAgent("mr", "David", "D", "Smith", "ds", "ds@whitehouse.gov"));
+            agents.add(createAgent("mr", "Robert", "H", "Burk", "rb", "beach@net.edu"));
+            agents.add(createAgent("mrs", "Margaret", "H", "Johnson", "jm", "jm@net.edu"));
+            agents.add(createAgent("mr", "Kip", "C", "Spencer", "kcs", "kip@ku.edu"));
             agents.add(johnByrn);
-            agents.add(createAgent("Sir", "Dudley", "X", "Thompson", "dxt", ""));
-            agents.add(createAgent("Mr.", "Joe", "A", "Campbell", "jb", ""));
-            agents.add(createAgent("Mr.", "Joe", "A", "Tester", "jb", ""));
-            agents.add(createAgent("Mr.", "Mitch", "A", "Smyth", "mas", "mas@ku.edu"));
+            agents.add(createAgent("sir", "Dudley", "X", "Thompson", "dxt", ""));
+            agents.add(createAgent("mr", "Joe", "A", "Campbell", "jb", ""));
+            agents.add(createAgent("mr", "Joe", "A", "Tester", "jb", ""));
+            agents.add(createAgent("mr", "Mitch", "A", "Smyth", "mas", "mas@ku.edu"));
             agents.add(userAgent);
             
             ku.initialize();
@@ -4675,8 +4675,8 @@ public class BuildSampleDatabase
             if (true)
             {
                 startTx();
-                Agent gm1 = createAgent("Mr.", "John", "A", "Lyon", "jal", "jal@group.edu");
-                Agent gm2 = createAgent("Mr.", "Dave", "D", "Jones", "ddj", "ddj@group.edu");
+                Agent gm1 = createAgent("mr", "John", "A", "Lyon", "jal", "jal@group.edu");
+                Agent gm2 = createAgent("mr", "Dave", "D", "Jones", "ddj", "ddj@group.edu");
                 persist(gm1);
                 persist(gm2);
                 commitTx();

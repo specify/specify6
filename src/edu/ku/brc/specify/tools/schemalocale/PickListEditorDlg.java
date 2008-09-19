@@ -238,7 +238,10 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    arePnl.getDelBtn().setEnabled(list.getSelectedIndex() > -1);
+                    if (arePnl.getDelBtn() != null)
+                    {
+                        arePnl.getDelBtn().setEnabled(list.getSelectedIndex() > -1);
+                    }
                     arePnl.getEditBtn().setEnabled(list.getSelectedIndex() > -1);
                 }
             }

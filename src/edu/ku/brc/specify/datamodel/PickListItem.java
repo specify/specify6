@@ -76,6 +76,7 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
     public PickListItem()
     {
         // do nothing
+        initialize();
     }
 
     public PickListItem(final String title, final String value, final Timestamp timestampCreated)
@@ -107,6 +108,7 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
         title          = null;
         value          = null;
         pickList       = null;
+        ordinal        = 0;
     }
     /**
      * @return
@@ -201,7 +203,7 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
     @Column(name = "Ordinal")
     public Integer getOrdinal()
     {
-        return ordinal;
+        return ordinal == null ? 0 : ordinal;
     }
 
     /**
@@ -276,7 +278,7 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
     @Override
     public int getOrderIndex()
     {
-        return ordinal;
+        return getOrdinal();
     }
 
     //-------------------------------------
