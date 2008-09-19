@@ -563,20 +563,20 @@ public class MySQLBackupService extends BackupServiceFactory
                                                          JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         }
         
-        if (userChoice == JOptionPane.YES_OPTION || doSkipAsk)
+        if (isMonthly)
         {
-            if (isMonthly)
-            {
-                AppPreferences.getLocalPrefs().putLong(MONTHLY_PREF, dateNow.getTime());
-                if (diffDays > 7)
-                {
-                    AppPreferences.getLocalPrefs().putLong(WEEKLY_PREF, dateNow.getTime());
-                }
-            } else
+            AppPreferences.getLocalPrefs().putLong(MONTHLY_PREF, dateNow.getTime());
+            if (diffDays > 7)
             {
                 AppPreferences.getLocalPrefs().putLong(WEEKLY_PREF, dateNow.getTime());
             }
-            
+        } else
+        {
+            AppPreferences.getLocalPrefs().putLong(WEEKLY_PREF, dateNow.getTime());
+        }
+        
+        if (userChoice == JOptionPane.YES_OPTION || doSkipAsk)
+        {
             return doBackUp(isMonthly, doSendExit);
         }
         
