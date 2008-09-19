@@ -106,7 +106,6 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         TimeZone tz = TimeZone.getDefault();
         DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
         dateFormatter.setTimeZone(tz);
-        
         String dateStr = dateFormatter.format(Calendar.getInstance().getTime());
         Character ch = null;
         for (int i=0;i<10;i++)
@@ -132,9 +131,9 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                 addFormats(formats, '.');
                 skip = true;
             }
-            if (ch != ',')
+            if (ch != '-')
             {
-                addFormats(formats, ',');
+                addFormats(formats, '-');
                 skip = true;
             }
             
