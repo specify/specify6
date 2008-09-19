@@ -444,6 +444,13 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery)formViewObj.getControlByName("acceptedParent");
             if (acceptedCheckBox != null && acceptedParentWidget != null)
             {
+                if (acceptedCheckBox.isSelected())
+                {
+                    //disable if necessary
+                    boolean canSynonymize = nodeInForm.getDefinition().getSynonymizedLevel() <= nodeInForm.getRankId()
+                        && nodeInForm.getDescendantCount() == 0;
+                    acceptedCheckBox.setEnabled(canSynonymize);
+                }
                 acceptedParentWidget.setEnabled(!acceptedCheckBox.isSelected() && acceptedCheckBox.isEnabled());
                 if (acceptedCheckBox.isSelected())
                 {
