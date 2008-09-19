@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -499,28 +500,54 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     {
         dataObj = value;
         
-        // Retrieve lazy object while in the context of a session (just like a subform would do
-        if (dataObj != null)
+        // See if there is a current session
+        boolean hasSession = false;
+        Component comp = getParent();
+        while (comp != null && !(comp instanceof MultiView))
         {
-            if (dataObj instanceof FormDataObjIFace)
+            comp = comp.getParent();
+        }
+        if (comp instanceof MultiView)
+        {
+            MultiView   mv = (MultiView)comp;
+            FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
+            hasSession = fvo != null && fvo.getSession() != null;
+        }
+        
+        // Create session if there isn't a session
+        DataProviderSessionIFace sessionLocal = null;
+        try
+        {
+            sessionLocal = hasSession ? null : DataProviderFactory.getInstance().createSession();
+            if (sessionLocal != null && parentObj != null)
             {
-                ((FormDataObjIFace)dataObj).getIdentityTitle();
-                
-            } else if (dataObj instanceof Set<?>)
-            {
-                updateBtnText(); // note: that by calling this, 'size' gets called and that loads the Set (this must be done).
-                
-                /*
-                for (Object data : (Set<?>)dataObj)
-                {
-                    if (data instanceof FormDataObjIFace)
-                    {
-                        ((FormDataObjIFace)data).getIdentityTitle();
-                    }
-                }*/
+                sessionLocal.attach(parentObj);
             }
             
-            setEnabledInternal(isEnabled());
+            // Retrieve lazy object while in the context of a session (just like a subform would do
+            if (dataObj != null)
+            {
+                
+                if (dataObj instanceof FormDataObjIFace)
+                {
+                    ((FormDataObjIFace)dataObj).getIdentityTitle();
+                    
+                } else if (dataObj instanceof Set<?>)
+                {
+                    updateBtnText(); // note: that by calling this, 'size' gets called and that loads the Set (this must be done).
+                }
+                
+                setEnabledInternal(isEnabled());
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            if (sessionLocal != null)
+            {
+                sessionLocal.close();
+            }
         }
     }
 
