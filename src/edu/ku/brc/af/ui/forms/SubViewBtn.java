@@ -519,7 +519,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         try
         {
             sessionLocal = hasSession ? null : DataProviderFactory.getInstance().createSession();
-            if (sessionLocal != null && parentObj != null)
+            if (sessionLocal != null && parentObj != null && parentObj.getId() != null)
             {
                 sessionLocal.attach(parentObj);
             }
