@@ -1377,12 +1377,14 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 }
             } else
             {
+                UIRegistry.getStatusBar().setLocalizedText("Specify.NO_UPDATE_AVAIL");
                 return ;
             }
             
         } catch (Exception ex)
         {
             ex.printStackTrace();
+            UIRegistry.getStatusBar().setLocalizedErrorMessage("Specify.UPDATE_CHK_ERROR");
             return;
         }
         

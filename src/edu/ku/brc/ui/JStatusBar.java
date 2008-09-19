@@ -172,7 +172,16 @@ public class JStatusBar extends JPanel
         statusLabel.setIcon(null);
         statusLabel.repaint();
     }
-
+    
+    /**
+     * @param key the localization key for the message
+     * @param args optional arguments to the localized string
+     */
+    public void setLocalizedText(final String key, final Object... args)
+    { 
+        setText(UIRegistry.getFormattedResStr(key, args));
+    }
+    
     /**
      * Sets text into the statusbar's section.
      * 
@@ -208,13 +217,23 @@ public class JStatusBar extends JPanel
      * 
      * @param message the the text of the error message
      */
-    public void setErrorMessage(String message)
+    public void setErrorMessage(final String message)
     {
         setText(message);
         statusLabel.setForeground(ERROR_COLOR);
         statusLabel.setIcon(errorIcon);
         this.lastException = null;
     }
+    
+    /**
+     * @param key the localization key for the error message
+     * @param args optional arguments to the localized string
+     */
+    public void setLocalizedErrorMessage(final String key, final Object... args)
+    { 
+        setErrorMessage(UIRegistry.getFormattedResStr(key, args));
+    }
+
 
     /**
      * Sets the given message into the statusbar.  The message is displayed
