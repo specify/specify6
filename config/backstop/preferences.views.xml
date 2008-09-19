@@ -186,7 +186,7 @@
                 </row>
                 <row>
                     <cell type="label" name="scrdateformatLabel" labelfor="scrdateformat" label="SCRN_DATE_FORMAT"/>
-                    <cell type="field" uitype="text" cols="10" id="scrdateformat" name="ui.formatting.scrdateformat" isrequired="true" colspan="3"/>
+                    <cell type="field" uitype="combobox" id="scrdateformat" name="ui.formatting.scrdateformat" isrequired="true" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="valtextcolor" label="ERROR_CLR"/>

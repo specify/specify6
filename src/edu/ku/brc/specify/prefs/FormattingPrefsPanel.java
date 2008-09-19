@@ -11,13 +11,18 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
+import java.util.TimeZone;
 import java.util.Vector;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -66,6 +71,8 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     protected ValComboBox  disciplineCBX;
     protected ValComboBox  appIconCBX;
     protected String       newAppIconName = null;
+    protected ValComboBox  dateFieldCBX;
+    
     protected Hashtable<String, UIHelper.CONTROLSIZE> controlSizesHash = new Hashtable<String, UIHelper.CONTROLSIZE>();
     
     /**
@@ -74,6 +81,82 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     public FormattingPrefsPanel()
     {
         createUI();
+    }
+    
+    /**
+     * @param formats
+     * @param ch
+     */
+    protected void addFormats(final Vector<String> formats, final Character ch)
+    {
+        formats.add("MM"+ch+"dd"+ch+"yyyy");
+        formats.add("dd"+ch+"MM"+ch+"yyyy");
+        formats.add("yyyy"+ch+"MM"+ch+"dd");
+        formats.add("yyyy"+ch+"dd"+ch+"MM");
+    }
+    
+    /**
+     * 
+     */
+    protected void fillDateFormat()
+    {
+        
+        String currentFormat = AppPreferences.getRemote().get("ui.formatting.scrdateformat", null);
+        
+        TimeZone tz = TimeZone.getDefault();
+        DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
+        dateFormatter.setTimeZone(tz);
+        
+        String dateStr = dateFormatter.format(Calendar.getInstance().getTime());
+        Character ch = null;
+        for (int i=0;i<10;i++)
+        {
+            if (!StringUtils.isNumeric(dateStr.substring(i,i+1)))
+            {
+                ch = dateStr.charAt(i);
+                break;
+            }
+        }
+        
+        if (ch != null)
+        {
+            boolean skip = false;
+            Vector<String> formats = new Vector<String>();
+            if (ch == '/')
+            {
+                addFormats(formats, '/');
+                skip = true;
+            }
+            if (ch != '.')
+            {
+                addFormats(formats, '.');
+                skip = true;
+            }
+            if (ch != ',')
+            {
+                addFormats(formats, ',');
+                skip = true;
+            }
+            
+            if (!skip)
+            {
+                addFormats(formats, ch);
+            }
+            
+            int selectedInx = 0;
+            int inx        = 0;
+            DefaultComboBoxModel model = (DefaultComboBoxModel)dateFieldCBX.getModel();
+            for (String fmt : formats)
+            {
+                model.addElement(fmt);
+                if (currentFormat != null && currentFormat.equals(fmt))
+                {
+                    selectedInx = inx;
+                }
+                inx++;
+            }
+            dateFieldCBX.getComboBox().setSelectedIndex(selectedInx);
+        }
     }
 
     /**
@@ -85,13 +168,13 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         
         UIValidator.setIgnoreAllValidation(this, true);
         
-        JLabel      fontNamesLabel = (JLabel)form.getLabelFor("fontNames"); //$NON-NLS-1$
+        JLabel      fontNamesLabel = form.getLabelFor("fontNames"); //$NON-NLS-1$
         ValComboBox fontNamesVCB   = (ValComboBox)form.getCompById("fontNames"); //$NON-NLS-1$
         
-        JLabel      fontSizesLabel = (JLabel)form.getLabelFor("fontSizes"); //$NON-NLS-1$
+        JLabel      fontSizesLabel = form.getLabelFor("fontSizes"); //$NON-NLS-1$
         ValComboBox fontSizesVCB   = (ValComboBox)form.getCompById("fontSizes"); //$NON-NLS-1$
         
-        JLabel      controlSizesLabel = (JLabel)form.getLabelFor("controlSizes"); //$NON-NLS-1$
+        JLabel      controlSizesLabel = form.getLabelFor("controlSizes"); //$NON-NLS-1$
         ValComboBox controlSizesVCB   = (ValComboBox)form.getCompById("controlSizes"); //$NON-NLS-1$
         
         fontNames    = fontNamesVCB.getComboBox();
@@ -248,6 +331,12 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         });
         
         comboBox.setSelectedIndex(inx);
+        
+        //-----------------------------------
+        // Date Field
+        //-----------------------------------
+        dateFieldCBX = (ValComboBox)form.getCompById("scrdateformat"); //$NON-NLS-1$
+        fillDateFormat();
         
         //-----------------------------------
         // Do App Icon
@@ -455,4 +544,6 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
             }
         }
     }
+
+    
 }
