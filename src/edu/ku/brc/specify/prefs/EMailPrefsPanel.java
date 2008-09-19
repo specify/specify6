@@ -17,9 +17,10 @@ package edu.ku.brc.specify.prefs;
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -39,8 +40,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
-import edu.ku.brc.af.ui.forms.FormViewObj;
-import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
@@ -48,6 +47,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -70,7 +70,7 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
     protected ImageIcon    exclaimIcon   = IconManager.getIcon("Error", IconManager.IconSize.Std24);
     protected ImageIcon    exclaimYWIcon = IconManager.getIcon("Warning", IconManager.IconSize.Std24);
 
-    protected JDialog      checkerDialog = null;
+    protected CustomDialog checkerDialog = null;
     protected JLabel[]     checkerLabels;
     protected JLabel[]     checkerIcons;
     protected JButton      closeCheckerBtn;
@@ -357,43 +357,21 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
     protected void startEMailSettingsTest()
     {
 
-        String rowDef = createDuplicateJGoodiesDef("p","4dlu", 6);
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p, 2dlu, p", rowDef));
-        CellConstraints cc         = new CellConstraints();
+        String          rowDef  = createDuplicateJGoodiesDef("p","4dlu", 4);
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g", rowDef));
+        CellConstraints cc      = new CellConstraints();
 
         int row = 1;
-        int col = 1;
-
-        builder.addSeparator(getResourceString("checkingemailsettings"), cc.xyw(col,row,3));
+        builder.add(UIHelper.createI18NLabel("checkingemailsettings"), cc.xy(1,row));
         row += 2;
 
-        //String[] labels = {getResourceString("chksendingmail"), getResourceString("chkmailbox"),
-        //        getResourceString("chkgetmail"), getResourceString("chkforsentmsg")};
-        String[] labels = {getResourceString("chksendingmail")};
-        checkerIcons  = new JLabel[labels.length];
-        checkerLabels = new JLabel[labels.length];
-        for (int i=0;i<labels.length;i++)
-        {
-            builder.add(checkerIcons[i] = new JLabel(exclaimYWIcon), cc.xy(col,row));
-            builder.add(checkerLabels[i] = UIHelper.createLabel(labels[i]), cc.xy(col+2,row));
-            row += 2;
-        }
-
-        col = 1;
-        builder.add(progressBar = new JProgressBar(0,100), cc.xyw(col,row,3));
+        builder.add(progressBar = new JProgressBar(0,100), cc.xy(1,row));
         progressBar.setIndeterminate(true);
         row += 2;
 
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
-        JPanel panel = new JPanel(new BorderLayout());
         checkPanel = builder.getPanel();
-        panel.add(builder.getPanel(), BorderLayout.CENTER);
-
-        builder = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
-        closeCheckerBtn = UIHelper.createButton(getResourceString("CLOSE"));
-        builder.add(closeCheckerBtn, cc.xy(1,1));
-        panel.add(builder.getPanel(), BorderLayout.SOUTH);
 
         closeCheckerBtn.addActionListener(new ActionListener()
                 {
@@ -404,20 +382,26 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
             }
         });
 
-        panel.doLayout();
         checkPanel.doLayout();
         builder.getPanel().doLayout();
 
-        checkerDialog = new JDialog();
+        if (UIRegistry.getMostRecentWindow() instanceof Dialog)
+        {
+            checkerDialog = new CustomDialog((Dialog)UIRegistry.getMostRecentWindow(), "", true, CustomDialog.OK_BTN, checkPanel);
+        } else
+        {
+            checkerDialog = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "", true, CustomDialog.OK_BTN, checkPanel);
+        }
         checkerDialog.setModal(true);
-
-        checkerDialog.setContentPane(panel);
-        checkerDialog.pack();
-        checkerDialog.doLayout();
-        //checkerDialog.setPreferredSize(checkerDialog.getPreferredSize());
-        checkerDialog.setSize(checkerDialog.getPreferredSize());
+        checkerDialog.setOkLabel(getResourceString("CLOSE"));
         
-        checkerDialog.setSize(new Dimension(400, 200));
+        //checkerDialog.pack();
+        //checkerDialog.doLayout();
+        //checkerDialog.setSize(checkerDialog.getPreferredSize());
+        checkerDialog.createUI();
+        checkerDialog.pack();
+        Dimension size = checkerDialog.getSize();
+        checkerDialog.setSize(new Dimension(Math.max(400, size.width), size.height));
 
         emailCheckerRunnable = new EMailCheckerRunnable(checkerDialog);
         emailCheckerRunnable.start();
@@ -470,7 +454,7 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
                 
             } else
             {
-                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), "Message Sent\nCheck your mailbox to see if it worked.");
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(), "Message Sent\nCheck your mailbox to see if it worked.");
             }
             parentDlg.setVisible(false);
             parentDlg.dispose();

@@ -4894,6 +4894,14 @@ public class FormViewObj implements Viewable,
         this.session = session;
     }
 
+    /**
+     * @return the session
+     */
+    public DataProviderSessionIFace getSession()
+    {
+        return session;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setCellName(java.lang.String)
      */

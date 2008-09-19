@@ -1515,7 +1515,7 @@ public class InteractionsTask extends BaseTask
                         
                         if (StringUtils.isNotEmpty(password))
                         {
-                            final boolean status = EMailHelper.sendMsg(emailPrefs.get("servername"), 
+                            final boolean status = EMailHelper.sendMsg(emailPrefs.get("smtp"), 
                                                                        emailPrefs.get("username"), 
                                                                        password, 
                                                                        emailPrefs.get("email"), 

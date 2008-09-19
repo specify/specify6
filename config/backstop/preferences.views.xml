@@ -132,7 +132,7 @@
                     <cell type="field" id="port" name="settings.email.port" uitype="text" cols="6" isrequired="false"/>
 
                     <cell type="label" name="securityLabel" labelfor="security" label="EMAILSECURITY"/>
-                    <cell type="field" id="security" name="settings.email.security" uitype="combobox" initialize="data=None,TTL,SSL"/>
+                    <cell type="field" id="security" name="settings.email.security" uitype="combobox" initialize="data=None,TLS,SSL"/>
                 </row>
                 <row>
                     <cell type="separator" label="USER_INFO" colspan="7"/>
@@ -147,7 +147,7 @@
                     <cell type="field" id="port" name="settings.email.port" uitype="text" cols="6" isrequired="false"/>
 
                     <cell type="label" name="securityLabel" labelfor="security" label="EMAILSECURITY"/>
-                    <cell type="field" id="security" name="settings.email.security" uitype="combobox" initialize="data=None,TTL,SSL"/>
+                    <cell type="field" id="security" name="settings.email.security" uitype="combobox" initialize="data=None,TLS,SSL"/>
                 </row>
                 <row>
                     <cell type="label" name="usernameLabel" labelfor="username" label="USERNAME"/>

@@ -16,7 +16,6 @@ package edu.ku.brc.helpers;
 
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
-import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createPasswordField;
 import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -53,7 +52,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -147,7 +145,7 @@ public class EMailHelper
         
         if (StringUtils.isNotEmpty(security))
         {
-            if (security.equals("TTL"))
+            if (security.equals("TLS"))
             {
                 props.put( "mail.smtp.auth", "true"); //$NON-NLS-1$ //$NON-NLS-2$
                 props.put("mail.smtp.starttls.enable", "true"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -200,6 +198,7 @@ public class EMailHelper
             MimeMessage msg = new MimeMessage(session);
 
             msg.setFrom(new InternetAddress(fromEMailAddr));
+            
             if (toEMailAddr.indexOf(",") > -1) //$NON-NLS-1$
             {
                 StringTokenizer st = new StringTokenizer(toEMailAddr, ","); //$NON-NLS-1$
@@ -213,7 +212,7 @@ public class EMailHelper
                 msg.setRecipients(Message.RecipientType.TO, address);
             } else
             {
-                InternetAddress[] address = {new InternetAddress(fromEMailAddr)};
+                InternetAddress[] address = {new InternetAddress(toEMailAddr)};
                 msg.setRecipients(Message.RecipientType.TO, address);
             }
             msg.setSubject(subject);
@@ -427,10 +426,11 @@ public class EMailHelper
     {
         AppPreferences remotePrefs    = AppPreferences.getRemote();
         boolean        allOK          = true;
-        String[]       emailPrefNames = { "servername", "username", "password", "email", "port", "security"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        String[]       emailPrefNames = { "smtp", "username", "password", "email", "port", "security"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         
         for (String pName : emailPrefNames)
         {
+            System.out.println("["+pName+"]");
             String key   = "settings.email."+pName; //$NON-NLS-1$
             String value = remotePrefs.get(key, ""); //$NON-NLS-1$
             if (StringUtils.isNotEmpty(value) || pName.equals("password")) //$NON-NLS-1$
