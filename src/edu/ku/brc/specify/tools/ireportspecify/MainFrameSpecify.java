@@ -401,9 +401,9 @@ public class MainFrameSpecify extends MainFrame
     {
         //Reloading the context to prevent weird Hibernate issues that occur when resources are deleted in a
         //concurrently running instance of Specify. 
-        AppContextMgr.getInstance().setContext(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
+        ((SpecifyAppContextMgr )AppContextMgr.getInstance()).setContext(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
-                false);
+                false, false);
 
         if (UIHelper.isSecurityOn())
         {

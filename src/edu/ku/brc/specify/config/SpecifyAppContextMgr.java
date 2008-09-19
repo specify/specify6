@@ -993,13 +993,21 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return strBuf.toString();
     }
 
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppContextMgr#setContext(java.lang.String, java.lang.String, boolean)
      */
     public CONTEXT_STATUS setContext(final String  databaseName,
                                      final String  userName,
                                      final boolean startingOver)
+    {
+        return setContext(databaseName, userName, startingOver, startingOver);
+    }
+
+    public CONTEXT_STATUS setContext(final String  databaseName,
+                                     final String  userName,
+                                     final boolean startingOver,
+                                     final boolean promptForCollection)
     {
         if (debug)  log.debug("setting context - databaseName: [" + databaseName + "] userName: [" + userName + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
@@ -1089,7 +1097,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             int prevCollectionId = AppContextMgr.getInstance().getClassObject(Collection.class) != null ? AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId() : -1;
             
             // Ask the User to choose which Collection they will be working with
-            Collection collection = setupCurrentCollection(user, startingOver);
+            Collection collection = setupCurrentCollection(user, promptForCollection);
             if (collection == null)
             {
                 // Return false but don't mess with anything that has been set up so far
