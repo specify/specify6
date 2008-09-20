@@ -2038,7 +2038,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         //moved here because context needs to be set before loading prefs, we need to know the SpecifyUser
         AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
         
-        // AppContextMgr.getInstance().
         SpecifyAppPrefs.initialPrefs();
         
         if (status == AppContextMgr.CONTEXT_STATUS.OK)
@@ -2221,11 +2220,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         // This is used to fill who editted the object
         FormHelper.setCurrentUserEditStr(userNameArg);
         
+        AppPreferences.setConnectedToDB(true);
+        
         restartApp(window, databaseName, userName, false, firstTime);
         
         statusField.setSectionText(0, userName);
         
-        AppPreferences.setConnectedToDB(true);
     }
     
     /**

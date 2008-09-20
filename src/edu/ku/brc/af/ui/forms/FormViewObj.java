@@ -814,7 +814,7 @@ public class FormViewObj implements Viewable,
         {
             FVOFieldInfo fieldInfo = getFieldInfoForId(id);
             String       fieldName = fieldInfo.getFormCell().getName();
-            log.debug(fieldName);
+            //log.debug(fieldName);
 
             // Start by assuming it is OK to be added
             boolean isOK = true;
@@ -3796,16 +3796,6 @@ public class FormViewObj implements Viewable,
         {
             isList   = false;
             isVector = false;
-        }
-        
-        Object objToCheck = data;
-        if (isList)
-        {
-            List<?> tmpList = (List<?>)data;
-            if (tmpList.size() > 0)
-            {
-                objToCheck = tmpList.get(0);
-            }
         }
         
         for (FVOFieldInfo fieldInfo : controlsById.values())

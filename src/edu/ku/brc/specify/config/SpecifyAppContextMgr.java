@@ -1227,6 +1227,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 spAppResourceHash.put(BACKSTOPDIR, appResDir);
             }
             
+            SpecifyAppPrefs.initialPrefs();
+            
             if (prevDisciplineId != -1)
             {
                 CommandDispatcher.dispatch(new CommandAction("Discipline", "Changed")); //$NON-NLS-1$ //$NON-NLS-2$

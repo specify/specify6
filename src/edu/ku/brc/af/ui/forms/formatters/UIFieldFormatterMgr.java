@@ -35,6 +35,8 @@ import org.dom4j.Element;
 import edu.ku.brc.af.core.db.AutoNumberIFace;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
+import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.UIRegistry;
@@ -46,7 +48,7 @@ import edu.ku.brc.ui.UIRegistry;
  * @author rods, ricardo
  * 
  */
-public class UIFieldFormatterMgr
+public class UIFieldFormatterMgr implements AppPrefsChangeListener
 {
     public static final String                                 factoryName    = "edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr";
 
@@ -65,13 +67,14 @@ public class UIFieldFormatterMgr
     protected UIFieldFormatterMgr()
     {
         load();
+        AppPrefsCache.addChangeListener("ui.formatting.scrdateformat", this);
     }
 
     /**
      * Copy constructor.
      * @param source
      */
-    public UIFieldFormatterMgr(UIFieldFormatterMgr source)
+    public UIFieldFormatterMgr(final UIFieldFormatterMgr source)
     {
         setHash(source.getHash());
     }
@@ -553,8 +556,8 @@ public class UIFieldFormatterMgr
                         }
 
                         UIFieldFormatter formatter = new UIFieldFormatter(name,
-                                isSystem, fieldName, type, partialDateType,
-                                dataClass, isDefault, isInc, fields);
+                                                            isSystem, fieldName, type, partialDateType,
+                                                            dataClass, isDefault, isInc, fields);
                         if (type == UIFieldFormatter.FormatterType.date && fields.size() == 0)
                         {
                             addFieldsForDate(formatter);
@@ -704,14 +707,16 @@ public class UIFieldFormatterMgr
      */
     protected void addFieldsForDate(final UIFieldFormatter formatter)
     {
+        formatter.getFields().clear();
+        
         DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
         UIFieldFormatter.PartialDateEnum partialType = formatter.getPartialDateType();
 
         StringBuilder newFormatStr = new StringBuilder();
-        String formatStr = scrDateFormat.getSimpleDateFormat().toPattern();
-        boolean wasConsumed = false;
-        char currChar = ' ';
+        String        formatStr    = scrDateFormat.getSimpleDateFormat().toPattern();
+        boolean       wasConsumed  = false;
+        char          currChar     = ' ';
 
         for (int i = 0; i < formatStr.length(); i++)
         {
@@ -802,8 +807,7 @@ public class UIFieldFormatterMgr
             formatter.setDateWrapper(scrDateFormat);
         } else
         {
-            formatter.setDateWrapper(new DateWrapper(new SimpleDateFormat(
-                    newFormatStr.toString())));
+            formatter.setDateWrapper(new DateWrapper(new SimpleDateFormat(newFormatStr.toString())));
         }
     }
 
@@ -942,6 +946,20 @@ public class UIFieldFormatterMgr
     {
         this.hash = hash;
     }
+    
+    /**
+     * 
+     */
+    public void reloadDateFormatter()
+    {
+        for (UIFieldFormatterIFace fmt : hash.values())
+        {
+            if (fmt.getDataClass() == Date.class && fmt instanceof UIFieldFormatter)
+            {
+                addFieldsForDate((UIFieldFormatter)fmt);
+            }
+        }
+    }
 
     /**
      * @return the localized char used to represent autonumbered.
@@ -953,6 +971,22 @@ public class UIFieldFormatterMgr
         return charPattern.length() > 0 ? charPattern.charAt(0) : '#';
     }
 
+    //-------------------------------------------------
+    // AppPrefsChangeListener
+    //-------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.AppPrefsChangeListener#preferenceChange(edu.ku.brc.af.prefs.AppPrefsChangeEvent)
+     */
+    public void preferenceChange(AppPrefsChangeEvent evt)
+    {
+        if (evt.getKey().equals("ui.formatting.scrdateformat")) //$NON-NLS-1$
+        {
+            reloadDateFormatter();
+        }
+    }
+
+    
     /*
      * public static void test() { Properties props = new Properties();
      * props.put("class", "edu.ku.brc.specify.datamodel.Accession");

@@ -32,7 +32,7 @@ import edu.ku.brc.ui.ColorWrapper;
  */
 public class SpecifyAppPrefs
 {
-
+    private static boolean isInited = false;
     
     /**
      * Singleton Constructor.
@@ -46,11 +46,15 @@ public class SpecifyAppPrefs
      */
     public static void initialPrefs()
     {
-        AppPrefsCache.reset();
-        
-        AppPreferences.getRemote().load(); // Loads prefs from the database
-        
-        loadColorAndFormatPrefs();
+        if (!isInited)
+        {
+            AppPrefsCache.reset();
+            
+            AppPreferences.getRemote().load(); // Loads prefs from the database
+            
+            loadColorAndFormatPrefs();
+            isInited = true;
+        }
     }
     
     public static void loadColorAndFormatPrefs()
