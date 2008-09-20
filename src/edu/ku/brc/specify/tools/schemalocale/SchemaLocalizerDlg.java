@@ -832,6 +832,11 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     @SuppressWarnings("unchecked")
     public List<PickList> getPickLists(final String disciplineName)
     {
+        if (StringUtils.isNotEmpty(disciplineName))
+        {
+            return null;
+        }
+        
         if (pickLists == null)
         {
             DataProviderSessionIFace session = null;
