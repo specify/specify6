@@ -103,16 +103,6 @@
   <picklist name="ExpressSearch" issystem="true" type="0" readonly="false" sizelimit="50">
     <items/>
   </picklist>
-  <picklist name="AgentTitle" issystem="true" type="0" readonly="true" sizelimit="50">
-    <items>
-      <picklistitem title="Asst. Director" value="Asst. Director"/>
-      <picklistitem title="Curator" value="curator"/>
-      <picklistitem title="Dr." value="dr"/>
-      <picklistitem title="Mr." value="mr"/>
-      <picklistitem title="Mrs." value="mrs"/>
-      <picklistitem title="Ms." value="ms"/>
-    </items>
-  </picklist>
   <picklist name="AgentTitles" issystem="true" type="0" readonly="true" sizelimit="6">
     <items>
       <picklistitem title="Asst. Director" value="asstdir"/>

@@ -25,8 +25,10 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
+import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
@@ -267,6 +269,12 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
 
         MultiView pickListItemsMV = (MultiView)fvo.getControlByName("pickListItems");
         
+        FormDataObjIFace dataObj = (FormDataObjIFace)fvo.getDataObj();
+        boolean        isEditing = dataObj != null && dataObj.getId() != null;
+        PickListIFace  pickList  = (PickListIFace)fvo.getDataObj();
+        
+        boolean fullEditIsOK = !isEditing || !pickList.isSystem();
+        
         int typeIndex = typesCBX.getComboBox().getSelectedIndex();
         log.debug("Type: "+typeIndex);
         switch (typeIndex) 
@@ -286,7 +294,7 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
                 break;
                 
             case 1:
-                tablesCBX.setEnabled(true);
+                tablesCBX.setEnabled(fullEditIsOK);
                 fieldsCBX.setEnabled(false);
                 formatterCBX.setEnabled(true);
                 pickListItemsMV.setVisible(false);

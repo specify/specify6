@@ -306,6 +306,16 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
         this.type = type;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.PickListIFace#isSystem()
+     */
+    @Transient
+    @Override
+    public boolean isSystem()
+    {
+        return isSystem == null ? false : isSystem;
+    }
+
     /**
      * @return the filterFieldName
      */

@@ -178,5 +178,10 @@ public interface PickListIFace
      * Reorders list if it is orderable.
      */
     public abstract void reorder();
-
+    
+    /**
+     * @return whether the PickList is a System PickList
+     */
+    public abstract boolean isSystem();
+    
 }

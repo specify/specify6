@@ -1317,21 +1317,25 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 } else if (relType != null && relType == DBRelationshipInfo.RelationshipType.ManyToOne)
                 {
                     plCbxModel.removeAllElements();
+                    plCbxModel.addElement(pickListNone);
                     int inx = 0;
                     for (PickList pl : pickLists)
                     {
                         if (pl.getType() == PickListIFace.PL_WHOLE_TABLE)
                         {
-                            plCbxModel.addElement(pl);
-                            String plName = fld.getPickListName();
-                            //System.out.println(plName+"  "+pl.getName());
-                            if (StringUtils.isNotEmpty(plName) && plName.equals(pl.getName()))
+                            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoByTableName(pl.getTableName());
+                            if (relInfo.getDataClass() == tblInfo.getClassObj())
                             {
-                                selectedIndex = inx;
+                                plCbxModel.addElement(pl);
+                                String plName = fld.getPickListName();
+                                //System.out.println(plName+"  "+pl.getName());
+                                if (StringUtils.isNotEmpty(plName) && plName.equals(pl.getName()))
+                                {
+                                    selectedIndex = inx;
+                                }
+                                inx++;
                             }
-                            inx++;
                         }
-                        
                     }
                 }
                 pickListCBX.setEnabled(isString || relType != null);
