@@ -255,8 +255,21 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      */
     protected String getStringFromFields(final ValFormattedTextFieldSingle... txtFields)
     {
+        return getStringFromFields(false, txtFields);
+    }
+    
+    /**
+     * @param doDisplay
+     * @param txtFields
+     * @return
+     */
+    protected String getStringFromFields(final boolean doDisplay, final ValFormattedTextFieldSingle... txtFields)
+    {
+        String degrees = "\u00b0";
+        
         sb.setLength(0);
         
+        int cnt = 0;
         for (ValFormattedTextFieldSingle tf : txtFields)
         {
             String str = StringUtils.deleteWhitespace(tf.getText());
@@ -264,8 +277,29 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             {
                 str = "0";
             }
-            if (sb.length() > 0) sb.append(' ');
+            
+            if (cnt > 0) sb.append(' ');
+            
+            double val = Double.parseDouble(str);
+            if (doDisplay && cnt > 0 && val < 10.0)
+            {
+                sb.append('0');
+            }
             sb.append(str);
+            if (doDisplay)
+            {
+                if (cnt == 0)
+                {
+                    sb.append(degrees);
+                } else if (txtFields.length == 2)
+                {
+                    sb.append("'");
+                } else if (txtFields.length == 3)
+                {
+                    sb.append(cnt == 1 ? "'" : "\"");
+                }
+            }
+            cnt++;
         }
         return sb.toString();
     }
@@ -334,6 +368,22 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
                 longitude = LatLonConverter.convertDDDDToDDDD(str, EAST_WEST[longitudeDir.getSelectedIndex()]);
             }
         }
+    }
+    
+    /**
+     * @return
+     */
+    public String getLatitudeStr()
+    {
+        return latitudeDD.getText() + " " + NORTH_SOUTH[latitudeDir.getSelectedIndex()];
+    }
+    
+    /**
+     * @return
+     */
+    public String getLongitudeStr()
+    {
+        return longitudeDD.getText() + " " + EAST_WEST[longitudeDir.getSelectedIndex()];
     }
     
     /**

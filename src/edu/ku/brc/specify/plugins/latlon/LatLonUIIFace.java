@@ -70,6 +70,16 @@ public interface LatLonUIIFace
     public abstract String getLongitudeDir();
     
     /**
+     * @return the Latitude as a string
+     */
+    public abstract String getLatitudeStr();
+    
+    /**
+     * @return the Longitude as a string
+     */
+    public abstract String getLongitudeStr();
+
+    /**
      * @return
      */
     public abstract boolean hasChanged();

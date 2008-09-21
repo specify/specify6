@@ -137,6 +137,22 @@ public class DDMMSSPanel extends DDMMMMPanel
         }
     }
     
+    /**
+     * @return
+     */
+    public String getLatitudeStr()
+    {
+        return getStringFromFields(true, latitudeDD, latitudeMM, latitudeSS) + " " + NORTH_SOUTH[latitudeDir.getSelectedIndex()];
+    }
+    
+    /**
+     * @return
+     */
+    public String getLongitudeStr()
+    {
+        return getStringFromFields(true, longitudeDD, longitudeMM, longitudeSS) + " " + EAST_WEST[longitudeDir.getSelectedIndex()];
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.latlon.DDMMMMPanel#validateState(boolean)
      */

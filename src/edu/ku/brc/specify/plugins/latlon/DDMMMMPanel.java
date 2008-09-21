@@ -154,6 +154,22 @@ public class DDMMMMPanel extends DDDDPanel
         }
     }
     
+    /**
+     * @return
+     */
+    public String getLatitudeStr()
+    {
+        return getStringFromFields(true, latitudeDD, latitudeMM) + " " + NORTH_SOUTH[latitudeDir.getSelectedIndex()];
+    }
+    
+    /**
+     * @return
+     */
+    public String getLongitudeStr()
+    {
+        return getStringFromFields(true, longitudeDD, longitudeMM) + " " + EAST_WEST[longitudeDir.getSelectedIndex()];
+    }
+
     /* (non-Javadoc)
      * @see DDDDPanel#getDataFromUI()
      */

@@ -492,6 +492,26 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
             // Panel Two
             locality.setLatitude2(panels[curInx+1].getLatitude());
             locality.setLongitude2(panels[curInx+1].getLongitude());
+            
+            if (locality.getLat1text() == null && locality.getLat1() != null)
+            {
+                locality.setLat1text(panels[curInx].getLatitudeStr());
+            }
+            
+            if (locality.getLong1text() == null && locality.getLong1() != null)
+            {
+                locality.setLong1text(panels[curInx].getLongitudeStr());   
+            }
+
+            if (locality.getLat2text() == null && locality.getLat2() != null)
+            {
+                locality.setLat2text(panels[curInx+1].getLatitudeStr());
+            }
+            
+            if (locality.getLong2text() == null && locality.getLong2() != null)
+            {
+                locality.setLong2text(panels[curInx+1].getLongitudeStr());   
+            }
         }
         return locality;
     }
