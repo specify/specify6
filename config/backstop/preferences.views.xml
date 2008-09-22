@@ -562,7 +562,7 @@
                     <cell type="field" id="2" name="mysql.location" cols="30" uitype="browse" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="MYS_RESTR_PATH"/>
+                    <cell type="label" labelfor="3" label="MYS_BCK_PATH"/>
                     <cell type="field" id="3" name="backup.location" cols="30" uitype="browse" colspan="3"/>
                 </row>
             </rows>

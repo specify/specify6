@@ -150,7 +150,7 @@ public class MySQLBackupService extends BackupServiceFactory
      */
     private boolean doBackUp(final boolean isMonthly, final boolean doSendAppExit)
     {
-        AppPreferences remotePrefs = AppPreferences.getRemote();
+        AppPreferences remotePrefs = AppPreferences.getLocalPrefs();
         
         final String mysqldumpLoc = remotePrefs.get(MYSQLDUMP_LOC, getDefaultMySQLDumpLoc());
         final String backupLoc    = remotePrefs.get(MYSQLBCK_LOC,  getDefaultBackupLoc());
@@ -307,7 +307,7 @@ public class MySQLBackupService extends BackupServiceFactory
     @Override
     public void doRestore()
     {
-        AppPreferences remotePrefs  = AppPreferences.getRemote();
+        AppPreferences remotePrefs  = AppPreferences.getLocalPrefs();
         final String   mysqlLoc     = remotePrefs.get(MYSQL_LOC,     getDefaultMySQLLoc());
         final String   backupLoc    = remotePrefs.get(MYSQLBCK_LOC,  getDefaultBackupLoc());
         

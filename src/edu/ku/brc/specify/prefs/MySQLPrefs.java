@@ -50,11 +50,11 @@ public class MySQLPrefs extends GenericPrefsPanel
     {
         createForm("Preferences", "MySQLBckRstrOptions");
         
-        AppPreferences remotePrefs = AppPreferences.getRemote();
+        AppPreferences prefs = AppPreferences.getLocalPrefs();
         
-        String mysqldumpLoc = remotePrefs.get(MYSQLDUMP_LOC, null);
-        String mysqlLoc     = remotePrefs.get(MYSQL_LOC,     null);
-        String backupLoc    = remotePrefs.get(MYSQLBCK_LOC,  null);
+        String mysqldumpLoc = prefs.get(MYSQLDUMP_LOC, null);
+        String mysqlLoc     = prefs.get(MYSQL_LOC,     null);
+        String backupLoc    = prefs.get(MYSQLBCK_LOC,  null);
         
         if (StringUtils.isEmpty(mysqldumpLoc))
         {
@@ -87,6 +87,35 @@ public class MySQLPrefs extends GenericPrefsPanel
         if (comp instanceof ValBrowseBtnPanel)
         {
             ((ValBrowseBtnPanel)comp).setValue(backupLoc, backupLoc);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.GenericPrefsPanel#savePrefs()
+     */
+    @Override
+    public void savePrefs()
+    {
+        super.savePrefs();
+        
+        AppPreferences prefs = AppPreferences.getLocalPrefs();
+        
+        Component comp = form.getCompById("1");
+        if (comp instanceof ValBrowseBtnPanel)
+        {
+            prefs.put(MYSQLDUMP_LOC, (String)((ValBrowseBtnPanel)comp).getValue());
+        }
+        
+        comp = form.getCompById("2");
+        if (comp instanceof ValBrowseBtnPanel)
+        {
+            prefs.put(MYSQL_LOC, (String)((ValBrowseBtnPanel)comp).getValue());
+        }
+        
+        comp = form.getCompById("3");
+        if (comp instanceof ValBrowseBtnPanel)
+        {
+            prefs.put(MYSQLBCK_LOC, (String)((ValBrowseBtnPanel)comp).getValue());
         }
     }
 
