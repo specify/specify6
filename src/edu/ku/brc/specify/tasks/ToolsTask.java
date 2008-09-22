@@ -38,6 +38,7 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
@@ -55,6 +56,7 @@ import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -211,7 +213,7 @@ public class ToolsTask extends BaseTask
             if (isVisible)
             {
                 extendedNavBoxes.clear();
-                NavBox navBox = new NavBox(getResourceString("EXPORTER_TOOLS"));
+                NavBox navBox = new NavBox(getResourceString("Tools"));
                 
                 // for each registered exporter, create a TaskCommandDef for it
                 for (RecordSetToolsIFace tool : loadedToolsList)
@@ -483,18 +485,23 @@ public class ToolsTask extends BaseTask
     {
         menuItems = new Vector<MenuItemDesc>();
         
-        JMenuItem menu = new JMenuItem(getResourceString("PluginsMenu"));
-        menuItems.add(new MenuItemDesc(menu, "TOOLS_MENU"));
-        
-        menu.addActionListener(new ActionListener()
+        if (permissions == null || permissions.canModify())
         {
-            @SuppressWarnings("synthetic-access")
-            public void actionPerformed(ActionEvent ae)
+            String    menuTitle = "ToolsTask.PLUGIN_MENU"; //$NON-NLS-1$
+            String    mneu      = "ToolsTask.PLUGIN_MNEU"; //$NON-NLS-1$
+            String    desc      = "ToolsTask.PLUGIN_DESC"; //$NON-NLS-1$
+            JMenuItem mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
+            mi.addActionListener(new ActionListener()
             {
-               ToolsTask.this.requestContext();
-            }
-        });
-
+                public void actionPerformed(ActionEvent ae)
+                {
+                    ToolsTask.this.requestContext();
+                }
+            });
+            MenuItemDesc rsMI = new MenuItemDesc(mi, "FileMenu");
+            menuItems.add(rsMI);
+        }
+        
         return menuItems;
 
     }
@@ -527,6 +534,8 @@ public class ToolsTask extends BaseTask
             {
                 RecordSetTask          rsTask       = (RecordSetTask)TaskMgr.getTask(RecordSetTask.RECORD_SET);
                 List<RecordSetIFace>   colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
+                
+                // XXX Probably need to also get RSs with Localisties and or CollectingEvents
 
                 data = getRecordSetOfColObj(null, colObjRSList.size());
             }

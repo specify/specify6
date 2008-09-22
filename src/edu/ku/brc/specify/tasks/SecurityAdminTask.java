@@ -99,7 +99,7 @@ public class SecurityAdminTask extends BaseTask
             	dlg.setVisible(true);
             }
         });
-        String menuDesc = "AdvMenu/SystemMenu";
+        String menuDesc = "Specify.SYSTEM_MENU/Specify.COLSETUP_MENU";
         
         MenuItemDesc showSummaryMenuDesc = new MenuItemDesc(mi, menuDesc);
         showSummaryMenuDesc.setPosition(MenuItemDesc.Position.After, getResourceString("SecurityAdminTask.SECURITY_TOOLS_MENU"));
@@ -120,7 +120,6 @@ public class SecurityAdminTask extends BaseTask
                     SecurityAdminTask.this.requestContext();
                 }
             });
-            menuDesc = "AdvMenu/SystemMenu";
             MenuItemDesc mid = new MenuItemDesc(mi, menuDesc);
             mid.setPosition(MenuItemDesc.Position.After, getResourceString("SystemSetupTask.COLL_CONFIG"));
             mid.setSepPosition(MenuItemDesc.Position.After);

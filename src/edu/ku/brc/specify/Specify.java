@@ -906,15 +906,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         //----------------------------------
         if (!isWorkbenchOnly)
         {
-            menu = UIHelper.createLocalizedMenu(mb, "Specify.TOOLS_MENU", "Specify.TOOLS_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
-            
-            menu = UIHelper.createLocalizedMenu(mb, "Specify.ADV_MENU", "Specify.ADV_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+            menu = UIHelper.createLocalizedMenu(mb, "Specify.SYSTEM_MENU", "Specify.SYSTEM_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
             
             //--------------------------------------------------------------------
             //-- System Menu
             //--------------------------------------------------------------------
 
-            menu.add(UIHelper.createLocalizedMenu(mb, "Specify.SYSTEM_MENU", "Specify.SYSTEM.MNEU")); //$NON-NLS-1$ //$NON-NLS-2$
+            menu.add(UIHelper.createLocalizedMenu(mb, "Specify.COLSETUP_MENU", "Specify.COLSETUP_MNEU")); //$NON-NLS-1$ //$NON-NLS-2$
             
             title = "Specify.SCHEMA_CONFIG"; //$NON-NLS-1$
             String mnu = "Specify.SCHEMA_CONFIG_MNU";  //$NON-NLS-1$

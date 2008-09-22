@@ -610,7 +610,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 SystemSetupTask.this.requestContext();
             }
         }); 
-        String menuDesc = "AdvMenu/SystemMenu";
+        String menuDesc = "Specify.SYSTEM_MENU/Specify.COLSETUP_MENU";
         menuItems.add(new MenuItemDesc(mi, menuDesc, MenuItemDesc.Position.Top));
         return menuItems;
 

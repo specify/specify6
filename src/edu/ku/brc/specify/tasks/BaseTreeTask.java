@@ -334,7 +334,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         Vector<MenuItemDesc> menus = new Vector<MenuItemDesc>();
         subMenu = new JMenu(menuItemText);
         
-        MenuItemDesc treeSubMenuMI = new MenuItemDesc(subMenu, "AdvMenu/SystemMenu");
+        MenuItemDesc treeSubMenuMI = new MenuItemDesc(subMenu, "Specify.SYSTEM_MENU/Specify.COLSETUP_MENU");
         treeSubMenuMI.setPosition(MenuItemDesc.Position.Bottom);
         menus.add(treeSubMenuMI);
         
