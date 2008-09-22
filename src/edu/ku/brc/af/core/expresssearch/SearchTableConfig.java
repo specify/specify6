@@ -275,7 +275,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         }
         
         sqlStr.append(" FROM ");
-        sqlStr.append(ti.getClassObj().getSimpleName());
+        sqlStr.append(isHQL ? ti.getClassObj().getSimpleName() : ti.getName());
         sqlStr.append(" as ");
         sqlStr.append(tableInfo.getAbbrev());
 
