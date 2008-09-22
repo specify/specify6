@@ -115,6 +115,7 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -6467,8 +6468,10 @@ public class BuildSampleDatabase
         embeddedSpecifyAppRootUser = SecurityMgr.getInstance().getEmbeddedUserName();
         embeddedSpecifyAppRootPwd  = SecurityMgr.getInstance().getEmbeddedPwd();
         
+        AppPrefsCache.setUseLocalOnly(true);
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
+        localPrefs.load();
 
         backstopPrefs = getInitializePrefs(null);
         
