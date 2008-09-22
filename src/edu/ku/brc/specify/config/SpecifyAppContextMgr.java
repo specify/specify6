@@ -1051,7 +1051,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     if (user.getIsLoggedIn())
                     {
                         Object[] options = { getResourceString("SpecifyAppContextMgr.OVERRIDE"),  //$NON-NLS-1$
-                                             getResourceString("SpecifyAppContextMgr.CONTINUE")  //$NON-NLS-1$
+                                             getResourceString("SpecifyAppContextMgr.EXIT")  //$NON-NLS-1$
                               };
                         int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
                                                                      getResourceString("SpecifyAppContextMgr.LOGGED_IN"),
