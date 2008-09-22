@@ -20,8 +20,9 @@
             <altviews>
                 <altview name="PickListItem View" viewdef="PickListItem" label="View" mode="view" validated="false"/>
                 <altview name="PickListItem Edit" viewdef="PickListItem" label="Edit" mode="edit" validated="true" default="true"/>
-                <altview name="PickListItem Tbl View" viewdef="PickListItem Table" label="Grid" mode="view" validated="false"/>
+                <!-- <altview name="PickListItem Tbl View" viewdef="PickListItem Table" label="Grid" mode="view" validated="false"/>
                 <altview name="PickListItem Tbl Edit" viewdef="PickListItem Table" label="Grid" mode="edit" validated="true" default="true"/>
+                 -->
             </altviews>
         </view>
         
