@@ -30,6 +30,7 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 
@@ -63,8 +64,10 @@ import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.RecordSetTask;
+import edu.ku.brc.specify.ui.db.AskForNumbersDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandActionWrapper;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -93,6 +96,9 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     //private static final Logger log = Logger.getLogger(BaseTask.class);
     
     private static final String  securityPrefix    = "Task."; //$NON-NLS-1$
+    
+    protected enum ASK_TYPE { Cancel, EnterCats, ChooseRS}
+
     
     public static final String APP_CMD_TYPE      = "App"; //$NON-NLS-1$
     public static final String APP_START_ACT     = "StartUp"; //$NON-NLS-1$
@@ -306,6 +312,17 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         return nbi;
     }
     
+    /**
+     * @param navBox
+     * @param labelText
+     * @param iconNameArg
+     * @param cmdAction
+     * @param delCmdAction
+     * @param flavorClass
+     * @param dragFlavor
+     * @param dropFlavor
+     * @return
+     */
     protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
                                             final String        labelText,
                                             final String        iconNameArg,
@@ -314,13 +331,23 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                             final Class<?>      flavorClass,
                                             final String        dragFlavor,
                                             final String        dropFlavor)
-{
+    {
         RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, labelText, null, iconNameArg, cmdAction, delCmdAction, true, -1, false);
         roc.addDragDataFlavor(new DataFlavor(Workbench.class, dragFlavor));
         roc.addDropDataFlavor(new DataFlavor(flavorClass, dropFlavor));
         return (NavBoxItemIFace)roc;
     }
     
+    /**
+     * @param navBox
+     * @param labelText
+     * @param iconNameArg
+     * @param cmdAction
+     * @param delCmdAction
+     * @param makeDraggable
+     * @param addSorted
+     * @return
+     */
     protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
                                             final String        labelText,
                                             final String        iconNameArg,
@@ -332,6 +359,17 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         return makeDnDNavBtn(navBox, labelText, iconNameArg, null, cmdAction, delCmdAction, makeDraggable, -1, addSorted);
     }
  
+    /**
+     * @param navBox
+     * @param labelText
+     * @param iconNameArg
+     * @param toolTip
+     * @param cmdAction
+     * @param delCmdAction
+     * @param makeDraggable
+     * @param addSorted
+     * @return
+     */
     protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
                                             final String        labelText,
                                             final String        iconNameArg,
@@ -344,6 +382,18 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         return makeDnDNavBtn(navBox, labelText, iconNameArg, toolTip, cmdAction, delCmdAction, makeDraggable, -1, addSorted);
     }
  
+    /**
+     * @param navBox
+     * @param labelText
+     * @param iconNameArg
+     * @param toolTip
+     * @param cmdAction
+     * @param delCmdAction
+     * @param makeDraggable
+     * @param position
+     * @param addSorted
+     * @return
+     */
     protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
                                             final String        labelText,
                                             final String        iconNameArg,
@@ -1299,10 +1349,75 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
          return nbi;
      }
     
-    
-    //--------------------------------------------------------------
-    // Inner Classes
-    //--------------------------------------------------------------
+     /**
+      * Asks where the source of the COs should come from.
+      * @return the source enum
+      */
+     protected ASK_TYPE askSourceOfColObj()
+     {
+         Object[] options = { 
+                 getResourceString("NEW_BT_USE_RS"), 
+                 getResourceString("NEW_BT_ENTER_CATNUM") 
+               };
+         int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                      getResourceString("NEW_BT_CHOOSE_RSOPT"), 
+                                                      getResourceString("NEW_BT_CHOOSE_RSOPT_TITLE"), 
+                                                      JOptionPane.YES_NO_CANCEL_OPTION,
+                                                      JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+         if (userChoice == JOptionPane.NO_OPTION)
+         {
+             return ASK_TYPE.EnterCats;
+             
+         } else if (userChoice == JOptionPane.YES_OPTION)
+         {
+             return ASK_TYPE.ChooseRS;
+         }
+         return ASK_TYPE.Cancel;
+     }
+
+     
+     /**
+      * @return a RecordSet of newly entered Catalog Numbers
+      */
+     protected RecordSetIFace askForCatNumbersRecordSet()
+     {
+         AskForNumbersDlg dlg = new AskForNumbersDlg("BT_COLOBJ_TITLE", "BT_LABEL", CollectionObject.class, "catalogNumber");
+         dlg.setVisible(true);
+         if (!dlg.isCancelled())
+         {
+             return dlg.getRecordSet();
+         }
+         return null;
+     }
+     
+     protected RecordSetIFace getRecordSetOfColObj(final RecordSetIFace recordSetArg,
+                                                   final int numColObjRS)
+     {
+         RecordSetIFace recordSetFromDB = recordSetArg;
+         if (recordSetFromDB == null)
+         {
+             if (numColObjRS > 0)
+             {
+                 ASK_TYPE rv = askSourceOfColObj();
+                 if (rv == ASK_TYPE.ChooseRS)
+                 {
+                     recordSetFromDB = recordSetArg == null ? RecordSetTask.askForRecordSet(CollectionObject.getClassTableId()) : recordSetArg;
+                 
+                 } else if (rv == ASK_TYPE.EnterCats)
+                 {
+                     recordSetFromDB = askForCatNumbersRecordSet();
+                 }
+             } else
+             {
+                 recordSetFromDB = askForCatNumbersRecordSet();
+             }
+         }
+         return recordSetFromDB;
+     }
+     
+     //--------------------------------------------------------------
+     // Inner Classes
+     //--------------------------------------------------------------
 
     /**
      * XXX This is now generic and should be moved out of here

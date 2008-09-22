@@ -40,7 +40,6 @@ import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -89,7 +88,6 @@ import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
@@ -97,19 +95,16 @@ import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.ExchangeIn;
 import edu.ku.brc.specify.datamodel.ExchangeOut;
-import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
-import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.ui.LoanReturnDlg;
 import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
 import edu.ku.brc.specify.ui.LoanReturnDlg.LoanReturnInfo;
-import edu.ku.brc.specify.ui.db.AskForNumbersDlg;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -148,8 +143,6 @@ public class InteractionsTask extends BaseTask
     
     public static final  String   IS_USING_INTERACTIONS_PREFNAME = "Interactions.Using.Interactions.";
 
-    enum ASK_TYPE { Cancel, EnterCats, ChooseRS}
-    
     protected static final String InfoRequestName      = "InfoRequest";
     protected static final String NEW_LOAN             = "NEW_LOAN";
     protected static final String NEW_ACCESSION        = "NEW_ACCESSION";
@@ -207,6 +200,7 @@ public class InteractionsTask extends BaseTask
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
         
+        /*
         if (false)
         {
             // temporary
@@ -265,9 +259,9 @@ public class InteractionsTask extends BaseTask
                 ex.printStackTrace();
             }
         } else
-        {
+        {*/
             readEntries();
-        }
+        //}
     }
     
     /**
@@ -849,20 +843,6 @@ public class InteractionsTask extends BaseTask
     }
     
     /**
-     * @return
-     */
-    protected RecordSetIFace askForCatNumbersRecordSet()
-    {
-        AskForNumbersDlg dlg = new AskForNumbersDlg("AFN_COLOBJ_TITLE", "AFN_LABEL", CollectionObject.class, "catalogNumber");
-        dlg.setVisible(true);
-        if (!dlg.isCancelled())
-        {
-            return dlg.getRecordSet();
-        }
-        return null;
-    }
-    
-    /**
      * Asks where the source of the Loan Preps should come from.
      * @return the source enum
      */
@@ -901,32 +881,6 @@ public class InteractionsTask extends BaseTask
         return ASK_TYPE.Cancel;
     }
     
-    /**
-     * Asks where the source of the COs should come from.
-     * @return the source enum
-     */
-    protected ASK_TYPE askSourceOfInfoReqColObj()
-    {
-        Object[] options = { 
-                getResourceString("NEW_IR_USE_RS"), 
-                getResourceString("NEW_IR_ENTER_CATNUM") 
-              };
-        int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                     getResourceString("NEW_IR_CHOOSE_RSOPT"), 
-                                                     getResourceString("NEW_IR_CHOOSE_RSOPT_TITLE"), 
-                                                     JOptionPane.YES_NO_CANCEL_OPTION,
-                                                     JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        if (userChoice == JOptionPane.NO_OPTION)
-        {
-            return ASK_TYPE.EnterCats;
-            
-        } else if (userChoice == JOptionPane.YES_OPTION)
-        {
-            return ASK_TYPE.ChooseRS;
-        }
-        return ASK_TYPE.Cancel;
-    }
-
     
     /**
      * @return returns a list of RecordSets of InfoRequests
@@ -1288,25 +1242,7 @@ public class InteractionsTask extends BaseTask
         RecordSetTask          rsTask       = (RecordSetTask)TaskMgr.getTask(RecordSetTask.RECORD_SET);
         List<RecordSetIFace>   colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
 
-        RecordSetIFace recordSetFromDB = recordSetArg;
-        if (recordSetFromDB == null)
-        {
-            if (colObjRSList.size() > 0)
-            {
-                ASK_TYPE rv = askSourceOfInfoReqColObj();
-                if (rv == ASK_TYPE.ChooseRS)
-                {
-                    recordSetFromDB = recordSetArg == null ? RecordSetTask.askForRecordSet(CollectionObject.getClassTableId()) : recordSetArg;
-                
-                } else if (rv == ASK_TYPE.EnterCats)
-                {
-                    recordSetFromDB = askForCatNumbersRecordSet();
-                }
-            } else
-            {
-                recordSetFromDB = askForCatNumbersRecordSet();
-            }
-        }
+        RecordSetIFace recordSetFromDB = getRecordSetOfColObj(recordSetArg, colObjRSList.size());
         
         if (recordSetFromDB != null)
         {

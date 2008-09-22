@@ -46,6 +46,7 @@ import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.TableModel2Excel;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.rstools.RecordSetToolsIFace;
 import edu.ku.brc.ui.CommandAction;
@@ -507,7 +508,6 @@ public class ToolsTask extends BaseTask
         return this.getClass();
     }
 
-
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -521,7 +521,17 @@ public class ToolsTask extends BaseTask
 
         if (tool != null)
         {
-            processToolDataFromRecordSet(cmdAction.getData(), cmdAction.getProperties(), tool);
+            Object data = cmdAction.getData();
+            
+            if (data instanceof CommandAction && ((CommandAction)data) == cmdAction) // means it was clicked on
+            {
+                RecordSetTask          rsTask       = (RecordSetTask)TaskMgr.getTask(RecordSetTask.RECORD_SET);
+                List<RecordSetIFace>   colObjRSList = rsTask.getRecordSets(CollectionObject.getClassTableId());
+
+                data = getRecordSetOfColObj(null, colObjRSList.size());
+            }
+            
+            processToolDataFromRecordSet(data, cmdAction.getProperties(), tool);
         }
     }
     
