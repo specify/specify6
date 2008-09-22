@@ -265,7 +265,7 @@ public class QueryForIdResultsIndexedSQL implements QueryForIdResultsIFace
         
         ESTermParser.parse(searchTermArg, false);
         String sql = searchTableConfig.getSQL(ESTermParser.getFields(), false, ids == null && recIds != null ? recIds : ids, false);
-        System.err.println(sql);
+        //System.err.println(sql);
         return sql;
     }
 
