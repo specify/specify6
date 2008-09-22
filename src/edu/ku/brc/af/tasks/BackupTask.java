@@ -70,7 +70,7 @@ public class BackupTask extends BaseTask
             }
         }
         
-        String menuDesc = "AdvMenu/SystemMenu";
+        String menuDesc = "AdvMenu";
         
         menuItems = new Vector<MenuItemDesc>();
         
