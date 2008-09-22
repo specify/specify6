@@ -33,7 +33,7 @@
                 </sql>
                 <captions>
                     <caption tableid="4" col="taxon.TaxonID" visible="false"/>
-                    <caption tableid="4" col="TaxonName"  key="TaxonName"/>
+                    <caption tableid="4" col="FullName"/>
                     <caption tableid="4" col="CommonName"/>
                     <caption tableid="4" key="Determiner" dataobjformatter="Agent">
                         <col name="agent.LastName"  field="lastName"/>
