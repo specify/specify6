@@ -130,7 +130,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     /**
      * Constructor of a results "table" which is really a panel
      * @param esrPane the parent
-     * @param tableInfo the info describing the results
+     * @param erTableInfo the info describing the results
      * @param installServices indicates whether services should be installed
      * @param isExpandedAtStartUp enough said
      */

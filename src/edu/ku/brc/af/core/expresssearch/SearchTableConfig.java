@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -88,9 +90,6 @@ public class SearchTableConfig implements DisplayOrderingIFace,
             {
                 wsfc.setStc(this);
             }
-        } else
-        {
-            wsFields = new Vector<DisplayFieldConfig>();
         }
     }
 
@@ -98,7 +97,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
      * @param tableName
      * @param displayOrder
      */
-    public SearchTableConfig(String tableName, Integer displayOrder)
+    public SearchTableConfig(final String tableName, final Integer displayOrder)
     {
         this.tableName    = tableName;
         this.displayOrder = displayOrder;
@@ -253,7 +252,12 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         
         DBTableInfo ti = getTableInfo(); // this sets the data member tableInfo
         
-        String primaryKey = ti.getIdFieldName(); 
+        String primaryKey = ti.getIdFieldName();
+        if (!isHQL)
+        {
+            primaryKey = primaryKey.substring(0, 1).toUpperCase() + primaryKey.substring(1, primaryKey.length());
+            primaryKey = StringUtils.replace(primaryKey, "Id", "ID");
+        }
         
         sqlStr.append(tableInfo.getAbbrev());
         sqlStr.append('.');

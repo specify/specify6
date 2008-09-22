@@ -272,11 +272,11 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             {
                 return join + alias +".discipline as dsp" + (aliasArg == null ? "" : alias);
             }
-            if (aliasArg != null)
-            {
-                throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
-            }
-            return join + "discipline as dsp ON "+tableInfo.getName()+".DisciplineID = dsp.DisciplineID";
+            //if (aliasArg != null)
+            //{
+                //throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
+            //}
+            return join + "discipline as dsp ON "+aliasArg+".DisciplineID = dsp.DisciplineID";
         }
         return super.getJoinClause(tableInfo, isHQL, alias, useLeftJoin);
 

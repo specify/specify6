@@ -65,6 +65,7 @@ import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigDlg;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
+import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIndexedSQL;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
 import edu.ku.brc.af.core.expresssearch.SearchConfig;
 import edu.ku.brc.af.core.expresssearch.SearchConfigService;
@@ -1172,7 +1173,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     }
                 }
                 
-                QueryForIdResultsHQL results = new QueryForIdResultsHQL(searchTableConfig, new Color(30, 144, 255), searchTerm, list);
+                QueryForIdResultsIFace results = new QueryForIdResultsIndexedSQL(searchTableConfig, new Color(30, 144, 255), searchTerm, list);
                 results.setMultipleSelection(true);
                 displayResults(esrPane, results, resultsForJoinsHash);
                 
