@@ -215,6 +215,7 @@
 		<copy file="${source.root}/edu/ku/brc/specify/images/specify32.png" todir="${installer.dir}" />
 		<!-- <copy file="${source.root}/edu/ku/brc/specify/images/SpecifyBigSplash.png" todir="${installer.dir}" /> -->
 		<copy file="packaging/specify.icns" todir="${installer.dir}" />
+		<copy file="packaging/changelog.html" todir="${installer.dir}" />
 		<copy file="./packaging/SpecifyBigSplash.png" todir="${installer.dir}" />
 		<copy file="./demo_files/Stratigraphy.csv" todir="${installer.dir}/config" />
 		<copy file="./demo_files/topbrc4.jpg" todir="${installer.dir}/demo_files" />

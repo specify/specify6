@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="4.1.3" transformSequenceNumber="2">
-  <directoryPresets config="../InstallerFiles" />
-  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MacMediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Alpha_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.1.20" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+<install4j version="4.1.4" transformSequenceNumber="2">
+  <directoryPresets config="./Includes" />
+  <application name="Specify" distributionSourceDir="" applicationId="5397-6897-2502-8965" mediaDir="../MacMediaUpdate" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}_Alpha_update" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" keepModificationTimes="false" shortName="Specify" publisher="Biodiversity Research Center, University of Kansas" publisherWeb="http://www.specifysoftware.org" version="6.1.34" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="true" macSignature="????" installerName="" javaMinVersion="1.6" javaMaxVersion="1.6" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -26,7 +26,7 @@
           <entry location="hibernate_libs" fileType="regular" />
           <entry location="iReportLibs" fileType="regular" />
           <entry location="libs" fileType="regular" />
-          <entry location="mac" fileType="regular" />
+          <entry location="non-mac-application-adapter.jar" fileType="regular" />
         </exclude>
       </dirEntry>
     </entries>
@@ -378,67 +378,20 @@ Placeholder for the user-end license agreement.
             </actions>
             <formComponents />
           </screen>
-          <screen name="" id="582" beanClass="com.install4j.runtime.beans.screens.CustomizableInfoScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="false">
+          <screen name="" id="650" beanClass="com.install4j.runtime.beans.screens.CustomizableInfoScreen" enabled="true" commentSet="false" comment="" rollbackBarrier="false" backButton="2" finishScreen="false">
             <serializedBean>
               <java class="java.beans.XMLDecoder">
                 <object class="com.install4j.runtime.beans.screens.CustomizableInfoScreen">
-                  <void property="displayedText">
-                    <string>&lt;html&gt;
-&lt;head&gt;
-&lt;title&gt;Changelog&lt;/title&gt;
-
-&lt;style&gt;
-body {
-    font-size: 10px;
-    font-family: monospace;
-    }
-
-ul {
-    list-style-type: circle;
-    }
-
-&lt;/style&gt;
-
-&lt;/head&gt;
-&lt;body&gt;
-&lt;h2&gt;Specify ${compiler:sys.version} Alpha includes the following changes:&lt;/h2&gt;
-&lt;ul&gt;
-    &lt;li&gt;Improved Trees&lt;/li&gt;
-    &lt;li&gt;Faster Queries&lt;/li&gt;
-    &lt;li&gt;Our Patented "Species Sniffer"&lt;/li&gt;
-    &lt;li&gt;Test&lt;/li&gt;
-    &lt;li&gt;Test&lt;/li&gt;
-    &lt;li&gt;Test&lt;/li&gt;
-    &lt;li&gt;Test&lt;/li&gt;
-    &lt;li&gt;Test&lt;/li&gt;
-    &lt;li&gt;Test&lt;/li&gt;
-    &lt;li&gt;Test&lt;/li&gt;
-    &lt;li&gt;Test&lt;/li&gt;
-    &lt;li&gt;Test&lt;/li&gt;
-    &lt;li&gt;Test&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;&lt;u&gt;Improved Trees:&lt;/u&gt;:  Users may now control whether each particular level of a tree is available for synonomization&lt;/p&gt;
-
-&lt;p&gt;&lt;u&gt;Faster Queries:&lt;/u&gt;:  The speed at which records are retrieved has been improved.&lt;/p&gt;
-
-&lt;p&gt;&lt;u&gt;Specify Species Sniffer&lt;/u&gt;:  Our highly anticipated 
-"Species Sniffer" is a nanotechnologically-inspired robot that
-prowls the field with you on your hunt for new species.  Invested
-with new on-site DNA scanning powers....&lt;/p&gt;
-
-&lt;p&gt;For additional information, please visit our website at &lt;a href="http://www.specifysoftware.org"&gt;www.specifysoftware.org&lt;/a&gt;&lt;/p&gt;
-
-&lt;/body&gt;
-&lt;/html&gt;</string>
+                  <void property="displayedTextFile">
+                    <object class="com.install4j.api.beans.ExternalFile">
+                      <string>${installer:sys.contentDir}/changelog.html</string>
+                    </object>
                   </void>
                   <void property="subTitle">
-                    <string>Change Log</string>
+                    <string>Specify ${compiler:sys.version} Alpha includes the following changes:</string>
                   </void>
                   <void property="title">
-                    <string>New Release</string>
+                    <string>New This Release</string>
                   </void>
                 </object>
               </java>
@@ -680,7 +633,7 @@ with new on-site DNA scanning powers....&lt;/p&gt;
                         <boolean>false</boolean>
                       </void>
                       <void property="updateDescriptorUrl">
-                        <string>http://localhost/updates.xml</string>
+                        <string>http://specify6-test.nhm.ku.edu/specifydownloads/specify6/alpha/updates.xml</string>
                       </void>
                       <void property="variable">
                         <string>updateDescriptor</string>
