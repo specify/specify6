@@ -24,6 +24,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.af.ui.db.PickListIFace;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
@@ -451,7 +452,8 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
             session = DataProviderFactory.getInstance().createSession();
             reasonList.clear();
             
-            PickList dbPL = session.getData(PickList.class, "name", pickList.getName(), DataProviderSessionIFace.CompareType.Equals);
+            String sql = QueryAdjusterForDomain.getInstance().adjustSQL("FROM PickList WHERE name = '"+ pickList.getName()+"' AND collectionId = COLLID");
+            PickList dbPL = (PickList)session.getData(sql);
             //log.debug("["+dbPL.getId().intValue()+"]["+pickList.getId().intValue()+"]");
             if (dbPL != null && dbPL.getId().intValue() != pickList.getId().intValue())
             {
