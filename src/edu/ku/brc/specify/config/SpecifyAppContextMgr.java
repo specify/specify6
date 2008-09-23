@@ -2490,5 +2490,19 @@ public class SpecifyAppContextMgr extends AppContextMgr
   
         return names;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#clear()
+     */
+    @Override
+    public void clear()
+    {
+        super.clear();
+        
+        spAppResourceList.clear();
+        spAppResourceHash.clear();
+        viewSetHash.clear();
+        viewSetMgrHash.clear();
+    }
     
 }

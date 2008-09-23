@@ -312,4 +312,12 @@ public abstract class AppContextMgr
         }
         return null;
     }
+    
+    /**
+     * Clears hashtable of ClassDataObjects 
+     */
+    public void clear()
+    {
+        classObjHash.clear();
+    }
 }

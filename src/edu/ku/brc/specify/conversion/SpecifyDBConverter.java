@@ -172,7 +172,7 @@ public class SpecifyDBConverter
                 dbNamesToConvert = converter.selectedDBsToConvert(names);
                 log.debug("size of name to conver: " + dbNamesToConvert.size());
                 
-                if ((dbNamesToConvert.size()>=1)&&(dbNamesToConvert.get(0).equals("Custom")))
+                if ((dbNamesToConvert.size() >= 1) && (dbNamesToConvert.get(0).equals("Custom")))
                 {
                     log.debug("Running custom converter");
                     CustomDBConverterDlg dlg = converter.runCustomConverter();
@@ -329,6 +329,8 @@ public class SpecifyDBConverter
                               final DatabaseConnectionProperties sourceDbProps,
                               final DatabaseConnectionProperties destDbProps) throws Exception
     {
+        AppContextMgr.getInstance().clear();
+        
         boolean doAll               = true; 
         boolean startfromScratch    = true; 
         boolean deleteMappingTables = true;
