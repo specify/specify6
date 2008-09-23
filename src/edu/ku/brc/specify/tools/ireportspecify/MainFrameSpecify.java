@@ -460,7 +460,6 @@ public class MainFrameSpecify extends MainFrame
         /* RULE: SpReport.name == SpAppResource.name (== jrf.getReport().name)*/
         SpReport spRep = ((ReportSpecify) jrf.getReport()).getSpReport();
         AppResourceIFace appRes = null;
-        String oldName = jrf.getReport().getName();
         
         if (!saveAs)
     	{
@@ -491,7 +490,6 @@ public class MainFrameSpecify extends MainFrame
         if (result != null)
         {
             jrf.getReport().setName(result.getAppRes().getName());
-            jrf.setTitle(jrf.getTitle().replace(oldName, jrf.getReport().getName()));
         }
         return result;
     }
