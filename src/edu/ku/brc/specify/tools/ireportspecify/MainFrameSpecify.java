@@ -266,7 +266,7 @@ public class MainFrameSpecify extends MainFrame
                 metaData += ";isimport=1";
             }
             resApp.getAppRes().setMetaData(metaData);
-            return saveXML(xml, resApp, null);
+            return saveXML(xml, resApp, null, false);
         }
         return false;
     }
@@ -277,7 +277,7 @@ public class MainFrameSpecify extends MainFrame
      * @param rep - ReportSpecify object associataed with appRes
      * @return true if everything turns out OK. Otherwise return false.
      */
-    protected static boolean saveXML(final ByteArrayOutputStream xml, final AppResAndProps apr, final ReportSpecify rep)
+    protected static boolean saveXML(final ByteArrayOutputStream xml, final AppResAndProps apr, final ReportSpecify rep, boolean saveAs)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         boolean result = false;
@@ -321,7 +321,7 @@ public class MainFrameSpecify extends MainFrame
             else
             {
                 boolean createReport = true;
-                if (rep.getSpReport() != null)
+                if (rep.getSpReport() != null && !saveAs)
                 {
                     try
                     {
@@ -399,6 +399,11 @@ public class MainFrameSpecify extends MainFrame
     @Override
     public void save(JReportFrame jrf)
     {
+        doSave(jrf, false);
+    }
+    
+    protected void doSave(JReportFrame jrf, boolean saveAs)
+    {
         //Reloading the context to prevent weird Hibernate issues that occur when resources are deleted in a
         //concurrently running instance of Specify. 
         ((SpecifyAppContextMgr )AppContextMgr.getInstance()).setContext(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
@@ -417,7 +422,7 @@ public class MainFrameSpecify extends MainFrame
             }
         }
 
-        AppResAndProps apr = getAppResAndPropsForFrame(jrf);        
+        AppResAndProps apr = getAppResAndPropsForFrame(jrf, saveAs);        
         if (apr != null)
         {
             ReportSpecify rep = (ReportSpecify)jrf.getReport();
@@ -432,7 +437,7 @@ public class MainFrameSpecify extends MainFrame
             {
             	modifyFieldsForEditing(rep);
             }
-            boolean success = saveXML(xmlOut, apr, rep);
+            boolean success = saveXML(xmlOut, apr, rep, saveAs);
             if (!success)
             {
                 JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_UNABLE_TO_SAVE_IREPORT"), UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);                        
@@ -449,28 +454,26 @@ public class MainFrameSpecify extends MainFrame
      *            iReport frame interface for a report
      * @return
      */
-    private AppResAndProps getAppResAndPropsForFrame(final JReportFrame jrf)
+    private AppResAndProps getAppResAndPropsForFrame(final JReportFrame jrf, boolean saveAs)
     {
     	//XXX - hard-coded for 'Collection' directory.
         /* RULE: SpReport.name == SpAppResource.name (== jrf.getReport().name)*/
         SpReport spRep = ((ReportSpecify) jrf.getReport()).getSpReport();
-    	AppResourceIFace appRes = spRep == null ? 
+        AppResourceIFace appRes = null;
+        String oldName = jrf.getReport().getName();
+        
+        if (!saveAs)
+    	{
+            appRes = spRep == null ? 
     	        AppContextMgr.getInstance().getResourceFromDir("Collection", jrf.getReport().getName()) :
     	            spRep.getAppResource();
+    	}
         if (appRes != null)
         {
             if (spRep != null) 
             { 
-                //return new AppResAndProps(appRes, spRep.getRepeats());
                 return getProps(jrf.getReport().getName(), -1, (ReportSpecify )jrf.getReport(), appRes);
             }
-//            int response = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), String.format(UIRegistry
-//                    .getResourceString("REP_CONFIRM_IMP_OVERWRITE"), jrf.getReport().getName()),
-//                    UIRegistry.getResourceString("REP_CONFIRM_IMP_OVERWRITE_TITLE"), JOptionPane.YES_NO_CANCEL_OPTION,
-//                    JOptionPane.QUESTION_MESSAGE, null);
-//            if (response == JOptionPane.CANCEL_OPTION || response == -1 /*closed with x-box*/) { return null; }
-//            if (response == JOptionPane.YES_OPTION) { return result; }
-//            result = null;
         }
         // else
         if (UIHelper.isSecurityOn())
@@ -488,6 +491,7 @@ public class MainFrameSpecify extends MainFrame
         if (result != null)
         {
             jrf.getReport().setName(result.getAppRes().getName());
+            jrf.setTitle(jrf.getTitle().replace(oldName, jrf.getReport().getName()));
         }
         return result;
     }
@@ -676,7 +680,8 @@ public class MainFrameSpecify extends MainFrame
     @Override
     public void saveAs(JReportFrame jrf)
     {
-        System.out.println("saveAs() is not implemented.");
+        doSave(jrf, true);
+        setActiveReportForm(jrf);    
     }
 
     /*
