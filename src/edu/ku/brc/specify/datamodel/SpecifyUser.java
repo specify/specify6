@@ -68,6 +68,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     protected String                    password;
     protected String                    userType;
     protected Boolean                   isLoggedIn;
+    protected Boolean                   isLoggedInReport;
     protected Timestamp                 loginOutTime;
     protected Long                      accumMinLoggedIn;
     
@@ -108,6 +109,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         name               = null;
         email              = null;
         isLoggedIn         = false;
+        isLoggedInReport   = false;
         loginOutTime       = null;
         
         //privLevel          = null;
@@ -311,6 +313,23 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         this.isLoggedIn = isLoggedIn;
     }
     
+    /**
+     * @return the isLoggedInReport
+     */
+    @Column(name = "IsLoggedInReport", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsLoggedInReport()
+    {
+        return isLoggedInReport;
+    }
+
+    /**
+     * @param isLoggedInReport the isLoggedInReport to set
+     */
+    public void setIsLoggedInReport(Boolean isLoggedInReport)
+    {
+        this.isLoggedInReport = isLoggedInReport;
+    }
+
     /**
      * 
      */

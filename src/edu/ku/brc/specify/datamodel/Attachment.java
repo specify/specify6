@@ -158,7 +158,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         return Attachment.class;
     }
 
-    @Column(name = "MimeType", length = 32)
+    @Column(name = "MimeType", length = 64)
     public String getMimeType()
     {
         return this.mimeType;
