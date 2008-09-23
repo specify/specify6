@@ -11,18 +11,13 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Vector;
 
 import javax.persistence.Transient;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -85,45 +80,14 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                      "INNER JOIN determinationstatus as ds ON dt.DeterminationStatusID = ds.DeterminationStatusID " +
                      "INNER JOIN collectionobject as co ON dt.CollectionObjectID = co.CollectionObjectID " +
                      "WHERE tx.TaxonID = %d AND co.CollectionMemberID = COLMEMID AND ds.Type = 1";
-        sql = QueryAdjusterForDomain.getInstance().adjustSQL(String.format(sql, taxon.getTaxonId()));
         
-        Connection conn = null;        
-        Statement  stmt = null;
-        try
+        Vector<Integer> list = new Vector<Integer>();
+        
+        fillLisWithIds(sql, list);
+        
+        for (Integer id : list)
         {
-            conn = DBConnection.getInstance().createConnection();
-            stmt = conn.createStatement();
-
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next())
-            {
-                recordSet.addItem(rs.getInt(1));
-            }
-            rs.close();
-
-        } 
-        catch (SQLException ex)
-        {
-            log.error("SQLException: " + ex.toString()); //$NON-NLS-1$
-            log.error(ex.getMessage());
-            
-        } finally
-        {
-            try 
-            {
-                if (stmt != null)
-                {
-                    stmt.close();
-                }
-                if (conn != null)
-                {
-                    conn.close();
-                }
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
+            recordSet.addItem(id);
         }
     }
 
@@ -185,7 +149,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 
                     final RecordSet recordSet = new RecordSet();
                     recordSet.initialize();
-                    recordSet.set(UIRegistry.getResourceString("TTV.showCollectionObjects"), CollectionObject.getClassTableId(), RecordSet.GLOBAL);
+                    recordSet.set("TTV", CollectionObject.getClassTableId(), RecordSet.GLOBAL);
 
                     fillRecordSet(taxon, recordSet);
 

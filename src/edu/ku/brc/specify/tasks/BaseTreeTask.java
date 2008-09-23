@@ -10,6 +10,10 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
@@ -27,10 +31,12 @@ import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
@@ -567,4 +573,57 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         UIRegistry.getStatusBar().setText("");
         
     }
+    
+    /**
+     * Runs the query synchronously and filles the vector.
+     * @param sqlStr the SQL string
+     * @param list the list to fill
+     */
+    protected void fillLisWithIds(final String sqlStr, final Vector<Integer> list)
+    {
+        list.clear();
+        
+        String sql = QueryAdjusterForDomain.getInstance().adjustSQL(sqlStr);
+        System.err.println(sql);
+        
+        Connection conn = null;        
+        Statement  stmt = null;
+        try
+        {
+            conn = DBConnection.getInstance().createConnection();
+            stmt = conn.createStatement();
+
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                list.add(rs.getInt(1));
+            }
+            rs.close();
+
+        } 
+        catch (SQLException ex)
+        {
+            log.error("SQLException: " + ex.toString()); //$NON-NLS-1$
+            log.error(ex.getMessage());
+            
+        } finally
+        {
+            try 
+            {
+                if (stmt != null)
+                {
+                    stmt.close();
+                }
+                if (conn != null)
+                {
+                    conn.close();
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+
 }

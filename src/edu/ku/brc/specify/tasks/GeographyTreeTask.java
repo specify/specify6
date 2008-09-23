@@ -131,7 +131,7 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
     {
         RecordSet recordSet = new RecordSet();
         recordSet.initialize();
-        recordSet.set(UIRegistry.getResourceString("TTV.showCollectionObjects"), CollectionObject.getClassTableId(), RecordSet.GLOBAL);
+        recordSet.set("TTV", CollectionObject.getClassTableId(), RecordSet.GLOBAL);
         try
         {
             while (resultSet.next())

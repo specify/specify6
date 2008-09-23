@@ -11,6 +11,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.persistence.Transient;
 import javax.swing.JList;
@@ -18,11 +19,8 @@ import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.Institution;
-import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
@@ -95,32 +93,31 @@ public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, Stora
 
         RecordSet recordSet = new RecordSet();
         recordSet.initialize();
-        recordSet.set(UIRegistry.getResourceString("TTV.showCollectionObjects"), CollectionObject.getClassTableId(), RecordSet.GLOBAL);
+        recordSet.set("TTV", CollectionObject.getClassTableId(), RecordSet.GLOBAL);
 
         Hashtable<Integer, Boolean> duplicateHash = new Hashtable<Integer, Boolean>();
         
-        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-        Integer    colMemId   = collection != null ? collection.getCollectionId() : null;
+        String sql = "SELECT p.CollectionObjectID FROM storage as st INNER JOIN preparation as p ON st.StorageID = p.StorageID " +
+                     "WHERE st.StorageID = "+storage.getStorageId()+" AND p.CollectionMemberID = COLMEMID";
+        
+        Vector<Integer> idList = new Vector<Integer>();
+        
+        fillLisWithIds(sql, idList);
         
         // Get the Collection Objects from the Preparations
-        for (Preparation prep : storage.getPreparations())
+        for (Integer id : idList)
         {
-            if (colMemId == null || prep.getCollectionMemberId().equals(colMemId))
-            {
-                duplicateHash.put(prep.getCollectionObject().getId(), true);
-            }
+            duplicateHash.put(id, true);
         }
         
-        // Get the Collection Objects from the Containers
-        for (Container container : storage.getContainers())
+        sql = "SELECT co.CollectionObjectID FROM storage as st INNER JOIN container as cn ON st.StorageID = cn.StorageID " +
+              "INNER JOIN collectionobjects co ON co.ContainerID = cn.ContainerID " +
+              "WHERE st.StorageID = "+storage.getStorageId()+" AND co.CollectionMemberID = COLMEMID";
+        
+        fillLisWithIds(sql, idList);
+        for (Integer id : idList)
         {
-            for (CollectionObject co : container.getCollectionObjects())
-            {
-                if (colMemId == null || co.getCollectionMemberId().equals(colMemId))
-                {
-                    duplicateHash.put(co.getId(), true);
-                }
-            }
+            duplicateHash.put(id, true);
         }
 
         for(Integer id : duplicateHash.keySet())
