@@ -103,6 +103,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
@@ -130,6 +131,7 @@ import edu.ku.brc.services.mapping.LocalityMapper;
 import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -185,7 +187,7 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
  */
 public class WorkbenchPaneSS extends BaseSubPane
 {
-    private static boolean          debugging = false;
+    private static boolean          debugging = true;
     private static final Logger     log = Logger.getLogger(WorkbenchPaneSS.class);
     
     private enum PanelType {Spreadsheet, Form}
@@ -353,10 +355,10 @@ public class WorkbenchPaneSS extends BaseSubPane
                 {
                     UsageTracker.incrUsageCount("WB.SaveDataSet");
 
-                    UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_SAVING"),
+                    UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_SAVING"),
                             new Object[] { workbench.getName() }),
                             WorkbenchTask.GLASSPANE_FONT_SIZE);
-
+                    UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), true);
                     final SwingWorker worker = new SwingWorker()
                     {
                         @SuppressWarnings("synthetic-access")
@@ -388,7 +390,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                                         getResourceString("WB_ERROR_SAVING"), ex);
                             }
 
-                            UIRegistry.clearGlassPaneMsg();
+                            UIRegistry.clearSimpleGlassPaneMsg();
+                            UIRegistry.getStatusBar().setProgressDone(workbench.getName());
                         }
                     };
                     worker.start();
@@ -2515,6 +2518,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         /* committed prevents null transaction exceptions occuring in catch blocks below.
          * DataProviderSessionIFace needs methods to access transaction status??
          */
+        UIRegistry.getStatusBar().setProgressDone(workbench.getName());
+        UIRegistry.getStatusBar().setIndeterminate(workbench.getName() + "XYZ", false);
+        UIRegistry.getStatusBar().setProgressRange(workbench.getName() + "XYZ", 0, workbench.getDeletedRows().size() + workbench.getWorkbenchRows().size(), 0);
+        
         boolean committed = false; 
         boolean opened = false;
         try
@@ -2531,6 +2538,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 for (WorkbenchRow row : deletedItems)
                 {
                     session.delete(row);
+                    UIRegistry.getStatusBar().incrementRange(workbench.getName() + "XYZ");
                 }
                 deletedItems.clear();
                 session.commit();
@@ -2569,7 +2577,14 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             finally
             {
-                dObj.setWorkbenchRows(rows);
+                if (dObj != null)
+                {
+                    dObj.setWorkbenchRows(rows);
+                }
+                else
+                {
+                    workbench.setWorkbenchRows(rows);
+                }
                 
             }
             // Now, iterate through the rows, only merging those that have ids. For some reason this
@@ -2585,6 +2600,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                         mergedRows.add(new Pair<WorkbenchRow, WorkbenchRow>(row, rowSession
                                 .merge(row)));
                     }
+                    UIRegistry.getStatusBar().incrementRange(workbench.getName() + "XYZ");
                 }
                 for (Pair<WorkbenchRow, WorkbenchRow> merger : mergedRows)
                 {
@@ -2615,7 +2631,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             committed = true;
             session.flush();
             workbench = dObj;
+            logDebug("workbench.forceLoad()" + System.nanoTime());
             workbench.forceLoad();
+            logDebug("end workbench.forceLoad()"  + System.nanoTime());
 
             model.setWorkbench(workbench);
             formPane.setWorkbench(workbench);
@@ -2714,15 +2732,33 @@ public class WorkbenchPaneSS extends BaseSubPane
                                                    JOptionPane.YES_NO_CANCEL_OPTION);
             if (rv == JOptionPane.YES_OPTION)
             {
-                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), WorkbenchTask.GLASSPANE_FONT_SIZE);            
-                try
+                UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), WorkbenchTask.GLASSPANE_FONT_SIZE);            
+                UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), true);
+                new SwingWorker()
                 {
-                    saveObject();
-                }
-                finally
-                {
-                    UIRegistry.clearGlassPaneMsg();
-                }
+
+                    /* (non-Javadoc)
+                     * @see edu.ku.brc.helpers.SwingWorker#construct()
+                     */
+                    @Override
+                    public Object construct()
+                    {
+                        saveObject();                        
+                        return null;
+                    }
+
+                    /* (non-Javadoc)
+                     * @see edu.ku.brc.helpers.SwingWorker#finished()
+                     */
+                    @Override
+                    public void finished()
+                    {
+                        UIRegistry.clearSimpleGlassPaneMsg();
+                        UIRegistry.getStatusBar().setProgressDone(workbench.getName());
+                    }
+                    
+                }.start();
+                
             }
             else if (rv == JOptionPane.CANCEL_OPTION || rv == JOptionPane.CLOSED_OPTION)
             {
@@ -2959,6 +2995,57 @@ public class WorkbenchPaneSS extends BaseSubPane
             return;
         }
         
+        List<String> logins = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getAgentListLoggedIn(null);
+        if (logins.size() > 0)
+        {
+            //currently not allowing uploads if ANYBODY else is on whether or not they can modify data or modify data in the current discipline.
+            String loginStr = "";
+            for (int l = 0; l < logins.size(); l++)
+            {
+                if (l > 0)
+                {
+                    loginStr += ", ";
+                }
+                loginStr += logins.get(l);
+            }
+            PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
+            pb.add(new JLabel(UIRegistry.getResourceString("WB_UPLOAD_OTHER_USERS")), new CellConstraints().xy(2, 2));
+            pb.add(new JLabel(loginStr), new CellConstraints().xy(2, 4));
+            pb.add(new JLabel(UIRegistry.getResourceString("WB_UPLOAD_OTHER_USERS2")), new CellConstraints().xy(2, 6));
+            
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+                    UIRegistry.getResourceString("WB_UPLOAD_DENIED_DLG"),
+                    true,
+                    CustomDialog.OKCANCELAPPLYHELP,
+                    pb.getPanel());
+            dlg.setApplyLabel(UIRegistry.getResourceString("WB_UPLOAD_OVERRIDE"));
+            dlg.setCloseOnApplyClk(true);
+            dlg.createUI();
+            
+            //Stoopid x-box...
+            dlg.getOkBtn().setVisible(false); 
+            dlg.setCancelLabel(dlg.getOkBtn().getText());
+            //...Stoopid x-box
+            
+            UIHelper.centerAndShow(dlg);
+            dlg.dispose();
+            if (dlg.isCancelled())
+            {
+                return;
+            }
+            PanelBuilder pb2 = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 5dlu"));
+            pb2.add(new JLabel(UIRegistry.getResourceString("WB_UPLOAD_CONFIRM_ANNIHILATION")), new CellConstraints().xy(2, 2));
+            CustomDialog dlg2 = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+                    UIRegistry.getResourceString("WB_UPLOAD_DANGER"),
+                    true,
+                    CustomDialog.OKCANCELHELP,
+                    pb2.getPanel());
+            UIHelper.centerAndShow(dlg2);
+            if (dlg2.isCancelled())
+            {
+                return;
+            }
+        }
         
         WorkbenchUploadMapper importMapper = new WorkbenchUploadMapper(workbench
                 .getWorkbenchTemplate());

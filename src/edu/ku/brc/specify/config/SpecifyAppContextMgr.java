@@ -2386,8 +2386,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * Returns a list of pre-formatted Agent names of those that are logged in.
      * Note: the current logged in person is not added to the list.
-     * @param discipline the current discipline
-     * @return null on error, an empty list if no one else iis logged in, or a populated list
+     * @param discipline the current discipline (if null no discipline restrictions are applied)
+     * @return null on error, an empty list if no one else is logged in, or a populated list
      */
     public List<String> getAgentListLoggedIn(final Discipline discipline)
     {
@@ -2399,9 +2399,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
         sb.append("SELECT specifyuser.SpecifyUserID ");
         sb.append("FROM specifyuser INNER JOIN specifyuser_spprincipal ON specifyuser.SpecifyUserID = specifyuser_spprincipal.SpecifyUserID ");
         sb.append("INNER JOIN spprincipal ON specifyuser_spprincipal.SpPrincipalID = spprincipal.SpPrincipalID ");
-        sb.append("WHERE spprincipal.userGroupScopeID = ");
-        sb.append(discipline.getId());
-        sb.append(" AND specifyuser.IsLoggedIn <> 0");
+        if (discipline != null)
+        {
+            sb.append("WHERE spprincipal.userGroupScopeID = ");
+            sb.append(discipline.getId());
+            sb.append(" AND specifyuser.IsLoggedIn <> 0");
+        }
+        else
+        {
+            sb.append(" WHERE specifyuser.IsLoggedIn <> 0");
+        }
         
         Connection conn = null;        
         Statement  stmt = null;
@@ -2411,10 +2418,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
             stmt = conn.createStatement();
 
             ResultSet rs = stmt.executeQuery(sb.toString());
-            if (rs.next())
+            while (rs.next())
             {
                 int id = rs.getInt(1);
-                if (id != spu.getId())
+                if (id != spu.getId() && ids.indexOf(id) == -1)
                 {
                     ids.add(id);
                 }
@@ -2452,9 +2459,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
         if (ids.size() > 0)
         {
             sb.setLength(0);
-            sb.append("SELECT ag FROM SpecifyUser spu INNER JOIN spu.agents ag INNER JOIN ag.division dv INNER JOIN dv.disciplines dsp WHERE dsp.id = ");
-            sb.append(discipline.getId());
-            sb.append(" AND ag.id in (");
+            sb.append("SELECT ag FROM SpecifyUser spu INNER JOIN spu.agents ag ");
+            if (discipline != null)
+            {
+                sb.append("INNER JOIN ag.division dv INNER JOIN dv.disciplines dsp  WHERE dsp.id = ");
+                sb.append(discipline.getId());
+                sb.append(" AND spu.id in (");
+            }
+            else
+            {
+                sb.append("WHERE spu.id in (");
+            }
             for (int i=0;i<ids.size();i++)
             {
                 if (i > 0) sb.append(",");
