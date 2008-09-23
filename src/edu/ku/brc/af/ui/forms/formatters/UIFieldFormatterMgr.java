@@ -67,7 +67,6 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     protected UIFieldFormatterMgr()
     {
         load();
-        AppPrefsCache.addChangeListener("ui.formatting.scrdateformat", this);
     }
 
     /**

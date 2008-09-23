@@ -99,6 +99,7 @@ import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
@@ -2085,6 +2086,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             preInitializePrefs();
             
             initStartUpPanels(databaseNameArg, userNameArg);
+            
+            AppPrefsCache.addChangeListener("ui.formatting.scrdateformat", UIFieldFormatterMgr.getInstance());
+
             
             if (changeCollectionMenuItem != null)
             {
