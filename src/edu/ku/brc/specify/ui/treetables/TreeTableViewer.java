@@ -2231,30 +2231,26 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	        int droppedRankId = droppedOnNode.getRank();
 	        //System.out.println("draggedRankId "+draggedRankId+"  droppedRankId "+droppedRankId+"  rankLevel "+rankLevel);
 	        
-	        if (draggedRankId >= droppedRankId)
-	        {
-    	        if (rankLevel == -1 || 
-    	            (draggedRankId >= rankLevel && droppedRankId >= rankLevel))
-    	        {
-                    boolean descendant = listModel.isDescendantOfNode(droppedOnNode, draggedNode);
-                    if (!descendant)
-                    {
-                        // check the other way as well
-                        descendant = listModel.isDescendantOfNode(draggedNode, droppedOnNode);
-                    }
-                    //log.debug("Synonymization request IS acceptable.");
-                    return !descendant;
-    	        }
-            } 
+    	    if (rankLevel == -1 || (draggedRankId >= rankLevel && droppedRankId >= rankLevel))
+            {
+                boolean descendant = listModel.isDescendantOfNode(droppedOnNode, draggedNode);
+                if (!descendant)
+                {
+                    // check the other way as well
+                    descendant = listModel.isDescendantOfNode(draggedNode, droppedOnNode);
+                }
+                // log.debug("Synonymization request IS acceptable.");
+                return !descendant;
+            }
         }
 	    return false;
 	}
 	
 	/**
-	 * @param droppedOnNode
-	 * @param draggedNode
-	 * @return
-	 */
+     * @param droppedOnNode
+     * @param draggedNode
+     * @return
+     */
 	private boolean isMoveOK(final TreeNode droppedOnNode, final TreeNode draggedNode)
 	{
 	    return 
