@@ -1173,7 +1173,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     }
                 }
                 
-                QueryForIdResultsIFace results = new QueryForIdResultsIndexedSQL(searchTableConfig, new Color(30, 144, 255), searchTerm, list);
+                QueryForIdResultsIFace results = new QueryForIdResultsHQL(searchTableConfig, new Color(30, 144, 255), searchTerm, list);
                 results.setMultipleSelection(true);
                 displayResults(esrPane, results, resultsForJoinsHash);
                 
