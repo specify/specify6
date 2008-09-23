@@ -1396,36 +1396,6 @@ public class SpecifyDBConverter
             public ChooseDBs(final String title, final List<T> items) throws HeadlessException
             {
                 super(null, title, items);
-                
-                final SwingWorker worker = new SwingWorker()
-                {
-                    @Override
-                    public Object construct()
-                    {
-                        try
-                        {
-                            Thread.sleep(10000); // 10 seconds
-                            
-                        }
-                        catch (Exception ex)
-                        {
-                            // ignore
-                        }
-                        return null;
-                    }
-
-                    //Runs on the event-dispatching thread.
-                    @SuppressWarnings("synthetic-access")
-                    @Override
-                    public void finished()
-                    {
-                        if (list.getSelectedIndex() > -1)
-                        {
-                            okBtn.doClick();
-                        }
-                    }
-                };
-                worker.start();
             }
 
         }
