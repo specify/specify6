@@ -480,6 +480,9 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             }
             
             label.setText(lblStr);
+        } else if (dataObj == null)
+        {
+            label.setText("  ");
         }
     }
     
@@ -496,7 +499,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
      * @see edu.ku.brc.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
     @Override
-    public void setValue(Object value, String defaultValue)
+    public void setValue(final Object value, final String defaultValue)
     {
         dataObj = value;
         
@@ -538,6 +541,9 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                 }
                 
                 setEnabledInternal(isEnabled());
+            } else 
+            {
+                updateBtnText(); // note: that by calling this, 'size' gets called and that loads the Set (this must be done).
             }
         } catch (Exception ex)
         {
