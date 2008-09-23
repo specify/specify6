@@ -23,6 +23,7 @@ import static org.apache.commons.lang.StringUtils.split;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.LayoutManager;
+import java.awt.MenuItem;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -379,6 +380,21 @@ public class TaskMgr implements CommandListener
                         menu.add(new JPopupMenu.Separator(), insertPos);
                     }
                 }
+            } else if (parent instanceof JMenuItem)
+            {
+                JMenuItem   mi   = (JMenuItem)parent;
+                JPopupMenu  menu = (JPopupMenu)mi.getParent();
+                
+                int pos = 0;
+                for (int i=0;i<menu.getComponentCount();i++)
+                {
+                    if (mi == menu.getComponent(i))
+                    {
+                        pos = i;
+                        break;
+                    }
+                }
+                menu.insert((JMenuItem)me, menuItemDesc.getPosition() == MenuItemDesc.Position.After ? pos + 1 : pos);
             }
             
         } else

@@ -38,7 +38,6 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
-import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
@@ -498,7 +497,8 @@ public class ToolsTask extends BaseTask
                     ToolsTask.this.requestContext();
                 }
             });
-            MenuItemDesc rsMI = new MenuItemDesc(mi, "FileMenu");
+            MenuItemDesc rsMI = new MenuItemDesc(mi, "FileMenu/Specify.CHANGE_COLLECTION");
+            rsMI.setPosition(MenuItemDesc.Position.After);
             menuItems.add(rsMI);
         }
         
