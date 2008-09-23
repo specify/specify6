@@ -75,7 +75,6 @@
     </table>
 
     <table name="Collection">
-    	<alias name="CollectionObject" field="collectionObjects" />
     	<alias name="Agent" field="contactAgent" />
         <alias name="Agent" field="createdByAgent" />
     	<alias name="Agent" field="curatorAgent" />
