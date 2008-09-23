@@ -371,13 +371,13 @@ public class SpecifyDBConverter
         else
         {
             log.debug("Running an non-custom MySQL convert, using old default login creds");
-            userNameSource      = initPrefs.getProperty("initializer.username", "rods");
-            passwordSource      = initPrefs.getProperty("initializer.password", "rods");
+            userNameSource      = initPrefs.getProperty("initializer.username", "Specify");
+            passwordSource      = initPrefs.getProperty("initializer.password", "Specify");
             driverNameSource    = initPrefs.getProperty("initializer.driver",   "MySQL");
             databaseHostSource  = initPrefs.getProperty("initializer.host",     "localhost"); 
             
-            userNameDest        = initPrefs.getProperty("initializer.username", "rods");
-            passwordDest        = initPrefs.getProperty("initializer.password", "rods");
+            userNameDest        = initPrefs.getProperty("initializer.username", "Specify");
+            passwordDest        = initPrefs.getProperty("initializer.password", "Specify");
             driverNameDest      = initPrefs.getProperty("initializer.driver",   "MySQL");
             databaseHostDest    = initPrefs.getProperty("initializer.host",     "localhost");  
         }
@@ -638,15 +638,15 @@ public class SpecifyDBConverter
                 boolean convertDiscipline = true;
                 if (convertDiscipline || doAll)
                 {
-                    String           username         = initPrefs.getProperty("initializer.username", "rods");
+                    String           username         = initPrefs.getProperty("initializer.username", "testuser");
                     String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
-                    String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
-                    String           lastName         = initPrefs.getProperty("useragent.lastname", "Spears");
+                    String           firstName        = initPrefs.getProperty("useragent.firstname", "Test");
+                    String           lastName         = initPrefs.getProperty("useragent.lastname", "User");
                     String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
-                    String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
-                    String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
+                    String           abbrev           = initPrefs.getProperty("useragent.abbrev", "tcu");
+                    String           email            = initPrefs.getProperty("useragent.email", "testuser@ku.edu");
                     String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");   
-                    String           password         = initPrefs.getProperty("useragent.password", "rods");
+                    String           password         = initPrefs.getProperty("useragent.password", "testuser");
                     
                     Agent       userAgent   = null;
                     SpecifyUser specifyUser = null;
