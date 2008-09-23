@@ -11,29 +11,28 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.Author;
+import edu.ku.brc.specify.datamodel.ReferenceWork;
 
 /**
  * @author rod
  *
  * @code_status Alpha
  *
- * Feb 11, 2008
+ * Sep 23, 2008
  *
  */
-public class CollectorBusRules extends BaseBusRules
+public class AuthorBusRules extends BaseBusRules
 {
 
     /**
-     * @param dataClasses
+     * 
      */
-    public CollectorBusRules()
+    public AuthorBusRules()
     {
-        super(Collector.class);
+        super();
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object, java.lang.Object)
      */
@@ -44,17 +43,17 @@ public class CollectorBusRules extends BaseBusRules
         
         // isEdit is false when the data object is new, true when editing an existing object.
         if (isExistingObject &&
-            parentDataObj instanceof CollectingEvent &&
-            dataObj instanceof Collector)
+            parentDataObj instanceof ReferenceWork &&
+            dataObj instanceof Author)
         {
-            CollectingEvent ce = (CollectingEvent)parentDataObj;
-            Collector       col = (Collector)dataObj;
+            ReferenceWork ce = (ReferenceWork)parentDataObj;
+            Author       col = (Author)dataObj;
             
-            for (Collector collector : ce.getCollectors())
+            for (Author Author : ce.getAuthors())
             {
-               if (collector.getAgent().getAgentId().equals(col.getAgent().getAgentId())) 
+               if (Author.getAgent().getAgentId().equals(col.getAgent().getAgentId())) 
                {
-                   reasonList.add(String.format(getResourceString("CE_DUPLICATE_COLLECTORS"), col.getIdentityTitle()));
+                   reasonList.add(String.format(getResourceString("RW_DUPLICATE_AUTHORS"), col.getIdentityTitle()));
                    return STATUS.Error;
                }
             }
