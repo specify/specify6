@@ -2676,9 +2676,22 @@ public class FormViewObj implements Viewable,
             // which might have failed from being lazy loaded.
             
             //session.attach(parentDataObj);
+            
+            // 09/23/08 - Bug 5996 When the dataObj fails to attach it is most likely
+            // because it has been changed. Which we don't care about because we are deleting it
+            boolean attachFailed = false;
             if (((FormDataObjIFace)dataObj).getId() != null)
             {
-                session.attach(dataObj);
+                try
+                {
+                    session.attach(dataObj);
+                    
+                } catch (org.hibernate.HibernateException ex)
+                {
+                    // we could check the type to make sure it was a "dirty colleciton" error
+                    // but for now I am not.
+                    attachFailed = true;
+                }
             }
             
             removeFromParent(mvParent, parentDataObj, cellName, dataObj);
@@ -2743,6 +2756,13 @@ public class FormViewObj implements Viewable,
                 Integer          objId = fdo.getId();
                 if (objId != null)
                 {
+                    if (attachFailed)
+                    {
+                        session.close();
+                        session = DataProviderFactory.getInstance().createSession();
+                        setSession(session);
+                    }
+                    
                     // Reload the object from the database  to avoid a stale object exception.
                     Object dbDataObj = session.getData(fdo.getDataClass(), "id", objId, DataProviderSessionIFace.CompareType.Equals);
                     if (dbDataObj != null)
