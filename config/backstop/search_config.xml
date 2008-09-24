@@ -753,9 +753,9 @@
   taxon.TaxonID, 
   taxon.FullName,
   taxon.CommonName,
-  attachment.GUID,
-  attachment.Name,
-  attachment.TaxonomicSerialNumber,
+  taxon.TaxonomicSerialNumber,
+  attachment.Title,
+  attachment.OrigFilename,
   %s
   FROM taxon INNER JOIN taxonattachment ON taxon.TaxonID = taxonattachment.TaxonID
   INNER JOIN attachment ON taxonattachment.AttachmentID = attachment.AttachmentID]]>
@@ -764,10 +764,9 @@
                     <caption tableid="4" col="TaxonID" visible="false"/>
                     <caption tableid="4" col="FullName"/>
                     <caption tableid="4" col="CommonName"/>
-                    <caption tableid="4" col="GUID"/>
-                    <caption tableid="4" col="Name"/>
                     <caption tableid="4" col="TaxonomicSerialNumber"/>                  
                     <caption tableid="41" col="Title"/>
+                    <caption tableid="41" col="OrigFilename"/>
                 </captions>
             </detailView>
         </table>
