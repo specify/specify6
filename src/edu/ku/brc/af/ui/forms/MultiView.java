@@ -537,7 +537,12 @@ public class MultiView extends JPanel
             {
                 FormValidator fv = viewable.getValidator();
                 fv.setUIValidatorsToNew(isNewForm);
-                fv.setUIValidatorsToNotChanged();
+                // rods 09/24/08 added the if statement because all the validators 
+                // in the immediate subforms were being set to not be changed
+                if (!isNewForm)
+                {
+                    fv.setUIValidatorsToNotChanged();
+                }
                 viewable.setHasNewData(isNewForm);
             }
         }
