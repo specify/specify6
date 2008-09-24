@@ -24,7 +24,10 @@ import java.util.List;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.DraggableRecordIdentifier;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.PrepType;
 
@@ -121,7 +124,18 @@ public class PrepTypeBusRules extends BaseBusRules
         if (dataObj == null || !(dataObj instanceof PrepType))
         {
             return STATUS.Error;
-        }       
+        } 
+        
+        if (dataObj instanceof PrepType)
+        {
+            STATUS duplicateNameStatus = isCheckDuplicateNumberOK("name", 
+                    (FormDataObjIFace)dataObj, 
+                    PrepType.class, 
+                    "prepTypeId");
+            
+            return duplicateNameStatus;
+        }
+        
         return STATUS.OK;
     }
 
@@ -144,8 +158,27 @@ public class PrepTypeBusRules extends BaseBusRules
         
         PrepType prepType = (PrepType)newDataObj;
         
-        AppContextMgr.getInstance().getClassObject(Collection.class).addReference(prepType, "prepTypes");
+        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);//
+        
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            collection = session.getData(Collection.class, "collectionId", collection.getId(), DataProviderSessionIFace.CompareType.Equals);
+            collection.addReference(prepType, "prepTypes");
+            prepType.setCollection(collection);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
         
     }
-
 }
