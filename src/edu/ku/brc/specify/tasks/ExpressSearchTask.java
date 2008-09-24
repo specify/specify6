@@ -65,7 +65,6 @@ import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigDlg;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
-import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIndexedSQL;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
 import edu.ku.brc.af.core.expresssearch.SearchConfig;
 import edu.ku.brc.af.core.expresssearch.SearchConfigService;

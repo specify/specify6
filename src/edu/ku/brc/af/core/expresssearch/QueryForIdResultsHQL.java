@@ -96,7 +96,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#isHQL()
      */
-    //@Override
+    @Override
     public boolean isHQL()
     {
         return true;
@@ -105,7 +105,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#cleanUp()
      */
-    //@Override
+    @Override
     public void cleanUp()
     {
         searchTableConfig = null;
@@ -114,7 +114,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#getBannerColor()
      */
-    //@Override
+    @Override
     public Color getBannerColor()
     {
         return bannerColor;
@@ -123,7 +123,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#getDisplayOrder()
      */
-    //@Override
+    @Override
     public Integer getDisplayOrder()
     {
         return searchTableConfig.getDisplayOrder();
@@ -132,7 +132,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#getIconName()
      */
-    //@Override
+    @Override
     public String getIconName()
     {
         return searchTableConfig.getIconName();
@@ -141,7 +141,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#getRecIds()
      */
-    //@Override
+    @Override
     public Vector<Integer> getRecIds()
     {
         return recIds;
@@ -150,7 +150,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#getSQL(java.lang.String, java.util.Vector)
      */
-    //@Override
+    @Override
     public String getSQL(String searchTermArg, Vector<Integer> ids)
     {
         if (StringUtils.isNotEmpty(overrideSQL))
@@ -164,7 +164,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#getSearchTerm()
      */
-    //@Override
+    @Override
     public String getSearchTerm()
     {
         return searchTerm;
@@ -173,7 +173,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#getTableId()
      */
-    //@Override
+    @Override
     public int getTableId()
     {
         return searchTableConfig.getTableInfo().getTableId();
@@ -182,7 +182,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#getTitle()
      */
-    //@Override
+    @Override
     public String getTitle()
     {
         return searchTableConfig.getTableInfo().getTitle();
@@ -191,7 +191,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#getVisibleCaptionInfo()
      */
-    //@Override
+    @Override
     public List<ERTICaptionInfo> getVisibleCaptionInfo()
     {
         if (captions == null)
@@ -315,7 +315,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getParams()
      */
-    //@Override
+    @Override
     public List<Pair<String, Object>> getParams()
     {
         return null;
@@ -324,7 +324,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#complete()
      */
-    //@Override
+    @Override
     public void complete()
     {
         // nothing to do
@@ -333,7 +333,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getQueryTask()
      */
-    //@Override
+    @Override
     public Future<?> getQueryTask()
     {
         return null;
@@ -342,7 +342,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setQueryTask(java.util.concurrent.Future)
      */
-    //@Override
+    @Override
     public void setQueryTask(Future<?> queryTask)
     {
         //nothing to do here.
@@ -351,7 +351,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#queryTaskDone()
      */
-    //@Override
+    @Override
     public void queryTaskDone(final Object results)
     {
         //nuthin
@@ -361,7 +361,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setRecIds(java.util.Vector)
      */
-    //@Override
+    @Override
     public void setRecIds(Vector<Integer> ids)
     {
         // TODO Auto-generated method stub
@@ -371,7 +371,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#showProgress()
      */
-    //@Override
+    @Override
     public boolean showProgress()
     {
         return true;
