@@ -773,6 +773,11 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             this.listSelectionListeners.remove(listSelectionListener);
         }
     }
+    
+    protected void notifyListSelectionListeners()
+    {
+        
+    }
 
     // Overriding the add/remove of FocusListeners is so we can make sure they get
     // called AFTER the Combobox has had a change to process it's focus listener
@@ -881,7 +886,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     
                 });
 
-                textWithQuery.setSelectedId(dataObj.getId());
+                textWithQuery.setSelectedId(dataObj != null ? dataObj.getId() : null);
                 
                 if (editBtn != null)
                 {

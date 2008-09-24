@@ -95,6 +95,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected JPopupMenu           popupMenu      = null;
     protected JButton              dbBtn;
     protected boolean              isPopupShowing = false;
+    protected boolean              isDoingQuery   = false;
     
     protected boolean              popupFromBtn   = false;
     protected boolean              ignoreFocusLost = false;
@@ -205,13 +206,18 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         {
             protected void check()
             {
+                boolean oldWasCleared = wasCleared;
                 if (!ignoreDocChange)
                 {
                     wasCleared = wasCleared || selectedId != null;
-                    
+
                     idList.clear();
                     list.clear();
                     selectedId = null;
+                }
+                if (oldWasCleared != wasCleared)
+                {
+                    notifyListenersOfChange(TextFieldWithQuery.this);
                 }
             }
             @Override
@@ -337,11 +343,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 ///////////////////////////////////////////////////////////////////////////////////
                 if (wasCleared)
                 {
-                    ListSelectionEvent lse = new ListSelectionEvent(TextFieldWithQuery.this, 0, 0, false);
-                    for (ListSelectionListener l : listSelectionListeners)
-                    {
-                        l.valueChanged(lse);
-                    }
+                    notifyListenersOfChange(TextFieldWithQuery.this);
                 }
             }
         }
@@ -487,10 +489,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     
                     /*if (listSelectionListeners != null)
                     {
-                        for (ListSelectionListener l : listSelectionListeners)
-                        {
-                            l.valueChanged(null);
-                        }
+                        notifyListenersOfChange(TextFieldWithQuery.this);
                     }*/
                     log.debug("setting hasNewText to true"); //$NON-NLS-1$
                     hasNewText  = true;
@@ -565,11 +564,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             
             if (listSelectionListeners != null)
             {
-                ListSelectionEvent lse = new ListSelectionEvent(mi, 0, 0, false);
-                for (ListSelectionListener l : listSelectionListeners)
-                {
-                    l.valueChanged(lse);
-                }
+                notifyListenersOfChange(mi);
             }
         }
     }
@@ -1078,6 +1073,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         } else
         {
             processResults(customQuery);
+            isDoingQuery = false;
         }
     }
 
@@ -1087,8 +1083,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     //@Override
     public void executionError(final CustomQueryIFace customQuery)
     {
-        // TODO Auto-generated method stub
-        
+        isDoingQuery = false;
     }
 
     /**
@@ -1096,24 +1091,28 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      */
     protected void doQuery(final String newEntryStr)
     {
-        prevEnteredText = newEntryStr;
-
-        if (hasNewText)
+        if (!isDoingQuery)
         {
-            list.clear();
-            idList.clear();
-            
-            returnCount  = null;
-            isDoingCount = true;
-                       
-            JPAQuery jpaQuery = new JPAQuery(buildSQL(newEntryStr, true), this);
-            jpaQuery.setUnique(true);
-            jpaQuery.setData(newEntryStr);
-            jpaQuery.start();
-            
-        } else
-        {
-            showPopup();
+            isDoingQuery    = true;
+            prevEnteredText = newEntryStr;
+    
+            if (hasNewText)
+            {
+                list.clear();
+                idList.clear();
+                
+                returnCount  = null;
+                isDoingCount = true;
+                           
+                JPAQuery jpaQuery = new JPAQuery(buildSQL(newEntryStr, true), this);
+                jpaQuery.setUnique(true);
+                jpaQuery.setData(newEntryStr);
+                jpaQuery.start();
+                
+            } else
+            {
+                showPopup();
+            }
         }
     }
     
