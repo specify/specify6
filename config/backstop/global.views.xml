@@ -2129,7 +2129,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[AttachmentMetadata Grid View.]]></desc>
-            <definition>AttachmentMetadata Form</definition>
+            <definition>AttachmentMetadata</definition>
         </viewdef>
         
         <viewdef
