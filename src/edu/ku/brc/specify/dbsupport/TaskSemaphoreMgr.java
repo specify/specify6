@@ -70,7 +70,8 @@ public class TaskSemaphoreMgr
             
             if (semaphore == null)
             {
-                throw new RuntimeException("lock ["+title+"] didn't exist");
+                //throw new RuntimeException("lock ["+title+"] didn't exist");
+                return false;
             }
             return semaphore.getIsLocked();
             
@@ -87,6 +88,43 @@ public class TaskSemaphoreMgr
              }
         }
         throw new RuntimeException("Error checking lock ["+title+"]");   
+    }
+
+    /**
+     * Find the semaphore for a task and return it..
+     * @param title The human (localized) title of the task 
+     * @param name the unique name
+     * @param scope the scope of the lock
+     * @return the semaphore or null if no matching semaphore exists.
+     */
+    public static SpTaskSemaphore getLockInfo(final String title, 
+                                   final String name, 
+                                   final SCOPE  scope)
+    {
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            Discipline discipline = scope == SCOPE.Discipline ? AppContextMgr.getInstance().getClassObject(Discipline.class) : null;
+            Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
+
+            SpTaskSemaphore semaphore = getSemaphore(session, name, scope, discipline, collection);
+            
+            return semaphore;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            //log.error(ex);
+            
+        } finally 
+        {
+             if (session != null)
+             {
+                 session.close();
+             }
+        }
+        throw new RuntimeException("Error getting lock info ["+title+"]");   
     }
 
     
@@ -355,7 +393,13 @@ public class TaskSemaphoreMgr
     {
         String sql = buildSQL(name, scope, discipline, collection);
         //System.err.println(sql);
-        Object[] cols = (Object[])session.getData(sql);
+        //Object[] cols = (Object[])session.getData(sql);
+        Object data = session.getData(sql);
+        if (data instanceof SpTaskSemaphore)
+        {
+            return (SpTaskSemaphore )data;
+        }
+        Object[] cols = (Object[] )data;
         return cols != null && cols.length > 0 ? (SpTaskSemaphore)cols[0] : null;
     }
     

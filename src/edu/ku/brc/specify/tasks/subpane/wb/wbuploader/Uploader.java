@@ -30,6 +30,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
@@ -41,6 +42,10 @@ import net.sf.jasperreports.engine.JRField;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -54,9 +59,11 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
@@ -3546,6 +3553,95 @@ public class Uploader implements ActionListener, KeyListener
             goToFirstInvalidCell(e.getComponent());
         else if (key == KeyEvent.VK_END)
             goToLastInvalidCell(e.getComponent());
+    }
+
+    
+    /**
+     * Checks to see if a lock has been set for the upload task. 
+     * 
+     * @return true if no lock is present or lock is overridden. Else return false.
+     *  
+     */
+    public static boolean checkUploadLock()
+    {
+        SpTaskSemaphore lockInfo = TaskSemaphoreMgr.getLockInfo("WORKBENCH_UPLOAD_TASK", "WORKBENCH_UPLOAD_TASK",
+                TaskSemaphoreMgr.SCOPE.Global);
+        if (lockInfo == null)
+        {
+            return true;
+        }
+        
+        if (!lockInfo.getIsLocked())
+        {
+            return true;
+        }
+        
+        String lockOwner = lockInfo.getOwner().getName();
+        
+        String msg1 = String.format(UIRegistry.getResourceString("WB_UPLOAD_LOCK_MSG1"), lockOwner);
+        String msg2 = UIRegistry.getResourceString("WB_UPLOAD_LOCK_MSG2");
+        String msg3 = UIRegistry.getResourceString("WB_UPLOAD_LOCK_MSG3");
+        
+        PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
+        pb.add(new JLabel(msg1), new CellConstraints().xy(2, 2));
+        pb.add(new JLabel(msg2), new CellConstraints().xy(2, 4));
+        pb.add(new JLabel(msg3), new CellConstraints().xy(2, 6));
+        
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+                UIRegistry.getResourceString("WB_UPLOAD_LOCK_DLG"),
+                true,
+                CustomDialog.OKCANCEL,
+                pb.getPanel());
+        dlg.setOkLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.OVERRIDE"));
+        dlg.setCancelLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.EXIT"));
+                
+        UIHelper.centerAndShow(dlg);
+        dlg.dispose();
+        if (dlg.isCancelled())
+        {
+            return false;
+        }
+
+        PanelBuilder pb2 = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 5dlu"));
+        pb2.add(new JLabel(UIRegistry.getResourceString("WB_UPLOAD_LOCK_OVERRIDE_DANGER")), new CellConstraints().xy(2, 2));
+        CustomDialog dlg2 = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+                UIRegistry.getResourceString("WB_UPLOAD_CONFIRM_LOCK_OVERRIDE"),
+                true,
+                CustomDialog.OKCANCEL,
+                pb2.getPanel());
+        dlg2.setOkLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.OVERRIDE"));
+        dlg2.setCancelLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.EXIT"));
+        UIHelper.centerAndShow(dlg2);
+        dlg2.dispose();
+        if (dlg2.isCancelled())
+        {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Sets a lock for the upload task.
+     * 
+     * @return true is successful.
+     */
+    public static boolean lockUpload()
+    {
+        return TaskSemaphoreMgr.lock(UIRegistry.getResourceString("WB_UPLOAD_FORM_TITLE"), 
+                "WORKBENCH_UPLOAD_TASK", "WORKBENCH_UPLOAD_TASK",
+                TaskSemaphoreMgr.SCOPE.Global, true);
+    }
+    
+    /**
+     * Unlocks the upload task.
+     * 
+     * @return true if successful.
+     */
+    public static boolean unlockUpload()
+    {
+        return TaskSemaphoreMgr.unlock(UIRegistry.getResourceString("WB_UPLOAD_FORM_TITLE"), "WORKBENCH_UPLOAD_TASK", 
+                TaskSemaphoreMgr.SCOPE.Global);
     }
 
 }

@@ -2775,7 +2775,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             return false;
         }
-
+      
         if (retStatus)
         {
             ((WorkbenchTask)task).closing(this);
@@ -2784,6 +2784,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 if (datasetUploader.closing(this))
                 {
                     datasetUploader = null;
+                    Uploader.unlockUpload();
                 }
             }
             if (spreadSheet != null)
@@ -3006,7 +3007,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 {
                     loginStr += ", ";
                 }
-                loginStr += logins.get(l);
+                loginStr += "'" + logins.get(l) + "'";
             }
             PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
             pb.add(new JLabel(UIRegistry.getResourceString("WB_UPLOAD_OTHER_USERS")), new CellConstraints().xy(2, 2));
@@ -3041,6 +3042,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     CustomDialog.OKCANCELHELP,
                     pb2.getPanel());
             UIHelper.centerAndShow(dlg2);
+            dlg2.dispose();
             if (dlg2.isCancelled())
             {
                 return;
@@ -3054,6 +3056,10 @@ public class WorkbenchPaneSS extends BaseSubPane
             Vector<UploadMappingDef> maps = importMapper.getImporterMapping();
             DB db = new DB();
             setAllUploadDatasetBtnEnabled(false);
+            if (!Uploader.lockUpload())
+            {
+                return;
+            }
             datasetUploader = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), this);
             Vector<UploadMessage> structureErrors = datasetUploader.verifyUploadability();
             if (structureErrors.size() > 0) 
@@ -3102,6 +3108,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         catch (Exception ex)
         {
             UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
+            Uploader.unlockUpload();
             datasetUploader = null;
         }
         finally
@@ -3113,6 +3120,11 @@ public class WorkbenchPaneSS extends BaseSubPane
     public void uploadDone()
     {
         datasetUploader = null;
+        if (!Uploader.unlockUpload())
+        {
+            log.error("unable to unlock upload task semaphore.");
+            //inform the user??
+        }
         if (uploadPane != null)
         {
             mainPanel.remove(uploadPane);
@@ -3125,7 +3137,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             setAllUploadDatasetBtnEnabled(true);
         }
     }
-    
+        
     protected void setAllUploadDatasetBtnEnabled(boolean enabled)
     {
         for (SubPaneIFace sp : SubPaneMgr.getInstance().getSubPanes())

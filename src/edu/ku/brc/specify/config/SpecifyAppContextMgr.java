@@ -91,6 +91,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -1048,6 +1049,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
                 if (!startingOver)
                 {
+                    if (!Uploader.checkUploadLock())
+                    {
+                        System.exit(0);
+                    }
+                    
                     if (user.getIsLoggedIn())
                     {
                         Object[] options = { getResourceString("SpecifyAppContextMgr.OVERRIDE"),  //$NON-NLS-1$
@@ -1064,6 +1070,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                             System.exit(0);
                         }
                     }
+                    
                     
                     user.setIsLoggedIn(true);
                     user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
