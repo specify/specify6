@@ -180,7 +180,7 @@ public class SecurityAdminPane extends BaseSubPane
             public void insertUpdate(DocumentEvent e)  { changed(e); }
             public void changedUpdate(DocumentEvent e) { changed(e); }
 
-            private void changed(DocumentEvent e)
+            private void changed(@SuppressWarnings("unused") DocumentEvent e)
             { 
                 FilteredTreeModel model = (FilteredTreeModel) tree.getModel();
                 Filter filter = (StringUtils.isNotEmpty(searchText.getText())) ? 
@@ -585,7 +585,7 @@ public class SecurityAdminPane extends BaseSubPane
         }
     }
 
-    private void addGroup(DataProviderSessionIFace session, 
+    private void addGroup(@SuppressWarnings("unused")DataProviderSessionIFace session, 
                             DefaultMutableTreeNode node, 
                             UserGroupScope scope)
     {
@@ -926,17 +926,31 @@ public class SecurityAdminPane extends BaseSubPane
         JTable generalPermissionsTable = new JTable();
         JPanel generalPermissionsPanel = GeneralPermissionEditor.createGeneralPermissionsPanel(
         		generalPermissionsTable, genTypeSwitcher, infoPanel);
-        final PermissionEditor generalPermissionEditor = GeneralPermissionEditor.
-        	createGeneralPermissionEditor(generalPermissionsTable, genTypeSwitcher, infoPanel);
-        
+        final PermissionEditor generalPermissionEditor = GeneralPermissionEditor.createGeneralPermissionsEditor(generalPermissionsTable, 
+                                                                                                                genTypeSwitcher, 
+                                                                                                                infoPanel);
+        genTypeSwitcher.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                generalPermissionEditor.fillWithType();
+            }
+        });
         // create object permission table and panel
     	JComboBox    objTypeSwitcher = UIHelper.createComboBox(new DefaultComboBoxModel());
     	JTable objectPermissionsTable = new JTable();
         JPanel objectPermissionsPanel  = ObjectPermissionEditor.createObjectPermissionsPanel(
         		objectPermissionsTable, objTypeSwitcher, infoPanel);
-        final PermissionEditor objectPermissionEditor = ObjectPermissionEditor.
-        	createObjectPermissionsEditor(objectPermissionsTable, genTypeSwitcher, infoPanel);
-
+        final PermissionEditor objectPermissionEditor = ObjectPermissionEditor.createObjectPermissionsEditor(objectPermissionsTable,
+                                                                                                             objTypeSwitcher, 
+                                                                                                             infoPanel);
+        objTypeSwitcher.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                objectPermissionEditor.fillWithType();
+            }
+        });
         // create user form
         ViewBasedDisplayPanel panel = createViewBasedDisplayPanelForUser(infoPanel);
         
@@ -986,7 +1000,7 @@ public class SecurityAdminPane extends BaseSubPane
         UIHelper.makeTableHeadersCentered(table, false);
         JComboBox              typeSwitcher = UIHelper.createComboBox(new DefaultComboBoxModel());
         final PermissionEditor editor       = GeneralPermissionEditor.
-        	createGeneralPermissionEditor(table, typeSwitcher, infoPanel);
+        	createGeneralPermissionsEditor(table, typeSwitcher, infoPanel);
         ViewBasedDisplayPanel  panel        = createViewBasedDisplayPanelForGroup(infoPanel);
         typeSwitcher.addActionListener(new ActionListener() {
             @Override

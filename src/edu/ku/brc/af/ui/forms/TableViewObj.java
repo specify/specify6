@@ -1045,13 +1045,13 @@ public class TableViewObj implements Viewable,
                 }
                 doOtherSide = false;
                 parentDataObj.removeReference(dObj, dataSetFieldName, doOtherSide || addSearch);
-                if (addSearch && mvParent != null && ((FormDataObjIFace)dObj).getId() != null)
+                if (addSearch && mvParent != null && dObj.getId() != null)
                 {
                     mvParent.getTopLevel().addToBeSavedItem(dObj);
                 }
                 
                 // 'addSearch' is used in FormViewObj, but here maybe we need to use 'doOtherSide'
-                if (addSearch && mvParent != null && ((FormDataObjIFace)dObj).getId() != null)
+                if (addSearch && mvParent != null && dObj.getId() != null)
                 {
                     mvParent.getTopLevel().addToBeSavedItem(dObj);
                 }

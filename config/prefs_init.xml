@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<prefs>
+<prefs i18nresname="preferences">
     <section title="ui">
         <!--
             <pref title="ui" icon="Data_Entry" panelClass="edu.ku.brc.af.prefs.UIPrefsPanel"/>
         -->
-        <pref title="Formatting" icon="Formatting"   panelClass="edu.ku.brc.specify.prefs.FormattingPrefsPanel"/>
-        <pref title="System"     icon="SystemSetup"  panelClass="edu.ku.brc.specify.prefs.SystemPrefs"/>
-        <pref title="Tree"       icon="TreePref"  panelClass="edu.ku.brc.specify.prefs.TreePrefs"/>
+        <pref name="FORMATTING" title="FORMATTING" icon="Formatting"   panelClass="edu.ku.brc.specify.prefs.FormattingPrefsPanel"/>
+        <pref name="SYSTEM" title="SYSTEM"     icon="SystemSetup"  panelClass="edu.ku.brc.specify.prefs.SystemPrefs"/>
+        <pref name="TREE" title="TREE"       icon="TreePref"  panelClass="edu.ku.brc.specify.prefs.TreePrefs"/>
      </section>
     
     
     <section title="settings">
-        <pref title="email" icon="EMail" panelClass="edu.ku.brc.specify.prefs.EMailPrefsPanel"/>
-        <pref title="Misc" icon="MiscPref" panelClass="edu.ku.brc.specify.prefs.MiscPrefsPanel"/>
+        <pref name="EMAIL" title="EMAIL" icon="EMail" panelClass="edu.ku.brc.specify.prefs.EMailPrefsPanel"/>
+        <pref name="MISC" title="MISC" icon="MiscPref" panelClass="edu.ku.brc.specify.prefs.MiscPrefsPanel"/>
     </section>
        
     <!-- 
@@ -21,12 +21,16 @@
     </section>
     --> 
     
-    <section title="GoogleEarth">
-        <pref title="GoogleEarth" icon="GoogleEarth" panelClass="edu.ku.brc.af.prefs.GenericPrefsPanel" viewsetname="Preferences" viewname="GoogleEarth" help="PrefsGoogleEarth"/>
+    <section title="GOOGLE_EARTH">
+        <pref name="GOOGLE_EARTH" title="GOOGLE_EARTH" icon="GoogleEarth" panelClass="edu.ku.brc.af.prefs.GenericPrefsPanel" viewsetname="Preferences" viewname="GoogleEarth" help="PrefsGoogleEarth"/>
     </section>
    
     <section title="MySQL">
-        <pref title="MySQL" icon="SystemSetup" panelClass="edu.ku.brc.specify.prefs.MySQLPrefs" viewsetname="Preferences" viewname="MySQLBckRstrOptions" help="PrefsMySQLBkRs"/>
+        <pref name="MYSQL" title="MYSQL" icon="SystemSetup" panelClass="edu.ku.brc.specify.prefs.MySQLPrefs" viewsetname="Preferences" viewname="MySQLBckRstrOptions" help="PrefsMySQLBkRs"/>
+    </section>
+    
+    <section title="Login">
+        <pref name="LOGIN" title="LOGIN" icon="SystemSetup" panelClass="edu.ku.brc.specify.prefs.LoginPrefs" viewsetname="Preferences" viewname="LoginPrefs" help="PrefsLogin"/>
     </section>
     
 </prefs>

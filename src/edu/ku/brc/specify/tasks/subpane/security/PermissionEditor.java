@@ -75,12 +75,7 @@ public class PermissionEditor
                             final ChangeListener       listener, 
 	                        final PermissionEnumerator enumerator)
 	{
-        this.permissionTable    = permissionTable;
-        this.typeSwitcherCBX    = typeSwitcherCBX;
-		this.enumerator 		= enumerator;
-		this.principal 			= null;
-		this.listener           = listener;
-		this.readOnly           = false;
+        this(permissionTable, typeSwitcherCBX, listener, enumerator, false);
 	}
 
 	/**
@@ -105,6 +100,8 @@ public class PermissionEditor
 	
 	public void fillWithType()
 	{
+	    log.error("fillWithType");
+	    
 		if (model == null) 
 		{
 			return;
@@ -116,6 +113,7 @@ public class PermissionEditor
         }
         
         String type = (String)typeSwitcherCBX.getSelectedItem();
+        log.error(type);
         if (type != null)
         {
     	    Vector<PermissionEditorRowIFace> list = typeRowHash.get(type);

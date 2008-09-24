@@ -15,13 +15,26 @@ import javax.swing.table.DefaultTableModel;
  * @author Ricardo
  *
  */
-public interface PermissionEditorRowIFace 
+public interface PermissionEditorRowIFace extends Comparable<PermissionEditorRowIFace>
 {
+    /**
+     * @return
+     */
     public abstract String getType();
     
+	/**
+	 * @param model
+	 * @param icon
+	 */
 	public abstract void addTableRow(DefaultTableModel model, ImageIcon icon);
 	
+	/**
+	 * @return
+	 */
 	public abstract String getTitle();
 	
+	/**
+	 * @return
+	 */
 	public abstract String getDescription();
 }

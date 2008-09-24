@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -81,7 +80,14 @@ public class ObjectPermissionEditor extends PermissionEditor
         return new ObjectPermissionEditor(table, typeSwitcherCBX, listener, new ObjectPermissionEnumerator(), readOnly);
     }
 
-    public static JPanel createObjectPermissionsPanel(JTable objectPermissionsTable, JComboBox objTypeSwitcher, EditorPanel infoPanel) {
+    /**
+     * @param objectPermissionsTable
+     * @param objTypeSwitcher
+     * @param infoPanel
+     * @return
+     */
+    public static JPanel createObjectPermissionsPanel(JTable objectPermissionsTable, JComboBox objTypeSwitcher, EditorPanel infoPanel) 
+    {
     	// create object permission table
     	final CellConstraints cc = new CellConstraints();
 

@@ -66,8 +66,10 @@ public class SecuritySummaryDlg extends CustomDialog
         JTable generalPermissionsTable = new JTable();
         JPanel generalPermissionsPanel = GeneralPermissionEditor.createGeneralPermissionsPanel(
         		                             generalPermissionsTable, genTypeSwitcher, infoPanel);
-        final PermissionEditor generalPermissionsEditor = GeneralPermissionEditor.
-        	createGeneralPermissionEditor(generalPermissionsTable, genTypeSwitcher, infoPanel, true);
+        final PermissionEditor generalPermissionsEditor = GeneralPermissionEditor.createGeneralPermissionsEditor(generalPermissionsTable, 
+                                                                                                                 genTypeSwitcher, 
+                                                                                                                 infoPanel,
+                                                                                                                 true);
         
         genTypeSwitcher.addActionListener(new ActionListener() {
             @Override
@@ -82,8 +84,10 @@ public class SecuritySummaryDlg extends CustomDialog
         JPanel objectPermissionsPanel  = ObjectPermissionEditor.createObjectPermissionsPanel(
         		                             objectPermissionsTable, objTypeSwitcher, infoPanel);
         
-        final PermissionEditor objectPermissionsEditor = ObjectPermissionEditor.
-        	createObjectPermissionsEditor(objectPermissionsTable, objTypeSwitcher, infoPanel, true);
+        final PermissionEditor objectPermissionsEditor = ObjectPermissionEditor.createObjectPermissionsEditor(objectPermissionsTable, 
+                                                                                                              objTypeSwitcher, 
+                                                                                                              infoPanel, 
+                                                                                                              true);
     
         objTypeSwitcher.addActionListener(new ActionListener() {
         	@Override

@@ -22,11 +22,11 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class GeneralPermissionEditor
 {
-    public static PermissionEditor createGeneralPermissionEditor(final JTable table,
-                                                                 final JComboBox typeSwitcherCBX,
-                                                                 final ChangeListener listener)
+    public static PermissionEditor createGeneralPermissionsEditor(final JTable table,
+                                                                  final JComboBox typeSwitcherCBX,
+                                                                  final ChangeListener listener)
     {
-    	return createGeneralPermissionEditor(table, typeSwitcherCBX, listener, false);
+    	return createGeneralPermissionsEditor(table, typeSwitcherCBX, listener, false);
     }
 
     /**
@@ -36,23 +36,25 @@ public class GeneralPermissionEditor
      * @param readOnly
      * @return
      */
-    public static PermissionEditor createGeneralPermissionEditor(final JTable table,
-                                                                 final JComboBox typeSwitcherCBX,
-                                                                 final ChangeListener listener,
-                                                                 final boolean readOnly) 
+    public static PermissionEditor createGeneralPermissionsEditor(final JTable table,
+                                                                  final JComboBox typeSwitcherCBX,
+                                                                  final ChangeListener listener,
+                                                                  final boolean readOnly) 
     {
         //PermissionEnumerator e1 = new FormPermissionEnumerator();
         PermissionEnumerator e1 = new DataObjPermissionEnumerator();
         PermissionEnumerator e2 = new TaskPermissionEnumerator();
+        PermissionEnumerator e3 = new PrefsPermissionEnumerator();
         CompositePermissionEnumerator enumerator = new CompositePermissionEnumerator();
         enumerator.addEnumerator(e1);
         enumerator.addEnumerator(e2);
+        enumerator.addEnumerator(e3);
         return new PermissionEditor(table, typeSwitcherCBX, listener, enumerator, readOnly);
     }
     
     public static JPanel createGeneralPermissionsPanel(final JTable generalPermissionsTable, 
                                                        final JComboBox genTypeSwitcher, 
-                                                       final EditorPanel infoPanel) 
+                                                       @SuppressWarnings("unused") final EditorPanel infoPanel) 
     {
     	// create general permission table
     	final CellConstraints cc = new CellConstraints();

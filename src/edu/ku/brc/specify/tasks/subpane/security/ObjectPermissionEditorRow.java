@@ -224,4 +224,12 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 			session.saveOrUpdate(principal);
 		}
 	}
+
+    @Override
+    public int compareTo(PermissionEditorRowIFace o)
+    {
+        return getTitle().compareTo(o.getTitle());
+    }
+	
+	
 }

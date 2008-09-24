@@ -24,6 +24,8 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -31,11 +33,17 @@ import javax.swing.JPanel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
+import org.dom4j.Node;
 
+import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolbarLayoutManager;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This class simply reads all the prefs and constructs a toolbar with the various icons.
@@ -89,7 +97,13 @@ public class PrefsToolbar extends JPanel
             {
                 return; // XXX FIXME
             }
-
+            Node           prefsNode        = root.selectSingleNode("/prefs");
+            String         i18NResourceName = getAttr((Element)prefsNode, "i18nresname", (String)null);
+            ResourceBundle resBundle        = null;
+            if (StringUtils.isNotEmpty(i18NResourceName))
+            {
+                resBundle = UIRegistry.getResourceBundle(i18NResourceName);
+            }
             List<?> sections = root.selectNodes("/prefs/section"); //$NON-NLS-1$
             numPrefs = sections.size();
             for ( Iterator<?> iter = sections.iterator(); iter.hasNext(); )
@@ -101,7 +115,7 @@ public class PrefsToolbar extends JPanel
                 {
                     if (!getAttr(section, "isApp", false)) //$NON-NLS-1$
                     {
-                        loadSectionPrefs(section);
+                        loadSectionPrefs(section, resBundle);
                     }
                 }
             }
@@ -115,11 +129,12 @@ public class PrefsToolbar extends JPanel
 
     /**
      * Loads a Section or grouping of Prefs.
-     * @param parentPref the parent pref which is the groups or section
+     * @param sectionElement the section elemnent
+     * @param title the localized title
      */
-    protected void loadSectionPrefs(final Element sectionElement)
+    protected void loadSectionPrefs(final Element sectionElement, final ResourceBundle resBundle)
     {
-        NavBoxButton.setVertGap(2);
+        RolloverCommand.setVertGap(2);
         
         //List<NavBoxButton> btns = new Vector<NavBoxButton>();
         //int totalWidth = 0;
@@ -131,17 +146,40 @@ public class PrefsToolbar extends JPanel
             {
                 org.dom4j.Element pref = (org.dom4j.Element)iterPrefs.next();
 
+                String prefName    = pref.attributeValue("name"); //$NON-NLS-1$
                 String prefTitle   = pref.attributeValue("title"); //$NON-NLS-1$
                 String iconPath    = pref.attributeValue("icon"); //$NON-NLS-1$
                 String panelClass  = pref.attributeValue("panelClass"); //$NON-NLS-1$
                 String viewSetName = pref.attributeValue("viewsetname"); //$NON-NLS-1$
                 String viewName    = pref.attributeValue("viewname"); //$NON-NLS-1$
                 String hContext    = pref.attributeValue("help"); //$NON-NLS-1$
+                
+                if (UIHelper.isSecurityOn())
+                {
+                    PermissionSettings perm = SecurityMgr.getInstance().getPermission("Prefs."+prefName);
+                    PermissionSettings.dumpPermissions("Prefs: "+prefName, perm.getOptions());
+                    if (!perm.canModify())
+                    {
+                        continue;
+                    }
+                }
 
                 if (StringUtils.isNotEmpty(prefTitle) && 
                     StringUtils.isNotEmpty(iconPath) && 
                     StringUtils.isNotEmpty(panelClass))
                 {
+                    if (resBundle != null)
+                    {
+                        try 
+                        {
+                            prefTitle = resBundle.getString(prefTitle);
+                            
+                        } catch (MissingResourceException ex)
+                        {
+                            log.error("Couldn't find key["+prefTitle+"]"); 
+                        }
+                    }
+
                     ImageIcon icon;
                     if (iconPath.startsWith("http") || iconPath.startsWith("file")) //$NON-NLS-1$ //$NON-NLS-2$
                     {
@@ -218,7 +256,7 @@ public class PrefsToolbar extends JPanel
             throw new RuntimeException(ex);
         } finally
         {
-            NavBoxButton.setVertGap(0);
+            RolloverCommand.setVertGap(0);
 
         }
         

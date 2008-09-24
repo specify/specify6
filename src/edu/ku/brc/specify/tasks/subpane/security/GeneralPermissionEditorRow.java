@@ -84,4 +84,15 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
 	{
 		return getTitle();
 	}
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(PermissionEditorRowIFace o)
+    {
+        return getTitle().compareTo(o.getTitle());
+    }
+	
+	
 }

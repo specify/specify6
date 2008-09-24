@@ -136,6 +136,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
             builder.getPanel().setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));//.createEmptyBorder(1,1,0,1));
             builder.getPanel().setBackground(Color.WHITE);
             mainPanel.add(builder.getPanel(), BorderLayout.NORTH);
+            
+            prefsToolbar.setPreferredSize(prefsToolbar.getPreferredSize());
+            prefsToolbar.setSize(prefsToolbar.getPreferredSize());
         }
         
         showPanel(firstPanelName);
@@ -298,8 +301,11 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
                 {
                     Dimension winDim = getSize();
                     winDim.width += currentComp.getPreferredSize().width - oldSize.width;
-                    winDim.width = Math.max(winDim.width, 400);
+                    winDim.width  = Math.max(winDim.width, 400);
                     winDim.height = Math.max(winDim.height, 250);
+                    
+                    Dimension pSize = prefsToolbar.getPreferredSize();
+                    winDim.width  = Math.max(winDim.width, pSize.width+30);
                     
                     setSize(winDim);
                     currentComp.setSize(new Dimension(currentComp.getPreferredSize().width, oldSize.height));

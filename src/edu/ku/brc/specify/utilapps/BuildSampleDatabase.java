@@ -103,6 +103,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
@@ -658,57 +659,67 @@ public class BuildSampleDatabase
                                                final boolean    doCheck,
                                                final Collection collection)
     {
-        
-        Hashtable<String, Boolean> nameHash = doCheck ? new Hashtable<String, Boolean>() : null;
-        
-        if (doCheck)
-        {
-            for (PickList pl : collection.getPickLists())
-            {
-                nameHash.put(pl.getName(), true);
-            }
-        }
-        
         BldrPickList colMethods = null;
-        
-        List<BldrPickList> pickLists = DataBuilder.getBldrPickLists(discipline != null ? discipline.getName() : "common");
-        if (pickLists != null)
+        try
         {
-            for (BldrPickList pl : pickLists)
+            Transaction trans = localSession.beginTransaction();
+            
+            Hashtable<String, Boolean> nameHash = doCheck ? new Hashtable<String, Boolean>() : null;
+            
+            if (doCheck)
             {
-                if (doCheck && nameHash.get(pl.getName()) != null)
+                for (PickList pl : collection.getPickLists())
                 {
-                    continue;
+                    nameHash.put(pl.getName(), true);
                 }
-                
-                PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
-                                                   pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
-                                                   pl.getSizeLimit(), pl.getIsSystem(), pl.getSortType());
-                pickList.setCollection(collection);
-                collection.getPickLists().add(pickList);
-                
-                for (BldrPickListItem item : pl.getItems())
+            }
+            
+            List<BldrPickList> pickLists = DataBuilder.getBldrPickLists(discipline != null ? discipline.getName() : "common");
+            if (pickLists != null)
+            {
+                for (BldrPickList pl : pickLists)
                 {
-                    pickList.addItem(item.getTitle(), item.getValue(), item.getOrdinal());
+                    System.out.println(pl.getName());
+                    if (doCheck && nameHash.get(pl.getName()) != null)
+                    {
+                        continue;
+                    }
+                    
+                    PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
+                                                       pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
+                                                       pl.getSizeLimit(), pl.getIsSystem(), pl.getSortType());
+                    pickList.setCollection(collection);
+                    collection.getPickLists().add(pickList);
+                    
+                    for (BldrPickListItem item : pl.getItems())
+                    {
+                        pickList.addItem(item.getTitle(), item.getValue(), item.getOrdinal());
+                    }
+                    
+                    if (localSession != null)
+                    {
+                        localSession.saveOrUpdate(pickList);
+                    }
+                    
+                    if (pl.getName().equals("CollectingMethod"))
+                    {
+                        colMethods = pl;
+                    }
                 }
-                
                 if (localSession != null)
                 {
-                    localSession.saveOrUpdate(pickList);
+                    localSession.saveOrUpdate(collection);
                 }
-                
-                if (pl.getName().equals("CollectingMethod"))
-                {
-                    colMethods = pl;
-                }
-            }
-            if (localSession != null)
+            } else
             {
-                localSession.saveOrUpdate(collection);
+                log.error("No PickList XML");
             }
-        } else
+            trans.commit();
+            localSession.flush();
+            
+        } catch (Exception ex)
         {
-            log.error("No PickList XML");
+            ex.printStackTrace();
         }
         return colMethods;
     }

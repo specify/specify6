@@ -381,7 +381,7 @@ public class ViewLoader
      */
     public static String getViewDefs(final Element doc, 
                                      final Hashtable<String, ViewDefIFace> viewDefs,
-                                     final Hashtable<String, ViewIFace>    views,
+                                     @SuppressWarnings("unused") final Hashtable<String, ViewIFace>    views,
                                      final boolean doMapDefinitions) throws Exception
     {
         instance.viewSetName = doc.attributeValue(NAME);
@@ -545,6 +545,9 @@ public class ViewLoader
                                 {
                                     cellDef = ce;
                                 }
+                                break;
+                                
+                            default:
                                 break;
                         } // switch
                     }
@@ -846,6 +849,11 @@ public class ViewLoader
                                 case button:
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", uitypeStr);
                                     properties   = UIHelper.parseProperties(initialize);
+                                    String ttl = properties.getProperty("title");
+                                    if (ttl != null)
+                                    {
+                                        properties.put("title", getResourceLabel(ttl));
+                                    }
                                     break;
                                     
                                 case spinner:

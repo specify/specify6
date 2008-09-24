@@ -64,7 +64,16 @@
                 <altview name="MySQLBckRstrOptions" viewdef="MySQLBckRstrOptions" label="BCKRSTR_OPTIONS" mode="edit" validated="true"/>
             </altviews>
         </view>
-
+        
+        <view
+            name="LoginPrefs"
+            class="java.util.prefs.Preferences">
+            <desc><![CDATA[Backup Restore Options Preference Form.]]></desc>
+            <altviews>
+                <altview name="LoginPrefs" viewdef="LoginPrefs" label="LOGIN_PREFS" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
     </views>
 
     <!-- ***************************************************************************************** -->
@@ -543,12 +552,12 @@
             gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
             settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
             useresourcelabels="true">
-
+            
             <desc><![CDATA[Backup and Restore Preference Form.]]></desc>
-
+            
             <columnDef>p,2px,p,p:g,f:p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
-
+            
             <rows>
                 <row>
                     <cell type="separator" label="BCKRSTR_OPTIONS" colspan="5"/>
@@ -567,7 +576,39 @@
                 </row>
             </rows>
         </viewdef>
-
+        
+        <viewdef
+            type="form"
+            name="LoginPrefs"
+            class="java.util.prefs.Preferences"
+            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+            useresourcelabels="true">
+            
+            <desc><![CDATA[Backup and Restore Preference Form.]]></desc>
+            
+            <columnDef>p,2px,p,p:g,f:p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="LOGIN" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="field" id="autologin" name="autologin" uitype="checkbox" label="AUTO_LOGIN" ignore="true"/>
+                </row>
+                <row>
+                    <cell type="field" id="usernames" name="usernames" uitype="button" ignore="true" initialize="title=CLEAR_USERNAMES;"/>
+                </row>
+                <row>
+                    <cell type="field" id="databases" name="databases" uitype="button" ignore="true" initialize="title=CLEAR_DATABASES;"/>
+                </row>
+                <row>
+                    <cell type="field" id="servers" name="servers" uitype="button" ignore="true" initialize="title=CLEAR_SERVERS;"/>
+                </row>
+            </rows>
+        </viewdef>
+        
         
     </viewdefs>
 </viewset>

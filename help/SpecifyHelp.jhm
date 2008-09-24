@@ -120,6 +120,7 @@
 	<mapID target="PrefsMisc"                  url="SpecifyHelp/Prefs/Misc.html"/>
 	<mapID target="PrefsTree"                  url="SpecifyHelp/Prefs/Tree.html"/>
 	<mapID target="PrefsGoogleEarth"           url="SpecifyHelp/Prefs/GoogleEarth.html"/>
+	<mapID target="PrefsLogin"                 url="SpecifyHelp/Prefs/Login.html"/>
 	
 	
 	<!--

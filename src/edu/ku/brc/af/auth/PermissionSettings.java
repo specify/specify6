@@ -153,9 +153,9 @@ public class PermissionSettings implements PermissionIFace
     public static void dumpPermissions(final String title, final int options)
     {
         System.err.print(title + " - ");
-        System.err.print("  View: "   + (canView(options)   ? "Y" : "N"));
-        System.err.print("Modify: " + (canModify(options) ? "Y" : "N"));
-        System.err.print("  Delete: " + (canDelete(options) ? "Y" : "N"));
-        System.err.println("  Add: "  + (canAdd(options)    ? "Y" : "N"));
+        System.err.print(" View: "   + (canView(options)   ? "Y" : "N"));
+        System.err.print(" Modify: " + (canModify(options) ? "Y" : "N"));
+        System.err.print(" Delete: " + (canDelete(options) ? "Y" : "N"));
+        System.err.println(" Add: "  + (canAdd(options)    ? "Y" : "N"));
     }
 }
