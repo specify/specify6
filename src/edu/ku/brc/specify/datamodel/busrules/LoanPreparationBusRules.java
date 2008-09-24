@@ -22,6 +22,7 @@ import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -175,4 +176,22 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
             }
         }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
+     */
+    @Override
+    public STATUS processBusinessRules(Object dataObj)
+    {
+        reasonList.clear();
+        LoanPreparation loanPrep = (LoanPreparation)dataObj;
+        if (loanPrep.getQuantityReturned() > loanPrep.getQuantity())
+        {
+            reasonList.add(UIRegistry.getResourceString("LOAN_RET_LWR_QNT"));
+            return STATUS.Error;
+        }
+        return super.processBusinessRules(dataObj);
+    }
+    
+    
 }
