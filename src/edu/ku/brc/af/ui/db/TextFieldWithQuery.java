@@ -214,10 +214,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     idList.clear();
                     list.clear();
                     selectedId = null;
-                }
-                if (oldWasCleared != wasCleared)
-                {
-                    notifyListenersOfChange(TextFieldWithQuery.this);
+                    if (oldWasCleared != wasCleared && wasCleared)
+                    {
+                        notifyListenersOfChange(StringUtils.isEmpty(prevEnteredText) ? null : TextFieldWithQuery.this);
+                    }
                 }
             }
             @Override
@@ -539,7 +539,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             textField.setText(uiFieldFormatter.formatToUI(text).toString());
         } else
         {
-            textField.setText(text);
+            if (!textField.getText().isEmpty())
+            {
+                textField.setText(text);
+            }
         }
         ignoreDocChange = false;
     }
@@ -939,7 +942,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     {
         if (listSelectionListeners != null)
         {
-            ListSelectionEvent lse = new ListSelectionEvent(source, 0, 0, false);
+            ListSelectionEvent lse = source == null ? null : new ListSelectionEvent(source, 0, 0, false);
             for (ListSelectionListener l : listSelectionListeners)
             {
                 l.valueChanged(lse);

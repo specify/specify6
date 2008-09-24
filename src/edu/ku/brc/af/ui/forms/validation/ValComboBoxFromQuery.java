@@ -774,11 +774,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
     }
     
-    protected void notifyListSelectionListeners()
-    {
-        
-    }
-
     // Overriding the add/remove of FocusListeners is so we can make sure they get
     // called AFTER the Combobox has had a change to process it's focus listener
 
