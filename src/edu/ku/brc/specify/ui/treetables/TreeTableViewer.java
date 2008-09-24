@@ -2005,9 +2005,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             if (userChoice == JOptionPane.YES_OPTION || userChoice == JOptionPane.OK_OPTION)
             {
                 return NODE_DROPTYPE.SYNONIMIZE_NODE;
-            }
-            
-            if (userChoice == JOptionPane.NO_OPTION)
+                
+            } else if (userChoice == JOptionPane.NO_OPTION)
             {
                 return NODE_DROPTYPE.MOVE_NODE;
             }
@@ -2038,6 +2037,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                                                 true,
                                                 numOptions == 4 ? CustomDialog.OKCANCELAPPLYHELP : CustomDialog.OKCANCELHELP,
                                                 pb.getPanel());
+            dlg.setHelpContext("SYNONIMIZE_NODE");
             if (isSynonymizeOK)
             {
                 dlg.setOkLabel(getResourceString("TreeTableView.SYNONIMIZE_NODE"));
