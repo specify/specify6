@@ -1051,6 +1051,7 @@ public class ViewFactory
         {
             FormCellField cellField = (FormCellField)cell;
             
+            /* DEBUG
             String fieldName = cellField.getName();
             if (childInfo == null && 
                 fieldName != null && 
@@ -1059,7 +1060,7 @@ public class ViewFactory
                 )
             {
                log.debug("No DBChild ["+cellField.getName()+"]"); 
-            }
+            }*/
             
             bi.isRequired = cellField.isRequired() || (childInfo != null && childInfo.isRequired());
             
