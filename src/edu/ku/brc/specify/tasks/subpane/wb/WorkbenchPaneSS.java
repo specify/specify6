@@ -48,7 +48,6 @@ import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -187,7 +186,7 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
  */
 public class WorkbenchPaneSS extends BaseSubPane
 {
-    private static boolean          debugging = true;
+    private static boolean          debugging = false;
     private static final Logger     log = Logger.getLogger(WorkbenchPaneSS.class);
     
     private enum PanelType {Spreadsheet, Form}
@@ -2490,7 +2489,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void backupObject()
     {
-        WorkbenchBackupMgr.backupWorkbench(workbench.getId(), (WorkbenchTask) task);
+        WorkbenchBackupMgr.backupWorkbench(workbench, (WorkbenchTask) task);
     }
     
     protected void logDebug(Object toLog)
@@ -2515,125 +2514,21 @@ public class WorkbenchPaneSS extends BaseSubPane
         logDebug("---------" + System.nanoTime());
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        /* committed prevents null transaction exceptions occuring in catch blocks below.
-         * DataProviderSessionIFace needs methods to access transaction status??
-         */
-        UIRegistry.getStatusBar().setProgressDone(workbench.getName());
-        UIRegistry.getStatusBar().setIndeterminate(workbench.getName() + "XYZ", false);
-        UIRegistry.getStatusBar().setProgressRange(workbench.getName() + "XYZ", 0, workbench.getDeletedRows().size() + workbench.getWorkbenchRows().size(), 0);
         
         boolean committed = false; 
         boolean opened = false;
         try
         {
             FormHelper.updateLastEdittedInfo(workbench);
-            
-            // the CascadeType.DELETE_ORPHAN should take care of these, but we'll look into that later
-            
-            // Delete the cached Items
-            Vector<WorkbenchRow> deletedItems = workbench.getDeletedRows();
-            if (deletedItems != null && deletedItems.size() > 0)
-            {
-                session.beginTransaction();
-                for (WorkbenchRow row : deletedItems)
-                {
-                    session.delete(row);
-                    UIRegistry.getStatusBar().incrementRange(workbench.getName() + "XYZ");
-                }
-                deletedItems.clear();
-                session.commit();
-                session.close();
-                
-                session = DataProviderFactory.getInstance().createSession();
-            }
-            
-
-            // DEBUG
-            /*for (WorkbenchRow row : workbench.getWorkbenchRowsAsList())
-            {
-                for (WorkbenchDataItem item : row.getWorkbenchDataItems())
-                {
-                    System.out.println("["+item.getCellData()+"]");
-                }
-            }*/
-            
-            
+                                    
             logDebug("merging and saving: " + System.nanoTime());
-            Workbench dObj = null;
-            // For some reason, when a wb contains a lot of newly added rows AND they have been
-            // pasted into,
-            // The previously used "Workbench dObj = session.merge(workbench)"
-            // would take about ten minutes to execute when a 1500x4 block had been pasted into the
-            // dataset.
-          
-            // So. Store the rows; remove them from the workbench; and merge the workbench without the
-            // rows...
-            Set<WorkbenchRow> rows = workbench.getWorkbenchRows();
-            try
-            {
-                workbench.setWorkbenchRows(null);
-                // reassign the rows.
-                dObj = session.merge(workbench);
-            }
-            finally
-            {
-                if (dObj != null)
-                {
-                    dObj.setWorkbenchRows(rows);
-                }
-                else
-                {
-                    workbench.setWorkbenchRows(rows);
-                }
-                
-            }
-            // Now, iterate through the rows, only merging those that have ids. For some reason this
-            // is much much faster.
-            DataProviderSessionIFace rowSession = DataProviderFactory.getInstance().createSession();
-            try
-            {
-                Vector<Pair<WorkbenchRow, WorkbenchRow>> mergedRows = new Vector<Pair<WorkbenchRow, WorkbenchRow>>();
-                for (WorkbenchRow row : dObj.getWorkbenchRows())
-                {
-                    if (row.getWorkbenchRowId() != null)
-                    {
-                        mergedRows.add(new Pair<WorkbenchRow, WorkbenchRow>(row, rowSession
-                                .merge(row)));
-                    }
-                    UIRegistry.getStatusBar().incrementRange(workbench.getName() + "XYZ");
-                }
-                for (Pair<WorkbenchRow, WorkbenchRow> merger : mergedRows)
-                {
-                    if (merger.getFirst() != merger.getSecond())
-                    {
-                        dObj.getWorkbenchRows().remove(merger.getFirst());
-                        dObj.getWorkbenchRows().add(merger.getSecond());
-                    }
-                }
-            }
-            finally
-            {
-                rowSession.close();
-                rowSession = null;
-            }
-
             session.beginTransaction();
             opened = true;
-
-            /*
-             * // DEBUG for (WorkbenchRow row : ((Workbench)dObj).getWorkbenchRowsAsList()) { for
-             * (WorkbenchDataItem item : row.getWorkbenchDataItems()) {
-             * System.out.println("["+item.getCellData()+"]"); } }
-             */
-            
-            session.saveOrUpdate(dObj);
+           
+            session.saveOrUpdate(workbench);
             session.commit();
             committed = true;
             session.flush();
-            workbench = dObj;
-            logDebug("workbench.forceLoad()" + System.nanoTime());
-            workbench.forceLoad();
-            logDebug("end workbench.forceLoad()"  + System.nanoTime());
 
             model.setWorkbench(workbench);
             formPane.setWorkbench(workbench);
@@ -2657,7 +2552,6 @@ public class WorkbenchPaneSS extends BaseSubPane
                 session.rollback();
             }
             //recoverFromStaleObject("UPDATE_DATA_STALE");
-            UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
             UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(ex);
             dlg.setVisible(true);
             
@@ -2670,7 +2564,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 session.rollback();
             }
-            UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
             UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(ex);
             dlg.setVisible(true);
         }

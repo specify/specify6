@@ -1945,7 +1945,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             return;
         }
         
-        UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_DELETING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
+        UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_DELETING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
         final WorkbenchTask thisTask = this;
         
         final SwingWorker worker = new SwingWorker()
@@ -1956,30 +1956,47 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             @Override
             public Object construct()
             {
-                try
+                
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                session.attach(workbench);
+                UIRegistry.getStatusBar().setProgressRange(workbench.getName(), 0, workbench.getWorkbenchRows().size() + 3);
+                UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), false);
+                //force load the workbench here instead of calling workbench.forceLoad() because
+                //is so time-consuming and needs progress bar.
+                workbench.getWorkbenchTemplate().forceLoad();
+                UIRegistry.getStatusBar().incrementValue(workbench.getName());
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
+                    {
+                        UIRegistry.getStatusBar().setText(String.format(UIRegistry.getResourceString("WB_PREPARING_DELETE"), workbench.getName()));
+                    }
+                });
+                for (WorkbenchRow row : workbench.getWorkbenchRows())
                 {
-                    Thread.sleep(500);
-                    
-                } catch (Exception ex)
-                {
-                    // ignore?
+                    row.forceLoad();
+                    UIRegistry.getStatusBar().incrementValue(workbench.getName());
                 }
                 
-                backupName = WorkbenchBackupMgr.backupWorkbench(workbench.getId(), thisTask);
-                
+                backupName = WorkbenchBackupMgr.backupWorkbench(workbench, thisTask);
+                UIRegistry.getStatusBar().incrementValue(workbench.getName());
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
+                    {
+                        UIRegistry.getStatusBar().setText(String.format(UIRegistry.getResourceString("WB_DELETING"), workbench.getName()));
+                    }
+                });
                 final NavBoxItemIFace nbi = getBoxByTitle(workbenchNavBox, workbench.getName());
                 if (nbi != null)
                 {
 
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                     try
                     {
-                        session.attach(workbench);
                         session.beginTransaction();
                         session.delete(workbench);
                   
                         session.commit();
                         session.flush();
+                        UIRegistry.getStatusBar().incrementValue(workbench.getName());
                         
                         deleteDnDBtn(workbenchNavBox, nbi);
                         
@@ -2013,9 +2030,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             @Override
             public void finished()
             {
-                UIRegistry.clearGlassPaneMsg();
-                //UIRegistry.getStatusBar().setText(String.format(getResourceString("WB_DELETED_DATASET"), new Object[] {workbench.getName()}));
-                if (StringUtils.isNotEmpty(backupName))
+                UIRegistry.clearSimpleGlassPaneMsg();
+               if (StringUtils.isNotEmpty(backupName))
                 {
                     UIRegistry.getStatusBar().setText(String.format(getResourceString("WB_DEL_BACKED_UP"), new Object[] { workbench.getName(), backupName }));
                 }

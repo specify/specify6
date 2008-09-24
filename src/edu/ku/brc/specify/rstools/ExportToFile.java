@@ -10,7 +10,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.CSVExport;
@@ -63,11 +66,18 @@ public class ExportToFile implements RecordSetToolsIFace
         DataExport exporter = buildExporter(reqParams);
         if (exporter != null)
         {
-            String     name      = FilenameUtils.getName(exporter.getConfig().getFileName());
-            JStatusBar statusBar = UIRegistry.getStatusBar();
+            final String     name      = FilenameUtils.getName(exporter.getConfig().getFileName());
+            final String msgKey = reqParams.getProperty("statusmsgkey") == null ? "EXPORTING_TO" : reqParams.getProperty("statusmsgkey");
+            final String doneMsgKey = reqParams.getProperty("statusdonemsgkey") == null ? "EXPORTING_DONE" : reqParams.getProperty("statusdonemsgkey");
+            final JStatusBar statusBar = UIRegistry.getStatusBar();
             if (statusBar != null)
             {
-                statusBar.setText(String.format(UIRegistry.getResourceString("EXPORTING_TO"), new Object[] {name}));
+                SwingUtilities.invokeLater(new Runnable(){
+                    public void run()
+                    {
+                        statusBar.setText(String.format(UIRegistry.getResourceString(msgKey), new Object[] {name}));
+                    }
+                });
             }
             try
             {
@@ -75,7 +85,14 @@ public class ExportToFile implements RecordSetToolsIFace
                 
                 if (statusBar != null)
                 {
-                    statusBar.setText(String.format(UIRegistry.getResourceString("EXPORTING_DONE"), new Object[] {name}));
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                            statusBar.setText(String.format(UIRegistry
+                                    .getResourceString(doneMsgKey), new Object[] { name }));
+                        }
+                    });
                 }
             }
             catch (IOException e)

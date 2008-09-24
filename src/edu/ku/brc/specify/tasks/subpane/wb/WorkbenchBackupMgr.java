@@ -113,17 +113,30 @@ public class WorkbenchBackupMgr
      * loads workbench from the database and backs it up (exports to an xls file) in a subdir in the
      * default working Path, and deletes old backups if necessary.
      */
-    public static String backupWorkbench(final int workbenchId, final WorkbenchTask task)
+    public static String backupWorkbench(final Object toBackup, final WorkbenchTask task)
     {
         String backupName = null;
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            Workbench workbench = session.get(Workbench.class, workbenchId);
-            session.attach(workbench);
-            workbench.forceLoad();
-            session.close();
-            session = null;
+            Workbench workbench = null;
+            if (toBackup instanceof Workbench)
+            {
+                workbench = (Workbench )toBackup;
+            }
+            else
+            {
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                try
+                {
+                    workbench = session.get(Workbench.class, (Integer )toBackup);
+                    workbench.forceLoad();
+                }
+                finally
+                {
+                    session.close();
+                    session = null;
+                }
+            }
 
             String fileName = getFileName(workbench);
 
@@ -135,6 +148,8 @@ public class WorkbenchBackupMgr
  
             CommandAction command = new CommandAction(ToolsTask.TOOLS, ToolsTask.EXPORT_LIST);
             command.setProperty("tool", ExportToFile.class);
+            command.setProperty("statusmsgkey", "WB_BACKUP_TO");
+            command.setProperty("statusdonemsgkey", "WB_BACKUP_TO_DONE");
             command.setData(workbench.getWorkbenchRowsAsList());
 
             // XXX the command has to be sent synchronously so the backup happens before the save,
@@ -153,13 +168,6 @@ public class WorkbenchBackupMgr
         catch (Exception ex)
         {
             log.error(ex);
-        }
-        finally
-        {
-            if (session != null)
-            {
-                session.close();
-            }
         }
         return backupName;
     }

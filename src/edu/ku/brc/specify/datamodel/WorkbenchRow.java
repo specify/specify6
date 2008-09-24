@@ -256,7 +256,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         WorkbenchRowImage toDelete = null;
         
         for (WorkbenchRowImage rowImg: workbenchRowImages)
-        {
+        {            
             if (rowImg.getImageOrder().intValue() == index)
             {
                 toDelete = rowImg;
@@ -272,7 +272,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         
         if (toDelete != null)
         {
-            toDelete.setWorkbenchRow(null);
+            //commented out line below because it messes up delete-orphan process
+            //toDelete.setWorkbenchRow(null);
             workbenchRowImages.remove(toDelete);
         }
     }
