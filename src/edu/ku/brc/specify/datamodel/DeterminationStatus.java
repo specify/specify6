@@ -21,9 +21,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.persistence.Column;
@@ -34,13 +32,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -77,7 +72,6 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     protected String             remarks;
     
     protected Discipline         discipline;
-    protected Set<Determination> determinations;
 
     public DeterminationStatus()
     {
@@ -102,7 +96,6 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         name                  = null;
         remarks               = null;
         discipline            = AppContextMgr.getInstance().getClassObject(Discipline.class);
-        determinations        = new HashSet<Determination>();
     }
 
     @Id
@@ -179,18 +172,6 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     public void setRemarks(String remarks)
     {
         this.remarks = remarks;
-    }
-    
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "status")
-    @Cascade( { CascadeType.MERGE, CascadeType.LOCK })
-    public Set<Determination> getDeterminations()
-    {
-        return determinations;
-    }
-
-    public void setDeterminations(Set<Determination> determinations)
-    {
-        this.determinations = determinations;
     }
 
     /**

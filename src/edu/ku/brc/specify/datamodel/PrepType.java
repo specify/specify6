@@ -71,7 +71,6 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     protected String            name;
     protected Boolean           isLoanable;
     protected Collection        collection;
-    protected Set<Preparation>  preparations;
     protected Set<AttributeDef> attributeDefs;
 
     // Constructors
@@ -97,7 +96,6 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
         name           = null;
         isLoanable     = true;
         collection     = AppContextMgr.getInstance().getClassObject(Collection.class);
-        preparations   = new HashSet<Preparation>();
         attributeDefs  = new HashSet<AttributeDef>();
     }
 
@@ -175,21 +173,6 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     public String getIdentityTitle()
     {
         return StringUtils.isNotEmpty(name) ? name : super.getIdentityTitle();
-    }
-
-    /**
-     * 
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "prepType")
-    @Cascade( { CascadeType.MERGE, CascadeType.LOCK })
-    public Set<Preparation> getPreparations()
-    {
-        return this.preparations;
-    }
-
-    public void setPreparations(Set<Preparation> preparations)
-    {
-        this.preparations = preparations;
     }
 
     /**
