@@ -40,7 +40,6 @@ import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.ui.DBObjSearchDialog;

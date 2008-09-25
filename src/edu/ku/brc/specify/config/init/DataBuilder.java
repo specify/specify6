@@ -592,7 +592,7 @@ public class DataBuilder
                                                           final int count,
                                                           final CollectingEvent collectingEvent,
                                                           final Calendar catalogedDate,
-                                                          final String lastEditedBy)
+                                                          @SuppressWarnings("unused") final String lastEditedBy)
     {
         // Create Collection Object
         CollectionObject colObj = new CollectionObject();
@@ -656,7 +656,7 @@ public class DataBuilder
         determination.setDeterminer(determiner);
         determination.setTaxon(taxon);
 
-        status.getDeterminations().add(determination);
+        //status.getDeterminations().add(determination);
         collectionObject.getDeterminations().add(determination);
         taxon.getDeterminations().add(determination);
 
@@ -1301,7 +1301,7 @@ public class DataBuilder
     {
         Accession accession = new Accession();
         accession.initialize();
-        division.addReference(accession, "accessions");
+        accession.setDivision(division);
         accession.setAccessionNumber(number);
         accession.setVerbatimDate(verbatimDate);
         accession.setDateAccessioned(dateAccessioned);
@@ -1479,10 +1479,9 @@ public class DataBuilder
 //        return borrowshipment;
 //    }
 
-    public static Collection createCollection(final Boolean isTissueSeries,
-                                                    final String seriesName,
-                                                    final String collectionPrefix)//,
-                                                    //final Collection tissue)
+    public static Collection createCollection(final String seriesName,
+                                              final String collectionPrefix)//,
+                                              //final Collection tissue)
     {
         Collection collection = new Collection();
         collection.initialize();
@@ -1706,7 +1705,6 @@ public class DataBuilder
     }
 
     public static DeaccessionPreparation createDeaccessionPreparation(final Short quantity,
-                                                                      final CollectionObject collectionObject,
                                                                       final Deaccession deaccession)
     {
         DeaccessionPreparation deaccessionpreparation = new DeaccessionPreparation();
@@ -2439,27 +2437,11 @@ public class DataBuilder
                     // create user group
                     String name       = userGroupElement.attributeValue("name");
                     String type       = userGroupElement.attributeValue("userType");
-                    String className  = userGroupElement.attributeValue("spPrincipalClass");
                     
                     SpPrincipal group = createGroup(name, type, scope); 
                     groups.add(group);
                     
-                    Class<?> dataClass = null;
-                    if (StringUtils.isNotEmpty(className))
-                    {
-                        try
-                        {
-                            dataClass = Class.forName(className);
-                        } catch (Exception ex)
-                        {
-                        	System.out.println("Couldn't load class ["+className+"]");
-                        }
-                    } else
-                    {
-                    	System.out.println("Class name ["+className+"] is empty and can't be. Skipping.");
-                        continue;
-                    }
-                    
+                   
                     Set<SpPrincipal> groupSet = new HashSet<SpPrincipal>();
                     groupSet.add(group);
                     
@@ -2775,7 +2757,7 @@ public class DataBuilder
             {
                 localSession.beginTransaction();
                 
-                List<SpExportSchema> schemaList = (List<SpExportSchema>)localSession.getDataList(SpExportSchema.class);
+                List<SpExportSchema> schemaList = localSession.getDataList(SpExportSchema.class);
                 if (schemaList != null)
                 {
                     for (SpExportSchema s : schemaList)
@@ -2893,7 +2875,7 @@ public class DataBuilder
                             System.err.println("Couldn't find ["+sql+"]");
                         }
                     }
-;                }
+                }
                 
                 /*if (name != null && type != null)
                 {

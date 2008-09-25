@@ -9,7 +9,6 @@
  */
 package edu.ku.brc.specify.config.init;
 
-import java.sql.Timestamp;
 
 /**
  * @author rod
@@ -34,14 +33,14 @@ public class BldrPickListItem
         // do nothing
     }
 
-    public BldrPickListItem(final String title, final String value, final Timestamp timestampCreated)
+    public BldrPickListItem(final String title, final String value)
     {
         super();
         this.title = title;
         this.value = value;
     }
 
-    public BldrPickListItem(final String title, final Object valueObject, final Timestamp timestampCreated)
+    public BldrPickListItem(final String title)
     {
         super();
         this.title       = title;
