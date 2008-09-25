@@ -327,7 +327,8 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
                 multiView.setIsNewForm(true, false); // traverse immediate children only
             }
 
-            if (multiView.getCurrentView().getValidator() != null)
+            if (multiView.getCurrentView() != null && 
+                multiView.getCurrentView().getValidator() != null)
             {
                 multiView.getCurrentView().getValidator().validateForm();
             }
