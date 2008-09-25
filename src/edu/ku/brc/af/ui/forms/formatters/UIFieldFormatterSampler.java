@@ -146,7 +146,7 @@ public class UIFieldFormatterSampler implements SQLExecutionListener
 		{
 			DBRelationshipInfo rel = node.second;
 			DBTableInfo firstTable = node.first;
-			DBTableInfo secondTable = DBTableIdMgr.getInstance().getByClassName(rel.getClassName());;
+			DBTableInfo secondTable = DBTableIdMgr.getInstance().getByClassName(rel.getClassName());
 			
 			String sql = "";
 			if (rel.getType() == RelationshipType.OneToMany)

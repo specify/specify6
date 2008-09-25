@@ -60,7 +60,7 @@ public class DefEditDeleteAddPanel extends EditDeleteAddPanel
                                  final String delTTKey,
                                  final String addTTKey)
     {
-        createUI(defAL, editAL, delAL, addAL, defTTKey, defTTKey, delTTKey, addTTKey);
+        createUI(defAL, editAL, delAL, addAL, defTTKey, editTTKey, delTTKey, addTTKey);
     }
 
     /**

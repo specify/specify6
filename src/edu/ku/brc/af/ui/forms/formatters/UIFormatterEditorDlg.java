@@ -314,7 +314,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                 	changed(e);
                 }
 
-                private void changed(DocumentEvent e)
+                private void changed(@SuppressWarnings("unused")DocumentEvent e)
                 {
                 	updateSample(); 
                 	findOrCreateFormat(formatTF.getText());
@@ -381,7 +381,7 @@ public class UIFormatterEditorDlg extends CustomDialog
                 changed(e);
             }
 
-            private void changed(DocumentEvent e)
+            private void changed(@SuppressWarnings("unused")DocumentEvent e)
             {
                 if (StringUtils.isEmpty(txtFld.getText()))
                 {
