@@ -145,11 +145,11 @@ public class SpecifySecurityMgr extends SecurityMgr
                 dbPassword = result.getString(result.findColumn("Password")); //$NON-NLS-1$
             }
 
-            if (dbPassword == null)
+            /*if (dbPassword == null)
             {
                 throw new LoginException("authenticateDB - Password for User " + user + " undefined."); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-            if (pass != null && pass.equals(dbPassword))
+            }*/
+            if (pass != null && dbPassword != null && pass.equals(dbPassword))
             {
                 passwordMatch = true;
             } 

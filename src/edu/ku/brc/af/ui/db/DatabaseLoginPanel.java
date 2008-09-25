@@ -837,14 +837,14 @@ public class DatabaseLoginPanel extends JPanel
                     return null;
                 }
                 
-                SwingUtilities.invokeLater(new Runnable(){
+                /*SwingUtilities.invokeLater(new Runnable(){
                     @Override
                     public void run()
                     {
                         //Not exactly true yet, but make sure users know that this is NOT Specify starting up. 
                         setMessage(getResourceString("INVALID_LOGIN"), true); //$NON-NLS-1$
                     }
-                });
+                });*/
 
                 
                 return null;
@@ -869,43 +869,40 @@ public class DatabaseLoginPanel extends JPanel
                     // This restarts the System
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                     session.close();
-                }
+                    
+                    long endTime = System.currentTimeMillis();
+                    eTime = (endTime - eTime) / 1000;
+                    timeOK = true;
 
-                long endTime = System.currentTimeMillis();
-                eTime = (endTime - eTime) / 1000;
-                timeOK = true;
-
-                if (progressWorker != null)
-                {
-                    progressWorker.stop();
-                }
-
-                isLoggingIn = false;
-                statusBar.setProgressDone(getClass().getName());
-
-                if (timeOK)
-                {
-                    elapsedTime = eTime;
-                    loginAccumTime += elapsedTime;
-
-                    if (loginCount < 1000)
+                    if (progressWorker != null)
                     {
-                        String basePrefNameStr = getDatabaseName() + "." + getUserName() + "."; //$NON-NLS-1$ //$NON-NLS-2$
-                        AppPreferences.getLocalPrefs().putLong(basePrefNameStr + "logincount", //$NON-NLS-1$
-                                ++loginCount);
-                        AppPreferences.getLocalPrefs().putLong(basePrefNameStr + "loginaccumtime", //$NON-NLS-1$
-                                loginAccumTime);
+                        progressWorker.stop();
                     }
-                }
 
-                if (!isLoggedIn)
+                    isLoggingIn = false;
+                    statusBar.setProgressDone(getClass().getName());
+
+                    if (timeOK)
+                    {
+                        elapsedTime = eTime;
+                        loginAccumTime += elapsedTime;
+
+                        if (loginCount < 1000)
+                        {
+                            String basePrefNameStr = getDatabaseName() + "." + getUserName() + "."; //$NON-NLS-1$ //$NON-NLS-2$
+                            AppPreferences.getLocalPrefs().putLong(basePrefNameStr + "logincount", //$NON-NLS-1$
+                                    ++loginCount);
+                            AppPreferences.getLocalPrefs().putLong(basePrefNameStr + "loginaccumtime", //$NON-NLS-1$
+                                    loginAccumTime);
+                        }
+                    }
+                    
+                    loginOK();
+                    
+                } else
                 {
                     String msg = DBConnection.getInstance().getErrorMsg();
                     setMessage(StringUtils.isEmpty(msg) ? getResourceString("INVALID_LOGIN") : msg, true);
-
-                } else
-                {
-                    loginOK();
                 }
                 
                 enableUI(true);
