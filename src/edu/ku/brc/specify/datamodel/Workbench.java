@@ -85,7 +85,12 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
 
      // Transient Data
     protected Vector<WorkbenchRow> rows        = new Vector<WorkbenchRow>();
-    protected Vector<WorkbenchRow> deletedRows = new Vector<WorkbenchRow>();
+    /*
+     * With current Hibernate annotations and session usage, it seems that it is
+     * no longer necessary to track deleted rows.
+     
+     * protected Vector<WorkbenchRow> deletedRows = new Vector<WorkbenchRow>();
+    */
     
     protected Hashtable<Short, WorkbenchTemplateMappingItem> wbtmiItems    = new Hashtable<Short, WorkbenchTemplateMappingItem>();
 
@@ -123,7 +128,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         group                 = null;
         
         rows.clear();
-        deletedRows.clear();
+        //deletedRows.clear();
         wbtmiItems.clear();
     }
     // End Initializer
@@ -468,11 +473,11 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      * Return all the rows that are to be deleted.
      * @return all the rows that are to be deleted.
      */
-    @Transient
-    public Vector<WorkbenchRow> getDeletedRows()
-    {
-        return deletedRows;
-    }
+//    @Transient
+//    public Vector<WorkbenchRow> getDeletedRows()
+//    {
+//        return deletedRows;
+//    }
     
     /**
      * Appends a new rows to the workbench.
@@ -533,11 +538,11 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     {
         WorkbenchRow wbRow = rows.get(rowIndex);
         rows.remove(rowIndex);
-        for (int i=rowIndex+1;i<rows.size();i++)
+        for (int i=rowIndex;i<rows.size();i++)
         {
-            rows.get(i).setRowNumber((short)(i-1));
+            rows.get(i).setRowNumber((short)(i));
         }
-        deletedRows.add(wbRow);
+        //deletedRows.add(wbRow);
         workbenchRows.remove(wbRow);
         return wbRow;
     }
