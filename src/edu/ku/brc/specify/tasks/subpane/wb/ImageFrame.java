@@ -576,6 +576,10 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
      */
     protected void enableMenus(final boolean enable)
     {
+        if (addMI != null)
+        {
+            addMI.setEnabled(enable);
+        }
         if (deleteMI != null)
         {
             deleteMI.setEnabled(enable);
@@ -809,7 +813,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
     public void setRow(final WorkbenchRow row)
     {
         // if nothing changed, ignore this call
-        if (this.row == row)
+        if (row != null && this.row == row)
         {
             return;
         }
