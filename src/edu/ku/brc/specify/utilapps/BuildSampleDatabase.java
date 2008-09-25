@@ -4416,7 +4416,6 @@ public class BuildSampleDatabase
                 pt.setCreatedByAgent(Agent.getUserAgent());
                 pt.setTimestampCreated(now);
                 pt.setCollection(AppContextMgr.getInstance().getClassObject(Collection.class));
-                pt.setPreparations(new HashSet<Preparation>());
                 pt.setAttributeDefs(new HashSet<AttributeDef>());
             }
             return prepTypes;
