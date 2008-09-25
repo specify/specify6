@@ -549,6 +549,23 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                }
            }
            return pattern;
+           
+        } else if (data instanceof Number)
+        {
+            int    size = fields.get(0).getSize();
+            String fmt;
+            if (data instanceof Float || data instanceof Double)
+            {
+                fmt = "%" + (size-2) + ".2f";
+                    
+            } else if (data instanceof BigDecimal)
+            {
+                fmt = "%" + (size-2) + ".2f";
+            } else
+            {
+                fmt = "%d";
+            }
+            return String.format(fmt, data).trim();
         }
         return data;
     }

@@ -847,6 +847,16 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             {
                 data = formatter.getDateWrapper().format(((Calendar)value).getTime());
                 
+            } else if (value instanceof Number)
+            {
+                if (formatter != null)
+                {
+                    data = formatter.formatToUI(value).toString();
+                     
+                } else
+                {
+                    data = value.toString();
+                }
             } else
             {
                 data = value.toString();
