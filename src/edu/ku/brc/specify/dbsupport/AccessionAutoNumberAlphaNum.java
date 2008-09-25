@@ -103,7 +103,7 @@ public class AccessionAutoNumberAlphaNum extends AutoNumberGeneric
             if (list.size() == 1)
             {
                 Object[] objArray = (Object[]) list.get(0);
-                System.err.println(((Accession)objArray[0]).getAccessionNumber());
+                //System.err.println(((Accession)objArray[0]).getAccessionNumber());
                 return objArray[0];
             }
         } catch (Exception ex)

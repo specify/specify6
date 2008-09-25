@@ -4323,7 +4323,6 @@ public class FormViewObj implements Viewable,
                                     
                                 } else
                                 {
-                                    System.err.println("  "+(values[0] instanceof Number));
                                     setDataIntoUIComp(comp, isTextFieldPerMode && !(values[0] instanceof Number) ? values[0].toString() : values[0], defaultValue);
                                 }
 

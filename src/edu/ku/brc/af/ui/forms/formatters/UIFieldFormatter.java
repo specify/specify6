@@ -318,7 +318,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
             // This is kind lame, but it works
             String nines = "99999999999999999999";
             String mask = nines.substring(0, precision-scale)+"."+nines.substring(0, scale);
-            System.err.println(mask);
+            //System.err.println(mask);
             maxValue = new BigDecimal(Double.parseDouble(mask));
         }
         return maxValue;
