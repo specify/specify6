@@ -28,16 +28,10 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -56,7 +50,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
 
      protected Integer dataTypeId;
      protected String name;
-     protected Set<Discipline> discipline;
+     //protected Set<Discipline> discipline;
 
 
     // Constructors
@@ -81,7 +75,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
         super.init();
         dataTypeId = null;
         name = null;
-        discipline = new HashSet<Discipline>();
+        //discipline = new HashSet<Discipline>();
     }
     // End Initializer
 
@@ -134,9 +128,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
         this.name = name;
     }
 
-    /**
-     *
-     */
+    /*
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "dataType")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Discipline> getDiscipline() {
@@ -146,8 +138,9 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
     public void setDiscipline(Set<Discipline> discipline) {
         this.discipline = discipline;
     }
-
-  /*
+    */
+    
+    /*
      * (non-Javadoc)
      * 
      * @see java.lang.Object#toString()

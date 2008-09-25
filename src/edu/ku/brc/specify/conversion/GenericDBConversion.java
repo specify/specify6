@@ -4861,8 +4861,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             for (String name : dataTypeNames)
             {
                 DataType dataType = new DataType();
+                dataType.initialize();
                 dataType.setName(name);
-                dataType.setDiscipline(null);
                 localSession.save(dataType);
 
                 if (returnName != null && name.equals(returnName))

@@ -21,6 +21,9 @@ import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 
+import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.ui.UIRegistry;
@@ -46,10 +49,10 @@ public class SpecifySchemaGenerator
      * @throws SQLException
      */
     public static void generateSchema(final DatabaseDriverInfo dbdriverInfo, 
-                                            final String hostname,
-                                            final String databaseName,
-                                            final String userName,
-                                            final String password) throws SQLException
+                                      final String hostname,
+                                      final String databaseName,
+                                      final String userName,
+                                      final String password) throws SQLException
     {
         log.debug("generateSchema hostname:" + hostname);
         log.debug("generateSchema databaseName:" + databaseName);
@@ -93,6 +96,10 @@ public class SpecifySchemaGenerator
                     connectionStr,
                     userName,
                     password);
+        
+        String       connStr           = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName);
+        DBConnection dbConnForDatabase = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connStr, userName, password);
+        fixFloatFields(dbConnForDatabase);
         
         // Now switch the Connection String back to Open from Create.
         if (isDerby)
@@ -194,6 +201,47 @@ public class SpecifySchemaGenerator
     } 
     
     /**
+     * @param dbConnection
+     * @throws SQLException
+     */
+    protected static void fixFloatFields(final DBConnection dbConnection) throws SQLException
+    {
+        Connection connection = dbConnection.createConnection();
+        int x = 1;
+        if (connection != null)
+        {
+            Statement stmt = connection.createStatement();
+            try
+            {
+                for (DBTableInfo tableInfo : DBTableIdMgr.getInstance().getTables())
+                {
+                    for (DBFieldInfo fldInfo : tableInfo.getFields())
+                    {
+                        if (fldInfo.getDataClass() == Float.class)
+                        {
+                            String sql = "ALTER TABLE "+tableInfo.getName()+" MODIFY "+fldInfo.getColumn()+" FLOAT(20,10)";
+                            stmt.executeUpdate(sql);
+                            stmt.clearBatch();                           
+                            log.info(sql);
+                        }
+                    }
+                }
+                
+            } catch (SQLException ex)
+            {
+                //log.error("SQLException could not drop database ["+dbName+"]:" + "\n" + ex.toString());
+                ex.printStackTrace();
+            }        
+            stmt.close();
+            connection.close();
+        } else
+        {
+            log.error(dbConnection.getErrorMsg());
+        }
+    } 
+
+    
+    /**
      * Drop the database via it's connection.
      * @param dbConnection the connection 
      * @param dbName the database name
@@ -226,9 +274,9 @@ public class SpecifySchemaGenerator
      * @return the generated Hibernate properties
      */
     protected static Properties getHibernateProperties(final DatabaseDriverInfo driverInfo,
-                                                final String connectionStr, // might be a create or an open connection string
-                                                final String user,
-                                                final String passwd)
+                                                       final String connectionStr, // might be a create or an open connection string
+                                                       final String user,
+                                                       final String passwd)
     {
         Properties props = new Properties();
         props.setProperty("hibernate.connection.driver_class", driverInfo.getDriverClassName());
@@ -253,9 +301,9 @@ public class SpecifySchemaGenerator
      * @param passwd the password (clear text)
      */
     protected static void doGenSchema(final DatabaseDriverInfo driverInfo,
-                               final String connectionStr, // might be a create or an open connection string
-                               final String user,
-                               final String passwd)
+                                      final String connectionStr, // might be a create or an open connection string
+                                      final String user,
+                                      final String passwd)
     {
         // setup the Hibernate configuartion
         Configuration hibCfg = new AnnotationConfiguration();

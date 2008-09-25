@@ -107,23 +107,13 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     
     protected String                        guid; 
     
-    protected Set<Author>                   authors;
-    protected Set<LoanReturnPreparation>    loanReturnPreparations;
-    protected Set<BorrowReturnMaterial>     borrowReturnMaterials;
-    protected Set<ExchangeIn>               exchangeInCatalogedBys;
     protected Set<Agent>                    orgMembers;
     protected Agent                         organization;
     protected Set<Project>                  projects;
-    protected Set<Preparation>              preparations;
     protected Set<GroupPerson>              groups;
     protected Set<GroupPerson>              members;
-    protected Set<Determination>            determinations;
-    protected Set<Shipment>                 shipments;
     protected Set<Collector>                collectors;
-    protected Set<ExchangeOut>              exchangeOutCatalogedBys;
-    protected Set<RepositoryAgreement>      repositoryAgreements;
-    protected Set<GeoCoordDetail>           geoCoordDetail;
-    protected Set<CollectionObject>         catalogers;
+    
     
     
     protected Division                      division;
@@ -145,6 +135,17 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
 
     
     /*
+    protected Set<Author>                   authors;
+    protected Set<LoanReturnPreparation>    loanReturnPreparations;
+    protected Set<BorrowReturnMaterial>     borrowReturnMaterials;
+    protected Set<ExchangeIn>               exchangeInCatalogedBys;
+    protected Set<Preparation>              preparations;
+    protected Set<Determination>            determinations;
+    protected Set<Shipment>                 shipments;
+    protected Set<ExchangeOut>              exchangeOutCatalogedBys;
+    protected Set<RepositoryAgreement>      repositoryAgreements;
+    protected Set<GeoCoordDetail>           geoCoordDetail;
+    protected Set<CollectionObject>         catalogers;
     protected Set<LoanAgent>                loanAgents;
     protected Set<Shipment>                 shipmentsByShipper;
     protected Set<Shipment>                 shipmentsByShippedTo;
@@ -210,23 +211,12 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         remarks                   = null;
         visibility                = null;
         guid                      = null;
-        authors                   = new HashSet<Author>();
-        loanReturnPreparations    = new HashSet<LoanReturnPreparation>();
-        borrowReturnMaterials     = new HashSet<BorrowReturnMaterial>();
-        exchangeInCatalogedBys    = new HashSet<ExchangeIn>();
         orgMembers                = new HashSet<Agent>();
         organization              = null;
         projects                  = new HashSet<Project>();
-        preparations              = new HashSet<Preparation>();
         groups                    = new HashSet<GroupPerson>();
         members                   = new HashSet<GroupPerson>();
-        determinations            = new HashSet<Determination>();
-        shipments                 = new HashSet<Shipment>();
         collectors                = new HashSet<Collector>();
-        exchangeOutCatalogedBys   = new HashSet<ExchangeOut>();
-        repositoryAgreements      = new HashSet<RepositoryAgreement>();
-        geoCoordDetail            = new HashSet<GeoCoordDetail>();
-        catalogers                = new HashSet<CollectionObject>();
         
         division                  = null;
         instTechContact           = null;
@@ -247,6 +237,17 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         agentSpecialties               = new HashSet<AgentSpecialty>();
 
         /*
+        authors                   = new HashSet<Author>();
+        loanReturnPreparations    = new HashSet<LoanReturnPreparation>();
+        borrowReturnMaterials     = new HashSet<BorrowReturnMaterial>();
+        exchangeInCatalogedBys    = new HashSet<ExchangeIn>();
+        preparations              = new HashSet<Preparation>();
+        determinations            = new HashSet<Determination>();
+        shipments                 = new HashSet<Shipment>();
+        exchangeOutCatalogedBys   = new HashSet<ExchangeOut>();
+        repositoryAgreements      = new HashSet<RepositoryAgreement>();
+        geoCoordDetail            = new HashSet<GeoCoordDetail>();
+        catalogers                = new HashSet<CollectionObject>();
         loanAgents                     = new HashSet<LoanAgent>();
         shipmentsByShipper             = new HashSet<Shipment>();
         shipmentsByShippedTo           = new HashSet<Shipment>();
@@ -315,18 +316,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         this.agentId = agentId;
     }
 
-    @OneToMany(mappedBy = "cataloger")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-    public Set<CollectionObject> getCatalogers()
-    {
-        return catalogers;
-    }
-
-    public void setCatalogers(Set<CollectionObject> catalogers)
-    {
-        this.catalogers = catalogers;
-    }
-    
     /**
      *
      */
@@ -512,64 +501,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(mappedBy = "agent")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-    public Set<Author> getAuthors() {
-        return this.authors;
-    }
-
-    public void setAuthors(Set<Author> authors) {
-        this.authors = authors;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "receivedBy")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-    public Set<LoanReturnPreparation> getLoanReturnPreparations() 
-    {
-        return this.loanReturnPreparations;
-    }
-
-    public void setLoanReturnPreparations(Set<LoanReturnPreparation> loanReturnPreparations) 
-    {
-        this.loanReturnPreparations = loanReturnPreparations;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "agent")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-    public Set<BorrowReturnMaterial> getBorrowReturnMaterials() 
-    {
-        return this.borrowReturnMaterials;
-    }
-
-    public void setBorrowReturnMaterials(Set<BorrowReturnMaterial> borrowReturnMaterials) 
-    {
-        this.borrowReturnMaterials = borrowReturnMaterials;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "agentCatalogedBy")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-    public Set<ExchangeIn> getExchangeInCatalogedBys() 
-    {
-        return this.exchangeInCatalogedBys;
-    }
-
-    public void setExchangeInCatalogedBys(Set<ExchangeIn> exchangeInCatalogedBys) 
-    {
-        this.exchangeInCatalogedBys = exchangeInCatalogedBys;
-    }
-
-    /**
-     *
-     */
     @OneToMany(mappedBy = "organization")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Agent> getOrgMembers() 
@@ -632,21 +563,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(mappedBy = "preparedByAgent")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-    public Set<Preparation> getPreparations() 
-    {
-        return this.preparations;
-    }
-
-    public void setPreparations(Set<Preparation> preparations) 
-    {
-        this.preparations = preparations;
-    }
-
-    /**
-     *
-     */
     @OneToMany(mappedBy = "group")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<GroupPerson> getGroups() 
@@ -674,9 +590,65 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         this.members = groupPersonByMember;
     }
 
-    /**
-    *
-    */
+    /*
+    @OneToMany(mappedBy = "cataloger")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<CollectionObject> getCatalogers()
+    {
+        return catalogers;
+    }
+
+    public void setCatalogers(Set<CollectionObject> catalogers)
+    {
+        this.catalogers = catalogers;
+    }
+    
+    @OneToMany(mappedBy = "agent")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<Author> getAuthors() {
+        return this.authors;
+    }
+
+    public void setAuthors(Set<Author> authors) {
+        this.authors = authors;
+    }
+
+    @OneToMany(mappedBy = "receivedBy")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<LoanReturnPreparation> getLoanReturnPreparations() 
+    {
+        return this.loanReturnPreparations;
+    }
+
+    public void setLoanReturnPreparations(Set<LoanReturnPreparation> loanReturnPreparations) 
+    {
+        this.loanReturnPreparations = loanReturnPreparations;
+    }
+
+    @OneToMany(mappedBy = "agent")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<BorrowReturnMaterial> getBorrowReturnMaterials() 
+    {
+        return this.borrowReturnMaterials;
+    }
+
+    public void setBorrowReturnMaterials(Set<BorrowReturnMaterial> borrowReturnMaterials) 
+    {
+        this.borrowReturnMaterials = borrowReturnMaterials;
+    }
+
+    @OneToMany(mappedBy = "agentCatalogedBy")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<ExchangeIn> getExchangeInCatalogedBys() 
+    {
+        return this.exchangeInCatalogedBys;
+    }
+
+    public void setExchangeInCatalogedBys(Set<ExchangeIn> exchangeInCatalogedBys) 
+    {
+        this.exchangeInCatalogedBys = exchangeInCatalogedBys;
+    }
+
    @OneToMany(mappedBy = "determiner")
    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
    public Set<Determination> getDeterminations() 
@@ -689,9 +661,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
        this.determinations = determinations;
    }
 
-   /**
-    *
-    */
     @OneToMany(mappedBy = "geoRefDetBy")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<GeoCoordDetail> getGeoCoordDetail() 
@@ -704,9 +673,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         this.geoCoordDetail = geoCoordDetail;
     }
 
-    /**
-     *
-     */
     @OneToMany(mappedBy = "shippedBy")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Shipment> getShipments() 
@@ -718,7 +684,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     {
         this.shipments = shipments;
     }
-
+    */
+    
     /**
      *
      */
@@ -734,35 +701,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         this.collectors = collectors;
     }
 
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "agentCatalogedBy")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-    public Set<ExchangeOut> getExchangeOutCatalogedBys() 
-    {
-        return this.exchangeOutCatalogedBys;
-    }
-
-    public void setExchangeOutCatalogedBys(Set<ExchangeOut> exchangeOutCatalogedBys) 
-    {
-        this.exchangeOutCatalogedBys = exchangeOutCatalogedBys;
-    }
-
-    /**
-    *
-    */
-   @OneToMany(mappedBy = "originator")
-   @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-   public Set<RepositoryAgreement> getRepositoryAgreements() 
-   {
-       return this.repositoryAgreements;
-   }
-
-   public void setRepositoryAgreements(Set<RepositoryAgreement> repositoryAgreements) 
-   {
-       this.repositoryAgreements = repositoryAgreements;
-   }
 
    /**
     *  The Division this Agent belongs to.

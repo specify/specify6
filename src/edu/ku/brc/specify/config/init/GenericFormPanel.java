@@ -58,7 +58,7 @@ public class GenericFormPanel extends BaseSetupPanel
         int i = 0;
         for (String fName : fields)
         {
-            comps.put((String)fName, createField(builder, labels[i], row));
+            comps.put(fName, createField(builder, labels[i], row));
             row += 2;
             i++;
         }

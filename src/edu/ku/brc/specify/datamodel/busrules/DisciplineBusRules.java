@@ -74,10 +74,10 @@ public class DisciplineBusRules extends BaseBusRules
             ct.setTaxonTreeDef(taxonTreeDef);
         }
         
-        if (ct.getSpAppResourceDirs() == null)
-        {
+        //if (ct.getSpAppResourceDirs() == null)
+        //{
             //ct.setTaxonTreeDef(taxonTreeDef);
-        }
+        //}
     }
 
     /* (non-Javadoc)

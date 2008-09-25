@@ -70,8 +70,8 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     
     // Relationships
     protected Discipline                 discipline;
-    protected Set<SpAppResourceDir>      spAppResourceDirs;
-    protected Set<FieldNotebook>         fieldNoteBooks;
+    //protected Set<SpAppResourceDir>      spAppResourceDirs;
+    //protected Set<FieldNotebook>         fieldNoteBooks;
     //protected Set<CollectionObject>      collectionObjects;
     protected Agent                      contactAgent;
     protected Agent                      curatorAgent;
@@ -118,9 +118,9 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         institutionType        = null;
         scope                  = null;
         dbContentVersion       = null;
-        spAppResourceDirs      = new HashSet<SpAppResourceDir>();
+        //spAppResourceDirs      = new HashSet<SpAppResourceDir>();
         //collectionObjects      = new HashSet<CollectionObject>();
-        fieldNoteBooks         = new HashSet<FieldNotebook>();
+        //fieldNoteBooks         = new HashSet<FieldNotebook>();
         numberingSchemes       = new HashSet<AutoNumberingScheme>();
         contactAgent           = null;
         curatorAgent           = null;
@@ -450,6 +450,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         this.discipline = discipline;
     }
     
+    /*
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collection")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<SpAppResourceDir> getSpAppResourceDirs()
@@ -462,7 +463,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         this.spAppResourceDirs = spAppResourceDirs;
     }
 
-    /*@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collection")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collection")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<CollectionObject> getCollectionObjects()
     {
@@ -472,11 +473,8 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     public void setCollectionObjects(Set<CollectionObject> collectionObjects)
     {
         this.collectionObjects = collectionObjects;
-    }*/
+    }
     
-    /**
-     * @return the fieldNoteBooks
-     */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collection")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<FieldNotebook> getFieldNoteBooks()
@@ -484,13 +482,11 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         return fieldNoteBooks;
     }
 
-    /**
-     * @param fieldNoteBooks the fieldNoteBooks to set
-     */
     public void setFieldNoteBooks(Set<FieldNotebook> fieldNoteBooks)
     {
         this.fieldNoteBooks = fieldNoteBooks;
     }
+   */
 
     /**
      * @return the contactAgent

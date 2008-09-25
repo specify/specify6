@@ -30,6 +30,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -49,6 +50,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 
 /**
@@ -98,7 +101,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
 
     protected Geography               geography;
     protected Set<LocalityCitation>   localityCitations;
-    protected Set<CollectingEvent>    collectingEvents;
+    //protected Set<CollectingEvent>    collectingEvents;
     protected Set<LocalityAttachment> localityAttachments;
     protected Set<LocalityNameAlias>  localityNameAliass;
     protected Set<LocalityDetail>     localityDetails;
@@ -157,7 +160,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         //discipline          = AppContextMgr.getInstance().getClassObject(Discipline.class);
         geography           = null;
         localityCitations   = new HashSet<LocalityCitation>();
-        collectingEvents    = new HashSet<CollectingEvent>();
+        //collectingEvents    = new HashSet<CollectingEvent>();
         localityNameAliass  = new HashSet<LocalityNameAlias>();
         localityAttachments = new HashSet<LocalityAttachment>();
         localityDetails     = new HashSet<LocalityDetail>();
@@ -677,9 +680,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         this.localityNameAliass = localityNameAliass;
     }
 
-    /**
-     * 
-     */
+    /*
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "locality")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<CollectingEvent> getCollectingEvents()
@@ -691,7 +692,33 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     {
         this.collectingEvents = collectingEvents;
     }
+    */
+    
+    @SuppressWarnings("unchecked")
+    @Transient
+    public List<CollectingEvent> getCollectingEvents()
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            if (session != null)
+            {
+                List<CollectingEvent> ces = (List<CollectingEvent>)session.getDataList("FROM CollectingEvent WHERE localityId = "+getId());
+                for (CollectingEvent ce : ces)
+                {
+                    ce.getCollectionObjects().size(); // force load of COs
+                }
+                return ces;
+            }
+        }
+        finally
+        {
+            session.close();
+        }
+        return null;
+    }
 
+    
     /**
      * @return the localityDetail
      */

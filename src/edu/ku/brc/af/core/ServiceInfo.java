@@ -102,6 +102,13 @@ public class ServiceInfo implements Comparable<ServiceInfo>
         this.tooltip   = tooltip;
         this.isDefault = isDefault;
         
+        if (tableId == 66)
+        {
+            int x = 0;
+            x++;
+        }
+        
+        
         addIcon(IconManager.getIcon(iconName, IconManager.IconSize.Std16), IconManager.IconSize.Std16);
         addIcon(IconManager.getIcon(iconName, IconManager.IconSize.Std24), IconManager.IconSize.Std24);
         addIcon(IconManager.getIcon(iconName, IconManager.IconSize.Std32), IconManager.IconSize.Std32);

@@ -74,8 +74,8 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     protected GeologicTimePeriodTreeDef geologicTimePeriodTreeDef;
     protected TaxonTreeDef              taxonTreeDef;
     protected LithoStratTreeDef         lithoStratTreeDef;
-    protected Set<Locality>             localities;
-    protected Set<SpAppResourceDir>     spAppResourceDirs;
+    //protected Set<Locality>             localities;
+    //protected Set<SpAppResourceDir>     spAppResourceDirs;
     //protected Set<UserPermission>       userPermissions;
     protected Set<Agent>                agents;
     protected Division                  division;
@@ -132,8 +132,8 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
         taxonTreeDef          = null;
         lithoStratTreeDef     = null;
         determinationStatuss  = new HashSet<DeterminationStatus>();
-        localities            = new HashSet<Locality>();
-        spAppResourceDirs     = new HashSet<SpAppResourceDir>();
+        //localities            = new HashSet<Locality>();
+        //spAppResourceDirs     = new HashSet<SpAppResourceDir>();
         spLocaleContainers    = new HashSet<SpLocaleContainer>();
         agents                = new HashSet<Agent>();
         spExportSchemas       = new HashSet<SpExportSchema>();
@@ -296,9 +296,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
         this.lithoStratTreeDef = lithoStratTreeDef;
     }
 
-    /**
-     *
-     */
+    /*
     @OneToMany(mappedBy="discipline")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Locality> getLocalities() 
@@ -310,7 +308,8 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     {
         this.localities = localities;
     } 
-
+    */
+    
     /**
      * @return the determinationStatuss
      */
@@ -329,7 +328,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
         this.determinationStatuss = determinationStatuss;
     }
     
-    @OneToMany(mappedBy="discipline")
+    /*@OneToMany(mappedBy="discipline")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<SpAppResourceDir> getSpAppResourceDirs()
     {
@@ -339,7 +338,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     public void setSpAppResourceDirs(Set<SpAppResourceDir> spAppResourceDirs)
     {
         this.spAppResourceDirs = spAppResourceDirs;
-    }
+    }*/
     
 //    @OneToMany(mappedBy="discipline")
 //    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )

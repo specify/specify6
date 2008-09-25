@@ -69,12 +69,12 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
      protected Set<Discipline>          disciplines;
      
      protected Set<Agent>               members;
-     protected Set<ConservDescription>  conservDescriptions;
-     protected Set<Loan>                loans;
-     protected Set<Gift>                gifts;
-     protected Set<TreatmentEvent>      treatmentEvents;
-     protected Set<Accession>           accessions;
-     protected Set<RepositoryAgreement> repositoryAgreements;
+     //protected Set<ConservDescription>  conservDescriptions;
+     //protected Set<Loan>                loans;
+     //protected Set<Gift>                gifts;
+     //protected Set<TreatmentEvent>      treatmentEvents;
+     //protected Set<Accession>           accessions;
+     //protected Set<RepositoryAgreement> repositoryAgreements;
      protected Set<AutoNumberingScheme> numberingSchemes;
 
      
@@ -110,6 +110,7 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
         remarks             = null;
         isAccessionBound    = true;
         members             = new HashSet<Agent>();
+        /*
         conservDescriptions = new HashSet<ConservDescription>();
         loans               = new HashSet<Loan>();
         gifts               = new HashSet<Gift>();
@@ -117,6 +118,7 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
         accessions          = new HashSet<Accession>();
         repositoryAgreements = new HashSet<RepositoryAgreement>();
         numberingSchemes     = new HashSet<AutoNumberingScheme>();
+        */
         institution         = null;
         address             = null;
         disciplines         = new HashSet<Discipline>();
@@ -224,19 +226,13 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
         return members;
     }
 
-    /**
-     * @return the treatmentEvents
-     */
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "division")
+    /*@OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "division")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<TreatmentEvent> getTreatmentEvents()
     {
         return treatmentEvents;
     }
 
-    /**
-     * @return the accessions
-     */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "division")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Accession> getAccessions()
@@ -244,15 +240,12 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
         return accessions;
     }
 
-    /**
-     * @return the repositoryAgreements
-     */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "division")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<RepositoryAgreement> getRepositoryAgreements()
     {
         return repositoryAgreements;
-    }
+    }*/
     
     /**
      * @return the numberingSchemes
@@ -302,12 +295,12 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     /**
      *
      */
-    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
+    /*@OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<ConservDescription> getConservDescriptions()
     {
         return this.conservDescriptions;
-    }
+    }*/
     
     /**
      * @return the address
@@ -322,22 +315,22 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     /**
      * @return the loans
      */
-    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
+    /*@OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Loan> getLoans()
     {
         return loans;
-    }
+    }*/
 
     /**
      * @return the gifts
      */
-    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
+    /*@OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Gift> getGifts()
     {
         return gifts;
-    }
+    }*/
 
     /**
      * @return the disciplines
@@ -422,10 +415,10 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     }
 
 
-    public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
+    /*public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
     {
         this.conservDescriptions = conservDescriptions;
-    }
+    }*/
 
     /**
      * @return the institution
@@ -449,26 +442,26 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     /**
      * @param treatmentEvents the treatmentEvents to set
      */
-    public void setTreatmentEvents(Set<TreatmentEvent> treatmentEvents)
+    /*public void setTreatmentEvents(Set<TreatmentEvent> treatmentEvents)
     {
         this.treatmentEvents = treatmentEvents;
-    }
+    }*/
 
     /**
      * @param accessions the accessions to set
      */
-    public void setAccessions(Set<Accession> accessions)
+    /*public void setAccessions(Set<Accession> accessions)
     {
         this.accessions = accessions;
-    }
+    }*/
     
     /**
      * @param repositoryAgreements the repositoryAgreements to set
      */
-    public void setRepositoryAgreements(Set<RepositoryAgreement> repositoryAgreements)
+    /*public void setRepositoryAgreements(Set<RepositoryAgreement> repositoryAgreements)
     {
         this.repositoryAgreements = repositoryAgreements;
-    }
+    }*/
 
     /**
      * @param address the address to set
@@ -481,18 +474,18 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     /**
      * @param loans the loans to set
      */
-    public void setLoans(Set<Loan> loans)
+    /*public void setLoans(Set<Loan> loans)
     {
         this.loans = loans;
-    }
+    }*/
 
     /**
      * @param gifts the gifts to set
      */
-    public void setGifts(Set<Gift> gifts)
+    /*public void setGifts(Set<Gift> gifts)
     {
         this.gifts = gifts;
-    }
+    }*/
 
     /**
      * @param disciplines the disciplines to set

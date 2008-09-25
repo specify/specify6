@@ -6,6 +6,9 @@
  */
 package edu.ku.brc.specify.plugins;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getStatusBar;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -17,11 +20,13 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.event.ChangeListener;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.rstools.GoogleEarthExporter;
 import edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace;
@@ -33,7 +38,6 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIPluginable;
-import static edu.ku.brc.ui.UIRegistry.*;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -84,10 +88,11 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
             
         } else if (locality != null)
         {
-            if (locality.getCollectingEvents().size() > 0)
+            List<CollectingEvent> collectingEvents = locality.getCollectingEvents();
+            if (collectingEvents.size() > 0)
             {
                 ImageIcon img = imageIcon != null ? imageIcon : IconManager.getIcon("collectingevent", IconManager.IconSize.Std32);
-                for (CollectingEvent colEv : locality.getCollectingEvents())
+                for (CollectingEvent colEv : collectingEvents)
                 {
                     items.add(new CEPlacemark(colEv, img));
                 }
@@ -121,9 +126,10 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         return origData;
     }
     
-    protected ImageIcon getDisciplineIcon(final CollectionObject co)
+    protected ImageIcon getDisciplineIcon()
     {
-        return IconManager.getIcon(co.getCollection().getDiscipline().getName(),  IconManager.IconSize.Std32);
+        Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);//co.getCollection().getDiscipline()
+        return IconManager.getIcon(discipline.getName(),  IconManager.IconSize.Std32);
     }
 
     /* (non-Javadoc)
@@ -143,7 +149,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
                 {
                     locality = ce.getLocality();
                 }
-                imageIcon = getDisciplineIcon(colObj);
+                imageIcon = getDisciplineIcon();
                 
             } else if (value instanceof CollectingEvent)
             {
@@ -153,19 +159,20 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
                 if (ce.getCollectionObjects().size() == 1)
                 {
                     colObj  = ce.getCollectionObjects().iterator().next();
-                    imageIcon = getDisciplineIcon(colObj);
+                    imageIcon = getDisciplineIcon();
                 }
                 
             } else if (value instanceof Locality)
             {
                 locality = (Locality)value;
-                if (locality.getCollectingEvents().size() == 1)
+                List<CollectingEvent> collectingEvents = locality.getCollectingEvents();
+                if (collectingEvents.size() == 1)
                 {
-                    ce = locality.getCollectingEvents().iterator().next();
+                    ce = collectingEvents.get(0);
                     if (ce.getCollectionObjects().size() == 1)
                     {
                         colObj  = ce.getCollectionObjects().iterator().next();
-                        imageIcon = getDisciplineIcon(colObj);
+                        imageIcon = getDisciplineIcon();
                     }
                 }
             }
