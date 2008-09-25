@@ -126,7 +126,8 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
                 }
                 
                 setText(data);
-            } else
+                
+            } else if (adapter != null)
             {
                 for (PickListItemIFace item : adapter.getList())
                 {
