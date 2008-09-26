@@ -584,7 +584,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         list.clear();
         
         String sql = QueryAdjusterForDomain.getInstance().adjustSQL(sqlStr);
-        System.err.println(sql);
+        log.debug(sql);
         
         Connection conn = null;        
         Statement  stmt = null;

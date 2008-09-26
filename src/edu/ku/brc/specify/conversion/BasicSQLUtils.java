@@ -1605,6 +1605,64 @@ public class BasicSQLUtils
         }
         return -1;
     }
+    
+    /**
+     * Returns a count of the records query by SQL passed in.
+     * @param sql the SQL with a 'count(?)' 
+     * @return the number of records or zero
+     */
+    public static int getNumRecords(final String sql)
+    {
+        log.debug(sql);
+        
+        Connection conn    = null;
+        Statement  cntStmt = null;
+        try
+        {
+            int count = 0;
+            
+            conn    = DBConnection.getInstance().createConnection();
+            if (conn != null)
+            {
+                cntStmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+                if (cntStmt != null)
+                {
+                    ResultSet rs      = cntStmt.executeQuery(sql);
+                    if (rs.first())
+                    {
+                        count = rs.getInt(1);
+                    }
+                    rs.close();
+                }
+                    cntStmt.close();
+            }
+            return count;
+
+        } catch (SQLException ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            try
+            {
+                if (cntStmt != null)
+                {
+                    cntStmt.close();
+                }
+                if (conn != null)
+                {
+                    conn.close();
+                }
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return 0;
+    }
+    
+    
 
     /**
      * Returns the last ID that was inserted into the database

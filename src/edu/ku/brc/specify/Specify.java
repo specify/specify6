@@ -2605,7 +2605,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
               log.debug("Checking for update....");
               try
               {
-                  if (true)
+                  String home = System.getProperty("user.home");
+                  if (!home.equals("/home/rods"))
                   {
                       try
                       {

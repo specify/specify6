@@ -117,7 +117,7 @@ public class TreeAdditionalProcFactory
                         // Create a new 'current' determination
                         // and add it to the Source Taxon
                         Determination newDet = (Determination)det.clone();
-                        dstTaxon.addReference(newDet, "determinations");
+                        newDet.setTaxon(dstTaxon);
 
                         // Set DeterminationStatus from Current to Old
                         det.setStatus(detStatusOld);

@@ -32,6 +32,10 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 
 @SuppressWarnings("serial")
@@ -772,7 +776,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.hybridChildren2 = hybridChildren2;
     }
 
-    @OneToMany(mappedBy = "taxon")
+    /*@OneToMany(mappedBy = "taxon")
     @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
 	public Set<Determination> getDeterminations()
 	{
@@ -782,7 +786,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	public void setDeterminations(Set<Determination> determinations)
 	{
 		this.determinations = determinations;
-	}
+	}*/
 
     /**
      * @return the commonNames
@@ -999,6 +1003,47 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     {
         return definitionItem.getFullNameSeparator();
     }
+    
+    
+    /**
+     * @return the count of 'current' Determinations
+     */
+    @Transient
+    public Integer getCurrentDeterminationCount()
+    {
+        String sql = "SELECT count(co.CollectionObjectID) FROM taxon as tx INNER JOIN determination as dt ON tx.TaxonID = dt.TaxonID " +
+                     "INNER JOIN determinationstatus as ds ON dt.DeterminationStatusID = ds.DeterminationStatusID " +
+                     "INNER JOIN collectionobject as co ON dt.CollectionObjectID = co.CollectionObjectID " +
+                     "WHERE tx.TaxonID = "+getId() + " AND co.CollectionMemberID = COLMEMID AND ds.Type = 1";
+
+        return BasicSQLUtils.getNumRecords(QueryAdjusterForDomain.getInstance().adjustSQL(sql));
+    }
+    
+    
+    @SuppressWarnings("unchecked")
+    @Transient
+    public List<Determination> getDeterminations()
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            if (session != null)
+            {
+                List<Determination> dets = (List<Determination>)session.getDataList("FROM Determination WHERE taxonId = "+getId());
+                for (Determination det : dets)
+                {
+                    det.forceLoad();
+                }
+                return dets;
+            }
+        }
+        finally
+        {
+            session.close();
+        }
+        return null;
+    }
+
 
 	/**
 	 * Generates the 'full name' of a node using the <code>IsInFullName</code> field from the tree

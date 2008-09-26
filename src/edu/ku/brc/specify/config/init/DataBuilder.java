@@ -658,7 +658,7 @@ public class DataBuilder
 
         //status.getDeterminations().add(determination);
         collectionObject.getDeterminations().add(determination);
-        taxon.getDeterminations().add(determination);
+        //taxon.getDeterminations().add(determination);
 
         persist(collectionObject);
         persist(determination);

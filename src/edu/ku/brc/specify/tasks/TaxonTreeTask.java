@@ -79,7 +79,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         String sql = "SELECT co.CollectionObjectID FROM taxon as tx INNER JOIN determination as dt ON tx.TaxonID = dt.TaxonID " +
                      "INNER JOIN determinationstatus as ds ON dt.DeterminationStatusID = ds.DeterminationStatusID " +
                      "INNER JOIN collectionobject as co ON dt.CollectionObjectID = co.CollectionObjectID " +
-                     "WHERE tx.TaxonID = %d AND co.CollectionMemberID = COLMEMID AND ds.Type = 1";
+                     "WHERE tx.TaxonID = "+taxon.getId()+" AND co.CollectionMemberID = COLMEMID AND ds.Type = 1";
         
         Vector<Integer> list = new Vector<Integer>();
         
@@ -141,9 +141,10 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                     // it only initializes the immediate links, not objects that are multiple hops away
                     ttv.initializeNodeAssociations(taxon);
                     
-                    if (taxon.getDeterminations().size() == 0)
+                    if (taxon.getCurrentDeterminationCount() == 0)
                     {
-                        UIRegistry.getStatusBar().setText(getResourceString("TTV_TAXON_NO_DETERS_FOR_NODE"));
+                        UIRegistry.displayErrorDlgLocalized("TTV_TAXON_NO_DETERS_FOR_NODE");
+                        UIRegistry.getStatusBar().setLocalizedText("TTV_TAXON_NO_DETERS_FOR_NODE");
                         return;
                     }
 

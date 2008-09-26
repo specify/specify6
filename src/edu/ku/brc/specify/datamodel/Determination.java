@@ -442,6 +442,19 @@ public class Determination extends CollectionMember implements java.io.Serializa
         this.determinationCitations.remove(determinationCitation);
         determinationCitation.setDetermination(null);
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.FormDataObjIFace#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        DeterminationStatus ds = getStatus();
+        if (ds != null)
+        {
+            ds.getId(); // make sure it is loaded;
+        }
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
