@@ -1290,10 +1290,22 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 final int results = runningResults.get().getQuery().getDataObjects().size();
                 
-                String msg = String.format(UIRegistry
+                String msg;
+                if (results <= runningResults.get().getMaxTableRows())
+                {
+                    msg = String.format(UIRegistry
                         .getResourceString("QB_DISPLAYING_RETRIEVED_RESULTS"), String
                         .valueOf(results), String
                         .valueOf((doneTime.get() - startTime.get()) / 1000000000D));
+                }
+                else
+                {
+                    msg = String.format(UIRegistry.getResourceString("QB_DISPLAYING_RETRIEVED_RESULTS_PARTIAL"), 
+                            String.valueOf(results), 
+                            String.valueOf((doneTime.get() - startTime.get()) / 1000000000D),
+                            String.valueOf(5));
+                }
+                    
                 UIRegistry.displayStatusBarText(msg);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run()

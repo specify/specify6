@@ -73,8 +73,8 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     protected static DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
     
     protected static int VISIBLE_ROWS = 10; // XXX Got get this from elsewhere
-
-    // Data Members
+    
+    // Data Members    
     protected ESResultsTablePanelIFace    parentERTP;
     protected Vector<Class<?>>            classNames  = new Vector<Class<?>>();
     protected Vector<String>              colNames    = new Vector<String>();
@@ -879,14 +879,20 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             } else*/
             {
                 
-                //int rowNum = 0;
+                int maxTableRows = results.getMaxTableRows();
+                int rowNum = 0;
                 for (Object rowObj : list)
                 {
+                    if (rowNum == maxTableRows)
+                    {
+                        break;
+                    }
                     if (customQuery.isCancelled())
                     {
                         break;
                     }
-                    Vector<Object> row = new Vector<Object>(list.size());
+                    //Vector<Object> row = new Vector<Object>(list.size()); //list.size()?????
+                    Vector<Object> row = new Vector<Object>(rowObj.getClass().isArray() ? ((Object[])rowObj).length : 1);
                     if (rowObj != null && rowObj.getClass().isArray())
                     {
                         int col = 0;
@@ -917,7 +923,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                         row.add(rowObj);
                     }
                     cache.add(row);
-                    //System.out.println(++rowNum);
+                    rowNum++;
                 }                
             }
             

@@ -114,8 +114,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     // Static Data Members
     private static final Logger log = Logger.getLogger(ExpressSearchTask.class);
 
-    private static final int RESULTS_THRESHOLD   = 5000;
-    
+    public static final int RESULTS_THRESHOLD   = 5000;
     public static final String EXPRESSSEARCH      = "Express_Search";
     public static final String CHECK_INDEXER_PATH = "CheckIndexerPath";
     

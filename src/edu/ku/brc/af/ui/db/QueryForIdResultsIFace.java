@@ -185,4 +185,11 @@ public interface QueryForIdResultsIFace
      * @return true if progress bar should be displayed by default.
      */
     public abstract boolean showProgress();
+    
+    /**
+     * @return maximum number of rows to be displayed
+     */
+    public abstract int getMaxTableRows();
+    
+    
 }

@@ -357,6 +357,15 @@ public class UploadResults implements QueryForIdResultsIFace
     {
         return false;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#getMaxTableRows()
+     */
+    @Override
+    public int getMaxTableRows()
+    {
+        return -1;
+    }
     
     
 }

@@ -33,6 +33,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.ReportsTask;
@@ -403,7 +404,6 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     public void setRecIds(final Vector<Integer> ids)
     {
         //Could also fill recIds in queryTaskDone method, but would entail an extra pass through the CustomQueryIFace results,
-        //and an extra list of ids. 
         
         //don't think it is necessary to copy the ids?
         this.recIds = ids;
@@ -418,4 +418,14 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         //QueryBuilder sets up progress bar and status messages for itself.
         return false;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#getMaxTableRows()
+     */
+    @Override
+    public int getMaxTableRows()
+    {
+        return ExpressSearchTask.RESULTS_THRESHOLD;
+    }    
+
 }
