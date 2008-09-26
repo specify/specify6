@@ -79,6 +79,8 @@ public class PrepTypeBusRules extends BaseBusRules
      */
     public boolean okToEnableDelete(Object dataObj)
     {
+        reasonList.clear();
+        
         PrepType prepType = (PrepType)dataObj;
         if (prepType.getId() == null)
         {

@@ -127,6 +127,8 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
                            final DataProviderSessionIFace session,
                            final BusinessRulesOkDeleteIFace deletable)
     {
+        reasonList.clear();
+        
         boolean isOK = false;
         if (deletable != null)
         {

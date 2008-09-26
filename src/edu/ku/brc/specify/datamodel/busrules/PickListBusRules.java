@@ -410,6 +410,8 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
                            final DataProviderSessionIFace session,
                            final BusinessRulesOkDeleteIFace deletable)
     {
+        reasonList.clear();
+        
         PickList pickList = (PickList)dataObj;
         
         if (!pickList.getIsSystem())

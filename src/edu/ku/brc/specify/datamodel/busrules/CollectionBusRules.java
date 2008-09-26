@@ -45,6 +45,8 @@ public class CollectionBusRules extends BaseBusRules
     @Override
     public boolean okToEnableDelete(final Object dataObj)
     {
+        reasonList.clear();
+        
         boolean isOK =  okToDelete("collectionobject", "CollectionID", ((FormDataObjIFace)dataObj).getId());
         if (!isOK)
         {

@@ -37,6 +37,8 @@ public class CatalogNumberingSchemeBusRules extends BaseBusRules
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
+        reasonList.clear();
+        
         return okToDelete("collection", "CatalogNumberingSchemeID", ((FormDataObjIFace)dataObj).getId());
     }
 

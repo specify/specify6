@@ -97,10 +97,13 @@ public class StorageBusRules extends BaseTreeBusRules<Storage, StorageTreeDef, S
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
+        reasonList.clear();
+        
         if (dataObj instanceof Storage)
         {
             return super.okToDeleteNode((Storage)dataObj);
         }
+        
         if (dataObj instanceof StorageTreeDefItem)
         {
             return okToDeleteDefItem((StorageTreeDefItem)dataObj);

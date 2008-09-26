@@ -66,6 +66,8 @@ public class PermitBusRules extends AttachmentOwnerBaseBusRules
      */
     public boolean okToEnableDelete(Object dataObj)
     {
+        reasonList.clear();
+        
         if (dataObj instanceof Permit)
         {
             Permit permit = (Permit)dataObj;

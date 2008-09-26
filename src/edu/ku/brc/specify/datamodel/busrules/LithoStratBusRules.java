@@ -30,6 +30,8 @@ public class LithoStratBusRules extends BaseTreeBusRules<LithoStrat, LithoStratT
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
+        reasonList.clear();
+        
         if (dataObj instanceof LithoStrat)
         {
             return super.okToDeleteNode((LithoStrat)dataObj);

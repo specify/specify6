@@ -117,7 +117,9 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
      */
     public boolean okToDeleteDefItem(TaxonTreeDefItem defItem)
     {
-        // never let the root level be deleted
+        reasonList.clear();
+        
+       // never let the root level be deleted
         if (defItem.getRankId() == 0)
         {
             return false;

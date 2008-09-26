@@ -71,6 +71,8 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
     @Override
     public void afterDeleteCommit(Object dataObj)
     {
+        reasonList.clear();
+        
         ObjectAttachmentIFace<?> attRef = (ObjectAttachmentIFace<?>)dataObj;
         
         Attachment a = attRef.getAttachment();

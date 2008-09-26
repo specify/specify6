@@ -43,6 +43,7 @@ public class AttachmentBusRules extends BaseBusRules
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
+        reasonList.clear();
         if (dataObj instanceof Attachment)
         {
             Attachment attach = (Attachment)dataObj;

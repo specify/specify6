@@ -157,6 +157,8 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
      */
     public boolean okToEnableDelete(Object dataObj)
     {
+        reasonList.clear();
+        
         if (dataObj != null)
         {
             if (dataObj instanceof Accession)

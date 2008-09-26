@@ -42,6 +42,8 @@ public class DisciplineBusRules extends BaseBusRules
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
+        reasonList.clear();
+        
         if (!okToDelete("collection", "DisciplineID", ((FormDataObjIFace)dataObj).getId()))
         {
             return false;

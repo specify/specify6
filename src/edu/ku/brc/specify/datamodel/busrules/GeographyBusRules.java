@@ -56,6 +56,8 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
+        reasonList.clear();
+        
         if (dataObj instanceof Geography)
         {
             return super.okToDeleteNode((Geography)dataObj);

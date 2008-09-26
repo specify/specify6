@@ -69,6 +69,8 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
                            final DataProviderSessionIFace session,
                            final BusinessRulesOkDeleteIFace deletable)
     {
+        reasonList.clear();
+        
         boolean isOK = false;
         if (deletable != null)
         {
@@ -81,7 +83,7 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
                 
             } else
             {
-               isOK = okToDelete(new String[] {"collectionobject", "CollectingEventID"}, dbObj.getId());
+               isOK = okToDelete(1, new String[] {"collectionobject", "CollectingEventID"}, (Integer)dbObj.getId());
             }
             deletable.doDeleteDataObj(dataObj, session, isOK);
             

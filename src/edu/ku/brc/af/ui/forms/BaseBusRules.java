@@ -30,6 +30,7 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -147,7 +148,25 @@ public class BaseBusRules implements BusinessRulesIFace
      * @param ids the Record IDs to check
      * @return true means it can be deleted, false means it found something
      */
-    protected boolean okToDelete(final String tableName, final String columnName, final Integer...ids)
+    protected boolean okToDelete(final String tableName,
+                                 final String columnName, 
+                                 final Integer...ids)
+    {
+        return okToDelete(0, tableName, columnName, ids);
+    }
+
+    /**
+     * Checks to see if it can be deleted.
+     * @param tableName the table name to check
+     * @param columnName the column name name to check
+     * @param count the count to check against
+     * @param ids the Record IDs to check
+     * @return true means it can be deleted, false means it found something
+     */
+    protected boolean okToDelete(final int count, 
+                                 final String tableName,
+                                 final String columnName, 
+                                 final Integer...ids)
     {
         if (ids != null)
         {
@@ -158,7 +177,7 @@ public class BaseBusRules implements BusinessRulesIFace
                 conn = DBConnection.getInstance().createConnection();
                 stmt = conn.createStatement();
     
-                return okToDelete(conn, stmt, tableName, columnName, ids);
+                return okToDelete(stmt, count, tableName, columnName, ids);
                 
             } catch (Exception ex)
             {
@@ -210,7 +229,13 @@ public class BaseBusRules implements BusinessRulesIFace
                 idString.append(", ");
             }
             idString.deleteCharAt(idString.length()-2);
-            String queryString = "select count(*) from " + tableName + " where " + tableName + "." + columnName + " in (" + idString.toString() + ")";
+            DBTableInfo tableInfo    = DBTableIdMgr.getInstance().getInfoByTableName(tableName);
+            String      extraColumns = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false);
+            String      queryString  = "select count(*) from " + tableName + " where " + tableName + "." + columnName + " in (" + idString.toString() + ") ";
+            if (StringUtils.isNotEmpty(extraColumns))
+            {
+                queryString += " AND " + extraColumns; 
+            }
             
             ResultSet rs = stmt.executeQuery(queryString);
             if (rs.next())
@@ -289,14 +314,14 @@ public class BaseBusRules implements BusinessRulesIFace
      * @param id the Record ID to check
      * @return true means it can be deleted, false means it found something
      */
-    protected boolean okToDelete(@SuppressWarnings("unused") final Connection connection, 
-                                                             final Statement  stmt,
-                                                             final String tableName, 
-                                                             final String columnName,
-                                                             final Integer...ids)
+    protected boolean okToDelete(final Statement  stmt,
+                                 final int        count,
+                                 final String     tableName, 
+                                 final String     columnName,
+                                 final Integer...ids)
     {
-        Integer count = getCount(stmt, tableName, columnName, ids);
-        return count != null && count == 0;
+        Integer recCount = getCount(stmt, tableName, columnName, ids);
+        return recCount != null && recCount == count;
     }
     
     /**
@@ -307,6 +332,17 @@ public class BaseBusRules implements BusinessRulesIFace
      */
     protected boolean okToDelete(final String[] nameCombos, final Integer...ids)
     {
+        return okToDelete(0, nameCombos, ids);
+    }
+    
+    /**
+     * Helper to check a list of tables at one time.
+     * @param nameCombos a list of names combinations "table name/Foreign Key name"
+     * @param id the id to be checked
+     * @return true if ok to delete
+     */
+    protected boolean okToDelete(final int count, final String[] nameCombos, final Integer...ids)
+    {
         Connection conn = null;
         Statement  stmt = null;
         try
@@ -316,7 +352,7 @@ public class BaseBusRules implements BusinessRulesIFace
 
             for (int i=0;i<nameCombos.length;i++)
             {
-                if (!okToDelete(conn, stmt, nameCombos[i], nameCombos[i+1], ids))
+                if (!okToDelete(stmt, count, nameCombos[i], nameCombos[i+1], ids))
                 {
                     //log.info("Found["+ nameCombos[i]+"]["+nameCombos[i+1]+"]");
                     DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(nameCombos[i]);

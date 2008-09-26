@@ -62,6 +62,8 @@ public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePer
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
+        reasonList.clear();
+        
         if (dataObj instanceof GeologicTimePeriod)
         {
             return super.okToDeleteNode((GeologicTimePeriod)dataObj);
