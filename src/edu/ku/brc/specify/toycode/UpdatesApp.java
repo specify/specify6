@@ -23,7 +23,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -183,6 +182,7 @@ public class UpdatesApp extends JPanel
             public void actionPerformed(ActionEvent e)
             {
                 merge();
+                doSave();
             }
             
         });
@@ -376,11 +376,10 @@ public class UpdatesApp extends JPanel
     
     public JMenuBar createMenus()
     {
-        JMenuBar menuBar = new JMenuBar();
+        JMenuBar menuBar = null;
         
-        JMenu fileMenu = createMenu(menuBar, "File", "F");
         
-        UIHelper.createMenuItemWithAction(fileMenu, "Open", "O",  "", true, new AbstractAction() //$NON-NLS-1$
+        /*UIHelper.createMenuItemWithAction(fileMenu, "Open", "O",  "", true, new AbstractAction() //$NON-NLS-1$
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -388,7 +387,7 @@ public class UpdatesApp extends JPanel
             }
         });
         
-        JMenuItem saveMenuItem = UIHelper.createMenuItemWithAction(fileMenu, "File", "F", "", false, new AbstractAction() //$NON-NLS-1$
+        JMenuItem saveMenuItem = UIHelper.createMenuItemWithAction(fileMenu, "Save", "S", "", true, new AbstractAction() //$NON-NLS-1$
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -397,9 +396,12 @@ public class UpdatesApp extends JPanel
             
         });
         saveMenuItem.setEnabled(false);
+        */
         
         if (!UIHelper.isMacOS())
         {
+            menuBar = new JMenuBar();
+            JMenu fileMenu = createMenu(menuBar, "File", "F");
             fileMenu.addSeparator();
             
             UIHelper.createMenuItemWithAction(fileMenu, "Exit", "x",  "", true, new AbstractAction() //$NON-NLS-1$
