@@ -3100,7 +3100,7 @@ public class FormViewObj implements Viewable,
      */
     protected void createAddDelSearchPanel()
     {
-        if (controlPanel != null)
+        if (controlPanel != null && formValidator != null)
         {
             boolean doAddSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
             
