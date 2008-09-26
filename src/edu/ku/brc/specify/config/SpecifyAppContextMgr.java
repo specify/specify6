@@ -1049,7 +1049,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
                 if (!startingOver)
                 {
-                    if (!Uploader.checkUploadLock())
+                    if (!Uploader.checkUploadLock(true))
                     {
                         System.exit(0);
                     }

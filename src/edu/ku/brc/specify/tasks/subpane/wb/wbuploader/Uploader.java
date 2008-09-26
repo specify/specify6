@@ -32,8 +32,10 @@ import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
+import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
 import net.sf.jasperreports.engine.JRDataSource;
@@ -3562,7 +3564,7 @@ public class Uploader implements ActionListener, KeyListener
      * @return true if no lock is present or lock is overridden. Else return false.
      *  
      */
-    public static boolean checkUploadLock()
+    public static boolean checkUploadLock(boolean isLogin)
     {
         SpTaskSemaphore lockInfo = TaskSemaphoreMgr.getLockInfo("WORKBENCH_UPLOAD_TASK", "WORKBENCH_UPLOAD_TASK",
                 TaskSemaphoreMgr.SCOPE.Global);
@@ -3578,8 +3580,9 @@ public class Uploader implements ActionListener, KeyListener
         
         String lockOwner = lockInfo.getOwner().getName();
         
+        
         String msg1 = String.format(UIRegistry.getResourceString("WB_UPLOAD_LOCK_MSG1"), lockOwner);
-        String msg2 = UIRegistry.getResourceString("WB_UPLOAD_LOCK_MSG2");
+        String msg2 = UIRegistry.getResourceString(isLogin ? "WB_UPLOAD_LOCK_LOGIN_MSG2" : "WB_UPLOAD_LOCK_TASK_MSG2");
         String msg3 = UIRegistry.getResourceString("WB_UPLOAD_LOCK_MSG3");
         
         PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
@@ -3593,7 +3596,14 @@ public class Uploader implements ActionListener, KeyListener
                 CustomDialog.OKCANCEL,
                 pb.getPanel());
         dlg.setOkLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.OVERRIDE"));
-        dlg.setCancelLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.EXIT"));
+        if (isLogin)
+        {
+            dlg.setCancelLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.EXIT"));
+        }
+        else
+        {
+            dlg.setCancelLabel(UIRegistry.getResourceString("CONTINUE"));
+        }
                 
         UIHelper.centerAndShow(dlg);
         dlg.dispose();
@@ -3644,4 +3654,61 @@ public class Uploader implements ActionListener, KeyListener
                 TaskSemaphoreMgr.SCOPE.Global);
     }
 
+    protected static void setAppLock(final boolean lock)
+    {
+        SwingUtilities.invokeLater(new Runnable(){
+            public void run()
+            {
+//                JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
+                //toolBar.setVisible(false);
+//                for (int c = 0; c < toolBar.getComponentCount(); c++)
+//                {
+//                    toolBar.getComponent(c).setEnabled(!lock);
+//                }
+                JMenuBar menuBar  = (JMenuBar)UIRegistry.get(UIRegistry.MENUBAR);
+                for (int m = 0; m < menuBar.getMenuCount(); m++)
+                {
+                    if (isSystemMenu(menuBar, m))
+                    {
+                        menuBar.getMenu(m).setEnabled(!lock);
+                    }
+                    else if (isTabsMenu(menuBar, m))
+                    {
+                        menuBar.getMenu(m).setEnabled(!lock);
+                    }
+                }
+            }
+        });
+    }
+    public static void lockApp()
+    {
+        setAppLock(true);
+    }
+    
+    /**
+     * @param menuBar
+     * @param menu
+     * @return true if menuBar.getMenu(menu) is the Specify "System" menu.
+     */
+    protected static boolean isSystemMenu(JMenuBar menuBar, int menu)
+    {
+        //very cheap and dirty
+        return menu == 3;
+    }
+    
+    /**
+     * @param menuBar
+     * @param menu
+     * @return true if menuBar.getMenu(menu) is the Specify "Tabs" menu.
+     */
+    protected static boolean isTabsMenu(JMenuBar menuBar, int menu)
+    {
+        //cheap. dirty. trash.
+        return menu == 4;
+    }
+    
+    public static void unlockApp()
+    {
+        setAppLock(false);
+    }
 }

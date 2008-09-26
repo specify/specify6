@@ -2677,6 +2677,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 if (datasetUploader.closing(this))
                 {
                     datasetUploader = null;
+                    Uploader.unlockApp();
                     Uploader.unlockUpload();
                 }
             }
@@ -2953,6 +2954,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 return;
             }
+            Uploader.lockApp();
             datasetUploader = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), this);
             Vector<UploadMessage> structureErrors = datasetUploader.verifyUploadability();
             if (structureErrors.size() > 0) 
@@ -3001,6 +3003,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         catch (Exception ex)
         {
             UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
+            Uploader.unlockApp();
             Uploader.unlockUpload();
             datasetUploader = null;
         }
@@ -3013,6 +3016,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     public void uploadDone()
     {
         datasetUploader = null;
+        Uploader.unlockApp();
         if (!Uploader.unlockUpload())
         {
             log.error("unable to unlock upload task semaphore.");

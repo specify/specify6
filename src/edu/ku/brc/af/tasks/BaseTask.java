@@ -67,6 +67,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.RecordSetTask;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.db.AskForNumbersDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandActionWrapper;
@@ -933,13 +934,26 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     public void requestContext()
     {
-        ContextMgr.requestContext(this);
+        if (canRequestContext())
+        {
+            ContextMgr.requestContext(this);
 
-        SubPaneIFace newPane = getStarterPane();
+            SubPaneIFace newPane = getStarterPane();
         
-        SubPaneMgr.getInstance().addPane(newPane);
+            SubPaneMgr.getInstance().addPane(newPane);
+        }
     }
 
+    /**
+     * @return true if it is OK to get a context for this task.
+     * 
+     * Should be part of Taskable interface??
+     */
+    protected boolean canRequestContext()
+    {
+        return true;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getShortDesc()
      */

@@ -102,6 +102,7 @@ import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.LoanReturnDlg;
 import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
 import edu.ku.brc.specify.ui.LoanReturnDlg.LoanReturnInfo;
@@ -2065,5 +2066,14 @@ public class InteractionsTask extends BaseTask
             task.loanPrepsLoaded(availColObjList, loan, infoRequest, session);
         }
         
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#canRequestContext()
+     */
+    @Override
+    protected boolean canRequestContext()
+    {
+        return Uploader.checkUploadLock(false);
     }
 }

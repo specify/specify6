@@ -45,6 +45,7 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandAction;
@@ -624,6 +625,17 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 ex.printStackTrace();
             }
         }
+    }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#canRequestContext()
+     */
+    @Override
+    protected boolean canRequestContext()
+    {
+        /*
+         * Probably can't get here when uploading but just in case
+         */
+        return Uploader.checkUploadLock(false);
     }
 
 }

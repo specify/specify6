@@ -69,6 +69,7 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
@@ -1390,4 +1391,12 @@ public class DataEntryTask extends BaseTask
         DataEntryView.config(xstream);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#canRequestContext()
+     */
+    @Override
+    protected boolean canRequestContext()
+    {
+        return Uploader.checkUploadLock(false);
+    }
 }
