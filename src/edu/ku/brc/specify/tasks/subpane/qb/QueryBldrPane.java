@@ -1303,7 +1303,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     msg = String.format(UIRegistry.getResourceString("QB_DISPLAYING_RETRIEVED_RESULTS_PARTIAL"), 
                             String.valueOf(results), 
                             String.valueOf((doneTime.get() - startTime.get()) / 1000000000D),
-                            String.valueOf(5));
+                            String.valueOf(runningResults.get().getMaxTableRows()));
                 }
                     
                 UIRegistry.displayStatusBarText(msg);
