@@ -1398,13 +1398,11 @@ public class QueryTask extends BaseTask
      */
     protected void clearTableTree(final TableTree tree)
     {
-        System.out.println("Clear TableTree: " + tree.getName());
         if (tree.getTableQRI() != null)
         {
             tree.getTableQRI().setIsInUse(false);
             for (int f = 0; f < tree.getTableQRI().getFields(); f++)
             {
-                System.out.println("   " + tree.getTableQRI().getField(f).getFieldName());
                 tree.getTableQRI().getField(f).setIsInUse(false);
             }
         }

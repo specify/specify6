@@ -42,9 +42,9 @@ class TableAbbreviator
      */
     public String getAbbreviation(final TableTree tt)
     {
-        if (ttAbbrevMap.containsKey(tt.getPathFromRoot()))
+        if (ttAbbrevMap.containsKey(getTableTreeKey(tt)))
         {
-            return ttAbbrevMap.get(tt.getPathFromRoot());
+            return ttAbbrevMap.get(getTableTreeKey(tt));
         }
         //else
         if (idCountMap.containsKey(tt.getTableInfo().getTableId()))
@@ -55,11 +55,16 @@ class TableAbbreviator
         return newAbbrev(tt, 0);
     }
     
+    protected String getTableTreeKey(final TableTree tt)
+    {
+        return tt.getPathFromRoot() + tt.getField();
+        
+    }
     protected String newAbbrev(final TableTree tt, final Integer count)
     {
         idCountMap.put(tt.getTableInfo().getTableId(), count);
         String result = tt.getAbbrev() + count;
-        ttAbbrevMap.put(tt.getPathFromRoot(), result);
+        ttAbbrevMap.put(getTableTreeKey(tt), result);
         return result;
     }
     

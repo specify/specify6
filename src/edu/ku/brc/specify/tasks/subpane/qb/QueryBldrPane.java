@@ -762,8 +762,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
 
         }
-        printTree(root, 0);
-
+        if (debug)
+        {
+            printTree(root, 0);
+        }
+        
         StringBuilder fromStr = new StringBuilder();
         TableAbbreviator tableAbbreviator = new TableAbbreviator();
         List<Pair<DBTableInfo,String>> fromTbls = new LinkedList<Pair<DBTableInfo,String>>();
@@ -1694,7 +1697,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected void checkFldUsage(final TableTree tblTree, final Vector<BaseQRI> flds)
     {
-        String treeStr = tblTree.getPathFromRoot();
+        String treeStr = tblTree.getPathFromRoot() + tblTree.getField();
         
         for (QueryFieldPanel qfp : this.queryFieldItems)
         {
@@ -1702,7 +1705,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             if (qri instanceof RelQRI)
             {
                 //if (qri.getTable().getTableTree().getParent() == tblTree)
-                if (qri.getTable().getTableTree().getParent().getPathFromRoot().equals(treeStr))
+                TableTree qriTT = qri.getTable().getTableTree().getParent();
+                String qriTTStr = qriTT.getPathFromRoot() + qriTT.getField(); 
+                if (qriTTStr.equals(treeStr))
                 {
                     for (BaseQRI fld : flds)
                     {
@@ -1716,7 +1721,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     }
                 }
             }
-            else if (qri.getTableTree().getPathFromRoot().equals(treeStr))
+            else if ((qri.getTableTree().getPathFromRoot() + qri.getTableTree().getField()).equals(treeStr))
             {
                 for (BaseQRI fld : flds)
                 {
@@ -2117,8 +2122,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         {
                             for (int f = 0; f < kid.getTableQRI().getFields(); f++)
                             {
-                                if (kid.getTableQRI().getField(f).getFieldName().equals(
-                                    field.getFieldName())) { return kid.getTableQRI().getField(f); }
+                                if (kid.getTableQRI().getField(f).getStringId().equals(field.getStringId())) 
+                                { 
+                                    return kid.getTableQRI().getField(f); 
+                                }
                             }
                         }
                         else

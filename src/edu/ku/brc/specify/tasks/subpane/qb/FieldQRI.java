@@ -136,4 +136,11 @@ public class FieldQRI extends BaseQRI
         return getFieldInfo().isHidden();
     }
     
+    /**
+     * @return a string identifier unique to this field within the query that is independent of the field's title.
+     */
+    public String getStringId()
+    {
+        return getTableTree().getPathFromRoot() + "." + getTableTree().getField() + "." + getTableInfo().getName() + "." + getFieldName();
+    }
 }

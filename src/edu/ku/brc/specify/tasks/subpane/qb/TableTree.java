@@ -259,7 +259,8 @@ public class TableTree implements Cloneable, Comparable<TableTree>
     {
         //strictly for the purposes of QueryBldrPane.doSearch()
         return this.getClass().equals(obj.getClass()) && 
-            tableInfo.getTableId() == ((TableTree)obj).getTableInfo().getTableId();
+            tableInfo.getTableId() == ((TableTree)obj).getTableInfo().getTableId() &&
+            field.equals(((TableTree)obj).getField());
     }
     
     /**

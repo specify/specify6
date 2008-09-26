@@ -1299,7 +1299,7 @@ public class QueryFieldPanel extends JPanel
      */
     public String getStringId()
     {
-        return fieldQRI.getTableTree().getPathFromRoot() + "." + fieldQRI.getTableInfo().getName() + "." + fieldQRI.getFieldName();
+        return fieldQRI.getStringId();
     }
 
     /**
