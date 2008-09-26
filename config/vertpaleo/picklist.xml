@@ -23,11 +23,7 @@
   </picklist>
   <picklist name="CollectingMethod" issystem="true" type="0" readonly="true" sizelimit="5">
     <items>
-      <picklistitem title="trap" value="trap"/>
-      <picklistitem title="boat electro-shocker" value="boat electro-shocker"/>
-      <picklistitem title="seine" value="seine"/>
-      <picklistitem title="&lt;no data&gt;" value="&lt;no data&gt;"/>
-      <picklistitem title="hook &amp; line" value="hook &amp; line"/>
+      <picklistitem title="Dug" value="dug"/>
     </items>
   </picklist>
   <picklist name="CollObjPrepMeth" issystem="true" type="0" readonly="true" sizelimit="5">

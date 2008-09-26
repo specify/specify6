@@ -2,7 +2,7 @@
 <list>
   <picklist name="CollectingMethod" issystem="true" type="0" readonly="true" sizelimit="5">
     <items>
-      <picklistitem title="cut" value="cut"/>
+      <picklistitem title="shot" value="shot"/>
     </items>
   </picklist>
   <picklist name="CollObjPrepMeth" issystem="true" type="0" readonly="true" sizelimit="5">

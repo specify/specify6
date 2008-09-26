@@ -33,8 +33,6 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 
@@ -776,7 +774,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.hybridChildren2 = hybridChildren2;
     }
 
-    /*@OneToMany(mappedBy = "taxon")
+    @OneToMany(mappedBy = "taxon")
     @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
 	public Set<Determination> getDeterminations()
 	{
@@ -786,7 +784,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	public void setDeterminations(Set<Determination> determinations)
 	{
 		this.determinations = determinations;
-	}*/
+	}
 
     /**
      * @return the commonNames
@@ -1020,7 +1018,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     }
     
     
-    @SuppressWarnings("unchecked")
+    /*@SuppressWarnings("unchecked")
     @Transient
     public List<Determination> getDeterminations()
     {
@@ -1042,7 +1040,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
             session.close();
         }
         return null;
-    }
+    }*/
 
 
 	/**

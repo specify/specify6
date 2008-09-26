@@ -725,7 +725,8 @@ public class BuildSampleDatabase
     }
     
     protected CollectingEvent createFakeCollectingEvent(final List<Agent> agents,
-                                                        final Locality farmpond)
+                                                        final Locality farmpond,
+                                                        final String method)
     {
         int year = (int)(rand.nextDouble() * 20.0) +1990;
         int mon = (int)(rand.nextDouble() * 11.0) +1;
@@ -741,7 +742,7 @@ public class BuildSampleDatabase
         calendar.set(year, mon, 22, 07, 31, 00);
         ce2.setEndDate(calendar);
         ce2.setEndDateVerbatim("22 Apr "+year+", 7:31 AM");
-        ce2.setMethod("Picked");
+        ce2.setMethod(method);
         return ce2;
     }
     
@@ -1259,7 +1260,7 @@ public class BuildSampleDatabase
         CollectingEvent[] colEves = new CollectingEvent[8];
         for (int i=0;i<colEves.length;i++)
         {
-            colEves[i] = createFakeCollectingEvent(agents, farmpond);
+            colEves[i] = createFakeCollectingEvent(agents, farmpond, "cut");
             collObjs.add(createCollectionObject(prefix + Integer.toString(catNo), "RSC"+Integer.toString(catNo), agents.get(i), col,  1, colEves[i], catDates[i], "BuildSampleDatabase"));
             catNo++;
         }
@@ -1980,7 +1981,7 @@ public class BuildSampleDatabase
             int agentInx2 = (int)(rand.nextDouble() * agents.size());
             int calInx    = (int)(rand.nextDouble() * catDates.length);
             
-            CollectingEvent  ce = createFakeCollectingEvent(agents, localities.get(inx));
+            CollectingEvent  ce = createFakeCollectingEvent(agents, localities.get(inx), "cut");
             CollectionObject co = createCollectionObject(catNumStr, "RSC"+Integer.toString(catNo), agents.get(agentInx), collection,  1, ce, catDates[calInx], "BuildSampleDatabase");
             Determination    dt = createDetermination(co, getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent);
             
@@ -2521,7 +2522,7 @@ public class BuildSampleDatabase
         CollectingEvent[] colEves = new CollectingEvent[8];
         for (int i=0;i<colEves.length;i++)
         {
-            colEves[i] = createFakeCollectingEvent(agents, farmpond);
+            colEves[i] = createFakeCollectingEvent(agents, farmpond, "Dug");
             collObjs.add(createCollectionObject(prefix + Integer.toString(catNo), "RSC"+Integer.toString(catNo), agents.get(i), col,  1, colEves[i], catDates[i], "BuildSampleDatabase"));
             catNo++;
         }
@@ -3100,7 +3101,8 @@ public class BuildSampleDatabase
     public List<Object> createGenericCollection(final DisciplineType disciplineType,
                                                 final Institution    institution,
                                                 final SpecifyUser    user,
-                                                final CollectionChoice choice)
+                                                final CollectionChoice choice,
+                                                final String         method)
     {
         frame.setProcess(0, 16);
         frame.setDesc("Creating "+disciplineType.getTitle()+"...");
@@ -3613,7 +3615,7 @@ public class BuildSampleDatabase
         CollectingEvent[] colEves = new CollectingEvent[8];
         for (int i=0;i<colEves.length;i++)
         {
-            colEves[i] = createFakeCollectingEvent(agents, farmpond);
+            colEves[i] = createFakeCollectingEvent(agents, farmpond, method);
             collObjs.add(createCollectionObject(prefix + Integer.toString(catNo), "RSC"+Integer.toString(catNo), agents.get(i), col,  1, colEves[i], catDates[i], "BuildSampleDatabase"));
             catNo++;
         }
@@ -5632,10 +5634,32 @@ public class BuildSampleDatabase
                 disp != DisciplineType.STD_DISCIPLINES.fish &&
                 isChoosen(disp, false))
             {
+                String method = null;
+                switch (disp)
+                {
+                    case amphibian : method = "trap";
+                    break;
+                    case reptile : method = "trap";
+                    break; 
+                    case paleobotany : method = "dug";
+                    break; 
+                    case vertpaleo : method = "dug";
+                    break;
+                    case bird : method = "shot";
+                    break; 
+                    case mammal : method = "trap";
+                    break; 
+                    case insect : method = "trap";
+                    break; 
+                    case invertebrate : method = "trap";
+                    break; 
+                    default: method = "XXX";
+                    break;
+                }
                 DisciplineType dType = DisciplineType.getDiscipline(disp);
                 if (XMLHelper.getConfigDir(dType.getName()+ File.separator + "taxon_init.xml").exists())
                 {
-                    createGenericCollection(dType, institution, user,  getChoice(disp, false));
+                    createGenericCollection(dType, institution, user,  getChoice(disp, false), method);
                 }
             }
         }
