@@ -54,7 +54,6 @@ import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -1888,7 +1887,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                                        SpLocaleContainer.CORE_SCHEMA, 
                                                        DBTableIdMgr.getInstance(),
                                                        "CatalogNumberNumeric",
-                                                       "AccessionNumber");
+                                                       "AccessionStringFormatter");
             localSession.save(discipline);
             trans.commit();
 
@@ -1958,6 +1957,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     /**
      * 
      */
+    @SuppressWarnings("cast")
     public void convertDivision(final String disciplineStr,
                                 final Integer institutionId)
     {
@@ -2634,7 +2634,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         
         log.info("Converting USYS Tables.");
 
-        int tableType = PickListDBAdapterIFace.Type.Table.ordinal();
+        //int tableType = PickListDBAdapterIFace.Type.Table.ordinal();
         // int tableFieldType = PickListDBAdapterIFace.Type.TableField.ordinal();
 
         // Name Type Table Name Field Formatter R/O Size IsSys
@@ -3724,7 +3724,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             
                             if (idMapper != null)
                             {
-                                Object prevObj = data;
+                                //Object prevObj = data;
                                 data = idMapper.get((Integer)data);
                                 if (data == null)
                                 {
@@ -4263,6 +4263,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     log.error("Can't find " + catalogSeriesID + "_" + taxonomyTypeID);
                 }
 
+                /*
                 String stratGTPIdStr = "SELECT collectionobject.CollectionObjectID, "
                         + "collectingevent.CollectingEventID, "
                         + "stratigraphy.StratigraphyID, "
@@ -4285,6 +4286,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     gtpId = rs2.getInt(4);
                 }
                 rs2.close();
+                */
 
                 String catalogNumber = null;
                 String colObjId = null;
@@ -5443,7 +5445,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         HibernateUtil.beginTransaction();
 
         LithoStratTreeDef def = DataBuilder.createLithoStratTreeDef("Standard LithoStrat Tree");
-        List<Object> defItemsAndRootNode = BuildSampleDatabase.createSimpleLithoStrat(def);
+        BuildSampleDatabase.createSimpleLithoStrat(def);
 
         localSession.save(def);
 
@@ -6039,7 +6041,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      */
     @SuppressWarnings("unchecked")
     public LithoStrat convertLithoStratFromCSV(LithoStratTreeDef treeDef, final boolean doSave)
-            throws SQLException
     {
         lithoStratHash.clear();
 
@@ -7088,7 +7089,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * The AgentAdress, Agent and Address (triple) can have a NULL Address but it cannot have a NULL
      * Agent. If there is a NULL Agent then this method will throw a RuntimeException.
      */
-    public boolean convertAgents() throws SQLException
+    public boolean convertAgents()
     {
         boolean debugAgents = false;
 

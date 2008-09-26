@@ -7101,7 +7101,8 @@ public class BuildSampleDatabase
         newContainer.setIsHidden(newContainer.getIsHidden());
 
         
-        boolean isColObj = memoryContainer.getName().equals("collectionobject");
+        boolean isColObj    = memoryContainer.getName().equals("collectionobject");
+        boolean isAccession = memoryContainer.getName().equals("accession");
         
         debugOn = false;//memoryContainer.getName().equals("collectionobject");
        
@@ -7148,7 +7149,7 @@ public class BuildSampleDatabase
                 newItem.setFormat(catFmtName);
             }
             
-            if (isColObj && item.getName().equals("accessionNumber") && accFmtName != null)
+            if (isAccession && item.getName().equals("accessionNumber") && accFmtName != null)
             {
                 newItem.setFormat(accFmtName);
             }

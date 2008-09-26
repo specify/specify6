@@ -60,6 +60,7 @@ public class DBRelationshipInfo extends DBInfoBase implements DBTableChildIFace
         this.otherSide   = otherSide;
         this.isRequired  = isRequired;
         this.isUpdatable = isUpdatable;
+        this.joinTable   = joinTable;
         
         try
         {

@@ -14,12 +14,10 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
- * This class is used for formatting String CatalogNumbers with no format (only a length constraint).
+ * This class is used for formatting Strings with no format (only a length constraint).
  * 
  * @author rod
  *
@@ -28,23 +26,35 @@ import edu.ku.brc.util.Pair;
  * May 23, 2008
  *
  */
-public class CatalogNumberStringUIFieldFormatter extends BaseUIFieldFormatter implements UIFieldFormatterIFace
+public class GenericStringUIFieldFormatter extends BaseUIFieldFormatter implements UIFieldFormatterIFace
 {
+    private Class<?> dataClass;
+    
     /**
      * Constructs a string based non-formatter formatter.
+     * @param name
+     * @param dataClass
+     * @param fieldName
+     * @param localizedTitle
+     * @param uiDisplayLen
      */
-    public CatalogNumberStringUIFieldFormatter()
+    public GenericStringUIFieldFormatter(final String   name,
+                                         final Class<?> dataClass,
+                                         final String   fieldName,
+                                         final String   localizedTitle,
+                                         final int      uiDisplayLen)
     {
         super();
         
-        this.name      = "CatalogNumberString";
-        this.title     = UIRegistry.getResourceString("StringCatalogFormatter.title");
+        this.name      = name;
+        this.title     = localizedTitle;
         
-        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
-        DBFieldInfo fi = ti.getFieldByName("catalogNumber");
+        DBTableInfo ti = DBTableIdMgr.getInstance().getByShortClassName(dataClass.getSimpleName());
+        DBFieldInfo fi = ti.getFieldByName(fieldName);
         
+        this.dataClass              = dataClass;
         this.length                 = fi.getLength();
-        this.uiLength               = 10;
+        this.uiLength               = uiDisplayLen;
         this.isNumericCatalogNumber = false;
         this.isIncrementer          = false;
         this.autoNumber             = null;
@@ -55,8 +65,6 @@ public class CatalogNumberStringUIFieldFormatter extends BaseUIFieldFormatter im
         fields     = new Vector<UIFieldFormatterField>();
         fields.add(field);
         incPos     = new Pair<Integer, Integer>(0, length);
-        
-        
     }
 
     /* (non-Javadoc)
@@ -74,6 +82,6 @@ public class CatalogNumberStringUIFieldFormatter extends BaseUIFieldFormatter im
     @Override
     public Class<?> getDataClass()
     {
-        return CollectionObject.class;
+        return dataClass;
     }
 }

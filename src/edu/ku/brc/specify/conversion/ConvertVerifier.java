@@ -468,7 +468,7 @@ public class ConvertVerifier
         }
     }
     
-    protected boolean verifyTableCounts(final String newTableName, final String oldTableName) throws SQLException
+    protected boolean verifyTableCounts(final String newTableName, final String oldTableName)
     {
         int newCnt = BasicSQLUtils.getNumRecords(newDBConn, newTableName);
         int oldCnt = BasicSQLUtils.getNumRecords(oldDBConn, oldTableName);
@@ -856,10 +856,8 @@ public class ConvertVerifier
                             log.error(desc+ " - "+msg);
                             printRowError(msg);
                             return false;
-                        } else
-                        {
-                            continue;
                         }
+                        continue;
                     }
                     
                     //System.out.println(newObj.getClass().getName()+"  "+oldObj.getClass().getName());

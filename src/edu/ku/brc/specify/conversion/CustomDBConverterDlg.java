@@ -23,7 +23,6 @@ import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.UIRegistry;
 
 /**

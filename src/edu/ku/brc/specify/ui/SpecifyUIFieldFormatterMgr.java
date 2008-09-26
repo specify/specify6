@@ -40,6 +40,7 @@ import edu.ku.brc.specify.dbsupport.CollectionAutoNumberAlphaNum;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -74,7 +75,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
     {
         super.load();
         
-        catalogNumberNumeric      = super.getFormatterInternal("CatalogNumberNumeric");  //$NON-NLS-1$
+        catalogNumberNumeric  = super.getFormatterInternal("CatalogNumberNumeric");  //$NON-NLS-1$
         
         // Just in case it got removed accidently
         if (catalogNumberNumeric == null)
@@ -92,6 +93,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
             catalogNumberString = new CatalogNumberStringUIFieldFormatter();
         }
         
+        loadStringFormatters();
     }
     
     /* (non-Javadoc)
@@ -112,6 +114,80 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr implements C
         
         return XMLHelper.readDOMFromConfigDir("backstop/uiformatters.xml"); //$NON-NLS-1$
     }
+    
+    /**
+     * @return
+     * @throws Exception
+     */
+    protected Element getDOMForStringFmts() throws Exception
+    {
+        if (doingLocal)
+        {
+            return XMLHelper.readDOMFromConfigDir("backstop/uistrformatters.xml"); //$NON-NLS-1$
+        }
+
+        AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "UIStrFormatters"); //$NON-NLS-1$ //$NON-NLS-2$
+        if (appRes != null)
+        {
+            return AppContextMgr.getInstance().getResourceAsDOM(appRes);
+        } 
+        
+        return XMLHelper.readDOMFromConfigDir("backstop/uistrformatters.xml"); //$NON-NLS-1$
+    }
+    
+    /**
+     * 
+     */
+    public void loadStringFormatters()
+    {
+        try
+        {
+            Element root = getDOMForStringFmts();
+            if (root != null)
+            {
+                List<?> formats = root.selectNodes("/formats/format");
+                for (Object fObj : formats)
+                {
+                    Element formatElement = (Element) fObj;
+                    String  name          = formatElement.attributeValue("name");
+                    
+                    UIFieldFormatterIFace fmt = super.getFormatterInternal(name);
+                    if (fmt == null)
+                    {
+                        String  fieldName     = XMLHelper.getAttr(formatElement, "fieldname", null);
+                        String  dataClassName = formatElement .attributeValue("class");
+                        String  titleKey      = XMLHelper.getAttr(formatElement, "titlekey", null);
+                        int     uiDisplayLen  = XMLHelper.getAttr(formatElement, "uilen", 10);
+                        
+                        
+                        Class<?> dataClass = null;
+                        try
+                        {
+                            dataClass = Class.forName(dataClassName);
+                            
+                        } catch (Exception ex)
+                        {
+                            log.error("Couldn't load class [" + dataClassName + "] for [" + name + "]");
+                        }
+                        
+                        fmt = new GenericStringUIFieldFormatter(name, 
+                                                                dataClass, 
+                                                                fieldName, 
+                                                                UIRegistry.getResourceString(titleKey), 
+                                                                uiDisplayLen);
+                        hash.put(name, fmt);
+                    
+                    }
+                }
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+        }
+    }
+
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr#saveXML(java.lang.String)

@@ -44,7 +44,8 @@ public class SpecifyInitializer
     /**
      * Constructor.
      */
-    public SpecifyInitializer(final boolean doLoginOnly, final boolean assumeDerby)
+    public SpecifyInitializer(final boolean doLoginOnly, 
+                              final boolean assumeDerby)
     {
         this.doLoginOnly = doLoginOnly;
         this.assumeDerby = assumeDerby;

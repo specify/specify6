@@ -130,6 +130,7 @@ import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
+import edu.ku.brc.specify.config.init.SetupDivsionCollection;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -913,10 +914,24 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             //-- System Menu
             //--------------------------------------------------------------------
 
-            menu.add(UIHelper.createLocalizedMenu(mb, "Specify.COLSETUP_MENU", "Specify.COLSETUP_MNEU")); //$NON-NLS-1$ //$NON-NLS-2$
+            JMenu setupMenu = UIHelper.createLocalizedMenu(mb, "Specify.COLSETUP_MENU", "Specify.COLSETUP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+            menu.add(setupMenu);
             
+            title = "Specify.CREATE_COL"; //$NON-NLS-1$
+            String mnu = "Specify.CREATE_COL_MNU";  //$NON-NLS-1$
+            mi = UIHelper.createLocalizedMenuItem(setupMenu, title, mnu, title, true, null);
+            mi.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            SetupDivsionCollection setup = new SetupDivsionCollection(Specify.this);
+                            UIHelper.centerAndShow(setup);
+                        }
+                    });
+
+
             title = "Specify.SCHEMA_CONFIG"; //$NON-NLS-1$
-            String mnu = "Specify.SCHEMA_CONFIG_MNU";  //$NON-NLS-1$
+            mnu = "Specify.SCHEMA_CONFIG_MNU";  //$NON-NLS-1$
             mi = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, true, null);
             mi.addActionListener(new ActionListener()
                     {

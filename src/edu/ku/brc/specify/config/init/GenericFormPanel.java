@@ -24,6 +24,9 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.forms.DataGetterForObj;
+import edu.ku.brc.af.ui.forms.DataSetterForObj;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -36,16 +39,32 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class GenericFormPanel extends BaseSetupPanel
 {
+    protected String[]         fieldsNames = null;
     protected Hashtable<String, JComponent> comps = new Hashtable<String, JComponent>();
+    protected FormDataObjIFace dataObj;
+    protected DataGetterForObj getter    = null;
+    protected DataSetterForObj setter    = null;
+
+    public GenericFormPanel(final String   name,
+                            final String   title,
+                            final String[] labels,
+                            final String[] fields, 
+                            final JButton  nextBtn)
+    {
+        this(null, name, title, labels, fields,  nextBtn);
+    }
     
-    
-    public GenericFormPanel(final String name,
+    public GenericFormPanel(final FormDataObjIFace dataObj,
+                            final String   name,
                             final String   title,
                             final String[] labels,
                             final String[] fields, 
                             final JButton  nextBtn)
     {
         super(name, nextBtn);
+        
+        this.dataObj     = dataObj;
+        this.fieldsNames = fields;
         
         CellConstraints cc = new CellConstraints();
         
@@ -65,6 +84,26 @@ public class GenericFormPanel extends BaseSetupPanel
         updateBtnUI();
     }
     
+    public DataGetterForObj getGetter()
+    {
+        return getter;
+    }
+
+    public void setGetter(DataGetterForObj getter)
+    {
+        this.getter = getter;
+    }
+
+    public DataSetterForObj getSetter()
+    {
+        return setter;
+    }
+
+    public void setSetter(DataSetterForObj setter)
+    {
+        this.setter = setter;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#getValues(java.util.Properties)
      */
@@ -76,7 +115,20 @@ public class GenericFormPanel extends BaseSetupPanel
             JComponent comp = comps.get(fName);
             if (comp instanceof JTextField)
             {
-                props.put(makeName(fName), ((JTextField)comp).getText());
+                String val = ((JTextField)comp).getText();
+                props.put(makeName(fName), val);
+                
+                if (dataObj != null && setter != null)
+                {
+                    Object dataVal = getter.getFieldValue(dataObj, fName);
+                    if (dataVal != null)
+                    {
+                        if (!dataVal.toString().equals(val))
+                        {
+                            setter.setFieldValue(dataObj, fName, val);
+                        }
+                    }
+                }
             }
         } 
     }
@@ -87,22 +139,27 @@ public class GenericFormPanel extends BaseSetupPanel
     @Override
     protected void setValues(final Properties values)
     {
-        for (Object key : values.keySet())
+        for (String fName : comps.keySet())
         {
-            String[] fieldNames = StringUtils.split(key.toString(), "_");
-            if (fieldNames[0].equals(panelName))
+            JComponent comp = comps.get(fName);
+            if (comp instanceof JTextField)
             {
-                JComponent comp = comps.get(fieldNames[1]);
-                if (comp instanceof JTextField)
+                String val = values.getProperty(makeName(fName));
+                if (dataObj != null && getter != null)
                 {
-                    String val      = values.getProperty(key.toString());
-                    ((JTextField)comp).setText(val);
-                    if (StringUtils.isNotEmpty(val))
+                    Object dataVal = getter.getFieldValue(dataObj, fName);
+                    if (dataVal != null)
                     {
-                        ((JTextField)comp).setCaretPosition(0);
+                        val = dataVal.toString();
                     }
-                } 
-            }
+                }
+                ((JTextField)comp).setText(val);
+                
+                if (StringUtils.isNotEmpty(val))
+                {
+                    ((JTextField)comp).setCaretPosition(0);
+                }
+            } 
         }
     }
 
