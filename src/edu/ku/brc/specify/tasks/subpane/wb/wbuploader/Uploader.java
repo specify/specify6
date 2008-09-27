@@ -35,7 +35,6 @@ import javax.swing.JList;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
-import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
 import net.sf.jasperreports.engine.JRDataSource;
@@ -62,6 +61,7 @@ import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
@@ -3558,6 +3558,26 @@ public class Uploader implements ActionListener, KeyListener
     }
 
     
+ /*
+  * Stuff to handling with preventing logins and disabling tasks during uploads.
+  * 
+  */
+    
+    /**
+     * True if a lock has been overridden. Prevents multiple complaints about uploader lock.
+     */
+    //XXX Need to test to be sure lockout of other logins is maintaind if user who overrides opens her own upload session.
+    protected static boolean isLockOverridden = false;
+    
+    /**
+     * @return true if it is possible (i.e. user has permission, ??) to override an upload lock.
+     */
+    protected static boolean canOverrideLock()
+    {
+        //return false;
+        //XXX Probably a better way to do this...
+        return AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getUserType().equals("CollectionManager");
+    }
     /**
      * Checks to see if a lock has been set for the upload task. 
      * 
@@ -3566,6 +3586,11 @@ public class Uploader implements ActionListener, KeyListener
      */
     public static boolean checkUploadLock(boolean isLogin)
     {
+        if (isLockOverridden)
+        {
+            return true;
+        }
+        
         SpTaskSemaphore lockInfo = TaskSemaphoreMgr.getLockInfo("WORKBENCH_UPLOAD_TASK", "WORKBENCH_UPLOAD_TASK",
                 TaskSemaphoreMgr.SCOPE.Global);
         if (lockInfo == null)
@@ -3577,37 +3602,46 @@ public class Uploader implements ActionListener, KeyListener
         {
             return true;
         }
-        
+                
         String lockOwner = lockInfo.getOwner().getName();
-        
+        boolean canOverride = canOverrideLock();
         
         String msg1 = String.format(UIRegistry.getResourceString("WB_UPLOAD_LOCK_MSG1"), lockOwner);
         String msg2 = UIRegistry.getResourceString(isLogin ? "WB_UPLOAD_LOCK_LOGIN_MSG2" : "WB_UPLOAD_LOCK_TASK_MSG2");
-        String msg3 = UIRegistry.getResourceString("WB_UPLOAD_LOCK_MSG3");
+        String msg3 = canOverride ? UIRegistry.getResourceString("WB_UPLOAD_LOCK_MSG3") : null;
         
         PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
         pb.add(new JLabel(msg1), new CellConstraints().xy(2, 2));
         pb.add(new JLabel(msg2), new CellConstraints().xy(2, 4));
-        pb.add(new JLabel(msg3), new CellConstraints().xy(2, 6));
-        
+        if (canOverride)
+        {
+            pb.add(new JLabel(msg3), new CellConstraints().xy(2, 6));
+        }
         CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
                 UIRegistry.getResourceString("WB_UPLOAD_LOCK_DLG"),
                 true,
-                CustomDialog.OKCANCEL,
+                canOverride ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN,
                 pb.getPanel());
-        dlg.setOkLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.OVERRIDE"));
-        if (isLogin)
+        if (canOverride)
         {
-            dlg.setCancelLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.EXIT"));
+            dlg.setOkLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.OVERRIDE"));
+            if (isLogin)
+            {
+                dlg.setCancelLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.EXIT"));
+            }
+            else
+            {
+                dlg.setCancelLabel(UIRegistry.getResourceString("CONTINUE"));
+            }
         }
         else
         {
-            dlg.setCancelLabel(UIRegistry.getResourceString("CONTINUE"));
+            dlg.setOkLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.EXIT"));
         }
                 
         UIHelper.centerAndShow(dlg);
         dlg.dispose();
-        if (dlg.isCancelled())
+        if (!canOverride || dlg.isCancelled())
         {
             return false;
         }
@@ -3628,6 +3662,7 @@ public class Uploader implements ActionListener, KeyListener
             return false;
         }
         
+        isLockOverridden = true;
         return true;
     }
     
@@ -3659,12 +3694,6 @@ public class Uploader implements ActionListener, KeyListener
         SwingUtilities.invokeLater(new Runnable(){
             public void run()
             {
-//                JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
-                //toolBar.setVisible(false);
-//                for (int c = 0; c < toolBar.getComponentCount(); c++)
-//                {
-//                    toolBar.getComponent(c).setEnabled(!lock);
-//                }
                 JMenuBar menuBar  = (JMenuBar)UIRegistry.get(UIRegistry.MENUBAR);
                 for (int m = 0; m < menuBar.getMenuCount(); m++)
                 {
