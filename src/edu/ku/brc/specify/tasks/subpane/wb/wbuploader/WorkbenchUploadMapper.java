@@ -675,7 +675,9 @@ public class WorkbenchUploadMapper
      */
     protected boolean isTaxTreeItem(WorkbenchTemplateMappingItem wbi)
     {
-        return (wbi.getTableName().equals("taxon") || wbi.getTableName().equals("determination"))
+//        return (wbi.getTableName().equals("taxon") || wbi.getTableName().equals("determination"))
+//        && taxonLevels.containsKey(wbi.getFieldName()); /* plus other fields??? */
+        return (wbi.getSrcTableId().equals(4) || wbi.getSrcTableId().equals(4000) || wbi.getTableName().equals("determination"))
                 && taxonLevels.containsKey(wbi.getFieldName()); /* plus other fields??? */
     }
 
