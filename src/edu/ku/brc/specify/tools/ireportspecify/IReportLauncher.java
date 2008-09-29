@@ -95,7 +95,7 @@ public class IReportLauncher implements DatabaseLoginListener
         }
         //...end specify.restartApp snatch
         
-        UIHelper.setSecurityOn(true);//XXX - not for release!!!
+        UIHelper.setSecurityOn(false);//XXX - not for release!!!
         boolean canOpen = true;
         if (UIHelper.isSecurityOn())
         {
