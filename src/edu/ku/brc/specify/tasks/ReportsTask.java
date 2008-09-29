@@ -132,9 +132,10 @@ public class ReportsTask extends ReportsBaseTask
                     public void actionPerformed(ActionEvent e)
                     {
                         //this is probably overkill, but doesn't seem to hurt anything and is not slow.
-                        AppContextMgr.getInstance().setContext(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
+                        ((SpecifyAppContextMgr) AppContextMgr.getInstance()).setContext(
+                                ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
                                 ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
-                                false);
+                                true, false);
                         
                         CommandDispatcher.dispatch(new CommandAction(ReportsBaseTask.REPORTS,
                                 ReportsBaseTask.IMPORT, null));
