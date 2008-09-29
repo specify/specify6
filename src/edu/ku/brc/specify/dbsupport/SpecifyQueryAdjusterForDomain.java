@@ -100,7 +100,8 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             {
                 if (prefix.equals(""))
                 {
-                    prefix = "dsp.";
+                    // rods - 9/29/08 - This was messing up the Geography Count (SQL) but is needed for HQL
+                    prefix = isHQL ? "dsp." : "";
                 }
                 else
                 {
