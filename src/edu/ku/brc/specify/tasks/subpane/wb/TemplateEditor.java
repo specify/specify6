@@ -832,7 +832,8 @@ public class TemplateEditor extends CustomDialog
                                                             null,
                                                             null,
                                                             null);
-        FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(fieldInfo.getTableinfo().getName(), IconManager.STD_ICON_SIZE), wbtmi);
+        FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(fieldInfo.getTableinfo().getShortClassName().toLowerCase(), 
+                IconManager.STD_ICON_SIZE), wbtmi);
         fmp.setFieldInfo(fieldInfo);
         fmp.setAdded(wbtmi == null); // new Items that was not in the data file.
         

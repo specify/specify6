@@ -547,7 +547,7 @@
     <field column="Subforma" name="subforma" type="java.lang.String" length="64"/>
     -->
   </table>
-  <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxon" tableid="4000">
+  <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxononly" tableid="4000">
     <field column="Kingdom" name="kingdom" type="java.lang.String" length="64"/>
     <field column="Kingdom Author" name="kingdomAuthor" type="java.lang.String" length="128"/>
     <field column="Kingdom Common Name" name="kingdomCommonName" type="java.lang.String" length="128"/>

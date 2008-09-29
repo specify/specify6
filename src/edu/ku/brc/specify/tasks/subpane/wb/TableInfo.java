@@ -24,7 +24,7 @@ public class TableInfo implements TableListItemIFace, Comparable<TableInfo>
     {
         this.tableInfo = tableInfo;
         
-        icon = IconManager.getIcon(tableInfo.getName(), size);
+        icon = IconManager.getIcon(tableInfo.getShortClassName().toLowerCase(), size);
     }
 
     /**
