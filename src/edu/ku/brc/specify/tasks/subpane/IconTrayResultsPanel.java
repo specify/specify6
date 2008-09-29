@@ -143,4 +143,16 @@ public class IconTrayResultsPanel extends IconTray implements ESResultsTablePane
         // TODO Auto-generated method stub
         
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#getSelectedRows()
+     */
+    @Override
+    public int[] getSelectedRows()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    
 }

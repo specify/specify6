@@ -731,6 +731,14 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#getSelectedRows()
+     */
+    public int[] getSelectedRows()
+    {
+        return table.getSelectedRows();
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#getTitle()
      */
     public String getTitle()

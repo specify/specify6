@@ -954,4 +954,12 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     {
         UIRegistry.getStatusBar().incrementValue(getClass().getSimpleName());
     }
+
+    /**
+     * @return the parentERTP
+     */
+    public ESResultsTablePanelIFace getParentERTP()
+    {
+        return parentERTP;
+    }
 }

@@ -38,6 +38,15 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
     protected int row = -1;
     
     /**
+     * Array of selected row numbers.
+     */
+    protected int[] selectedRows = null;
+    /**
+     * index of current selected row.
+     */
+    protected int selectedIdx = -1;
+    
+    /**
      * @param data
      * @param columnInfo
      */
@@ -46,6 +55,14 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
         //XXX setting rowIds to true doesn't guarantee that rowIds will be available if Select Distinct was used
         super(columnInfo, true, null);
         this.data = data;
+        if (data != null)
+        {
+            selectedRows = data.getParentERTP().getSelectedRows();
+            if (selectedRows.length == 0)
+            {
+                selectedRows = null;
+            }
+        }
     }
 
     public QBLiveJRDataSource(final ResultSetTableModel data, final List<ERTICaptionInfoQB> columnInfo, final Object repeats)
@@ -53,8 +70,23 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
         //XXX setting rowIds to true doesn't guarantee that rowIds will be available if Select Distinct was used
         super(columnInfo, true, repeats);
         this.data = data;
+        if (data != null)
+        {
+            selectedRows = data.getParentERTP().getSelectedRows();
+            if (selectedRows.length == 0)
+            {
+                selectedRows = null;
+            }
+        }
     }
  
+    /**
+     * @return the number of records to be printed.
+     */
+    protected int getRowCount()
+    {
+        return selectedRows == null ? data.getRowCount() : selectedRows.length;
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#getFieldValue(net.sf.jasperreports.engine.JRField)
@@ -65,7 +97,7 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
         //XXX - what if user-defined 'resultsetsize' field exists???
         if (arg0.getName().equalsIgnoreCase("resultsetsize"))
         {
-        	return String.valueOf(data.getRowCount()); //currently returned as a string for convenience.
+        	return String.valueOf(getRowCount()); //currently returned as a string for convenience.
         }
         int fldIdx = getFldIdx(arg0.getName());
         if (fldIdx < 0)
@@ -87,7 +119,16 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
     @Override
     protected boolean getNext()
     {
-        return ++row < data.getRowCount();
+        if (selectedRows == null)
+        {
+            return ++row < data.getRowCount();
+        }
+        if (++selectedIdx < selectedRows.length)
+        {
+            row = selectedRows[selectedIdx];
+            return true;
+        }
+        return false;
     }
 
     /* (non-Javadoc)

@@ -56,6 +56,11 @@ public interface ESResultsTablePanelIFace extends PropertyChangeListener
      */
     public abstract List<Integer> getListOfIds(final boolean returnAll);
 
+    /**
+     * @return a list of the indexes (row numbers) of selected rows.
+     */
+    public abstract int[] getSelectedRows();
+    
     /** 
      * Register a single property listener.
      * @param pcl the listener
