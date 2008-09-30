@@ -19,12 +19,12 @@ package edu.ku.brc.af.ui.forms;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 
 import org.apache.commons.lang.StringUtils;
@@ -62,6 +62,7 @@ public class RecordSetTableViewObj extends TableViewObj
     //protected JButton deleteButton;
     
     protected boolean dataTypeError;
+    protected boolean shouldCloseSession = false;
     
     protected FormValidator            validator;
     protected DataProviderSessionIFace tempSession = null;
@@ -102,9 +103,9 @@ public class RecordSetTableViewObj extends TableViewObj
     {
         super.buildTable();
         
-        Dimension size = table.getPreferredSize();
-        size.height = 200;
-        table.setPreferredSize(size);
+        //Dimension size = table.getPreferredSize();
+        //size.height = 200;
+        //table.setPreferredSize(size);
     }
     
     protected void initMainComp()
@@ -150,6 +151,17 @@ public class RecordSetTableViewObj extends TableViewObj
      */
     private void processRecordSet(final RecordSetIFace recordSet)
     {
+        isLoading = true;
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                table.tableChanged(new TableModelEvent(model));
+                table.repaint();
+            }
+        });
+        
         DBTableIdMgr.getInstance().getInClause(recordSet);
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
         
@@ -171,6 +183,22 @@ public class RecordSetTableViewObj extends TableViewObj
                 fdi.forceLoad();
             }
         }
+        
+        if (tempSession != null)
+        {
+            tempSession.close();
+            tempSession = null;
+        }
+        
+        isLoading = false;
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                table.repaint();
+            }
+        });
     }
     
     /* (non-Javadoc)
@@ -238,8 +266,7 @@ public class RecordSetTableViewObj extends TableViewObj
     {
         this.session = null;//session;
         
-        
-        if (dataObj instanceof RecordSetIFace)
+        /*if (dataObj instanceof RecordSetIFace)
         {
             RecordSetIFace recordSet = (RecordSetIFace)dataObj;
             
@@ -263,7 +290,7 @@ public class RecordSetTableViewObj extends TableViewObj
                     table.tableChanged(new TableModelEvent(model));
                 }
             }
-        }
+        }*/
         
     }
 
@@ -274,27 +301,4 @@ public class RecordSetTableViewObj extends TableViewObj
     {
         return dataObj;
     }
-
-    @Override
-    public void aboutToShow(boolean show)
-    {
-        if (!show && tempSession != null)
-        {
-            tempSession.close();
-            tempSession = null;
-        }
-        super.aboutToShow(show);
-    }
-
-    @Override
-    public void getDataFromUI()
-    {
-        if (tempSession != null)
-        {
-            tempSession.close();
-            tempSession = null;
-        }
-        super.getDataFromUI();
-    }
-
 }

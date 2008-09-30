@@ -17,11 +17,9 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
-
-import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -31,18 +29,18 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.DataSetterForObj;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.Specify;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.UIRegistry;
 
-public class SetupDivsionCollection extends JFrame
+public class SetupDivsionCollection extends JDialog
 {
-    private static final Logger log = Logger.getLogger(SetupDivsionCollection.class);
+    //private static final Logger log = Logger.getLogger(SetupDivsionCollection.class);
     
     protected Properties             props = new Properties();
     
@@ -57,7 +55,7 @@ public class SetupDivsionCollection extends JFrame
     protected boolean                isCancelled;
     protected JPanel                 cardPanel;
     protected CardLayout             cardLayout = new CardLayout();
-    protected Vector<GenericFormPanel> panels     = new Vector<GenericFormPanel>();
+    protected Vector<SetupPanelIFace> panels     = new Vector<SetupPanelIFace>();
     
     protected Specify                specify;
     protected String                 setupXMLPath;
@@ -68,6 +66,8 @@ public class SetupDivsionCollection extends JFrame
     public SetupDivsionCollection(final Specify specify)
     {
         super();
+        
+        setModal(true);
         
         this.specify = specify;
         
@@ -81,11 +81,22 @@ public class SetupDivsionCollection extends JFrame
         JPanel btnBar;
         backBtn    = createButton(UIRegistry.getResourceString("BACK"));
         nextBtn    = createButton(UIRegistry.getResourceString("NEXT"));
+        /*nextBtn    = new JButton("Next") {
+            public void setEnabled(boolean enable)
+        {
+            super.setEnabled(enable);
+            if (enable)
+            {
+                int x = 0;
+                x++;
+            }
+        }
+        };*/
         
         HelpMgr.registerComponent(helpBtn, "ConfiguringDatabase");
         CellConstraints cc = new CellConstraints();
         
-        if (false)
+        if (true)
         {
             PanelBuilder bbpb = new PanelBuilder(new FormLayout("f:p:g,p,4px,p,4px,p,4px,p,4px", "p"));
             bbpb.add(helpBtn, cc.xy(2,1));
@@ -93,15 +104,49 @@ public class SetupDivsionCollection extends JFrame
             bbpb.add(nextBtn, cc.xy(6,1));
             bbpb.add(cancelBtn, cc.xy(8,1));
             
+            btnBar = bbpb.getPanel();
+            
         } else
         {
             btnBar = ButtonBarFactory.buildWizardBar(helpBtn, backBtn, nextBtn, cancelBtn);
         }
             
-        Institution inst     = AppContextMgr.getInstance().getClassObject(Institution.class);
-        Division    division = AppContextMgr.getInstance().getClassObject(Division.class);
+        //Institution inst     = AppContextMgr.getInstance().getClassObject(Institution.class);
+        //Division    division = AppContextMgr.getInstance().getClassObject(Division.class);
         
-        panels.add(new GenericFormPanel(inst, "inst", 
+        Collection col = new Collection();
+        col.initialize();
+        FormSetupPanel coll1 = new FormSetupPanel("Cln", 
+                                                     null, 
+                                                     "CollectionSetup", 
+                                                     Division.class.getName(), 
+                                                     true, 
+                                                     MultiView.HIDE_SAVE_BTN, 
+                                                     col,
+                                                     nextBtn);
+        panels.add(coll1);
+        
+        FormSetupPanel coll2 = new FormSetupPanel("Cln", 
+                null, 
+                "CollectionSetupABCD", 
+                Division.class.getName(), 
+                true, 
+                MultiView.HIDE_SAVE_BTN, 
+                col,
+                nextBtn);
+        panels.add(coll2);
+        
+        FormSetupPanel coll3 = new FormSetupPanel("Cln", 
+                null, 
+                "CollectionSetupNumSch", 
+                Division.class.getName(), 
+                true, 
+                MultiView.HIDE_SAVE_BTN, 
+                col,
+                nextBtn);
+        panels.add(coll3);
+        
+        /*panels.add(new GenericFormPanel(inst, "inst", 
                 "Enter Institution Information",
                 new String[] { "Name", "Title"}, 
                 new String[] { "name", "title"}, 
@@ -120,7 +165,7 @@ public class SetupDivsionCollection extends JFrame
                 "Enter Collection Information", 
                 new String[] { "Prefix", "Name"}, 
                 new String[] { "prefix", "name"}, 
-                nextBtn));
+                nextBtn));*/
          
          
         lastStep = panels.size();
@@ -154,7 +199,7 @@ public class SetupDivsionCollection extends JFrame
                 } else
                 {
                     setVisible(false);
-                    configureDatabase();
+                    saveCollection();
                     dispose();
                 }
             }
@@ -175,17 +220,17 @@ public class SetupDivsionCollection extends JFrame
         //boolean isAllOK = true;
         for (int i=0;i<panels.size();i++)
         {
-            cardPanel.add(Integer.toString(i), panels.get(i));
+            SetupPanelIFace panel = panels.get(i);
+            cardPanel.add(Integer.toString(i), panel.getUIComponent());
             
-            GenericFormPanel p = panels.get(i);
-            p.setGetter(getter);
-            p.setSetter(setter);
-            p.setValues(props);
-            
-            if (!p.isUIValid())
+            if (panels.get(i) instanceof GenericFormPanel)
             {
-                //isAllOK = false;
+                GenericFormPanel p = (GenericFormPanel)panels.get(i);
+                p.setGetter(getter);
+                p.setSetter(setter);
             }
+            
+            panel.setValues(props);
         }
         cardLayout.show(cardPanel, "0");
         
@@ -198,6 +243,8 @@ public class SetupDivsionCollection extends JFrame
         setContentPane(builder.getPanel());
         
         pack();
+        
+        nextBtn.setEnabled(false);
 
     }
     
@@ -232,11 +279,11 @@ public class SetupDivsionCollection extends JFrame
     /**
      * 
      */
-    public void configureDatabase()
+    public void saveCollection()
     {
         try
         {
-            for (BaseSetupPanel panel : panels)
+            for (SetupPanelIFace panel : panels)
             {
                 panel.getValues(props);
             }

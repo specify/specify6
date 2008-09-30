@@ -929,7 +929,7 @@ public class QueryTask extends BaseTask
      */
     protected void loadQueries()
     {
-        navBox = new DroppableNavBox(getResourceString("Queries"), QUERY_FLAVOR, QUERY, SAVE_QUERY);
+        navBox = new DroppableNavBox(getResourceString("QUERIES"), QUERY_FLAVOR, QUERY, SAVE_QUERY);
         // XXX Users will probably want to share queries??
         String sqlStr = "From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = true AND user.specifyUserId = "
                 + AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getSpecifyUserId()

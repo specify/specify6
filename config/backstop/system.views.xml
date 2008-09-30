@@ -132,6 +132,36 @@
             </altviews>
         </view>
         
+        <view name="CollectionSetup"
+            class="edu.ku.brc.specify.datamodel.Collection"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionSetupBusRules"
+            resourcelabels="false">
+            <desc><![CDATA[The Collection Object form.]]></desc>
+            <altviews>
+                <altview name="CollectionSetup Edit" viewdef="CollectionSetup" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+
+        <view name="CollectionSetupABCD"
+            class="edu.ku.brc.specify.datamodel.Collection"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionSetupBusRules"
+            resourcelabels="false">
+            <desc><![CDATA[The Collection Object form.]]></desc>
+            <altviews>
+                <altview name="CollectionSetupABC Edit" viewdef="CollectionSetupABCD" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view name="CollectionSetupNumSch"
+            class="edu.ku.brc.specify.datamodel.Collection"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionSetupBusRules"
+            resourcelabels="false">
+            <desc><![CDATA[The Collection Object form.]]></desc>
+            <altviews>
+                <altview name="CollectionSetupNumSch Edit" viewdef="CollectionSetupNumSch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
         <view name="Institution"
             class="edu.ku.brc.specify.datamodel.Institution"
             resourcelabels="false">
@@ -491,6 +521,133 @@
             </rows>
         </viewdef>
         
+        <viewdef
+            type="form"
+            name="CollectionSetup"
+            class="edu.ku.brc.specify.datamodel.Collection"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Collection Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>            
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Collection" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="  "/>
+                    <cell type="field" id="6" name="isEmbeddedCollectingEvent" label="Add Collecting Event Automatically" uitype="checkbox"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="collectionPrefix" uitype="text" isrequired="false"/>
+                </row>
+                <row>
+                    <cell type="label" label="Discipline"/>
+                    <cell type="field" id="disciplineCBX" name="disciplineCBX" uitype="combobox" isrequired="true" ignore="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="description" uitype="textarea" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="remarks" uitype="textarea" colspan="2"/>
+                </row>
+            </rows>
+        </viewdef>        
+        
+        <viewdef 
+            type="form"
+            name="CollectionSetupABCD"
+            class="edu.ku.brc.specify.datamodel.Collection"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Collection Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>            
+            <rows>
+                <row>
+                    <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="3"/>
+                </row>
+                 <row>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="kingdomCoverage" uitype="text" isrequired="false"/>
+                </row>
+                 <row>
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="primaryFocus" uitype="text" isrequired="false"/>
+                </row>
+                 <row>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="collectionType" uitype="text" isrequired="false"/>
+                </row>
+                 <row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="primaryPurpose" uitype="text" isrequired="false"/>
+                </row>
+                 <row>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="preservationMethodType" uitype="text" isrequired="false"/>
+                </row>
+                 <row>
+                    <cell type="label" labelfor="13"/>
+                    <cell type="field" id="13" name="developmentStatus" uitype="text" isrequired="false"/>
+                </row>
+                 <row>
+                    <cell type="label" labelfor="14"/>
+                    <cell type="field" id="14" name="institutionType" uitype="text" isrequired="false"/>
+                </row>
+                 <row>
+                    <cell type="label" labelfor="15"/>
+                    <cell type="field" id="15" name="scope" uitype="text" isrequired="false"/>
+                </row>
+                 <row>
+                    <cell type="label" labelfor="16"/>
+                    <cell type="field" id="16" name="dbContentVersion" uitype="text" isrequired="false"/>
+                </row>
+            </rows>
+        </viewdef>
+          
+        <viewdef 
+            type="form"
+            name="CollectionSetupNumSch"
+            class="edu.ku.brc.specify.datamodel.Collection"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Collection Data Entry Form]]></desc>
+            <enableRules/>
+            <columnDef>p,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>            
+            <rows>
+                <row>
+                    <cell type="label" label="Numbering Scheme"/>
+                    <cell type="field" id="numScheme" name="numScheme" uitype="text" readonly="true" ignore="true"/> 
+                </row>
+                <row>
+                    <cell type="label" label=" "/>
+                </row>
+                <row>
+                    <cell type="panel" id="16" name="btnpanel" coldef="f:p:g,p,f:p:g,p,f:p:g" rowdef="p" colspan="3">
+                        <rows>
+                            <row>
+				                <cell type="field" id="newNumSchemeBTN" name="newNumSchemeBTN" uitype="button" initialize="title=Create New Numbering Schema;" ignore="true"/>
+				                <cell type="field" id="chooseNumSchemeBTN" name="chooseNumSchemeBTN" uitype="button" initialize="title=Choose Numbering Schema;" ignore="true"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+            </rows>
+        </viewdef> 
+              
         <viewdef
             type="form"
             name="Institution"

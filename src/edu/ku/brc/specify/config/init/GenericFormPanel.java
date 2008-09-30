@@ -44,6 +44,16 @@ public class GenericFormPanel extends BaseSetupPanel
     protected FormDataObjIFace dataObj;
     protected DataGetterForObj getter    = null;
     protected DataSetterForObj setter    = null;
+    
+    /**
+     * @param panelName
+     * @param nextBtn
+     */
+    public GenericFormPanel(final String panelName,
+                            final JButton nextBtn)
+    {
+        super(panelName, nextBtn);
+    }
 
     public GenericFormPanel(final String   name,
                             final String   title,
@@ -66,6 +76,8 @@ public class GenericFormPanel extends BaseSetupPanel
         this.dataObj     = dataObj;
         this.fieldsNames = fields;
         
+        //DBTableInfo tblInfo = dataObj != null ? DBTableIdMgr.getInstance().getInfoById(dataObj.getTableId()) : null;
+        
         CellConstraints cc = new CellConstraints();
         
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,5px," + 
@@ -77,6 +89,8 @@ public class GenericFormPanel extends BaseSetupPanel
         int i = 0;
         for (String fName : fields)
         {
+            //DBFieldInfo fldInfo = tblInfo != null ? tblInfo.getFieldByName(fName) : null;
+            
             comps.put(fName, createField(builder, labels[i], row));
             row += 2;
             i++;
@@ -137,7 +151,7 @@ public class GenericFormPanel extends BaseSetupPanel
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#setValues(java.util.Hashtable)
      */
     @Override
-    protected void setValues(final Properties values)
+    public void setValues(final Properties values)
     {
         for (String fName : comps.keySet())
         {
@@ -167,7 +181,7 @@ public class GenericFormPanel extends BaseSetupPanel
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#isUIValid()
      */
     @Override
-    protected boolean isUIValid()
+    public boolean isUIValid()
     {
         for (String fName : comps.keySet())
         {
@@ -187,7 +201,7 @@ public class GenericFormPanel extends BaseSetupPanel
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#updateBtnUI()
      */
     @Override
-    protected void updateBtnUI()
+    public void updateBtnUI()
     {
         if (nextBtn != null)
         {

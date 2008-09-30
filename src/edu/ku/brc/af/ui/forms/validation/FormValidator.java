@@ -1195,7 +1195,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         if (validationInfoBtn != null)
         {
             boolean                 enable = true;
-            ImageIcon               icon   = IconManager.getIcon("ValidationValid");
+            ImageIcon               icon   = IconManager.getIcon("ValidationValid", IconManager.IconSize.Std16);
             UIValidatable.ErrorType state  = getState();
             
             if ( kidsValState.ordinal() > state.ordinal())

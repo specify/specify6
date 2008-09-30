@@ -119,6 +119,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected Division                      division;
     protected Institution                   instTechContact;
     protected Institution                   instContentContact;
+    protected Collection                    collTechContact;
+    protected Collection                    collContentContact;
     
     protected SpecifyUser                   specifyUser;
 
@@ -221,6 +223,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         division                  = null;
         instTechContact           = null;
         instContentContact        = null;
+        collTechContact           = null;
+        collContentContact        = null;
         disciplines               = new HashSet<Discipline>();
         specifyUser               = null;
        
@@ -747,7 +751,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     *  The Institution for Technical Contact.
     */
    @ManyToOne
-   @JoinColumn(name = "InstitutionID")
+   @JoinColumn(name = "InstitutionTCID")
    public Institution getInstTechContact() 
    {
        return this.instTechContact;
@@ -771,6 +775,42 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
    public void setInstContentContact(Institution instContentContact) 
    {
        this.instContentContact = instContentContact;
+   }
+   
+   /**
+    * @return the collTechContact
+    */
+   @ManyToOne
+   @JoinColumn(name = "CollectionTCID")
+   public Collection getCollTechContact()
+   {
+       return collTechContact;
+   }
+   
+   /**
+    * @param collTechContact the collTechContact to set
+    */
+   public void setCollTechContact(Collection collTechContact)
+   {
+       this.collTechContact = collTechContact;
+   }
+   
+   /**
+    * @return the collContentContact
+    */
+   @ManyToOne
+   @JoinColumn(name = "CollectionCCID")
+   public Collection getCollContentContact()
+   {
+       return collContentContact;
+   }
+   
+   /**
+    * @param collContentContact the collContentContact to set
+    */
+   public void setCollContentContact(Collection collContentContact)
+   {
+       this.collContentContact = collContentContact;
    }
 
 

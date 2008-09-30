@@ -3164,9 +3164,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         if (doingStarterPane)
         {
             doingStarterPane = false;
-            return IconManager.getIcon("Workbench", iSize);
         }
-        return IconManager.getIcon("DataSet", iSize);
+        return IconManager.getIcon("Workbench", iSize);
     }
 
     //-------------------------------------------------------

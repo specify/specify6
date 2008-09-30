@@ -40,7 +40,7 @@ import edu.ku.brc.af.core.AppContextMgr;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@org.hibernate.annotations.Proxy(lazy = false)
+//@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collection")
 @org.hibernate.annotations.Table(appliesTo="collection", indexes =
     {   @Index (name="CollectionNameIDX", columnNames={"CollectionName"})
@@ -57,7 +57,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     protected String                     description;
     protected String                     remarks;
     
-    // TDWG Fields (ABCD Schema)
+    // ABCD Schema
     protected String                     kingdomCoverage;
     protected String                     primaryFocus;
     protected String                     collectionType;
@@ -73,8 +73,8 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     //protected Set<SpAppResourceDir>      spAppResourceDirs;
     //protected Set<FieldNotebook>         fieldNoteBooks;
     //protected Set<CollectionObject>      collectionObjects;
-    protected Agent                      contactAgent;
-    protected Agent                      curatorAgent;
+    protected Set<Agent>                 technicalContacts;
+    protected Set<Agent>                 contentContacts;
     protected Set<PrepType>              prepTypes;
     protected Set<PickList>              pickLists;
     
@@ -118,12 +118,14 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         institutionType        = null;
         scope                  = null;
         dbContentVersion       = null;
+        
+        technicalContacts = new HashSet<Agent>();
+        contentContacts   = new HashSet<Agent>();
+
         //spAppResourceDirs      = new HashSet<SpAppResourceDir>();
         //collectionObjects      = new HashSet<CollectionObject>();
         //fieldNoteBooks         = new HashSet<FieldNotebook>();
         numberingSchemes       = new HashSet<AutoNumberingScheme>();
-        contactAgent           = null;
-        curatorAgent           = null;
         prepTypes              = new HashSet<PrepType>();
         pickLists              = new HashSet<PickList>();
 
@@ -487,41 +489,40 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         this.fieldNoteBooks = fieldNoteBooks;
     }
    */
-
     /**
-     * @return the contactAgent
+     * @return the technicalContacts
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ContactID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Agent getContactAgent()
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collTechContact")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<Agent> getTechnicalContacts()
     {
-        return contactAgent;
+        return technicalContacts;
+    }
+    
+    /**
+     * @return the contentContacts
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collContentContact")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<Agent> getContentContacts()
+    {
+        return contentContacts;
+    }
+ 
+    /**
+     * @param technicalContacts the technicalContacts to set
+     */
+    public void setTechnicalContacts(Set<Agent> technicalContacts)
+    {
+        this.technicalContacts = technicalContacts;
     }
 
     /**
-     * @param contactAgent the contactAgent to set
+     * @param contentContacts the contentContacts to set
      */
-    public void setContactAgent(Agent contactAgent)
+    public void setContentContacts(Set<Agent> contentContacts)
     {
-        this.contactAgent = contactAgent;
-    }
-
-    /**
-     * @return the curatorAgent
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CuratorID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Agent getCuratorAgent()
-    {
-        return curatorAgent;
-    }
-
-    /**
-     * @param curatorAgent the curatorAgent to set
-     */
-    public void setCuratorAgent(Agent curatorAgent)
-    {
-        this.curatorAgent = curatorAgent;
+        this.contentContacts = contentContacts;
     }
 
     /* (non-Javadoc)

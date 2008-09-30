@@ -14,16 +14,25 @@
  */
 package edu.ku.brc.af.tasks;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.BackupServiceFactory;
+import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -102,6 +111,10 @@ public class BackupTask extends BaseTask
             {
                 public void actionPerformed(ActionEvent ae)
                 {
+                    SubPaneMgr.getInstance().aboutToShutdown();
+                    SubPaneIFace splash = getSplashPane();
+                    SubPaneMgr.getInstance().addPane(splash);
+                    SubPaneMgr.getInstance().showPane(splash);
                     BackupServiceFactory.getInstance().doRestore();
                 }
             });
@@ -110,4 +123,24 @@ public class BackupTask extends BaseTask
         }
         return menuItems;
     }  
+    
+    
+    /**
+     * @return
+     */
+    public SubPaneIFace getSplashPane()
+    {
+        PanelBuilder    display = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,150px,f:p:g"));
+        CellConstraints cc      = new CellConstraints();
+
+        display.add(new JLabel(IconManager.getIcon("SpecifySplash")), cc.xy(2, 2));
+        
+        if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
+        {
+            display.getPanel().setBackground(Color.WHITE);
+        }
+        
+        return starterPane = new SimpleDescPane(title, this, display.getPanel());
+    }
+
 }

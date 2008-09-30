@@ -56,13 +56,15 @@
         <table name="edu.ku.brc.specify.datamodel.Author" abbrev="au" id="17" searchable="true">
         	<display view="Author" dataobjformatter=""  searchdlg="AuthorSearch" newobjdlg="AuthorDisplay"/>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.AutoNumberingScheme" abbrev="cns" id="97">
+        	<display view="AutoNumberingScheme" searchdlg="AutoNumberingScheme" newobjdlg="AutoNumberingScheme"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.Borrow" abbrev="bo" id="18" searchable="true">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.Borrow</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.BorrowAgent" abbrev="boa" id="19" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.BorrowMaterial" abbrev="bom" id="20" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" abbrev="brm" id="21" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.AutoNumberingScheme" abbrev="cns" id="97"/>
         <table name="edu.ku.brc.specify.datamodel.Collection" abbrev="col" id="23" workbench="true" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.CollectingEvent" abbrev="ce" id="10" workbench="true" searchable="true">
             <display view="CollectingEvent" dataobjformatter="CollectingEvent" searchdlg="CollectingEventSearch" newobjdlg="CollectingEvent"/>

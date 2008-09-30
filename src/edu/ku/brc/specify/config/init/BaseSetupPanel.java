@@ -13,6 +13,7 @@ import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createPasswordField;
 import static edu.ku.brc.ui.UIHelper.createTextField;
 
+import java.awt.Component;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Properties;
@@ -36,7 +37,7 @@ import com.jgoodies.forms.layout.CellConstraints;
  * Jan 17, 2008
  *
  */
-public abstract class BaseSetupPanel extends JPanel
+public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
 {
     protected static final boolean DO_DEBUG = false;
     
@@ -44,6 +45,10 @@ public abstract class BaseSetupPanel extends JPanel
     protected KeyAdapter         keyAdapter;
     protected JButton            nextBtn;
     
+    /**
+     * @param panelName
+     * @param nextBtn
+     */
     public BaseSetupPanel(final String panelName,
                           final JButton nextBtn)
     {
@@ -58,8 +63,8 @@ public abstract class BaseSetupPanel extends JPanel
         };
     }
     
-    /**
-     * @return the panelName
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getPanelName()
      */
     public String getPanelName()
     {
@@ -76,13 +81,25 @@ public abstract class BaseSetupPanel extends JPanel
         return pName+"_"+fName;
     }
 
-    protected abstract void getValues(Properties props);
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getValues(java.util.Properties)
+     */
+    public abstract void getValues(Properties props);
     
-    protected abstract void setValues(Properties values);
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#setValues(java.util.Properties)
+     */
+    public abstract void setValues(Properties values);
     
-    protected abstract boolean isUIValid();
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#isUIValid()
+     */
+    public abstract boolean isUIValid();
     
-    protected abstract void updateBtnUI();
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#updateBtnUI()
+     */
+    public abstract void updateBtnUI();
     
     /**
      * Helper function for creating the UI.
@@ -104,14 +121,17 @@ public abstract class BaseSetupPanel extends JPanel
      * @param isPassword whether to create a password or text field
      * @return the create JTextField (or JPasswordField)
      */
-    protected JTextField createField(final PanelBuilder builder, final String label, final int row, final boolean isPassword)
+    protected JTextField createField(final PanelBuilder builder, 
+                                     final String       label, 
+                                     final int          row, 
+                                     final boolean      isPassword)
     {
         CellConstraints cc = new CellConstraints();
         
         JTextField txt = isPassword ? createPasswordField(15) : createTextField(15);
         
         builder.add(createLabel(label+":", SwingConstants.RIGHT), cc.xy(1, row));
-        builder.add(txt,                                         cc.xy(3, row));
+        builder.add(txt,                                          cc.xy(3, row));
         //txt.addFocusListener(this);
         //txt.addKeyListener(keyAdapter);
         
@@ -122,5 +142,16 @@ public abstract class BaseSetupPanel extends JPanel
         });
         return txt;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getUIComponent()
+     */
+    @Override
+    public Component getUIComponent()
+    {
+        return this;
+    }
+    
+    
 }
 

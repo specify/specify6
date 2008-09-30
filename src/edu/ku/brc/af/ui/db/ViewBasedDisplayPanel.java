@@ -109,6 +109,15 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         this(parent, viewSetName, viewName, displayName, className, idFieldName, isEdit, true, null, null, options);
     }
 
+    public ViewBasedDisplayPanel(final String  viewSetName,
+                                 final String  viewName,
+                                 final String  className,
+                                 final boolean isEdit,
+                                 final int     options)
+    {
+        this(null, viewSetName, viewName, null, className, null, isEdit, true, null, null, options);
+    }
+
     /**
      * Constructs a search dialog from form information and from search info.
      * @param viewSetName the viewset name

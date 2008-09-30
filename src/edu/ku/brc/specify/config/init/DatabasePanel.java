@@ -143,7 +143,7 @@ public class DatabasePanel extends BaseSetupPanel
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#getValues()
      */
     @Override
-    protected void getValues(final Properties props)
+    public void getValues(final Properties props)
     {
         props.put(makeName("username"), usernameTxt.getText());
         props.put(makeName("password"), passwordTxt.getText());
@@ -155,7 +155,7 @@ public class DatabasePanel extends BaseSetupPanel
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#setValues(java.util.Hashtable)
      */
     @Override
-    protected void setValues(Properties values)
+    public void setValues(Properties values)
     {
         usernameTxt.setText(values.getProperty(makeName("username")));
         passwordTxt.setText(values.getProperty(makeName("password")));
@@ -168,7 +168,7 @@ public class DatabasePanel extends BaseSetupPanel
      * Checks all the textfields to see if they have text
      * @return true of all fields have text
      */
-    protected void updateBtnUI()
+    public void updateBtnUI()
     {
         boolean isValid = isUIValid();
         if (nextBtn != null)
@@ -195,7 +195,7 @@ public class DatabasePanel extends BaseSetupPanel
      * Checks all the textfeilds to see if they have text
      * @return true of all fields have text
      */
-    protected boolean isUIValid()
+    public boolean isUIValid()
     {
         JTextField[] txtFields = {usernameTxt, passwordTxt, dbNameTxt};
         for (JTextField tf : txtFields)

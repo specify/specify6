@@ -23,7 +23,6 @@ import static org.apache.commons.lang.StringUtils.split;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.LayoutManager;
-import java.awt.MenuItem;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;

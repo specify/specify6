@@ -560,11 +560,13 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             boolean ok = sp.aboutToShutdown();
             if (!ok)
             {
+                globalShutdown = false;
                 return false;
             }
             removePane(sp, false); // overrides asking to be saved.
         }
         
+        globalShutdown = false;
         return true;
     }
 
@@ -641,7 +643,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public SubPaneIFace getCurrentSubPane()
     {
-        return getSubPaneForComponent(getComponentAt(this.getSelectedIndex()));
+        int index = this.getSelectedIndex();
+        return index > -1 ? getSubPaneForComponent(getComponentAt(index)) : null;
     }
 
     /**

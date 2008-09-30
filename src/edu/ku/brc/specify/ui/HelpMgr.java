@@ -159,6 +159,10 @@ public class HelpMgr
     {
         if (HelpMgr.helpAvailable())
         {
+            for (ActionListener l : component.getActionListeners())
+            {
+                component.removeActionListener(l);    
+            }
             component.addActionListener(new CSH.DisplayHelpFromSource(hb));
             if (isGoodID(idString))
             {

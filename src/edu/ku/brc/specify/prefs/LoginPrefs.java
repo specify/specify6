@@ -46,6 +46,8 @@ public class LoginPrefs extends GenericPrefsPanel
         super();
         
         createUI();
+        
+        this.hContext = "PrefsLogin";
     }
 
     /**

@@ -157,6 +157,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
+import edu.ku.brc.specify.tasks.SystemSetupTask;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tools.FormDisplayer;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
@@ -924,8 +925,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
-                            SetupDivsionCollection setup = new SetupDivsionCollection(Specify.this);
-                            UIHelper.centerAndShow(setup);
+                            SetupDivsionCollection dlg = new SetupDivsionCollection(Specify.this);
+                            UIRegistry.pushWindow(dlg);
+                            UIHelper.centerAndShow(dlg);
+                            UIRegistry.popWindow(dlg);
                         }
                     });
 

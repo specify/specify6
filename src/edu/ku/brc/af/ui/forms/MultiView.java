@@ -1109,7 +1109,10 @@ public class MultiView extends JPanel
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
-                    currentViewable.focus();
+                    if (currentViewable != null)
+                    {
+                        currentViewable.focus();
+                    }
                 }
             });
         }

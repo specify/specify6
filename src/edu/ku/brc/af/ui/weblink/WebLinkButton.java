@@ -197,7 +197,7 @@ public class WebLinkButton extends JPanel implements UIPluginable,
             return;
         }
         
-        if (urlString == null)
+        if (StringUtils.isEmpty(urlString))
         {
             // an error message should have already been put on the status bar
             // just exit
@@ -328,11 +328,16 @@ public class WebLinkButton extends JPanel implements UIPluginable,
             // so first see if we need to prompt for data.
             valueHash.clear();
 
+            int possibleValues = 0;
+            int numValues      = 0;
+            
             Hashtable<String, String> backupPrompt = new Hashtable<String, String>();
             for (WebLinkDefArg arg : webLinkDef.getArgs())
             {
                 if (!arg.isPrompt())
                 {
+                    possibleValues++;
+                    
                     String name  = arg.getName();
                     String value = ""; //$NON-NLS-1$
                     if (provider != null)
@@ -357,11 +362,17 @@ public class WebLinkButton extends JPanel implements UIPluginable,
                     if (value != null)
                     {
                         valueHash.put(name, value);
+                        numValues++;
                     }
                 } else
                 {
                     valueHash.put(arg.getName(), "??");
                 }
+            }
+            
+            if (possibleValues != numValues)
+            {
+                return null;
             }
             
             if (!forToolTip)

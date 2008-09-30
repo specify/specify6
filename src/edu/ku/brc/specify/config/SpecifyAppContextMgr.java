@@ -552,6 +552,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 session.attach(discipline);
                 
                 Institution institution = discipline.getDivision().getInstitution();
+                session.attach(institution);
+                
                 AppContextMgr.getInstance().setClassObject(Institution.class, institution);
                 
                 if (discipline != null)

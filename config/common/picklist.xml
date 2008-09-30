@@ -168,5 +168,8 @@
 	      <picklistitem title="Topotype" value="topotype"/>
 	      <picklistitem title="Type" value="type"/>
       </items>
-    </picklist>  
+    </picklist>
+      <picklist name="NumberingScheme" issystem="true" type="1" tablename="autonumberingscheme" formatter="AutoNumberingScheme" readonly="true" sizelimit="-1">
+    <items/>
+  </picklist>
 </list>

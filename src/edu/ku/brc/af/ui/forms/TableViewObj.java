@@ -214,6 +214,7 @@ public class TableViewObj implements Viewable,
     protected JTable                        table;
     protected JScrollPane                   tableScroller;
     protected JPanel                        orderablePanel;
+    protected boolean                       isLoading   = false;
     
     // Reordering
     protected JButton                       orderUpBtn  = null;
@@ -658,7 +659,7 @@ public class TableViewObj implements Viewable,
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
         table.setFocusable(false);
-        table.setPreferredScrollableViewportSize(new Dimension(200,table.getRowHeight()*6));
+        //table.setPreferredScrollableViewportSize(new Dimension(200,table.getRowHeight()*6));
         
         configColumns();
         
@@ -2338,6 +2339,10 @@ public class TableViewObj implements Viewable,
 
         public int getRowCount()
         {
+            if (isLoading)
+            {
+                return 1;
+            }
             return dataObjList == null ? 0 : dataObjList.size();
         }
 
@@ -2347,6 +2352,11 @@ public class TableViewObj implements Viewable,
         public Object getValueAt(int row, int column)
         {
             //log.debug(row+","+column+"  isLoaded:"+isLoaded);
+            
+            if (isLoading)
+            {
+                return column == 0 && row == 0 ? UIRegistry.getResourceBundle("LOADING") : "";
+            }
 
             if (columnList != null && dataObjList != null && dataObjList.size() > 0)
             {

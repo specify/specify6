@@ -329,7 +329,7 @@ public class SetupDialog extends JFrame
     {
         try
         {
-            for (BaseSetupPanel panel : panels)
+            for (SetupPanelIFace panel : panels)
             {
                 panel.getValues(props);
             }

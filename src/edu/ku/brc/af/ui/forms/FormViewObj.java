@@ -1880,6 +1880,7 @@ public class FormViewObj implements Viewable,
                 // that are empty. If there are than we need to tell the validator and the parent
                 // validators that the forms are changed and are incomplete.
                 boolean hasEmptyRequiredField = false;
+                boolean hasRequiredFields     = false;
                 for (FVOFieldInfo fieldInfo : controlsById.values())
                 {
                     if (fieldInfo.isOfType(FormCellIFace.CellType.field))
@@ -1888,11 +1889,13 @@ public class FormViewObj implements Viewable,
                         if (comp instanceof UIValidatable &&
                             comp instanceof GetSetValueIFace)
                         {
-                            if (((UIValidatable)comp).isRequired() &&
-                                ((GetSetValueIFace)comp).getValue() == null)
+                            if (((UIValidatable)comp).isRequired())
                             {
-                                hasEmptyRequiredField = true;
-                                break;
+                                hasRequiredFields = true;
+                                if (((GetSetValueIFace)comp).getValue() == null)
+                                {
+                                    hasEmptyRequiredField = true;
+                                }
                             }
                         }
                     }
@@ -1919,6 +1922,12 @@ public class FormViewObj implements Viewable,
                     }
                     mvParent.getTopLevel().getCurrentViewAsFormViewObj().getValidator().updateValidationBtnUIState();
                     mvParent.getTopLevel().getCurrentValidator().updateSaveUIEnabledState();
+                    
+                } else if (hasRequiredFields)
+                {
+                    formValidator.setFormValidationState(UIValidatable.ErrorType.Valid);
+                    formValidator.setHasChanged(true);
+                    formValidator.updateValidationBtnUIState();
                 }
             }
         }
@@ -3296,7 +3305,7 @@ public class FormViewObj implements Viewable,
         }
         // else
         //throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
-        log.error("Couldn't find FieldInfo for ID["+id+"]");
+        //log.error("Couldn't find FieldInfo for ID["+id+"]");
         return null;
     }
 

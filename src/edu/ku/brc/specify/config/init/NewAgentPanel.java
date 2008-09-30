@@ -73,7 +73,7 @@ public class NewAgentPanel extends BaseSetupPanel
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#getValues(java.util.Properties)
      */
     @Override
-    protected void getValues(Properties props)
+    public void getValues(Properties props)
     {
         // TODO Auto-generated method stub
         
@@ -83,7 +83,7 @@ public class NewAgentPanel extends BaseSetupPanel
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#setValues(java.util.Hashtable)
      */
     @Override
-    protected void setValues(Properties values)
+    public void setValues(Properties values)
     {
         // TODO Auto-generated method stub
         
@@ -93,7 +93,7 @@ public class NewAgentPanel extends BaseSetupPanel
      * Checks all the textfeilds to see if they have text
      * @return true of all fields have text
      */
-    protected void updateBtnUI()
+    public void updateBtnUI()
     {
         if (nextBtn != null)
         {
@@ -106,7 +106,7 @@ public class NewAgentPanel extends BaseSetupPanel
      * Checks all the textfields to see if they have text
      * @return true of all fields have text
      */
-    protected boolean isUIValid()
+    public boolean isUIValid()
     {
         JTextField[] txtFields = {firstNameTxt, lastNameTxt, emailTxt};
         for (JTextField tf : txtFields)

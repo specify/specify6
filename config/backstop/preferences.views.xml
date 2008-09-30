@@ -598,13 +598,16 @@
                     <cell type="field" id="autologin" name="autologin" uitype="checkbox" label="AUTO_LOGIN" ignore="true"/>
                 </row>
                 <row>
-                    <cell type="field" id="usernames" name="usernames" uitype="button" ignore="true" initialize="title=CLEAR_USERNAMES;"/>
+                    <cell type="label" labelfor="usernames" label="CLEAR_USERNAMES"/>
+                    <cell type="field" id="usernames" name="usernames" uitype="button" ignore="true" initialize="title=CLEAR;"/>
                 </row>
                 <row>
-                    <cell type="field" id="databases" name="databases" uitype="button" ignore="true" initialize="title=CLEAR_DATABASES;"/>
+                    <cell type="label" labelfor="databases" label="CLEAR_DATABASES"/>
+                    <cell type="field" id="databases" name="databases" uitype="button" ignore="true" initialize="title=CLEAR;"/>
                 </row>
                 <row>
-                    <cell type="field" id="servers" name="servers" uitype="button" ignore="true" initialize="title=CLEAR_SERVERS;"/>
+                    <cell type="label" labelfor="servers" label="CLEAR_SERVERS"/>
+                    <cell type="field" id="servers" name="servers" uitype="button" ignore="true" initialize="title=CLEAR;"/>
                 </row>
             </rows>
         </viewdef>

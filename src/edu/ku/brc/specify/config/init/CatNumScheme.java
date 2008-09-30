@@ -102,7 +102,7 @@ public class CatNumScheme extends BaseSetupPanel
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#getValues()
      */
     @Override
-    protected void getValues(final Properties props)
+    public void getValues(final Properties props)
     {
         props.put(makeName("catnumsheme"), catNumSchemeCBX.getSelectedItem().toString());
     }
@@ -111,7 +111,7 @@ public class CatNumScheme extends BaseSetupPanel
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#setValues(java.util.Hashtable)
      */
     @Override
-    protected void setValues(Properties values)
+    public void setValues(Properties values)
     {
         //dbNameTxt.setText(values.getProperty(makeName("dbname")));
         
@@ -122,7 +122,7 @@ public class CatNumScheme extends BaseSetupPanel
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#isUIValid()
      */
     @Override
-    protected boolean isUIValid()
+    public boolean isUIValid()
     {
         return true;
     }
@@ -131,7 +131,7 @@ public class CatNumScheme extends BaseSetupPanel
      * @see edu.ku.brc.specify.config.init.BaseSetupPanel#updateBtnUI()
      */
     @Override
-    protected void updateBtnUI()
+    public void updateBtnUI()
     {
         // TODO Auto-generated method stub
 
