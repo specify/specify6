@@ -1009,14 +1009,29 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     @Transient
     public Integer getCurrentDeterminationCount()
     {
-        String sql = "SELECT count(co.CollectionObjectID) FROM taxon as tx INNER JOIN determination as dt ON tx.TaxonID = dt.TaxonID " +
-                     "INNER JOIN determinationstatus as ds ON dt.DeterminationStatusID = ds.DeterminationStatusID " +
-                     "INNER JOIN collectionobject as co ON dt.CollectionObjectID = co.CollectionObjectID " +
-                     "WHERE tx.TaxonID = "+getId() + " AND co.CollectionMemberID = COLMEMID AND ds.Type = 1";
-
-        return BasicSQLUtils.getNumRecords(QueryAdjusterForDomain.getInstance().adjustSQL(sql));
+        return getDeterminationCount(true);
     }
     
+    /**
+     * @param current
+     * @return the count of Determinations
+     */
+    @Transient
+    public Integer getDeterminationCount(boolean current)
+    {
+        String sql = "SELECT count(co.CollectionObjectID) FROM taxon as tx INNER JOIN determination as dt ON tx.TaxonID = dt.TaxonID ";
+        if (current) 
+        {
+            sql += " INNER JOIN determinationstatus as ds ON dt.DeterminationStatusID = ds.DeterminationStatusID";
+        }
+        sql +=  " INNER JOIN collectionobject as co ON dt.CollectionObjectID = co.CollectionObjectID " +
+            "WHERE tx.TaxonID = " +getId() + " AND co.CollectionMemberID = COLMEMID";
+        if (current)
+        {
+            sql += " AND ds.Type = 1";
+        }
+        return BasicSQLUtils.getNumRecords(QueryAdjusterForDomain.getInstance().adjustSQL(sql));
+    }
     
     /*@SuppressWarnings("unchecked")
     @Transient

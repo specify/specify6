@@ -77,9 +77,8 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         // The old way using Hibernate relationships was too slow, 
         // so instead I am using straight SQL it is a lot faster.
         String sql = "SELECT co.CollectionObjectID FROM taxon as tx INNER JOIN determination as dt ON tx.TaxonID = dt.TaxonID " +
-                     "INNER JOIN determinationstatus as ds ON dt.DeterminationStatusID = ds.DeterminationStatusID " +
                      "INNER JOIN collectionobject as co ON dt.CollectionObjectID = co.CollectionObjectID " +
-                     "WHERE tx.TaxonID = "+taxon.getId()+" AND co.CollectionMemberID = COLMEMID AND ds.Type = 1";
+                     "WHERE tx.TaxonID = "+taxon.getId()+" AND co.CollectionMemberID = COLMEMID";
         
         Vector<Integer> list = new Vector<Integer>();
         
@@ -141,7 +140,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                     // it only initializes the immediate links, not objects that are multiple hops away
                     ttv.initializeNodeAssociations(taxon);
                     
-                    if (taxon.getCurrentDeterminationCount() == 0)
+                    if (taxon.getDeterminationCount(false) == 0)
                     {
                         UIRegistry.displayErrorDlgLocalized("TTV_TAXON_NO_DETERS_FOR_NODE");
                         UIRegistry.getStatusBar().setLocalizedText("TTV_TAXON_NO_DETERS_FOR_NODE");
