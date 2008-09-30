@@ -160,9 +160,6 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
      */
     public List<ServiceInfo> getServices(final Object data)
     {
-        //Since only query results pane is shown at a time, can remove services from previous runs without messing anything else up.
-        ContextMgr.removeServicesByTaskAndTable(ContextMgr.getTaskByClass(QueryTask.class), QBQIdRHQLTblId);    
-
         if (reports.size() == 0)
         {
             return null;
