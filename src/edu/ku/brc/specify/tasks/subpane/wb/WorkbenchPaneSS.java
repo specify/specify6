@@ -1250,11 +1250,11 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         Vector<DropDownMenuInfo> menuItems = new Vector<DropDownMenuInfo>();
         menuItems.add(new DropDownMenuInfo(getResourceString("Form"), 
-                                            IconManager.getImage("EditForm24", IconManager.IconSize.NonStd), 
-                                            getResourceString("WB_SHOW_FORM_VIEW")));
+                IconManager.getImage("EditForm24", IconManager.IconSize.NonStd), 
+                getResourceString("WB_SHOW_GRID_VIEW")));
         menuItems.add(new DropDownMenuInfo(getResourceString("Grid"), 
-                                            IconManager.getImage("Spreadsheet24", IconManager.IconSize.NonStd), 
-                                            getResourceString("WB_SHOW_GRID_VIEW")));
+                IconManager.getImage("Spreadsheet24", IconManager.IconSize.NonStd), 
+                getResourceString("WB_SHOW_FORM_VIEW")));
         final DropDownButtonStateful switcher = new DropDownButtonStateful(menuItems);
         switcher.setCurrentIndex(1);
         switcher.setToolTipText(getResourceString("SwitchViewsTT"));
