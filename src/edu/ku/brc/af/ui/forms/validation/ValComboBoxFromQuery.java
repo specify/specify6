@@ -868,6 +868,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
             if (newVal != null)
             {
+                textWithQuery.setSelectedId(dataObj != null ? dataObj.getId() : null);
+                
                 valState = UIValidatable.ErrorType.Valid;
                 final JTextField tf = textWithQuery.getTextField();
                 tf.setText(newVal.toString());   // rods 08/18/08 - doesn't seem to be needed it is already set correctly
@@ -880,8 +882,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     }
                     
                 });
-
-                textWithQuery.setSelectedId(dataObj != null ? dataObj.getId() : null);
                 
                 if (editBtn != null)
                 {
