@@ -674,6 +674,8 @@ public class ViewFactory
         ta.setForeground(Color.BLACK);
         ta.setEditable(false);
         ta.setBackground(viewFieldColor.getColor());
+        ta.setLineWrap(true);
+        ta.setWrapStyleWord(true);
         
         JScrollPane scrollPane = new JScrollPane(ta);
         insets = scrollPane.getBorder().getBorderInsets(scrollPane);
@@ -1330,7 +1332,7 @@ public class ViewFactory
                     
                     JScrollPane scrollPane = new JScrollPane(list);
                     scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                    scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+                    scrollPane.setVerticalScrollBarPolicy(UIHelper.isMacOS() ? ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS : ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
                     bi.doAddToValidator = validator == null;
                     bi.compToReg = list;
