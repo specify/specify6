@@ -1338,7 +1338,7 @@
 			        <cell type="separator" label="ATTACHMENTS" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="taxonAttachments" colspan="5" initialize="btn=true"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="taxonAttachments" colspan="5" initialize="btn=true;icon=TaxonAttachment"/>
                 </row>
             </rows>
         </viewdef>
