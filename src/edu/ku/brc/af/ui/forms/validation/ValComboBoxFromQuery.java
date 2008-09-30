@@ -868,9 +868,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
             if (newVal != null)
             {
-                textWithQuery.setSelectedId(dataObj != null ? dataObj.getId() : null);
-                
                 valState = UIValidatable.ErrorType.Valid;
+                textWithQuery.setSelectedId(dataObj != null ? dataObj.getId() : null); // needs to be done before and after
+                
                 final JTextField tf = textWithQuery.getTextField();
                 tf.setText(newVal.toString());   // rods 08/18/08 - doesn't seem to be needed it is already set correctly
                 SwingUtilities.invokeLater(new Runnable() {
@@ -882,6 +882,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     }
                     
                 });
+
+                textWithQuery.setSelectedId(dataObj != null ? dataObj.getId() : null);
                 
                 if (editBtn != null)
                 {
@@ -989,9 +991,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public UIValidatable.ErrorType validateState()
     {
-        //log.debug("validateState "+(isRequired && textWithQuery.hasItem()));
+        log.debug("validateState "+(isRequired && textWithQuery.hasItem()));
         valState = isRequired && !textWithQuery.hasItem() ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
-        //log.debug(valState);
+        log.debug(valState);
         return valState;
     }
 
