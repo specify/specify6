@@ -77,7 +77,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     protected Set<Workbench>            workbenches;
     protected Set<WorkbenchTemplate>    workbenchTemplates;
     protected Set<SpAppResource>        spAppResources;
-    protected Set<SpPrincipal>          spPrincipalGroups;
+    protected Set<SpPrincipal>          spPrincipals;
     protected Set<SpAppResourceDir>     spAppResourceDirs;
     protected Set<SpQuery>              spQuerys;
     protected Set<Agent>              	agents;
@@ -117,7 +117,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         workbenches        = new HashSet<Workbench>();
         workbenchTemplates = new HashSet<WorkbenchTemplate>();
         spAppResources     = new HashSet<SpAppResource>();
-        spPrincipalGroups  = new HashSet<SpPrincipal>();
+        spPrincipals       = new HashSet<SpPrincipal>();
         spAppResourceDirs  = new HashSet<SpAppResourceDir>();
         spQuerys           = new HashSet<SpQuery>();
         agents             = new HashSet<Agent>();
@@ -369,18 +369,18 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     )
     
     @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE })
-    public Set<SpPrincipal> getUserGroup()
+    public Set<SpPrincipal> getSpPrincipals()
     {
-        return this.spPrincipalGroups;
+        return this.spPrincipals;
     }
 
     /**
      * @param spUserGroup - 
      * void
      */
-    public void setUserGroup(Set<SpPrincipal> spUserGroup)
+    public void setSpPrincipals(Set<SpPrincipal> spPrincipals)
     {
-        this.spPrincipalGroups = spUserGroup;
+        this.spPrincipals = spPrincipals;
     }
 
     /**
@@ -527,7 +527,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      */
     public void addUserToSpPrincipalGroup(final SpPrincipal userGroupArg)
     {
-        this.spPrincipalGroups.add(userGroupArg);
+        this.spPrincipals.add(userGroupArg);
         userGroupArg.getSpecifyUsers().add(this);
     }
     
@@ -556,7 +556,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
 
     public void removeUserGroups(final SpPrincipal userGroupArg)
     {
-        this.spPrincipalGroups.remove(userGroupArg);
+        this.spPrincipals.remove(userGroupArg);
         userGroupArg.getSpecifyUsers().remove(this);
     }
 

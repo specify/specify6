@@ -67,11 +67,8 @@ public class SpPrincipal extends DataModelObjBase implements java.io.Serializabl
 	protected String remarks;
 	protected String groupSubClass;
 	protected UserGroupScope scope;
-	protected Set<SpecifyUser> specifyUsers;
-	protected Set<RecordSet> recordsets;
-	private   Set<Workbench> workbenches;
-	protected Set<SpAppResource> spAppResources;
-	protected Set<SpPermission> permissions;
+    protected Set<SpecifyUser> specifyUsers;
+    protected Set<SpPermission> permissions;
 
 	// Constructors
 
@@ -97,9 +94,6 @@ public class SpPrincipal extends DataModelObjBase implements java.io.Serializabl
 		groupSubClass = null;
 		scope = null;
 		specifyUsers = new HashSet<SpecifyUser>();
-		recordsets = new HashSet<RecordSet>();
-		workbenches = new HashSet<Workbench>();
-		spAppResources = new HashSet<SpAppResource>();
 	}
 
 	// End Initializer
@@ -188,7 +182,7 @@ public class SpPrincipal extends DataModelObjBase implements java.io.Serializabl
 	/**
 	 *
 	 */
-	@ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "userGroup")
+	@ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spPrincipals")
 	public Set<SpecifyUser> getSpecifyUsers()
 	{
 		return this.specifyUsers;
@@ -197,55 +191,6 @@ public class SpPrincipal extends DataModelObjBase implements java.io.Serializabl
 	public void setSpecifyUsers(Set<SpecifyUser> specifyUsers)
 	{
 		this.specifyUsers = specifyUsers;
-	}
-
-	/**
-	 *
-	 */
-	@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "group")
-	@org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL,
-			org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-	public Set<RecordSet> getRecordsets()
-	{
-		return this.recordsets;
-	}
-
-	public void setRecordsets(Set<RecordSet> recordSets)
-	{
-		this.recordsets = recordSets;
-	}
-
-	/**
-	 * 
-	 */
-	@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "group")
-	@org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL,
-			org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-	public Set<SpAppResource> getSpAppResources()
-	{
-		return this.spAppResources;
-	}
-
-	public void setSpAppResources(Set<SpAppResource> spAppResource)
-	{
-		this.spAppResources = spAppResource;
-	}
-
-	/**
-	 * 
-	 */
-	@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "group")
-	@org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL,
-			org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-	public Set<Workbench> getWorkbenches()
-	{
-		return this.workbenches;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void setWorkbenches(Set<Workbench> workbench)
-	{
-		this.workbenches = workbench;
 	}
 
 	/* (non-Javadoc)
