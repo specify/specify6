@@ -1010,6 +1010,10 @@ public class UploadTable implements Comparable<UploadTable>
                         if (formatter != null)
                         {
                             val = formatter.formatFromUI(fldStr);
+                            if (!formatter.isValid((String )val))
+                            {
+                                throw new UploaderException(UIRegistry.getResourceString("WB_UPLOAD_INVALID_FORMAT"), UploaderException.INVALID_DATA);
+                            }
                         }
                     }
                     arg[0] = val;
