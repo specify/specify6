@@ -178,6 +178,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected ExpressSearchResultsPaneIFace                  esrp        = null;
     protected boolean                                        isHeadless  = false; 
     
+    /**
+     * True if warning to reload after schema/treeDef changes has been shown.
+     */
+    protected boolean                                        reloadMsgShown = false;
+    
     protected final AtomicReference<QBQueryForIdResultsHQL> runningResults = new AtomicReference<QBQueryForIdResultsHQL>();
     protected final AtomicReference<QBQueryForIdResultsHQL> completedResults = new AtomicReference<QBQueryForIdResultsHQL>();
     protected final AtomicLong doneTime = new AtomicLong(-1);
@@ -2666,20 +2671,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     @Override
     public void showingPane(boolean show)
     {
-        if (show && ((QueryTask )task).needToRebuildTableTree())
+        if (show && ((QueryTask )task).needToRebuildTableTree() && !reloadMsgShown)
         {
             //It seems that no serious problems will occur so for now just show a message:
             UIRegistry.showLocalizedMsg("QB_TREEDEF_LOCALIZ_CHANGES_TITLE", "QB_TREEDEF_LOCALIZ_CHANGES_WARN", (Object[] )null);
-            //Could also automatically reload but this should be a rare occurrence and several changes 
-            //to normal saving/loading process would be necessary 
-//            new SwingWorker() {
-//                @Override
-//                public Object construct()
-//                {
-//                    ((QueryTask )task).reloadQuery();
-//                    return null;
-//                }
-//            }.start();
+            reloadMsgShown = true;
         }
     }
     

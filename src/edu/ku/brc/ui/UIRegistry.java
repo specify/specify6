@@ -985,6 +985,7 @@ public class UIRegistry
     /**
      * Display an Information dialog that gets its string from the resource bundle.
      * @param msg the message to be displayed
+     * @param args for formatting msg
      */
     public static void displayInfoMsgDlgLocalized(final String key, Object... args)
     {
