@@ -95,7 +95,6 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
         sqlProc.start();
 
     }
-
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.BaseTreeTask#createTreeViewer(boolean)
@@ -146,14 +145,22 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
         }
         
         final RecordSet rs = recordSet;
-        UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_CO_FORM"));
-        // This is needed so the StatusBar gets updated
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run()
-            {
-                CommandDispatcher.dispatch(new CommandAction(DataEntryTask.DATA_ENTRY, DataEntryTask.EDIT_DATA, rs));
-            }
-        });
+        if (rs.getRecordSetItems().size() > 0)
+        {
+            UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_CO_FORM"));
+            // This is needed so the StatusBar gets updated
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    CommandDispatcher.dispatch(new CommandAction(DataEntryTask.DATA_ENTRY, DataEntryTask.EDIT_DATA, rs));
+                }
+            });
+        }
+        else
+        {
+            UIRegistry.displayInfoMsgDlgLocalized("TTV_GEO_NO_COS_FOR_NODE");
+            UIRegistry.getStatusBar().setLocalizedText("TTV_GEO_NO_COS_FOR_NODE");
+        }
     }
 
     /* (non-Javadoc)
@@ -161,6 +168,7 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
      */
     public void executionError(SQLExecutionProcessor process, Exception ex)
     {
+        //undocumented empty block
     }
     
 }

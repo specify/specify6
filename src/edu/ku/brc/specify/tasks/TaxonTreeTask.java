@@ -142,7 +142,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                     
                     if (taxon.getDeterminationCount(false) == 0)
                     {
-                        UIRegistry.displayErrorDlgLocalized("TTV_TAXON_NO_DETERS_FOR_NODE");
+                        UIRegistry.displayInfoMsgDlgLocalized("TTV_TAXON_NO_DETERS_FOR_NODE");
                         UIRegistry.getStatusBar().setLocalizedText("TTV_TAXON_NO_DETERS_FOR_NODE");
                         return;
                     }

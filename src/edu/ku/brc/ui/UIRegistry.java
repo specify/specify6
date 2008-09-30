@@ -983,6 +983,15 @@ public class UIRegistry
     }
 
     /**
+     * Display an Information dialog that gets its string from the resource bundle.
+     * @param msg the message to be displayed
+     */
+    public static void displayInfoMsgDlgLocalized(final String key, Object... args)
+    {
+         JOptionPane.showMessageDialog(getMostRecentWindow(), String.format(getResourceString(key), args), getResourceString("INFORMATION"), JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    /**
      * Display an Confirmation Dialog where everything comes ffrom the bundle.
      * @param titleKey the key to the dialog title
      * @param msgKey the key to the dialog message

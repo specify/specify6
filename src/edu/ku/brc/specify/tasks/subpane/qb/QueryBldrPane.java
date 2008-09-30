@@ -1264,10 +1264,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         int max = completedResults.get().getMaxTableRows();
         if (results > max)
         {
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
-                    String.format(UIRegistry.getResourceString("QB_PARTIAL_RESULTS_DISPLAY"), max, results),
-                    UIRegistry.getResourceString("INFORMATION"), 
-                    JOptionPane.INFORMATION_MESSAGE);
+            UIRegistry.displayInfoMsgDlgLocalized("QB_PARTIAL_RESULTS_DISPLAY", max, results);
         }
         else
         {
