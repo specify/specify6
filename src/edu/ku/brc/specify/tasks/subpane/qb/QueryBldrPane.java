@@ -1260,7 +1260,19 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         completedResults.set(runningResults.get());
         runningResults.set(null);
        
-        UIRegistry.displayStatusBarText("");
+        int results = completedResults.get().getQuery().getDataObjects().size();
+        int max = completedResults.get().getMaxTableRows();
+        if (results > max)
+        {
+            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                    String.format(UIRegistry.getResourceString("QB_PARTIAL_RESULTS_DISPLAY"), max, results),
+                    UIRegistry.getResourceString("INFORMATION"), 
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+        else
+        {
+            UIRegistry.displayStatusBarText("");
+        }
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
