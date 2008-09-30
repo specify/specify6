@@ -2427,42 +2427,48 @@ public class DataBuilder
             {
             	String permClass = BasicSpPermission.class.getCanonicalName();
             	
-                Node defaultUserGroupsNode = root.selectSingleNode("/Security/DefaultUserGroups[@scope='"+scope.getClass().getSimpleName()+"']");
-
-                List<?> userGroups = defaultUserGroupsNode.selectNodes("UserGroup");
-                for ( Object userGroupObj : userGroups)
+            	String nodePath = "/Security/DefaultUserGroups[@scope='"+scope.getDataClass().getSimpleName()+"']";
+                Node defaultUserGroupsNode = root.selectSingleNode(nodePath);
+                if (defaultUserGroupsNode != null)
                 {
-                    Element userGroupElement = (Element) userGroupObj;
-
-                    // create user group
-                    String name       = userGroupElement.attributeValue("name");
-                    String type       = userGroupElement.attributeValue("userType");
-                    
-                    SpPrincipal group = createGroup(name, type, scope); 
-                    groups.add(group);
-                    
-                   
-                    Set<SpPrincipal> groupSet = new HashSet<SpPrincipal>();
-                    groupSet.add(group);
-                    
-                    // create permissions
-                    Set<SpPermission> permSet = new HashSet<SpPermission>();
-                    List<?> permissionNodes = userGroupElement.selectNodes("Permissions/Permission");
-                    for ( Object permissionObj : permissionNodes)
+                    List<?> userGroups = defaultUserGroupsNode.selectNodes("UserGroup");
+                    for ( Object userGroupObj : userGroups)
                     {
-                        Element permissionElement = (Element) permissionObj;
-                        String permName = permissionElement.attributeValue("name");
-                        String actions  = userGroupElement.attributeValue("actions");
+                        Element userGroupElement = (Element) userGroupObj;
+    
+                        // create user group
+                        String name       = userGroupElement.attributeValue("name");
+                        String type       = userGroupElement.attributeValue("userType");
                         
-                        SpPermission perm = createPermission(permName, actions, permClass, groupSet);
-                        permSet.add(perm);
+                        SpPrincipal group = createGroup(name, type, scope); 
+                        groups.add(group);
+                        
+                       
+                        Set<SpPrincipal> groupSet = new HashSet<SpPrincipal>();
+                        groupSet.add(group);
+                        
+                        // create permissions
+                        Set<SpPermission> permSet = new HashSet<SpPermission>();
+                        List<?> permissionNodes = userGroupElement.selectNodes("Permissions/Permission");
+                        for ( Object permissionObj : permissionNodes)
+                        {
+                            Element permissionElement = (Element) permissionObj;
+                            String permName = permissionElement.attributeValue("name");
+                            String actions  = userGroupElement.attributeValue("actions");
+                            
+                            SpPermission perm = createPermission(permName, actions, permClass, groupSet);
+                            permSet.add(perm);
+                        }
+                        group.setPermissions(permSet);
                     }
-                    group.setPermissions(permSet);
+                } else
+                {
+                    System.err.println("Couldn't get find ["+nodePath+"]");
                 }
                     
             } else
             {
-            	System.out.println("Couldn't get resource [security]");
+            	System.err.println("Couldn't get resource [security]");
             }
         } catch (Exception ex)
         {

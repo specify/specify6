@@ -7272,7 +7272,7 @@ public class BuildSampleDatabase
         try
         {
             localSession = DataProviderFactory.getInstance().createSession();
-            Object[] cols = (Object[])localSession.getData("FROM SpLocaleContainer as sp INNER JOIN sp.discipline as d WHERE sp.name = '" + tableName + "' AND d.disciplineId = "+discipline.getId());
+            Object[] cols = (Object[])localSession.getData("FROM SpLocaleContainer as sp INNER JOIN sp.discipline as d WHERE sp.name = '" + tableName + "' AND d.id = "+discipline.getId());
             SpLocaleContainer container = (SpLocaleContainer)cols[0];
             if (container != null)
             {

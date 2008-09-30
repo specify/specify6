@@ -26,7 +26,7 @@
     </section>
    
     <section title="MySQL">
-        <pref name="MYSQL" title="MYSQL" icon="SystemSetup" panelClass="edu.ku.brc.specify.prefs.MySQLPrefs" viewsetname="Preferences" viewname="MySQLBckRstrOptions" help="PrefsMySQLBkRs"/>
+        <pref name="MYSQL" title="MYSQL" icon="MySQL" panelClass="edu.ku.brc.specify.prefs.MySQLPrefs" viewsetname="Preferences" viewname="MySQLBckRstrOptions" help="PrefsMySQLBkRs"/>
     </section>
     
     <section title="Login">

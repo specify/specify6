@@ -21,6 +21,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -51,8 +52,10 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
@@ -466,6 +469,8 @@ public class SpecifyDBConverter
         DataBuilder.setSession(HibernateUtil.getNewSession());
         HibernateUtil.getCurrentSession(); 
         IdMapperMgr idMapperMgr = null;
+        SpecifyUser specifyUser = null;
+
         try
         {
         	GenericDBConversion.setShouldCreateMapTables(startfromScratch);
@@ -649,7 +654,6 @@ public class SpecifyDBConverter
                     String           password         = initPrefs.getProperty("useragent.password", "testuser");
                     
                     Agent       userAgent   = null;
-                    SpecifyUser specifyUser = null;
                     
                     if (startfromScratch)
                     {
@@ -953,20 +957,22 @@ public class SpecifyDBConverter
                     DataBuilder.setSession(null);
                 }
 
-                boolean    status       = false;
-                Collection collection   = null;
-                Discipline dscp         = null;
-                Session    localSession = HibernateUtil.getNewSession();
+                boolean     status       = false;
+                Institution institution  = null;
+                Division    division     = null;
+                Collection  collection   = null;
+                Discipline  dscp         = null;
+                Session     localSession = HibernateUtil.getNewSession();
                 try
                 {
-                    if (conversion.getCurDisciplineID() == null || conversion.getCurDisciplineID() == 0)
+                    if (conversion.getCurDisciplineID() == null)
                     {
                         List<?> list = localSession.createQuery("FROM Discipline").list();
                         dscp = (Discipline)list.get(0);
                         
                     } else
                     {
-                        List<?> list = localSession.createQuery("FROM Discipline WHERE disciplineId = "+conversion.getCurDisciplineID()).list();
+                        List<?> list = localSession.createQuery("FROM Discipline WHERE id = "+conversion.getCurDisciplineID()).list();
                         dscp = (Discipline)list.get(0);
                     }
                     AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
@@ -985,11 +991,50 @@ public class SpecifyDBConverter
                             
                         } else
                         {
-                            List<?> list = localSession.createQuery("FROM Collection WHERE collectionId = "+conversion.getCurDisciplineID()).list();
+                            List<?> list = localSession.createQuery("FROM Collection WHERE id = "+conversion.getCurDisciplineID()).list();
                             collection = (Collection)list.get(0);
                         }
                     }
+                    
+                    division    = dscp.getDivision();
+                    localSession.lock(division, LockMode.NONE);
+                    institution = division.getInstitution();
+                    localSession.lock(institution, LockMode.NONE);
+                    institution.getDivisions().size();
+                    
                     AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+                    AppContextMgr.getInstance().setClassObject(Division.class, division);
+                    AppContextMgr.getInstance().setClassObject(Institution.class, institution);
+                    
+                    try
+                    {
+                        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
+                        DataBuilder.createStandardGroups(groups, institution);
+                        //DataBuilder.createStandardGroups(groups, division);
+                        DataBuilder.createStandardGroups(groups, dscp);
+                        DataBuilder.createStandardGroups(groups, collection);
+                        
+                        SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(specifyUser);
+                        groups.add(userPrincipal);
+                        specifyUser.addUserToSpPrincipalGroup(userPrincipal);
+                        
+                        Transaction trans = localSession.beginTransaction();
+                        for (Object obj : groups)
+                        {
+                            localSession.saveOrUpdate(obj);
+                        }
+                        localSession.saveOrUpdate(institution);
+                        //localSession.saveOrUpdate(division);
+                        localSession.saveOrUpdate(dscp);
+                        localSession.saveOrUpdate(collection);
+                        trans.commit();
+                        localSession.flush();
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                    
                     status = true;
                     
                 } catch (Exception ex)

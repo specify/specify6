@@ -22,6 +22,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
@@ -36,6 +37,7 @@ import edu.ku.brc.specify.tasks.subpane.security.SecurityAdminPane;
 import edu.ku.brc.specify.tasks.subpane.security.SecuritySummaryDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -66,6 +68,12 @@ public class SecurityAdminTask extends BaseTask
         }
     }
     
+    @Override
+    public ImageIcon getIcon(int size)
+    {
+        return IconManager.getIcon("Security", size == 16 ? IconManager.IconSize.Std16 : IconManager.STD_ICON_SIZE);
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
@@ -106,7 +114,8 @@ public class SecurityAdminTask extends BaseTask
 
         // check whether user can see the security admin panel
         // other permissions will be checked when the panel is created 
-        if (SecurityMgr.getInstance().checkPermission("Task." + SECURITY_ADMIN, BasicSpPermission.view)) //$NON-NLS-1$
+        // XXX RELEASE
+        if (!UIHelper.isSecurityOn() || SecurityMgr.getInstance().checkPermission("Task." + SECURITY_ADMIN, BasicSpPermission.view)) //$NON-NLS-1$
         {
             // security tools menu item
             menuTitle = "SecurityAdminTask.SECURITY_TOOLS_MENU"; //$NON-NLS-1$

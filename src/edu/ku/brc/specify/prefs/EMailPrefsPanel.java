@@ -73,7 +73,6 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
     protected CustomDialog checkerDialog = null;
     protected JLabel[]     checkerLabels;
     protected JLabel[]     checkerIcons;
-    protected JButton      closeCheckerBtn;
     protected JProgressBar progressBar;
     protected JPanel       checkPanel;
 
@@ -372,15 +371,6 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
         checkPanel = builder.getPanel();
-
-        closeCheckerBtn.addActionListener(new ActionListener()
-                {
-            public void actionPerformed(ActionEvent e)
-            {
-                checkerDialog.setVisible(false);
-                emailCheckerRunnable = null;
-            }
-        });
 
         checkPanel.doLayout();
         builder.getPanel().doLayout();
