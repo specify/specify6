@@ -118,7 +118,9 @@
       	<table name="DNASequence" field="dnaSequences">
       		<alias name="Agent" field="sequencer" /> 
       	</table>
-      	<table name="FieldNotebookPage" field="fieldNotebookPage" />
+      	<table name="FieldNotebookPage" field="fieldNotebookPage" >
+      		<table name="FieldNotebookPageSet" field="pageSet" />  
+      	</table>
       	<!-- <table name="CollectionRelationship" field="leftSideRels" /> -->
       	<alias name="Agent" field="modifiedByAgent" />
       	<table name="OtherIdentifier" field="otherIdentifiers" />
@@ -258,9 +260,7 @@
         <table name="TaxonCitation" field="taxonCitations">
            	<alias name="ReferenceWork"/>
         </table>
-        <table name="CommonNameTx" field="commonNames">
-           	<alias name="ReferenceWork"/>
-        </table>
+        <table name="CommonNameTx" field="commonNames" />
         <table name="Determination" field="determinations" title="Determinations">
             <alias name="CollectionObject"/>
             <table name="DeterminationCitation" field="determinationCitations">
