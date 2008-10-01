@@ -31,7 +31,9 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
+import edu.ku.brc.af.ui.db.TextFieldFromPickListTable;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
@@ -150,7 +152,24 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         {
             field.setEnabled(enabled);
             
-            if (field instanceof JComboBox || field instanceof ValComboBox)
+            if (field instanceof TextFieldFromPickListTable)
+            {
+                String title = "";
+                PickListDBAdapterIFace adaptor = ((TextFieldFromPickListTable)field).getPickListAdapter();
+                for (PickListItemIFace pli : adaptor.getList())
+                {
+                    if (pli.getValue().equals(value))
+                    {
+                        title = pli.getTitle();
+                        break;                                
+                    }
+                }
+                ((TextFieldFromPickListTable)field).setText(title);
+                return;
+            }
+            
+            if (field instanceof JComboBox || 
+                field instanceof ValComboBox)
             {
                 JComboBox cbx = field instanceof ValComboBox ? ((ValComboBox)field).getComboBox() : (JComboBox)field;
                 int inx = -1;
