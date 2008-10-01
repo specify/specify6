@@ -27,7 +27,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.DataSetterForObj;
-import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
@@ -119,6 +118,7 @@ public class SetupDivsionCollection extends JDialog
         //DivisionSetupPanel div1 = new DivisionSetupPanel(nextBtn);
         //panels.add(div1);
         
+        /*
         DisciplineSetupPanel dsp1 = new DisciplineSetupPanel(nextBtn);
         panels.add(dsp1);
         
@@ -144,9 +144,10 @@ public class SetupDivsionCollection extends JDialog
                 nextBtn);
         panels.add(coll2);
         
+        
         NumberingSchemeSetup numSchemePanel = new NumberingSchemeSetup(nextBtn);
         panels.add(numSchemePanel);
-        
+        */
         lastStep = panels.size();
         
         if (backBtn != null)
