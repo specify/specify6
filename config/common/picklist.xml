@@ -126,7 +126,13 @@
         <picklistitem title="Bug Room" value="bugroom"/>
         <picklistitem title="CO2" value="co2"/>
       </items>
-    </picklist>  
+    </picklist> 
+    <picklist name="TypeOfAddr" issystem="true" type="0" readonly="true" tablename="address" sizelimit="2">
+	  	<items>
+	  		<picklistitem title="Home" value="home"/>
+	  		<picklistitem title="Work" value="work"/>
+	  	</items>
+    </picklist>
     <picklist name="TypeStatus" issystem="true" type="0" readonly="true" sizelimit="-1" sort="2">
       <items>
 	      <picklistitem title="None" value="|null|"/>
