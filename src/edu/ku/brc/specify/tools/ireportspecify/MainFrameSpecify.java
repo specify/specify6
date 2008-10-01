@@ -16,6 +16,7 @@ import it.businesslogic.ireport.gui.JReportFrame;
 import it.businesslogic.ireport.gui.MainFrame;
 import it.businesslogic.ireport.gui.ReportPropertiesFrame;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -92,6 +93,8 @@ public class MainFrameSpecify extends MainFrame
     
     protected boolean refreshingConnections = false;
 
+    protected static Integer overwrittenReportId = null;
+    
     /**
      * @param args -
      *            parameters to configure iReport mainframe
@@ -422,7 +425,14 @@ public class MainFrameSpecify extends MainFrame
             }
         }
 
-        AppResAndProps apr = getAppResAndPropsForFrame(jrf, saveAs);        
+        overwrittenReportId = null;
+        AppResAndProps apr = getAppResAndPropsForFrame(jrf, saveAs);
+        if (overwrittenReportId != null)
+        {
+            removeFrameForDeletedReport(overwrittenReportId);
+            overwrittenReportId = null;
+        }
+        
         if (apr != null)
         {
             ReportSpecify rep = (ReportSpecify)jrf.getReport();
@@ -625,6 +635,7 @@ public class MainFrameSpecify extends MainFrame
                     session = null;
                 }
                 ReportsBaseTask.deleteReportAndResource(matchId, match);
+                overwrittenReportId = matchId;
             }
             
             AppResourceIFace modifiedRes = null;
@@ -665,6 +676,33 @@ public class MainFrameSpecify extends MainFrame
         return null;
     }
     
+    protected void removeFrameForDeletedReport(final Integer reportId)
+    {
+        if (reportId != null)
+        {
+            javax.swing.JInternalFrame[] frames = getJMDIDesktopPane().getAllFrames();
+            JReportFrame jrf;
+            Vector<Component> toRemove = new Vector<Component>();
+            for (int i = 0; i < frames.length; ++i)
+            {
+                if (frames[i] instanceof JReportFrame)
+                {
+                    jrf = (JReportFrame) frames[i];
+                    if (jrf.getReport() instanceof ReportSpecify  && ((ReportSpecify) (jrf.getReport())).getSpReport() != null)
+                    {
+                        if (reportId.equals(((ReportSpecify) (jrf.getReport())).getSpReport().getId()))
+                        {
+                            toRemove.add(jrf);
+                        }
+                    }
+                }
+            }
+            for (Component c : toRemove)
+            {
+                getJMDIDesktopPane().remove(c);
+            }
+        }        
+    }
     
     /**
      * @param jrf
