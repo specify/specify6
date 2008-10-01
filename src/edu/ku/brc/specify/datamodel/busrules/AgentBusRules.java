@@ -31,6 +31,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
@@ -159,7 +160,15 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                     for (int i=0;i<model.getSize();i++)
                     {
                         Object item = model.getElementAt(i);
-                        if (item.toString().equals(value))
+                        if (item instanceof PickListItemIFace)
+                        {
+                            PickListItemIFace pli = (PickListItemIFace)item;
+                            if (pli.getValue().equals(value))
+                            {
+                                inx = i;
+                                break;                                
+                            }
+                        } else if (item.toString().equals(value))
                         {
                             inx = i;
                             break;
