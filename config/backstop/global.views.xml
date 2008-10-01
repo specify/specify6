@@ -862,7 +862,7 @@
              <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="schemeName" uitype="text"/>
+                    <cell type="field" id="1" name="schemeName" uitype="text" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label"/>

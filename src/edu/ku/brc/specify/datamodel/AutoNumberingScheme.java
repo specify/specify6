@@ -25,12 +25,12 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 /**
@@ -161,10 +161,8 @@ public class AutoNumberingScheme extends DataModelObjBase implements java.io.Ser
         this.tableNumber = tableNumber;
     }
 
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(name = "autonumsch_coll", 
-            joinColumns = { @JoinColumn(name = "AutoNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = false) }, 
-            inverseJoinColumns = { @JoinColumn(name = "CollectionID", unique = false, nullable = false, insertable = true, updatable = false) })
+    @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="numberingSchemes")
+    @Cascade( {CascadeType.SAVE_UPDATE} )
     public Set<Collection> getCollections()
     {
         return collections;
@@ -175,10 +173,8 @@ public class AutoNumberingScheme extends DataModelObjBase implements java.io.Ser
         this.collections = collections;
     }
     
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(name = "autonumsch_div", 
-            joinColumns = { @JoinColumn(name = "AutoNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = false) }, 
-            inverseJoinColumns = { @JoinColumn(name = "DivisionID", unique = false, nullable = false, insertable = true, updatable = false) })
+    @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="numberingSchemes")
+    @Cascade( {CascadeType.SAVE_UPDATE} )
     public Set<Division> getDivisions()
     {
         return divisions;
@@ -189,10 +185,8 @@ public class AutoNumberingScheme extends DataModelObjBase implements java.io.Ser
         this.divisions = divisions;
     }
     
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(name = "autonumsch_dsp", 
-            joinColumns = { @JoinColumn(name = "AutoNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = false) }, 
-            inverseJoinColumns = { @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = false) })
+    @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="numberingSchemes")
+    @Cascade( {CascadeType.SAVE_UPDATE} )
     public Set<Discipline> getDisciplines()
     {
         return disciplines;
@@ -201,6 +195,14 @@ public class AutoNumberingScheme extends DataModelObjBase implements java.io.Ser
     public void setDisciplines(Set<Discipline> disciplines)
     {
         this.disciplines = disciplines;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+     */
+    public String toString()
+    {
+        return schemeName;
     }
     
     /* (non-Javadoc)

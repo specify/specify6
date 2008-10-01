@@ -991,9 +991,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public UIValidatable.ErrorType validateState()
     {
-        log.debug("validateState "+(isRequired && textWithQuery.hasItem()));
+        //log.debug("validateState "+(isRequired && textWithQuery.hasItem()));
         valState = isRequired && !textWithQuery.hasItem() ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
-        log.debug(valState);
+        //log.debug(valState);
         return valState;
     }
 

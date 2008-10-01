@@ -370,7 +370,26 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                 parentObj = (FormDataObjIFace)sessionLocal.get(parentObj.getDataClass(), parentObj.getId());
                 
                 Object[] objs = UIHelper.getFieldValues(subviewDef, parentObj, getter);
-                dataObj = objs[0];
+                if (objs == null)
+                {
+                    try
+                    {
+                        Class<?> cls = Class.forName(view.getClassName());
+                        if (FormDataObjIFace.class.isAssignableFrom(cls))
+                        {
+                            dataObj = cls.newInstance();
+                            ((FormDataObjIFace)dataObj).initialize();
+                            parentObj.addReference((FormDataObjIFace)dataObj, subviewDef.getName());
+                        }
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                    
+                } else
+                {
+                    dataObj = objs[0];
+                }
                 multiView.setParentDataObj(parentObj);
                 multiView.setData(dataObj);
                 
@@ -462,7 +481,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
      */
     protected void updateBtnText()
     {
-        if (dataObj instanceof Set<?> && icon != null)
+        if (icon != null)
         {
             ensurePermissions(dataObj);
             
@@ -473,10 +492,16 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                 lblStr = blank;
             }
 
-            if (lblStr == null || lblStr != blank)
+            if (dataObj instanceof Set<?>)
             {
-                int size = ((Set<?>)dataObj).size();
-                lblStr = " " + String.format("%s", size)+ " ";
+                if (lblStr == null || lblStr != blank)
+                {
+                    int size = ((Set<?>)dataObj).size();
+                    lblStr = " " + String.format("%s", size)+ " ";
+                }
+            } else
+            {
+                lblStr = dataObj != null ? ((FormDataObjIFace)dataObj).getIdentityTitle() : "  ";
             }
             
             label.setText(lblStr);
@@ -530,21 +555,11 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             // Retrieve lazy object while in the context of a session (just like a subform would do
             if (dataObj != null)
             {
-                
-                if (dataObj instanceof FormDataObjIFace)
-                {
-                    ((FormDataObjIFace)dataObj).getIdentityTitle();
-                    
-                } else if (dataObj instanceof Set<?>)
-                {
-                    updateBtnText(); // note: that by calling this, 'size' gets called and that loads the Set (this must be done).
-                }
-                
                 setEnabledInternal(isEnabled());
-            } else 
-            {
-                updateBtnText(); // note: that by calling this, 'size' gets called and that loads the Set (this must be done).
             }
+            
+            updateBtnText(); // note: that by calling this, 'size' gets called and that loads the Set (this must be done).
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();

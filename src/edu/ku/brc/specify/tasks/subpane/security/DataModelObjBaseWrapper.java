@@ -195,7 +195,7 @@ public class DataModelObjBaseWrapper
 	        if (dataObj instanceof Discipline)
 	        {
 	            DisciplineType dispType = DisciplineType.getDiscipline(((Discipline)dataObj).getName());
-	            title = dispType.getTitle();
+	            title =dispType != null ?  dispType.getTitle() : "N/A";
 	        } else
 	        {
 	            title = dataObj.getIdentityTitle();

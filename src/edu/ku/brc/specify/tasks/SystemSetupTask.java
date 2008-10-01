@@ -59,6 +59,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
@@ -145,6 +146,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             NavBox sysNavBox = new NavBox(getResourceString("CORE_DATA_OBJECTS"));
             //createSysNavBtn(sysNavBox, DataType.getClassTableId());
             //createSysNavBtn(sysNavBox, Discipline.getClassTableId());
+            createSysNavBtn(sysNavBox, Division.getClassTableId());
             createSysNavBtn(sysNavBox, PrepType.getClassTableId());
             createSysNavBtn(sysNavBox, DeterminationStatus.getClassTableId());
             createSysNavBtn(sysNavBox, edu.ku.brc.specify.datamodel.Collection.getClassTableId());

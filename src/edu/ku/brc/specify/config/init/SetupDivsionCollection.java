@@ -11,8 +11,6 @@ import static edu.ku.brc.ui.UIHelper.createButton;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -30,12 +28,17 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.DataSetterForObj;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIRegistry;
 
 public class SetupDivsionCollection extends JDialog
@@ -57,19 +60,19 @@ public class SetupDivsionCollection extends JDialog
     protected CardLayout             cardLayout = new CardLayout();
     protected Vector<SetupPanelIFace> panels     = new Vector<SetupPanelIFace>();
     
-    protected Specify                specify;
     protected String                 setupXMLPath;
+    protected Collection             collection = null;
     
     /**
      * @param specify
      */
-    public SetupDivsionCollection(final Specify specify)
+    public SetupDivsionCollection(final Division division)
     {
         super();
         
         setModal(true);
         
-        this.specify = specify;
+        props.put("division", division);
         
         setTitle("Configuring"); // I18N
         cardPanel = new JPanel(cardLayout);
@@ -113,61 +116,37 @@ public class SetupDivsionCollection extends JDialog
             
         //Institution inst     = AppContextMgr.getInstance().getClassObject(Institution.class);
         //Division    division = AppContextMgr.getInstance().getClassObject(Division.class);
+        //DivisionSetupPanel div1 = new DivisionSetupPanel(nextBtn);
+        //panels.add(div1);
         
-        Collection col = new Collection();
-        col.initialize();
-        FormSetupPanel coll1 = new FormSetupPanel("Cln", 
+        DisciplineSetupPanel dsp1 = new DisciplineSetupPanel(nextBtn);
+        panels.add(dsp1);
+        
+        collection = new Collection();
+        collection.initialize();
+        FormSetupPanel coll1 = new FormSetupPanel("Cln1", 
                                                      null, 
                                                      "CollectionSetup", 
                                                      Division.class.getName(), 
                                                      true, 
                                                      MultiView.HIDE_SAVE_BTN, 
-                                                     col,
+                                                     collection,
                                                      nextBtn);
         panels.add(coll1);
         
-        FormSetupPanel coll2 = new FormSetupPanel("Cln", 
+        FormSetupPanel coll2 = new FormSetupPanel("Cln2", 
                 null, 
                 "CollectionSetupABCD", 
                 Division.class.getName(), 
                 true, 
                 MultiView.HIDE_SAVE_BTN, 
-                col,
+                collection,
                 nextBtn);
         panels.add(coll2);
         
-        FormSetupPanel coll3 = new FormSetupPanel("Cln", 
-                null, 
-                "CollectionSetupNumSch", 
-                Division.class.getName(), 
-                true, 
-                MultiView.HIDE_SAVE_BTN, 
-                col,
-                nextBtn);
-        panels.add(coll3);
+        NumberingSchemeSetup numSchemePanel = new NumberingSchemeSetup(nextBtn);
+        panels.add(numSchemePanel);
         
-        /*panels.add(new GenericFormPanel(inst, "inst", 
-                "Enter Institution Information",
-                new String[] { "Name", "Title"}, 
-                new String[] { "name", "title"}, 
-                nextBtn));
-         
-        panels.add(new GenericFormPanel(division, "div", 
-                "Enter Division Information", 
-                new String[] { "Name", "Title", "Abbrev"}, 
-                new String[] { "name", "title", "abbrev"}, 
-                nextBtn));
-        
-        Collection collection = new Collection();
-        collection.initialize();
-        
-        panels.add(new GenericFormPanel(collection, "collection", 
-                "Enter Collection Information", 
-                new String[] { "Prefix", "Name"}, 
-                new String[] { "prefix", "name"}, 
-                nextBtn));*/
-         
-         
         lastStep = panels.size();
         
         if (backBtn != null)
@@ -178,6 +157,7 @@ public class SetupDivsionCollection extends JDialog
                     if (step > 0)
                     {
                         step--;
+                        panels.get(step).doingPrev();
                         cardLayout.show(cardPanel, Integer.toString(step));
                     }
                     updateBtnBar();
@@ -193,6 +173,7 @@ public class SetupDivsionCollection extends JDialog
                 if (step < lastStep-1)
                 {
                     step++;
+                    panels.get(step).doingNext();
                     cardLayout.show(cardPanel, Integer.toString(step));
                     updateBtnBar();
                       
@@ -232,6 +213,8 @@ public class SetupDivsionCollection extends JDialog
             
             panel.setValues(props);
         }
+        
+        panels.get(0).doingNext();
         cardLayout.show(cardPanel, "0");
         
         PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g", "f:p:g,10px,p"));
@@ -287,7 +270,8 @@ public class SetupDivsionCollection extends JDialog
             {
                 panel.getValues(props);
             }
-            props.storeToXML(new FileOutputStream(new File(setupXMLPath)), "SetUp Props");
+            //props.storeToXML(new FileOutputStream(new File(setupXMLPath)), "SetUp Props");
+            
             
         } catch (Exception ex)
         {
@@ -302,6 +286,79 @@ public class SetupDivsionCollection extends JDialog
                 
                 public Object construct()
                 {
+                    Division            division   = (Division)props.get("division");
+                    Discipline          discipline = (Discipline)props.get("discipline");
+                    AutoNumberingScheme numScheme  = (AutoNumberingScheme)props.get("numScheme");
+
+                    if (division != null && collection != null && numScheme != null)
+                    {
+                        DataProviderSessionIFace session = null;
+                        try
+                        {
+                            Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
+                            session = DataProviderFactory.getInstance().createSession();
+                            
+                            session.beginTransaction();
+                            
+                            if (division.getId() == null)
+                            {
+                                Institution institution = session.getData(Institution.class, "id", inst.getId(), DataProviderSessionIFace.CompareType.Equals);
+                                institution.getDivisions().add(division);
+                                division.setInstitution(institution);
+                                
+                                session.saveOrUpdate(institution);
+                                session.saveOrUpdate(division);
+                            } else
+                            {
+                                session.attach(division);
+                            }
+                            
+                            if (discipline.getId() == null)
+                            {
+                                discipline.setDivision(division);
+                                session.saveOrUpdate(discipline);
+                            } else
+                            {
+                                discipline = session.merge(discipline);
+                            }
+                            
+                            if (numScheme.getId() != null)
+                            {
+                                numScheme = session.merge(numScheme);
+                            }
+                            
+                            session.saveOrUpdate(division);
+                            
+                            
+                            collection.setDiscipline(discipline);
+                            discipline.getCollections().add(collection);
+                            
+                            collection.getNumberingSchemes().add(numScheme);
+                            numScheme.getCollections().add(collection);
+                            
+                            session.saveOrUpdate(collection);
+                            session.saveOrUpdate(numScheme);
+                            session.saveOrUpdate(discipline);
+                            
+                            session.commit();
+                            session.flush();
+                            
+                            CommandDispatcher.dispatch(new CommandAction("SystemSetup", "DivisionSaved", division));
+                            
+                        } catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                            CommandDispatcher.dispatch(new CommandAction("SystemSetup", "DivisionError", division));
+                            
+                        } finally
+                        {
+                            if (session != null)
+                            {
+                                session.close();
+                            }
+                        }
+                    }
+                    
                     return null;
                 }
 

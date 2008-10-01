@@ -14,13 +14,22 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -29,9 +38,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
+
+import edu.ku.brc.dbsupport.DBConnection;
 
 
 
@@ -250,8 +259,10 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     /**
      * @return the numberingSchemes
      */
-    @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="divisions")
-    @Cascade( {CascadeType.SAVE_UPDATE} )
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(name = "autonumsch_div", 
+            joinColumns = { @JoinColumn(name = "DivisionID", unique = false, nullable = false, insertable = true, updatable = false) }, 
+            inverseJoinColumns = { @JoinColumn(name = "AutoNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = false) })
     public Set<AutoNumberingScheme> getNumberingSchemes()
     {
         return numberingSchemes;
@@ -305,7 +316,7 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     /**
      * @return the address
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AddressID", unique = false, nullable = true, insertable = true, updatable = true)
     public Address getAddress()
     {
@@ -505,6 +516,62 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
         {
             ans.getTableNumber();
         }
+    }
+    
+    /**
+     * @return a list of title (or names) of the Disciplines that the Division owns.
+     */
+    @Transient
+    public List<String> getDisciplineList()
+    {
+        List<String> list = new Vector<String>();
+        Connection conn = null;        
+        Statement  stmt = null;
+        try
+        {
+            conn = DBConnection.getInstance().createConnection();
+            stmt = conn.createStatement();
+
+            String sql = "SELECT Title,Name FROM discipline where DivisionID = "+ getId();
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            while (rs.next())
+            {
+                String dspTitle = rs.getString(1);
+                if (StringUtils.isEmpty(dspTitle))
+                {
+                    dspTitle = rs.getString(2);
+                }
+                list.add(dspTitle);
+            }
+            rs.close();
+            Collections.sort(list);
+            return list;
+        } 
+        catch (SQLException ex)
+        {
+            System.err.println("SQLException: " + ex.toString()); //$NON-NLS-1$
+            System.err.println(ex.getMessage());
+            
+        } finally
+        {
+            try 
+            {
+                if (stmt != null)
+                {
+                    stmt.close();
+                }
+                if (conn != null)
+                {
+                    conn.close();
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return list;
     }
     
     /**

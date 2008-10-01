@@ -22,6 +22,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -253,8 +254,10 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     /**
      * @return the numberingSchemes
      */
-    @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collections")
-    @Cascade( {CascadeType.SAVE_UPDATE} )
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(name = "autonumsch_coll", 
+            joinColumns = { @JoinColumn(name = "CollectionID", unique = false, nullable = false, insertable = true, updatable = false) }, 
+            inverseJoinColumns = { @JoinColumn(name = "AutoNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = false) })
     public Set<AutoNumberingScheme> getNumberingSchemes()
     {
         return numberingSchemes;

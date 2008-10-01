@@ -59,7 +59,7 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
 	protected String				    name;
 	protected String				    remarks;
     protected Integer                   fullNameDirection;
-	protected Set<Discipline>		disciplines;
+	protected Set<Discipline>		    disciplines;
 	protected Set<Geography>			treeEntries;
 	protected Set<GeographyTreeDefItem>	treeDefItems;
 

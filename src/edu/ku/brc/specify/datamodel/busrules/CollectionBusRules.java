@@ -13,12 +13,21 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.config.init.NumberingSchemeSetupDlg;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
 
 /**
  * @author rod
@@ -38,49 +47,171 @@ public class CollectionBusRules extends BaseBusRules
     {
         
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeDelete(dataObj, session);
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeMerge(dataObj, session);
+        
+        Collection   collection = (Collection)dataObj;
+        
+        for (AutoNumberingScheme ans : collection.getNumberingSchemes())
+        {
+            try
+            {
+                session.saveOrUpdate(ans);
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        beforeMerge(dataObj, session);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
+     */
+    @Override
+    public void afterFillForm(Object dataObj)
+    {
+        super.afterFillForm(dataObj);
+        
+        Collection   collection = (Collection)dataObj;
+        ValTextField txt        = (ValTextField)formViewObj.getControlById("4");
+        if (txt != null && collection != null)
+        {
+            AutoNumberingScheme ans = collection.getNumberingSchemes().iterator().next();
+            txt.setText(ans.getIdentityTitle());
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#addChildrenToNewDataObjects(java.lang.Object)
+     */
+    @Override
+    public void addChildrenToNewDataObjects(Object newDataObj)
+    {
+        super.addChildrenToNewDataObjects(newDataObj);
+        
+        Collection collection = (Collection)newDataObj;
+        
+        MultiView disciplineMV = formViewObj.getMVParent().getMultiViewParent();
+        MultiView divisionMV   = disciplineMV.getMultiViewParent();
+        
+        NumberingSchemeSetupDlg dlg = new NumberingSchemeSetupDlg((Division)divisionMV.getData(), 
+                                                                  (Discipline)disciplineMV.getData(), 
+                                                                  (Collection)newDataObj);
+        dlg.setVisible(true);
+        if (!dlg.isCancelled())
+        {
+            AutoNumberingScheme ns = dlg.getNumScheme();
+            ns.setTableNumber(Collection.getClassTableId());
+            
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                if (ns.getId() != null)
+                {
+                    session.attach(ns);
+                } else
+                {
+                    session.beginTransaction();
+                    session.saveOrUpdate(ns);
+                    session.commit();
+                }
+                
+                collection.getNumberingSchemes().add(ns);
+                ns.getCollections().add(collection);
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToEnableDelete(java.lang.Object)
      */
     @Override
     public boolean okToEnableDelete(final Object dataObj)
     {
-        reasonList.clear();
-        
-        boolean isOK =  okToDelete("collectionobject", "CollectionID", ((FormDataObjIFace)dataObj).getId());
-        if (!isOK)
+        if (dataObj != null)
         {
-            return false;
-        }
-        
-        Collection collection = (Collection)dataObj;
-        
-        String colMemName = "CollectionMemberID";
-        
-        Vector<String> tableList = new Vector<String>();
-        for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
-        {
-            for (DBFieldInfo fi : ti.getFields())
+            Collection col     = AppContextMgr.getInstance().getClassObject(Collection.class);
+            Collection dataCol = (Collection)dataObj;
+            if (col.getId() != null && dataCol.getId() != null && col.getId().equals(dataCol.getId()))
             {
-                String colName = fi.getColumn();
-                if (StringUtils.isNotEmpty(colName) && colName.equals(colMemName))
+                return false;
+            }
+    
+            reasonList.clear();
+            
+            boolean isOK =  okToDelete("collectionobject", "CollectionID", ((FormDataObjIFace)dataObj).getId());
+            if (!isOK)
+            {
+                return false;
+            }
+            
+            Collection collection = (Collection)dataObj;
+            
+            String colMemName = "CollectionMemberID";
+            
+            Vector<String> tableList = new Vector<String>();
+            for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
+            {
+                for (DBFieldInfo fi : ti.getFields())
                 {
-                    tableList.add(ti.getName());
-                    break;
+                    String colName = fi.getColumn();
+                    if (StringUtils.isNotEmpty(colName) && colName.equals(colMemName))
+                    {
+                        tableList.add(ti.getName());
+                        break;
+                    }
                 }
             }
+            
+            int inx = 0;
+            String[] tableFieldNamePairs = new String[tableList.size() * 2];
+            for (String tableName : tableList)
+            {
+                tableFieldNamePairs[inx++] = tableName;
+                tableFieldNamePairs[inx++] = colMemName;
+            }
+            isOK = okToDelete(tableFieldNamePairs, collection.getId());
+            
+            return isOK;
         }
-        
-        int inx = 0;
-        String[] tableFieldNamePairs = new String[tableList.size() * 2];
-        for (String tableName : tableList)
-        {
-            tableFieldNamePairs[inx++] = tableName;
-            tableFieldNamePairs[inx++] = colMemName;
-        }
-        isOK = okToDelete(tableFieldNamePairs, collection.getId());
-        
-        return isOK;
+        return false;
     }
     
 }

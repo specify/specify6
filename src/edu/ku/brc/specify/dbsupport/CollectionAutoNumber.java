@@ -78,14 +78,14 @@ public class CollectionAutoNumber extends AutoNumberGeneric
     {
         boolean doDebug = true;
         
-        AutoNumberingScheme cns = AppContextMgr.getInstance().getClassObject(Collection.class).getNumberingSchemesByType(CollectionObject.getClassTableId());
+        AutoNumberingScheme catNumScheme = AppContextMgr.getInstance().getClassObject(Collection.class).getNumberingSchemesByType(CollectionObject.getClassTableId());
         
-        cns = (AutoNumberingScheme)session.merge(cns);
+        catNumScheme = (AutoNumberingScheme)session.merge(catNumScheme);
         
-        if (doDebug) System.out.println("CatNumScheme: "+cns.getSchemeName());
+        if (doDebug) System.out.println("CatNumScheme: "+catNumScheme.getSchemeName());
         
         Vector<Integer> ids = new Vector<Integer>();
-        for (Collection collection : cns.getCollections())
+        for (Collection collection : catNumScheme.getCollections())
         {
             if (doDebug) System.out.println("adding ID: "+collection.getCollectionId()+"  "+collection.getCollectionName());
             ids.add(collection.getCollectionId());

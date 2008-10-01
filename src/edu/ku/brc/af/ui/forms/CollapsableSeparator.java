@@ -97,7 +97,8 @@ public class CollapsableSeparator extends JPanel
         
         subPanel = new JPanel(cardLayout);
         subPanel.setBorder(null);
-        
+        subPanel.setOpaque(false);
+
         int x = 1;
         if (includeMore)
         {

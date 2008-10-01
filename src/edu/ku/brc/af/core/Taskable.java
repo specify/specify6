@@ -172,4 +172,9 @@ public interface Taskable
      * @param permissions the obj
      */
     public abstract void setPermissions(PermissionIFace permissions); 
+    /**
+     * Sets the icon name for the task
+     * @param iconName the the name
+     */
+    public abstract void setIconName(String iconName); 
 }

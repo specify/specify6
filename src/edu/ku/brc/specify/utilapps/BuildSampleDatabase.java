@@ -268,6 +268,9 @@ public class BuildSampleDatabase
     
     protected boolean             doHugeBotany = false;
     
+    protected DataType            dataType;
+
+    
     
     /**
      * 
@@ -419,9 +422,6 @@ public class BuildSampleDatabase
         SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(user);
         groups.add(userPrincipal);
         user.addUserToSpPrincipalGroup(userPrincipal);
-        
-        DataType         dataType         = createDataType(config.getDiscipline().getTitle());
-        persist(dataType);
         
         frame.setDesc("Creating Trees Definitions...");
         frame.setProcess(++createStep);
@@ -798,9 +798,6 @@ public class BuildSampleDatabase
         
         startTx();
 
-        DataType         dataType = createDataType(disciplineType.getTitle());
-        persist(dataType);
-        
         Division       division   = createDivision(institution, disciplineType.getName(), "Botany", "BT", "Botany");
         
         // create tree defs (later we will make the def items and nodes)
@@ -1606,9 +1603,6 @@ public class BuildSampleDatabase
         
         startTx();
 
-        DataType         dataType = createDataType(disciplineType.getTitle());
-        persist(dataType);
-        
         Division       division   = createDivision(institution, disciplineType.getName(), "Botany", "BT", "Botany");
         
         // create tree defs (later we will make the def items and nodes)
@@ -2043,9 +2037,6 @@ public class BuildSampleDatabase
         
         startTx();
 
-        DataType dataType = createDataType(disciplineType.getTitle());
-        persist(dataType);
-        
         Division division   = createDivision(institution, disciplineType.getName(), disciplineType.getTitle(), "INVP", disciplineType.getTitle());
         
         // create tree defs (later we will make the def items and nodes)
@@ -3111,9 +3102,6 @@ public class BuildSampleDatabase
         
         startTx();
 
-        DataType dataType = createDataType(disciplineType.getTitle());
-        persist(dataType);
-        
         Division division   = createDivision(institution, disciplineType.getName(), disciplineType.getTitle(), disciplineType.getAbbrev(), disciplineType.getTitle());
         
         // create tree defs (later we will make the def items and nodes)
@@ -4180,9 +4168,6 @@ public class BuildSampleDatabase
         
         startTx();
         
-        DataType dataType = createDataType(disciplineType.getTitle());
-        persist(dataType);
-
         Division division = createDivision(institution, disciplineType.getName(), "Icthyology", "IT", "Icthyology");
         persist(division);
         
@@ -5584,10 +5569,13 @@ public class BuildSampleDatabase
         groups.add(admin);
         user.addUserToSpPrincipalGroup(admin);
         
+        dataType = createDataType("Animalia");
+        
         startTx();
         persist(institution);        
         persist(user); 
         persist(groups);
+        persist(dataType);
         //persist(admin);
         commitTx();
         

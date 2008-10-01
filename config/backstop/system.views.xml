@@ -132,33 +132,24 @@
             </altviews>
         </view>
         
-        <view name="CollectionSetup"
+        <view name="CollectionGrid"
             class="edu.ku.brc.specify.datamodel.Collection"
-            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionSetupBusRules"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionBusRules"
             resourcelabels="false">
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
-                <altview name="CollectionSetup Edit" viewdef="CollectionSetup" label="Edit" mode="edit" validated="true" default="true"/>
-            </altviews>
-        </view>
-
-        <view name="CollectionSetupABCD"
-            class="edu.ku.brc.specify.datamodel.Collection"
-            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionSetupBusRules"
-            resourcelabels="false">
-            <desc><![CDATA[The Collection Object form.]]></desc>
-            <altviews>
-                <altview name="CollectionSetupABC Edit" viewdef="CollectionSetupABCD" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="CollectionGrid View" viewdef="CollectionGrid" label="View" mode="view" validated="false"/>
+                <altview name="CollectionGrid Edit" viewdef="CollectionGrid" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
         
-        <view name="CollectionSetupNumSch"
+        <view name="CollectionForGrid"
             class="edu.ku.brc.specify.datamodel.Collection"
-            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionSetupBusRules"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionBusRules"
             resourcelabels="false">
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
-                <altview name="CollectionSetupNumSch Edit" viewdef="CollectionSetupNumSch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="CollectionGrid View" viewdef="CollectionForGrid" label="View" mode="view" validated="false"/>
             </altviews>
         </view>
         
@@ -169,6 +160,18 @@
             <altviews>
                 <altview name="Institution View" viewdef="Institution" label="View" mode="view" validated="false"/>
                 <altview name="Institution Edit" viewdef="Institution" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+                
+        <view name="Division"
+            class="edu.ku.brc.specify.datamodel.Division"
+            busrules="edu.ku.brc.specify.datamodel.busrules.DivisionBusRules"
+            resourcelabels="false">
+            <desc><![CDATA[Subform within the Collection Object form.]]></desc>
+            <altviews>
+                <altview name="Division View" viewdef="Division" label="View" mode="view"/>
+                <altview name="Division Edit" viewdef="Division" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
 
@@ -414,33 +417,29 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Discipline Data Entry Form]]></desc>
-            <columnDef>p,3dlu,p,p:g</columnDef>
+            <columnDef>p,3dlu,p,100px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
             
             <rows>
-                <row>
-                    <cell type="separator" label="Discipline" colspan="4"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" isrequired="true"/> 
-                </row>
                 <row>
                     <cell type="label" labelfor="2" label="Data Type"/>
                     <cell type="field" id="2" name="dataType" uitype="combobox" picklist="DataType" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Title"/>
-                    <cell type="field" id="3" name="title" uitype="text"/>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" isrequired="true" colspan="3"/> 
                 </row>
                 <row>
+                    <cell type="label" labelfor="3" label="Title"/>
+                    <cell type="field" id="3" name="title" uitype="text" colspan="3"/>
+                </row>
+                <!-- <row>
                     <cell type="label" labelfor="4" label="GTP Tree Def"/>
                     <cell type="field" id="4" name="geologicTimePeriodTreeDef" uitype="combobox" picklist="GeologicTimePeriodTreeDef" isrequired="true"/>
-                </row>
+                </row> -->
                 <row>
-                    <cell type="subview" viewname="Collection" id="5" name="collections" colspan="4"/>
+                    <cell type="subview" viewname="CollectionGrid" id="5" name="collections" colspan="6"/>
                 </row>
-                
             </rows>
         </viewdef>
         
@@ -479,6 +478,53 @@
         </viewdef>
 
         <viewdef
+            type="formtable"
+            name="CollectionGrid"
+            class="edu.ku.brc.specify.datamodel.Collection"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Collection Grid View.]]></desc>
+            <definition>CollectionForGrid</definition>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="CollectionForGrid"
+            class="edu.ku.brc.specify.datamodel.Collection"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Collection Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>            
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" label=" "/>
+                    <cell type="field" id="6" name="isEmbeddedCollectingEvent" label="Add Collecting Event Automatically" uitype="checkbox"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="collectionPrefix" uitype="text" isrequired="false"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="discipline" uitype="text" readonly="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="description" uitype="textarea" colspan="2"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
             type="form"
             name="Collection"
             class="edu.ku.brc.specify.datamodel.Collection"
@@ -494,54 +540,19 @@
                     <cell type="separator" label="Collection" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true"/> 
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="discipline" uitype="text" readonly="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label=""/>
-                    <cell type="field" id="6" name="isEmbeddedCollectingEvent" label="Add Collecting Event Automatically" uitype="checkbox"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="2" label="Prefix"/>
-                    <cell type="field" id="2" name="collectionPrefix" uitype="text" isrequired="false"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="3" label="Discipline"/>
-                    <cell type="field" id="3" name="discipline" uitype="combobox" picklist="Discipline" isrequired="true"/>
-                </row>
-                
-                <row>
-                    <cell type="label" labelfor="4" label="Numbering Scheme"/>
-                    <cell type="field" id="4" name="catalogNumberingScheme" uitype="combobox" picklist="CatalogNumberingScheme" isrequired="true"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="5" label="Remarks"/>
-                    <cell type="field" id="5" name="remarks" uitype="textarea" colspan="2"/>
-                </row>
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="CollectionSetup"
-            class="edu.ku.brc.specify.datamodel.Collection"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Collection Data Entry Form]]></desc>
-            <columnDef>p,3dlu,p,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>            
-            
-            <rows>
-                <row>
-                    <cell type="separator" label="Collection" colspan="4"/>
+                    <cell type="label" label="Numbering Scheme:" initialize="align=right;"/>
+                    <cell type="field" id="4" name="catalogNumberingSchemeLbl" uitype="text" readonly="true" ignore="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="  "/>
+                    <cell type="label" label=" "/>
                     <cell type="field" id="6" name="isEmbeddedCollectingEvent" label="Add Collecting Event Automatically" uitype="checkbox"/> 
                 </row>
                 <row>
@@ -549,31 +560,9 @@
                     <cell type="field" id="2" name="collectionPrefix" uitype="text" isrequired="false"/>
                 </row>
                 <row>
-                    <cell type="label" label="Discipline"/>
-                    <cell type="field" id="disciplineCBX" name="disciplineCBX" uitype="combobox" isrequired="true" ignore="true"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="description" uitype="textarea" colspan="2"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="remarks" uitype="textarea" colspan="2"/>
+                    <cell type="field" id="5" name="description" uitype="textarea" colspan="2"/>
                 </row>
-            </rows>
-        </viewdef>        
-        
-        <viewdef 
-            type="form"
-            name="CollectionSetupABCD"
-            class="edu.ku.brc.specify.datamodel.Collection"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Collection Data Entry Form]]></desc>
-            <columnDef>p,3dlu,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>            
-            <rows>
                 <row>
                     <cell type="separator" label="ABCD Schema Fields (Optional)" colspan="3"/>
                 </row>
@@ -612,41 +601,61 @@
                  <row>
                     <cell type="label" labelfor="16"/>
                     <cell type="field" id="16" name="dbContentVersion" uitype="text" isrequired="false"/>
-                </row>
+                </row>                
             </rows>
         </viewdef>
           
-        <viewdef 
+        <viewdef
+            name="Division"
             type="form"
-            name="CollectionSetupNumSch"
-            class="edu.ku.brc.specify.datamodel.Collection"
+            class="edu.ku.brc.specify.datamodel.Division"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[Collection Data Entry Form]]></desc>
+            <desc><![CDATA[Division Form.]]></desc>
             <enableRules/>
-            <columnDef>p,3dlu,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>            
+            
+            <columnDef>100px,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
-                    <cell type="label" label="Numbering Scheme"/>
-                    <cell type="field" id="numScheme" name="numScheme" uitype="text" readonly="true" ignore="true"/> 
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="name" uitype="text" isrequired="true"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="abbrev" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" label=" "/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="title" uitype="text" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="panel" id="16" name="btnpanel" coldef="f:p:g,p,f:p:g,p,f:p:g" rowdef="p" colspan="3">
-                        <rows>
-                            <row>
-				                <cell type="field" id="newNumSchemeBTN" name="newNumSchemeBTN" uitype="button" initialize="title=Create New Numbering Schema;" ignore="true"/>
-				                <cell type="field" id="chooseNumSchemeBTN" name="chooseNumSchemeBTN" uitype="button" initialize="title=Choose Numbering Schema;" ignore="true"/>
-                            </row>
-                        </rows>
-                    </cell>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="uri" uitype="text" cols="30"/>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="iconURI" uitype="text" cols="30"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="description" uitype="textarea" colspan="10"/>
+                </row>
+                <!-- <row>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="remarks" uitype="textarea" colspan="10"/>
+                </row>  -->
+                 <row>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="isAccessionBound" uitype="checkbox"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Discipline" id="9" name="disciplines" colspan="12" initialize="bgcolor=222,222,222"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Address" id="10" name="address" colspan="12" initialize="btn=true"/>
                 </row>
             </rows>
-        </viewdef> 
+        </viewdef>
+        
+        
               
         <viewdef
             type="form"

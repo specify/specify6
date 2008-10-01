@@ -26,5 +26,9 @@ public interface SetupPanelIFace
     public abstract void updateBtnUI();
     
     public abstract Component getUIComponent();
+    
+    public abstract void doingPrev();
+    
+    public abstract void doingNext();
 
 }

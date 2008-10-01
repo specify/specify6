@@ -3101,6 +3101,7 @@ public class FormViewObj implements Viewable,
             x += 2;
         }
         
+        pb.getPanel().setOpaque(false);
         sepController = pb.getPanel();
     }
     
@@ -3131,6 +3132,7 @@ public class FormViewObj implements Viewable,
                 srchRecBtn = UIHelper.createIconBtn("Search", IconManager.IconSize.Std16, null, null);
                 srchRecBtn.setToolTipText(ResultSetController.createTooltip("SearchForRecordTT", view.getObjTitle()));
                 srchRecBtn.setMargin(insets);
+                srchRecBtn.setOpaque(false);
                 rowBuilder.add(srchRecBtn, cc.xy(6,1));
                 
                 DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
@@ -3152,6 +3154,8 @@ public class FormViewObj implements Viewable,
             }
             
             rowBuilder.getPanel().setOpaque(false);
+            newRecBtn.setOpaque(false);
+            delRecBtn.setOpaque(false);
             // This is the Old way
             //controlPanel.addController(rowBuilder.getPanel());
             
@@ -4393,6 +4397,10 @@ public class FormViewObj implements Viewable,
                     } else if (fieldInfo.getComp() instanceof MultiView)
                     {
                         ((MultiView)fieldInfo.getComp()).setData(data);
+                        
+                    } else
+                    {
+                        ((SubViewBtn)fieldInfo.getComp()).setValue(data, null);
                     }
                 }
                 

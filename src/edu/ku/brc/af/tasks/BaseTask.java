@@ -67,7 +67,6 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.RecordSetTask;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.db.AskForNumbersDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandActionWrapper;
@@ -205,7 +204,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * Sets the icon from the IconCacheManager with the appropriate size.
      * @param iconName the name of the icon to use
      */
-    protected void setIconName(final String iconName)
+    public void setIconName(final String iconName)
     {
         this.iconName = iconName;
     }

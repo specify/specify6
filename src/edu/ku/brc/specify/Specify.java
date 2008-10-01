@@ -157,7 +157,6 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
-import edu.ku.brc.specify.tasks.SystemSetupTask;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tools.FormDisplayer;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
@@ -547,7 +546,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         TaskMgr.readRegistry();
         
         TaskMgr.initializePlugins();
-
+        
+        Taskable bkTask = TaskMgr.getTask("BackupTask");
+        if (bkTask != null)
+        {
+            bkTask.setIconName("MySQL");
+        }
         validate();
 
         add(mainPanel, BorderLayout.CENTER);
@@ -918,23 +922,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             JMenu setupMenu = UIHelper.createLocalizedMenu(mb, "Specify.COLSETUP_MENU", "Specify.COLSETUP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
             menu.add(setupMenu);
             
-            title = "Specify.CREATE_COL"; //$NON-NLS-1$
-            String mnu = "Specify.CREATE_COL_MNU";  //$NON-NLS-1$
-            mi = UIHelper.createLocalizedMenuItem(setupMenu, title, mnu, title, true, null);
-            mi.addActionListener(new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            SetupDivsionCollection dlg = new SetupDivsionCollection(Specify.this);
-                            UIRegistry.pushWindow(dlg);
-                            UIHelper.centerAndShow(dlg);
-                            UIRegistry.popWindow(dlg);
-                        }
-                    });
-
-
             title = "Specify.SCHEMA_CONFIG"; //$NON-NLS-1$
-            mnu = "Specify.SCHEMA_CONFIG_MNU";  //$NON-NLS-1$
+            String mnu = "Specify.SCHEMA_CONFIG_MNU";  //$NON-NLS-1$
             mi = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, true, null);
             mi.addActionListener(new ActionListener()
                     {

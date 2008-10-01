@@ -67,6 +67,8 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     protected boolean isRequired = false;
     protected boolean isChanged  = false;
     protected boolean isNew      = false;
+    protected boolean viewOnly   = false;
+    
     protected Color   bgColor;
     protected int     limit     = Integer.MAX_VALUE;
 
@@ -203,7 +205,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     {
         super.setEnabled(enabled);
 
-        setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : bgColor);
+        setBackground(isRequired && isEnabled() && !viewOnly ? requiredFieldColor.getColor() : bgColor);
     }
 
 
@@ -278,7 +280,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
      */
     public void setRequired(boolean isRequired)
     {
-        if (isRequired && isEnabled())
+        if (isRequired && isEnabled() && !viewOnly)
         {
             setBackground(requiredFieldColor.getColor());
             
@@ -287,6 +289,14 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             setBackground(bgColor);
         }
         this.isRequired = isRequired;
+    }
+    
+    /**
+     * @param isViewOnly whether it is view only (read only).
+     */
+    public void setViewOnly(final boolean isViewOnlyArg)
+    {
+        this.viewOnly = isViewOnlyArg;
     }
 
     /* (non-Javadoc)
@@ -486,7 +496,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     {
         if (evt.getKey().equals("requiredfieldcolor"))
         {
-            setBackground(isRequired && isEnabled() ? requiredFieldColor.getColor() : bgColor);
+            setBackground(isRequired && isEnabled() && !viewOnly ? requiredFieldColor.getColor() : bgColor);
         }
     }
     

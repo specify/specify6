@@ -52,7 +52,7 @@ public class BackupTask extends BaseTask
     public BackupTask()
     {
         super("BackupTask", UIRegistry.getResourceString("BackupTask.TITLE"));
-        this.iconName = "SystemSetup";
+        this.iconName = "Backup";
     }
 
     /* (non-Javadoc)

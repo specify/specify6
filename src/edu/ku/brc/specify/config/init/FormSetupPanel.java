@@ -88,6 +88,22 @@ public class FormSetupPanel extends ViewBasedDisplayPanel implements SetupPanelI
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#doingNext()
+     */
+    @Override
+    public void doingNext()
+    {
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#doingPrev()
+     */
+    @Override
+    public void doingPrev()
+    {
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getPanelName()
      */
     @Override
@@ -102,7 +118,7 @@ public class FormSetupPanel extends ViewBasedDisplayPanel implements SetupPanelI
     @Override
     public void getValues(Properties props)
     {
-        
+        multiView.getDataFromUI();
     }
 
     /* (non-Javadoc)

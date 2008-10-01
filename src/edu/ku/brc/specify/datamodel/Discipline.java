@@ -37,6 +37,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -420,8 +421,10 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     /**
      * @return the numberingSchemes
      */
-    @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="disciplines")
-    @Cascade( {CascadeType.SAVE_UPDATE} )
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(name = "autonumsch_dsp", 
+            joinColumns = { @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = false) }, 
+            inverseJoinColumns = { @JoinColumn(name = "AutoNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = false) })
     public Set<AutoNumberingScheme> getNumberingSchemes()
     {
         return numberingSchemes;
@@ -463,13 +466,14 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     @Override
     public String toString()
     {
-        StringBuffer buffer = new StringBuffer(128);
+        /*StringBuffer buffer = new StringBuffer(128);
 
         buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
         //buffer.append("name").append("='").append(getName()).append("' ");
         buffer.append("]");
 
-        return buffer.toString();
+        return buffer.toString();*/
+        return StringUtils.isNotEmpty(title) ? title :  name;
     }
 
     
@@ -480,7 +484,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     @Transient
     public String getIdentityTitle()
     {
-        return name != null ? name : super.getIdentityTitle();
+        return toString();
     }
     
     /* (non-Javadoc)

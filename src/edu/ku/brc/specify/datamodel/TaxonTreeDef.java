@@ -66,6 +66,21 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
     public static final int SUBFORMA      = 270;
     // end standard levels
 
+
+    protected Integer               taxonTreeDefId;
+    protected String                name;
+    protected String                remarks;
+    protected Integer               fullNameDirection;
+    protected Discipline            discipline;
+    protected Set<Taxon>            treeEntries;
+    protected Set<TaxonTreeDefItem> treeDefItems;
+    
+    /** default constructor */
+    public TaxonTreeDef()
+    {
+        // do nothing
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.BaseTreeDef#getStandardLevels()
      */
@@ -162,21 +177,6 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
     {
         return 10;
     }
-
-
-    protected Integer               taxonTreeDefId;
-    protected String                name;
-    protected String                remarks;
-    protected Integer               fullNameDirection;
-    protected Discipline            discipline;
-    protected Set<Taxon>            treeEntries;
-    protected Set<TaxonTreeDefItem> treeDefItems;
-    
-	/** default constructor */
-	public TaxonTreeDef()
-	{
-		// do nothing
-	}
 
 	/** constructor with id */
 	public TaxonTreeDef(Integer taxonTreeDefId)

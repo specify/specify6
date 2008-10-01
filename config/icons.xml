@@ -122,6 +122,7 @@
     <icon name="Close"         file="close.gif" sizes="NonStd"/>
     <icon name="CloseHover"    file="closeHover.gif" sizes="NonStd"/>
     <icon name="Print"         file="printer.gif" sizes="all"/>
+    <icon name="Backup"        file="backup.png" sizes="all"/>
     
     <!-- <icon name="BGImage"  file="frogs_bg.gif" sizes="NonStd"/> -->
     
@@ -209,7 +210,7 @@
     <icon name="MiscPref"              file="Miscellaneous32x32.png" sizes="all"/>
     <icon name="TreePref"              file="Tree32x32.png" sizes="all"/>
     <icon name="Security"              file="security.png" sizes="all"/>
-    <icon name="MySQL"                 file="mysql_logo" sizes="all"/>
+    <icon name="MySQL"                 file="mysql_logo.png" sizes="all"/>
     
     
 </icons>

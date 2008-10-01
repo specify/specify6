@@ -252,7 +252,8 @@ public class ViewFactory
         {
             ValTextField textField = new ValTextField(cellField.getTxtCols(), adapter);
             textField.setRequired(isRequired);
-
+            textField.setViewOnly(cellField.isReadOnly());
+            
             validator.hookupTextField(textField,
                                       cellField.getIdent(),//+"_text",
                                       isRequired,
@@ -271,6 +272,7 @@ public class ViewFactory
         } else if (adapter != null)
         {
             ValTextField textField = new ValTextField(cellField.getTxtCols(), adapter);
+            textField.setViewOnly(cellField.isReadOnly());
             if (fieldInfo.getLength() > -1)
             {
                 textField.setLimit(fieldInfo.getLength());
@@ -282,6 +284,7 @@ public class ViewFactory
         } else
         {
             ValTextField textField = new ValTextField(cellField.getTxtCols());
+            textField.setViewOnly(cellField.isReadOnly());
             if (fieldInfo != null && fieldInfo.getLength() > -1)
             {
                 textField.setLimit(fieldInfo.getLength());

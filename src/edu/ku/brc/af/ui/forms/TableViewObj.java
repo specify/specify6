@@ -798,7 +798,9 @@ public class TableViewObj implements Viewable,
         
         if (deleteButton != null)
         {
-            deleteButton.setEnabled(hasSelection);
+            int inx = table != null ? table.getSelectedRow() : -1;
+            Object item = inx > -1 ? dataObjList.get(inx) : null;
+            deleteButton.setEnabled(hasSelection && (businessRules == null || businessRules.okToEnableDelete(item)));
         }
         
         if (doOrdering && table != null)
@@ -876,6 +878,11 @@ public class TableViewObj implements Viewable,
             realParent.addChildMV(multiView);
             
             multiView.addCurrentValidator();
+            
+            if (isNew && multiView.getCurrentViewAsFormViewObj() != null)
+            {
+                multiView.getCurrentViewAsFormViewObj().getBusinessRules().addChildrenToNewDataObjects(dObj);
+            }
             
             dialog.setParentData(parentDataObj);
             

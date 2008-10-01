@@ -101,6 +101,22 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
      */
     public abstract void updateBtnUI();
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#doingNext()
+     */
+    @Override
+    public void doingNext()
+    {
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.config.init.SetupPanelIFace#doingPrev()
+     */
+    @Override
+    public void doingPrev()
+    {
+    }
+
     /**
      * Helper function for creating the UI.
      * @param builder builder

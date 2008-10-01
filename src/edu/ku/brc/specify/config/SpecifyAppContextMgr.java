@@ -421,12 +421,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
             String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+spUser.getSpecifyUserId(); //$NON-NLS-1$
             for (Object obj : session.getDataList(sqlStr))
             {
-                Collection cs = (Collection)obj; 
-                cs.forceLoad();
+                Collection collection = (Collection)obj; 
+                collection.forceLoad();
                 
-                cs.getDiscipline();// force load of Discipline
-                cs.getDiscipline().getAgents(); // force load of agents
-                collectionHash.put(cs.getCollectionName(), cs);
+                collection.getDiscipline();// force load of Discipline
+                collection.getDiscipline().getAgents(); // force load of agents
+                collectionHash.put(collection.getCollectionName(), collection);
             }
     
             Collection collection = null;

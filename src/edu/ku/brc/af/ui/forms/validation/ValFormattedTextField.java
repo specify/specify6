@@ -541,7 +541,7 @@ s     * @param isViewOnly
                 isEnabled = enabled;
             }
     
-            setBGColor(isRequired && isEnabled ? requiredfieldcolor.getColor() : bgColor);
+            setBGColor(isRequired && isEnabled && !isViewOnly ? requiredfieldcolor.getColor() : bgColor);
         }
         
         super.setEnabled(isEnabled);
@@ -773,7 +773,7 @@ s     * @param isViewOnly
     public void setRequired(boolean isRequired)
     {
         this.isRequired = isRequired;
-        setBGColor(!isPartialOK && isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        setBGColor(!isPartialOK && isRequired && isEnabled() && !isViewOnly? requiredfieldcolor.getColor() : bgColor);
     }
 
     /* (non-Javadoc)

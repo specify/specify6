@@ -474,7 +474,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
      * @return the divisions
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "address")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    //@Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Division> getDivisions()
     {
         return divisions;

@@ -344,6 +344,7 @@ public class MultiView extends JPanel
             this.cardPanel = new JPanel(cardLayout);
             this.separator = new CollapsableSeparator(title, !isOptionOn(options, NO_MORE_BTN_FOR_SEP));
             this.separator.setInnerComp(this.cardPanel);
+            this.cardPanel.setOpaque(false);
             
             add(this.separator, BorderLayout.NORTH);
             add(this.cardPanel, BorderLayout.CENTER);
