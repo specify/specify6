@@ -478,6 +478,10 @@ public class BuildSampleDatabase
         persist(cns);
         persist(accessionNS);
         
+        commitTx();
+        
+        startTx();
+        
         ////////////////////////////////
         // Create Collection
         ////////////////////////////////
@@ -884,6 +888,10 @@ public class BuildSampleDatabase
 
         persist(cns);
         persist(accessionNS);
+        
+        commitTx();
+        
+        startTx();
 
         
         ////////////////////////////////
@@ -1669,6 +1677,10 @@ public class BuildSampleDatabase
         
         persist(cns);
         persist(accessionNS);
+        
+        commitTx();
+        
+        startTx();
 
         
         ////////////////////////////////
@@ -2134,6 +2146,10 @@ public class BuildSampleDatabase
         persist(accessionNS);
         persist(earth);
         
+        commitTx();
+        
+        startTx();
+
         ////////////////////////////////
         // Create Collection
         ////////////////////////////////
@@ -3190,6 +3206,10 @@ public class BuildSampleDatabase
         persist(cns);
         persist(accessionNS);
         
+        commitTx();
+        
+        startTx();
+
         ////////////////////////////////
         // Create Collection
         ////////////////////////////////
@@ -4489,6 +4509,10 @@ public class BuildSampleDatabase
         
         persist(cns);
         persist(accessionNS);
+        
+        commitTx();
+        
+        startTx();
         
         ////////////////////////////////
         // Create Collection

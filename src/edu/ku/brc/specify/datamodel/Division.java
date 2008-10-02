@@ -126,8 +126,8 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
         treatmentEvents     = new HashSet<TreatmentEvent>();
         accessions          = new HashSet<Accession>();
         repositoryAgreements = new HashSet<RepositoryAgreement>();
-        numberingSchemes     = new HashSet<AutoNumberingScheme>();
         */
+        numberingSchemes    = new HashSet<AutoNumberingScheme>();
         institution         = null;
         address             = null;
         disciplines         = new HashSet<Discipline>();

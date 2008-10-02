@@ -510,7 +510,7 @@ s     * @param isViewOnly
                 {
                     sb.append(val);
                 }
-                
+                System.err.println(sb.toString());
                 if (!isPartialOK && StringUtils.isEmpty(val))
                 {
                     return null;
@@ -624,8 +624,18 @@ s     * @param isViewOnly
                 }
             }  else if (comps[inx] instanceof JPanel)
             {
+                if (isAutoFmtOn)
+                {
+                    if (StringUtils.isNotEmpty(val))
+                    {
+                        viewTF.setText(val);
+                    }
+                } else
+                {
+                    editTF.setText(val);    
+                }
                 JTextField tf = isAutoFmtOn ? viewTF : editTF;
-                tf.setText(val);
+                
                 
             } else 
             {
@@ -942,7 +952,7 @@ s     * @param isViewOnly
         {
             if (formatter.isInBoundFormatter())
             {
-                needsUpdating = StringUtils.isEmpty(data) && formatter.getAutoNumber() != null && formatter.isIncrementer();
+                needsUpdating = (StringUtils.isEmpty(data) || data.length() != formatter.getLength()) && formatter.getAutoNumber() != null && formatter.isIncrementer();
                 
                 fmtVal = (String)formatter.formatToUI(data);
                 
