@@ -40,7 +40,9 @@ import edu.ku.brc.ui.AutoCompComboBoxModelIFace;
  * @author rods
  *
  */
-public class PickListDBAdapter extends AbstractListModel implements PickListDBAdapterIFace, MutableComboBoxModel, AutoCompComboBoxModelIFace
+public class PickListDBAdapter extends AbstractListModel implements PickListDBAdapterIFace, 
+                                                                    MutableComboBoxModel, 
+                                                                    AutoCompComboBoxModelIFace
 {
     // Static Data Members
     protected static final Logger log                = Logger.getLogger(PickListDBAdapter.class);
@@ -78,6 +80,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
          
         // Always keep the list sorted
         Collections.sort(items);
+        super.fireContentsChanged(this, 0, items.size()-1);
     }
     
     /**
@@ -159,7 +162,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
         if (index < 0)
         {
             // find oldest item and remove it
-            if (items.size() >= sizeLimit) 
+            if (items.size() >= sizeLimit && sizeLimit > 0) 
             {
                 PickListItemIFace oldest = null;
                 for (PickListItemIFace pli : items)
@@ -184,6 +187,9 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
             }
             
             Collections.sort(items);
+            log.debug("Sorted");
+            
+            super.fireContentsChanged(this, 0, items.size()-1);
 
             save();
 
@@ -324,7 +330,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
             }
             
             Collections.sort(items);
-            
+            super.fireContentsChanged(this, 0, items.size()-1);
             
         } else if (anObject instanceof String)
         {

@@ -444,16 +444,14 @@ public class AutoCompletion extends PlainDocument
         if (selectedItem != null && startsWithIgnoreCase(selectedItem.toString(), pattern))
         {
             return selectedItem;
-            
-        } else
+        }
+        
+        // iterate over all items
+        for (int i = 0, n = model.getSize(); i < n; i++)
         {
-            // iterate over all items
-            for (int i = 0, n = model.getSize(); i < n; i++)
-            {
-                Object currentItem = model.getElementAt(i);
-                // current item starts with the pattern?
-                if (currentItem != null && startsWithIgnoreCase(currentItem.toString(), pattern)) { return currentItem; }
-            }
+            Object currentItem = model.getElementAt(i);
+            // current item starts with the pattern?
+            if (currentItem != null && startsWithIgnoreCase(currentItem.toString(), pattern)) { return currentItem; }
         }
         // no item starts with the pattern => return null
         return null;

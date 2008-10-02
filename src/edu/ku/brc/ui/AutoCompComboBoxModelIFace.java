@@ -19,8 +19,15 @@ package edu.ku.brc.ui;
  */
 public interface AutoCompComboBoxModelIFace
 {
-    public boolean isMutable();
+    /**
+     * @return
+     */
+    public abstract boolean isMutable();
     
-    public void add(Object item);
+    /**
+     * @param item
+     * @return
+     */
+    public abstract void add(Object item);
     
 }

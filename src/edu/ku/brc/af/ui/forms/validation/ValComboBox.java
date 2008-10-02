@@ -26,6 +26,8 @@ import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -83,6 +85,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     protected JComboBox         comboBox     = null;
     protected JTextComponent    textEditor   = null;
     protected String            defaultValue = null;
+    protected String            currTypedValue = null;
     protected PickListDBAdapterIFace adapter = null;
 
     /**
@@ -155,6 +158,41 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
             if (editComp instanceof JTextComponent)
             {
                 textEditor = (JTextComponent)editComp;
+                textEditor.addKeyListener(new KeyAdapter() {
+
+                    @Override
+                    public void keyPressed(KeyEvent e)
+                    {
+                        super.keyPressed(e);
+                        if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                        {
+                            if (adapter != null)
+                            {
+                                int inx = -1;
+                                for (PickListItemIFace pli : adapter.getList())
+                                {
+                                    if (pli.getValue().equals(currTypedValue))
+                                    {
+                                        inx++;
+                                        break;
+                                    }
+                                    inx++;
+                                }
+                                comboBox.setSelectedIndex(inx);
+                            } else
+                            {
+                                comboBox.setSelectedItem(ValComboBox.this.textEditor.getText());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void keyReleased(KeyEvent e)
+                    {
+                        super.keyReleased(e);
+                        currTypedValue = ValComboBox.this.textEditor.getText();
+                    }
+                });
             } else
             {
                 throw new RuntimeException("JComboBox editor compoent is not an instanceof JTextComponent");
