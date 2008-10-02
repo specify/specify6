@@ -181,7 +181,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
                                 comboBox.setSelectedIndex(inx);
                             } else
                             {
-                                comboBox.setSelectedItem(ValComboBox.this.textEditor.getText());
+                                comboBox.setSelectedItem(currTypedValue);
                             }
                         }
                     }

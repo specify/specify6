@@ -187,7 +187,6 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
             }
             
             Collections.sort(items);
-            log.debug("Sorted");
             
             super.fireContentsChanged(this, 0, items.size()-1);
 
