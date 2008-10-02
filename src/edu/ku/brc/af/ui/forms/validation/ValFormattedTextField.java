@@ -634,9 +634,6 @@ s     * @param isViewOnly
                 {
                     editTF.setText(val);    
                 }
-                JTextField tf = isAutoFmtOn ? viewTF : editTF;
-                
-                
             } else 
             {
                 ((JTextField)comps[inx]).setText(val);
