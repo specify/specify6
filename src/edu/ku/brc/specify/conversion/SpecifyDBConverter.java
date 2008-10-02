@@ -17,6 +17,7 @@ import java.util.Vector;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -106,13 +107,39 @@ public class SpecifyDBConverter
      */
     public static void main(String args[]) throws Exception
     {
-        /*
-        for (Enumeration e=LogManager.getCurrentLoggers(); e.hasMoreElements();)
+        log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        // This is for Windows and Exe4J, turn the args into System Properties
+        for (String s : args)
         {
-            Logger logger = (Logger)e.nextElement();
-            logger.setLevel(Level.ALL);
-            System.out.println("Setting "+ logger.getName() + " to " + logger.getLevel());
-        }*/
+            String[] pairs = s.split("="); //$NON-NLS-1$
+            if (pairs.length == 2)
+            {
+                log.debug("["+pairs[0]+"]["+pairs[1]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                if (pairs[0].startsWith("-D")) //$NON-NLS-1$
+                {
+                    System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
+                } 
+            }
+        }
+        
+        // Now check the System Properties
+        String appDir = System.getProperty("appdir"); //$NON-NLS-1$
+        if (StringUtils.isNotEmpty(appDir))
+        {
+            UIRegistry.setDefaultWorkingPath(appDir);
+        }
+        
+        String appdatadir = System.getProperty("appdatadir"); //$NON-NLS-1$
+        if (StringUtils.isNotEmpty(appdatadir))
+        {
+            UIRegistry.setBaseAppDataDir(appdatadir);
+        }
+        
+        String javadbdir = System.getProperty("javadbdir"); //$NON-NLS-1$
+        if (StringUtils.isNotEmpty(javadbdir))
+        {
+            UIRegistry.setJavaDBDir(javadbdir);
+        }
         
         final SpecifyDBConverter converter = new  SpecifyDBConverter();
         
