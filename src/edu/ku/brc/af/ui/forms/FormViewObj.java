@@ -49,7 +49,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -1152,14 +1151,6 @@ public class FormViewObj implements Viewable,
         }*/
     }
     
-    /**
-     * Adjust the UI for the SaveAndNew MenuItem and Action.
-     * @param show the form is being shown.
-     */
-    private void adjustSaveAndNewUI(final boolean show)
-    {
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getViewDef()
      */
