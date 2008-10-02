@@ -47,11 +47,13 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -1928,6 +1930,36 @@ public class UIRegistry
     {
         undoableText.getTextComponent().getDocument().addUndoableEditListener(new UICUndoableEditListener(undoableText.getUndoManager()));
     }
+    
+    /**
+     * @param nameStr
+     * @param enable
+     * @param selected
+     */
+    public static void enableActionAndMenu(final String nameStr, final boolean enable, final Boolean selected)
+    {
+        Action action = UIRegistry.getAction(nameStr);
+        if (action != null)
+        {
+            action.setEnabled(enable);
+        }
+        
+        Component comp = UIRegistry.get(nameStr);
+        if (comp instanceof JCheckBoxMenuItem)
+        {
+            ((JCheckBoxMenuItem)comp).setEnabled(enable);
+            if (selected != null)
+            {
+                ((JCheckBoxMenuItem)comp).setSelected(selected);
+            }
+            
+        } else if (comp instanceof JMenuItem)
+        {
+            ((JMenuItem)comp).setEnabled(enable);
+        }
+    }
+
+
     
     //-----------------------------------------------------------------
     //-- Inner Classes

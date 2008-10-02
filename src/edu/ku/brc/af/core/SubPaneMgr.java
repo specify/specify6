@@ -283,6 +283,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         {
             //log.warn("Couldn't find Pane ["+oldPane.getPaneName()+"]");
             addPane(newPane);
+            notifyListeners(NotificationType.Added, newPane);
             return newPane;
         }
         
@@ -294,6 +295,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         
         if (panes.get(oldPane.getPaneName()) != null)
         {
+            notifyListeners(NotificationType.Added, newPane);
+            
             this.insertTab(newPane.getPaneName(), newPane.getIcon(), newPane.getUIComponent(), null, index);
             
             String title = buildUniqueName(newPane.getPaneName());
@@ -411,7 +414,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 {
                     this.removeTabAt(inx);
                 }
-                //pane.getUIComponent().setVisible(false);
+                pane.getUIComponent().setVisible(false);
                 
             } catch (ArrayIndexOutOfBoundsException ex)
             {
@@ -835,6 +838,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             if (type == NotificationType.Added)
             {
                 l.subPaneAdded(subPane);
+                
             } else if (type == NotificationType.Removed)
             {
                 l.subPaneRemoved(subPane);

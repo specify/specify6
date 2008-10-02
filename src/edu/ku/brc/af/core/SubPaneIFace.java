@@ -39,77 +39,77 @@ public interface SubPaneIFace
      * Returns the name of the sub pane.
      * @return Returns the name of the sub pane
      */
-    public String getPaneName();
+    public abstract String getPaneName();
 
     /**
      * Sets a name.
      * @param name the new name
      */
-    public void setPaneName(String name);
+    public abstract void setPaneName(String name);
 
     /**
      * Returns the title.
      * @return the title
      */
-    public String getTitle();
+    public abstract String getTitle();
 
     /**
      * Returns the small icon used in the tab.
      * @return the small icon used in the tab
      */
-    public Icon getIcon();
+    public abstract Icon getIcon();
 
     /**
-     * Returns the UI component of the pane.
+    public abstract abstract rns the UI component of the pane.
      * @return the UI component of the pane
      */
-    public JComponent getUIComponent();
+    public abstract JComponent getUIComponent();
     
     /**
      * Returns the UI component of the pane.
      * @return the UI component of the pane
      */
-    public Component getFirstFocusable();
+    public abstract Component getFirstFocusable();
     
     /**
      * Returns the MultiView for the SubPane (may return null).
      * @return the MultiView for the SubPane (may return null).
      */
-    public MultiView getMultiView();
+    public abstract MultiView getMultiView();
 
     /**
      * Returns the task who owns this pane (needed for context).
      * @return the task who owns this pane (needed for context)
      */
-    public Taskable getTask();
+    public abstract Taskable getTask();
 
     /**
-     * Returns the recordset contained in this panel, it may return null.
-     * @return the recordset contained in this panel, it may return null.
+     * Returns the RecordSet contained in this panel, it may return null.
+     * @return the RecordSet contained in this panel, it may return null.
      */
-    public RecordSetIFace getRecordSet();
+    public abstract RecordSetIFace getRecordSet();
 
     /**
      * Tells the SubPane that it is about to be shown or hidden.
      * @param show true = show, false hide
      */
-    public void showingPane(boolean show);
+    public abstract void showingPane(boolean show);
     
     /**
-     * Returns the string of the Jaba Help target that should be displayed.
-     * @return the string of the Jaba Help target that should be displayed.
+     * Returns the string of the Java Help target that should be displayed.
+     * @return the string of the Java Help target that should be displayed.
      */
-    public String getHelpTarget();
+    public abstract String getHelpTarget();
 
     /**
      * Tells the panel it is about to be closed and destroyed and it can return "false" if it wats the processed stopped.
-     * @return true means it was shutdwon correctly, false means the shutdown process stop if it can
+     * @return true means it was shutdown correctly, false means the shutdown process stop if it can
      */
-    public boolean aboutToShutdown();
+    public abstract boolean aboutToShutdown();
 
     /**
      * Tells the panel it is being closed and destroyed
      */
-    public void shutdown();
+    public abstract void shutdown();
 
  }

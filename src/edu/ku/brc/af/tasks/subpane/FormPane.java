@@ -49,6 +49,7 @@ public class FormPane extends DroppableTaskPane
     
     protected boolean        isNewObj;
     protected boolean        firstTimeShown = true;
+    protected boolean        isShuttingDown = false;
 
     /**
      * Creates a form pane for a task.
@@ -139,14 +140,16 @@ public class FormPane extends DroppableTaskPane
      * @see javax.swing.JComponent#setVisible(boolean)
      */
     @Override
-    public void setVisible(boolean visible)
+    public void setVisible(final boolean visible)
     {
         boolean isVis = super.isVisible();
         if (isVis != visible)
         {
             super.setVisible(visible);
             
-            if (multiView != null)
+            // NOTE: On the Mac (at least) when the tab is removed it get visibility set to true
+            // before being removed and the SubPaneMgr has to manually call setVisible(false)
+            if (multiView != null && ((isShuttingDown && !visible) || !isShuttingDown))
             {
                 multiView.aboutToShow(visible);
                 
@@ -521,15 +524,16 @@ public class FormPane extends DroppableTaskPane
     @Override
     public boolean aboutToShutdown()
     {
+        isShuttingDown = true;
         if (multiView != null)
         {
             FormViewObj formViewObj = multiView.getCurrentViewAsFormViewObj();
             if (formViewObj != null)
             {
-                return formViewObj.isDataCompleteAndValid(true);
+                isShuttingDown = formViewObj.isDataCompleteAndValid(true);
             }
         }
-        return true;
+        return isShuttingDown;
     }
 
     /* (non-Javadoc)

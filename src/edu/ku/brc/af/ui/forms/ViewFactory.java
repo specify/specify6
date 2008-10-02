@@ -1574,7 +1574,7 @@ public class ViewFactory
                             
                             Color bgColor = getBackgroundColor(props, parent.getBackground());
                             
-                            log.debug(cellSubView.getName()+"  "+UIHelper.getProperty(props, "addsearch", false));
+                            //log.debug(cellSubView.getName()+"  "+UIHelper.getProperty(props, "addsearch", false));
                             if (UIHelper.getProperty(props, "addsearch", false))
                             {
                                 options |= MultiView.ADD_SEARCH_BTN;

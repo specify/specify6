@@ -252,6 +252,9 @@ public interface Viewable
      */
     public abstract boolean isDataCompleteAndValid(boolean throwAwayOnDiscard);
     
+    /**
+     * @return
+     */
     public abstract JComponent getControllerPanel();
     
     /**
@@ -261,6 +264,8 @@ public interface Viewable
 
     /**
      * Tells the Viewable that it is being shutdown and it should cleanup.
+     * Sometimes this is called asynchronously by being dispatched onto the 
+     * UI Event thread and sometimes not.
      */
     public abstract void shutdown();
 

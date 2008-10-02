@@ -17,6 +17,7 @@ package edu.ku.brc.af.ui.forms;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
+import static edu.ku.brc.ui.UIRegistry.enableActionAndMenu;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
@@ -746,7 +747,7 @@ public class FormViewObj implements Viewable,
     public void setDoCarryForward(boolean doCarryForward)
     {
         this.doCarryForward = doCarryForward;
-        adjustCarryForwardUI();
+        adjustActionsAndMenus(true);
     }
     
     /**
@@ -763,34 +764,19 @@ public class FormViewObj implements Viewable,
     
     /**
      * Adjust the Action and MenuItem for CarryForward.
+     * @param isVisible whether is is visible
      */
-    private void adjustCarryForwardUI()
+    private void adjustActionsAndMenus(final boolean isVisible)
     {
-        // Now Adjust Carry Forward for the form
-        Action action = UIRegistry.getAction("CarryForward");
-        if (action != null)
-        {
-            action.setEnabled(isCarryForwardConfgured());
-        }
+        boolean isConfiged = isCarryForwardConfgured() && isVisible;
+        enableActionAndMenu("CarryForward", isConfiged, isConfiged);
         
-        Component comp = UIRegistry.get("CarryForward");
-        if (comp instanceof JCheckBoxMenuItem)
-        {
-            ((JCheckBoxMenuItem)comp).setSelected(isCarryForwardConfgured() && isDoCarryForward());
-        }
+        enableActionAndMenu("ConfigCarryForward", isVisible, null);
         
-        // Now Adjust AutoNumbering for the form
-        action = UIRegistry.getAction("AutoNumbering");
-        if (action != null)
-        {
-            action.setEnabled(isAutoNumberOn() && isEditing);
-        }
+        boolean doAutoNum = isAutoNumberOn() && isEditing && isVisible;
+        enableActionAndMenu("AutoNumbering", doAutoNum, doAutoNum);
         
-        comp = UIRegistry.get("AutoNumbering");
-        if (comp instanceof JCheckBoxMenuItem)
-        {
-            ((JCheckBoxMenuItem)comp).setSelected(isAutoNumberOn());
-        }
+        enableActionAndMenu("SaveAndNew", isVisible, null);
     }
     
     /**
@@ -1139,20 +1125,25 @@ public class FormViewObj implements Viewable,
             mv.aboutToShow(show);
         }
         
-        if (mvParent != null && mvParent.isTopLevel())
+        if (mvParent != null && mvParent.isTopLevel() && isEditing)
         {
-            adjustSaveAndNewUI(show);
-            
-            adjustCarryForwardUI();
-            
-            Action action = UIRegistry.getAction("ConfigCarryForward");
-            if (action != null)
+            if (show)
             {
-                action.setEnabled(show && isEditing);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        log.error(hashCode()+"  "+show);
+                        adjustActionsAndMenus(true);
+                    }
+                });
+            } else
+            {
+                log.error(hashCode()+"  "+show);
+                adjustActionsAndMenus(false);
             }
-            
         }
-        
+
         // Moving this to the MultiView
         /*if (show)
         {
@@ -1167,17 +1158,6 @@ public class FormViewObj implements Viewable,
      */
     private void adjustSaveAndNewUI(final boolean show)
     {
-        Action action = UIRegistry.getAction("SaveAndNew");
-        if (action != null)
-        {
-            action.setEnabled(show);
-        }
-        
-        Component comp = UIRegistry.get("SaveAndNew");
-        if (comp instanceof JCheckBoxMenuItem)
-        {
-            ((JCheckBoxMenuItem)comp).setSelected(saveAndNew);
-        } 
     }
 
     /* (non-Javadoc)
@@ -4981,7 +4961,7 @@ public class FormViewObj implements Viewable,
     {
         focusFirstFormControl();
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#shutdown()
      */
