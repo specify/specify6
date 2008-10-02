@@ -584,7 +584,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         } else
         {
             DBFieldInfo fi = (DBFieldInfo)item;
-            if (fi.getDataClass() == String.class)
+            if (fi != null && fi.getDataClass() == String.class)
             {
                 String ts      = fi.getType();
                 String typeStr = ts.indexOf('.') > -1 ? StringUtils.substringAfterLast(fi.getType(), ".") : ts;
@@ -844,7 +844,12 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         currContainer = container;
         currJListItem = jListContainerItem;
         
-        tableInfo = currContainer == null ? null : DBTableIdMgr.getInstance().getInfoByTableName(currContainer.getName());
+        String cName = currContainer.getName();
+        if (cName.equals("taxononly"))
+        {
+            cName = "taxon";
+        }
+        tableInfo = currContainer == null ? null : DBTableIdMgr.getInstance().getInfoByTableName(cName);
         
         fillFieldList();
     }
@@ -1236,7 +1241,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         }
         
         LocalizableItemIFace fld = getSelectedFieldItem();
-        if (fld != null)
+        if (fld != null && tableInfo != null)
         {
             fieldInfo = fld != null ? tableInfo.getFieldByName(fld.getName()) : null;
             relInfo   = fieldInfo == null ? tableInfo.getRelationshipByName(fld.getName()) : null;
@@ -1401,7 +1406,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                             fieldReqChk.setSelected(ri.isRequired());
                         } else
                         {
-                            throw new RuntimeException("couldn't find field or relationship.");
+                            //throw new RuntimeException("couldn't find field or relationship.");
                         }
                     }
                 }
@@ -1530,7 +1535,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFaceListener#containterRetrieved(edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace)
      */
-    public void containterRetrieved(LocalizableContainerIFace container)
+    public void containterRetrieved(final LocalizableContainerIFace container)
     {
         if (container != null)
         {
