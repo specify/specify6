@@ -31,6 +31,7 @@ import edu.ku.brc.ui.UIHelper;
  * Aug 5, 2008
  *
  */
+@SuppressWarnings("serial")
 public class EditorPanel extends JPanel implements ChangeListener, 
                                                    DataChangeListener
 {

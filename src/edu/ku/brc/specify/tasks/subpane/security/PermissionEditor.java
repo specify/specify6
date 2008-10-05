@@ -44,6 +44,7 @@ import edu.ku.brc.util.ComparatorByStringRepresentation;
  * @author Ricardo
  *
  */
+@SuppressWarnings("serial")
 public class PermissionEditor 
 {
     private static final Logger log = Logger.getLogger(PermissionEditor.class);

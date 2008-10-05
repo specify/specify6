@@ -38,6 +38,7 @@ import edu.ku.brc.ui.UIHelper;
  * Created Date: Sep 10, 2008
  *
  */
+@SuppressWarnings("serial")
 public class SecuritySummaryDlg extends CustomDialog
 {
     /**

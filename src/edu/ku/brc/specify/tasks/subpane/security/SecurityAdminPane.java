@@ -16,10 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,13 +25,11 @@ import java.util.regex.PatternSyntaxException;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -61,7 +57,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.SecurityMgr;
-import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.af.ui.SearchBox;
@@ -104,7 +99,7 @@ public class SecurityAdminPane extends BaseSubPane
     private AdminInfoSubPanelWrapper                    currentDisplayPanel = null;
     private EditorPanel                                 currentEditorPanel  = null;
     private String                                      currentTitle        = null;
-    private JAutoCompTextField                          searchText; 
+    private JAutoCompTextField                          searchText;
 
     private JButton[] navToolbarBtns;
     private JButton delBtn;
@@ -112,6 +107,10 @@ public class SecurityAdminPane extends BaseSubPane
     private JButton addCollBtn;
     private JButton addGrpBtn;
     private JButton addUserBtn;
+    
+    // manages creation and deletion of items on the navigation tree
+    private NavigationTreeMgr navTreeMgr;
+
     
     private boolean hasPermissionToAdd    = false;
     private boolean hasPermissionToModify = false;
@@ -249,174 +248,39 @@ public class SecurityAdminPane extends BaseSubPane
      * Adds a new discipline to the selected institution in the table model.
      * Also adds an anonymous division as the parent of the discipline.
      */
-    public void addDiscipline()
+    private void addDiscipline()
     {
         // get parent institution from tree selection
-        DefaultMutableTreeNode instNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-
-        if (instNode == null || !(instNode.getUserObject() instanceof DataModelObjBaseWrapper))
-        {
-            // Nothing is selected or object type isn't relevant    
-            return;
-        }
-
-        DataModelObjBaseWrapper instWrp  = (DataModelObjBaseWrapper) (instNode.getUserObject());
-        if (!instWrp.isInstitution())
-        {
-            // selection isn't an institution
-            return;
-        }
-        
-        Institution institution = (Institution) instWrp.getDataObj();
-        Division    division    = new Division();
-        Discipline  discipline  = new Discipline();
-        
-        division.initialize();
-        discipline.initialize();
-        
-        division.setInstitution(institution);
-        discipline.setDivision(division);
-        
-        division.setName("Anonymous Division");
-        discipline.setName("New Discipline");
-        
-        // The commented lines below insert a division into the tree with the discipline
-        // It's there for reference only
-        
-        //DataModelObjBaseWrapper divWrp  = new DataModelObjBaseWrapper(division);
-        DataModelObjBaseWrapper discWrp = new DataModelObjBaseWrapper(discipline);
-        
-        //DefaultMutableTreeNode divNode  = new DefaultMutableTreeNode(divWrp);
-        DefaultMutableTreeNode discNode = new DefaultMutableTreeNode(discWrp);
-        
-        DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-        //model.insertNodeInto(divNode,  instNode, instNode.getChildCount());
-        //model.insertNodeInto(discNode, divNode,  divNode.getChildCount());
-        model.insertNodeInto(discNode, instNode,  instNode.getChildCount());
-        
-        tree.setSelectionPath(new TreePath(discNode.getPath()));
+        navTreeMgr.addNewDiscipline((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
     }
 
     /**
      * Adds a new collection to the selected discipline in the table model. 
      */
-    public void addCollection()
+    private void addCollection()
     {
         // get parent institution from tree selection
-        DefaultMutableTreeNode discNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-
-        if (discNode == null || !(discNode.getUserObject() instanceof DataModelObjBaseWrapper))
-            // Nothing is selected or object type isn't relevant    
-            return;
-
-        DataModelObjBaseWrapper discWrp  = (DataModelObjBaseWrapper) (discNode.getUserObject());
-        if (!discWrp.isDiscipline())
-            // selection isn't a discipline
-            return;
-        
-        Discipline discipline = (Discipline) discWrp.getDataObj();
-        Collection collection = new Collection();
-        collection.initialize();
-        collection.setDiscipline(discipline);
-        collection.setCollectionName("New Collection");
-        DataModelObjBaseWrapper collWrp  = new DataModelObjBaseWrapper(collection);
-        DefaultMutableTreeNode  collNode = new DefaultMutableTreeNode(collWrp);
-        
-        DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-        model.insertNodeInto(collNode, discNode, discNode.getChildCount());
-        
-        tree.setSelectionPath(new TreePath(collNode.getPath()));
+        navTreeMgr.addNewCollection((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
     }
 
     /**
      * Adds a new user to the selected group in the table model. 
      */
-    public void addUser()
+    private void addUser()
     {
-        // get parent institution from tree selection
-        DefaultMutableTreeNode grpNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-
-        if (grpNode == null || !(grpNode.getUserObject() instanceof DataModelObjBaseWrapper))
-            // Nothing is selected or object type isn't relevant    
-            return;
-
-        DataModelObjBaseWrapper parentWrp  = (DataModelObjBaseWrapper) (grpNode.getUserObject());
-        if (!parentWrp.isGroup())
-            // selection isn't a suitable parent for a group
-            return;
-        
-        SpPrincipal group = (SpPrincipal) parentWrp.getDataObj();
-        SpecifyUser user = new SpecifyUser();
-        user.initialize();
-        Set<SpecifyUser> usersFromGroup = group.getSpecifyUsers();
-        if (usersFromGroup == null) {
-            usersFromGroup = new HashSet<SpecifyUser>();
-        }
-        usersFromGroup.add(user);
-        user.setName("New User");
-        DataModelObjBaseWrapper userWrp  = new DataModelObjBaseWrapper(group);
-        DefaultMutableTreeNode  userNode = new DefaultMutableTreeNode(userWrp);
-        
-        DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-        model.insertNodeInto(userNode, grpNode, grpNode.getChildCount());
-        
-        tree.setSelectionPath(new TreePath(userNode.getPath()));
+        // get parent group node from tree selection and add user to it
+        navTreeMgr.addNewUser((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
     }
     
     /**
      * Adds a new group to the selected institution, discipline, or collection in the table model. 
      */
-    public void addGroup()
+    private void addGroup()
     {
         // get parent (scope) of the group from tree selection
-        DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-
-        if (parentNode == null || !(parentNode.getUserObject() instanceof DataModelObjBaseWrapper))
-            // Nothing is selected or object type isn't relevant    
-            return;
-
-        DataModelObjBaseWrapper parentWrp  = (DataModelObjBaseWrapper) (parentNode.getUserObject());
-        if (!parentWrp.isInstitution() && !parentWrp.isDiscipline() && !parentWrp.isCollection())
-            // selection isn't a suitable parent for a group
-            return;
-        
-        UserGroupScope scope = (UserGroupScope) parentWrp.getDataObj();
-        SpPrincipal group = new SpPrincipal();
-        group.initialize();
-        group.setGroupSubClass(GroupPrincipal.class.getCanonicalName());
-        group.setScope(scope);
-        group.setName("New Group");
-        DataModelObjBaseWrapper grpWrp  = new DataModelObjBaseWrapper(group);
-        DefaultMutableTreeNode  grpNode = new DefaultMutableTreeNode(grpWrp);
-        
-        DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-        model.insertNodeInto(grpNode, parentNode, parentNode.getChildCount());
-        
-        tree.setSelectionPath(new TreePath(grpNode.getPath()));
+        navTreeMgr.addNewGroup((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
     }
     
-    public JList createUserList()
-    {
-        DefaultListModel listModel = new DefaultListModel();
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            List<SpecifyUser> users = session.getDataList(SpecifyUser.class);
-            for (SpecifyUser user : users)
-            {
-                listModel.addElement(user);
-            }
-        } 
-        finally
-        {
-            session.close();
-        }
-        
-        JList userList = new JList(listModel);
-        
-        return userList;
-    }
-            
     private void createNavigationTree()
     {
         TreeSelectionListener tsl = new TreeSelectionListener()
@@ -456,6 +320,12 @@ public class SecurityAdminPane extends BaseSubPane
         tree.setRootVisible(false);
         tree.setCellRenderer(new MyTreeCellRenderer());
         tree.addTreeSelectionListener(tsl);
+        
+        navTreeMgr = new NavigationTreeMgr(tree);
+        
+        // create object that will control the creation of popups
+        // constructor will take care of hooking up right listeners to the tree.
+        new NavigationTreeContextMenuMgr(navTreeMgr);
         
         IconManager.IconSize iconSize = IconManager.IconSize.Std20;
         ImageIcon sysIcon = IconManager.getIcon("SystemSetup", iconSize);
@@ -613,26 +483,27 @@ public class SecurityAdminPane extends BaseSubPane
     private JPanel createFullTreeNavPanel()
     {
         createNavigationTree();
-        JList userList = createUserList();
+        //JList userList = createUserList();
         
         JPanel addDeleteNavToolbarPanel = createAddDeleteNavToolbarPanel();
         
         String helpStr = "<html>To add an existing user to a group, just " +
-                "drag the user from this list and drop it into the appropriate " +
-                "group on the list above.</html>"; // I18N
+                "right-click on the group and choose 'add existing user' " +
+                "and select the user to add.</html>"; // I18N
         JLabel userDnDHelp = UIHelper.createLabel(helpStr);
         
         // adding the tree as f:p:g makes it grow too large
-        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("min(210px;p):g", "min(310px;p),p,15px,p,p,p")/*, new FormDebugPanel()*/);
+        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("min(210px;p):g", 
+                "min(500px;p),p,15px,p,p,p")/*, new FormDebugPanel()*/);
         final CellConstraints cc = new CellConstraints();
         
         JScrollPane sp = new JScrollPane(tree, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         mainPB.add(sp,                        cc.xy(1, 1));
         mainPB.add(addDeleteNavToolbarPanel,  cc.xy(1, 2));
-        mainPB.addSeparator("Users",          cc.xy(1, 4)); // I18N
-        
-        sp = new JScrollPane(userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        mainPB.add(sp,                        cc.xy(1, 5));
+//        mainPB.addSeparator("Users",          cc.xy(1, 4)); // I18N
+//        
+//        sp = new JScrollPane(userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+//        mainPB.add(sp,                        cc.xy(1, 5));
         mainPB.add(userDnDHelp,               cc.xy(1, 6));
 
         return mainPB.getPanel();
