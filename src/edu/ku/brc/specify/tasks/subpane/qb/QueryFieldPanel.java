@@ -900,17 +900,20 @@ public class QueryFieldPanel extends JPanel
         isNotCheckbox.addFocusListener(focusListener);
         operatorCBX = createComboBox(comparators);
         operatorCBX.addFocusListener(focusListener);
-        operatorCBX.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e)
-            {
-                if (e.getStateChange() == ItemEvent.SELECTED)
+        boolean isBool = fieldQRI != null && fieldQRI.getDataClass().equals(Boolean.class);
+        if (!isBool)
+        {
+            operatorCBX.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e)
                 {
-                    criteria.setVisible(!operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.EMPTY));
+                    if (e.getStateChange() == ItemEvent.SELECTED)
+                    {
+                        criteria.setVisible(!operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.EMPTY));
+                    }
                 }
-            }
-        });
-        
+            });
+        }
         if (pickList == null)
         {
             criteria = createTextField();
@@ -1033,7 +1036,7 @@ public class QueryFieldPanel extends JPanel
         boolean isRel = fieldQRI != null && fieldQRI instanceof RelQRI;
         isNotCheckbox.setVisible(!isRel);
         operatorCBX.setVisible(!isRel);
-        criteria.setVisible(!isRel);
+        criteria.setVisible(!isRel && !isBool);
         this.sortCheckbox.setVisible(!isRel);
         if (!ownerQuery.isPromptMode())
         {
