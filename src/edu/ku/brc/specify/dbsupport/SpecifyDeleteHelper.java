@@ -28,8 +28,11 @@ import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.Treeable;
 
 /**
  * @author rod
@@ -43,8 +46,12 @@ public class SpecifyDeleteHelper
 {
     protected boolean debug       = false;
     protected boolean debugUpdate = true;
+    protected boolean doTrees     = true;
+
     protected Integer totalCount = null;
     protected int     counter    = 0;
+    
+    protected Connection connection;
     
     /**
      * 
@@ -53,20 +60,26 @@ public class SpecifyDeleteHelper
     {
         super();
         
-        DBConnection dbConn = DBConnection.createInstance("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", "testfish", "jdbc:mysql://localhost/testfish", "Specify", "Specify");
-        Connection conn = null;
-        conn = dbConn.createConnection();
+        DBConnection dbConn = DBConnection.createInstance("com.mysql.jdbc.Driver", 
+                                                          "org.hibernate.dialect.MySQLDialect", 
+                                                          "testfish", 
+                                                          "jdbc:mysql://localhost/testfish", 
+                                                          "Specify", 
+                                                          "Specify");
+        connection = dbConn.createConnection();
 
         try
         {
-            delRecordFromTable(conn, Discipline.class, 3);
+            delRecordFromTable(Discipline.class, 3);
+            
+            checkTables();
             
         } catch (SQLException ex)
         {
             ex.printStackTrace();
             try
             {
-                conn.rollback();
+                connection.rollback();
             } catch (SQLException ex2)
             {
                 ex.printStackTrace();
@@ -76,9 +89,9 @@ public class SpecifyDeleteHelper
         {
             try
             {
-                if (conn != null)
+                if (connection != null)
                 {
-                    conn.close();
+                    connection.close();
                 }
             } catch (SQLException ex)
             {
@@ -89,14 +102,12 @@ public class SpecifyDeleteHelper
 
     
     /**
-     * @param conn
-     * @param tableInfo
+     * @param cls
      * @param id
      * @return
      * @throws SQLException
      */
-    public boolean delRecordFromTable(final Connection  conn, 
-                                      final Class<?>    cls, 
+    public boolean delRecordFromTable(final Class<?>    cls, 
                                       final int         id) throws SQLException
     {
         StackItem root = new StackItem(null, null, null);
@@ -106,7 +117,7 @@ public class SpecifyDeleteHelper
         String sqlStr = "SELECT "+tblInfo.getIdColumnName()+" FROM "+ tblInfo.getName() + " WHERE " +tblInfo.getIdColumnName()+" = ";
         String delStr = "DELETE FROM "+ tblInfo.getName() + " WHERE " +tblInfo.getIdColumnName()+" = ";
         
-        getSubTables(root, cls, sqlStr, delStr, id);
+        getSubTables(root, cls, id, sqlStr, delStr, 0);
         
         if (debug)
         {
@@ -114,16 +125,16 @@ public class SpecifyDeleteHelper
             dumpStack(root, 0);
         }
         
-        boolean isAutoCommit = conn.getAutoCommit();
+        boolean isAutoCommit = connection.getAutoCommit();
         
-        conn.setAutoCommit(false);
+        connection.setAutoCommit(false);
 
-        Statement stmt = conn.createStatement();
+        Statement stmt = connection.createStatement();
         if (stmt != null)
         {
             for (StackItem si : root.getStack())
             {
-                showIds(si, 0, id, conn, stmt, false);
+                deleteRecords(si, 0, id, stmt, false);
             }
             
             if (debug) System.out.println("Count: "+counter);
@@ -134,14 +145,14 @@ public class SpecifyDeleteHelper
                 counter = 0;
                 for (StackItem si : root.getStack())
                 {
-                    showIds(si, 0, id, conn, stmt, true);
+                    deleteRecords(si, 0, id, stmt, true);
                 }
             }
             stmt.close();
                 
-            conn.commit();
+            connection.commit();
             
-            conn.setAutoCommit(isAutoCommit);
+            connection.setAutoCommit(isAutoCommit);
             
             return true;            
         }
@@ -166,11 +177,12 @@ public class SpecifyDeleteHelper
      * @param delSqlStr
      * @param level
      */
-    protected void getSubTables(final StackItem parent,
-                                final Class<?>  cls, 
-                                final String    sqlStr,
-                                final String    delSqlStr,
-                                final int       level)
+    protected StackItem getSubTables(final StackItem parent,
+                                     final Class<?>  cls, 
+                                     final int       id,
+                                     final String    sqlStr,
+                                     final String    delSqlStr,
+                                     final int       level)
     {
         if (debug)
         {
@@ -184,6 +196,13 @@ public class SpecifyDeleteHelper
         
         Hashtable<String, DBTableChildIFace> hash      = new Hashtable<String, DBTableChildIFace>();
         Hashtable<String, DBTableChildIFace> otherHash = new Hashtable<String, DBTableChildIFace>();
+        
+        
+        if (tblInfo.getTableId() == 4)
+        {
+            int x = 0;
+            x++;
+        }
         
         for (Method method : cls.getMethods())
         {
@@ -202,7 +221,13 @@ public class SpecifyDeleteHelper
                 continue;
             }
 
-            if (methodName.equals("getGeographyTreeDef") || methodName.equals("getTreeEntries"))
+            if (methodName.equals("getPickListItems"))
+            {
+                int x = 0;
+                x++;
+            }
+
+            if (StringUtils.contains(methodName, "TaxonCitation"))
             {
                 int x = 0;
                 x++;
@@ -210,33 +235,63 @@ public class SpecifyDeleteHelper
             
             if (methodName.endsWith("TreeDef"))
             {
-                String className      = methodName.substring(3, methodName.length()-7);
-                
-                //String tableName      = className.toLowerCase() + "treedef";
-                //String primaryKey     = className+"ID";
-
-                String tableNameTD      = className.toLowerCase() + "treedef";
-                String primaryKeyTD     = className+"TreeDefID";
-                
-                String itemTableNameTDI  = className.toLowerCase() + "treedefitem";
-                //String primaryKeyTDI    = className+"TreeDefItemID";
-
-                String sql;
-                String delSql;
-                
-                
-                sql    = "SELECT "+primaryKeyTD+" FROM "+tblInfo.getName() + " WHERE "+tblInfo.getIdColumnName()+" = ";
-                delSql = "DELETE FROM "+className.toLowerCase() + " WHERE "+primaryKeyTD+" = XXX order by "+className+"ID desc";
-                child.pushPPS(new StackItem(null, sql, delSql));
-                
-                sql    = "SELECT "+primaryKeyTD+" FROM "+tblInfo.getName() + " WHERE "+tblInfo.getIdColumnName()+" = ";
-                delSql = "DELETE FROM "+tableNameTD + " WHERE "+primaryKeyTD+" = ";
-                child.pushPPS(new StackItem(null, sql, delSql));
-                
-                sql    = "SELECT "+primaryKeyTD+" FROM "+tblInfo.getName() + " WHERE "+tblInfo.getIdColumnName()+" = ";
-                delSql = "DELETE FROM "+itemTableNameTDI + " WHERE "+primaryKeyTD+" = ";
-                child.pushPPS(new StackItem(null, sql, delSql));
-
+                if (doTrees)
+                {
+                    String className = methodName.substring(3, methodName.length()-7);
+                    
+                    //String tableName      = className.toLowerCase() + "treedef";
+                    //String primaryKey     = className+"ID";
+    
+                    String tableNameTD      = className.toLowerCase() + "treedef";
+                    String primaryKeyTD     = className+"TreeDefID";
+                    
+                    String itemTableNameTDI  = className.toLowerCase() + "treedefitem";
+                    //String primaryKeyTDI    = className+"TreeDefItemID";
+    
+                    String sql;
+                    String delSql;
+                    
+                    try
+                    {
+                        sql    = "SELECT "+primaryKeyTD+" FROM "+tblInfo.getName() + " WHERE "+tblInfo.getIdColumnName()+" = "+id;
+                        Vector<Integer> ids = getIds(sql, level);
+                        if (ids != null && ids.size() > 0)
+                        {
+                            Class<?> treeClass = null;
+                            try
+                            {
+                                treeClass = Class.forName("edu.ku.brc.specify.datamodel."+className);
+                            } catch (Exception ex)
+                            {
+                                ex.printStackTrace();
+                            }
+                            if (treeClass == cls)
+                            {
+                                return null;
+                            }
+                            
+                            if (treeClass == Taxon.class)
+                            {
+                                String tmpSql = "SELECT tc.TaxonCitationID FROM taxoncitation tc INNER JOIN taxon tx ON tc.TaxonID = tx.TaxonID INNER JOIN taxontreedef ttd ON tx.TaxonTreeDefID = ttd.TaxonTreeDefID = "+ids.get(0);
+                                delSql = "DELETE FROM taxoncitation WHERE TaxonCitationID = ";
+                                child.pushPPS(new StackItem(null, tmpSql, delSql, false, true));
+                            }
+                            
+                            delSql = "DELETE FROM "+className.toLowerCase() + " WHERE "+primaryKeyTD+" = "+ids.get(0)+" ORDER BY AcceptedID DESC, ParentID DESC";
+                            child.pushPPS(new StackItem(null, sql, delSql, false, false));
+                            
+                            delSql = "DELETE FROM "+itemTableNameTDI + " WHERE "+primaryKeyTD+" = "+ids.get(0)+" ORDER BY RankID DESC";
+                            child.pushPPS(new StackItem(null, sql, delSql, false, false));
+                            
+                            delSql = "DELETE FROM "+tableNameTD + " WHERE "+primaryKeyTD+" = "+ids.get(0);
+                            child.pushPPS(new StackItem(null, sql, delSql, false, false));
+                        }
+                        
+                    } catch (SQLException ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
                 continue;
             }
 
@@ -253,7 +308,8 @@ public class SpecifyDeleteHelper
                         //doDel = true;
                     }
                 }
-                isOKToDel = !doDel ? isOKToDel(method) : true;
+                isOKToDel = !doDel ? method.isAnnotationPresent(edu.ku.brc.DeleteRelationship.class) : true;
+                isOKToDel = !isOKToDel ? isOKToDel(method) : true;
                 colName = tblInfo.getIdColumnName();
                 
             } else if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
@@ -267,7 +323,8 @@ public class SpecifyDeleteHelper
                         doDel = true;
                     }
                 }
-                isOKToDel = !doDel ? isOKToDel(method) : true;
+                isOKToDel = !doDel ? method.isAnnotationPresent(edu.ku.brc.DeleteRelationship.class) : true;
+                isOKToDel = !isOKToDel ? isOKToDel(method) : true;
                 if (isOKToDel)
                 {
                     javax.persistence.JoinColumn joinCol = (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class);
@@ -346,27 +403,40 @@ public class SpecifyDeleteHelper
                                   tblInfo.getAbbrev()+" ON "+ti.getAbbrev()+"."+ti.getIdColumnName()+" = "+tblInfo.getAbbrev()+"."+colName+
                                   "  WHERE "+tblInfo.getAbbrev()+"."+tblInfo.getIdColumnName()+" = ";
                         }
-                        String delSQL = "DELETE FROM "+ti.getName() + " WHERE "+ti.getIdColumnName()+" = ";
+                        String delSql = "DELETE FROM "+ti.getName() + " WHERE "+ti.getIdColumnName()+" = ";
                         
                         if (debug)
                         {
                             printLevel(level);
                             System.out.println(sql);
                             printLevel(level);
-                            System.out.println(delSQL);
+                            System.out.println(delSql);
                         }
                         
                         hash.put(relInfo.getClassName(), relInfo);
                         otherHash.put(relInfo.getDataClass().getSimpleName(), relInfo);
                         
-                        getSubTables(child, ti.getClassObj(), sql, delSQL, level+1);
+                        if (ti.getClassObj() != cls || (doTrees && !Treeable.class.isAssignableFrom(cls)))
+                        {
+                            getSubTables(child, ti.getClassObj(), id, sql, delSql, level+1);
+                        } else
+                        {
+                            System.err.println("Skipping "+ti.getClassObj().getSimpleName());
+                        }
                         
                     } else
                     {
                         String shortClassName = relInfo.getDataClass().getSimpleName();
                         String sql    = "SELECT "+shortClassName+"ID FROM "+shortClassName.toLowerCase() + " WHERE "+tblInfo.getClassObj().getSimpleName()+"ID = ";
                         String delSql = "DELETE FROM "+shortClassName.toLowerCase() + " WHERE "+shortClassName+"ID = ";
-                        child.push(null, sql, delSql);
+                        if (debug)
+                        {
+                            printLevel(level);
+                            System.out.println(sql);
+                            printLevel(level);
+                            System.out.println(delSql);
+                        }
+                        child.push(tblInfo, sql, delSql); // NOTE: the tblInfo is for the parent!
                     }
                 }
             }
@@ -374,10 +444,22 @@ public class SpecifyDeleteHelper
         
         for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
         {
+            if (ti.getTableId() == 75 && tblInfo.getTableId() == 4)
+            {
+                int x = 0;
+                x++;
+            }
             if (ti != tblInfo)
             {
                 for (DBRelationshipInfo ri : ti.getRelationships())
                 {
+                    /*System.out.println(ri.getName());
+                    if (ri.getDataClass() == Taxon.class)
+                    {
+                        int x = 0;
+                        x++;
+                    }*/
+
                     if (ri.getDataClass() == tblInfo.getClassObj() && StringUtils.isEmpty(ri.getOtherSide()))
                     {
                         String sql    = "SELECT "+ti.getIdColumnName()+ " FROM "+ti.getName() + "  WHERE " + ri.getColName() + " = ";
@@ -391,7 +473,7 @@ public class SpecifyDeleteHelper
                             System.out.println(sql);
                         }
                         
-                        getSubTables(child, ti.getClassObj(), sql, delSql, level+1);
+                        getSubTables(child, ti.getClassObj(), id, sql, delSql, level+1);
                     }
                 }
             }
@@ -403,9 +485,10 @@ public class SpecifyDeleteHelper
         {
             String sql    = "SELECT DisciplineID FROM agent_discipline WHERE DisciplineID = ";
             String delSql = "DELETE FROM agent_discipline WHERE DisciplineID = ";
-            child.push(null, sql, delSql);
+            child.push(tblInfo, sql, delSql); // NOTE: tblInfo is of parent!
         }
 
+        return child;
     }
     
     /**
@@ -414,9 +497,9 @@ public class SpecifyDeleteHelper
      */
     protected boolean isOKToDel(final Method method)
     {
-            org.hibernate.annotations.Cascade hibCascade = (org.hibernate.annotations.Cascade)method.getAnnotation(org.hibernate.annotations.Cascade.class);
-            if (hibCascade != null)
-            {
+        org.hibernate.annotations.Cascade hibCascade = (org.hibernate.annotations.Cascade)method.getAnnotation(org.hibernate.annotations.Cascade.class);
+        if (hibCascade != null)
+        {
             boolean isAllOrDel = false;
             for (org.hibernate.annotations.CascadeType ct : hibCascade.value())
             {
@@ -456,20 +539,64 @@ public class SpecifyDeleteHelper
     }
     
     /**
+     * @param stmt
+     * @param sqlArg
+     * @param id
+     * @param level
+     * @return
+     * @throws SQLException
+     */
+    protected Vector<Integer> getIds(final String    sqlArg,
+                                     final int       level) throws SQLException
+    {
+        int             cnt = 0;
+        Vector<Integer> ids = null;
+        if (sqlArg != null)
+        {
+            ids = new Vector<Integer>();
+            
+            //if (debugUpdate) System.err.println(sqlArg);
+            
+            Statement stmt = connection.createStatement();
+            ResultSet rs   = stmt.executeQuery(sqlArg);
+            while (rs.next())
+            {
+                int rowId = rs.getInt(1);
+                ids.add(rowId);
+                
+                /*if (debugUpdate)
+                {
+                    printLevel(level);
+                    System.out.println("Deleting ID: "+rowId);
+                }*/
+                cnt++;
+            }
+            rs.close();
+            stmt.close();
+            counter += cnt;
+        }
+        return ids;
+    }
+    
+    /**
      * @param si
      * @param level
      * @param id
-     * @param conn
      * @param stmt
      * @throws SQLException
      */
-    protected void showIds(final StackItem si, 
-                           final int       level,
-                           final int       id, 
-                           final Connection conn,
-                           final Statement stmt,
-                           final boolean   doDeletes) throws SQLException
+    protected void deleteRecords(final StackItem si, 
+                                 final int       level,
+                                 final int       id, 
+                                 final Statement stmt,
+                                 final boolean   doDeletes) throws SQLException
     {
+        
+        if (!doTrees && (si.getTableInfo() == null || Treeable.class.isAssignableFrom(si.getTableInfo().getClassObj())))
+        {
+            return;
+        }
+        
         if (debugUpdate)
         {  
             printLevel(level);
@@ -478,12 +605,18 @@ public class SpecifyDeleteHelper
         }
         
         
+        if (StringUtils.contains(si.getDelSql(), "taxoncitation"))
+        {
+            int x = 0;
+            x++;
+        }
+        
         int             cnt = 0;
         Vector<Integer> ids = null;
-        if (si.getSql() != null)
+        if (si.getSql() != null && (si.isBuildingSQL() || si.isBuildingDelSQL()))
         {
             ids = new Vector<Integer>();
-            String sql = si.getSql() + Integer.toString(id);
+            String sql = si.isBuildingSQL() ? si.getSql() + Integer.toString(id) : si.getSql();
 
             if (debugUpdate) System.err.println(sql);
             
@@ -496,51 +629,70 @@ public class SpecifyDeleteHelper
                 if (debugUpdate)
                 {
                     printLevel(level);
-                    System.out.println("Deleting ID: "+rowId);
+                    System.out.println("Adding ID: "+rowId+"  "+(si.getTableInfo() != null ? si.getTableInfo().getName() : "N/A"));
                 }
                 
-                Statement statement = conn.createStatement();
+                Statement statement = connection.createStatement();
                 for (StackItem s : si.getStack())
                 {
-                   showIds(s, level+1, rowId, conn, statement, doDeletes);
+                   deleteRecords(s, level+1, rowId, statement, doDeletes);
                 }
                 statement.close();
                 cnt++;
             }
             rs.close();
             counter += cnt;
+            
+            if (debugUpdate)
+            {
+                //printLevel(level);
+                System.err.println("Items returned: "+cnt);
+            }
         }
+
         
         if (doDeletes)
         {
-            if (ids != null)
+            if (si.isBuildingDelSQL())
             {
-                if (cnt > 0)
+                if (ids != null)
                 {
-                    for (Integer itemId : ids)
+                    if (cnt > 0)
                     {
-                        String delSql = si.getDelSql() + itemId;
-                        if (StringUtils.contains(si.getDelSql(), "XXX"))
+                        for (Integer itemId : ids)
                         {
-                            delSql = StringUtils.replace(si.getDelSql(), "XXX", Integer.toString(itemId));
+                            String delSql = si.getDelSql() + itemId;
+                            if (StringUtils.contains(si.getDelSql(), "XXX"))
+                            {
+                                delSql = StringUtils.replace(si.getDelSql(), "XXX", Integer.toString(itemId));
+                            }
+                            if (debugUpdate) System.err.println(delSql);
+                            int count = stmt.executeUpdate(delSql);
+                            if (debugUpdate) System.err.println("Count: "+count);
                         }
-                        if (debugUpdate) System.err.println(delSql);
-                        int count = stmt.executeUpdate(delSql);
-                        if (debugUpdate) System.err.println("Count: "+count);
                     }
+                } else
+                {
+                    String delSql = si.getDelSql() + id;
+                    if (debugUpdate) System.err.println(delSql);
+                    
+                    int count = stmt.executeUpdate(delSql);
+                    if (debugUpdate) System.err.println("Count: "+count);
                 }
             } else
             {
-                String delSql = si.getDelSql() + id;
-                if (debugUpdate) System.err.println(delSql);
+                String delSql = si.getDelSql();
+                if (debugUpdate) System.err.println("*****: "+delSql);
                 
                 int count = stmt.executeUpdate(delSql);
-                if (debugUpdate) System.err.println("Count: "+count);
+                if (debugUpdate) System.err.println("Count: "+count); 
             }
-            
+                
             for (StackItem stckItm : si.getPostProcStack())
             {
-                showIds(stckItm, level+2, id, conn, stmt, true);
+
+                debugUpdate = true;
+                deleteRecords(stckItm, level+2, id, stmt, true);
             }
         }
         
@@ -554,6 +706,24 @@ public class SpecifyDeleteHelper
         {
             System.err.println(counter+" / "+totalCount);
         }
+    }
+    
+    protected void checkTables() throws SQLException
+    {
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery("show tables");
+        while (rs.next())
+        {
+            String tablename = rs.getString(1);
+            int count = BasicSQLUtils.getNumRecords("select count(*) FROM "+tablename, connection);
+            if (count > 0)
+            {
+                System.out.println(tablename+" "+count);
+            }
+        }
+        rs.close();
+        statement.close();
+            
     }
     
     /**
@@ -578,6 +748,8 @@ public class SpecifyDeleteHelper
         protected Stack<StackItem> postProcStack  = new Stack<StackItem>();
         protected String           sql;
         protected String           delSql;
+        protected boolean          isBuildingSQL;
+        protected boolean          isBuildingDelSQL;
         
         /**
          * @param tableInfo
@@ -585,12 +757,36 @@ public class SpecifyDeleteHelper
          */
         public StackItem(final DBTableInfo tableInfo, 
                          final String sql, 
-                         final String delSql)
+                         final String delSql,
+                         final boolean isBuildingSQL,
+                         final boolean isBuildingDelSQL)
         {
             super();
-            this.tableInfo = tableInfo;
-            this.sql       = sql;
-            this.delSql    = delSql;
+            this.tableInfo     = tableInfo;
+            this.sql           = sql;
+            this.delSql        = delSql;
+            this.isBuildingSQL = isBuildingSQL;
+            this.isBuildingDelSQL = isBuildingDelSQL;
+        }
+        
+        /**
+         * @param tableInfo
+         * @param sql
+         */
+        public StackItem(final DBTableInfo tableInfo, 
+                         final String sql, 
+                         final String delSql,
+                         final boolean isBuildingAllSQL)
+        {
+            this(tableInfo, sql, delSql, isBuildingAllSQL, isBuildingAllSQL);
+        }
+        
+        
+        public StackItem(final DBTableInfo tableInfo, 
+                         final String sql, 
+                         final String delSql)
+        {
+            this(tableInfo, sql, delSql, true);
         }
         
         public StackItem push(final DBTableInfo ti, final String sqlArg, final String delSqlArg)
@@ -598,6 +794,11 @@ public class SpecifyDeleteHelper
             StackItem si = new StackItem(ti, sqlArg, delSqlArg);
             stack.push(si);
             return si;
+        }
+        
+        public void removeChild(final StackItem child)
+        {
+            stack.remove(child);
         }
         
         public StackItem pushPPS(final StackItem si)
@@ -646,5 +847,38 @@ public class SpecifyDeleteHelper
             return postProcStack;
         }
 
+        /**
+         * @return the isBuildingSQL
+         */
+        public boolean isBuildingSQL()
+        {
+            return isBuildingSQL;
+        }
+
+        /**
+         * @return the isBuildingDelSQL
+         */
+        public boolean isBuildingDelSQL()
+        {
+            return isBuildingDelSQL;
+        }
+
+        /**
+         * @param isBuildingSQL the isBuildingSQL to set
+         */
+        public void setBuildingSQL(boolean isBuildingSQL)
+        {
+            this.isBuildingSQL = isBuildingSQL;
+        }
+
+        /**
+         * @param isBuildingSQL the isBuildingSQL to set
+         */
+        public void setBuildingDelSQL(boolean isBuildingDelSQL)
+        {
+            this.isBuildingDelSQL = isBuildingDelSQL;
+        }
+
+        
     }
 }
