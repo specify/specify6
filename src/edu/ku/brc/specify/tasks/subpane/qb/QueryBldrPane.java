@@ -340,6 +340,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         });
 
         addBtn = new JButton(IconManager.getImage("PlusSign", IconManager.IconSize.Std16));
+        addBtn.setEnabled(false);
         addBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
