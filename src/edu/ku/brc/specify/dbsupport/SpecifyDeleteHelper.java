@@ -308,8 +308,8 @@ public class SpecifyDeleteHelper
                         //doDel = true;
                     }
                 }
-                isOKToDel = !doDel ? method.isAnnotationPresent(edu.ku.brc.DeleteRelationship.class) : true;
-                isOKToDel = !isOKToDel ? isOKToDel(method) : true;
+                //isOKToDel = !doDel ? method.isAnnotationPresent(edu.ku.brc.DeleteRelationship.class) : true;
+                isOKToDel = !doDel ? isOKToDel(method) : true;
                 colName = tblInfo.getIdColumnName();
                 
             } else if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
@@ -323,8 +323,8 @@ public class SpecifyDeleteHelper
                         doDel = true;
                     }
                 }
-                isOKToDel = !doDel ? method.isAnnotationPresent(edu.ku.brc.DeleteRelationship.class) : true;
-                isOKToDel = !isOKToDel ? isOKToDel(method) : true;
+                //isOKToDel = !doDel ? method.isAnnotationPresent(edu.ku.brc.DeleteRelationship.class) : true;
+                isOKToDel = !doDel ? isOKToDel(method) : true;
                 if (isOKToDel)
                 {
                     javax.persistence.JoinColumn joinCol = (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class);
