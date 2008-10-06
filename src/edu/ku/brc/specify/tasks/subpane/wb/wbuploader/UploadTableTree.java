@@ -67,10 +67,10 @@ public class UploadTableTree extends UploadTable
 	 * @param required
 	 * @param rank
 	 */
-	public UploadTableTree(Table table, Table baseTable, UploadTableTree parent, boolean required, Integer rank,
+	public UploadTableTree(Uploader uploader, Table table, Table baseTable, UploadTableTree parent, boolean required, Integer rank,
                            String wbLevelName) 
 	{
-		super(table, null);
+		super(uploader, table, null);
         this.baseTable = baseTable;
 		this.parent = parent;
         if (this.parent != null)
@@ -386,7 +386,7 @@ public class UploadTableTree extends UploadTable
      */
     protected String getDefaultParentName()
     {
-        return Uploader.currentUpload.getIdentifier();
+        return uploader.getIdentifier();
     }
     
     /* (non-Javadoc)
@@ -470,11 +470,11 @@ public class UploadTableTree extends UploadTable
     {
         try
         {
-            return getTreeDefItem().getName() + "_" + Uploader.currentUpload.getIdentifier();
+            return getTreeDefItem().getName() + "_" + uploader.getIdentifier();
         }
         catch (UploaderException ux)
         {
-            return tblClass.getSimpleName() + "_" + Uploader.currentUpload.getIdentifier();
+            return tblClass.getSimpleName() + "_" + uploader.getIdentifier();
         }
     }
     

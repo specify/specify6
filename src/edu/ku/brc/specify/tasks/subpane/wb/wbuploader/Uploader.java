@@ -30,7 +30,6 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
@@ -44,10 +43,6 @@ import net.sf.jasperreports.engine.JRField;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -60,7 +55,6 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
@@ -384,7 +378,7 @@ public class Uploader implements ActionListener, KeyListener
                 boolean addIt = it == null;
                 if (addIt)
                 {
-                    it = new UploadTable(f.getField().getTable(), f.getRelationship());
+                    it = new UploadTable(this, f.getField().getTable(), f.getRelationship());
                     if (it != null) // ??
                     {
                         it.init();
@@ -699,7 +693,7 @@ public class Uploader implements ActionListener, KeyListener
             }
             if (genSpPresent)
             {
-                UploadTable det = new UploadTable(db.getSchema().getTable("Determination"), null);
+                UploadTable det = new UploadTable(this, db.getSchema().getTable("Determination"), null);
                 for (int seq = 0; seq < maxSeq; seq++)
                 {
                     UploadField fld = new UploadField(db.getSchema().getField("determination",
@@ -713,7 +707,7 @@ public class Uploader implements ActionListener, KeyListener
         }
         if (!cePresent && locPresent && coPresent)
         {
-            UploadTable ce = new UploadTable(db.getSchema().getTable("CollectingEvent"), null);
+            UploadTable ce = new UploadTable(this, db.getSchema().getTable("CollectingEvent"), null);
             ce.init();
             ce.addField(new UploadField(db.getSchema().getField("collectingevent",
                     "stationfieldnumber"), -1, null, null));
@@ -863,7 +857,7 @@ public class Uploader implements ActionListener, KeyListener
 
             // create UploadTable for new table
 
-            UploadTableTree it = new UploadTableTree(rankTbl, baseTbl, parentImpTbl, treeMap
+            UploadTableTree it = new UploadTableTree(this, rankTbl, baseTbl, parentImpTbl, treeMap
                     .getLevels().get(level).isRequired(), treeMap.getLevels().get(level)
                     .getRank(), treeMap.getLevels().get(level).getWbFldName());
             it.init();
@@ -1216,7 +1210,7 @@ public class Uploader implements ActionListener, KeyListener
                             getResourceString("WB_UPLOAD_VALIDATING") + " " + getResourceString("ERD_TABLE"), false);
                     for (UploadTable tbl : uploadTables)
                     {
-                        setCurrentOpProgress(++progress, false);
+                        setCurrentOpProgress(++progress);
                         issues.addAll(validateLengths(tbl));
                         issues.addAll(tbl.validateValues(uploadData));
                     }
@@ -1903,6 +1897,11 @@ public class Uploader implements ActionListener, KeyListener
         return opKiller;
     }
     
+    protected boolean indeterminateProgress = false;
+    protected boolean useAppStatBar = false;
+    protected int maxProgVal = 0;
+    protected int minProgVal = 0;
+    
     /**
      * @param min
      * @param max
@@ -1916,47 +1915,56 @@ public class Uploader implements ActionListener, KeyListener
                                    final int max,
                                    final boolean paintString,
                                    final String itemName,
-                                   final boolean useAppStatBar)
+                                   final boolean useAppProgress)
     {
         SwingUtilities.invokeLater(new Runnable() {
            public void run()
            {
-               if (mainPanel == null)
+               if (!useAppStatBar && mainPanel == null)
                {
                    log.error("UI does not exist.");
                    return;
                }
-               JProgressBar pb;
+               minProgVal = min;
+               maxProgVal = max;
+               indeterminateProgress = minProgVal == 0 && maxProgVal == 0;
+               useAppStatBar = useAppProgress;
                if (useAppStatBar)
                {
-                   pb = UIRegistry.getStatusBar().getProgressBar();
+                   if (indeterminateProgress)
+                   {
+                       UIRegistry.getStatusBar().setIndeterminate("UPLOADER", indeterminateProgress);
+                   }
+                   else
+                   {
+                       UIRegistry.getStatusBar().setProgressRange("UPLOADER", minProgVal, maxProgVal);
+                   }
                }
                else
                {
-                   pb = mainPanel.getCurrOpProgress();
-               }
-               pb.setVisible(true);
-               if (min == 0 && max == 0)
-               {
-                   pb.setIndeterminate(true);
-                   pb.setString("");
-               }
-               else
-               {
-                   if (pb.isIndeterminate())
+                   JProgressBar pb = mainPanel.getCurrOpProgress();
+                   pb.setVisible(true);
+                   if (indeterminateProgress)
                    {
-                       pb.setIndeterminate(false);
+                       pb.setIndeterminate(true);
+                       pb.setString("");
                    }
-                   pb.setStringPainted(paintString);
-                   if (paintString)
+                   else
                    {
-                       pb.setName(itemName);
-                   }
-                   pb.setMinimum(min);
-                   pb.setMaximum(max);
-                   pb.setValue(min);
+                       if (pb.isIndeterminate())
+                       {
+                           pb.setIndeterminate(false);
+                       }
+                       pb.setStringPainted(paintString);
+                       if (paintString)
+                       {
+                           pb.setName(itemName);
+                       }
+                       pb.setMinimum(minProgVal);
+                       pb.setMaximum(maxProgVal);
+                       pb.setValue(minProgVal);
+                   }}
                }
-           }
         });
     }
 
@@ -1965,7 +1973,7 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * Sets progress bar progress.
      */
-    protected void setCurrentOpProgress(final int val, final boolean useAppStatBar)
+    protected void setCurrentOpProgress(final int val)
     {
         SwingUtilities.invokeLater(new Runnable()
         {
@@ -1977,24 +1985,30 @@ public class Uploader implements ActionListener, KeyListener
                     log.error("UI does not exist.");
                     return;
                 }
-                JProgressBar pb;
-                if (useAppStatBar)
+                if (!indeterminateProgress)
                 {
-                    pb = UIRegistry.getStatusBar().getProgressBar();
-                }
-                else
-                {
-                    pb = mainPanel.getCurrOpProgress();
-                }
-                if (!pb.isIndeterminate())
-                {
-                    int newVal = val == -1 ? Math.min(pb.getValue()+1, pb.getMaximum()) : val;
-                    pb.setValue(newVal);
-                    if (pb.isStringPainted())
+                    if (useAppStatBar && !indeterminateProgress)
                     {
-                        pb.setString(String.format(getResourceString("WB_UPLOAD_PROGRESSBAR_TEXT"),
+                        if (val == -1)
+                        {
+                            UIRegistry.getStatusBar().incrementValue("UPLOADER");
+                        }
+                        else
+                        {
+                            UIRegistry.getStatusBar().setValue("UPLOADER", val);
+                        }
+                    }
+                    else
+                    {
+                        JProgressBar pb = mainPanel.getCurrOpProgress();
+                        int newVal = val == -1 ? Math.min(pb.getValue()+1, pb.getMaximum()) : val;
+                        pb.setValue(newVal);
+                        if (pb.isStringPainted())
+                        {
+                            pb.setString(String.format(getResourceString("WB_UPLOAD_PROGRESSBAR_TEXT"),
                                 new Object[] { pb.getName(), Integer.toString(newVal),
                                         Integer.toString(pb.getMaximum()) }));
+                        }
                     }
                 }
             }
@@ -2012,7 +2026,7 @@ public class Uploader implements ActionListener, KeyListener
                     log.error("UI does not exist.");
                     return;
                 }
-                setCurrentOpProgress(val, false);
+                setCurrentOpProgress(val);
                 for (UploadMessage newMsg : newMessages)
                 {
                     mainPanel.addMsg(newMsg);
@@ -2025,7 +2039,7 @@ public class Uploader implements ActionListener, KeyListener
 
     public void undoStep()
     {
-        setCurrentOpProgress(-1, false);
+        setCurrentOpProgress(-1);
     }
     
     protected void updateObjectsCreated()
@@ -2197,11 +2211,11 @@ public class Uploader implements ActionListener, KeyListener
         mainPanel.setVisible(false);
         mainPanel = null;
         closeUploadedDataViewers();
-        currentUpload = null;
         if (notifyWB)
         {
             wbSS.uploadDone();
         }
+        currentUpload = null;
     }
 
     public UploadMainPanel getMainPanel()
@@ -2915,7 +2929,7 @@ public class Uploader implements ActionListener, KeyListener
                             break;
                         }
                         logDebug("uploading row " + String.valueOf(rowUploading));
-                        setCurrentOpProgress(rowUploading + 1, false);
+                        setCurrentOpProgress(rowUploading + 1);
                         for (UploadTable t : uploadTables)
                         {
                             if (cancelled)
@@ -3035,23 +3049,89 @@ public class Uploader implements ActionListener, KeyListener
     public void undoUpload(final boolean isUserCmd, final boolean shuttingDown)
     {
         setOpKiller(null);
-        
-        if (shuttingDown)
+
+        final UploaderTask undoTask = new UploaderTask(false, "")
         {
-            //This process can take a long time and needs some kind of progress indication.
-            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_UPLOAD_CLEANING_UP") + "...", 
-                    wbSS.getWorkbench().getName()), WorkbenchTask.GLASSPANE_FONT_SIZE);
-            try
+            boolean success = false;
+
+            @Override
+            public Object construct()
             {
-                List<UploadTable> fixedUp = reorderUploadTablesForUndo();
                 try
                 {
-                    for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
+                    if (isUserCmd)
                     {
-                        fixedUp.get(ut).undoUpload(false);
+                        SwingUtilities.invokeAndWait(new Runnable()
+                        {
+                            public void run()
+                            {
+                                initProgressBar(0, getUploadedObjects(), true,
+                                        getResourceString("WB_UPLOAD_UNDOING") + " "
+                                                + getResourceString("WB_UPLOAD_OBJECT"),
+                                        shuttingDown);
+                            }
+                        });
+                    }
+                    else
+                    {
+                        SwingUtilities.invokeAndWait(new Runnable()
+                        {
+                            public void run()
+                            {
+                                initProgressBar(0, getUploadedObjects(), true,
+                                        getResourceString("WB_UPLOAD_CLEANING_UP") + " "
+                                                + getResourceString("WB_UPLOAD_OBJECT"),
+                                        shuttingDown);
+                            }
+                        });
+                    }
+                    List<UploadTable> fixedUp = reorderUploadTablesForUndo();
+                    boolean isEmbeddedCE = AppContextMgr.getInstance().getClassObject(
+                            Collection.class).getIsEmbeddedCollectingEvent();
+                    try
+                    {
+                        AppContextMgr.getInstance().getClassObject(Collection.class)
+                                .setIsEmbeddedCollectingEvent(false);
+                        for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
+                        {
+                            // setCurrentOpProgress(fixedUp.size() - ut, false);
+                            logDebug("undoing " + fixedUp.get(ut).getTable().getName());
+                            fixedUp.get(ut).undoUpload(true);
+                        }
+                        success = true;
+                        return success;
+                    }
+                    finally
+                    {
+                        AppContextMgr.getInstance().getClassObject(Collection.class)
+                                .setIsEmbeddedCollectingEvent(isEmbeddedCE);
                     }
                 }
                 catch (Exception ex)
+                {
+                    setOpKiller(ex);
+                    return false;
+                }
+            }
+
+            @Override
+            public void finished()
+            {
+                super.finished();
+                statusBar.setText("");
+                statusBar.setProgressDone("UPLOADER");
+                if (shuttingDown)
+                {
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                            UIRegistry.clearSimpleGlassPaneMsg();
+
+                        }
+                    });
+                }
+                if (getOpKiller() != null)
                 {
                     JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(
                             getResourceString("WB_UPLOAD_CLEANUP_FAILED"), new Object[] {
@@ -3059,118 +3139,45 @@ public class Uploader implements ActionListener, KeyListener
                                             : "WB_UPLOAD_CLEANUP")), wbSS.getWorkbench().getName(),
                                     wbSS.getWorkbench().getName() }), getResourceString("Warning"),
                             JOptionPane.WARNING_MESSAGE);
-                    setOpKiller(ex); //probably doesn't matter if shuttingDown but..
-                    return;
+
+                }
+                if (mainPanel != null)
+                {
+                    mainPanel.clearObjectsCreated();
+                    if (success)
+                    {
+                        setCurrentOp(Uploader.READY_TO_UPLOAD);
+                    }
+                    else
+                    {
+                        setCurrentOp(Uploader.FAILURE);
+                    }
                 }
             }
-            finally
-            {
-                UIRegistry.clearGlassPaneMsg();
-            }
-        }
-        else
+
+        };
+        if (recordSets != null)
         {
-            final UploaderTask undoTask = new UploaderTask(false, "")
-            {
-                boolean success = false;
-
-                @Override
-                public Object construct()
-                {
-                    try
-                    {
-                        if (isUserCmd)
-                        {
-                            SwingUtilities.invokeAndWait(new Runnable() {
-                                public void run()
-                                {
-                                    initProgressBar(0, getUploadedObjects(), true,
-                                            getResourceString("WB_UPLOAD_UNDOING") + " "
-                                                    + getResourceString("WB_UPLOAD_OBJECT"), false);
-                                }
-                            });
-                        }
-                        else
-                        {
-                            SwingUtilities.invokeAndWait(new Runnable()
-                            {
-                                public void run()
-                                {
-                                    initProgressBar(0, getUploadedObjects(), true,
-                                            getResourceString("WB_UPLOAD_CLEANING_UP") + " "
-                                                    + getResourceString("WB_UPLOAD_OBJECT"), false);
-                                }
-                            });
-                        }
-                        List<UploadTable> fixedUp = reorderUploadTablesForUndo();
-                        boolean isEmbeddedCE = AppContextMgr.getInstance().getClassObject(Collection.class).getIsEmbeddedCollectingEvent();
-                        try
-                        {
-                            AppContextMgr.getInstance().getClassObject(Collection.class).setIsEmbeddedCollectingEvent(false);
-                            for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
-                            {
-                                //setCurrentOpProgress(fixedUp.size() - ut, false);
-                                logDebug("undoing " + fixedUp.get(ut).getTable().getName());
-                                fixedUp.get(ut).undoUpload(true);
-                            }
-                            success = true;
-                            return success;
-                        }
-                        finally
-                        {
-                            AppContextMgr.getInstance().getClassObject(Collection.class).setIsEmbeddedCollectingEvent(isEmbeddedCE);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        setOpKiller(ex);
-                        return false;
-                    }
-                }
-
-                @Override
-                public void finished()
-                {
-                    super.finished();
-                    statusBar.setText("");
-                    statusBar.getProgressBar().setVisible(false);
-                    if (getOpKiller() != null)
-                    {
-                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
-                                String.format(getResourceString("WB_UPLOAD_CLEANUP_FAILED"),
-                                        new Object[] {getResourceString((isUserCmd ? "WB_UPLOAD_UNDO_BTN" : "WB_UPLOAD_CLEANUP")),
-                                                        wbSS.getWorkbench().getName(), wbSS.getWorkbench().getName()
-                                }),
-                                getResourceString("Warning"), JOptionPane.WARNING_MESSAGE);
-
-                    }
-                    if (mainPanel != null)
-                    {
-                        mainPanel.clearObjectsCreated();
-                        if (success)
-                        {
-                            setCurrentOp(Uploader.READY_TO_UPLOAD);
-                        }
-                        else
-                        {
-                            setCurrentOp(Uploader.FAILURE);
-                        }
-                    }
-                }
-
-            };
-            if (recordSets != null)
-            {
-                recordSets.clear();
-                recordSets = null;
-            }
-            UIRegistry.getStatusBar()
-                    .setText(
-                            getResourceString((isUserCmd ? Uploader.UNDOING_UPLOAD
-                                    : Uploader.CLEANING_UP)));
-            undoTask.start();
-            setCurrentOp(isUserCmd ? Uploader.UNDOING_UPLOAD : Uploader.CLEANING_UP);
+            recordSets.clear();
+            recordSets = null;
         }
+        UIRegistry.displayStatusBarText(getResourceString((isUserCmd ? Uploader.UNDOING_UPLOAD
+                : Uploader.CLEANING_UP)));
+        if (shuttingDown)
+        {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    UIRegistry.writeSimpleGlassPaneMsg(String.format(
+                            getResourceString("WB_UPLOAD_CLEANING_UP") + "...", wbSS.getWorkbench()
+                                    .getName()), WorkbenchTask.GLASSPANE_FONT_SIZE);
+
+                }
+            });
+        }
+        undoTask.start();
+        setCurrentOp(isUserCmd ? Uploader.UNDOING_UPLOAD : Uploader.CLEANING_UP);
     }
 
     /**
@@ -3574,7 +3581,6 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected static boolean canOverrideLock()
     {
-        //return false;
         //XXX Probably a better way to do this...
         return AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getUserType().equals("CollectionManager");
     }
@@ -3584,88 +3590,25 @@ public class Uploader implements ActionListener, KeyListener
      * @return true if no lock is present or lock is overridden. Else return false.
      *  
      */
-    public static boolean checkUploadLock(boolean isLogin)
+    public static boolean checkUploadLock()
     {
         if (isLockOverridden)
         {
             return true;
         }
-        
-        SpTaskSemaphore lockInfo = TaskSemaphoreMgr.getLockInfo("WORKBENCH_UPLOAD_TASK", "WORKBENCH_UPLOAD_TASK",
-                TaskSemaphoreMgr.SCOPE.Global);
-        if (lockInfo == null)
+        if (!TaskSemaphoreMgr.isLocked(getLockTitle(), "WORKBENCHUPLOAD", TaskSemaphoreMgr.SCOPE.Discipline))
         {
             return true;
         }
-        
-        if (!lockInfo.getIsLocked())
-        {
-            return true;
-        }
-                
-        String lockOwner = lockInfo.getOwner().getName();
-        boolean canOverride = canOverrideLock();
-        
-        String msg1 = String.format(UIRegistry.getResourceString("WB_UPLOAD_LOCK_MSG1"), lockOwner);
-        String msg2 = UIRegistry.getResourceString(isLogin ? "WB_UPLOAD_LOCK_LOGIN_MSG2" : "WB_UPLOAD_LOCK_TASK_MSG2");
-        String msg3 = canOverride ? UIRegistry.getResourceString("WB_UPLOAD_LOCK_MSG3") : null;
-        
-        PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
-        pb.add(new JLabel(msg1), new CellConstraints().xy(2, 2));
-        pb.add(new JLabel(msg2), new CellConstraints().xy(2, 4));
-        if (canOverride)
-        {
-            pb.add(new JLabel(msg3), new CellConstraints().xy(2, 6));
-        }
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
-                UIRegistry.getResourceString("WB_UPLOAD_LOCK_DLG"),
-                true,
-                canOverride ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN,
-                pb.getPanel());
-        if (canOverride)
-        {
-            dlg.setOkLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.OVERRIDE"));
-            if (isLogin)
-            {
-                dlg.setCancelLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.EXIT"));
-            }
-            else
-            {
-                dlg.setCancelLabel(UIRegistry.getResourceString("CONTINUE"));
-            }
-        }
-        else
-        {
-            dlg.setOkLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.EXIT"));
-        }
-                
-        UIHelper.centerAndShow(dlg);
-        dlg.dispose();
-        if (!canOverride || dlg.isCancelled())
-        {
-            return false;
-        }
-
-        PanelBuilder pb2 = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 5dlu"));
-        pb2.add(new JLabel(UIRegistry.getResourceString("WB_UPLOAD_LOCK_OVERRIDE_DANGER")), new CellConstraints().xy(2, 2));
-        CustomDialog dlg2 = new CustomDialog((Frame)UIRegistry.getTopWindow(),
-                UIRegistry.getResourceString("WB_UPLOAD_CONFIRM_LOCK_OVERRIDE"),
-                true,
-                CustomDialog.OKCANCEL,
-                pb2.getPanel());
-        dlg2.setOkLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.OVERRIDE"));
-        dlg2.setCancelLabel(UIRegistry.getResourceString("SpecifyAppContextMgr.EXIT"));
-        UIHelper.centerAndShow(dlg2);
-        dlg2.dispose();
-        if (dlg2.isCancelled())
-        {
-            return false;
-        }
-        
-        isLockOverridden = true;
-        return true;
+        boolean result = lockUpload();
+        isLockOverridden = result;
+        return result;
     }
     
+    protected static String getLockTitle()
+    {
+        return UIRegistry.getResourceString("Uploader.UploaderTask");
+    }
     /**
      * Sets a lock for the upload task.
      * 
@@ -3673,9 +3616,9 @@ public class Uploader implements ActionListener, KeyListener
      */
     public static boolean lockUpload()
     {
-        return TaskSemaphoreMgr.lock(UIRegistry.getResourceString("WB_UPLOAD_FORM_TITLE"), 
-                "WORKBENCH_UPLOAD_TASK", "WORKBENCH_UPLOAD_TASK",
-                TaskSemaphoreMgr.SCOPE.Global, true);
+        return TaskSemaphoreMgr.lock(getLockTitle(), 
+                "WORKBENCHUPLOAD", null,
+                TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock());
     }
     
     /**
@@ -3685,8 +3628,7 @@ public class Uploader implements ActionListener, KeyListener
      */
     public static boolean unlockUpload()
     {
-        return TaskSemaphoreMgr.unlock(UIRegistry.getResourceString("WB_UPLOAD_FORM_TITLE"), "WORKBENCH_UPLOAD_TASK", 
-                TaskSemaphoreMgr.SCOPE.Global);
+        return TaskSemaphoreMgr.unlock(getLockTitle(), "WORKBENCHUPLOAD",  TaskSemaphoreMgr.SCOPE.Discipline);
     }
 
     protected static void setAppLock(final boolean lock)

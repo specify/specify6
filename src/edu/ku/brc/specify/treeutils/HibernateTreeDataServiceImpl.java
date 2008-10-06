@@ -61,7 +61,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	 */
 	public HibernateTreeDataServiceImpl()
 	{
-	    
+	    //empty
 	}
 	
 	/* (non-Javadoc)
@@ -1167,7 +1167,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
         return o.toString();
     }
-
+    
+    
 //    /**
 //     * This class is an extension of {@link EmptyInterceptor} that logs all
 //     * objects loaded by Hibernate.  This class is only intended for use in
@@ -1186,4 +1187,5 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 //            return false;
 //        }
 //    }
+  
 }

@@ -122,7 +122,7 @@ public class UIRegistry
     protected static final UIRegistry instance  = new UIRegistry();
     protected static Rectangle        frameRect = null;
     protected static GhostGlassPane   oldGlassPane = null;    
-
+    protected static boolean          showingGlassPane = false;
 
     // Data Members
     protected Hashtable<String, Component> components  = new Hashtable<String, Component>();
@@ -1298,6 +1298,7 @@ public class UIRegistry
             //during workbench or app shutdown. Don't know if there is a better way to fix it.
             //glassPane.repaint();
             glassPane.paintImmediately(glassPane.getBounds());
+            showingGlassPane = true;
         }
     }
     
@@ -1316,6 +1317,12 @@ public class UIRegistry
             Frame frame = (JFrame)get(FRAME);
             frame.setBounds(frameRect);
         }  
+        showingGlassPane = false;
+    }
+    
+    public static boolean isShowingGlassPane()
+    {
+        return showingGlassPane;
     }
     
     /**
@@ -1330,6 +1337,7 @@ public class UIRegistry
         
         ((JFrame)UIRegistry.getTopWindow()).setGlassPane(glassPane);
         glassPane.setVisible(true);
+        showingGlassPane = true;
     }
     
     /**
@@ -1340,6 +1348,7 @@ public class UIRegistry
         ((JFrame)UIRegistry.getTopWindow()).setGlassPane(oldGlassPane);
         oldGlassPane.setVisible(false);
         oldGlassPane = null;
+        showingGlassPane = false;
     }
     
     public static void setJavaDBDir(final String path)

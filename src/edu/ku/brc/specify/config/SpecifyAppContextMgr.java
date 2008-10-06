@@ -1050,12 +1050,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 AppContextMgr.getInstance().setClassObject(SpecifyUser.class, user);
                 
                 if (!startingOver)
-                {
-                    if (!Uploader.checkUploadLock(true))
-                    {
-                        System.exit(0);
-                    }
-                    
+                {                    
                     if (user.getIsLoggedIn())
                     {
                         Object[] options = { getResourceString("SpecifyAppContextMgr.OVERRIDE"),  //$NON-NLS-1$
@@ -1140,6 +1135,60 @@ public class SpecifyAppContextMgr extends AppContextMgr
             Division division = discipline.getDivision();
             division.forceLoad();
             AppContextMgr.getInstance().setClassObject(Division.class, division);
+            
+            //--------------------------------------------------------------------------------
+            //Check for locks set uploader, tree update, ...
+            //--------------------------------------------------------------------------------
+            
+            boolean noLocks = Uploader.checkUploadLock();
+            
+            noLocks &= discipline.getTaxonTreeDef().checkNodeRenumberingLock();
+            noLocks &= discipline.getGeographyTreeDef().checkNodeRenumberingLock();
+            if (noLocks && discipline.getGeologicTimePeriodTreeDef() != null)
+            {
+                noLocks = discipline.getGeologicTimePeriodTreeDef().checkNodeRenumberingLock();
+            }
+            if (noLocks && discipline.getLithoStratTreeDef() != null)
+            {
+                noLocks = discipline.getLithoStratTreeDef().checkNodeRenumberingLock();
+            }
+            //XXX and what about Storage Trees???
+            
+            boolean goodTrees = true;
+            if (noLocks)
+            {
+                //Now force node number updates for trees that are out-of-date
+                goodTrees = discipline.getTaxonTreeDef().checkNodeNumbersUpToDate();
+                goodTrees &= discipline.getGeographyTreeDef().checkNodeNumbersUpToDate();
+                if (goodTrees && discipline.getGeologicTimePeriodTreeDef() != null)
+                {
+                    goodTrees = discipline.getGeologicTimePeriodTreeDef().checkNodeNumbersUpToDate();
+                }
+                if (goodTrees && discipline.getLithoStratTreeDef() != null)
+                {
+                    goodTrees = discipline.getLithoStratTreeDef().checkNodeNumbersUpToDate();
+                }
+                //XXX and what about Storage Trees???
+            }
+            
+            if (!noLocks || !goodTrees)
+            {
+                user.setIsLoggedIn(false);
+                user.setLoginOutTime(new Timestamp(System.currentTimeMillis()));
+                
+                try
+                {
+                    session.beginTransaction();
+                    session.saveOrUpdate(user);
+                    session.commit();
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                }
+                System.exit(0);
+            }
+
             
             //---------------------------------------------------------
             // This is the Full Path User / Discipline / Collection / UserType / isPersonal

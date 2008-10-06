@@ -105,8 +105,7 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
 	 * @param arg - true if a workbench upload is (possibly) modifying the tree.
 	 */
 	public void setUploadInProgress(boolean arg);
-	
-	   
+		
     /**
      * The rank id of the level of the tree that items below it can be synonymized to. For example,
      * all ranks below Species can be synonymized up to Species, but not above. A call to this for the

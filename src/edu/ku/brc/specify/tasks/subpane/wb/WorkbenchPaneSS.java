@@ -131,6 +131,7 @@ import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -2890,10 +2891,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             return;
         }
         
-        List<String> logins = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getAgentListLoggedIn(null);
+        List<String> logins = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getAgentListLoggedIn(AppContextMgr.getInstance().getClassObject(Discipline.class));
         if (logins.size() > 0)
         {
-            //currently not allowing uploads if ANYBODY else is on whether or not they can modify data or modify data in the current discipline.
             String loginStr = "";
             for (int l = 0; l < logins.size(); l++)
             {

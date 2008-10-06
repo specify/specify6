@@ -8,6 +8,7 @@ package edu.ku.brc.specify.ui.treetables;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createTextArea;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -24,6 +25,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -88,6 +91,8 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
 import edu.ku.brc.specify.treeutils.ChildNodeCounter;
+import edu.ku.brc.specify.treeutils.NodeNumberVerifier;
+import edu.ku.brc.specify.treeutils.NodeNumberer;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
@@ -234,6 +239,74 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         countGrabberExecutor = Executors.newFixedThreadPool(10);
 	}
 	
+	//XXX - move renumber and verify code somewhere else (possibly debug menu) or dump it.
+	public void renumberNodes()
+	{
+//	    final NodeNumberer<T,D,I> nodeNumberer = new NodeNumberer<T,D,I>(treeDef);
+//        final JStatusBar nStatusBar = UIRegistry.getStatusBar();
+//        nStatusBar.setProgressRange(nodeNumberer.getProgressName(), 0, 100);
+//        
+//        UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("Updating Tree Structure"), 24);
+//        
+//        nodeNumberer.addPropertyChangeListener(
+//                new PropertyChangeListener() {
+//                    public  void propertyChange(final PropertyChangeEvent evt) {
+//                        if ("progress".equals(evt.getPropertyName())) 
+//                        {
+//                            nStatusBar.setValue(nodeNumberer.getProgressName(), (Integer)evt.getNewValue());
+//                        }
+//                    }
+//                });
+//        try
+//        {
+//            nodeNumberer.execute();
+//            nodeNumberer.get();
+//        }
+//        catch (Exception ex)
+//        {
+//            System.out.println(ex);
+//        }
+//        
+//        UIRegistry.clearSimpleGlassPaneMsg();
+//        nStatusBar.setProgressDone(nodeNumberer.getProgressName());
+
+	    try
+	    {
+	        treeDef.updateAllNodes(null);
+	    }
+	    catch (Exception ex)
+	    {
+	        System.out.println(ex);
+	    }
+	    
+//        final NodeNumberVerifier<T,D,I> nodeVerifier = new NodeNumberVerifier<T,D,I>(treeDef);
+//        nStatusBar.setProgressRange(nodeVerifier.getProgressName(), 0, 100);
+//        UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("Checking Tree Structure"), 24);
+//        
+//        nodeVerifier.addPropertyChangeListener(
+//                new PropertyChangeListener() {
+//                    public  void propertyChange(final PropertyChangeEvent evt) {
+//                        if ("progress".equals(evt.getPropertyName())) 
+//                        {
+//                            nStatusBar.setValue(nodeNumberer.getProgressName(), (Integer)evt.getNewValue());
+//                        }
+//                    }
+//                });
+//        try
+//        {
+//            nodeVerifier.execute();
+//            nodeVerifier.get();
+//        }
+//        catch (Exception ex)
+//        {
+//            System.out.println(ex);
+//        }
+//        
+//        UIRegistry.clearSimpleGlassPaneMsg();
+//        nStatusBar.setProgressDone(nodeVerifier.getProgressName());
+
+	    
+	}
 	public D getTreeDef()
 	{
 		return this.treeDef;

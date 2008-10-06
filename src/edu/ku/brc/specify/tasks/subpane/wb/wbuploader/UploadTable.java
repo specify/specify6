@@ -81,6 +81,8 @@ public class UploadTable implements Comparable<UploadTable>
     //if modification to the database is prevented while uploading.
     private static boolean                          doRawDeletes            = true;
     
+    
+    protected final Uploader                        uploader;      
     /**
      * The 'underlying' table being uploaded to. Could be an artificial table added to represent a
      * level in a tree (eg. TaxonFamily).
@@ -198,9 +200,10 @@ public class UploadTable implements Comparable<UploadTable>
      * @param table
      * @param relationship
      */
-    public UploadTable(Table table, Relationship relationship)
+    public UploadTable(Uploader uploader, Table table, Relationship relationship)
     {
         super();
+        this.uploader = uploader;
         this.table = table;
         this.relationship = relationship;
         uploadFields = new Vector<Vector<UploadField>>();
@@ -1519,8 +1522,8 @@ public class UploadTable implements Comparable<UploadTable>
                 match = matches.get(0);
                 if (ignoringBlankCell)
                 {
-                    Uploader.currentUpload.addMsg(new PartialMatchMsg(restrictedVals, match
-                            .toString(), Uploader.currentUpload.getRow() + 1, this));
+                    uploader.addMsg(new PartialMatchMsg(restrictedVals, match
+                            .toString(), uploader.getRow() + 1, this));
                 }
             }
             else if (matches.size() > 1)
@@ -1536,7 +1539,7 @@ public class UploadTable implements Comparable<UploadTable>
                     if (match != null)
                     {
                         matchSetting.addSelection(matchSetting.new MatchSelection(restrictedVals,
-                                Uploader.currentUpload.getRow(), match.getId(), matchSetting
+                                uploader.getRow(), match.getId(), matchSetting
                                         .getMode()));
                     }
                 }
@@ -1937,7 +1940,7 @@ public class UploadTable implements Comparable<UploadTable>
         if (restrictedValsForAddNewMatch != null)
         {
             matchSetting.addSelection(matchSetting.new MatchSelection(restrictedValsForAddNewMatch,
-                    Uploader.currentUpload.getRow(), rec.getId(), matchSetting.getMode()));
+                    uploader.getRow(), rec.getId(), matchSetting.getMode()));
             restrictedValsForAddNewMatch = null;
         }
     }
@@ -2159,7 +2162,7 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 public void run()
                 {
-                    Uploader.currentUpload.undoStep();
+                    uploader.undoStep();
                 }
             };
         }
@@ -2384,12 +2387,12 @@ public class UploadTable implements Comparable<UploadTable>
     {
         int maxNameLength = DBTableIdMgr.getInstance().getInfoByTableName("recordset").getFieldByColumnName("name").getLength();
         String tblName = DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle();
-        String uploadName = Uploader.currentUpload.getIdentifier();
+        String uploadName = uploader.getIdentifier();
         String rsName = tblName + "_" + uploadName;
         if (rsName.length() > maxNameLength)
         {
             //add as many pieces of the upload time as will fit...
-            Calendar now = Uploader.currentUpload.getUploadTime();
+            Calendar now = uploader.getUploadTime();
             String[] chunks = {"_" + String.valueOf(now.get(Calendar.YEAR)), "-" + String.valueOf(now.get(Calendar.MONTH) + 1),
                     "-" + String.valueOf(now.get(Calendar.DAY_OF_MONTH)), "_" + String.valueOf(now.get(Calendar.HOUR_OF_DAY)),
                     ":" + String.valueOf(now.get(Calendar.SECOND))}; 

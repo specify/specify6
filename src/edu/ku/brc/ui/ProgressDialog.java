@@ -68,7 +68,7 @@ public class ProgressDialog extends JDialog
         desc.setHorizontalAlignment(SwingConstants.CENTER);
         builder.add( desc, cc.xywh(1,y,3,1)); y += 2;
         
-        processProgress = new JProgressBar();
+        processProgress = createProgressBar(); //new JProgressBar();
         processProgress.setStringPainted(true);
         builder.add( createLabel("Process:"), cc.xy(1,y)); // I18N
         builder.add( processProgress, cc.xy(3,y));y += 2;
