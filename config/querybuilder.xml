@@ -73,21 +73,6 @@
         <alias name="Agent" field="createdByAgent" />
         <alias name="Agent" field="modifiedByAgent" />
     </table>
-
-    <table name="Collection">
-    	<alias name="Agent" field="contactAgent" />
-        <alias name="Agent" field="createdByAgent" />
-    	<alias name="Agent" field="curatorAgent" />
-    	<table name="FieldNotebook" field="fieldNoteBooks">
-    	</table>
-        <alias name="Agent" field="modifiedByAgent" />
-      	<!-- <alias name="CollectionRelType" field="leftSideRelTypes" />  -->
-      	<table name="PickList" field="pickLists"/>
-      	<table name="PrepType" field="prepTypes"/>
-      	<!-- <alias name="CollectionRelType" field="rightSideRelTypes"/> -->
-      	<!-- <table name="SpAppResourceDir" field="spAppResourceDirs"/> -->
-      	<table name="SpPrincipal" field="userGroups"/>
-    </table>
     
     <table name="CollectionObject">
 		<alias name="Accession"/>    	
@@ -110,13 +95,24 @@
         <alias name="Preparation" field="preparations"/>
       	<alias name="Appraisal" field="appraisal" />
       	<alias name="Agent" field="cataloger" />
-      	<alias name="Collection" field="collection" />
+    	<table name="Collection" field="collection" >
+        	<alias name="Agent" field="createdByAgent" />
+    		<table name="FieldNotebook" field="fieldNoteBooks">
+    		</table>
+        	<alias name="Agent" field="modifiedByAgent" />
+      		<!-- <alias name="CollectionRelType" field="leftSideRelTypes" />  -->
+      		<table name="PickList" field="pickLists"/>
+      		<table name="PrepType" field="prepTypes"/>
+      		<!-- <alias name="CollectionRelType" field="rightSideRelTypes"/> -->
+      		<!-- <table name="SpAppResourceDir" field="spAppResourceDirs"/> -->
+      		<table name="SpPrincipal" field="userGroups"/>
+      	</table>
       	<table name="ConservDescription" field="conservDescriptions" />
       	<table name="Container" field="container" />
       	<table name="Container" field="containerOwner" />
       	<alias name="Agent" field="createdByAgent" />
       	<table name="DNASequence" field="dnaSequences">
-      		<alias name="Agent" field="sequencer" /> 
+      			<alias name="Agent" field="sequencer" /> 
       	</table>
       	<table name="FieldNotebookPage" field="fieldNotebookPage" >
       		<table name="FieldNotebookPageSet" field="pageSet" />  

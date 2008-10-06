@@ -1,7 +1,6 @@
 <vector>
   <string>Agent</string>
   <string>CollectingEvent</string>
-  <string>Collection</string>
   <string>CollectionObject</string>
   <string>Loan</string>
   <string>Locality</string>
