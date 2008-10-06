@@ -745,12 +745,14 @@ public class DatamodelGenerator
                     {
                         System.out.println(className + " " + method.getName());
                     }
-                    Type type = method.getGenericReturnType();
+                    
+                    Type     type = method.getGenericReturnType();
                     Class<?> typeClass;
                     if (type instanceof Class<?>)
                     {
                         typeClass = (Class<?>)type;
-                    } else
+                        
+                    } else if (type instanceof ParameterizedType)
                     {
                         typeClass = null;
                         for (Type t : ((ParameterizedType)type).getActualTypeArguments())
@@ -760,11 +762,16 @@ public class DatamodelGenerator
                                 typeClass = (Class<?>)t;
                             }
                         }
+                    } else
+                    {
+                        log.warn("Not handled: "+type);
+                        typeClass = null;
                     }
                     
                     // rods 07/10/08 - Used to skip all relationships that point to themslves
                     // that works now and is needed.
-                    if (typeClass == AttributeIFace.class || 
+                    if (typeClass == null ||
+                        typeClass == AttributeIFace.class || 
                         typeClass == PickListItemIFace.class || 
                         typeClass == RecordSetItemIFace.class)
                     {
