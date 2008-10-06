@@ -1615,13 +1615,33 @@ public class BasicSQLUtils
     {
         log.debug(sql);
         
-        Connection conn    = null;
+        Connection conn    = DBConnection.getInstance().createConnection();
+        try
+        {
+            int count = getNumRecords(sql, conn);
+            conn.close();
+            return count;
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+        return -1;
+    }
+    
+    /**
+     * Returns a count of the records query by SQL passed in.
+     * @param sql the SQL with a 'count(?)' 
+     * @return the number of records or zero
+     */
+    public static int getNumRecords(final String sql, final Connection conn)
+    {
         Statement  cntStmt = null;
         try
         {
             int count = 0;
             
-            conn    = DBConnection.getInstance().createConnection();
+            
             if (conn != null)
             {
                 cntStmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
@@ -1649,10 +1669,6 @@ public class BasicSQLUtils
                 if (cntStmt != null)
                 {
                     cntStmt.close();
-                }
-                if (conn != null)
-                {
-                    conn.close();
                 }
             } catch (SQLException ex)
             {
