@@ -12,7 +12,7 @@
     
     <section title="settings">
         <pref name="EMAIL" title="EMAIL" icon="EMail" panelClass="edu.ku.brc.specify.prefs.EMailPrefsPanel"/>
-        <pref name="MISC" title="MISC" icon="MiscPref" panelClass="edu.ku.brc.specify.prefs.MiscPrefsPanel"/>
+        <pref name="MISC" title="MISC" icon="Taskbar" panelClass="edu.ku.brc.specify.prefs.MiscPrefsPanel"/>
     </section>
        
     <!-- 

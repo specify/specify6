@@ -85,7 +85,7 @@ public class DBConnection
         {
             if (!argHaveBeenChecked)
             {
-                if (StringUtils.isEmpty(dbConnectionStr))
+                if (StringUtils.isEmpty(dbName))
                 {
                     errMsg = getResourceString("DBConnection.NO_DB_NAME"); //$NON-NLS-1$
                     return null;

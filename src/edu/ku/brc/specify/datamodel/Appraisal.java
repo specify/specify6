@@ -214,7 +214,8 @@ public class Appraisal extends DataModelObjBase
     /**
      * @return the collectionObjects
      */
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "appraisal")
+    @OneToMany(cascade = {}, mappedBy = "appraisal")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<CollectionObject> getCollectionObjects()
     {
         return collectionObjects;

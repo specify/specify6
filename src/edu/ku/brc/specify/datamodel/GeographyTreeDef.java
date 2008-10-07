@@ -180,7 +180,7 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
     }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definition") //$NON-NLS-1$
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
 	public Set<Geography> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -192,7 +192,7 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "treeDef") //$NON-NLS-1$
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
 	public Set<GeographyTreeDefItem> getTreeDefItems()
 	{
 		return this.treeDefItems;

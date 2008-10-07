@@ -139,6 +139,33 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#delete(java.lang.String)
+     */
+    @Override
+    public boolean deleteHQL(String hql) throws Exception
+    {
+        if (session != null)
+        {
+            Query query = session.createQuery(hql);
+            int row = query.executeUpdate();
+            if (row == 0)
+            {
+              System.out.println("Doesn't deleted any row!");
+              return false;
+            }
+            else
+            {
+              System.out.println("Deleted Row: " + row);
+            }
+            return true;
+        }
+        
+        log.error("Session was null.", new NullPointerException("Session was null"));
+
+        return false;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#deleteOnSaveOrUpdate(java.lang.Object)
      */
     public void deleteOnSaveOrUpdate(final Object dataObj)

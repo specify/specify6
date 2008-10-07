@@ -85,7 +85,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     
     protected Set<SpLocaleContainer>    spLocaleContainers;
     protected Set<SpExportSchema>       spExportSchemas;  // Zero or One
-    protected Set<AutoNumberingScheme>   numberingSchemes;
+    protected Set<AutoNumberingScheme>  numberingSchemes;
 
 
     // Constructors
@@ -245,9 +245,10 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
      *
      */
     @ManyToOne( fetch = FetchType.LAZY )
-    @Cascade( {CascadeType.ALL} )
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     @JoinColumn(name="GeographyTreeDefID", nullable=false)
-    public GeographyTreeDef getGeographyTreeDef() {
+    public GeographyTreeDef getGeographyTreeDef() 
+    {
         return this.geographyTreeDef;
     }
 
@@ -376,7 +377,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
      * @return the agents
      */
     @ManyToMany(mappedBy="disciplines")
-    @Cascade( {CascadeType.SAVE_UPDATE} )
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Agent> getAgents()
     {
         return agents;

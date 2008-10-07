@@ -41,7 +41,7 @@ public abstract class UserGroupScope extends DataModelObjBase
     @Id  
     @GeneratedValue(generator = "hilo")  
     @GenericGenerator(name = "hilo", strategy = "hilo")  
-    @Column(name = "userGroupScopeId", unique = true, nullable = false, insertable = true, updatable = true)
+    @Column(name = "UserGroupScopeId", unique = true, nullable = false, insertable = true, updatable = true)
 	public Integer getUserGroupScopeId() {
 		return userGroupScopeId;
 	}

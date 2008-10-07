@@ -42,18 +42,29 @@
     <icon name="NewDataSet"    file="NewDataSet16x16.png" sizes="16"/>
     <icon name="Labels"        file="Label32x32.png" sizes="all"/>
     <icon name="Form"          file="Form32x32.png" sizes="all"/>
+    <icon name="FormEdit"      file="FormEdit32x32.png" sizes="all"/>
+    <icon name="EditForm20"    file="FormEdit20x20.png" sizes="NonStd"/>
+    <icon name="EditIcon"      file="edit_icon.gif"  sizes="NonStd"/>
+    <icon name="EditForm"      file="FormEdit16x16.png" sizes="16"/>
+    <icon name="InfoIcon"      file="info.png"       sizes="all"/>
+    <icon name="Reload"        file="view-refresh16.png" sizes="16"/>
+    <icon name="ViewForm16"    file="Form16x16.png" sizes="16"/>
+    <icon name="ViewForm"      file="Form32x32.png" sizes="32"/>
+    
     <icon name="Data_Entry"    file="Data_Entry.png" sizes="all"/>
     <icon name="Configure16"   file="Configure16x16.png" sizes="16"/>
     <icon name="CarryForward"  file="CarryForward16x16.png" sizes="16"/>
     <icon name="CarryForward20x20" file="CarryForward20x20.png" sizes="NonStd"/>
     <icon name="EMail"         file="Email32x32.png" sizes="all"/>
+    <icon name="Taskbar"       file="taskbar.png" sizes="all"/>
     
     <icon name="Configure"     file="Configure20x20.png" sizes="NonStd"/>
     <icon name="AddRec"        file="AddNewRecord20x20.png" sizes="NonStd"/>
     <icon name="DelRec"        file="RemoveRecord20x20.png" sizes="NonStd"/>
-    <icon name="EditForm24"    file="Form20x20.png" sizes="NonStd"/>
-    <icon name="Spreadsheet24" file="Grid20x20.png" sizes="NonStd"/>
+    <icon name="Spreadsheet20" file="Grid20x20.png" sizes="NonStd"/>
+    <icon name="Spreadsheet16" file="Grid16x16.png" sizes="16"/>
     <icon name="Spreadsheet"   file="Grid32x32.png" sizes="all"/>
+    <icon name="SpreadsheetEdit" file="GridEdit32x32.png" sizes="all"/>
     <icon name="Export"        file="ExportDataSet20x20.png" sizes="NonStd"/>
     <icon name="Upload"        file="upload_data.gif" sizes="NonStd"/>    
     <icon name="Eraser"        file="Clear20x20.png"   sizes="NonStd"/>
@@ -111,14 +122,6 @@
     <icon name="NextRec"  file="next.gif"  sizes="NonStd"/>
     <icon name="LastRec"  file="last.gif"  sizes="NonStd"/>
     
-    <icon name="EditIcon"      file="edit_icon.gif"  sizes="NonStd"/>
-    <icon name="EditForm"      file="Form16x16.png" sizes="16"/>
-    <icon name="Spreadsheet16" file="Grid16x16.png" sizes="16"/>
-    <icon name="InfoIcon"      file="info.png"       sizes="all"/>
-    <icon name="Reload"        file="view-refresh16.png" sizes="16"/>
-    <icon name="ViewForm"      file="viewform16.gif" sizes="16"/>
-    <icon name="ViewForm"      file="viewform.gif" sizes="32"/>
-    
     <icon name="Close"         file="close.gif" sizes="NonStd"/>
     <icon name="CloseHover"    file="closeHover.gif" sizes="NonStd"/>
     <icon name="Print"         file="printer.gif" sizes="all"/>
@@ -129,6 +132,7 @@
     <icon name="ValidationValid"   file="validation-valid.gif"    sizes="all"/>
     <icon name="ValidationWarning" file="FeedbackYellow32x32.png" sizes="all"/>
     <icon name="ValidationError"   file="FeedbackRed32x32.png"    sizes="all"/>
+    
     <icon name="Warning"    alias="ValidationWarning"/>
     <icon name="Error"      alias="ValidationError"/>
     

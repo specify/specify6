@@ -496,7 +496,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
      * @return the technicalContacts
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collTechContact")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
     public Set<Agent> getTechnicalContacts()
     {
         return technicalContacts;
@@ -506,7 +506,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
      * @return the contentContacts
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collContentContact")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
     public Set<Agent> getContentContacts()
     {
         return contentContacts;

@@ -185,7 +185,7 @@ public class Collector extends CollectionMember implements java.io.Serializable,
     /**
      *      * The CollectingEvent the agent participated in
      */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "CollectingEventID", nullable = false)
     public CollectingEvent getCollectingEvent()
     {

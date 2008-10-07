@@ -19,18 +19,26 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createGeologicTimePerio
 import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDef;
 import static edu.ku.brc.specify.config.init.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-import edu.ku.brc.af.core.AppContextMgr;
+
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.List;
+import java.util.Vector;
+
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.CollectingTrip;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
+import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -65,7 +73,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
-        if (dataObj != null)
+        /*if (dataObj != null)
         {
             Discipline dis     = AppContextMgr.getInstance().getClassObject(Discipline.class);
             Discipline dataDis = (Discipline)dataObj;
@@ -93,6 +101,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
             return true;
         }
         return false;
+        */
+        return true;
     }
     
     /* (non-Javadoc)
@@ -178,6 +188,112 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeDelete(dataObj, session);
+        
+        Discipline discipline = (Discipline)dataObj;
+        Integer dspId = discipline.getId();
+        
+        Statement stmt = null;
+        try
+        {
+            stmt = DBConnection.getInstance().getConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+
+            List<Integer> ids = new Vector<Integer>();
+            ResultSet rs = stmt.executeQuery("SELECT SpAppResourceDirID FROM spappresourcedir WHERE DisciplineID = "+dspId);
+            while (rs.next())
+            {
+                ids.add(rs.getInt(1));
+            }         
+            rs.close();
+            
+            if (ids.size() > 0)
+            {
+                for (Integer id : ids)
+                {
+                    SpAppResourceDir obj = session.get(SpAppResourceDir.class, id);
+                    if (obj != null)
+                    {
+                        System.err.println(obj.getIdentityTitle());
+                        session.delete(obj);
+                    }
+                }
+            }
+            
+            ids = new Vector<Integer>();
+            rs = stmt.executeQuery("SELECT CollectingTripID FROM collectingtrip WHERE DisciplineID = "+dspId);
+            while (rs.next())
+            {
+                ids.add(rs.getInt(1));
+            }         
+            rs.close();
+            
+            if (ids.size() > 0)
+            {
+                for (Integer id : ids)
+                {
+                    CollectingTrip obj = session.get(CollectingTrip.class, id);
+                    if (obj != null)
+                    {
+                        System.err.println(obj.getIdentityTitle());
+                        session.delete(obj);
+                    }
+                }
+            }
+            
+            ids = new Vector<Integer>();
+            rs = stmt.executeQuery("SELECT CollectionID FROM collection WHERE DisciplineID = "+dspId);
+            while (rs.next())
+            {
+                ids.add(rs.getInt(1));
+            }         
+            rs.close();
+            
+            for (Integer id : ids)
+            {
+                rs  = stmt.executeQuery("select CollectionObjectID from collectionobject where CollectionMemberID = "+id);
+                while (rs.next())
+                {
+                    CollectionObject obj = session.get(CollectionObject.class, rs.getInt(1));
+                    if (obj != null)
+                    {
+                        System.err.println(obj.getIdentityTitle());
+                        session.delete(obj);
+                    }
+
+                }
+                rs.close();
+            }
+            stmt.close();
+    
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            //log.error(ex);
+            throw new RuntimeException(ex);
+            
+        } finally
+        {
+            try
+            {
+                stmt.close();
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                //log.error(ex);
+                throw new RuntimeException(ex);
+            }
+        }
+
+
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
      */

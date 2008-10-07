@@ -387,6 +387,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      * @return the address
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     @JoinColumn(name = "AddressID", unique = false, nullable = true, insertable = true, updatable = true)
     public Address getAddress()
     {
@@ -423,7 +424,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      * 
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.ALL })
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     @JoinColumn(name = "StorageTreeDefID")
     public StorageTreeDef getStorageTreeDef()
     {

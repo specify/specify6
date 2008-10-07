@@ -79,6 +79,16 @@
             </altviews>
         </view>
         
+        <view name="DisciplineViewOnly"
+            class="edu.ku.brc.specify.datamodel.Discipline"
+            busrules="edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules"
+            resourcelabels="false">
+            <desc><![CDATA[The Discipline Object form.]]></desc>
+            <altviews>
+                <altview name="Discipline Edit View" viewdef="Discipline" label="View" mode="view" validated="false"/>
+            </altviews>
+        </view>
+        
         <view name="DisciplineWithoutCollections"
             class="edu.ku.brc.specify.datamodel.Discipline"
             busrules="edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules"
@@ -132,6 +142,16 @@
             </altviews>
         </view>
         
+        <view name="CollectionViewOnly"
+            class="edu.ku.brc.specify.datamodel.Collection"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionBusRules"
+            resourcelabels="false">
+            <desc><![CDATA[The Collection Object form.]]></desc>
+            <altviews>
+                <altview name="Collection View" viewdef="Collection" label="View" mode="view" validated="false"/>
+            </altviews>
+        </view>
+        
         <view name="CollectionGrid"
             class="edu.ku.brc.specify.datamodel.Collection"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectionBusRules"
@@ -139,7 +159,6 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
                 <altview name="CollectionGrid View" viewdef="CollectionGrid" label="View" mode="view" validated="false"/>
-                <altview name="CollectionGrid Edit" viewdef="CollectionGrid" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -537,9 +556,6 @@
             
             <rows>
                 <row>
-                    <cell type="separator" label="Collection" colspan="4"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="discipline" uitype="text" readonly="true"/>
                 </row>
@@ -647,7 +663,7 @@
                     <cell type="field" id="8" name="isAccessionBound" uitype="checkbox"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Discipline" id="9" name="disciplines" colspan="12" initialize="bgcolor=222,222,222"/>
+                    <cell type="subview" viewname="DisciplineViewOnly" id="9" name="disciplines" colspan="12" initialize="bgcolor=222,222,222"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Address" id="10" name="address" colspan="12" initialize="btn=true"/>

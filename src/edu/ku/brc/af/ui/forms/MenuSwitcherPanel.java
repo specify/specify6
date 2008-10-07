@@ -171,33 +171,46 @@ public class MenuSwitcherPanel extends JPanel
         {
             for (AltViewIFace av : altViewsListArg)
             {
-                String    label   = av.getLabel();
+                String    label   = null;
                 ImageIcon imgIcon = null;
                 String    toolTip = null;
 
                 // TODO This is Sort of Temporary until I get it all figured out
                 // But somehow we need to externalize this, possible have the AltViewIFace Definition
                 // define its own icon
-                if (av.getMode() == AltViewIFace.CreationMode.EDIT)
+                
+                ViewDefIFace viewDef = av.getViewDef();
+                boolean      isEdit  = av.getMode() == AltViewIFace.CreationMode.EDIT;
+                if (viewDef.getType() == ViewDefIFace.ViewType.form)
                 {
-                    imgIcon = IconManager.getImage("EditForm", IconManager.IconSize.Std16);
-                    toolTip = getResourceString("ShowEditViewTT");
+                    label = "Form";
+                    imgIcon = IconManager.getImage(isEdit ? "EditForm" : "ViewForm", IconManager.IconSize.Std16);
+                    toolTip = getResourceString(isEdit ? "ShowEditViewTT" : "ShowViewTT");
 
-                } else if (av.getViewDef().getType() == ViewDefIFace.ViewType.table ||
-                           av.getViewDef().getType() == ViewDefIFace.ViewType.formtable)
+                } else if (viewDef.getType() == ViewDefIFace.ViewType.table ||
+                           viewDef.getType() == ViewDefIFace.ViewType.formtable)
                 {
-                    imgIcon = IconManager.getImage("Spreadsheet", IconManager.IconSize.Std16);
+                    label = "Grid";
+                    imgIcon = IconManager.getImage(isEdit ? "SpreadsheetEdit" : "Spreadsheet", IconManager.IconSize.Std16);
                     toolTip = getResourceString("ShowSpreadsheetTT");
 
                 } else
                 {
-                    imgIcon = IconManager.getImage("ViewForm", IconManager.IconSize.Std16);
+                    label = "Icon";
+                    imgIcon = IconManager.getImage("image", IconManager.IconSize.Std16);
                     toolTip = getResourceString("ShowViewTT");
+                }
+                
+                // Override when Top Level Form
+                if (mvParentArg.isTopLevel())
+                {
+                    label = isEdit ? "Edit" : "View";
+                    
                 }
 
                 items.add(new DropDownMenuInfo(label, imgIcon, toolTip));
             }
-
+            
 
             switcher = new DropDownButtonStateful(items);
             switcher.setToolTipText(getResourceString("SwitchViewsTT"));

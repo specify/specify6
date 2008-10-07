@@ -292,7 +292,7 @@ public class LoanPreparation extends CollectionMember implements java.io.Seriali
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loanPreparation")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     public Set<LoanReturnPreparation> getLoanReturnPreparations() {
         return this.loanReturnPreparations;
     }

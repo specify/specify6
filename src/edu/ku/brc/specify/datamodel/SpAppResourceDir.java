@@ -42,6 +42,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -257,7 +259,8 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     /**
      * @return
      */
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "spAppResourceDir")
+    @OneToMany(mappedBy = "spAppResourceDir")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<SpAppResource> getSpPersistedAppResources() 
     {
         return this.spPersistedAppResources;
@@ -276,7 +279,8 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     /**
      * @return
      */
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "spAppResourceDir")
+    @OneToMany(mappedBy = "spAppResourceDir")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<SpViewSetObj> getSpPersistedViewSets() 
     {
         return this.spPersistedViewSets;

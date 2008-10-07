@@ -29,7 +29,6 @@ import java.util.Vector;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -42,7 +41,6 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
@@ -59,6 +57,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -145,11 +144,11 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             // Temporary
             NavBox sysNavBox = new NavBox(getResourceString("CORE_DATA_OBJECTS"));
             //createSysNavBtn(sysNavBox, DataType.getClassTableId());
-            //createSysNavBtn(sysNavBox, Discipline.getClassTableId());
             createSysNavBtn(sysNavBox, Division.getClassTableId());
+            createSysNavBtn(sysNavBox, Discipline.getClassTableId());
+            createSysNavBtn(sysNavBox, edu.ku.brc.specify.datamodel.Collection.getClassTableId());
             createSysNavBtn(sysNavBox, PrepType.getClassTableId());
             createSysNavBtn(sysNavBox, DeterminationStatus.getClassTableId());
-            createSysNavBtn(sysNavBox, edu.ku.brc.specify.datamodel.Collection.getClassTableId());
             
             sysNavBox.add(NavBox.createBtnWithTT(getResourceString("PICKLIST_EDITOR"), "PickList", "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
@@ -375,7 +374,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 sb.append(" as ");
                 sb.append(tableInfo.getAbbrev());
 
-                String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true, null, false); // false means SQL
+                /*String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true, null, false); // false means SQL
                 if (joinSnipet != null)
                 {
                     sb.append(' ');
@@ -391,7 +390,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                         sb.append(" WHERE ");
                         sb.append(specialWhere);
                     }
-                }
+                }*/
                 log.debug(sb.toString());
                 dataItems = session.getDataList(sb.toString());
                 

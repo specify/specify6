@@ -109,7 +109,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     
     protected Set<Agent>                    orgMembers;
     protected Agent                         organization;
-    protected Set<Project>                  projects;
     protected Set<GroupPerson>              groups;
     protected Set<GroupPerson>              members;
     protected Set<Collector>                collectors;
@@ -137,6 +136,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
 
     
     /*
+    protected Set<Project>                  projects;
     protected Set<Author>                   authors;
     protected Set<LoanReturnPreparation>    loanReturnPreparations;
     protected Set<BorrowReturnMaterial>     borrowReturnMaterials;
@@ -215,7 +215,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         guid                      = null;
         orgMembers                = new HashSet<Agent>();
         organization              = null;
-        projects                  = new HashSet<Project>();
         groups                    = new HashSet<GroupPerson>();
         members                   = new HashSet<GroupPerson>();
         collectors                = new HashSet<Collector>();
@@ -241,6 +240,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         agentSpecialties               = new HashSet<AgentSpecialty>();
 
         /*
+        projects                  = new HashSet<Project>();
         authors                   = new HashSet<Author>();
         loanReturnPreparations    = new HashSet<LoanReturnPreparation>();
         borrowReturnMaterials     = new HashSet<BorrowReturnMaterial>();
@@ -552,7 +552,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(mappedBy = "agent")
+    /*@OneToMany(mappedBy = "agent")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Project> getProjects() 
     {
@@ -562,7 +562,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     public void setProjects(Set<Project> projects) 
     {
         this.projects = projects;
-    }
+    }*/
 
     /**
      *
@@ -710,7 +710,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     *  The Division this Agent belongs to.
     */
    @ManyToOne
-   @JoinColumn(name = "DivisionID")
+   @JoinColumn(name = "DivisionID", unique = false, nullable = false, insertable = true, updatable = true)
    public Division getDivision() 
    {
        return this.division;
@@ -733,7 +733,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
            { 
                @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = false) 
            })
-           
     public Set<Discipline> getDisciplines()
     {
         return disciplines;
@@ -826,7 +825,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         return this.jobTitle;
     }
 
-    public void setJobTitle(String jobTitle) {
+    public void setJobTitle(String jobTitle) 
+    {
         this.jobTitle = jobTitle;
     }
 
@@ -838,7 +838,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         return this.email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(String email) 
+    {
         this.email = email;
     }
 
@@ -850,7 +851,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         return this.url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(String url) 
+    {
         this.url = url;
     }
 
@@ -871,11 +873,13 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
      */
     @OneToMany(mappedBy = "agent")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<Address> getAddresses() {
+    public Set<Address> getAddresses() 
+    {
         return this.addresses;
     }
 
-    public void setAddresses(Set<Address> addresses) {
+    public void setAddresses(Set<Address> addresses) 
+    {
         this.addresses = addresses;
     }
 

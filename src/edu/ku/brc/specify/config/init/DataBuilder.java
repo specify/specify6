@@ -245,10 +245,23 @@ public class DataBuilder
         Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
         if (discipline != null)
         {   
-            agent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-            AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(agent);
+            Discipline dsp = AppContextMgr.getInstance().getClassObject(Discipline.class);
+            agent.getDisciplines().add(dsp);
+            dsp.getAgents().add(agent);
+            //persist(dsp);
+            
+        } else
+        {
+            throw new RuntimeException("Disicpline is NULL!");
         }
-
+        
+        Division division = AppContextMgr.getInstance().getClassObject(Division.class);
+        if (division == null)
+        {
+            throw new RuntimeException("Division is NULL!");
+        }
+        agent.setDivision(division);
+        
         persist(agent);
         return agent;
     }
@@ -1341,30 +1354,6 @@ public class DataBuilder
         accessionauthorization.setRepositoryAgreement(repositoryAgreement);
         persist(accessionauthorization);
         return accessionauthorization;
-    }
-
-    public static Agent createAgent(final Byte agentType,
-                                    final String firstName,
-                                    final String lastName,
-                                    final String middleInitial,
-                                    final String title,
-                                    final String interests,
-                                    final String abbreviation,
-                                    final Agent organization)
-    {
-        Agent agent = new Agent();
-        agent.initialize();
-        agent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        agent.setOrganization(organization);
-        agent.setAgentType(agentType);
-        agent.setFirstName(firstName);
-        agent.setLastName(lastName);
-        agent.setMiddleInitial(middleInitial);
-        agent.setInterests(interests);
-        agent.setAbbreviation(abbreviation);
-        agent.setTitle(title);
-        persist(agent);
-        return agent;
     }
 
     public static AttributeDef createAttributeDef(final Short tableType,

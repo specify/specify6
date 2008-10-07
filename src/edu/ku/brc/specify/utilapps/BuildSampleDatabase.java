@@ -1064,6 +1064,7 @@ public class BuildSampleDatabase
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
         AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
+        ku.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
         
         agents.add(ku);
         agents.get(0).setOrganization(ku);
@@ -1081,6 +1082,8 @@ public class BuildSampleDatabase
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
         AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
+        otherAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+
         agents.add(otherAgent);
         
         commitTx();
@@ -1104,7 +1107,8 @@ public class BuildSampleDatabase
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
             groupAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
             AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(groupAgent);
-            
+            groupAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+
             agents.add(groupAgent);
             
             gpList.add(createGroupPerson(groupAgent, gm1, 0));
@@ -1568,6 +1572,9 @@ public class BuildSampleDatabase
         ship2Date.set(2005, 11, 24);
         Shipment loan2Ship = createShipment(ship2Date, "2006-002", "FedEx", (short) 2, "6.0 kg", null, agents.get(3), agents.get(4), agents.get(3));
         
+        loan1Ship.setLoan(closedLoan);
+        loan2Ship.setLoan(overdueLoan);
+
         //closedLoan.setShipment(loan1Ship);
         //overdueLoan.setShipment(loan2Ship);
         closedLoan.getShipments().add(loan1Ship);
@@ -1839,7 +1846,8 @@ public class BuildSampleDatabase
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
         AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
-        
+        ku.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+
         agents.add(ku);
         agents.get(0).setOrganization(ku);
         agents.get(1).setOrganization(ku);
@@ -1856,6 +1864,8 @@ public class BuildSampleDatabase
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
         AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
+        otherAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+
         agents.add(otherAgent);
         
         commitTx();
@@ -1879,7 +1889,8 @@ public class BuildSampleDatabase
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
             groupAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
             AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(groupAgent);
-            
+            groupAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+
             agents.add(groupAgent);
             
             gpList.add(createGroupPerson(groupAgent, gm1, 0));
@@ -2333,7 +2344,8 @@ public class BuildSampleDatabase
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
         AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
-        
+        ku.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+
         agents.add(ku);
         agents.get(0).setOrganization(ku);
         agents.get(1).setOrganization(ku);
@@ -2350,6 +2362,8 @@ public class BuildSampleDatabase
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
         AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
+        otherAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+
         agents.add(otherAgent);
         
         commitTx();
@@ -2373,6 +2387,8 @@ public class BuildSampleDatabase
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
             groupAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
             AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(groupAgent);
+            groupAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+
             
             agents.add(groupAgent);
             
@@ -2830,6 +2846,9 @@ public class BuildSampleDatabase
         Calendar ship2Date = Calendar.getInstance();
         ship2Date.set(2005, 11, 24);
         Shipment loan2Ship = createShipment(ship2Date, "2005-002", "FedEx", (short) 2, "60.0 kg", null, agents.get(3), agents.get(4), agents.get(3));
+        
+        loan1Ship.setLoan(closedLoan);
+        loan2Ship.setLoan(overdueLoan);
         
         //closedLoan.setShipment(loan1Ship);
         //overdueLoan.setShipment(loan2Ship);
@@ -3420,7 +3439,8 @@ public class BuildSampleDatabase
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
         AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
-        
+        ku.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+
         agents.add(ku);
         agents.get(0).setOrganization(ku);
         agents.get(1).setOrganization(ku);
@@ -3437,6 +3457,8 @@ public class BuildSampleDatabase
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
         AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
+        otherAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+
         agents.add(otherAgent);
         
         commitTx();
@@ -3461,7 +3483,8 @@ public class BuildSampleDatabase
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
             groupAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
             AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(groupAgent);
-            
+            groupAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+
             agents.add(groupAgent);
             
             gpList.add(createGroupPerson(groupAgent, gm1, 0));
@@ -3931,6 +3954,9 @@ public class BuildSampleDatabase
         ship2Date.set(2005, 11, 24);
         Shipment loan2Ship = createShipment(ship2Date, "2005-002", "FedEx", (short) 2, "60.0 kg", null, agents.get(3), agents.get(4), agents.get(3));
         
+        loan1Ship.setLoan(closedLoan);
+        loan2Ship.setLoan(overdueLoan);
+        
         //closedLoan.setShipment(loan1Ship);
         //overdueLoan.setShipment(loan2Ship);
         closedLoan.getShipments().add(loan1Ship);
@@ -4216,6 +4242,8 @@ public class BuildSampleDatabase
         persist(institution);
         persist(discipline);
         commitTx();
+        
+        AppContextMgr.getInstance().setClassObject(Division.class, division);
         
         ////////////////////////////////
         // Create the really high-level stuff
@@ -4674,7 +4702,8 @@ public class BuildSampleDatabase
             ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
             ku.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
             AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(ku);
-            
+            ku.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+
             agents.add(ku);
             agents.get(0).setOrganization(ku);
             agents.get(1).setOrganization(ku);
@@ -4691,6 +4720,7 @@ public class BuildSampleDatabase
             otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
             otherAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
             AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(otherAgent);
+            otherAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
             agents.add(otherAgent);
 
             List<GroupPerson> gpList = new ArrayList<GroupPerson>();
@@ -4703,6 +4733,8 @@ public class BuildSampleDatabase
                 persist(gm2);
                 commitTx();
                 
+                Discipline dsp = AppContextMgr.getInstance().getClassObject(Discipline.class);
+                
                 Agent groupAgent = new Agent();
                 groupAgent.initialize();
                 groupAgent.setAbbreviation("GRP");
@@ -4710,8 +4742,9 @@ public class BuildSampleDatabase
                 groupAgent.setLastName("The Group");
                 groupAgent.setEmail("group@group.com");
                 groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-                groupAgent.getDisciplines().add(AppContextMgr.getInstance().getClassObject(Discipline.class));
-                AppContextMgr.getInstance().getClassObject(Discipline.class).getAgents().add(groupAgent);
+                groupAgent.getDisciplines().add(dsp);
+                groupAgent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+                dsp.getAgents().add(groupAgent);
                 
                 agents.add(groupAgent);
                 
@@ -5200,6 +5233,9 @@ public class BuildSampleDatabase
         ship2Date.set(2005, 11, 24);
         Shipment loan2Ship = createShipment(ship2Date, yr + "-002", "FedEx", (short) 2, "6.0 kg", null, agents.get(3), agents.get(4), agents.get(3));
         
+        loan1Ship.setLoan(closedLoan);
+        loan2Ship.setLoan(overdueLoan);
+
         //closedLoan.setShipment(loan1Ship);
         //overdueLoan.setShipment(loan2Ship);
         closedLoan.getShipments().add(loan1Ship);

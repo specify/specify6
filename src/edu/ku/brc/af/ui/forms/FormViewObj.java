@@ -2074,11 +2074,12 @@ public class FormViewObj implements Viewable,
         {
             BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
             // notify the business rules object that a deletion is going to happen
+            Object obj2 = localSession.merge(obj);
             if (delBusRules != null)
             {
-                delBusRules.beforeDelete(obj, localSession);
+                delBusRules.beforeDelete(obj2, localSession);
             }
-            localSession.delete(obj);
+            localSession.delete(obj2);
         }
         for (Object obj : deletedItems)
         {

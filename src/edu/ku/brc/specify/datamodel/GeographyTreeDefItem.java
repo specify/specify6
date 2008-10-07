@@ -58,14 +58,14 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 	// Fields    
 
 	protected Integer			    	geographyTreeDefItemId;
-	protected String				name;
-	protected String				remarks;
-	protected Integer				rankId;
-	protected Boolean				isEnforced;
-	protected Boolean				isInFullName;
-    protected String                textBefore;
-    protected String                textAfter;
-    protected String                fullNameSeparator;
+	protected String				    name;
+	protected String				    remarks;
+	protected Integer				    rankId;
+	protected Boolean				    isEnforced;
+	protected Boolean				    isInFullName;
+    protected String                    textBefore;
+    protected String                    textAfter;
+    protected String                    fullNameSeparator;
 	protected GeographyTreeDef			treeDef;
 	protected GeographyTreeDefItem		parent;
 	protected Set<Geography>			treeEntries;

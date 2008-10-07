@@ -40,6 +40,13 @@ import org.hibernate.annotations.Index;
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 
 
+/**
+ * @author jds
+ *
+ * @code_status Alpha
+ *
+ *
+ */
 @SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
@@ -59,75 +66,75 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
      */
     protected static final Logger log = Logger.getLogger(LithoStrat.class);
 
-	protected Integer					    lithoStratId;
-	protected Integer						rankId;
-	protected String						name;
-	protected String						fullName;
-	protected String						remarks;
-	protected String                        guid;
-	protected Integer						nodeNumber;
-	protected Integer						highestChildNodeNumber;
-	private LithoStratTreeDef		        definition;
-	private LithoStratTreeDefItem	        definitionItem;
-	private LithoStrat				        parent;
-	protected Set<LithoStrat>		        children;
+    protected Integer                       lithoStratId;
+    protected Integer                       rankId;
+    protected String                        name;
+    protected String                        fullName;
+    protected String                        remarks;
+    protected String                        guid;
+    protected Integer                       nodeNumber;
+    protected Integer                       highestChildNodeNumber;
+    protected LithoStratTreeDef             definition;
+    protected LithoStratTreeDefItem         definitionItem;
+    protected LithoStrat                    parent;
+    protected Set<LithoStrat>               children;
     
-	protected Set<PaleoContext>	            paleoContexts;
+    protected Set<PaleoContext>             paleoContexts;
 
     // for synonym support
-    protected Boolean               isAccepted;
-    protected LithoStrat            acceptedLithoStrat;
-    protected Set<LithoStrat>       acceptedChildren;
+    protected Boolean                       isAccepted;
+    protected LithoStrat                    acceptedLithoStrat;
+    protected Set<LithoStrat>               acceptedChildren;
 
 
-	// Constructors
+    // Constructors
 
-	/** default constructor */
-	public LithoStrat()
-	{
-		// do nothing
-	}
+    /** default constructor */
+    public LithoStrat()
+    {
+        // do nothing
+    }
 
-	/** constructor with id */
-	public LithoStrat(Integer lithoStratId)
-	{
-		this.lithoStratId = lithoStratId;
-	}
+    /** constructor with id */
+    public LithoStrat(Integer lithoStratId)
+    {
+        this.lithoStratId = lithoStratId;
+    }
 
-	// Initializer
-	@Override
+    // Initializer
+    @Override
     public void initialize()
-	{
+    {
         super.init();
-		lithoStratId = null;
-		rankId = null;
-		name = null;
+        lithoStratId = null;
+        rankId = null;
+        name = null;
         fullName = null;
-		remarks = null;
-		guid = null;
-		nodeNumber = null;
-		highestChildNodeNumber = null;
-		definition = null;
-		definitionItem = null;
-		parent = null;
-		children = new HashSet<LithoStrat>();
+        remarks = null;
+        guid = null;
+        nodeNumber = null;
+        highestChildNodeNumber = null;
+        definition = null;
+        definitionItem = null;
+        parent = null;
+        children = new HashSet<LithoStrat>();
         paleoContexts = new HashSet<PaleoContext>();
-	}
+    }
 
-	// End Initializer
+    // End Initializer
 
-	// Property accessors
+    // Property accessors
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @Id
     @GeneratedValue
     @Column(name = "LithoStratID", unique = false, nullable = false, insertable = true, updatable = true)
-	public Integer getLithoStratId()
-	{
-		return this.lithoStratId;
-	}
+    public Integer getLithoStratId()
+    {
+        return this.lithoStratId;
+    }
 
     /**
      * Generic Getter for the ID Property.
@@ -150,55 +157,55 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
         return LithoStrat.class;
     }
 
-	public void setLithoStratId(Integer lithoStratId)
-	{
-		this.lithoStratId = lithoStratId;
-	}
+    public void setLithoStratId(Integer lithoStratId)
+    {
+        this.lithoStratId = lithoStratId;
+    }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @Column(name = "RankID", nullable=false)
-	public Integer getRankId()
-	{
-		return this.rankId;
-	}
+    public Integer getRankId()
+    {
+        return this.rankId;
+    }
 
-	public void setRankId(Integer rankId)
-	{
-		this.rankId = rankId;
-	}
+    public void setRankId(Integer rankId)
+    {
+        this.rankId = rankId;
+    }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @Column(name = "Name", nullable=false, length = 64)
-	public String getName()
-	{
-		return this.name;
-	}
+    public String getName()
+    {
+        return this.name;
+    }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+    public void setName(String name)
+    {
+        this.name = name;
+    }
 
-	/**
-	 * @return the fullName
-	 */
+    /**
+     * @return the fullName
+     */
     @Column(name = "FullName", length = 255)
-	public String getFullName()
-	{
-		return fullName;
-	}
+    public String getFullName()
+    {
+        return fullName;
+    }
 
-	/**
-	 * @param fullName the fullName to set
-	 */
-	public void setFullName(String fullName)
-	{
-		this.fullName = fullName;
-	}
+    /**
+     * @param fullName the fullName to set
+     */
+    public void setFullName(String fullName)
+    {
+        this.fullName = fullName;
+    }
 
     /**
      *
@@ -211,49 +218,49 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
     public void setGuid(String guid) {
         this.guid = guid;
     }
-	
-	/**
-	 * 
-	 */
+    
+    /**
+     * 
+     */
     @Column(name = "NodeNumber", unique = false, nullable = true, insertable = true, updatable = true)
-	public Integer getNodeNumber()
-	{
-		return this.nodeNumber;
-	}
+    public Integer getNodeNumber()
+    {
+        return this.nodeNumber;
+    }
 
-	public void setNodeNumber(Integer nodeNumber)
-	{
-		this.nodeNumber = nodeNumber;
-	}
+    public void setNodeNumber(Integer nodeNumber)
+    {
+        this.nodeNumber = nodeNumber;
+    }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @Column(name = "HighestChildNodeNumber", unique = false, nullable = true, insertable = true, updatable = true)
-	public Integer getHighestChildNodeNumber()
-	{
-		return this.highestChildNodeNumber;
-	}
+    public Integer getHighestChildNodeNumber()
+    {
+        return this.highestChildNodeNumber;
+    }
 
-	public void setHighestChildNodeNumber(Integer highestChildNodeNumber)
-	{
-		this.highestChildNodeNumber = highestChildNodeNumber;
-	}
+    public void setHighestChildNodeNumber(Integer highestChildNodeNumber)
+    {
+        this.highestChildNodeNumber = highestChildNodeNumber;
+    }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @Lob
     @Column(name = "Remarks", length = 4096)
-	public String getRemarks()
-	{
-		return this.remarks;
-	}
+    public String getRemarks()
+    {
+        return this.remarks;
+    }
 
-	public void setRemarks(String remarks)
-	{
-		this.remarks = remarks;
-	}
+    public void setRemarks(String remarks)
+    {
+        this.remarks = remarks;
+    }
     
     @Column(name="IsAccepted", unique=false, nullable=true, insertable=true, updatable=true)
     public Boolean getIsAccepted()
@@ -301,65 +308,65 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
         setAcceptedLithoStrat(acceptedParent);
     }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "LithoStratTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
-	public LithoStratTreeDef getDefinition()
-	{
-		return this.definition;
-	}
+    public LithoStratTreeDef getDefinition()
+    {
+        return this.definition;
+    }
 
-	public void setDefinition(LithoStratTreeDef definition)
-	{
-		this.definition = definition;
-	}
+    public void setDefinition(LithoStratTreeDef definition)
+    {
+        this.definition = definition;
+    }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "LithoStratTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
-	public LithoStratTreeDefItem getDefinitionItem()
-	{
-		return this.definitionItem;
-	}
+    public LithoStratTreeDefItem getDefinitionItem()
+    {
+        return this.definitionItem;
+    }
 
-	public void setDefinitionItem(LithoStratTreeDefItem definitionItem)
-	{
+    public void setDefinitionItem(LithoStratTreeDefItem definitionItem)
+    {
         this.definitionItem = definitionItem;
         if (definitionItem!=null && definitionItem.getRankId()!=null)
         {
             this.rankId = this.definitionItem.getRankId();
         }
-	}
+    }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
-	public LithoStrat getParent()
-	{
-		return this.parent;
-	}
+    public LithoStrat getParent()
+    {
+        return this.parent;
+    }
 
-	public void setParent(LithoStrat parent)
-	{
-		this.parent = parent;
-	}
+    public void setParent(LithoStrat parent)
+    {
+        this.parent = parent;
+    }
 
     @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "parent")
-	public Set<LithoStrat> getChildren()
-	{
-		return this.children;
-	}
+    public Set<LithoStrat> getChildren()
+    {
+        return this.children;
+    }
 
-	public void setChildren(Set<LithoStrat> children)
-	{
-		this.children = children;
-	}
+    public void setChildren(Set<LithoStrat> children)
+    {
+        this.children = children;
+    }
 
     /**
      * @return the paleoContexts
@@ -379,36 +386,36 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
         this.paleoContexts = paleoContexts;
     }
 
-	/* Code added in order to implement Treeable */
+    /* Code added in order to implement Treeable */
 
     @Transient
-	public Integer getTreeId()
-	{
-		return getLithoStratId();
-	}
+    public Integer getTreeId()
+    {
+        return getLithoStratId();
+    }
 
-	public void setTreeId(Integer id)
-	{
-		setLithoStratId(id);
-	}
+    public void setTreeId(Integer id)
+    {
+        setLithoStratId(id);
+    }
 
-	public void addChild(LithoStrat child)
-	{
-		LithoStrat oldParent = child.getParent();
-		if( oldParent!=null )
-		{
-			oldParent.removeChild(child);
-		}
+    public void addChild(LithoStrat child)
+    {
+        LithoStrat oldParent = child.getParent();
+        if( oldParent!=null )
+        {
+            oldParent.removeChild(child);
+        }
 
-		children.add(child);
-		child.setParent(this);
-	}
+        children.add(child);
+        child.setParent(this);
+    }
 
-	public void removeChild(LithoStrat child)
-	{
-		children.remove(child);
-		child.setParent(null);
-	}
+    public void removeChild(LithoStrat child)
+    {
+        children.remove(child);
+        child.setParent(null);
+    }
 
     @Override
     public String toString()
@@ -416,7 +423,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
         return (fullName!=null) ? fullName : super.toString();
     }
 
-	// methods to complete implementation of AbstractTreeable
+    // methods to complete implementation of AbstractTreeable
 
     @Transient
     public int getFullNameDirection()
@@ -430,15 +437,15 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
         return definitionItem.getFullNameSeparator();
     }
 
-	/**
-	 * Generates the 'full name' of a node using the <code>IsInFullName</code> field from the tree
-	 * definition items and following the parent pointer until we hit the root node.  Also used
-	 * in the process is a "direction indicator" for the tree determining whether the name
-	 * should start with the higher nodes and work down to the given node or vice versa.
-	 * 
-	 * @param node the node to get the full name for
-	 * @return the full name
-	 */
+    /**
+     * Generates the 'full name' of a node using the <code>IsInFullName</code> field from the tree
+     * definition items and following the parent pointer until we hit the root node.  Also used
+     * in the process is a "direction indicator" for the tree determining whether the name
+     * should start with the higher nodes and work down to the given node or vice versa.
+     * 
+     * @param node the node to get the full name for
+     * @return the full name
+     */
     public String fixFullName()
     {
         Vector<LithoStrat> parts = new Vector<LithoStrat>();
@@ -517,95 +524,95 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
         
         return fullNameBuilder.toString().trim();
     }
-	
-	/**
-	 * Returns the number of proper descendants for node.
-	 * 
-	 * @param node the node to count descendants for
-	 * @return the number of proper descendants
-	 */
+    
+    /**
+     * Returns the number of proper descendants for node.
+     * 
+     * @param node the node to count descendants for
+     * @return the number of proper descendants
+     */
     @Transient
-	public int getDescendantCount()
-	{
-		int totalDescendants = 0;
-		for( LithoStrat child: getChildren() )
-		{
-			totalDescendants += 1 + child.getDescendantCount();
-		}
-		return totalDescendants;
-	}
-	
-	/**
-	 * Determines if children are allowed for the given node.
-	 * 
-	 * @param item the node to examine
-	 * @return <code>true</code> if children are allowed as defined by the node's tree definition, false otherwise
-	 */
-	public boolean childrenAllowed()
-	{
-		if( definitionItem == null || definitionItem.getChild() == null )
-		{
-			return false;
-		}
-		return true;
-	}
+    public int getDescendantCount()
+    {
+        int totalDescendants = 0;
+        for( LithoStrat child: getChildren() )
+        {
+            totalDescendants += 1 + child.getDescendantCount();
+        }
+        return totalDescendants;
+    }
+    
+    /**
+     * Determines if children are allowed for the given node.
+     * 
+     * @param item the node to examine
+     * @return <code>true</code> if children are allowed as defined by the node's tree definition, false otherwise
+     */
+    public boolean childrenAllowed()
+    {
+        if( definitionItem == null || definitionItem.getChild() == null )
+        {
+            return false;
+        }
+        return true;
+    }
 
-	/**
-	 * Returns a <code>List</code> of all descendants of the called <code>node</code>.
-	 * 
-	 * @return all descendants of <code>node</code>
-	 */
+    /**
+     * Returns a <code>List</code> of all descendants of the called <code>node</code>.
+     * 
+     * @return all descendants of <code>node</code>
+     */
     @Transient
-	public List<LithoStrat> getAllDescendants()
-	{
-		Vector<LithoStrat> descendants = new Vector<LithoStrat>();
-		for( LithoStrat child: getChildren() )
-		{
-			descendants.add(child);
-			descendants.addAll(child.getAllDescendants());
-		}
-		return descendants;
-	}
-	
+    public List<LithoStrat> getAllDescendants()
+    {
+        Vector<LithoStrat> descendants = new Vector<LithoStrat>();
+        for( LithoStrat child: getChildren() )
+        {
+            descendants.add(child);
+            descendants.addAll(child.getAllDescendants());
+        }
+        return descendants;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.Treeable#getAllAncestors()
      */
     @Transient
-	public List<LithoStrat> getAllAncestors()
-	{
-		Vector<LithoStrat> ancestors = new Vector<LithoStrat>();
-		LithoStrat parentNode = parent;
-		while(parentNode != null)
-		{
-			ancestors.add(0,parentNode);
-			parentNode = parentNode.getParent();
-		}
-		
-		return ancestors;
-	}
+    public List<LithoStrat> getAllAncestors()
+    {
+        Vector<LithoStrat> ancestors = new Vector<LithoStrat>();
+        LithoStrat parentNode = parent;
+        while(parentNode != null)
+        {
+            ancestors.add(0,parentNode);
+            parentNode = parentNode.getParent();
+        }
+        
+        return ancestors;
+    }
 
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.datamodel.Treeable#isDescendantOf(edu.ku.brc.specify.datamodel.Treeable)
-	 */
-	public boolean isDescendantOf(LithoStrat node)
-	{
-		if( node==null )
-		{
-			throw new NullPointerException();
-		}
-		
-		LithoStrat i = getParent();
-		while( i != null )
-		{
-			if( i.getId() == getId() )
-			{
-				return true;
-			}
-			
-			i = i.getParent();
-		}
-		return false;
-	}
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.Treeable#isDescendantOf(edu.ku.brc.specify.datamodel.Treeable)
+     */
+    public boolean isDescendantOf(LithoStrat node)
+    {
+        if( node==null )
+        {
+            throw new NullPointerException();
+        }
+        
+        LithoStrat i = getParent();
+        while( i != null )
+        {
+            if( i.getId() == getId() )
+            {
+                return true;
+            }
+            
+            i = i.getParent();
+        }
+        return false;
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.Treeable#getComparator()

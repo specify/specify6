@@ -81,6 +81,8 @@ public interface DataProviderSessionIFace
     
     public abstract boolean delete(Object dataObj) throws Exception; 
     
+    public abstract boolean deleteHQL(String sql) throws Exception; 
+    
     public abstract void deleteOnSaveOrUpdate(Object dataObj);
 
     //---------------------------

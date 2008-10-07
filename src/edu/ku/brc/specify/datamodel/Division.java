@@ -228,8 +228,8 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     /**
      * @return the members
      */
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "division")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL,  org.hibernate.annotations.CascadeType.DELETE_ORPHAN})
     public Set<Agent> getMembers()
     {
         return members;

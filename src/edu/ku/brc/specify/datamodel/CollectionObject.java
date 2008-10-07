@@ -208,7 +208,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         collectionObjectAttrs = new HashSet<CollectionObjectAttr>();
         preparations          = new HashSet<Preparation>();
         determinations        = new HashSet<Determination>();
-        projects = new HashSet<Project>();
+        projects              = new HashSet<Project>();
         //deaccessionPreparations = new HashSet<DeaccessionPreparation>();
         otherIdentifiers      = new HashSet<OtherIdentifier>();
         collection            = null;

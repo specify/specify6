@@ -1330,10 +1330,10 @@
                 </row>
                 <row>
                     <cell type="subview" viewname="CommonNameTx" id="commonNames" name="commonNames" colspan="5"/>
-                </row> 
+                </row> -->
                 <row>
                     <cell type="subview" viewname="TaxonCitation" id="taxonCitations" name="taxonCitations" colspan="5"/>
-                </row> -->
+                </row> 
 		        <row>
 			        <cell type="separator" label="ATTACHMENTS" colspan="5"/>
                 </row>
