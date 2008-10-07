@@ -557,7 +557,77 @@
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true"/>
                 </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="type" uitype="combobox" picklist="AccessionType" isrequired="true"/>
+                    
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="division" uitype="combobox" picklist="Division" isrequired="true"/>
+                    
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="dateAccessioned" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
+                    
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="dateReceived" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
+                </row>
+                <!-- 
+                <row>
+                    <cell type="label" labelfor="99"/>
+                    <cell type="field" id="99" name="this" uitype="plugin" initialize="name=WebLinkButton;weblink=AccessionNumber"/>
+                    <cell type="label" labelfor="199"/>
+                    <cell type="field" id="199" name="text2" uitype="plugin" initialize="name=WebLinkButton;weblink=Tester"/>
+                </row>
+                 -->
+                <!-- Atypical form fields<row>
+                    <cell type="label" labelfor="26"/>
+                    <cell type="field" id="26" name="dateAcknowledged" uitype="formattedtext" isrequired="false" uifieldformatter="Date" default="today"/>
+                    
+                    <cell type="label" labelfor="27"/>
+                    <cell type="field" id="27" name="verbatimDate" uitype="text" isrequired="false" />
+                </row>
+                <row>
+                	<cell type="label" labelfor="29"/>
+                	<cell type="field" id="29" name="number1" uitype="text"/>
+                	
+                	
+                	<cell type="label" labelfor="30"/>
+                	<cell type="field" id="30" name="number2" uitype="text"/>
+                </row>
+                <row>
+                	<cell type="field" id="34" uitype="checkbox" name="yesNo1" label="yesNo1"/>
+                	
+                	<cell type="field" id="35" uitype="checkbox" name="yesNo2" label="yesNo2"/>
+                </row>
 
+                <row>
+                	<cell type="label" labelfor="31"/>
+                	<cell type="field" id="31" name="text1" uitype="textarea" cols="30" colspan="10"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="32"/>
+                	<cell type="field" id="32" name="text2" uitype="textarea" cols="30" colspan="10"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="33"/>
+                	<cell type="field" id="33" name="text3" uitype="textarea" cols="30" colspan="10"/>
+                </row>
+    			<row>
+    				<cell type="label" labelfor="28"/>
+    				<cell type="field" id="28" name="accessionCondition" uitype="textarea" cols="30" colspan="10"/>
+    			</row> -->
+    			            
+                <row>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="remarks" uitype="textarea" cols="30" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="AccessionAuthorization" id="9" desc="Authorization" name="accessionAuthorizations" colspan="12"/>
+                </row>
                 <row> 
                     <cell type="subview" viewname="CollectionObjectSub" id="25" desc="Collection Object" name="collectionObjects" colspan="12" initialize="addsearch=true" />
                 </row>
@@ -571,7 +641,9 @@
                 <row>
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
-
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="12" initialize="addsearch=true;btn=true;icon=AccessionAttachment;hc=xxx"/>
+                </row>
                 <row>
                     <cell type="separator" label="" colspan="12"/>
                 </row>
