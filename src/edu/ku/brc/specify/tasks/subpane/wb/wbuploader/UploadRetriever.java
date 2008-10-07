@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.Taskable;
@@ -77,13 +79,26 @@ public class UploadRetriever //implements CommandListener, SQLExecutionListener,
     {
         for (UploadTable ut : uploadTables)
         {
-            esrPane.addSearchResults(new UploadResults(ut, Uploader.getCurrentUpload().uploadData));
+            final UploadTable upTbl = ut;
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run()
+                {
+                    esrPane.addSearchResults(new UploadResults(upTbl, Uploader.getCurrentUpload().uploadData));
+                }
+            });
         }
-        CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), 
-                        "Uploaded Data", //XXX i18n
-                        true,
-                        (ESResultsSubPane )esrPane);
-        UIHelper.centerAndShow(cd);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), 
+                                "Uploaded Data", //XXX i18n
+                                true,
+                                (ESResultsSubPane )esrPane);
+                UIHelper.centerAndShow(cd);
+            }
+        });
     }
 
 

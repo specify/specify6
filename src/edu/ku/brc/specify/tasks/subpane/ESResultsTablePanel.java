@@ -778,9 +778,9 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         
         if (rowCount > 0)
         {
-//            SwingUtilities.invokeLater(new Runnable() {
-//                public void run()
-//                {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
                     setTitleBar();
                     esrPane.addTable(ESResultsTablePanel.this);
                     
@@ -788,8 +788,8 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
                     {
                         propChangeListener.propertyChange(new PropertyChangeEvent(this, "loaded", rowCount, rowCount));
                     }
-//                }
-//            });
+                }
+            });
         }
     }
 
