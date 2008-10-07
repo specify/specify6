@@ -260,8 +260,8 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
             });
         }
         
-        title = "CLOSE";
-        mneu = "CloseMneu";
+        title = "ImageFrame.CLOSE";
+        mneu = "ImageFrame.CloseMneu";
         closeMI = UIHelper.createLocalizedMenuItem(fileMenu, title, mneu,  "", true, null);
         closeMI.addActionListener(new ActionListener()
         {
@@ -271,10 +271,10 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
             }
         });
         
-        title = "View";
-        mneu = "ViewMneu";
+        title = "ImageFrame.View";
+        mneu = "ImageFrame.ViewMneu";
         viewMenu  = UIHelper.createLocalizedMenu(menuBar, title, mneu);        
-        reduceMI = UIHelper.createRadioButtonMenuItem(viewMenu, "WB_REDUCED_SIZE", "ReducedSizeMneu", "", true, null);
+        reduceMI = UIHelper.createRadioButtonMenuItem(viewMenu, "WB_REDUCED_SIZE", "ImageFrame.ReducedSizeMneu", "", true, null);
         reduceMI.setSelected(true);
         reduceMI.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -291,7 +291,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
             }
         });
         
-        origMI = UIHelper.createRadioButtonMenuItem(viewMenu, "WB_ORIG_SIZE", "OrigMneu", "", true, null);
+        origMI = UIHelper.createRadioButtonMenuItem(viewMenu, "WB_ORIG_SIZE", "ImageFrame.OrigMneu", "", true, null);
         origMI.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
@@ -351,8 +351,8 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
                 }
             };
 
-            title = "Image";
-            mneu = "ImageMneu";
+            title = "ImageFrame.Image";
+            mneu = "ImageFrame.ImageMneu";
             imageMenu = UIHelper.createLocalizedMenu(menuBar, title, mneu);
 
             title = "WB_ADD_IMG";
