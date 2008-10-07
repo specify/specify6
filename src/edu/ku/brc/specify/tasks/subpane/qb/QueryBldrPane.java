@@ -1268,7 +1268,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
        
         int results = completedResults.get().getQuery().getDataObjects().size();
         int max = completedResults.get().getMaxTableRows();
-        if (results > max)
+        if (results > max && !countOnly)
         {
             UIRegistry.displayInfoMsgDlgLocalized("QB_PARTIAL_RESULTS_DISPLAY", max, results);
         }
