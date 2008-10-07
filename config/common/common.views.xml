@@ -546,7 +546,7 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,2px,p,2px,100px:g,2px,p,2px,p,2px,p,p:g</columnDef>
+            <columnDef>p,2px,p,2px,100px:g,2px,p,2px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1px"/>
 
             <rows>
@@ -1011,7 +1011,7 @@
               <desc><![CDATA[The Collection Object Subform for Accessions.]]></desc>
               <enableRules/>
               
-              <columnDef>100px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g</columnDef>
+              <columnDef>p,2px,150px,2px,200px,2px,100px,2px,p,2px,p,p:g</columnDef>
               <rowDef auto="true" cell="p" sep="2px"/>
               <rows>
                 <row>
