@@ -109,7 +109,6 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -875,7 +874,6 @@ public class ViewFactory
 
                 // initialize the plugin object
                
-                props.put("parent", parent);
                 uiPlugin.initialize(props, isViewMode);
                 
                 // get the UI component provided by the plugin object
@@ -894,7 +892,7 @@ public class ViewFactory
                                                                        parseValidationType(cellField.getValidationType()), 
                                                                        cellField.getValidationRule(), 
                                                                        false);
-                    uiPlugin.setChangeListener(dcn);
+                    uiPlugin.addChangeListener(dcn);
                 }
 
                 return uiPlugin;
@@ -1780,6 +1778,8 @@ public class ViewFactory
                 }
             }
         }
+        
+        viewBldObj.doneBuilding();
         
         // Check to see if there is at least one required field
         if (doFixLabels && hasRequiredOrDerivedField)

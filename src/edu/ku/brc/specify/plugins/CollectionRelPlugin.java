@@ -99,7 +99,7 @@ public class CollectionRelPlugin extends UIPluginBase
     protected void itemSelected()
     {
         CollectionObject newColObj = (CollectionObject)cbx.getValue();
-        CollectionObject curColObj = (CollectionObject)data;
+        CollectionObject curColObj = (CollectionObject)dataObj;
         
         DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
         tmpSession.attach(newColObj);

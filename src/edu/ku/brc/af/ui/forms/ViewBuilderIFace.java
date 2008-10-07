@@ -23,7 +23,6 @@ import javax.swing.JLabel;
 import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.af.ui.forms.persist.FormCellSubView;
-import edu.ku.brc.ui.UIPluginable;
 
 /**
  * This interface enables class to accept the UI components to be layed out by it's internal
@@ -127,5 +126,10 @@ public interface ViewBuilderIFace
      * 
      */
     public abstract void fixUpRequiredDerivedLabels();
+    
+    /**
+     * Provide an opportunity to tell the controls that the form is now complete (i.e. like UIPlugins)
+     */
+    public abstract void doneBuilding();
     
 }

@@ -44,6 +44,7 @@ import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -470,6 +471,11 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         super.beforeMerge(dataObj, session);
         
         Agent agent = (Agent)dataObj;
+        
+        if (agent.getDivision() == null)
+        {
+            agent.setDivision(AppContextMgr.getInstance().getClassObject(Division.class));
+        }
         
         //session.attach(agent);
         

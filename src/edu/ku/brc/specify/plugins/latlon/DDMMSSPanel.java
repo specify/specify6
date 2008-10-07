@@ -129,11 +129,17 @@ public class DDMMSSPanel extends DDMMMMPanel
             if (evalState(latitudeDD, latitudeMM, latitudeSS) == ValState.Valid)
             {
                 latitude =  LatLonConverter.convertDDMMSSToDDDD(getStringFromFields(latitudeDD, latitudeMM, latitudeSS), NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
+            } else
+            {
+                latitude = null;
             }
 
         } else if (evalState(longitudeDD, longitudeMM, longitudeSS) == ValState.Valid)
         {
             longitude = LatLonConverter.convertDDMMSSToDDDD(getStringFromFields(longitudeDD, longitudeMM, longitudeSS), EAST_WEST[longitudeDir.getSelectedIndex()]);
+        } else
+        {
+            longitude = null;
         }
     }
     

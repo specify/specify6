@@ -142,7 +142,6 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Orderable;
 
@@ -3355,8 +3354,8 @@ public class FormViewObj implements Viewable,
         return fi != null ? fi.getComp() : null;
     }
     
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.ViewBuilderIFace#fixUpRequiredDerivedLabels()
      */
     public void fixUpRequiredDerivedLabels()
     {
@@ -3449,6 +3448,21 @@ public class FormViewObj implements Viewable,
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.ViewBuilderIFace#doneBuilding()
+     */
+    @Override
+    public void doneBuilding()
+    {
+        for (FVOFieldInfo fi : controlsById.values())
+        {
+            if (fi.getUiPlugin() != null)
+            {
+                fi.getUiPlugin().setParent(this);
+            }
+        }
+    }
+
     /**
      * @param id
      * @return
@@ -5063,7 +5077,7 @@ public class FormViewObj implements Viewable,
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#registerPlugin(edu.ku.brc.ui.forms.persist.FormCellIFace, edu.ku.brc.ui.UIPluginable)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#registerPlugin(edu.ku.brc.ui.forms.persist.FormCellIFace, edu.ku.brc.af.ui.forms.UIPluginable)
      */
     public void registerPlugin(FormCellIFace formCell, UIPluginable uip)
     {

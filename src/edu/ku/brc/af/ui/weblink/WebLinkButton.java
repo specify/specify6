@@ -24,8 +24,6 @@ import java.util.Properties;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeListener;
@@ -41,15 +39,15 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.validation.DataChangeListener;
 import edu.ku.brc.af.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
+import edu.ku.brc.specify.plugins.UIPluginBase;
 import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
 
@@ -63,23 +61,20 @@ import edu.ku.brc.util.AttachmentUtils;
  * Apr 13, 2008
  *
  */
-public class WebLinkButton extends JPanel implements UIPluginable, 
-                                                     GetSetValueIFace, 
-                                                     ActionListener, 
-                                                     UIValidatable,
-                                                     DataChangeListener
+public class WebLinkButton extends UIPluginBase implements ActionListener, 
+                                                           UIValidatable,
+                                                           DataChangeListener
 {
     protected Logger log = Logger.getLogger(WebLinkButton.class);
     
     protected JButton                       launchBtn;
     protected JButton                       editBtn     = null;
-    protected ValTextField                  textField        = null;
+    protected ValTextField                  textField   = null;
+    protected FormViewObj                   fvo         = null;
     
     protected WebLinkDef                    webLinkDef  = null;
     
     protected String                        urlStr;
-    protected Properties                    initProps;
-    protected Object                        dataObj;
     protected boolean                       usingThisData = true;
     protected boolean                       isTableSpecific;
     
@@ -99,6 +94,9 @@ public class WebLinkButton extends JPanel implements UIPluginable,
     protected boolean                       isRequired = false;
     protected boolean                       isChanged  = false;
     protected boolean                       isNew      = false;
+    
+    protected String                        watchId    = null;
+    protected boolean                       isWatchSetUp = false;
 
     /**
      * 
@@ -109,10 +107,13 @@ public class WebLinkButton extends JPanel implements UIPluginable,
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#initialize(java.util.Properties, boolean)
      */
-    public void initialize(final Properties properties, final boolean isViewMode)
+    @Override
+    public void initialize(final Properties propertiesArg, final boolean isViewModeArg)
     {
+        super.initialize(propertiesArg, isViewModeArg);
+        
         urlStr = properties.getProperty("url");
         
         String iconName = properties.getProperty("icon"); //$NON-NLS-1$
@@ -161,9 +162,10 @@ public class WebLinkButton extends JPanel implements UIPluginable,
             {
                 ViewFactory.changeTextFieldUIForDisplay(textField, false);
             }
+        } else
+        {
+            watchId = properties.getProperty("watch");
         }
-        
-        
         
         /*if (!isViewMode)
         {
@@ -346,10 +348,10 @@ public class WebLinkButton extends JPanel implements UIPluginable,
                         
                     } else if (dataObj instanceof FormDataObjIFace)
                     {
-                        Object data = FormHelper.getValue((FormDataObjIFace)dataObj, name);
-                        if (data != null)
+                        Object dataVal = FormHelper.getValue((FormDataObjIFace)dataObj, name);
+                        if (dataVal != null)
                         {
-                            value = data.toString();
+                            value = dataVal.toString();
                         } else
                         {
                             backupPrompt.put(name, arg.getTitle() == null ? arg.getName() : arg.getTitle());
@@ -359,9 +361,24 @@ public class WebLinkButton extends JPanel implements UIPluginable,
                         value = (String)dataObj;
                     }
                     
+                    String textFieldValue = null;
+                    if (textField != null)
+                    {
+                        textFieldValue = textField.getText();
+                    }
+                    
                     if (value != null)
                     {
+                        if (StringUtils.isNotEmpty(textFieldValue) && !textFieldValue.equals(value))
+                        {
+                            value = textFieldValue;
+                        }
                         valueHash.put(name, value);
+                        numValues++;
+                        
+                    } else if (StringUtils.isNotEmpty(textFieldValue))
+                    {
+                        valueHash.put(name, textFieldValue);
                         numValues++;
                     }
                 } else
@@ -453,39 +470,36 @@ public class WebLinkButton extends JPanel implements UIPluginable,
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#getUIComponent()
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setCellName(java.lang.String)
      */
-    public JComponent getUIComponent()
-    {
-        return this;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setCellName(java.lang.String)
-     */
+    @Override
     public void setCellName(String cellName)
     {
-        this.cellName = cellName;
+        super.setCellName(cellName);
         usingThisData = StringUtils.isNotEmpty(cellName) && cellName.equals("this"); //$NON-NLS-1$ 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setViewable(edu.ku.brc.af.ui.forms.Viewable)
      */
-    public void setChangeListener(ChangeListener listener)
+    @Override
+    public void setParent(final FormViewObj parent)
     {
-        this.changeListener = listener;
+        super.setParent(parent);
+        
+        if (fvo != null && isTableSpecific && StringUtils.isNotEmpty(watchId))
+        {
+            Component comp = fvo.getCompById(watchId);
+            if (comp instanceof ValTextField)
+            {
+                textField = (ValTextField)comp;
+                DataChangeNotifier dcn = new DataChangeNotifier(null, textField, null);
+                dcn.addDataChangeListener(this);
+                textField.getDocument().addDocumentListener(dcn);
+            }
+        }
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#shutdown()
-     */
-    public void shutdown()
-    {
-        dataObj = null;
-        changeListener = null;
-    }
-    
     //--------------------------------------------------------
     //-- GetSetValueIFace
     //--------------------------------------------------------
@@ -495,6 +509,8 @@ public class WebLinkButton extends JPanel implements UIPluginable,
      */
     public void setValue(Object value, String defaultValue)
     {
+        super.setValue(value, defaultValue);
+        
         if (value == null)
         {
             this.setEnabled(false);
@@ -523,15 +539,6 @@ public class WebLinkButton extends JPanel implements UIPluginable,
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.ui.GetSetValueIFace#getValue()
-     */
-    public Object getValue()
-    {
-        return dataObj;
-    }
-
-    
     //-----------------------------------------------------------
     //-- UIValidatable
     //-----------------------------------------------------------
@@ -540,7 +547,6 @@ public class WebLinkButton extends JPanel implements UIPluginable,
      */
     public void cleanUp()
     {
-        changeListener = null;
     }
 
     /* (non-Javadoc)
@@ -650,7 +656,7 @@ public class WebLinkButton extends JPanel implements UIPluginable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.forms.validation.DataChangeNotifier)
      */
-    public void dataChanged(String name, Component comp, DataChangeNotifier dcn)
+    public void dataChanged(final String name, final Component comp, final DataChangeNotifier dcn)
     {
         validateState();
         

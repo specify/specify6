@@ -951,7 +951,7 @@
                 <row>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="agent.email" uitype="text" cols="32"/>
-                    <cell type="field" id="mailto" name="agent" uitype="plugin" initialize="name=WebLinkLauncherButton;url=mailto:$email$;label=Send Mail"/>
+                    <cell type="field" id="mailto" name="agent" uitype="plugin" initialize="name=WebLinkLauncherButton;url=mailto:$email$;label=Send Mail;watch=7"/>
                 </row>
             </rows>
         </viewdef>
@@ -1667,8 +1667,8 @@
                         <rows>
                             <row>
                                 <cell type="label" label=" "/>
-                                <cell type="field" id="23" name="this" uitype="plugin" initialize="name=LocalityGeoRef;title=Geo Ref" colspan="1"/>
-                                <cell type="field" id="24" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth" colspan="1"/>
+                                <cell type="field" id="23" name="this" uitype="plugin" initialize="name=LocalityGeoRef;title=Geo Ref;watch=5" colspan="1"/>
+                                <cell type="field" id="24" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth;watch=5" colspan="1"/>
                             </row>
                         </rows>
                     </cell>

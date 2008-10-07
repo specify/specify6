@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.ui;
+package edu.ku.brc.af.ui.forms;
 
 import java.beans.PropertyChangeListener;
 import java.util.Properties;
@@ -48,7 +48,7 @@ public interface UIPluginable
      * Sets a single ChangeListener.
      * @param listener the listener
      */
-    public abstract void setChangeListener(ChangeListener listener);
+    public abstract void addChangeListener(ChangeListener listener);
     
     /**
      * @return the UI component for the plugin
@@ -65,5 +65,13 @@ public interface UIPluginable
      * @param l the listener
      */
     public abstract void addPropertyChangeListener(PropertyChangeListener l);
-
+    
+    
+    /**
+     * Sets the parent FormViewObj, the parent that contains this plugin.
+     * This caller should be guaranteeing that the FormViewObj is completely built.
+     * @param parent the FormViewObj parent (or null)
+     */
+    public abstract void setParent(FormViewObj parent);
+    
 }

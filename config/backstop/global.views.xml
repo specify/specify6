@@ -580,7 +580,7 @@
                 <row>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="email" uitype="text" cols="32"/>
-                    <cell type="field" id="mailto" name="this" uitype="plugin" initialize="name=WebLinkButton;weblink=MailTo;icon=EMail"/>
+                    <cell type="field" id="mailto" name="this" uitype="plugin" initialize="name=WebLinkButton;weblink=MailTo;icon=EMail;watch=7"/>
                 </row>
                 <!-- "URL:" <row>
                 	<cell type="label" labelfor="17" />

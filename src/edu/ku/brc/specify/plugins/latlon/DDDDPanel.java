@@ -359,6 +359,9 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
             {
                 latitude = LatLonConverter.convertDDDDToDDDD(str, NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
+            } else
+            {
+                latitude = null;
             }
         } else
         {
@@ -366,6 +369,9 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
             {
                 longitude = LatLonConverter.convertDDDDToDDDD(str, EAST_WEST[longitudeDir.getSelectedIndex()]);
+            } else
+            {
+                longitude = null;
             }
         }
     }

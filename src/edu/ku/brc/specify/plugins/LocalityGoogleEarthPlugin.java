@@ -9,8 +9,12 @@ package edu.ku.brc.specify.plugins;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getStatusBar;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
@@ -20,14 +24,20 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.UIPluginable;
+import edu.ku.brc.af.ui.forms.validation.UIValidatable.ErrorType;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.plugins.latlon.LatLonUI;
 import edu.ku.brc.specify.rstools.GoogleEarthExporter;
 import edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace;
 import edu.ku.brc.specify.tasks.ToolsTask;
@@ -37,7 +47,6 @@ import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -50,7 +59,9 @@ import edu.ku.brc.util.Pair;
  * Oct 17, 2007
  *
  */
-public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFace, UIPluginable
+public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFace, 
+                                                                  UIPluginable,
+                                                                  PropertyChangeListener
 {
     protected CollectionObject colObj    = null;
     protected CollectingEvent  ce;
@@ -58,6 +69,10 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     protected Object           origData  = null;
     protected boolean          hasPoints = false;
     protected ImageIcon        imageIcon = null;
+    
+    protected String           watchId      = null;
+    protected LatLonUI         latLonPlugin = null;
+    protected Vector<ChangeListener> listeners = null;
     
     /**
      * 
@@ -193,7 +208,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#getUIComponent()
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getUIComponent()
      */
     public JComponent getUIComponent()
     {
@@ -201,16 +216,18 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#initialize(java.util.Properties, boolean)
      */
     public void initialize(final Properties properties, final boolean isViewMode)
     {
         setIcon(IconManager.getIcon("GoogleEarth16"));
         setText(getResourceString("GE_DSP_IN_GE"));
+        
+        watchId = properties.getProperty("watch");
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setCellName(java.lang.String)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setCellName(java.lang.String)
      */
     public void setCellName(final String cellName)
     {
@@ -218,20 +235,73 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
      */
-    public void setChangeListener(final ChangeListener listener)
+    public void addChangeListener(final ChangeListener listener)
     {
-        
+        if (this.listeners == null)
+        {
+            this.listeners = new Vector<ChangeListener>();
+        }
+        this.listeners.add(listener);
     }
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#shutdown()
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setViewable(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void setParent(FormViewObj parent)
+    {
+        if (parent != null && StringUtils.isNotEmpty(watchId))
+        {
+            Component comp = parent.getCompById(watchId);
+            if (comp instanceof LatLonUI)
+            {
+                latLonPlugin = (LatLonUI)comp;
+                latLonPlugin.addPropertyChangeListener(this);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#shutdown()
      */
     public void shutdown()
     {
+        if (latLonPlugin != null)
+        {
+            latLonPlugin.removePropertyChangeListener(this);
+            latLonPlugin = null;
+        }
         
+        if (listeners != null)
+        {
+            listeners.clear();
+            listeners = null;
+        }
+        locality = null;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+     */
+    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (evt.getPropertyName().equals("latlon"))
+        {
+            Object obj = evt.getNewValue();
+            if (obj instanceof Pair<?, ?>)
+            {
+                Pair<BigDecimal, BigDecimal> latLon = latLonPlugin.getLatLon();
+                super.setEnabled(latLon != null && 
+                        latLon.first != null && 
+                        latLon.second != null && 
+                        StringUtils.isNotEmpty(((Locality)latLonPlugin.getValue()).getLocalityName()) &&
+                        latLonPlugin.getState() == ErrorType.Valid);
+            }
+        }
     }
     
     //---------------------------------------------------------------------------------

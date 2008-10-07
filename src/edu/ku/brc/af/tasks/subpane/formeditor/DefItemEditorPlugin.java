@@ -25,11 +25,12 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.UIPluginable;
 import edu.ku.brc.af.ui.forms.persist.FormRowIFace;
 import edu.ku.brc.af.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -137,7 +138,7 @@ public class DefItemEditorPlugin extends JPanel implements GetSetValueIFace, UIP
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#getUIComponent()
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getUIComponent()
      */
     public JComponent getUIComponent()
     {
@@ -145,7 +146,7 @@ public class DefItemEditorPlugin extends JPanel implements GetSetValueIFace, UIP
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#initialize(java.util.Properties, boolean)
      */
     public void initialize(Properties properties, boolean isViewMode)
     {
@@ -153,7 +154,7 @@ public class DefItemEditorPlugin extends JPanel implements GetSetValueIFace, UIP
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setCellName(java.lang.String)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setCellName(java.lang.String)
      */
     public void setCellName(String cellName)
     {
@@ -161,21 +162,27 @@ public class DefItemEditorPlugin extends JPanel implements GetSetValueIFace, UIP
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
      */
-    public void setChangeListener(ChangeListener listener)
+    public void addChangeListener(ChangeListener listener)
     {
         
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#shutdown()
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#shutdown()
      */
     public void shutdown()
     {
         // TODO Auto-generated method stub
         
     }
-    
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setViewable(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void setParent(FormViewObj parent)
+    {
+    }
 }

@@ -111,7 +111,6 @@ import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Orderable;
 
@@ -1776,7 +1775,7 @@ public class TableViewObj implements Viewable,
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#registerPlugin(edu.ku.brc.ui.forms.persist.FormCellIFace, edu.ku.brc.ui.UIPluginable)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#registerPlugin(edu.ku.brc.ui.forms.persist.FormCellIFace, edu.ku.brc.af.ui.forms.UIPluginable)
      */
     public void registerPlugin(FormCellIFace formCell, UIPluginable uip)
     {
@@ -1941,6 +1940,14 @@ public class TableViewObj implements Viewable,
                 }
             }
         }*/
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.ViewBuilderIFace#doneBuilding()
+     */
+    @Override
+    public void doneBuilding()
+    {
     }
 
     

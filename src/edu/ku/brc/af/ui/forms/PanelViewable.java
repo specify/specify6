@@ -38,7 +38,6 @@ import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.af.ui.forms.persist.FormCellPanel;
 import edu.ku.brc.af.ui.forms.persist.FormCellSubView;
-import edu.ku.brc.ui.UIPluginable;
 
 /**
  * A simple container using the JGoodies layout for better organzing UI components. It also enables
@@ -168,7 +167,7 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#registerPlugin(edu.ku.brc.ui.forms.persist.FormCellIFace, edu.ku.brc.ui.UIPluginable)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#registerPlugin(edu.ku.brc.ui.forms.persist.FormCellIFace, edu.ku.brc.af.ui.forms.UIPluginable)
      */
     public void registerPlugin(FormCellIFace formCell, UIPluginable uip)
     {
@@ -214,4 +213,14 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
     {
         // no op
     }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.ViewBuilderIFace#doneBuilding()
+     */
+    @Override
+    public void doneBuilding()
+    {
+    }
+
 }

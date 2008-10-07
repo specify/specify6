@@ -693,7 +693,7 @@ public class WorkbenchTask extends BaseTask
     
     /**
      * Ask the user for information needed to fill in the data object.
-     * @param data the data object
+     * @param dataObj the data object
      * @return true if OK, false if cancelled
      */
     public static boolean askUserForInfo(final String viewSetName, 
@@ -2043,7 +2043,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     
     /**
      * Ask the user for information needed to fill in the data object.
-     * @param data the data object
+     * @param dataObj the data object
      * @return true if OK, false if cancelled
      */
     public static boolean askUserForReportProps()

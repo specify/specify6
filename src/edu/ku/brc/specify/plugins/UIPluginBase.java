@@ -18,13 +18,16 @@
 package edu.ku.brc.specify.plugins;
 
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.UIPluginable;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.UIPluginable;
 
 /**
  * @author rods
@@ -36,12 +39,16 @@ import edu.ku.brc.ui.UIPluginable;
  */
 public class UIPluginBase extends JPanel implements GetSetValueIFace, UIPluginable
 {
-    protected Object         data          = null;
-    protected ChangeListener listener      = null;
-    protected String         cellName      = null;
-    protected boolean        isViewMode    = true;
-    protected Properties     properties    = null;
+    protected Object         dataObj           = null;
+    protected String         cellName          = null;
+    protected boolean        isViewMode        = true;
+    protected Properties     properties        = null;
+    protected FormViewObj    fvo               = null;
+    protected Vector<ChangeListener> listeners = null;
     
+    /**
+     * 
+     */
     public UIPluginBase()
     {
         // no op
@@ -56,7 +63,7 @@ public class UIPluginBase extends JPanel implements GetSetValueIFace, UIPluginab
      */
     public Object getValue()
     {
-        return data;
+        return dataObj;
     }
 
     /* (non-Javadoc)
@@ -64,7 +71,7 @@ public class UIPluginBase extends JPanel implements GetSetValueIFace, UIPluginab
      */
     public void setValue(Object value, String defaultValue)
     {
-        data = value == null ? defaultValue : value;
+        dataObj = value == null ? defaultValue : value;
     }
     
     //-----------------------------------------
@@ -72,7 +79,7 @@ public class UIPluginBase extends JPanel implements GetSetValueIFace, UIPluginab
     //-----------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#getUIComponent()
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getUIComponent()
      */
     public JComponent getUIComponent()
     {
@@ -80,16 +87,16 @@ public class UIPluginBase extends JPanel implements GetSetValueIFace, UIPluginab
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#initialize(java.util.Properties, boolean)
      */
-    public void initialize(Properties propertiesArg, boolean isViewModeArg)
+    public void initialize(final Properties propertiesArg, final boolean isViewModeArg)
     {
         this.properties = propertiesArg;
         this.isViewMode = isViewModeArg;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setCellName(java.lang.String)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setCellName(java.lang.String)
      */
     public void setCellName(String cellName)
     {
@@ -97,21 +104,57 @@ public class UIPluginBase extends JPanel implements GetSetValueIFace, UIPluginab
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
      */
-    public void setChangeListener(final ChangeListener listener)
+    public void addChangeListener(final ChangeListener listener)
     {
-        this.listener = listener;
+        if (this.listeners == null)
+        {
+            this.listeners = new Vector<ChangeListener>();
+        }
+        this.listeners.add(listener);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setViewable(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void setParent(FormViewObj parent)
+    {
+        fvo = parent;
+    }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#shutdown()
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#shutdown()
      */
     public void shutdown()
     {
-        listener   = null;
-        properties = null;
-        data       = null;
+        if (listeners != null)
+        {
+            listeners.clear();
+            listeners  = null;
+        }
+        
+        if (properties != null)
+        {
+            properties.clear();
+            properties = null;
+        }
+        dataObj = null;
+    }
+    
+    /**
+     * Notify all the change listeners.
+     * @param e the change event or null
+     */
+    protected void notifyChangeListeners(final ChangeEvent e)
+    {
+        if (listeners != null)
+        {
+            for (ChangeListener l : listeners)
+            {
+                l.stateChanged(e);
+            }
+        }
     }
 }

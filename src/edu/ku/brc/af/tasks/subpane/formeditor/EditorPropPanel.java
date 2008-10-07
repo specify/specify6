@@ -237,7 +237,7 @@ public class EditorPropPanel extends JPanel
     }
     
     /**
-     * @param data
+     * @param dataObj
      */
     protected void getDataFromUI(final AltView altView)
     {

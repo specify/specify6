@@ -42,7 +42,9 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayActionAdapter;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.UIPluginable;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.extras.FishBaseInfoGetter;
 import edu.ku.brc.specify.extras.FishBaseInfoGetterListener;
@@ -50,7 +52,6 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -182,7 +183,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#initialize(java.util.Properties, boolean)
      */
     public void initialize(final Properties properties, final boolean isViewMode)
     {
@@ -227,7 +228,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setCellName(java.lang.String)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setCellName(java.lang.String)
      */
     public void setCellName(String cellName)
     {
@@ -237,16 +238,16 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
      */
-    public void setChangeListener(ChangeListener listener)
+    public void addChangeListener(ChangeListener listener)
     {
         // TODO Auto-generated method stub
         
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#getUIComponent()
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#getUIComponent()
      */
     public JComponent getUIComponent()
     {
@@ -283,7 +284,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
     
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#shutdown()
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#shutdown()
      */
     public void shutdown()
     {
@@ -291,4 +292,14 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         getter    = null;
         frame     = null;
     }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setViewable(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void setParent(FormViewObj parent)
+    {
+    }
+
 }

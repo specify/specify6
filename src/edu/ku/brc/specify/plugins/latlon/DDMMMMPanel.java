@@ -143,6 +143,9 @@ public class DDMMMMPanel extends DDDDPanel
             if (evalState(latitudeDD, latitudeMM) == ValState.Valid)
             {
                 latitude = LatLonConverter.convertDDMMMMToDDDD(getStringFromFields(latitudeDD, latitudeMM), NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
+            } else
+            {
+                latitude = null;
             }
         } else
         {
@@ -150,6 +153,9 @@ public class DDMMMMPanel extends DDDDPanel
             if (evalState(longitudeDD, longitudeMM) == ValState.Valid)
             {
                 longitude =  LatLonConverter.convertDDMMMMToDDDD(getStringFromFields(longitudeDD, longitudeMM), EAST_WEST[longitudeDir.getSelectedIndex()]);
+            } else
+            {
+                longitude = null;
             }
         }
     }

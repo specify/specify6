@@ -9,6 +9,9 @@ package edu.ku.brc.specify.plugins.latlon;
 
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.loadAndPushResourceBundle;
+import static edu.ku.brc.ui.UIRegistry.popResourceBundle;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -17,6 +20,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -41,13 +46,13 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.specify.plugins.UIPluginBase;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIPluginable;
-import static edu.ku.brc.ui.UIRegistry.*;
+import edu.ku.brc.util.Pair;
 
 
 
@@ -63,7 +68,7 @@ import static edu.ku.brc.ui.UIRegistry.*;
  * Created Date: Jan 10, 2007
  *
  */
-public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, UIValidatable, ChangeListener
+public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListener
 {
     protected final static String[] formatClass             = new String[] {"DDDDPanel", "DDMMMMPanel", "DDMMSSPanel"};
     protected final static String[] formats                 = new String[] {"DDD.DDD", "DD:MM.MM", "DD MM SS"};
@@ -77,7 +82,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     
     protected String[]              errorMessages;
     
-    protected CellConstraints cc       = new CellConstraints();
+    protected CellConstraints cc = new CellConstraints();
     
     protected String[]                 typeNamesLabels;
     protected Hashtable<LatLonUIIFace.LatLonType, String> typeMapper = new Hashtable<LatLonUIIFace.LatLonType, String>();
@@ -98,17 +103,12 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     protected JPanel             rightPanel;
     protected Border             panelBorder = BorderFactory.createEtchedBorder();
     protected JLabel             typeLabel   = null;
-    protected boolean            isViewMode  = false;
     protected int                currentInx  = -1;
     protected BorderedRadioButton[] botBtns  = null;
     
     protected Locality           locality;
     protected LatLonUIIFace[]    panels;
     protected String             latLonType;
-    
-    // UIPluginable
-    protected String             cellName       = null;
-    protected ChangeListener     changeListener = null;
     
     // UIValidatable && UIPluginable
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
@@ -292,6 +292,9 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
 
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
     public void setEnabled(final boolean enabled)
     {
         super.setEnabled(enabled);
@@ -432,10 +435,13 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
+     * @see edu.ku.brc.specify.plugins.UIPluginBase#setValue(java.lang.Object, java.lang.String)
      */
+    @Override
     public void setValue(Object value, String defaultValue)
     {
+        super.setValue(value, defaultValue);
+        
         if (value != null && !(value instanceof Locality))
         {
             throw new RuntimeException("Data ["+value.getClass().getSimpleName()+"] is not of class Locality!");
@@ -469,10 +475,10 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         }
     }
     
-    /**
-     * Returns a value for the component
-     * @return Returns a value for the component
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.UIPluginBase#getValue()
      */
+    @Override
     public Object getValue()
     {
         if (locality != null && currentType != null)
@@ -515,55 +521,55 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         }
         return locality;
     }
+    
+    /**
+     * @return
+     */
+    public Pair<BigDecimal, BigDecimal> getLatLon()
+    {
+        int curInx = formatSelector.getSelectedIndex() * 2;
+        
+        panels[curInx].getDataFromUI();   // get data for Lat/Long One
+        panels[curInx+1].getDataFromUI(); // get data for Lat/Long Two
+        
+        Pair<BigDecimal, BigDecimal> latLon = new Pair<BigDecimal, BigDecimal>();
+        latLon.first  = panels[curInx].getLatitude();
+        latLon.second = panels[curInx].getLongitude();
+        return latLon;
+    }
 
     //--------------------------------------------------------
     //-- UIPluginable
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#initialize(java.util.Properties, boolean)
      */
-    public void initialize(final Properties properties, final boolean isViewModeArg)
+    public void initialize(final Properties propertiesArg, final boolean isViewModeArg)
     {
-        this.isViewMode = isViewModeArg;
+        super.initialize(propertiesArg, isViewModeArg);
         createEditUI();
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setCellName(java.lang.String)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#shutdown()
      */
-    public void setCellName(final String cellName)
-    {
-        this.cellName = cellName;
-    }
-    
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
-     */
-    public void setChangeListener(final ChangeListener changeListener)
-    {
-        this.changeListener = changeListener;
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#getUIComponent()
-     */
-    public JComponent getUIComponent()
-    {
-        return this;
-    }
-    
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#shutdown()
-     */
+    @Override
     public void shutdown()
     {
-       changeListener = null;
-       locality       = null;
+        super.shutdown();
+        locality = null;
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setViewable(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void setParent(FormViewObj parent)
+    {
+        
+    }
+
     //--------------------------------------------------------
     // UIValidatable Interface
     //--------------------------------------------------------
@@ -644,6 +650,14 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     public void setChanged(boolean isChanged)
     {
         this.isChanged = isChanged;
+        
+        if (isChanged)
+        {
+            for (PropertyChangeListener l : getPropertyChangeListeners())
+            {
+                l.propertyChange(new PropertyChangeEvent(LatLonUI.this, "latlon", null, getLatLon()));
+            }
+        }
         
         for (LatLonUIIFace panel : panels)
         {
@@ -726,10 +740,8 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         validateState();
         
         isChanged = true;
-        if (changeListener != null)
-        {
-            changeListener.stateChanged(e);
-        }
+        
+        notifyChangeListeners(e);
     }
 
 }

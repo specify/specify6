@@ -32,6 +32,7 @@ import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
@@ -74,6 +75,8 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
         final ValComboBox tablesCBX     = (ValComboBox)fvo.getControlByName("tablesCBX");
         final ValComboBox fieldsCBX     = (ValComboBox)fvo.getControlByName("fieldsCBX");
         final ValComboBox typesCBX      = (ValComboBox)fvo.getControlByName("typesCBX");
+        final ValCheckBox readOnlyChk    = (ValCheckBox)fvo.getControlByName("readOnly");
+        
 
         tablesCBX.getComboBox().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -89,6 +92,17 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
             }
         });
         
+        readOnlyChk.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (!readOnlyChk.isSelected() && fvo.getDataObj() != null)
+                {
+                    adjustSizeSpinner();
+                }
+            }
+        });
+        
         fieldsCBX.setEnabled(false);
         formatterCBX.setEnabled(false);
         
@@ -100,6 +114,34 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
         for (String title : types)
         {
             model.addElement(title);
+        }
+    }
+    
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg)
+    {
+        super.initialize(viewableArg);
+        adjustForm(formViewObj);
+    }
+
+    /**
+     * 
+     */
+    protected void adjustSizeSpinner()
+    {
+        final ValSpinner  sizeLimitSp = (ValSpinner)formViewObj.getControlByName("sizeLimit");
+        if (formViewObj != null)
+        {
+            PickListIFace pl = (PickListIFace)formViewObj.getDataObj();
+            int min = Math.max(pl.getNumItems(), 0);
+            
+            // XXX note this is Hard Code and does match the form's value
+            sizeLimitSp.setRange(min, 500, pl.getNumItems());
         }
     }
     
@@ -374,6 +416,10 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
                 } else
                 {
                     sizeLimitSp.setEnabled(typeIndex == 0);
+                    if (typeIndex == 0)
+                    {
+                        adjustSizeSpinner();
+                    }
                 }
                 
                 typeSelected(formViewObj);
@@ -476,6 +522,16 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
         }
         
         return super.processBusinessRules(dataObj);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object)
+     */
+    @Override
+    public boolean afterSaveCommit(Object dataObj)
+    {
+        adjustSizeSpinner();
+        return super.afterSaveCommit(dataObj);
     }
 
 
