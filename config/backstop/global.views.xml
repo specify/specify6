@@ -1448,6 +1448,7 @@
             <desc><![CDATA[New GeologicTimePeriod Node Form]]></desc>
             <enableRules>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
+                <rule id="acceptedGeologicTimePeriod"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
             <columnDef>100px,3dlu,p:g,3dlu,p,3dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
@@ -1468,6 +1469,14 @@
                 <row>
                     <cell type="label" labelfor="definitionItem"/>
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" label=" "/>
+                    <cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="acceptedGeologicTimePeriod" label="ACCEPTEDPARENT"/>
+                    <cell type="field" id="acceptedGeologicTimePeriod" isrequired="true" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false" name="acceptedGeologicTimePeriod" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="startPeriod"/>
@@ -1502,6 +1511,7 @@
             <desc><![CDATA[New LithoStrat Node Form]]></desc>
             <enableRules>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
+                <rule id="acceptedLithoStrat"><![CDATA[!isAccepted.isSelected()]]></rule>
             </enableRules>
             <columnDef>100px,3dlu,p:g,3dlu,200px,3dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
@@ -1522,6 +1532,14 @@
                 <row>
                     <cell type="label" labelfor="definitionItem"/>
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="definitionItem"/>
+                    <cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" label=" "/>
+                    <cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true" colspan="3"/>
                 </row>
             </rows>
         </viewdef>
