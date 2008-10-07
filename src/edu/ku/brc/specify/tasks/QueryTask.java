@@ -53,6 +53,7 @@ import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.DroppableNavBox;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
@@ -1007,6 +1008,30 @@ public class QueryTask extends BaseTask
             {
                 session.close();
             }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#requestContext()
+     */
+    public void requestContext()
+    {
+        ContextMgr.requestContext(this);
+
+        if (starterPane == null)
+        {
+            if (queryBldrPane == null)
+            {
+                super.requestContext();
+                
+            } else
+            {
+                SubPaneMgr.getInstance().showPane(queryBldrPane);
+            }
+            
+        } else  
+        {
+            SubPaneMgr.getInstance().showPane(starterPane);
         }
     }
     
