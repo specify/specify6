@@ -96,15 +96,18 @@
       	<alias name="Appraisal" field="appraisal" />
       	<alias name="Agent" field="cataloger" />
     	<table name="Collection" field="collection" >
+    		<alias name="Agent" field="contentContacts" />
         	<alias name="Agent" field="createdByAgent" />
-    		<table name="FieldNotebook" field="fieldNoteBooks">
-    		</table>
-        	<alias name="Agent" field="modifiedByAgent" />
+        	<table name="Discipline" field="discipline" />
+    		<table name="FieldNotebook" field="fieldNoteBooks" />
       		<!-- <alias name="CollectionRelType" field="leftSideRelTypes" />  -->
+         	<alias name="Agent" field="modifiedByAgent" />
+         	<table name="AutoNumberingScheme" field="numberingSchemes" />
       		<table name="PickList" field="pickLists"/>
       		<table name="PrepType" field="prepTypes"/>
       		<!-- <alias name="CollectionRelType" field="rightSideRelTypes"/> -->
       		<!-- <table name="SpAppResourceDir" field="spAppResourceDirs"/> -->
+      		<alias name="Agent" field="technicalContacts" />
       		<table name="SpPrincipal" field="userGroups"/>
       	</table>
       	<table name="ConservDescription" field="conservDescriptions" />
