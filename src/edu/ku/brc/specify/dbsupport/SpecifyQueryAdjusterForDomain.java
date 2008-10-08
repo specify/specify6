@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.specify.datamodel.Accession;
@@ -87,28 +88,32 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             {
                 if (prefix.equals(""))
                 {
-                    prefix = "dv.";
+                    prefix = isHQL ? "dv." : "";
                 }
                 else
                 {
-                    prefix = "dv" + prefix;
+                    prefix = isHQL ? ("dv" + prefix) : prefix;
                 }
                 fld = isHQL ? "divisionId" : "DivisionID";
                 criterion = DIVID;
                 
             } else if (tableInfo.getRelationshipByName("discipline") != null)
             {
-                if (prefix.equals(""))
+                DBRelationshipInfo ri = tableInfo.getRelationshipByName("discipline");
+                if (ri.getType() != DBRelationshipInfo.RelationshipType.OneToOne)
                 {
-                    // rods - 9/29/08 - This was messing up the Geography Count (SQL) but is needed for HQL
-                    prefix = isHQL ? "dsp." : "";
+                    if (prefix.equals(""))
+                    {
+                        // rods - 9/29/08 - This was messing up the Geography Count (SQL) but is needed for HQL
+                        prefix = isHQL ? "dsp." : "";
+                    }
+                    else
+                    {
+                        prefix = isHQL ? ("dsp" + prefix) : prefix;
+                    }
+                    fld = isHQL ? "disciplineId" : "DisciplineID";
+                    criterion = DSPLNID;
                 }
-                else
-                {
-                    prefix = "dsp" + prefix;
-                }
-                fld = isHQL ? "disciplineId" : "DisciplineID";
-                criterion = DSPLNID;
                 
             } else if (tableInfo.getTableId() == DeterminationStatus.getClassTableId())
             {
@@ -251,9 +256,10 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             }
             if (aliasArg != null)
             {
-                throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
+                //return "";
+                //throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
             }
-            return join + "agent_discipline ON agent.AgentID = agent_discipline.AgentID";
+            return join + "agent_discipline ON "+(aliasArg == null ? "" : alias)+".AgentID = agent_discipline.AgentID";
             
         } else if (tableInfo.getTableId() == Accession.getClassTableId())
         {
@@ -263,21 +269,26 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             }
             if (aliasArg != null)
             {
-                throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
+                return "";
+                //throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
             }
             return join;
             
         } else if (tableInfo.getRelationshipByName("discipline") != null)
         {
-            if (isHQL)
+            DBRelationshipInfo ri = tableInfo.getRelationshipByName("discipline");
+            if (ri.getType() != DBRelationshipInfo.RelationshipType.OneToOne)
             {
-                return join + alias +".discipline as dsp" + (aliasArg == null ? "" : alias);
+                if (isHQL)
+                {
+                    return join + alias +".discipline as dsp" + (aliasArg == null ? "" : alias);
+                }
+                //if (aliasArg != null)
+                //{
+                    //throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
+                //}
+                return join + "discipline as dsp ON "+aliasArg+".DisciplineID = dsp.DisciplineID";
             }
-            //if (aliasArg != null)
-            //{
-                //throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
-            //}
-            return join + "discipline as dsp ON "+aliasArg+".DisciplineID = dsp.DisciplineID";
         }
         return super.getJoinClause(tableInfo, isHQL, alias, useLeftJoin);
 

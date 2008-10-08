@@ -14,7 +14,6 @@
  */package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -74,16 +73,16 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
         boolean isOK = false;
         if (deletable != null)
         {
-            FormDataObjIFace dbObj = (FormDataObjIFace)dataObj;
+            CollectingEvent ce = (CollectingEvent)dataObj;
             
-            Integer id = dbObj.getId();
+            Integer id = ce.getId();
             if (id == null)
             {
                 isOK = true;
                 
             } else
             {
-               isOK = okToDelete(1, new String[] {"collectionobject", "CollectingEventID"}, (Integer)dbObj.getId());
+                isOK = okToDelete(0, new String[] {"collectionobject", "CollectingEventID"}, (Integer)ce.getId());
             }
             deletable.doDeleteDataObj(dataObj, session, isOK);
             

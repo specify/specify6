@@ -252,7 +252,7 @@ public class DataBuilder
             
         } else
         {
-            throw new RuntimeException("Disicpline is NULL!");
+            //throw new RuntimeException("Discipline is NULL!");
         }
         
         Division division = AppContextMgr.getInstance().getClassObject(Division.class);

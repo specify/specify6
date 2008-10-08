@@ -510,7 +510,6 @@ s     * @param isViewOnly
                 {
                     sb.append(val);
                 }
-                System.err.println(sb.toString());
                 if (!isPartialOK && StringUtils.isEmpty(val))
                 {
                     return null;

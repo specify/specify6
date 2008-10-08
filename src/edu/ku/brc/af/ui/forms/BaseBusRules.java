@@ -230,13 +230,15 @@ public class BaseBusRules implements BusinessRulesIFace
             }
             idString.deleteCharAt(idString.length()-2);
             DBTableInfo tableInfo    = DBTableIdMgr.getInstance().getInfoByTableName(tableName);
-            String      extraColumns = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false);
-            String      queryString  = "select count(*) from " + tableName + " where " + tableName + "." + columnName + " in (" + idString.toString() + ") ";
+            String      extraColumns = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false, false, tableInfo.getAbbrev());
+            String      join         = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, false, tableInfo.getAbbrev(), false);
+            String      queryString  = "select count(*) from " + tableName + " "+ tableInfo.getAbbrev() +" " + (join != null ? join : "") + "  where " + tableInfo.getAbbrev() + "." + columnName + " in (" + idString.toString() + ") ";
             if (StringUtils.isNotEmpty(extraColumns))
             {
                 queryString += " AND " + extraColumns; 
             }
             
+            log.debug(queryString);
             ResultSet rs = stmt.executeQuery(queryString);
             if (rs.next())
             {

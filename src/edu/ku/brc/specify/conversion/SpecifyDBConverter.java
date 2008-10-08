@@ -572,7 +572,10 @@ public class SpecifyDBConverter
                         if (conversion.getCurDisciplineID() == null || conversion.getCurDisciplineID() == 0)
                         {
                             List<?> list = localSession.createQuery("FROM Discipline").list();
-                            dscp = (Discipline)list.get(0);
+                            if (list.size() > 0)
+                            {
+                                dscp = (Discipline)list.get(0);
+                            }
                             
                         } else
                         {
@@ -581,7 +584,7 @@ public class SpecifyDBConverter
                         }
                         AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
                         
-                        if (dscp.getCollections().size() == 1)
+                        if (dscp != null && dscp.getCollections().size() == 1)
                         {
                             collection = dscp.getCollections().iterator().next();
                         }
@@ -603,12 +606,12 @@ public class SpecifyDBConverter
                         
                         conversion.convertUSYSTables(localSession, collection);
                         
-                        Transaction trans = localSession.beginTransaction();
                         
                         frame.setDesc("Creating PickLists from XML.");
                         BuildSampleDatabase.createPickLists(localSession, null, true, collection);
                         BuildSampleDatabase.createPickLists(localSession, dscp, true, collection);
                         
+                        Transaction trans = localSession.beginTransaction();
                         localSession.saveOrUpdate(collection);
                         trans.commit();
                         localSession.flush();

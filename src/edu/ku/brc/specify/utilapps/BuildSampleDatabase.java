@@ -668,13 +668,21 @@ public class BuildSampleDatabase
         {
             Transaction trans = localSession.beginTransaction();
             
-            Hashtable<String, Boolean> nameHash = doCheck ? new Hashtable<String, Boolean>() : null;
+            Hashtable<String, PickList> nameHash = doCheck ? new Hashtable<String, PickList>() : null;
             
             if (doCheck)
             {
-                for (PickList pl : collection.getPickLists())
+                for (PickList pl : new Vector<PickList>(collection.getPickLists()))
                 {
-                    nameHash.put(pl.getName(), true);
+                    if (pl.getNumItems() > 0)
+                    {
+                        nameHash.put(pl.getName(), pl);
+                    } else
+                    {
+                        System.out.println("Deleting: "+pl.getName());
+                        collection.getPickLists().remove(pl);
+                        localSession.delete(pl);
+                    }
                 }
             }
             
@@ -684,14 +692,18 @@ public class BuildSampleDatabase
                 for (BldrPickList pl : pickLists)
                 {
                     System.out.println(pl.getName());
-                    if (doCheck && nameHash.get(pl.getName()) != null)
+                    PickList convPickList = nameHash.get(pl.getName());
+                    if (doCheck && convPickList != null)
                     {
+                        convPickList.setIsSystem(true);
+                        localSession.saveOrUpdate(convPickList);
                         continue;
                     }
                     
                     PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
                                                        pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
                                                        pl.getSizeLimit(), pl.getIsSystem(), pl.getSortType());
+                    pickList.setIsSystem(true);
                     pickList.setCollection(collection);
                     collection.getPickLists().add(pickList);
                     

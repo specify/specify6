@@ -2649,7 +2649,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             "usyscollobjprepmeth", "CollObjPrepMeth", "usysdeaccessiotype", "DeaccessionType",
                             "usysdeterminatconfidence", "DeterminationConfidence", "usysdeterminatmethod",
                             "DeterminationMethod", "usysdeterminattypestatusname", "DeterminationTypeStatus",
-                            "usyshabitathabitattype", "HabitatTtype", "usyslocalityelevationmethod",
+                            "usyshabitathabitattype", "HabitatType", "usyslocalityelevationmethod",
                             "LocalityElevationMethod", "usysobservatioobservationmetho", "ObservationMethod",
                             "usyspermittype", "PermitType", "usyspreparatiocontainertype", "PrepContainertype",
                             "usyspreparatiomedium", "PreparatioMedium", "usyspreparatiopreparationtype",
@@ -7414,7 +7414,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     // It has not been added yet so Add it
                     StringBuilder sqlStr = new StringBuilder();
                     sqlStr.append("INSERT INTO agent ");
-                    sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, ");
+                    sqlStr.append("(AgentID, DivisionId, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, ");
                     sqlStr.append("Title, Interests, Abbreviation, Email, URL, Remarks, TimestampCreated, ");
                     sqlStr.append("Visibility, VisibilitySetBy, ParentOrganizationID, CreatedByAgentID, ModifiedByAgentID, Version)");
                     sqlStr.append(" VALUES (");
@@ -7430,6 +7430,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         {
                             if (debugAgents)log.info("Adding: "+agentColumns[i]);
                             sqlStr.append(agentInfo.getNewAgentId());
+                            sqlStr.append(",");
+                            sqlStr.append(getCurDivisionID());
 
                         } else if (agentColumns[i].equals("agent.ParentOrganizationID"))
                         {
@@ -7727,7 +7729,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     
                     // Create Agent
                     StringBuilder sqlStr = new StringBuilder("INSERT INTO agent ");
-                    sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, Title, Interests, ");
+                    sqlStr.append("(AgentID, DivisionID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, Title, Interests, ");
                     sqlStr.append("Abbreviation, Email, URL, Remarks, TimestampCreated, Visibility, VisibilitySetBy, ParentOrganizationID, ");
                     sqlStr.append("CreatedByAgentID, ModifiedByAgentID, Version)");
                     sqlStr.append(" VALUES (");
@@ -7739,6 +7741,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         {
                             if (debugAgents) log.info(agentColumns[i]);
                             sqlStr.append(agentInfo.getNewAgentId());
+                            sqlStr.append(",");
+                            sqlStr.append(getCurDivisionID());
 
                         } else if (i == lastEditInx)
                         {
@@ -7749,6 +7753,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         {
                             if (debugAgents) log.info(agentColumns[i]);
                             sqlStr.append(defaultVisibilityLevel);
+                            
                         } else if (agentColumns[i].equals("agent.VisibilitySetBy"))// User/Security changes
                         {
                             if (debugAgents) log.info(agentColumns[i]);

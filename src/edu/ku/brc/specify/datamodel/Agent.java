@@ -710,7 +710,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     *  The Division this Agent belongs to.
     */
    @ManyToOne
-   @JoinColumn(name = "DivisionID", unique = false, nullable = false, insertable = true, updatable = true)
+   @JoinColumn(name = "DivisionID", unique = false, nullable = true, insertable = true, updatable = true)
    public Division getDivision() 
    {
        return this.division;

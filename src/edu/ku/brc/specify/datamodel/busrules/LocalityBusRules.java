@@ -8,10 +8,10 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
-import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Locality;
 
@@ -132,16 +132,16 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
         boolean isOK = false;
         if (deletable != null)
         {
-            FormDataObjIFace dbObj = (FormDataObjIFace)dataObj;
+            Locality locality = (Locality)dataObj;
             
-            Integer id = dbObj.getId();
+            Integer id = locality.getId();
             if (id == null)
             {
                 isOK = true;
                 
             } else
             {
-               isOK = okToDelete(new String[] {"collectingevent", "LocalityID"}, dbObj.getId());
+                isOK = okToDelete(0, new String[] {"collectingevent", "LocalityID"}, locality.getId());
             }
             deletable.doDeleteDataObj(dataObj, session, isOK);
             
