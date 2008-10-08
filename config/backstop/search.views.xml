@@ -201,6 +201,17 @@
           </altviews>
         </view>
         
+        <view 
+            name="RepositoryAgreementSearch"
+            class="edu.ku.brc.specify.datamodel.RepositoryAgreement"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The RepositoryAgreement Search Form]]></desc>
+            <altviews>
+                <altview name="RepositoryAgreementSearch" viewdef="RepositoryAgreementSearch" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
         <view name="TaxonSearch"
             class="edu.ku.brc.specify.datamodel.Taxon"
             usedefbusrule="false"
@@ -719,6 +730,30 @@ Good: <cell type="field" name="FieldNum" ...>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="Title" isrequired="false" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef type="form"
+            name="RepositoryAgreementSearch"
+            class="edu.ku.brc.specify.datamodel.RepositoryAgreement"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The RepositoryAgreement Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="RepositoryAgreementNumber" isrequired="false" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="StartDate" isrequired="false" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
             </rows>
         </viewdef>

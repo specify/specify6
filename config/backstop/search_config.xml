@@ -1139,5 +1139,18 @@
             </detailView>
         </table>
         
+        <table id="125" tableid="70" name="RepositoryAgreementSearch" priority="1" color="30, 144, 255">
+            <detailView icon="RepositoryAgreement">
+                <sql>
+                    <![CDATA[SELECT RepositoryAgreementID, RepositoryAgreementNumber, StartDate FROM repositoryagreement WHERE DisciplineID = DSPLNID AND (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="70" col="ProjectID" visible="false"/>
+                    <caption tableid="70" col="RepositoryAgreementNumber"/>
+                    <caption tableid="70" col="StartDate"/>
+                </captions>
+            </detailView>
+        </table>
+        
     </generic>
 </searches>
