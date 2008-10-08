@@ -179,10 +179,6 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
             {
                 addKey((Integer )key, value);
             }
-            else if (!useCache)
-            {
-                logDaBug(getColLabel() + " -- " + ++adds + ": processed " + key);
-            }
         }
         return value;
     }

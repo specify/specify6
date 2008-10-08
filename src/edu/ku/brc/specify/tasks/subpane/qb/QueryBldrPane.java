@@ -1052,6 +1052,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected static List<ERTICaptionInfoQB> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels)
     {
         List<ERTICaptionInfoQB> result = new Vector<ERTICaptionInfoQB>();
+        Vector<ERTICaptionInfoTreeLevelGrp> treeGrps = new Vector<ERTICaptionInfoTreeLevelGrp>(5);
         for (QueryFieldPanel qfp : queryFieldItemsArg)
         {
             DBFieldInfo fi = qfp.getFieldInfo();
@@ -1072,13 +1073,31 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 {
                     lbl = fixFldNameForJR(lbl);
                 }
-                ERTICaptionInfoQB erti;
+                ERTICaptionInfoQB erti = null;
                 if (qfp.getFieldQRI() instanceof RelQRI)
                 {
                     erti = new ERTICaptionInfoRel(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0,
                             qfp.getStringId(),
                             ((RelQRI)qfp.getFieldQRI()).getRelationshipInfo());
                 }
+//                else if (qfp.getFieldQRI() instanceof TreeLevelQRI)
+//                {
+//                    for (ERTICaptionInfoTreeLevelGrp tg : treeGrps)
+//                    {
+//                        erti = tg.addRank((TreeLevelQRI )qfp.getFieldQRI(), colName, lbl, qfp.getStringId());
+//                        if (erti != null)
+//                        {
+//                            break;
+//                        }
+//                    }
+//                    if (erti == null)
+//                    {
+//                        TreeLevelQRI tqri = (TreeLevelQRI )qfp.getFieldQRI();
+//                        ERTICaptionInfoTreeLevelGrp newTg = new ERTICaptionInfoTreeLevelGrp(tqri.getTreeDataClass(), tqri.getTreeDefId(), tqri.getTableAlias());
+//                        erti = newTg.addRank(tqri, colName, lbl, qfp.getStringId());
+//                        treeGrps.add(newTg);
+//                    }
+//                }
                 else
                 {
                     erti = new ERTICaptionInfoQB(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0, qfp.getStringId(), qfp.getPickList());
@@ -1086,6 +1105,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
                 result.add(erti);
             }
+        }
+        for (ERTICaptionInfoTreeLevelGrp tg : treeGrps)
+        {
+            tg.setUp();
         }
         return result;
     }

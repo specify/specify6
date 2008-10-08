@@ -32,6 +32,9 @@ import edu.ku.brc.util.Pair;
 public class TreeLevelQRI extends FieldQRI
 {
     protected final int rankId;
+    protected final int treeDefId;
+    
+    protected String    tableAlias = null;
     
     /**
      * @param parent
@@ -47,11 +50,9 @@ public class TreeLevelQRI extends FieldQRI
         this.rankId = rankId;
         SpecifyAppContextMgr spMgr = (SpecifyAppContextMgr )AppContextMgr.getInstance();
         TreeDefIface<?, ?, ?> treeDef = spMgr.getTreeDefForClass((Class<? extends Treeable<?,?,?>> )getTableInfo().getClassObj());
+        treeDefId = treeDef.getTreeDefId();
         TreeDefItemIface<?, ?, ?> treeDefItem = null;
-        if (treeDef != null)
-        {
-        	treeDefItem = treeDef.getDefItemByRank(rankId);
-        }
+        treeDefItem = treeDef.getDefItemByRank(rankId);
         if (treeDefItem != null)
         {
             title = treeDefItem.getName();
@@ -91,24 +92,51 @@ public class TreeLevelQRI extends FieldQRI
     /**
      * @param ta
      * @return complete specification of the field to be used in sql/hql fields clause.
+     * 
+     * Has a side-effect: Sets the tableAlias property
      */
     protected String getSQLFldName(final TableAbbreviator ta)
     {
-        StringBuilder result = new StringBuilder("(select treelevel.name from ");
-        result.append(getTableInfo().getClassObj().getSimpleName());
-        result.append(" treelevel where ");
-        result.append(ta.getAbbreviation(table.getTableTree()));
-        result.append(".nodeNumber between treelevel.nodeNumber and treelevel.highestChildNodeNumber and treelevel.rankId = ");
-        result.append(String.valueOf(rankId));
-        String treeDef = getTreeDefIdFldName();
-        result.append(" and treelevel.");
-        result.append(treeDef);
-        result.append("=");
-        result.append(ta.getAbbreviation(table.getTableTree()));
-        result.append(".");
-        result.append(treeDef);
-        result.append(")");
-        return result.toString();
+        tableAlias = ta.getAbbreviation(table.getTableTree());
+        return tableAlias + ".nodeNumber";
+        
+//        StringBuilder result = new StringBuilder("(select treelevel.name from ");
+//        result.append(getTableInfo().getClassObj().getSimpleName());
+//        result.append(" treelevel where ");
+//        tableAlias = ta.getAbbreviation(table.getTableTree());
+//        result.append(ta.getAbbreviation(table.getTableTree()));
+//        result.append(".nodeNumber between treelevel.nodeNumber and treelevel.highestChildNodeNumber and treelevel.rankId = ");
+//        result.append(String.valueOf(rankId));
+//        String treeDef = getTreeDefIdFldName();
+//        result.append(" and treelevel.");
+//        result.append(treeDef);
+//        result.append("=");
+//        result.append(ta.getAbbreviation(table.getTableTree()));
+//        result.append(".");
+//        result.append(treeDef);
+//        result.append(")");
+//        return result.toString();
+    }
+    
+    /**
+     * @return the tableAlias used for this field when sql was generated.
+     */
+    public String getTableAlias()
+    {
+        return tableAlias;
+    }
+    
+    /**
+     * @return the treeDefId
+     */
+    public int getTreeDefId()
+    {
+        return treeDefId;
+    }
+    
+    public Class<?> getTreeDataClass()
+    {
+        return getTableInfo().getClassObj();
     }
     
     /**
