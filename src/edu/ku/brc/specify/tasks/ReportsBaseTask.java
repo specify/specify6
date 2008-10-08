@@ -409,6 +409,7 @@ public class ReportsBaseTask extends BaseTask
         {
             labelsPane  = (LabelsPane)starterPane;
             SubPaneMgr.getInstance().renamePane(labelsPane, labelTitle);
+            SubPaneMgr.getInstance().showPane(labelsPane);
         }
         labelsPane.createReport(labelName, data, params);
         starterPane = null;
@@ -705,7 +706,7 @@ public class ReportsBaseTask extends BaseTask
                 {
                     Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
                     //System.out.println("************** "+(new File("/home/rods/Specify/reportsCache_Linux/fish_label.jrxml").lastModified()));
-                    doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, params, originatingTask, (ImageIcon)cmdAction.getProperty("icon"));
+                    doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, params, originatingTask == null ? this : originatingTask, (ImageIcon)cmdAction.getProperty("icon"));
                 }
             }
             
