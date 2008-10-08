@@ -184,8 +184,8 @@ public class BaseSubPane extends JPanel implements SubPaneIFace, Printable
                 imgH = (int) ((double) imgH * scale);
             }*/
             
-            Image scaledImg = GraphicsUtils.getScaledImage(new ImageIcon(fullSizeImg), (int)imgW, (int)imgH, true);
-            System.out.println(scaledImg.getWidth(null)+", "+scaledImg.getHeight(null));
+            Image scaledImg = GraphicsUtils.getScaledImage(new ImageIcon(fullSizeImg), imgW, imgH, true);
+            //System.out.println(scaledImg.getWidth(null)+", "+scaledImg.getHeight(null));
             g2.drawImage(scaledImg, 0, 0, null);
         } else
         {
@@ -213,6 +213,7 @@ public class BaseSubPane extends JPanel implements SubPaneIFace, Printable
         }
     }
     
+    @SuppressWarnings("cast")
     protected void registerPrintContextMenu()
     {
         if (this instanceof Printable)

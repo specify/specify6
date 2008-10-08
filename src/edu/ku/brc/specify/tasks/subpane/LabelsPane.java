@@ -140,6 +140,11 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             add(label, BorderLayout.CENTER);
         }
         
+        if (progressBarPanel != null)
+        {
+            remove(progressBarPanel);
+        }
+        
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
@@ -171,6 +176,15 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                              final Object     data, 
                              final Properties paramsArg)
     {
+        if (progressBarPanel != null)
+        {
+            if (label != null)
+            {
+                remove(label);
+            }
+            add(progressBarPanel, BorderLayout.CENTER);
+        }
+        
         if (data instanceof RecordSetIFace)
         {
             this.recordSet  = (RecordSetIFace)data;
