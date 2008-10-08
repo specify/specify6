@@ -240,6 +240,8 @@
         <switch single="true">
             <fields>
                 <field formatter="Agent">agent</field>
+                <field sep=" - ">role</field>
+
             </fields>
         </switch>
     </format>
@@ -568,6 +570,15 @@
                     format="Collector" 
                     default="true"
                     orderfieldname="orderNumber"/>
+
+        <aggregator name="LoanAgent"
+                    class="edu.ku.brc.specify.datamodel.LoanAgent" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="LoanAgent" 
+                    default="true"/>   
+
                     
         <aggregator name="AccessionAttachment"
                     class="edu.ku.brc.specify.datamodel.AccessionAttachment" 

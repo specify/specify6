@@ -778,18 +778,23 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         
         if (rowCount > 0)
         {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run()
-                {
-                    setTitleBar();
-                    esrPane.addTable(ESResultsTablePanel.this);
+            //SwingUtilities.invokeLater(new Runnable() {
+            //    public void run()
+            //    {
+            synchronized (getTreeLock()) 
+            {
+                setTitleBar();
+                esrPane.addTable(ESResultsTablePanel.this);
+                
+            }
+            
+            if (propChangeListener != null) 
+            {
+                propChangeListener.propertyChange(new PropertyChangeEvent(this, "loaded", rowCount, rowCount));
+            }                
                     
-                    if (propChangeListener != null) 
-                    {
-                        propChangeListener.propertyChange(new PropertyChangeEvent(this, "loaded", rowCount, rowCount));
-                    }
-                }
-            });
+            //    }
+            //});
         }
     }
 
