@@ -692,7 +692,7 @@ public class BuildSampleDatabase
                 for (BldrPickList pl : pickLists)
                 {
                     System.out.println(pl.getName());
-                    PickList convPickList = nameHash.get(pl.getName());
+                    PickList convPickList = nameHash != null ? nameHash.get(pl.getName()) : null;
                     if (doCheck && convPickList != null)
                     {
                         convPickList.setIsSystem(true);
