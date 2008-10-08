@@ -8,8 +8,8 @@
         resourcelabels="false">
         <desc><![CDATA[Subform within the Collection Object form.]]></desc>
         <altviews>
-            <altview name="AmphibianAttributes View" viewdef="AmphibianAttributes" label="View" mode="view" />
-            <altview name="AmphibianAttributes Edit" viewdef="AmphibianAttributes" label="Edit" mode="edit" default="true"/>
+            <altview name="AmphibianAttributes View" viewdef="AmphibianAttributes" mode="view" />
+            <altview name="AmphibianAttributes Edit" viewdef="AmphibianAttributes" mode="edit" default="true"/>
         </altviews>
     </view>
     
@@ -20,8 +20,8 @@
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent Form]]></desc>
             <altviews>
-                <altview name="CollectingEvent View" viewdef="CollectingEvent" label="View" mode="view" />
-                <altview name="CollectingEvent Edit" viewdef="CollectingEvent" label="Edit" mode="edit" default="true"/>
+                <altview name="CollectingEvent View" viewdef="CollectingEvent" mode="view" />
+                <altview name="CollectingEvent Edit" viewdef="CollectingEvent" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -31,8 +31,8 @@
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent SubForm]]></desc>
             <altviews>
-                <altview name="CollectingEventSub View" viewdef="CollectingEventSub" label="View" mode="view" />
-                <altview name="CollectingEventSub Edit" viewdef="CollectingEventSub" label="Edit" mode="edit" default="true"/>
+                <altview name="CollectingEventSub View" viewdef="CollectingEventSub" mode="view" />
+                <altview name="CollectingEventSub Edit" viewdef="CollectingEventSub" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -43,8 +43,8 @@
             >
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
-                <altview name="Collection Object View" viewdef="Collection Object" label="View" mode="view"/>
-                <altview name="Collection Object Edit" viewdef="Collection Object" label="Edit" mode="edit" default="true"/>
+                <altview name="Collection Object View" viewdef="Collection Object" mode="view"/>
+                <altview name="Collection Object Edit" viewdef="Collection Object" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -54,10 +54,10 @@
             resourcelabels="false">
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
-                <altview name="Determination View"       viewdef="Determination" label="View" mode="view"/>
-                <altview name="Determination Edit"       viewdef="Determination" label="Edit" mode="edit" default="true"/>
-                <altview name="Determination Table View" viewdef="Determination Table" label="Grid" mode="view"/>
-                <altview name="Determination Table Edit" viewdef="Determination Table" label="Grid" mode="edit"/>
+                <altview name="Determination View"       viewdef="Determination" mode="view"/>
+                <altview name="Determination Edit"       viewdef="Determination" mode="edit" default="true"/>
+                <altview name="Determination Table View" viewdef="Determination Table" mode="view"/>
+                <altview name="Determination Table Edit" viewdef="Determination Table" mode="edit"/>
             </altviews>
         </view>
         
@@ -67,8 +67,8 @@
             resourcelabels="false">
             <desc><![CDATA[Locality form.]]></desc>
             <altviews>
-                <altview name="Locality View" viewdef="Locality" label="View" mode="view"/>
-                <altview name="Locality Edit" viewdef="Locality" label="Edit" mode="edit" default="true"/>
+                <altview name="Locality View" viewdef="Locality" mode="view"/>
+                <altview name="Locality Edit" viewdef="Locality" mode="edit" default="true"/>
             </altviews>
         </view>
         

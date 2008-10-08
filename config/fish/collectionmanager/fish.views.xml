@@ -9,8 +9,8 @@
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent Form]]></desc>
             <altviews>
-                <altview name="CollectingEvent View" viewdef="CollectingEvent" label="View" mode="view" default="true"/>
-                <altview name="CollectingEvent Edit" viewdef="CollectingEvent" label="Edit" mode="edit"/>
+                <altview name="CollectingEvent View" viewdef="CollectingEvent" mode="view" default="true"/>
+                <altview name="CollectingEvent Edit" viewdef="CollectingEvent" mode="edit"/>
             </altviews>
         </view>
         
@@ -21,8 +21,8 @@
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent Form]]></desc>
             <altviews>
-                <altview name="SubCollectingEvent View" viewdef="SubCollectingEvent" label="View" mode="view" default="true"/>
-                <altview name="SubCollectingEvent Edit" viewdef="SubCollectingEvent" label="Edit" mode="edit"/>
+                <altview name="SubCollectingEvent View" viewdef="SubCollectingEvent" mode="view" default="true"/>
+                <altview name="SubCollectingEvent Edit" viewdef="SubCollectingEvent" mode="edit"/>
             </altviews>
         </view>
         
@@ -34,8 +34,8 @@
             >
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
-                <altview name="Collection Object View" viewdef="Collection Object" label="View" mode="view"/>
-                <altview name="Collection Object Edit" viewdef="Collection Object" label="Edit" mode="edit" default="true"/>
+                <altview name="Collection Object View" viewdef="Collection Object" mode="view"/>
+                <altview name="Collection Object Edit" viewdef="Collection Object" mode="edit" default="true"/>
             </altviews>
         </view>
     </views>

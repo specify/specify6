@@ -10,7 +10,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Agent Search Form]]></desc>
             <altviews>
-                <altview name="AgentSearch" viewdef="AgentSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="AgentSearch" viewdef="AgentSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -21,7 +21,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Agent Search Form]]></desc>
             <altviews>
-                <altview name="AgentNameSearch" viewdef="AgentNameSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="AgentNameSearch" viewdef="AgentNameSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
 
@@ -32,7 +32,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Agent Search Form]]></desc>
             <altviews>
-                <altview name="AppraisalSearch" viewdef="AppraisalSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="AppraisalSearch" viewdef="AppraisalSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -43,7 +43,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Attachment Search Form]]></desc>
             <altviews>
-                <altview name="AttachmentSearch" viewdef="AttachmentSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="AttachmentSearch" viewdef="AttachmentSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -54,7 +54,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Permit Search Form]]></desc>
             <altviews>
-                <altview name="PermitSearch" viewdef="PermitSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="PermitSearch" viewdef="PermitSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -65,7 +65,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Accession Search Form]]></desc>
             <altviews>
-                <altview name="AccessionSearch" viewdef="AccessionSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="AccessionSearch" viewdef="AccessionSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -76,7 +76,7 @@
             resourcelabels="false">
             <desc><![CDATA[The CollectionObject Search Form]]></desc>
             <altviews>
-                <altview name="CollectionObjectSearch" viewdef="CollectionObjectSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="CollectionObjectSearch" viewdef="CollectionObjectSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -87,7 +87,7 @@
             resourcelabels="false">
             <desc><![CDATA[The CollectingEvent Search Form]]></desc>
             <altviews>
-                <altview name="CollectingEventSearch" viewdef="CollectingEventSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="CollectingEventSearch" viewdef="CollectingEventSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -98,7 +98,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Collecting Trip Search Form]]></desc>
             <altviews>
-                <altview name="CollectingTripSearch" viewdef="CollectingTripSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="CollectingTripSearch" viewdef="CollectingTripSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -109,7 +109,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Division Search Form]]></desc>
             <altviews>
-                <altview name="DivisionSearch" viewdef="DivisionSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="DivisionSearch" viewdef="DivisionSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -120,7 +120,7 @@
             resourcelabels="false">
             <desc><![CDATA[The FieldNotebookPage Search Form]]></desc>
             <altviews>
-                <altview name="JournalSearch" viewdef="JournalSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="JournalSearch" viewdef="JournalSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
 
@@ -131,7 +131,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Locality Search Form]]></desc>
             <altviews>
-                <altview name="LocalitySearch" viewdef="LocalitySearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="LocalitySearch" viewdef="LocalitySearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -142,7 +142,7 @@
             resourcelabels="false">
             <desc><![CDATA[The PrepType Search Form]]></desc>
             <altviews>
-                <altview name="PrepTypeSearch" viewdef="PrepTypeSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="PrepTypeSearch" viewdef="PrepTypeSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -153,7 +153,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Project Form]]></desc>
             <altviews>
-                <altview name="ProjectSearch" viewdef="ProjectSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="ProjectSearch" viewdef="ProjectSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -164,7 +164,7 @@
             resourcelabels="false">
             <desc><![CDATA[The GeologicTimePeriod Search Form]]></desc>
             <altviews>
-                <altview name="BioStratSearch" viewdef="BioStratSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="BioStratSearch" viewdef="BioStratSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
                 
@@ -175,7 +175,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Discipline Search Form]]></desc>
             <altviews>
-                <altview name="DisciplineSearch" viewdef="DisciplineSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="DisciplineSearch" viewdef="DisciplineSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -186,7 +186,7 @@
             resourcelabels="false">
             <desc><![CDATA[The AutoNumberingScheme Search Form]]></desc>
             <altviews>
-                <altview name="AutoNumberingSchemeSearch" viewdef="AutoNumberingSchemeSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="AutoNumberingSchemeSearch" viewdef="AutoNumberingSchemeSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
 
@@ -197,7 +197,7 @@
           resourcelabels="false">
           <desc><![CDATA[The ReferenceWork Search Form]]></desc>
           <altviews>
-             <altview name="ReferenceWorkSearch" viewdef="ReferenceWorkSearch" label="Edit" mode="edit" validated="true" default="true"/>
+             <altview name="ReferenceWorkSearch" viewdef="ReferenceWorkSearch" mode="edit" validated="true" default="true"/>
           </altviews>
         </view>
         
@@ -207,7 +207,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Taxon Search Form]]></desc>
             <altviews>
-                <altview name="TaxonSearch" viewdef="TaxonSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="TaxonSearch" viewdef="TaxonSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
 
@@ -218,7 +218,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Geography Search Form]]></desc>
             <altviews>
-                <altview name="GeographySearch" viewdef="GeographySearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="GeographySearch" viewdef="GeographySearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -229,7 +229,7 @@
             resourcelabels="false">
             <desc><![CDATA[The GeologicTimePeriod Search Form]]></desc>
             <altviews>
-                <altview name="GeologicTimePeriodSearch" viewdef="GeologicTimePeriodSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="GeologicTimePeriodSearch" viewdef="GeologicTimePeriodSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -240,7 +240,7 @@
             resourcelabels="false">
             <desc><![CDATA[The LithoStrat Search Form]]></desc>
             <altviews>
-                <altview name="LithoStratSearch" viewdef="LithoStratSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="LithoStratSearch" viewdef="LithoStratSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -251,7 +251,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Storage Search Form]]></desc>
             <altviews>
-                <altview name="StorageSearch" viewdef="StorageSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="StorageSearch" viewdef="StorageSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -262,7 +262,7 @@
             resourcelabels="false">
             <desc><![CDATA[The PaleoContext Search Form]]></desc>
             <altviews>
-                <altview name="PaleoContextSearch" viewdef="PaleoContextSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="PaleoContextSearch" viewdef="PaleoContextSearch" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         

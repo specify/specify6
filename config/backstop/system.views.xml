@@ -8,8 +8,8 @@
             resourcelabels="false">
             <desc><![CDATA[The PickList form.]]></desc>
             <altviews>
-                <altview name="Pick List View" viewdef="PickList" label="View" mode="view" validated="false"/>
-                <altview name="Pick List Edit" viewdef="PickList" label="Edit" mode="edit" validated="true"/>
+                <altview name="Pick List View" viewdef="PickList" mode="view" validated="false"/>
+                <altview name="Pick List Edit" viewdef="PickList" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -18,10 +18,10 @@
             resourcelabels="false">
             <desc><![CDATA[The PickListItem form.]]></desc>
             <altviews>
-                <altview name="PickListItem View" viewdef="PickListItem" label="View" mode="view" validated="false"/>
-                <altview name="PickListItem Edit" viewdef="PickListItem" label="Edit" mode="edit" validated="true" default="true"/>
-                <!-- <altview name="PickListItem Tbl View" viewdef="PickListItem Table" label="Grid" mode="view" validated="false"/>
-                <altview name="PickListItem Tbl Edit" viewdef="PickListItem Table" label="Grid" mode="edit" validated="true" default="true"/>
+                <altview name="PickListItem View" viewdef="PickListItem" mode="view" validated="false"/>
+                <altview name="PickListItem Edit" viewdef="PickListItem" mode="edit" validated="true" default="true"/>
+                <!-- <altview name="PickListItem Tbl View" viewdef="PickListItem Table" mode="view" validated="false"/>
+                <altview name="PickListItem Tbl Edit" viewdef="PickListItem Table" mode="edit" validated="true" default="true"/>
                  -->
             </altviews>
         </view>
@@ -31,7 +31,7 @@
             resourcelabels="false">
             <desc><![CDATA[New Tree Definition Data Entry Form]]></desc>
             <altviews>
-                <altview name="SendMail" viewdef="SendMail" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="SendMail" viewdef="SendMail" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -41,8 +41,8 @@
             resourcelabels="false">
             <desc><![CDATA[The PrepType Object form.]]></desc>
             <altviews>
-                <altview name="PrepType View" viewdef="PrepType" label="View" mode="view" validated="false"/>
-                <altview name="PrepType Edit" viewdef="PrepType" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="PrepType View" viewdef="PrepType" mode="view" validated="false"/>
+                <altview name="PrepType Edit" viewdef="PrepType" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -52,8 +52,8 @@
             resourcelabels="false">
             <desc><![CDATA[The DeterminationStatus Object form.]]></desc>
             <altviews>
-                <altview name="DeterminationStatus Edit View" viewdef="DeterminationStatus" label="View" mode="view" validated="false"/>
-                <altview name="DeterminationStatus Edit" viewdef="DeterminationStatus" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="DeterminationStatus Edit View" viewdef="DeterminationStatus" mode="view" validated="false"/>
+                <altview name="DeterminationStatus Edit" viewdef="DeterminationStatus" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -63,8 +63,8 @@
             resourcelabels="false">
             <desc><![CDATA[The DataType Object form.]]></desc>
             <altviews>
-                <altview name="DataType Edit View" viewdef="DataType" label="View" mode="view" validated="false"/>
-                <altview name="DataType Edit" viewdef="DataType" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="DataType Edit View" viewdef="DataType" mode="view" validated="false"/>
+                <altview name="DataType Edit" viewdef="DataType" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -74,8 +74,8 @@
             resourcelabels="false">
             <desc><![CDATA[The Discipline Object form.]]></desc>
             <altviews>
-                <altview name="Discipline Edit View" viewdef="Discipline" label="View" mode="view" validated="false"/>
-                <altview name="Discipline Edit" viewdef="Discipline" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="Discipline Edit View" viewdef="Discipline" mode="view" validated="false"/>
+                <altview name="Discipline Edit" viewdef="Discipline" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -85,7 +85,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Discipline Object form.]]></desc>
             <altviews>
-                <altview name="Discipline Edit View" viewdef="Discipline" label="View" mode="view" validated="false"/>
+                <altview name="Discipline Edit View" viewdef="Discipline" mode="view" validated="false"/>
             </altviews>
         </view>
         
@@ -95,8 +95,8 @@
             resourcelabels="false">
             <desc><![CDATA[The Discipline Object form without collections subform.]]></desc>
             <altviews>
-                <altview name="Discipline Edit View" viewdef="DisciplineWithoutCollections" label="View" mode="view" validated="false"/>
-                <altview name="Discipline Edit" viewdef="DisciplineWithoutCollections" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="Discipline Edit View" viewdef="DisciplineWithoutCollections" mode="view" validated="false"/>
+                <altview name="Discipline Edit" viewdef="DisciplineWithoutCollections" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
 
@@ -105,8 +105,8 @@
             resourcelabels="false">
             <desc><![CDATA[User Group form.]]></desc>
             <altviews defaultmode="view">
-                <altview name="User Group View"        title="User Group"        viewdef="User Group"        label="View" mode="view" validated="false"/>
-                <altview name="User Group Edit"        title="User Group"        viewdef="User Group"        label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="User Group View"        title="User Group"        viewdef="User Group"        mode="view" validated="false"/>
+                <altview name="User Group Edit"        title="User Group"        viewdef="User Group"        mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
 
@@ -115,8 +115,8 @@
             resourcelabels="false">
             <desc><![CDATA[User form.]]></desc>
             <altviews defaultmode="view">
-                <altview name="User View"        title="User"        viewdef="User"        label="View" mode="view" validated="false"/>
-                <altview name="User Edit"        title="User"        viewdef="User"        label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="User View"        title="User"        viewdef="User"        mode="view" validated="false"/>
+                <altview name="User Edit"        title="User"        viewdef="User"        mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
 
@@ -126,8 +126,8 @@
             resourcelabels="false">
             <desc><![CDATA[The CatalogNumberingScheme Object form.]]></desc>
             <altviews>
-                <altview name="CatalogNumberingScheme Edit View" viewdef="CatalogNumberingScheme" label="View" mode="view" validated="false"/>
-                <altview name="CatalogNumberingScheme Edit" viewdef="CatalogNumberingScheme" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="CatalogNumberingScheme Edit View" viewdef="CatalogNumberingScheme" mode="view" validated="false"/>
+                <altview name="CatalogNumberingScheme Edit" viewdef="CatalogNumberingScheme" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -137,8 +137,8 @@
             resourcelabels="false">
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
-                <altview name="Collection View" viewdef="Collection" label="View" mode="view" validated="false"/>
-                <altview name="Collection Edit" viewdef="Collection" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="Collection View" viewdef="Collection" mode="view" validated="false"/>
+                <altview name="Collection Edit" viewdef="Collection" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -148,7 +148,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
-                <altview name="Collection View" viewdef="Collection" label="View" mode="view" validated="false"/>
+                <altview name="Collection View" viewdef="Collection" mode="view" validated="false"/>
             </altviews>
         </view>
         
@@ -158,7 +158,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
-                <altview name="CollectionGrid View" viewdef="CollectionGrid" label="View" mode="view" validated="false"/>
+                <altview name="CollectionGrid View" viewdef="CollectionGrid" mode="view" validated="false"/>
             </altviews>
         </view>
         
@@ -168,7 +168,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>
-                <altview name="CollectionGrid View" viewdef="CollectionForGrid" label="View" mode="view" validated="false"/>
+                <altview name="CollectionGrid View" viewdef="CollectionForGrid" mode="view" validated="false"/>
             </altviews>
         </view>
         
@@ -177,8 +177,8 @@
             resourcelabels="false">
             <desc><![CDATA[The Institution Object form.]]></desc>
             <altviews>
-                <altview name="Institution View" viewdef="Institution" label="View" mode="view" validated="false"/>
-                <altview name="Institution Edit" viewdef="Institution" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="Institution View" viewdef="Institution" mode="view" validated="false"/>
+                <altview name="Institution Edit" viewdef="Institution" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -189,8 +189,8 @@
             resourcelabels="false">
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
-                <altview name="Division View" viewdef="Division" label="View" mode="view"/>
-                <altview name="Division Edit" viewdef="Division" label="Edit" mode="edit" default="true"/>
+                <altview name="Division View" viewdef="Division" mode="view"/>
+                <altview name="Division Edit" viewdef="Division" mode="edit" default="true"/>
             </altviews>
         </view>
 
@@ -199,7 +199,7 @@
             resourcelabels="false">
             <desc><![CDATA[]]></desc>
             <altviews>
-                <altview name="View Edit" viewdef="ViewProps" label="Edit" mode="edit" validated="true"/>
+                <altview name="View Edit" viewdef="ViewProps" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -208,7 +208,7 @@
             resourcelabels="false">
             <desc><![CDATA[]]></desc>
             <altviews>
-                <altview name="ExcelExportInfo Edit" viewdef="ExcelExportInfo" label="Edit" mode="edit" validated="true"/>
+                <altview name="ExcelExportInfo Edit" viewdef="ExcelExportInfo" mode="edit" validated="true"/>
             </altviews>
         </view>
         

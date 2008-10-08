@@ -9,8 +9,8 @@
             resourcelabels="false">
             <desc><![CDATA[Agent subform within the AccessionAgent form.]]></desc>
             <altviews defaultmode="view">
-                <altview name="Agent View"        title="Agent"        viewdef="Agent"        label="View" mode="view" validated="false"/>
-                <altview name="Agent Edit"        title="Agent"        viewdef="Agent"        label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="Agent View"        title="Agent"        viewdef="Agent"        mode="view" validated="false"/>
+                <altview name="Agent Edit"        title="Agent"        viewdef="Agent"        mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -19,8 +19,8 @@
             resourcelabels="false">
             <desc><![CDATA[AgentVariant subform within the Agent form.]]></desc>
             <altviews defaultmode="view">
-                <altview name="AgentVariant View" title="AgentVariant" viewdef="AgentVariant" label="View" mode="view" validated="false"/>
-                <altview name="AgentVariant Edit" title="AgentVariant" viewdef="AgentVariant" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="AgentVariant View" title="AgentVariant" viewdef="AgentVariant" mode="view" validated="false"/>
+                <altview name="AgentVariant Edit" title="AgentVariant" viewdef="AgentVariant" mode="edit" validated="true" default="true"/>
                 <altview name="AgentVariant Table View" viewdef="AgentVariant Table"    label="Table View" mode="view" />
                 <altview name="AgentVariant Table Edit" viewdef="AgentVariant Table"    label="Table Edit" mode="edit"/>
             </altviews>
@@ -32,8 +32,8 @@
             resourcelabels="false">
             <desc><![CDATA[GroupPerson form.]]></desc>
             <altviews>
-                <altview name="GroupPersons Table View" viewdef="GroupPersons Table"   label="Grid" mode="view"/>
-                <altview name="GroupPersons Table Edit" viewdef="GroupPersons Table"   label="Grid" mode="edit"/>
+                <altview name="GroupPersons Table View" viewdef="GroupPersons Table"   mode="view"/>
+                <altview name="GroupPersons Table Edit" viewdef="GroupPersons Table"   mode="edit"/>
             </altviews>
        </view>
         
@@ -43,8 +43,8 @@
             resourcelabels="false">
             <desc><![CDATA[GroupPerson subform for Agent.]]></desc>
             <altviews>
-                <altview name="GroupPerson View" viewdef="GroupPerson" label="View" mode="view"/>
-                <altview name="GroupPerson Edit" viewdef="GroupPerson" label="Edit" mode="edit" default="true"/> 
+                <altview name="GroupPerson View" viewdef="GroupPerson" mode="view"/>
+                <altview name="GroupPerson Edit" viewdef="GroupPerson" mode="edit" default="true"/> 
             </altviews> 
         </view>
 
@@ -54,8 +54,8 @@
             resourcelabels="false">
             <desc><![CDATA[Address subform within the Accession form.]]></desc>
             <altviews>
-                <altview name="Address View" viewdef="Address" label="View" mode="view" validated="false" default="true"/>
-                <altview name="Address Edit" viewdef="Address" label="Edit" mode="edit" validated="true"/>
+                <altview name="Address View" viewdef="Address" mode="view" validated="false" default="true"/>
+                <altview name="Address Edit" viewdef="Address" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -65,8 +65,8 @@
         	resourcelabels="false">
         	<desc><![CDATA[Loan display form]]></desc>
         	<altviews>
-        		<altview name="Loan View" viewdef="Loan" label="View" mode="view" validated="false" default="true"/>
-        		<altview name="Loan Edit" viewdef="Loan" label="Edit" mode="edit" validated="true"/>
+        		<altview name="Loan View" viewdef="Loan" mode="view" validated="false" default="true"/>
+        		<altview name="Loan Edit" viewdef="Loan" mode="edit" validated="true"/>
 			</altviews>
 		</view>
 		
@@ -87,8 +87,8 @@
             resourcelabels="false">
             <desc><![CDATA[The Attachments Form.]]></desc>
             <altviews>
-                <altview name="Attachment View" viewdef="Attachment" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" validated="true"/>                
+                <altview name="Attachment View" viewdef="Attachment" mode="view" validated="false" default="true"/>                
+                <altview name="Attachment Edit" viewdef="Attachment" mode="edit" validated="true"/>                
             </altviews>
         </view> -->
         
@@ -98,8 +98,8 @@
             resourcelabels="false">
             <desc><![CDATA[The PrepType Form.]]></desc>
             <altviews>
-                <altview name="PrepType View" viewdef="PrepType" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="PrepType Edit" viewdef="PrepType" label="Edit" mode="edit" validated="true"/>                
+                <altview name="PrepType View" viewdef="PrepType" mode="view" validated="false" default="true"/>                
+                <altview name="PrepType Edit" viewdef="PrepType" mode="edit" validated="true"/>                
             </altviews>
         </view>
         
@@ -109,8 +109,8 @@
             resourcelabels="false">
             <desc><![CDATA[The PrepType Form.]]></desc>
             <altviews>
-                <altview name="DeterminationStatus View" viewdef="DeterminationStatus" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="DeterminationStatus Edit" viewdef="DeterminationStatus" label="Edit" mode="edit" validated="true"/>                
+                <altview name="DeterminationStatus View" viewdef="DeterminationStatus" mode="view" validated="false" default="true"/>                
+                <altview name="DeterminationStatus Edit" viewdef="DeterminationStatus" mode="edit" validated="true"/>                
             </altviews>
         </view>
         
@@ -119,10 +119,10 @@
             resourcelabels="false">
             <desc><![CDATA[The Author subform for Reference Work form.]]></desc>
             <altviews>
-            <!--    <altview name="Author View" viewdef="Author" label="View" mode="view" default="true"/>
-                <altview name="Author Edit" viewdef="Author" label="Edit" mode="edit"/> -->
-                <altview name="Authors Table View" viewdef="Authors Table" label="Grid" mode="view"/>
-                <altview name="Authors Table Edit" viewdef="Authors Table" label="Grid" mode="edit" default="true"/>
+            <!--    <altview name="Author View" viewdef="Author" mode="view" default="true"/>
+                <altview name="Author Edit" viewdef="Author" mode="edit"/> -->
+                <altview name="Authors Table View" viewdef="Authors Table" mode="view"/>
+                <altview name="Authors Table Edit" viewdef="Authors Table" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -131,8 +131,8 @@
             resourcelabels="false">
             <desc><![CDATA[The Author subform for Reference Work form.]]></desc>
             <altviews>
-                    <altview name="Author View" viewdef="Author" label="View" mode="view" default="true"/>
-                    <altview name="Author Edit" viewdef="Author" label="Edit" mode="edit"/> 
+                    <altview name="Author View" viewdef="Author" mode="view" default="true"/>
+                    <altview name="Author Edit" viewdef="Author" mode="edit"/> 
             </altviews>
         </view>
         
@@ -142,8 +142,8 @@
             resourcelabels="false">
             <desc><![CDATA[The Author subform for "CatAutoNumberingScheme" form.]]></desc>
             <altviews>
-                    <altview name="AutoNumberingScheme View" viewdef="AutoNumberingScheme" label="View" mode="view" default="true"/>
-                    <altview name="AutoNumberingScheme Edit" viewdef="AutoNumberingScheme" label="Edit" mode="edit"/> 
+                    <altview name="AutoNumberingScheme View" viewdef="AutoNumberingScheme" mode="view" default="true"/>
+                    <altview name="AutoNumberingScheme Edit" viewdef="AutoNumberingScheme" mode="edit"/> 
             </altviews>
         </view>
         
@@ -153,8 +153,8 @@
             resourcelabels="false">
             <desc><![CDATA[The Journal Form.]]></desc>
             <altviews>
-                <altview name="JournalForm View" viewdef="JournalForm" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="JournalForm Edit" viewdef="JournalForm" label="Edit" mode="edit" validated="true"/>                
+                <altview name="JournalForm View" viewdef="JournalForm" mode="view" validated="false" default="true"/>                
+                <altview name="JournalForm Edit" viewdef="JournalForm" mode="edit" validated="true"/>                
             </altviews>
         </view>
         
@@ -163,8 +163,8 @@
             resourcelabels="false">
             <desc><![CDATA[The Journal Form.]]></desc>
             <altviews>
-                <altview name="Journal View" viewdef="Journal" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="Journal Edit" viewdef="Journal" label="Edit" mode="edit" validated="true"/>                
+                <altview name="Journal View" viewdef="Journal" mode="view" validated="false" default="true"/>                
+                <altview name="Journal Edit" viewdef="Journal" mode="edit" validated="true"/>                
             </altviews>
         </view>
         
@@ -174,8 +174,8 @@
             resourcelabels="false">
             <desc><![CDATA[The ReferenceWork Form.]]></desc>
             <altviews>
-                <altview name="ReferenceWork View" viewdef="ReferenceWork" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="ReferenceWork Edit" viewdef="ReferenceWork" label="Edit" mode="edit" validated="true"/>                
+                <altview name="ReferenceWork View" viewdef="ReferenceWork" mode="view" validated="false" default="true"/>                
+                <altview name="ReferenceWork Edit" viewdef="ReferenceWork" mode="edit" validated="true"/>                
             </altviews>
         </view>
         
@@ -184,8 +184,8 @@
             resourcelabels="false">
             <desc><![CDATA[The ReferenceWork SubForm.]]></desc>
             <altviews>
-                <altview name="ReferenceWorkSub View" viewdef="ReferenceWorkSub" label="View" mode="view"  default="true"/>                
-                <altview name="ReferenceWorkSub Edit" viewdef="ReferenceWorkSub" label="Edit" mode="edit"/>                
+                <altview name="ReferenceWorkSub View" viewdef="ReferenceWorkSub" mode="view"  default="true"/>                
+                <altview name="ReferenceWorkSub Edit" viewdef="ReferenceWorkSub" mode="edit"/>                
             </altviews>
         </view>
         
@@ -194,8 +194,8 @@
             resourcelabels="false">
             <desc><![CDATA[The WorkbenchTemplate Form.]]></desc>
             <altviews>
-                <!-- <altview name="WorkbenchTemplate View" viewdef="WorkbenchTemplate" label="View" mode="view" validated="false"/>    -->            
-                <altview name="WorkbenchTemplate Edit" viewdef="WorkbenchTemplate" label="Edit" mode="edit" validated="true" default="true"/>                
+                <!-- <altview name="WorkbenchTemplate View" viewdef="WorkbenchTemplate" mode="view" validated="false"/>    -->            
+                <altview name="WorkbenchTemplate Edit" viewdef="WorkbenchTemplate" mode="edit" validated="true" default="true"/>                
             </altviews>
         </view>
         
@@ -204,8 +204,8 @@
             resourcelabels="false">
             <desc><![CDATA[The Workbench Form.]]></desc>
             <altviews>
-                <!-- <altview name="Workbench View" viewdef="Workbench" label="View" mode="view" validated="false" default="true"/> -->        
-                <altview name="Workbench Edit" viewdef="Workbench" label="Edit" mode="edit" validated="true" default="true"/>                
+                <!-- <altview name="Workbench View" viewdef="Workbench" mode="view" validated="false" default="true"/> -->        
+                <altview name="Workbench Edit" viewdef="Workbench" mode="edit" validated="true" default="true"/>                
             </altviews>
         </view>
 
@@ -224,7 +224,7 @@
             resourcelabels="false">
             <desc><![CDATA[The Workbench Form.]]></desc>
             <altviews>
-                <altview name="Query Edit" viewdef="Query" label="Edit" mode="edit" validated="true" default="true"/>                
+                <altview name="Query Edit" viewdef="Query" mode="edit" validated="true" default="true"/>                
             </altviews>
         </view>
         
@@ -233,8 +233,8 @@
             resourcelabels="false">
             <desc><![CDATA[Taxon data entry form.]]></desc>
             <altviews>
-                <altview name="TaxonCitation View" viewdef="TaxonCitation" label="View" mode="view"/>
-                <altview name="TaxonCitation Edit" viewdef="TaxonCitation" label="Edit" mode="edit" default="true"/>
+                <altview name="TaxonCitation View" viewdef="TaxonCitation" mode="view"/>
+                <altview name="TaxonCitation Edit" viewdef="TaxonCitation" mode="edit" default="true"/>
             </altviews>
         </view>
   
@@ -245,8 +245,8 @@
             resourcelabels="false">
             <desc><![CDATA[Taxon data entry form.]]></desc>
             <altviews>
-                <altview name="Taxon View" viewdef="Taxon" label="View" mode="view"/>
-                <altview name="Taxon Edit" viewdef="Taxon" label="Edit" mode="edit" default="true"/>
+                <altview name="Taxon View" viewdef="Taxon" mode="view"/>
+                <altview name="Taxon Edit" viewdef="Taxon" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -256,9 +256,9 @@
             resourcelabels="false">
             <desc><![CDATA[Taxon data entry form.]]></desc>
             <altviews>
-                <altview name="Taxon Children View" viewdef="TaxonSubform" label="View" mode="view"/>
+                <altview name="Taxon Children View" viewdef="TaxonSubform" mode="view"/>
                 <!--
-                <altview name="Taxon Children Table View" viewdef="TaxonSubform Table" label="Grid" mode="view" default="true"/>
+                <altview name="Taxon Children Table View" viewdef="TaxonSubform Table" mode="view" default="true"/>
 				-->
             </altviews>
         </view>
@@ -270,8 +270,8 @@
             resourcelabels="false">
             <desc><![CDATA[Geography data entry form.]]></desc>
             <altviews>
-                <altview name="Geography View" viewdef="Geography" label="View" mode="view"/>
-                <altview name="Geography Edit" viewdef="Geography" label="Edit" mode="edit" default="true"/>
+                <altview name="Geography View" viewdef="Geography" mode="view"/>
+                <altview name="Geography Edit" viewdef="Geography" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -281,9 +281,9 @@
             resourcelabels="false">
             <desc><![CDATA[Geography data entry form.]]></desc>
             <altviews>
-                <altview name="Geography Children View" viewdef="GeographySubform" label="View" mode="view"/>
+                <altview name="Geography Children View" viewdef="GeographySubform" mode="view"/>
                 <!--
-                <altview name="Geography Children Table View" viewdef="GeographySubform Table" label="Grid" mode="view" default="true"/>
+                <altview name="Geography Children Table View" viewdef="GeographySubform Table" mode="view" default="true"/>
 				-->
             </altviews>
         </view>
@@ -295,8 +295,8 @@
             resourcelabels="false">
             <desc><![CDATA[Storage data entry form.]]></desc>
             <altviews>
-                <altview name="Storage View" viewdef="Storage" label="View" mode="view"/>
-                <altview name="Storage Edit" viewdef="Storage" label="Edit" mode="edit" default="true"/>
+                <altview name="Storage View" viewdef="Storage" mode="view"/>
+                <altview name="Storage Edit" viewdef="Storage" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -306,9 +306,9 @@
             resourcelabels="false">
             <desc><![CDATA[Storage data entry form.]]></desc>
             <altviews>
-                <altview name="Storage Children View" viewdef="StorageSubform" label="View" mode="view"/>
+                <altview name="Storage Children View" viewdef="StorageSubform" mode="view"/>
                 <!--
-                <altview name="Storage Children Table View" viewdef="StorageSubform Table" label="Grid" mode="view" default="true"/>
+                <altview name="Storage Children Table View" viewdef="StorageSubform Table" mode="view" default="true"/>
 				-->
             </altviews>
         </view>
@@ -320,8 +320,8 @@
             resourcelabels="false">
             <desc><![CDATA[GeologicTimePeriod data entry form.]]></desc>
             <altviews>
-                <altview name="GeologicTimePeriod View" viewdef="GeologicTimePeriod" label="View" mode="view"/>
-                <altview name="GeologicTimePeriod Edit" viewdef="GeologicTimePeriod" label="Edit" mode="edit" default="true"/>
+                <altview name="GeologicTimePeriod View" viewdef="GeologicTimePeriod" mode="view"/>
+                <altview name="GeologicTimePeriod Edit" viewdef="GeologicTimePeriod" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -331,9 +331,9 @@
             resourcelabels="false">
             <desc><![CDATA[GeologicTimePeriod data entry form.]]></desc>
             <altviews>
-                <altview name="GeologicTimePeriod Children View" viewdef="GeologicTimePeriodSubform" label="View" mode="view"/>
+                <altview name="GeologicTimePeriod Children View" viewdef="GeologicTimePeriodSubform" mode="view"/>
                 <!--
-                <altview name="GeologicTimePeriod Children Table View" viewdef="GeologicTimePeriodSubform Table" label="Grid" mode="view" default="true"/>
+                <altview name="GeologicTimePeriod Children Table View" viewdef="GeologicTimePeriodSubform Table" mode="view" default="true"/>
 				-->
             </altviews>
         </view>
@@ -345,8 +345,8 @@
             resourcelabels="false">
             <desc><![CDATA[LithoStrat data entry form.]]></desc>
             <altviews>
-                <altview name="LithoStrat View" viewdef="LithoStrat" label="View" mode="view"/>
-                <altview name="LithoStrat Edit" viewdef="LithoStrat" label="Edit" mode="edit" default="true"/>
+                <altview name="LithoStrat View" viewdef="LithoStrat" mode="view"/>
+                <altview name="LithoStrat Edit" viewdef="LithoStrat" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -355,7 +355,7 @@
             resourcelabels="false">
             <desc><![CDATA[StorageTreeDefItem Form]]></desc>
             <altviews>
-                <altview name="Tree Def Item Edit" viewdef="StorageTreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="Tree Def Item Edit" viewdef="StorageTreeDefItem" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -364,7 +364,7 @@
             resourcelabels="false">
             <desc><![CDATA[Root StorageTreeDefItem Form]]></desc>
             <altviews>
-                <altview name="Root Tree Def Item Edit" viewdef="RootStorageTreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="Root Tree Def Item Edit" viewdef="RootStorageTreeDefItem" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -373,7 +373,7 @@
             resourcelabels="false">
             <desc><![CDATA[GeographyTreeDefItem Form]]></desc>
             <altviews>
-                <altview name="Tree Def Item Edit" viewdef="GeographyTreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="Tree Def Item Edit" viewdef="GeographyTreeDefItem" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -382,7 +382,7 @@
             resourcelabels="false">
             <desc><![CDATA[Root GeographyTreeDefItem Form]]></desc>
             <altviews>
-                <altview name="Root Tree Def Item Edit" viewdef="RootGeographyTreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="Root Tree Def Item Edit" viewdef="RootGeographyTreeDefItem" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -391,7 +391,7 @@
             resourcelabels="false">
             <desc><![CDATA[GeologicTimePeriodTreeDefItem Form]]></desc>
             <altviews>
-                <altview name="Tree Def Item Edit" viewdef="GeologicTimePeriodTreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="Tree Def Item Edit" viewdef="GeologicTimePeriodTreeDefItem" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -400,7 +400,7 @@
             resourcelabels="false">
             <desc><![CDATA[Root GeologicTimePeriodTreeDefItem Form]]></desc>
             <altviews>
-                <altview name="Root Tree Def Item Edit" viewdef="RootGeologicTimePeriodTreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="Root Tree Def Item Edit" viewdef="RootGeologicTimePeriodTreeDefItem" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -409,7 +409,7 @@
             resourcelabels="false">
             <desc><![CDATA[LithoStratTreeDefItem Form]]></desc>
             <altviews>
-                <altview name="Tree Def Item Edit" viewdef="LithoStratTreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="Tree Def Item Edit" viewdef="LithoStratTreeDefItem" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -418,7 +418,7 @@
             resourcelabels="false">
             <desc><![CDATA[Root LithoStratTreeDefItem Form]]></desc>
             <altviews>
-                <altview name="Root Tree Def Item Edit" viewdef="RootLithoStratTreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="Root Tree Def Item Edit" viewdef="RootLithoStratTreeDefItem" mode="edit" validated="true"/>
             </altviews>
         </view>
 
@@ -427,7 +427,7 @@
             resourcelabels="false">
             <desc><![CDATA[TaxonTreeDefItem Form]]></desc>
             <altviews>
-                <altview name="Tree Def Item Edit" viewdef="TaxonTreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="Tree Def Item Edit" viewdef="TaxonTreeDefItem" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -436,7 +436,7 @@
             resourcelabels="false">
             <desc><![CDATA[Root TaxonTreeDefItem Form]]></desc>
             <altviews>
-                <altview name="Root Tree Def Item Edit" viewdef="RootTaxonTreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="Root Tree Def Item Edit" viewdef="RootTaxonTreeDefItem" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -446,7 +446,7 @@
             resourcelabels="false">
             <desc><![CDATA[New Tree Definition Data Entry Form]]></desc>
             <altviews>
-                <altview name="NewTreeDefDataEntry" viewdef="NewTreeDefDataEntry" label="Edit" mode="edit" validated="true"/>
+                <altview name="NewTreeDefDataEntry" viewdef="NewTreeDefDataEntry" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -455,12 +455,12 @@
 			resourcelabels="false">
 			<desc><![CDATA[The Object-Attachment View.]]></desc>
             <altviews>
-                <altview name="ObjectAttachment Icon View"  viewdef="ObjectAttachment IconView" label="Icon"  mode="view"/>
-                <altview name="ObjectAttachment Icon Edit"  viewdef="ObjectAttachment IconView" label="Icon"  mode="edit"/>
-                <altview name="ObjectAttachment Table View" viewdef="ObjectAttachment Table"    label="Grid" mode="view" />
-                <altview name="ObjectAttachment Table Edit" viewdef="ObjectAttachment Table"    label="Grid" mode="edit"/>
-                <altview name="ObjectAttachment Form View"  viewdef="ObjectAttachment Form"     label="Form"  mode="view" default="true"/>
-                <altview name="ObjectAttachment Form Edit"  viewdef="ObjectAttachment Form"     label="Form"  mode="edit"/>
+                <altview name="ObjectAttachment Icon View"  viewdef="ObjectAttachment IconView" mode="view"/>
+                <altview name="ObjectAttachment Icon Edit"  viewdef="ObjectAttachment IconView" mode="edit"/>
+                <altview name="ObjectAttachment Table View" viewdef="ObjectAttachment Table"    mode="view" />
+                <altview name="ObjectAttachment Table Edit" viewdef="ObjectAttachment Table"    mode="edit"/>
+                <altview name="ObjectAttachment Form View"  viewdef="ObjectAttachment Form"     label="Form" mode="view" default="true"/>
+                <altview name="ObjectAttachment Form Edit"  viewdef="ObjectAttachment Form"     label="Form" mode="edit"/>
             </altviews>
         </view>
 			
@@ -480,8 +480,8 @@
             resourcelabels="false">
             <desc><![CDATA[PaleoContext subform within Collection Object form.]]></desc>
             <altviews>
-                <altview name="SubPaleoContext View" viewdef="SubPaleoContext" label="View" mode="view"/>
-                <altview name="SubPaleoContext Edit" viewdef="SubPaleoContext" label="Edit" mode="edit" default="true"/>
+                <altview name="SubPaleoContext View" viewdef="SubPaleoContext" mode="view"/>
+                <altview name="SubPaleoContext Edit" viewdef="SubPaleoContext" mode="edit" default="true"/>
             </altviews>
         </view>
         

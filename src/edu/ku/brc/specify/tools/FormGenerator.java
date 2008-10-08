@@ -90,14 +90,12 @@ public class FormGenerator
             altViewView.initialize();
             altViewView.setName(tName+" View");
             altViewView.setDefault(true);
-            altViewView.setLabel("View");
             altViewView.setMode(AltViewIFace.CreationMode.VIEW);
            
             SpUIAltView altViewEdit = new SpUIAltView();
             altViewEdit.initialize();
             altViewEdit.setName(tName+" Edit");
             altViewEdit.setDefault(true);
-            altViewEdit.setLabel("Edit");
             altViewEdit.setMode(AltViewIFace.CreationMode.EDIT);
            
             view.getSpAltViews().add(altViewView);

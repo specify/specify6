@@ -7,7 +7,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="label" viewdef="label" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="label" viewdef="label" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -16,7 +16,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="separator" viewdef="separator" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="separator" viewdef="separator" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -25,7 +25,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="subview" viewdef="subview" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="subview" viewdef="subview" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -34,7 +34,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="command" viewdef="command" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="command" viewdef="command" mode="edit"  validated="true"  default="true"/>
             </altviews>
        </view>
         
@@ -43,7 +43,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="panel" viewdef="panel" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="panel" viewdef="panel" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -52,7 +52,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="statusbar" viewdef="statusbar" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="statusbar" viewdef="statusbar" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -61,7 +61,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="ViewDefProps" viewdef="ViewDefProps" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="ViewDefProps" viewdef="ViewDefProps" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -70,7 +70,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="baseFormCell" viewdef="baseFormCell" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="baseFormCell" viewdef="baseFormCell" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -79,7 +79,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="baseFormCellField" viewdef="baseFormCellField" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="baseFormCellField" viewdef="baseFormCellField" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
         
@@ -90,7 +90,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="text" viewdef="text" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="text" viewdef="text" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -99,7 +99,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="formattedtext" viewdef="formattedtext" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="formattedtext" viewdef="formattedtext" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -109,7 +109,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="label" viewdef="label" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="label" viewdef="label" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
         -->
@@ -119,7 +119,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="dsptextfield" viewdef="dsptextfield" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="dsptextfield" viewdef="dsptextfield" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -128,7 +128,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="textfieldinfo" viewdef="textfieldinfo" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="textfieldinfo" viewdef="textfieldinfo" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -137,7 +137,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="image" viewdef="image" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="image" viewdef="image" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -146,7 +146,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="url" viewdef="url" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="url" viewdef="url" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -155,7 +155,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="combobox" viewdef="combobox" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="combobox" viewdef="combobox" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -164,7 +164,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="checkbox" viewdef="checkbox" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="checkbox" viewdef="checkbox" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -173,7 +173,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="spinner" viewdef="spinner" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="spinner" viewdef="spinner" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -182,7 +182,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="password" viewdef="password" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="password" viewdef="password" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -191,7 +191,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="dsptextarea" viewdef="dsptextarea" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="dsptextarea" viewdef="dsptextarea" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -200,7 +200,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="textarea" viewdef="textarea" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="textarea" viewdef="textarea" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -209,7 +209,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="browse" viewdef="browse" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="browse" viewdef="browse" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -218,7 +218,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="querycbx" viewdef="querycbx" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="querycbx" viewdef="querycbx" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -227,7 +227,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="list" viewdef="list" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="list" viewdef="list" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -236,7 +236,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="colorchooser" viewdef="colorchooser" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="colorchooser" viewdef="colorchooser" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -245,7 +245,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="button" viewdef="button" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="button" viewdef="button" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
 
@@ -254,7 +254,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="progress" viewdef="progress" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="progress" viewdef="progress" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -263,7 +263,7 @@
               resourcelabels="false">
             <desc><![CDATA[The label form.]]></desc>
             <altviews>
-                <altview name="plugin" viewdef="plugin" label="Edit" mode="edit"  validated="true"  default="true"/>
+                <altview name="plugin" viewdef="plugin" mode="edit"  validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -272,7 +272,7 @@
             resourcelabels="false">
             <desc><![CDATA[]]></desc>
             <altviews>
-                <altview name="AltView Edit" viewdef="AltViewProps" label="Edit" mode="edit" validated="true"  default="true"/>
+                <altview name="AltView Edit" viewdef="AltViewProps" mode="edit" validated="true"  default="true"/>
             </altviews>
         </view>
         
@@ -281,7 +281,7 @@
             resourcelabels="false">
             <desc><![CDATA[]]></desc>
             <altviews>
-                <altview name="ViewDef Edit" viewdef="ViewDefProps" label="Edit" mode="edit" validated="true"  default="true"/>
+                <altview name="ViewDef Edit" viewdef="ViewDefProps" mode="edit" validated="true"  default="true"/>
             </altviews>
         </view>
   
@@ -290,7 +290,7 @@
             resourcelabels="false">
             <desc><![CDATA[]]></desc>
             <altviews>
-                <altview name="View Edit" viewdef="ViewProps" label="Edit" mode="edit" validated="true"  default="true"/>
+                <altview name="View Edit" viewdef="ViewProps" mode="edit" validated="true"  default="true"/>
             </altviews>
         </view>
   

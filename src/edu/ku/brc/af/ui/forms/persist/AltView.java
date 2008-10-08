@@ -32,7 +32,6 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
 {
     protected ViewIFace     view;
     protected String        name;
-    protected String        label;
     protected String        title;
     protected AltViewIFace.CreationMode  mode;
     protected boolean       validated;
@@ -54,7 +53,6 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
 
     public AltView(final ViewIFace view, 
                    final String name, 
-                   final String label, 
                    final String title, 
                    final CreationMode mode, 
                    final boolean validated, 
@@ -63,7 +61,6 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
     {
         this.view = view;
         this.name = name;
-        this.label = label;
         this.title = title;
         this.mode = mode;
         this.validated = validated;
@@ -96,28 +93,12 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
         return viewDef != null ? viewDef.getName() : null;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#getLabel()
-     */
-    public String getLabel()
-    {
-        return label;
-    }
-
     /**
      * @return the title (or name if title is null).
      */
     public String getTitle()
     {
         return title != null ? title : name;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#setLabel(java.lang.String)
-     */
-    public void setLabel(String label)
-    {
-        this.label = label;
     }
 
     /* (non-Javadoc)
@@ -276,7 +257,6 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
         AltView altView = (AltView)super.clone();
         altView.view      = view;
         altView.name      = name;
-        altView.label     = label;
         altView.title     = title;
         altView.mode      = mode;
         altView.validated = validated;
@@ -296,7 +276,6 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
         sb.append("        <altview ");
         xmlAttr(sb, "name", name);
         xmlAttr(sb, "viewdef", viewDef.getName());
-        xmlAttr(sb, "label", label);
         xmlAttr(sb, "title", title);
         xmlAttr(sb, "validated", validated);
         xmlAttr(sb, "default", isDefault);

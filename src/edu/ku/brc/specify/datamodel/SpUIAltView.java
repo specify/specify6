@@ -59,7 +59,6 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
             
     protected Integer     spUIAltViewId;
     protected String      name;
-    protected String      label;
     protected String      title;
     protected String      modeName;
     protected Boolean     isValidated;
@@ -83,7 +82,6 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
     
     public SpUIAltView(final ViewIFace view, 
                        final String name, 
-                       final String label, 
                        final String title, 
                        final CreationMode mode, 
                        final boolean validated, 
@@ -94,7 +92,6 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
         
         this.spView = (SpUIView)view;
         this.name = name;
-        this.label = label;
         this.title = title;
         this.modeName = SpUIView.getCreationModeStrFrom(mode);
         this.isValidated = validated;
@@ -115,7 +112,6 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
         
         spUIAltViewId = null;
         name          = null;
-        label         = null;
         title         = null;
         modeName      = null;
         isValidated   = null;
@@ -152,23 +148,6 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
     public void setIsDefaultAltView(Boolean defaultAltView)
     {
         this.isDefaultAltView = defaultAltView;
-    }
-
-    /**
-     * @return the label
-     */
-    @Column(name = "Label", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
-    public String getLabel()
-    {
-        return label;
-    }
-
-    /**
-     * @param label the label to set
-     */
-    public void setLabel(String label)
-    {
-        this.label = label;
     }
 
     /**
@@ -498,7 +477,6 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
         // Need to set the View and the ViewDef Externally
         
         name             = altView.getName();
-        label            = altView.getLabel();
         title            = altView.getTitle();
         modeName         = altView.getMode().toString().toLowerCase();
         isValidated      = altView.isValidated();
@@ -518,7 +496,6 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
         sb.append("                <altview");
         xmlAttr(sb, "name", name);
         xmlAttr(sb, "viewdef", spViewDef.getName());
-        xmlAttr(sb, "label", label);
         xmlAttr(sb, "title", title);
         xmlAttr(sb, "mode", modeName);
         xmlAttr(sb, "default", isDefaultAltView);

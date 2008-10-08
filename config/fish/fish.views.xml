@@ -8,7 +8,7 @@
             resourcelabels="false">
             <desc><![CDATA[FishBase]]></desc>
             <altviews>
-                <altview name="FishBase" viewdef="FishBase" label="View" mode="view" default="true"/>
+                <altview name="FishBase" viewdef="FishBase" mode="view" default="true"/>
             </altviews>
         </view>
         
