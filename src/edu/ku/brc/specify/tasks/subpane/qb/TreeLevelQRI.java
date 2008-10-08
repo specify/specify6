@@ -97,25 +97,25 @@ public class TreeLevelQRI extends FieldQRI
      */
     protected String getSQLFldName(final TableAbbreviator ta)
     {
-        tableAlias = ta.getAbbreviation(table.getTableTree());
-        return tableAlias + ".nodeNumber";
-        
-//        StringBuilder result = new StringBuilder("(select treelevel.name from ");
-//        result.append(getTableInfo().getClassObj().getSimpleName());
-//        result.append(" treelevel where ");
 //        tableAlias = ta.getAbbreviation(table.getTableTree());
-//        result.append(ta.getAbbreviation(table.getTableTree()));
-//        result.append(".nodeNumber between treelevel.nodeNumber and treelevel.highestChildNodeNumber and treelevel.rankId = ");
-//        result.append(String.valueOf(rankId));
-//        String treeDef = getTreeDefIdFldName();
-//        result.append(" and treelevel.");
-//        result.append(treeDef);
-//        result.append("=");
-//        result.append(ta.getAbbreviation(table.getTableTree()));
-//        result.append(".");
-//        result.append(treeDef);
-//        result.append(")");
-//        return result.toString();
+//        return tableAlias + ".nodeNumber";
+        
+        StringBuilder result = new StringBuilder("(select treelevel.name from ");
+        result.append(getTableInfo().getClassObj().getSimpleName());
+        result.append(" treelevel where ");
+        tableAlias = ta.getAbbreviation(table.getTableTree());
+        result.append(ta.getAbbreviation(table.getTableTree()));
+        result.append(".nodeNumber between treelevel.nodeNumber and treelevel.highestChildNodeNumber and treelevel.rankId = ");
+        result.append(String.valueOf(rankId));
+        String treeDef = getTreeDefIdFldName();
+        result.append(" and treelevel.");
+        result.append(treeDef);
+        result.append("=");
+        result.append(ta.getAbbreviation(table.getTableTree()));
+        result.append(".");
+        result.append(treeDef);
+        result.append(")");
+        return result.toString();
     }
     
     /**
