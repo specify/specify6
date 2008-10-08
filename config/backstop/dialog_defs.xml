@@ -34,7 +34,7 @@
     <dialog type="display" view="AttachmentsForm"    name="AttachmentsForm"          class="edu.ku.brc.specify.datamodel.Attachment"/>
     <dialog type="display" view="AutoNumberingScheme" name="AutoNumberingScheme"     class="edu.ku.brc.specify.datamodel.AutoNumberingScheme"/>
     <dialog type="display" view="Author"             name="AuthorDisplay"            class="edu.ku.brc.specify.datamodel.Author"/>
-    <dialog type="display" view="GeologicTimePeriod" name="BioStratDisplay"          class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
+    <dialog type="display" view="BioStrat"           name="BioStratDisplay"          class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
     <dialog type="display" view="Collection"         name="Collection"               class="edu.ku.brc.specify.datamodel.Collection"/>
     <dialog type="display" view="Collector"          name="CollectorDisplay"         class="edu.ku.brc.specify.datamodel.Collector"/>
     <dialog type="display" view="CollectionObject"   name="CollectionObject"         class="edu.ku.brc.specify.datamodel.CollectionObject"/>
@@ -43,7 +43,7 @@
     <dialog type="display" view="Determination"      name="DeterminationDisplay"     class="edu.ku.brc.specify.datamodel.Determination"/>
     <dialog type="display" view="Division"           name="DivisionDisplay"          class="edu.ku.brc.specify.datamodel.Division"/>
     <dialog type="display" view="FieldNotebookPage"  name="FieldNotebookPageDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPage"/>
-    <dialog type="display" view="GeologicTimePeriod" name="GeologicTimePeriodDisplay" class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
+    <dialog type="display" view="ChronosStrat"       name="ChronosStratDisplay"      class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
     <dialog type="display" view="Geography"          name="GeographyDisplay"         class="edu.ku.brc.specify.datamodel.Geography"/>
     <dialog type="display" view="GroupPerson"        name="GroupPersonDisplay"       class="edu.ku.brc.specify.datamodel.GroupPerson"/>
     <dialog type="display" view="Journal"            name="JournalDisplay"           class="edu.ku.brc.specify.datamodel.Journal"/>

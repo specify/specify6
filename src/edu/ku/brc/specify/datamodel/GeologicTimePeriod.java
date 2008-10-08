@@ -133,7 +133,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         definition = null;
         definitionItem = null;
         parent = null;
-        isBioStrat = null;
+        isBioStrat = false;
 
         children                  = new HashSet<GeologicTimePeriod>();
         bioStratsPaleoContext     = new HashSet<PaleoContext>();
@@ -356,7 +356,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     @Column(name="IsBioStrat")
     public Boolean getIsBioStrat()
     {
-        return isBioStrat;
+        return isBioStrat == null ? false : isBioStrat;
     }
 
     /**

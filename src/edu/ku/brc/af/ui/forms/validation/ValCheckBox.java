@@ -87,10 +87,19 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
             
         }
     }
+
+    /**
+     * @param currentValue
+     */
+    public void setCurrentValue(Boolean currentValue)
+    {
+        this.currentValue = currentValue;
+    }
     
     //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#isInError()

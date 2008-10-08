@@ -325,6 +325,30 @@
             </altviews>
         </view>
         
+        <view name="BioStrat"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            busrules="edu.ku.brc.specify.datamodel.busrules.BioStratBusRules"
+            isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[GeologicTimePeriod data entry form.]]></desc>
+            <altviews>
+                <altview name="GeologicTimePeriod View" viewdef="GeologicTimePeriodSpecial" mode="view"/>
+                <altview name="GeologicTimePeriod Edit" viewdef="GeologicTimePeriodSpecial" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
+        <view name="ChronosStrat"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            busrules="edu.ku.brc.specify.datamodel.busrules.BioStratBusRules"
+            isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[GeologicTimePeriod data entry form.]]></desc>
+            <altviews>
+                <altview name="GeologicTimePeriod View" viewdef="GeologicTimePeriodSpecial" mode="view"/>
+                <altview name="GeologicTimePeriod Edit" viewdef="GeologicTimePeriodSpecial" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
         <view name="GeologicTimePeriodSubform"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
             busrules="edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules"
@@ -1493,6 +1517,69 @@
                 <row>
                     <cell type="label" label=" "/>
                     <cell type="field" id="isBioStrat" uitype="checkbox" label="##" name="isBioStrat"/>
+                </row>                
+                <row>
+                    <cell type="subview" viewname="GeographySubform" id="children" name="children" colspan="7"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            name="GeologicTimePeriodSpecial"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj"
+            useresourcelabels="true">
+            
+            <desc><![CDATA[New GeologicTimePeriod Node Form]]></desc>
+            <enableRules>
+                <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
+                <rule id="acceptedGeologicTimePeriod"><![CDATA[!isAccepted.isSelected()]]></rule>
+            </enableRules>
+            <columnDef>100px,3dlu,p:g,3dlu,p,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="name"/>
+                    <cell type="field" id="name" uitype="text" cols="16" name="name" colspan="5" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="remarks"/>
+                    <cell type="field" id="remarks" uitype="textarea" name="remarks" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="parent" label="PARENT"/>
+                    <cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="definitionItem"/>
+                    <cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" label=" "/>
+                    <cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="acceptedGeologicTimePeriod" label="ACCEPTEDPARENT"/>
+                    <cell type="field" id="acceptedGeologicTimePeriod" isrequired="true" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false" name="acceptedGeologicTimePeriod" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="startPeriod"/>
+                    <cell type="field" id="startPeriod" uitype="text" name="startPeriod"/>
+                    <cell type="label" labelfor="startUncertainty"/>
+                    <cell type="field" id="startUncertainty" uitype="text" name="startUncertainty"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="endPeriod"/>
+                    <cell type="field" id="endPeriod" uitype="text" name="endPeriod"/>
+                    <cell type="label" labelfor="endUncertainty"/>
+                    <cell type="field" id="endUncertainty" uitype="text" name="endUncertainty"/>
+                </row>
+                <row>
+                    <cell type="label" label=" "/>
+                    <cell type="field" id="isBioStrat" uitype="checkbox" label="##" name="isBioStrat" readonly="true"/>
                 </row>                
                 <row>
                     <cell type="subview" viewname="GeographySubform" id="children" name="children" colspan="7"/>

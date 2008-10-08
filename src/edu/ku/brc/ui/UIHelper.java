@@ -19,6 +19,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Insets;
@@ -1868,6 +1869,21 @@ public final class UIHelper
             if (parent instanceof Window)
             {
                 return (Window)parent;
+            }
+            parent = parent.getParent();
+        } while (parent != null);
+        
+        return null;
+    }
+    
+    public static Dialog getDialog(final Component comp)
+    {
+        Component parent = comp.getParent();
+        do
+        {
+            if (parent instanceof Dialog)
+            {
+                return (Dialog)parent;
             }
             parent = parent.getParent();
         } while (parent != null);

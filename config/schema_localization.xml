@@ -14662,7 +14662,7 @@
       <item name="acceptedGeologicTimePeriod">
         <names>
           <str language="en">
-            <text>Accepted Geologic Time Period</text>
+            <text>Accepted Chronos Stratigraphy</text>
             <version>0</version>
           </str>
         </names>
@@ -14836,7 +14836,7 @@
     </items>
     <names>
       <str language="de" country="" variant="">
-        <text>Geological Time Period</text>
+        <text>Chronos Stratigraphy</text>
         <version>0</version>
       </str>
       <str language="en" country="" variant="">
@@ -32606,7 +32606,7 @@
       <item name="geologicTimePeriodTreeDef">
         <names>
           <str language="en">
-            <text>Geologic Time Period Tree Def</text>
+            <text>Chronos Stratigraphy Tree Def</text>
             <version>0</version>
           </str>
         </names>
@@ -32768,7 +32768,7 @@
     </names>
     <descs>
       <str language="en" country="" variant="">
-        <text>May include one or more collections that share the Taxon, Geography, LithoStratigraphy, and Geologic Time Period Trees, Localities, Agents and Determination Status.</text>
+        <text>May include one or more collections that share the Taxon, Geography, LithoStratigraphy, and Chronos Stratigraphy Trees, Localities, Agents and Determination Status.</text>
         <version>0</version>
       </str>
     </descs>
