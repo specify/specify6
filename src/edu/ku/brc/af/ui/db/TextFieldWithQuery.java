@@ -34,6 +34,7 @@ import java.util.Formatter;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -95,7 +96,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected JPopupMenu           popupMenu      = null;
     protected JButton              dbBtn;
     protected boolean              isPopupShowing = false;
-    protected boolean              isDoingQuery   = false;
+    protected AtomicBoolean        isDoingQuery   = new AtomicBoolean(false);
     
     protected boolean              popupFromBtn   = false;
     protected boolean              ignoreFocusLost = false;
@@ -467,7 +468,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         } 
         //System.out.println(currentText);
         
-        //log.debug("hasNewText "+hasNewText+"  "+currentText.length());
+        //log.debug("hasNewText "+hasNewText+"    len: "+currentText.length());
         if (currentText.length() == 0 || !hasNewText)
         {
             if (ev.getKeyCode() != JAutoCompComboBox.SEARCH_KEY &&
@@ -539,7 +540,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             textField.setText(uiFieldFormatter.formatToUI(text).toString());
         } else
         {
-            if (!textField.getText().isEmpty())
+            // 10/2/08 - rods - Not sure why the the if was put here.
+            //if (!textField.getText().isEmpty())
             {
                 textField.setText(text);
             }
@@ -1024,7 +1026,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             }
         }
         
-        CustomDialog dlg = new PopUpDialog((Frame)UIRegistry.getTopWindow(), true, panel, listBox);
+        popupFromBtn = false;
+        hasNewText   = false;
+        
+        CustomDialog dlg = new PopUpDialog((Frame)UIRegistry.getMostRecentWindow(), true, panel, listBox);
         dlg.setVisible(true);
         
         if (!dlg.isCancelled())
@@ -1067,8 +1072,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             idList.clear();
             
             String sqlStr = buildSQL(((JPAQuery)customQuery).getData().toString(), false);
-            log.debug(sqlStr);
-            //sqlStr = "SELECT clt.collectingTripName, clt.collectingTripId FROM edu.ku.brc.specify.datamodel.CollectingTrip as clt inner join clt.discipline as dsp  WHERE  LOWER(collectingTripName) LIKE 'a%'  AND dsp.disciplineId = 3 ORDER BY collectingTripName ASC";
+            //log.debug(sqlStr);
             JPAQuery jpaQuery = new JPAQuery(sqlStr, this);
             isDoingCount = false;
             jpaQuery.start();
@@ -1076,7 +1080,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         } else
         {
             processResults(customQuery);
-            isDoingQuery = false;
+            isDoingQuery.set(false);
         }
     }
 
@@ -1086,7 +1090,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     //@Override
     public void executionError(final CustomQueryIFace customQuery)
     {
-        isDoingQuery = false;
+        isDoingQuery.set(false);
     }
 
     /**
@@ -1094,13 +1098,14 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      */
     protected void doQuery(final String newEntryStr)
     {
-        if (!isDoingQuery)
+        prevEnteredText = newEntryStr;
+
+        if (hasNewText)
         {
-            isDoingQuery    = true;
-            prevEnteredText = newEntryStr;
-    
-            if (hasNewText)
+            if (!isDoingQuery.get())
             {
+                isDoingQuery.set(true);
+                
                 list.clear();
                 idList.clear();
                 
@@ -1111,11 +1116,15 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 jpaQuery.setUnique(true);
                 jpaQuery.setData(newEntryStr);
                 jpaQuery.start();
-                
-            } else
-            {
-                showPopup();
             }
+            
+        } else if (returnCount > popupDlgThreshold)
+        {
+            showDialog();
+            
+        } else
+        {
+            showPopup();
         }
     }
     

@@ -62,6 +62,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      protected String        remarks;
      protected String        description;
      protected String        license;
+     protected Boolean       isServerBased;
      
      protected Address       address;
      protected Set<Agent>    technicalContacts;
@@ -101,6 +102,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         description       = null;
         license           = null;
         address           = null;
+        isServerBased     = false;
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
         divisions         = new HashSet<Division>();
@@ -280,6 +282,15 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
+     * @return the isServerBased
+     */
+    @Column(name = "IsServerBased", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsServerBased()
+    {
+        return isServerBased;
+    }
+
+    /**
      * @param contentContacts the contentContacts to set
      */
     public void setContentContacts(Set<Agent> contentContacts)
@@ -381,6 +392,14 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     public void setUri(String uri)
     {
         this.uri = uri;
+    }
+
+    /**
+     * @param isServerBased the isServerBased to set
+     */
+    public void setIsServerBased(Boolean isServerBased)
+    {
+        this.isServerBased = isServerBased;
     }
 
     /**
