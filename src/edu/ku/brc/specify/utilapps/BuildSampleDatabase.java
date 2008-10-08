@@ -677,9 +677,10 @@ public class BuildSampleDatabase
                     if (pl.getNumItems() > 0)
                     {
                         nameHash.put(pl.getName(), pl);
-                    } else
+                        
+                    } else if (discipline == null)
                     {
-                        System.out.println("Deleting: "+pl.getName());
+                        log.debug("Deleting PickList: "+pl.getName());
                         collection.getPickLists().remove(pl);
                         localSession.delete(pl);
                     }
@@ -691,18 +692,23 @@ public class BuildSampleDatabase
             {
                 for (BldrPickList pl : pickLists)
                 {
-                    System.out.println(pl.getName());
-                    PickList convPickList = nameHash != null ? nameHash.get(pl.getName()) : null;
-                    if (doCheck && convPickList != null)
-                    {
-                        convPickList.setIsSystem(true);
-                        localSession.saveOrUpdate(convPickList);
-                        continue;
-                    }
+                    PickList pickList;
                     
-                    PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
+                    pickList = doCheck ? nameHash.get(pl.getName()) : null;
+                    if (pickList != null)
+                    {
+                        pickList.setIsSystem(true);
+                        if (pickList.getNumItems() > 0)
+                        {
+                            continue;
+                        }
+                        
+                    } else
+                    {
+                        pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
                                                        pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
                                                        pl.getSizeLimit(), pl.getIsSystem(), pl.getSortType());
+                    }
                     pickList.setIsSystem(true);
                     pickList.setCollection(collection);
                     collection.getPickLists().add(pickList);

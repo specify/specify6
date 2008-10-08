@@ -62,7 +62,6 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.init.DataBuilder;
@@ -1891,13 +1890,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             localSession.save(discipline);
             trans.commit();
 
-            DBTableIdMgr schema = new DBTableIdMgr(false);
+            /*DBTableIdMgr schema = new DBTableIdMgr(false);
             schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
             BuildSampleDatabase.loadSchemaLocalization(discipline, SpLocaleContainer.WORKBENCH_SCHEMA, schema, null, null);
 
             trans = localSession.beginTransaction();
             localSession.save(discipline);
             trans.commit();
+            */
 
         } catch (Exception ex)
         {
@@ -1927,9 +1927,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             strBuf.setLength(0);
             
             // Adding Institution
-            strBuf.append("INSERT INTO institution (InstitutionID, TimestampModified, Name, TimestampCreated, StorageTreeDefID, ");
+            strBuf.append("INSERT INTO institution (InstitutionID, IsServerBased, TimestampModified, Name, TimestampCreated, StorageTreeDefID, ");
             strBuf.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
-            strBuf.append(institutionId + ",");
+            strBuf.append(institutionId + ",FALSE,");
             strBuf.append("'" + dateFormatter.format(now) + "',"); // TimestampModified
             strBuf.append("'" + instName + "',");
             strBuf.append("'" + dateFormatter.format(now) + "',"); // TimestampCreated
@@ -2298,7 +2298,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     strBuf.append(curCollectionID);  // UserGroupScopeId
                     strBuf.append(")");
 
-                    System.out.println(strBuf.toString());
+                    log.debug(strBuf.toString());
 
                     updateStatement.executeUpdate(strBuf.toString());
                     
@@ -2380,7 +2380,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             strBuf.append(autoNumId.toString());
             strBuf.append(")");
 
-            System.out.println(strBuf.toString());
+            log.debug(strBuf.toString());
 
             updateStatement.executeUpdate(strBuf.toString());
             updateStatement.clearBatch();
@@ -3059,7 +3059,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     && !oldColName.equals("TypeStatusNameID")
                     && !oldColName.equals("ObservationMethodID"))
             {
-                System.out.println("No Map for [" + fromTableName + "][" + oldColName + "]");
+                log.debug("No Map for [" + fromTableName + "][" + oldColName + "]");
             }
         }
         return data;
@@ -3137,7 +3137,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                         String newName = convertColumnName(md.getName());
                         attrDef.setFieldName(newName);
-                        System.out.println("mapping[" + newName + "][" + md.getName() + "]");
+                        log.debug("mapping[" + newName + "][" + md.getName() + "]");
 
                         // newNameToOldNameMap.put(newName, md.getName());
 
@@ -3239,9 +3239,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                 colObjAttr.setTimestampCreated(now);
 
                                 // String oldName = newNameToOldNameMap.get(attrDef.getFieldName());
-                                // System.out.println("["+attrDef.getFieldName()+"]["+oldName+"]");
+                                // log.debug("["+attrDef.getFieldName()+"]["+oldName+"]");
 
-                                // System.out.println(inx+" "+attrTypes[attrDef.getDataType()]+"
+                                // log.debug(inx+" "+attrTypes[attrDef.getDataType()]+"
                                 // "+md.getName()+" "+md.getType());
                                 setData(rs, inx, attrTypes[attrDef.getDataType()], md, colObjAttr);
 
@@ -3302,7 +3302,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                                     BasicSQLUtils.removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
                                     if (false)
                                     {
-                                        System.out.println(strBufInner.toString());
+                                        log.debug(strBufInner.toString());
                                     }
                                     updateStatement.executeUpdate(strBufInner.toString());
                                     updateStatement.clearBatch();
@@ -3517,10 +3517,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                  * int catNum = rs.getInt(oldNameIndex.get("CatalogNumber")+1); doDebug = catNum ==
                  * 30972;
                  * 
-                 * if (doDebug) { System.out.println("CatalogNumber "+catNum);
-                 * System.out.println("CollectionObjectID
+                 * if (doDebug) { log.debug("CatalogNumber "+catNum);
+                 * log.debug("CollectionObjectID
                  * "+rs.getInt(oldNameIndex.get("CollectionObjectID")+1));
-                 * System.out.println("DerivedFromID
+                 * log.debug("DerivedFromID
                  * "+rs.getInt(oldNameIndex.get("DerivedFromID")+1)); }
                  */
 
@@ -3552,7 +3552,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     String newFieldName = newFieldMetaData.get(i).getName();
                     String mappedName   = newToOld.get(newFieldName);
-                    //System.out.println("["+newFieldName+"]["+mappedName+"]");
+                    //log.debug("["+newFieldName+"]["+mappedName+"]");
                     
                     if (mappedName != null)
                     {
@@ -3710,7 +3710,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                         if (idMapperMgr != null && mappedName.endsWith("ID"))
                         {
-                            //System.out.println(mappedName);
+                            //log.debug(mappedName);
                             
                             IdMapperIFace idMapper;
                             if (mappedName.equals("DerivedFromID"))
@@ -4119,9 +4119,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         final String ZEROES = "000000000";
         
         UIFieldFormatterIFace formatter0 = UIFieldFormatterMgr.getInstance().getFormatter("CatalogNumber");
-        System.out.println(formatter0);
+        log.debug(formatter0);
         UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getInstance().getFormatter("CatalogNumberNumeric");
-        System.out.println(formatter);
+        log.debug(formatter);
         
         idMapperMgr.dumpKeys();
         IdHashMapper colObjTaxonMapper = (IdHashMapper)idMapperMgr.get("ColObjCatToTaxonType" .toLowerCase());
@@ -4449,11 +4449,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                             int idInx = newFieldName.lastIndexOf("ID");
                             if (idMapperMgr != null && idInx > -1)
                             {
-                                // System.out.println(newFieldName+" "+(index.intValue()+1)+"
+                                // log.debug(newFieldName+" "+(index.intValue()+1)+"
                                 // "+rs.getInt(index+1));
                                 /*if (catalogNumber.equals("000023421"))
                                 {
-                                    System.out.println(newFieldName);
+                                    log.debug(newFieldName);
                                     if (newFieldName.equals("CatalogerID"))
                                     {
                                         int x= 0;
@@ -4998,7 +4998,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             name         = rs.getString(2);
             requiredRank = rs.getInt(3);
             
-            System.out.println(rank + "  " + name);
+            log.debug(rank + "  " + name);
             
             TaxonTreeDefItem i = new TaxonTreeDefItem();
             i.initialize();
@@ -5568,7 +5568,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     {
                         if (rows == 0)
                         {
-                            System.out.println("Skipping[" + colName + "]");
+                            log.debug("Skipping[" + colName + "]");
                         }
                         continue;
                     }
@@ -5605,7 +5605,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         }
                         value = BasicSQLUtils.getStrValue(obj);
                     }
-                    // System.out.println(colName+" ["+value+"]");
+                    // log.debug(colName+" ["+value+"]");
 
                     if (valuesSQL.length() > 0)
                         valuesSQL.append(",");
@@ -6654,7 +6654,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         for (String tblName : tableNames)
         {
             existsMap.put(tblName, true);
-            System.out.println("[" + tblName + "]");
+            log.debug("[" + tblName + "]");
         }
         for (int i = 1; i <= rsmd.getColumnCount(); i++)
         {
@@ -7030,7 +7030,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         Integer index = oldIndexFromNameMap.get(fieldName);
                         if (index == null)
                         {
-                            // System.out.println(fieldName);
+                            // log.debug(fieldName);
                             value = "NULL";
 
                         } else if (fCnt == 0)
