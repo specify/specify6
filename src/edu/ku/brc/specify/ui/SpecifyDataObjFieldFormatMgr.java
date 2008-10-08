@@ -54,12 +54,7 @@ public class SpecifyDataObjFieldFormatMgr extends DataObjFieldFormatMgr implemen
             return AppContextMgr.getInstance().getResourceAsDOM(appRes);
         } 
         
-        // Get the default resource by name and copy it to a new User Area Resource
-        AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Collection", "DataObjFormatters");
-        
-        // Save it in the User Area
-        AppContextMgr.getInstance().saveResource(newAppRes);
-        return AppContextMgr.getInstance().getResourceAsDOM(newAppRes);
+        return XMLHelper.readDOMFromConfigDir(localFileName);
     }
     
     /* (non-Javadoc)
