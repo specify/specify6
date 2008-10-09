@@ -327,7 +327,7 @@
                             <row>
                                 <cell type="label" label=" "/>
                                 <cell type="field" id="23" name="this" uitype="plugin" initialize="name=LocalityGeoRef;title=Geo Ref" colspan="1"/>
-                                <cell type="field" id="24" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth" colspan="1"/>
+                                <cell type="field" id="24" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth;watch=5" colspan="1"/>
                             </row>
                         </rows>
                     </cell>
