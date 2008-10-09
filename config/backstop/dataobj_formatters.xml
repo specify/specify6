@@ -570,6 +570,14 @@
                     ending=""
                     format="Address"
                     default="true"/>
+      
+        <aggregator name="CollectionObject"
+                    class="edu.ku.brc.specify.datamodel.CollectionObject"
+                    separator="; "
+                    count=""
+                    ending=""
+                    format="CollectionObject"
+                    default="true"/>
         
         
         
