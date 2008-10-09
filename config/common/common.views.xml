@@ -281,6 +281,30 @@
             </altviews>
         </view>
         
+        <view name="Gift"
+            class="edu.ku.brc.specify.datamodel.Gift"
+            busrules="edu.ku.brc.specify.datamodel.busrules.GiftBusRules"
+            resourcelabels="false"
+            isinternal="false">
+            <desc><![CDATA[Gift display form]]></desc>
+            <altviews>
+                <altview name="Gift View" viewdef="Gift" mode="view" default="true"/>
+                <altview name="Gift Edit" viewdef="Gift" mode="edit"/>
+            </altviews>
+        </view>
+        
+        <view name="GiftItems"
+            class="edu.ku.brc.specify.datamodel.GiftPreparation"
+            resourcelabels="false">
+            <desc><![CDATA[Gift display form]]></desc>
+            <altviews>
+                <!--    <altview name="LoanItems Table View" viewdef="LoanItems Table" mode="view"/>
+                    <altview name="LoanItems Table Edit" viewdef="LoanItems Table" mode="edit"/> -->
+                <altview name="GiftItems View" viewdef="GiftItems" mode="view" default="true"/>
+                <altview name="GiftItems Edit" viewdef="GiftItems" mode="edit"/>
+            </altviews>
+        </view>
+        
         <view name="Institution"
             class="edu.ku.brc.specify.datamodel.Institution" 
             resourcelables="false">
@@ -1451,6 +1475,74 @@
                     <cell type="separator" label="Attachments"/>
                     <cell type="subview" id="6" name="attachments" viewname="FieldNotebookPageSetAttachment" initialize="btn=true;icon=FieldNotebookPageSetAttachment;addsearch=true"/>
                     </row> -->
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="Gift"
+            class="edu.ku.brc.specify.datamodel.Gift"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Gift viewing form.]]></desc>
+            <columnDef>85px,4px,p,10px,p,4px,75px,5px,p,4px,p,p:g</columnDef>
+            <columnDef os="mac">110px,4px,p,80px,p,4px,p,5px,p,4px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="1dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="giftNumber" uitype="formattedtext" uifieldformatter="LoanNumber" isrequired="true"/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="giftDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="remarks" uitype="textarea" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="GiftItems" id="10" name="giftPreparations" defaulttype="table" colspan="12"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="GiftItems"
+            class="edu.ku.brc.specify.datamodel.GiftPreparation"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Gift viewing form.]]></desc>
+            <columnDef>125px,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
+            <columnDef os="mac">110px,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="1dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="9" />
+                    <cell type="field" id="9" name="preparation.collectionObject.catalogNumber" uitype="text" readonly="true"/>
+                    <cell type="label" labelfor="3" />
+                    <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=2000" isrequired="true"/>
+                    <cell type="field" id="2" name="preparation.prepType.name" uitype="dsptextfield" readonly="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" />
+                    <cell type="field" id="5" name="preparation.count" uitype="dsptextfield"/>
+                    
+                    <cell type="field" id="8" name="isResolved" uitype="checkbox" label="Resolved" colspan="3"/>
+                    
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="preparation.storageLocation" uitype="dsptextfield" colpsan="2"/>
+                </row>
             </rows>
         </viewdef>
         
