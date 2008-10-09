@@ -1621,12 +1621,12 @@
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="definitionItem"/>
-                    <cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
-                </row>
-                <row>
                     <cell type="label" label=" "/>
                     <cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="acceptedLithoStrat" label="ACCEPTEDPARENT"/>
+                    <cell type="field" id="acceptedLithoStrat" isrequired="true" uitype="querycbx" initialize="name=LithoStrat;title=LithoStrat;editbtn=false;newbtn=false" name="acceptedLithoStrat" colspan="5"/>
                 </row>
             </rows>
         </viewdef>
