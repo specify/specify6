@@ -175,11 +175,9 @@ public interface QueryForIdResultsIFace
     public abstract void queryTaskDone(final Object results);
     
     /**
-     * Sets the record ids for the results.
-     * 
-     * @param ids
+     * @return number of records in result set.
      */
-    public abstract void setRecIds(final Vector<Integer> ids);
+    public abstract int size();
     
     /**
      * @return true if progress bar should be displayed by default.
@@ -191,5 +189,11 @@ public interface QueryForIdResultsIFace
      */
     public abstract int getMaxTableRows();
     
-    
+    /**
+     * @param cache 
+     * 
+     * This is called when results have been retrieved and cached.
+     * Sorting or other actions can be applied to the cache.
+     */
+    public abstract void cacheFilled(final Vector<Vector<Object>> cache);
 }

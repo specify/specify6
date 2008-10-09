@@ -339,14 +339,14 @@ public class UploadResults implements QueryForIdResultsIFace
         return uploadData;
     }
 
+
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setRecIds(java.util.Vector)
+     * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#size()
      */
-    //@Override
-    public void setRecIds(Vector<Integer> ids)
+    @Override
+    public int size()
     {
-        // TODO Auto-generated method stub
-        
+        return getRecIds().size();
     }
 
     /* (non-Javadoc)
@@ -365,6 +365,16 @@ public class UploadResults implements QueryForIdResultsIFace
     public int getMaxTableRows()
     {
         return -1;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#cacheFilled(java.util.Vector)
+     */
+    @Override
+    public void cacheFilled(Vector<Vector<Object>> cache)
+    {
+        // TODO Auto-generated method stub
+        
     }
     
     

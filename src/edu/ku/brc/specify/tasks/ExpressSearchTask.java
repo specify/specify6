@@ -91,6 +91,7 @@ import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsFromQuery;
 import edu.ku.brc.specify.tasks.subpane.SIQueryForIdResults;
 import edu.ku.brc.specify.tasks.subpane.qb.QBQueryForIdResultsHQL;
+import edu.ku.brc.specify.tasks.subpane.qb.QBResultsSubPane;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.web.ExplorerESPanel;
 import edu.ku.brc.ui.CommandAction;
@@ -583,7 +584,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             }
         }
         
-        if (queryResults.getRecIds().size() > 0)
+        if (queryResults.size() > 0)
         {
             esrPane.addSearchResults(queryResults);
         }
@@ -663,7 +664,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         {
             if (queryResultsPane == null)
             {
-                queryResultsPane = new ESResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
+                //queryResultsPane = new ESResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
+                queryResultsPane = new QBResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
                 queryResultsPane.setIcon(IconManager.getIcon("Query", IconManager.IconSize.Std16));
                 
             } else

@@ -633,7 +633,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         updateSearchBtn();
         QueryBldrPane.this.validate();
     }
-
+    
     /**
      * @param rootTable
      * @param distinct
@@ -642,11 +642,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param keysToRetrieve
      * @return the hql paired with a list of parameters/objects to assign.
      */
-    protected static Pair<String, List<Pair<String, Object>>> buildHQL(final TableQRI rootTable, 
-                                                                       final boolean distinct, 
-                                                                       final Vector<QueryFieldPanel> qfps,
-                                                                       final TableTree tblTree, 
-                                                                       final RecordSetIFace keysToRetrieve) throws ParseException
+    protected static HQLSpecs buildHQL(final TableQRI rootTable, 
+                                       final boolean distinct, 
+                                       final Vector<QueryFieldPanel> qfps,
+                                       final TableTree tblTree, 
+                                       final RecordSetIFace keysToRetrieve) throws ParseException
     {
         if (qfps.size() == 0)
             return null;
@@ -658,6 +658,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         Vector<BaseQRI> list = new Vector<BaseQRI>();
         StringBuilder criteriaStr = new StringBuilder();
         StringBuilder orderStr = new StringBuilder();
+        LinkedList<SortElement> sortElements = new LinkedList<SortElement>();
+        boolean treeSortPresent = false;
         boolean debug = true;
         ProcessNode root = new ProcessNode(null);
         int fldPosition = distinct ? 0 : 1;
@@ -679,11 +681,21 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             String orderSpec = qfi.getOrderSpec(fldPosition);
             if (orderSpec != null)
             {
-                if (orderStr.length() > 0)
+                if (!treeSortPresent && qfi.getFieldQRI() instanceof TreeLevelQRI)
                 {
-                    orderStr.append(", ");
+                    treeSortPresent = true;
+                    orderStr.setLength(0); //don't care about the orderStr anymore.
                 }
-                orderStr.append(orderSpec);
+                if (!treeSortPresent)
+                {
+                    if (orderStr.length() > 0)
+                    {
+                        orderStr.append(", ");
+                    }
+                    orderStr.append(orderSpec);
+                }
+                int direction = orderSpec.endsWith("DESC") ? SortElement.DESCENDING : SortElement.ASCENDING;
+                sortElements.add(new SortElement(distinct ? fldPosition-1 : fldPosition-2, direction));
             }
 
             // Create a Stack (list) of parent from
@@ -891,11 +903,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         if (debug)
         {
             System.out.println(sqlStr.toString());
+            System.out.println("sort:");
+            for (SortElement s : sortElements)
+            {
+                System.out.println("  " + s.getColumn() + " - " + s.getDirection());
+            }
         }
         
         String result = sqlStr.toString();
         
-        return new Pair<String, List<Pair<String, Object>>>(result, paramsToSet);
+        //return new Pair<String, List<Pair<String, Object>>>(result, paramsToSet);
+        return new HQLSpecs(result, paramsToSet, sortElements);
     }
     
     /**
@@ -905,8 +923,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         try
         {
-            Pair<String, List<Pair<String, Object>>> hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null);    
-            processSQL(queryFieldItems, hql.getFirst(), hql.getSecond(), rootTable.getTableInfo(), distinct);
+            HQLSpecs hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null);    
+            processSQL(queryFieldItems, hql, rootTable.getTableInfo(), distinct);
         }
         catch (Exception ex)
         {
@@ -1080,24 +1098,24 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                             qfp.getStringId(),
                             ((RelQRI)qfp.getFieldQRI()).getRelationshipInfo());
                 }
-//                else if (qfp.getFieldQRI() instanceof TreeLevelQRI)
-//                {
-//                    for (ERTICaptionInfoTreeLevelGrp tg : treeGrps)
-//                    {
-//                        erti = tg.addRank((TreeLevelQRI )qfp.getFieldQRI(), colName, lbl, qfp.getStringId());
-//                        if (erti != null)
-//                        {
-//                            break;
-//                        }
-//                    }
-//                    if (erti == null)
-//                    {
-//                        TreeLevelQRI tqri = (TreeLevelQRI )qfp.getFieldQRI();
-//                        ERTICaptionInfoTreeLevelGrp newTg = new ERTICaptionInfoTreeLevelGrp(tqri.getTreeDataClass(), tqri.getTreeDefId(), tqri.getTableAlias());
-//                        erti = newTg.addRank(tqri, colName, lbl, qfp.getStringId());
-//                        treeGrps.add(newTg);
-//                    }
-//                }
+                else if (qfp.getFieldQRI() instanceof TreeLevelQRI)
+                {
+                    for (ERTICaptionInfoTreeLevelGrp tg : treeGrps)
+                    {
+                        erti = tg.addRank((TreeLevelQRI )qfp.getFieldQRI(), colName, lbl, qfp.getStringId());
+                        if (erti != null)
+                        {
+                            break;
+                        }
+                    }
+                    if (erti == null)
+                    {
+                        TreeLevelQRI tqri = (TreeLevelQRI )qfp.getFieldQRI();
+                        ERTICaptionInfoTreeLevelGrp newTg = new ERTICaptionInfoTreeLevelGrp(tqri.getTreeDataClass(), tqri.getTreeDefId(), tqri.getTableAlias());
+                        erti = newTg.addRank(tqri, colName, lbl, qfp.getStringId());
+                        treeGrps.add(newTg);
+                    }
+                }
                 else
                 {
                     erti = new ERTICaptionInfoQB(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0, qfp.getStringId(), qfp.getPickList());
@@ -1257,7 +1275,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 qfps.add(qpp.getField(f));
             }
             
-            Pair<String, List<Pair<String, Object>>> sql = null;
+            HQLSpecs sql = null;
             
             // XXX need to allow modification of SelectDistinct(etc) ???
             boolean includeRecordIds = true;
@@ -1271,7 +1289,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
                 return;
             }
-            QBJRDataSource src = new QBJRDataSource(sql.getFirst(), sql.getSecond(), getColumnInfo(qfps, true), includeRecordIds, report.getRepeats());
+            QBJRDataSource src = new QBJRDataSource(sql.getHql(), sql.getArgs(), sql.getSortElements(),
+                    getColumnInfo(qfps, true), includeRecordIds, report.getRepeats());
             
             final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
                     ReportsBaseTask.PRINT_REPORT, src);
@@ -1383,31 +1402,27 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     @SuppressWarnings("unchecked")
     protected void processSQL(final Vector<QueryFieldPanel>    queryFieldItemsArg, 
-                              final String                     sql, 
-                              final List<Pair<String, Object>> params, 
+                              final HQLSpecs                   hqlSpecs,
                               final DBTableInfo                rootTable, 
                               final boolean                    distinct)
     {
         List<? extends ERTICaptionInfo> captions = getColumnInfo(queryFieldItemsArg, false);
-        List<Integer> list = new Vector<Integer>();
         
         String iconName = distinct ? "BlankIcon" : rootTable.getClassObj().getSimpleName();
         int tblId = distinct ? -1 : rootTable.getTableId();
         final QBQueryForIdResultsHQL qri = new QBQueryForIdResultsHQL(new Color(144, 30, 255),
                 getResourceString("QB_SEARCH_RESULTS"),
-                //rootTable.getTableInfo().getClassObj().getSimpleName(), // Icon Name
                 iconName,
-                //rootTable.getTableInfo().getTableId(), // table id
                 tblId,
-                "", // search term
-                list,
                 this);
         
-        qri.setSQL(sql);
-        qri.setParams(params);
+        qri.setSQL(hqlSpecs.getHql());
+        qri.setParams(hqlSpecs.getArgs());
+        qri.setSort(hqlSpecs.getSortElements());
         // XXX check generics reference book. (unchecked conversion here)
         qri.setCaptions((List<ERTICaptionInfo> )captions);
         qri.setExpanded(true);
+        qri.setHasIds(!distinct);
         runningResults.set(qri);
         doneTime.set(-1);
         

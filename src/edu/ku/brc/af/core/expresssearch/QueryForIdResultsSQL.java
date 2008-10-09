@@ -201,9 +201,20 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.ExpressSearchResultsIFace#getRecIds()
      */
+    @Override
     public Vector<Integer> getRecIds()
     {
         return recIds;
+    }
+
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#size()
+     */
+    @Override
+    public int size()
+    {
+        return recIds.size();
     }
 
     /* (non-Javadoc)
@@ -410,16 +421,6 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setRecIds(java.util.Vector)
-     */
-    //@Override
-    public void setRecIds(Vector<Integer> ids)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#showProgress()
      */
     //@Override
@@ -435,6 +436,16 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     public int getMaxTableRows()
     {
         return -1;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#cacheFilled(java.util.Vector)
+     */
+    @Override
+    public void cacheFilled(Vector<Vector<Object>> cache)
+    {
+        // TODO Auto-generated method stub
+        
     }
     
     

@@ -338,13 +338,14 @@ public class QueryForIdResultsIndexedSQL implements QueryForIdResultsIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setRecIds(java.util.Vector)
+     * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#size()
      */
     @Override
-    public void setRecIds(Vector<Integer> ids)
+    public int size()
     {
-        // TODO Auto-generated method stub
+        return recIds.size();
     }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#showProgress()
@@ -364,6 +365,16 @@ public class QueryForIdResultsIndexedSQL implements QueryForIdResultsIFace
     {
         // TODO Auto-generated method stub
         return -1;
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#cacheFilled(java.util.Vector)
+     */
+    @Override
+    public void cacheFilled(Vector<Vector<Object>> cache)
+    {
+        // nothing to do
     }
     
     

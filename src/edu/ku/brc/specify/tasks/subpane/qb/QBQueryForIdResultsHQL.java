@@ -10,6 +10,7 @@
 package edu.ku.brc.specify.tasks.subpane.qb;
 
 import java.awt.Color;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,11 +60,16 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     protected final AtomicReference<CustomQueryIFace>         query          = new AtomicReference<CustomQueryIFace>();
     protected final AtomicBoolean                             cancelled      = new AtomicBoolean(
                                                                                      false);
-    protected List<Pair<String, Object>>                      params;
+    protected List<Pair<String, Object>>                      params = null;
     protected String                                          title;
     protected int                                             tableId;
     protected String                                          iconName;
-
+    protected List<SortElement>                               sortElements = null;
+    
+    protected Vector<Vector<Object>>                          cache = null;
+    protected boolean                                         recIdsLoaded = false;
+    protected boolean                                         hasIds = true;
+    
     protected final SortedSet<QBResultReportServiceInfo> reports = new TreeSet<QBResultReportServiceInfo>(
                 new Comparator<QBResultReportServiceInfo>()
                 {
@@ -80,18 +86,15 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
      * @param title
      * @param iconName
      * @param tableId
-     * @param searchTerm
-     * @param listOfIds
+     * @param queryBuilder
      */
     public QBQueryForIdResultsHQL(final Color     bannerColor,
                                   final String    title,
                                   final String    iconName,
                                   final int       tableId,
-                                  final String    searchTerm,
-                                  final List<?>   listOfIds,
                                   final QueryBldrPane queryBuilder)
     {
-        super(null, bannerColor, searchTerm, listOfIds);
+        super(null, bannerColor, "", null);
         this.title    = title;
         this.tableId  = tableId;
         this.iconName = iconName;
@@ -393,17 +396,36 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     {
         return cancelled.get();
     }
-
+ 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#setRecIds(java.util.Vector)
+     * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#getRecIds()
      */
     @Override
-    public void setRecIds(final Vector<Integer> ids)
+    public Vector<Integer> getRecIds()
     {
-        //Could also fill recIds in queryTaskDone method, but would entail an extra pass through the CustomQueryIFace results,
-        
-        //don't think it is necessary to copy the ids?
-        this.recIds = ids;
+        if (!recIdsLoaded)
+        {
+            //if somebody wants 'em copy em from the cache
+            recIds = new Vector<Integer>(cache != null ? cache.size() : 0);
+            if (cache != null)
+            {
+                for (Vector<Object> row : cache)
+                {
+                    recIds.add((Integer )row.get(row.size()-1));                
+                }
+            }
+            recIdsLoaded = true;
+        }
+        return recIds;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#size()
+     */
+    @Override
+    public int size()
+    {
+        return cache != null ? cache.size() : 0;
     }
 
     /* (non-Javadoc)
@@ -425,4 +447,36 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         return ExpressSearchTask.RESULTS_THRESHOLD;
     }    
 
+    public void setSort(final List<SortElement> sortElements)
+    {
+        this.sortElements = sortElements;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#cacheFilled(java.util.Vector)
+     */
+    @Override
+    public void cacheFilled(final Vector<Vector<Object>> cacheData)
+    {
+        Collections.sort(cacheData, new ResultRowComparator(sortElements));
+        this.cache = cacheData;
+    }
+
+    /**
+     * @return the hasIds
+     */
+    public boolean isHasIds()
+    {
+        return hasIds;
+    }
+
+    /**
+     * @param hasIds the hasIds to set
+     */
+    public void setHasIds(boolean hasIds)
+    {
+        this.hasIds = hasIds;
+    }
+    
+    
 }

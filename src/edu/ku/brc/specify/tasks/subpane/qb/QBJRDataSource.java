@@ -10,8 +10,11 @@
 package edu.ku.brc.specify.tasks.subpane.qb;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -46,6 +49,24 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
      * name-value list of parameters for the hql query.
      */
     protected final List<Pair<String, Object>> params;
+    
+    /**
+     * sort to be applied AFTER data is retrieved.
+     */
+    protected final List<SortElement> sort;
+    
+    /**
+     * true if data has been pre-processed (i.e. sorted).
+     */
+    protected boolean processed = false;
+    
+    protected AtomicBoolean processing = new AtomicBoolean(true);
+    
+    /**
+     * stores processed data;
+     */
+    protected Vector<Vector<Object>> cache = null;
+    
     /**
      * stores size of the data set.
      */
@@ -53,7 +74,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     /**
      * column values for the current record.
      */
-    protected Object[] rowVals = null;
+    protected Object rowVals = null;
     /**
      * iterator of records in the data source.
      */
@@ -71,13 +92,13 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         	return String.valueOf(resultSetSize);  //currently returned as a string for convenience.
         }
     	
-    	boolean logIt = rows.get() == null;
+    	boolean logIt = rows.get() == null || processing.get();
         if (logIt)
         {
             log.debug(this + " waiting for rows...");
         }
         //XXX Bad Code Alert!
-        while (rows.get() == null) { 
+        while (processing.get() || rows.get() == null) { 
             /*wait till done executing the query. (forever and ever??)
              * Do we know that exectionDone and executionError will be called on different threads?
              * */
@@ -87,19 +108,31 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
             log.debug("... " + this + " got rows");
         }
         int fldIdx = getFldIdx(arg0.getName());
+        return getFieldValue(fldIdx, arg0.getName(), arg0.getClass());
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected Object getFieldValue(final int fldIdx, final String fldName, final Class<?> fldClass)
+    {
         if (fldIdx < 0)
             return null;
         int processIdx = recordIdsIncluded ? fldIdx-1 : fldIdx;
         if (processIdx == -1)
         {
-           if (arg0.getClass().equals(String.class))
+           if (fldClass.equals(String.class))
            {
-        	   return String.format(UIRegistry.getResourceString("QBJRDS_UNKNOWN_FIELD"), arg0.getName());
+               return String.format(UIRegistry.getResourceString("QBJRDS_UNKNOWN_FIELD"), fldName);
            }
-           log.error("field not found: " + arg0.getName());
+           log.error("field not found: " + fldName);
            return null;
         }
-        return processValue(processIdx, columnInfo.get(processIdx).processValue(rowVals[fldIdx]));
+        
+        if (!processed)
+        {
+            return processValue(processIdx, columnInfo.get(processIdx).processValue(((Object[] )rowVals)[fldIdx]));
+        }
+        //else processing already done
+        return ((Vector<Object> )rowVals).get(processIdx);
     }
     
     /* (non-Javadoc)
@@ -108,13 +141,13 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     @Override
     public boolean getNext() 
     {
-        boolean logIt = rows.get() == null;
+        boolean logIt = rows.get() == null || processing.get();
         if (logIt)
         {
             log.debug(this + " waiting for rows...");
         }
         //XXX Bad Code Alert!
-        while (rows.get() == null) { 
+        while (rows.get() == null || processing.get()) { 
             /*wait till done executing the query. (forever and ever??)
              * Do we know that exectionDone and executionError will be called on different threads?
              * */
@@ -124,33 +157,51 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
             log.debug("... " + this + " got rows");
         }
         
+        return doGetNext();
+    }
+
+    protected boolean doGetNext()
+    {
         if (rows.get().hasNext())
         {
             Object nextRow = rows.get().next();
             if (Object[].class.isAssignableFrom(nextRow.getClass()))
             {
-                rowVals = (Object[])nextRow;
+                rowVals = nextRow;
+            }
+            else if (Vector.class.isAssignableFrom(nextRow.getClass()))
+            {
+                rowVals = nextRow;
             }
             else
             {
                 //if only one column...
                 rowVals = new Object[1];
-                rowVals[0] = nextRow;
+                ((Object[] )rowVals)[0] = nextRow;
             }
             return true;
         }
         rowVals = null;
         return false;
     }
-
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#getRepeaterRowVals()
      */
     @Override
+    @SuppressWarnings("unchecked")
     protected Object[] getRepeaterRowVals()
     {
-        return rowVals;
+        if (Vector.class.isAssignableFrom(rowVals.getClass()))
+        {
+            Object[] result = new Object[((Vector<Object>) rowVals).size()];
+            for (int r = 0; r < ((Vector<Object> )rowVals).size(); r++)
+            {
+                result[r] = ((Vector<Object> )rowVals).get(r);
+            }
+            return result;
+        }
+        return (Object[] )rowVals;
     }
 
     /* (non-Javadoc)
@@ -160,13 +211,31 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     public void exectionDone(CustomQueryIFace customQuery)
     {
         resultSetSize.set(((JPAQuery)customQuery).getDataObjects().size()); 
-    	rows.set(((JPAQuery)customQuery).getDataObjects().iterator());
+        rows.set(((JPAQuery)customQuery).getDataObjects().iterator());
+        //cache rows and sort
+        if (sort != null && sort.size() > 0)
+        {
+            cache = new Vector<Vector<Object>>(resultSetSize.get());
+            while (doGetNext())
+            {
+                Vector<Object> row = new Vector<Object>(((Object[] )rowVals).length);
+                for (int fldIdx = recordIdsIncluded ? 1 : 0; fldIdx < ((Object[] )rowVals).length; fldIdx++)
+                {
+                    row.add(getFieldValue(fldIdx, "nyx", String.class));
+                }
+                cache.add(row);
+            }
+            Collections.sort(cache, new ResultRowComparator(sort));
+            processed = true;
+            rows.set(cache.iterator());
+        }
+        processing.set(false);
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#executionError(edu.ku.brc.dbsupport.CustomQueryIFace)
      */
-    //@Override
+    @Override
     public void executionError(CustomQueryIFace customQuery)
     {
         rows.set(new ArrayList<Object>().iterator());
@@ -178,12 +247,14 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
      * @param columnInfo
      * @param recordIdsIncluded
      */
-    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfoQB> columnInfo,
+    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<SortElement> sort, 
+                          final List<ERTICaptionInfoQB> columnInfo,
                           final boolean recordIdsIncluded)
     {
         super(columnInfo, recordIdsIncluded, null);
         this.hql = hql;
         this.params = params;
+        this.sort = sort;
         startDataAcquisition();
     }
     
@@ -194,12 +265,14 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
      * @param recordIdsIncluded
      * @param repeatCount - number of repeats for each record
      */
-    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfoQB> columnInfo,
+    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<SortElement> sort,
+                          final List<ERTICaptionInfoQB> columnInfo,
                           final boolean recordIdsIncluded, final Object repeats)
     {
         super(columnInfo, recordIdsIncluded, repeats);
         this.hql = hql;
         this.params = params;
+        this.sort = sort;
         startDataAcquisition();
     }    
     
@@ -219,11 +292,12 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     @Override
     public Object getRecordId()
     {
-        if (!recordIdsIncluded)
+        //XXX what if processed???? does this EVER get called??
+        if (!recordIdsIncluded || processed)
         {
             return super.getRecordId();
         }
-        return rowVals[0];
+        return ((Object[] )rowVals)[0];
     }
 
     /* (non-Javadoc)

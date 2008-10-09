@@ -220,6 +220,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
      * @param column the column in question
      * @return the Class of the column
      */
+    @Override
     public Class<?> getColumnClass(int column)
     {
         /*
@@ -268,6 +269,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
      * Get the column name
      * @param column the column of the cell to be gotten
      */
+    @Override
     public String getColumnName(int column)
     {
         if (captionInfo != null)
@@ -354,9 +356,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
      * @param row the row of the cell to be set
      * @param column the column of the cell to be set
      */
+    @Override
     public void setValueAt(Object aValue, int row, int column)
     {
-
+        //empty
     }
 
     /**
@@ -438,7 +441,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
      */
     public void clear()
     {
-        ids.clear();
+        if (ids != null)
+        {
+            ids.clear();
+        }
         
         if (cache != null)
         {
@@ -927,7 +933,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 }                
             }
             
-            results.setRecIds(ids);
+            results.cacheFilled(cache);
             
             fireTableDataChanged();
         }

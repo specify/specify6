@@ -67,9 +67,12 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         this.searchTerm        = searchTerm;
         this.recordSet         = null;
         
-        for (Integer id : (List<Integer>)listOfIds)
+        if (listOfIds != null)
         {
-            recIds.add(id);
+            for (Integer id : (List<Integer>)listOfIds)
+            {
+                recIds.add(id);
+            }
         }
     }
 
@@ -358,14 +361,14 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         
     }
 
+    
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setRecIds(java.util.Vector)
+     * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#size()
      */
     @Override
-    public void setRecIds(Vector<Integer> ids)
+    public int size()
     {
-        // TODO Auto-generated method stub
-        
+        return getRecIds().size();
     }
 
     /* (non-Javadoc)
@@ -384,6 +387,15 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     public int getMaxTableRows()
     {
         return -1;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.QueryForIdResultsIFace#cacheFilled(java.util.Vector)
+     */
+    @Override
+    public void cacheFilled(Vector<Vector<Object>> cache)
+    {
+        // nothing to do
     }    
     
     
