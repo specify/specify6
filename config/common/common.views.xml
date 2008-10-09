@@ -60,6 +60,30 @@
             </altviews>
         </view>
         
+        <view name="Borrow"
+            class="edu.ku.brc.specify.datamodel.Borrow"
+            busrules="edu.ku.brc.specify.datamodel.busrules.BorrowBusRules"
+            resourcelabels="false"
+            isinternal="false">
+            <desc><![CDATA[Borrow display form]]></desc>
+            <altviews>
+                <altview name="Borrow View" viewdef="Borrow" mode="view" default="true"/>
+                <altview name="Borrow Edit" viewdef="Borrow" mode="edit"/>
+            </altviews>
+        </view>
+        
+        <view name="BorrowMaterial"
+            class="edu.ku.brc.specify.datamodel.BorrowMaterial"
+            resourcelabels="false">
+            <desc><![CDATA[Borrow display form]]></desc>
+            <altviews>
+                <!--    <altview name="BorrowMaterial Table View" viewdef="BorrowMaterial Table" mode="view"/>
+                    <altview name="BorrowMaterial Table Edit" viewdef="BorrowMaterial Table" mode="edit"/> -->
+                <altview name="BorrowMaterial View" viewdef="BorrowMaterial" mode="view" default="true"/>
+                <altview name="BorrowMaterial Edit" viewdef="BorrowMaterial" mode="edit"/>
+            </altviews>
+        </view>
+        
         <view name="CollectingEventSubform"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectingEventBusRules"
@@ -810,6 +834,77 @@
 
             </rows>
         </viewdef>
+        
+        <viewdef
+            type="form"
+            name="Borrow"
+            class="edu.ku.brc.specify.datamodel.Borrow"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Loan viewing form.]]></desc>
+            <columnDef>85px,4px,p,10px,p,4px,75px,5px,p,4px,p,p:g</columnDef>
+            <columnDef os="mac">110px,4px,p,80px,p,4px,p,5px,p,4px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="1dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="receivedDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="dateClosed" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="currentDueDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="invoiceNumber" uitype="formattedtext" uifieldformatter="LoanNumber" isrequired="true"/>
+                    <cell type="field" id="2" name="isClosed" uitype="checkbox" label="Closed" initialize="editable=true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="remarks" uitype="textarea" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="BorrowMaterial" id="10" name="borrowMaterials" defaulttype="table" colspan="12"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="BorrowMaterial"
+            class="edu.ku.brc.specify.datamodel.BorrowMaterial"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Loan viewing form.]]></desc>
+            <columnDef>125px,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
+            <columnDef os="mac">110px,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="1dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="9" />
+                    <cell type="field" id="9" name="materialNumber" uitype="text"/>
+                    <cell type="label" labelfor="3" />
+                    <cell type="field" id="3" name="description" uitype="text" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=2000" isrequired="true"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="quantityReturned" uitype="text"/>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="quantityResolved" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+
 
         <viewdef
             type="form"
