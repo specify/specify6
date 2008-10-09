@@ -15,6 +15,8 @@ import java.util.Set;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -91,6 +93,15 @@ public class CollectionRelPlugin extends UIPluginBase
                 itemSelected();
             }
         });
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#isNotEmpty()
+     */
+    @Override
+    public boolean isNotEmpty()
+    {
+        throw new NotImplementedException("isNotEmpty not implement!");
     }
     
     /**

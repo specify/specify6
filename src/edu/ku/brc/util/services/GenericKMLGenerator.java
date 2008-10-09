@@ -97,7 +97,7 @@ public class GenericKMLGenerator
         }
         
         points.add(point);
-        pointNameMap.put(point, name);
+        pointNameMap.put(point, name == null ? "" : name);
         pointDescMap.put(point, htmlDescription);
     }
     

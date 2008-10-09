@@ -17,7 +17,6 @@ package edu.ku.brc.af.ui.forms.validation;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.Color;
@@ -329,6 +328,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.displayDlgName = displayDlgName;
     }
 
+    /**
+     * @return whether is has a value
+     */
+    public boolean isNotEmpty()
+    {
+        return dataObj != null;
+    }
 
     /**
      * Helper to create a button.
@@ -838,7 +844,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 } else
                 {
                     
-                    if (isNotEmpty(textWithQuery.getFormat()))
+                    if (StringUtils.isNotEmpty(textWithQuery.getFormat()))
                     {
                         newVal = UIHelper.getFormattedValue(val, textWithQuery.getFormat());
                     } else

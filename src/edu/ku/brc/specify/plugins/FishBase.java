@@ -32,6 +32,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.dom4j.Element;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -145,6 +146,9 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         textField.requestFocus();
     }
 
+    /**
+     * @param dom
+     */
     protected void setDataIntoframe(@SuppressWarnings("unused") final Element dom)
     {
         SwingUtilities.invokeLater(new Runnable() {
@@ -156,6 +160,15 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
 
             }
         });
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#isNotEmpty()
+     */
+    @Override
+    public boolean isNotEmpty()
+    {
+        throw new NotImplementedException("isNotEmpty not implement!");
     }
 
     //--------------------------------------------------------

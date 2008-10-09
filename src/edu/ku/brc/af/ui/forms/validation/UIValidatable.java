@@ -101,6 +101,13 @@ public interface UIValidatable
      * @return the actual Component being validated
      */
     public abstract Component getValidatableUIComp();
+    
+    
+    /**
+     * @return whether the control is not empty and valid.
+     */
+    public abstract boolean isNotEmpty();
+
 
     /**
      * Tells it clean up, meaning unregistering listeners etc.

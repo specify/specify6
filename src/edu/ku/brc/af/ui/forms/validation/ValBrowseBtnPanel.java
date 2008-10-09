@@ -105,6 +105,17 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
         //System.out.println("textField.isRequired(): "+textField.isRequired());
         return textField.isRequired();
     }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#isNotEmpty()
+     */
+    @Override
+    public boolean isNotEmpty()
+    {
+        return !textField.getText().isEmpty();
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#reset()

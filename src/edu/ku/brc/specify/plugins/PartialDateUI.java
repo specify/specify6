@@ -24,6 +24,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -155,6 +156,15 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
 
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#isNotEmpty()
+     */
+    @Override
+    public boolean isNotEmpty()
+    {
+        throw new NotImplementedException("isNotEmpty not implement!");
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.GetSetValueIFace#getValue()
      */

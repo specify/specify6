@@ -316,6 +316,17 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     }
     
     /**
+     * @return whether the current panel has a valid Lat and Lon
+     */
+    public boolean isNotEmpty()
+    {
+        int curInx = formatSelector.getSelectedIndex() * 2;
+        System.err.println(curInx+" **** "+panels[curInx].getLatitude()+"  "+panels[curInx].getLongitude());
+        return panels[curInx].getLatitude() != null &&
+               panels[curInx].getLongitude() != null;
+    }
+    
+    /**
      * Swaps the the proper form into the panel.
      * @param formInx the index of the format that is being used.
      * @param type the type of point, line or Rect being used

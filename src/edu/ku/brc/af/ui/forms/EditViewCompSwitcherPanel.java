@@ -15,6 +15,8 @@ import java.awt.Component;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import edu.ku.brc.af.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.af.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.af.ui.forms.validation.DataChangeListener;
@@ -90,6 +92,17 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     {
         return validator;
     }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#isNotEmpty()
+     */
+    @Override
+    public boolean isNotEmpty()
+    {
+        throw new NotImplementedException("isNotEmpty not implement!");
+    }
+
 
     public void putIntoEditMode()
     {

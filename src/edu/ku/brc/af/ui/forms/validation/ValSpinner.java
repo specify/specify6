@@ -134,6 +134,15 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
         super.setEnabled(enabled);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#isNotEmpty()
+     */
+    @Override
+    public boolean isNotEmpty()
+    {
+        return getValue() != null;
+    }
+
     /**
      * Initializes the control.
      */

@@ -455,6 +455,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         for (GoogleEarthPlacemarkIFace pm : placemarks)
         {
             String name = pm.getTitle();
+            name = name == null ? "" : name;
             Pair<Double,Double> geoRef = pm.getLatLon();
             if (geoRef != null)
             {

@@ -124,6 +124,15 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
     {
         this.valState = state;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#isNotEmpty()
+     */
+    @Override
+    public boolean isNotEmpty()
+    {
+        return true;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#isRequired()

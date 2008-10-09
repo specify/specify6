@@ -706,6 +706,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         if (isNotEmpty(id) && comp != null)
         {
+            log.debug("["+id+"]["+comp+"]");
             jc.getVars().put(id, comp);
         } else
         {

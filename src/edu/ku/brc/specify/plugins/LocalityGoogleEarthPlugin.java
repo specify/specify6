@@ -24,6 +24,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -70,9 +71,11 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     protected boolean          hasPoints = false;
     protected ImageIcon        imageIcon = null;
     
-    protected String           watchId      = null;
-    protected LatLonUI         latLonPlugin = null;
-    protected Vector<ChangeListener> listeners = null;
+    protected String                       watchId      = null;
+    protected LatLonUI                     latLonPlugin = null;
+    protected Vector<ChangeListener>       listeners    = null;
+    protected Pair<BigDecimal, BigDecimal> latLon       = null;
+    protected boolean                      isLatLonOK   = false;
     
     /**
      * 
@@ -114,6 +117,11 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
             } else
             {
                 ImageIcon img = imageIcon != null ? imageIcon : IconManager.getIcon("locality", IconManager.IconSize.Std32);
+                if (latLon != null && isLatLonOK)
+                {
+                    locality.setLatitude1(latLon.first);
+                    locality.setLongitude1(latLon.second);
+                }
                 items.add(new CEPlacemark(locality, img));
             }
         }
@@ -141,10 +149,22 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         return origData;
     }
     
+    /**
+     * @return
+     */
     protected ImageIcon getDisciplineIcon()
     {
         Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);//co.getCollection().getDiscipline()
         return IconManager.getIcon(discipline.getName(),  IconManager.IconSize.Std32);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#isNotEmpty()
+     */
+    @Override
+    public boolean isNotEmpty()
+    {
+        throw new NotImplementedException("isNotEmpty not implement!");
     }
 
     /* (non-Javadoc)
@@ -196,6 +216,11 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         {
             hasPoints = false;
         }
+        
+        if (latLon != null && isLatLonOK)
+        {
+            hasPoints = isLatLonOK;
+        }
         setEnabled(hasPoints);
     }
     
@@ -204,7 +229,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
      */
     public void setEnabled(final boolean enabled)
     {
-        super.setEnabled(enabled && hasPoints);
+        super.setEnabled(enabled && (hasPoints || isLatLonOK));
     }
 
     /* (non-Javadoc)
@@ -294,12 +319,9 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
             Object obj = evt.getNewValue();
             if (obj instanceof Pair<?, ?>)
             {
-                Pair<BigDecimal, BigDecimal> latLon = latLonPlugin.getLatLon();
-                super.setEnabled(latLon != null && 
-                        latLon.first != null && 
-                        latLon.second != null && 
-                        StringUtils.isNotEmpty(((Locality)latLonPlugin.getValue()).getLocalityName()) &&
-                        latLonPlugin.getState() == ErrorType.Valid);
+                latLon = latLonPlugin.getLatLon();
+                isLatLonOK = latLon != null && latLon.first != null && latLon.second != null && latLonPlugin.getState() == ErrorType.Valid;
+                setEnabled(isLatLonOK);
             }
         }
     }
@@ -370,7 +392,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
             sb.append(localityTI.getFieldByColumnName("localityName").getTitle());
             sb.append(":</td><td align=\"left\">");
             
-            sb.append(localityCEP.getLocalityName());
+            sb.append(localityCEP.getLocalityName() == null ? "" : localityCEP.getLocalityName());
             sb.append("</td></tr>\n");
             
             sb.append("<tr><td align=\"right\">");

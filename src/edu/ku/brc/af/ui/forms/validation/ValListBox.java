@@ -150,6 +150,15 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
     {
         return valState;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#isNotEmpty()
+     */
+    @Override
+    public boolean isNotEmpty()
+    {
+        return getSelectedIndex() != -1;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#setState(edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType)

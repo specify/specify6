@@ -74,4 +74,9 @@ public interface UIPluginable
      */
     public abstract void setParent(FormViewObj parent);
     
+    /**
+     * @return whether the plugin has values
+     */
+    public abstract boolean isNotEmpty();
+    
 }

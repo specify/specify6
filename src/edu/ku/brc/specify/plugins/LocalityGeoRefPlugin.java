@@ -9,7 +9,6 @@
  */
 package edu.ku.brc.specify.plugins;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -23,17 +22,16 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.UIPluginable;
-import edu.ku.brc.af.ui.forms.validation.UIValidatable.ErrorType;
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.plugins.latlon.LatLonUI;
 import edu.ku.brc.specify.rstools.BGMRecordSetProcessor;
 import edu.ku.brc.specify.rstools.GeoCoordData;
 import edu.ku.brc.specify.rstools.GeoLocateRecordSetProcessor;
@@ -59,8 +57,7 @@ import edu.ku.brc.util.Pair;
 public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace, 
                                                              UIPluginable,
                                                              GeoCoordProviderListenerIFace,
-                                                             CommandListener,
-                                                             PropertyChangeListener
+                                                             CommandListener
 {
     protected final String     PREFERENCES = "Preferences";
     
@@ -72,7 +69,6 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
     protected boolean          doGeoLocate = false;
     
     protected String           watchId      = null;
-    protected LatLonUI         latLonPlugin = null;
     protected Vector<ChangeListener> listeners = null;
     
     /**
@@ -139,6 +135,15 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#isNotEmpty()
+     */
+    @Override
+    public boolean isNotEmpty()
+    {
+        throw new NotImplementedException("isNotEmpty not implement!");
+    }
+
     /**
      * 
      */
@@ -234,20 +239,10 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.forms.UIPluginable#setViewable(edu.ku.brc.af.ui.forms.Viewable)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#setParent(edu.ku.brc.af.ui.forms.FormViewObj)
      */
-    @Override
     public void setParent(FormViewObj parent)
     {
-        if (parent != null && StringUtils.isNotEmpty(watchId))
-        {
-            Component comp = parent.getCompById(watchId);
-            if (comp instanceof LatLonUI)
-            {
-                latLonPlugin = (LatLonUI)comp;
-                latLonPlugin.addPropertyChangeListener(this);
-            }
-        }
     }
 
     /* (non-Javadoc)
@@ -255,7 +250,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
      */
     public void setEnabled(final boolean enable)
     {
-        super.setEnabled(enable && locality != null && locality.getLat1() != null && locality.getLong1() != null);
+        super.setEnabled(enable && locality != null);// && locality.getLat1() != null && locality.getLong1() != null);
     }
 
     /* (non-Javadoc)
@@ -316,11 +311,6 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
             listeners = null;
         }
         
-        if (latLonPlugin != null)
-        {
-            latLonPlugin.removePropertyChangeListener(this);
-            latLonPlugin = null;
-        }
         locality = null;
     }
 
@@ -336,27 +326,6 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                 String geoRefTool = cmdAction.getPropertyAsString("georef_tool");
                 doGeoLocate = StringUtils.isNotEmpty(geoRefTool) && geoRefTool.equalsIgnoreCase("geolocate");
                 adjustUIForTool();
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
-     */
-    @Override
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-        if (evt.getPropertyName().equals("latlon"))
-        {
-            Object obj = evt.getNewValue();
-            if (obj instanceof Pair<?, ?>)
-            {
-                Pair<BigDecimal, BigDecimal> latLon = latLonPlugin.getLatLon();
-                super.setEnabled(latLon != null && 
-                                 latLon.first != null && 
-                                 latLon.second != null && 
-                                 StringUtils.isNotEmpty(((Locality)latLonPlugin.getValue()).getLocalityName()) &&
-                                 latLonPlugin.getState() == ErrorType.Valid);
             }
         }
     }

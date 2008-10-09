@@ -117,9 +117,8 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
         });
     }
 
-    /**
-     * Returns whether the text is not empty
-     * @return return whether the text is not empty
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#isNotEmpty()
      */
     public boolean isNotEmpty()
     {

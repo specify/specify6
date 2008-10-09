@@ -37,7 +37,7 @@ import edu.ku.brc.ui.GetSetValueIFace;
  * Created Date: Jul 18, 2007
  *
  */
-public class UIPluginBase extends JPanel implements GetSetValueIFace, UIPluginable
+public abstract class UIPluginBase extends JPanel implements GetSetValueIFace, UIPluginable
 {
     protected Object         dataObj           = null;
     protected String         cellName          = null;
@@ -123,6 +123,13 @@ public class UIPluginBase extends JPanel implements GetSetValueIFace, UIPluginab
     {
         fvo = parent;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.UIPluginable#isNotEmpty()
+     */
+    @Override
+    public abstract boolean isNotEmpty();
+    
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#shutdown()

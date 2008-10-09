@@ -320,13 +320,12 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     }
 
 
-    /**
-     * Helper method for validation scripting to see if the text field is empty
-     * @return whether the text field is empty or not
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.validation.UIValidatable#isNotEmpty()
      */
     public boolean isNotEmpty()
     {
-        return getText().length() > 0;
+        return !getText().isEmpty();
     }
 
     /* (non-Javadoc)
