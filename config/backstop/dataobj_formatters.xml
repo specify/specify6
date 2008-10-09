@@ -39,6 +39,23 @@
     </format>
     
     <format
+        name="Address"
+        class="edu.ku.brc.specify.datamodel.Address"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>address</field>
+                <field sep=" ">address2</field>
+                <field sep=", ">city</field>
+                <field sep=", ">state</field>
+                <field sep=" ">postalCode</field>
+            </fields>
+        </switch>
+    </format>
+    
+    
+    <format
         name="Agent"
         class="edu.ku.brc.specify.datamodel.Agent"
         default="true"
@@ -545,6 +562,16 @@
                     ending="" 
                     format="AccessionAgent" 
                     default="true"/>   
+        
+        <aggregator name="Address"
+                    class="edu.ku.brc.specify.datamodel.Address"
+                    separator="; "
+                    count=""
+                    ending=""
+                    format="Address"
+                    default="true"/>
+        
+        
         
         <aggregator name="Preparation"
                     class="edu.ku.brc.specify.datamodel.Preparation" 
