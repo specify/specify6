@@ -92,7 +92,7 @@
     
     <!-- Done Aliases -->
     
-    <icon name="UserInterface" file="FormEditor32x32.png" sizes="all"/>
+    <icon name="UserInterface" file="FormEdit32x32.png" sizes="all"/>
     
     <icon name="DropDownArrow" file="dropdownarrow.gif" sizes="NonStd"/>
     <icon name="UpArrow"       file="up.png"            sizes="16"/>

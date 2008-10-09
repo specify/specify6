@@ -328,6 +328,7 @@
         <view name="BioStrat"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
             busrules="edu.ku.brc.specify.datamodel.busrules.BioStratBusRules"
+            isinternal="true"
             resourcelabels="false">
             <desc><![CDATA[GeologicTimePeriod data entry form.]]></desc>
             <altviews>
@@ -339,6 +340,7 @@
         <view name="ChronosStrat"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
             busrules="edu.ku.brc.specify.datamodel.busrules.BioStratBusRules"
+            isinternal="true"
             resourcelabels="false">
             <desc><![CDATA[GeologicTimePeriod data entry form.]]></desc>
             <altviews>

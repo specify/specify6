@@ -205,13 +205,23 @@ public class PrefsToolbar extends JPanel
                     btn.setOpaque(false);
                     btn.setVerticalLayout(true);
                     
-                    //btns.add(btn);
-                    //totalWidth += btn.getPreferredSize().getWidth();
-                    
                     try
                     {
                         Class<?>  panelClassObj = Class.forName(panelClass);
                         Component comp          = (Component)panelClassObj.newInstance();
+                        
+                        if (comp instanceof PrefsPanelIFace)
+                        {
+                            PrefsPanelIFace prefPanel = (PrefsPanelIFace)comp;
+                            prefPanel.setName(prefName);
+                            prefPanel.setTitle(prefTitle);
+                            
+                            if (!prefPanel.isOKToLoad() || !prefPanel.getPermissions().canModify())
+                            {
+                                continue;
+                            }
+                        }
+                        
                         if (panelClassObj == GenericPrefsPanel.class)
                         {
                             if (StringUtils.isNotEmpty(viewSetName) && StringUtils.isNotEmpty(viewName))
@@ -225,6 +235,9 @@ public class PrefsToolbar extends JPanel
                                 log.error("ViewSetName["+viewSetName+"] or ViewName["+viewName+"] is empty!"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                             }
                         }
+                        
+                        
+                        
                         prefsDlg.addPanel(prefTitle, comp);
 
                         add(btn.getUIComponent());

@@ -78,9 +78,9 @@ public class RuleExpression implements FormValidationRuleIFace
     {
         try
         {
-            log.debug("Rule "+rule+" for id "+id+"  "+id);
+            //log.debug("Rule "+rule+" for id "+id+"  "+id);
             Object result = expression.evaluate(context);
-            log.debug("Result "+result+" for "+id+"  "+rule);
+            //log.debug("Result "+result+" for "+id+"  "+rule);
             if (result instanceof Boolean)
             {
                 return (Boolean)result;

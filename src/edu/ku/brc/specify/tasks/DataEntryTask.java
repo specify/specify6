@@ -312,9 +312,18 @@ public class DataEntryTask extends BaseTask
             dataObj = dataObjList;
         }
         
-        final FormPane formPane = new FormPane(view.getName(), task, view.getViewSetName(), viewName, mode, dataObj, 
-                                         isNewForm ? (MultiView.IS_NEW_OBJECT | MultiView.RESULTSET_CONTROLLER): 0);
+        FormPane tmpFP;
+        if (view != null)
+        {
+            tmpFP = new FormPane(view.getName(), task, view.getViewSetName(), viewName, mode, dataObj, 
+                                 isNewForm ? (MultiView.IS_NEW_OBJECT | MultiView.RESULTSET_CONTROLLER): 0);
+        } else
+        {
+            UIRegistry.showError("Couldn't find default form for ["+viewName+"]");
+            return;
+        }
         
+        final FormPane formPane = tmpFP;
         formPane.setIcon(getIconForView(view));
         
         if (isNewForm)
@@ -525,7 +534,7 @@ public class DataEntryTask extends BaseTask
         
         for (DataEntryView dev : devList)
         {
-            boolean isColObj = dev.getName().equals("Collection Object");
+            boolean isColObj = dev.getTableInfo() != null && dev.getTableInfo().getTableId() == CollectionObject.getClassTableId();
             
             ImageIcon iconImage = IconManager.getIcon(dev.getIconName(), IconManager.STD_ICON_SIZE);
             if (iconImage != null)
@@ -985,6 +994,7 @@ public class DataEntryTask extends BaseTask
             
             for (DataEntryView dev : stdViews)
             {
+                System.out.println(dev.getTableInfo());
                 if (dev.getTableInfo() != null)
                 {
                     String srvName = ServiceInfo.getHashKey(dev.getName(), this, dev.getTableInfo().getTableId());

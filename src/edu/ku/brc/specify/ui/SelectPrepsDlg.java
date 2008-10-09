@@ -72,6 +72,8 @@ import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.PreparationHolderIFace;
+import edu.ku.brc.specify.datamodel.PreparationsProviderIFace;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CustomDialog;
@@ -80,29 +82,31 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
- * Creates a dialog listing all the Preparations that are available to be loaned.
+ * Creates a dialog listing all the Preparations that are available to be loaned or gifted.
  * 
  * @author rods
  *
  * @code_status Beta
  *
- * Created Date: Nov 21, 2006
+ * Created Date: Oct 10, 2008
  *
  */
-public class LoanSelectPrepsDlg extends CustomDialog
+public class SelectPrepsDlg extends CustomDialog
 {
-    protected ColorWrapper           requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    protected List<CollectionObject> colObjs;
-    protected Loan                   loan;
-    protected List<ColObjPanel>      colObjPanels = new Vector<ColObjPanel>();
-    protected JLabel                 summaryLabel;
-    protected int                    totalCntLoanablePreps = 0;
-    Hashtable<Integer, LoanPreparation> prepToLoanPrepHash = new Hashtable<Integer, LoanPreparation>();
+    protected ColorWrapper              requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    protected List<CollectionObject>    colObjs;
+    protected PreparationsProviderIFace loan;
+    protected List<ColObjPanel>         colObjPanels = new Vector<ColObjPanel>();
+    protected JLabel                    summaryLabel;
+    protected int                       totalCntLoanablePreps = 0;
+    protected Hashtable<Integer, PreparationHolderIFace> prepToLoanPrepHash = new Hashtable<Integer, PreparationHolderIFace>();
     
     /**
      * @param colObjs
+     * @param loan
      */
-    public LoanSelectPrepsDlg(final List<CollectionObject> colObjs, final Loan loan)
+    public SelectPrepsDlg(final List<CollectionObject> colObjs, 
+                          final PreparationsProviderIFace loan)
     {
         super((Frame)UIRegistry.getTopWindow(), getResourceString("LoanSelectPrepsDlg.CREATE_LN_FR_PREP"),//$NON-NLS-1$
                 true, OKCANCELAPPLYHELP, null);
@@ -122,8 +126,8 @@ public class LoanSelectPrepsDlg extends CustomDialog
         
         if (loan != null)
         {
-            prepToLoanPrepHash = new Hashtable<Integer, LoanPreparation>();
-            for (LoanPreparation lp : loan.getLoanPreparations())
+            prepToLoanPrepHash = new Hashtable<Integer, PreparationHolderIFace>();
+            for (PreparationHolderIFace lp : loan.getPreparations())
             {
                 prepToLoanPrepHash.put(lp.getPreparation().getId(), lp);
             }
@@ -542,11 +546,11 @@ public class LoanSelectPrepsDlg extends CustomDialog
          */
         public int getLoanQuantityOut(final Preparation preparation)
         {
-            LoanPreparation loanPrepObj = prepToLoanPrepHash.get(preparation.getId());
+            PreparationHolderIFace loanPrepObj = prepToLoanPrepHash.get(preparation.getId());
             int stillOut = 0;
             for (LoanPreparation lp : preparation.getLoanPreparations())
             {
-                LoanPreparation lpo = loanPrepObj != null && loanPrepObj.getId() != null && loanPrepObj.getId().equals(lp.getId()) ? loanPrepObj : lp; 
+                PreparationHolderIFace lpo = loanPrepObj != null && loanPrepObj.getId() != null && loanPrepObj.getId().equals(lp.getId()) ? loanPrepObj : lp; 
                 
                 stillOut += calcStillOut(lpo);
             }
@@ -563,7 +567,7 @@ public class LoanSelectPrepsDlg extends CustomDialog
          * @param lpo
          * @return
          */
-        protected int calcStillOut(final LoanPreparation lpo)
+        protected int calcStillOut(final PreparationHolderIFace lpo)
         {
             int quantityLoaned   = lpo.getQuantity() != null ? lpo.getQuantity() : 0;
             int quantityReturned = lpo.getQuantityReturned() != null ? lpo.getQuantityReturned() : 0;

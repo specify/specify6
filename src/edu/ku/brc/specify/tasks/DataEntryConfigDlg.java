@@ -97,9 +97,13 @@ public class DataEntryConfigDlg extends TaskConfigureDlg
         {
             if (hash.get(view.getName()) == null)
             {
-                hash.put(view.getName(), view);
-                uniqueList.add(view.getTitle());
-                newAvailViews.put(view.getTitle(), view);
+                DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                if (!ti.isHidden())
+                {
+                    hash.put(view.getName(), view);
+                    uniqueList.add(view.getTitle());
+                    newAvailViews.put(view.getTitle(), view);
+                }
             }
         }
         

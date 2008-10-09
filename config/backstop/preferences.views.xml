@@ -574,6 +574,23 @@
                     <cell type="label" labelfor="3" label="MYS_BCK_PATH"/>
                     <cell type="field" id="3" name="backup.location" cols="30" uitype="browse" colspan="3"/>
                 </row>
+                <row>
+                    <cell type="label" id=" " label=" " colspan="5"/>
+                </row>
+                <row>
+                    <cell type="panel" id="4" name="btnpanel" coldef="f:p:g,2px,p,5px,p,f:p:g" rowdef="p" colspan="5">
+                        <rows>
+                            <row>
+                                <cell type="field" uitype="label" id="x" label=" " ignore="true"/>
+                                <cell type="field" uitype="button" id="backup" ignore="true" initialize="title=MYS_BACKUP;"/>
+                                <cell type="field" uitype="button" id="restore" ignore="true" initialize="title=MYS_RESTORE;"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell type="label" id="z" label=" " colspan="5"/>
+                </row>
             </rows>
         </viewdef>
         

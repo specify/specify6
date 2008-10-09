@@ -13,6 +13,7 @@ import static edu.ku.brc.ui.UIHelper.setControlSize;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GradientPaint;
@@ -21,6 +22,7 @@ import java.awt.Graphics2D;
 import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -985,8 +987,26 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                                JList pListBoxArg) throws HeadlessException
             {
                 super(frame, UIRegistry.getResourceString("TFWQ_CHOOSE_TITLE"), isModal, contentPanel); //$NON-NLS-1$
-                
                 this.pListBox = pListBoxArg;
+                initialize();
+            }
+            
+            public PopUpDialog(final Dialog     dialog, 
+                               final boolean   isModal,
+                               final Component contentPanel,
+                               JList pListBoxArg) throws HeadlessException
+            {
+                super(dialog, UIRegistry.getResourceString("TFWQ_CHOOSE_TITLE"), isModal, OK_BTN | CANCEL_BTN, contentPanel); //$NON-NLS-1$
+                this.pListBox = pListBoxArg;
+                initialize();
+            }
+            
+            /**
+             * 
+             */
+            protected void initialize()
+            {
+                
                 
                 pListBox.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                     public void valueChanged(ListSelectionEvent e)
@@ -1029,7 +1049,15 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         popupFromBtn = false;
         hasNewText   = false;
         
-        CustomDialog dlg = new PopUpDialog((Frame)UIRegistry.getMostRecentWindow(), true, panel, listBox);
+        Window mostRecent = UIRegistry.getMostRecentWindow();
+        CustomDialog dlg;
+        if (mostRecent instanceof Dialog)
+        {
+            dlg = new PopUpDialog((Dialog)UIRegistry.getMostRecentWindow(), true, panel, listBox);
+        } else
+        {
+            dlg = new PopUpDialog((Frame)UIRegistry.getMostRecentWindow(), true, panel, listBox);
+        }
         dlg.setVisible(true);
         
         if (!dlg.isCancelled())

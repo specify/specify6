@@ -57,7 +57,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="loanpreparation", indexes =
     {   @Index (name="LoanPrepColMemIDX", columnNames={"CollectionMemberID"})
     })
-public class LoanPreparation extends CollectionMember implements java.io.Serializable, Comparable<LoanPreparation>
+public class LoanPreparation extends CollectionMember implements java.io.Serializable, PreparationHolderIFace, Comparable<LoanPreparation>
 {
 
     // Fields    

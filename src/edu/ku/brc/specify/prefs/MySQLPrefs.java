@@ -13,10 +13,12 @@ import java.awt.Component;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.MySQLBackupService;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.ui.forms.validation.ValBrowseBtnPanel;
+import edu.ku.brc.specify.datamodel.Institution;
 
 /**
  * @author rod
@@ -119,4 +121,13 @@ public class MySQLPrefs extends GenericPrefsPanel
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.GenericPrefsPanel#isOKToLoad()
+     */
+    @Override
+    public boolean isOKToLoad()
+    {
+        Institution institution = AppContextMgr.getInstance().getClassObject(Institution.class);
+        return !institution.getIsServerBased();
+    }
 }

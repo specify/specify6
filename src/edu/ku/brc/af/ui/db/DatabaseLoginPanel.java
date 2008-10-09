@@ -603,7 +603,9 @@ public class DatabaseLoginPanel extends JPanel
     protected void updateUIControls()
     {
         if (extraPanel == null || isLoggingIn)
-            return; // if this is null then we should skip all the checks because nothing is created
+        {
+            return;
+        }
 
         boolean shouldEnable = StringUtils.isNotEmpty(username.getText())
                 && StringUtils.isNotEmpty(new String(password.getPassword()))
@@ -879,7 +881,6 @@ public class DatabaseLoginPanel extends JPanel
                         progressWorker.stop();
                     }
 
-                    isLoggingIn = false;
                     statusBar.setProgressDone(getClass().getName());
 
                     if (timeOK)
@@ -899,13 +900,17 @@ public class DatabaseLoginPanel extends JPanel
                     
                     loginOK();
                     
+                    isLoggingIn = false;
+                    
                 } else
                 {
                     String msg = DBConnection.getInstance().getErrorMsg();
                     setMessage(StringUtils.isEmpty(msg) ? getResourceString("INVALID_LOGIN") : msg, true);
+                    
+                    enableUI(true);
                 }
                 
-                enableUI(true);
+                
 
                 if (isAutoClose)
                 {

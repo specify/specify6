@@ -199,10 +199,10 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
             Vector<String> controlSizeTitles = new Vector<String>();
             for (UIHelper.CONTROLSIZE cs : UIHelper.CONTROLSIZE.values())
             {
-                String title = getResourceString(cs.toString());
-                controlSizeTitles.add(title); 
-                controlSizesHash.put(title, cs);
-                controlSizes.addItem(title);
+                String titleStr = getResourceString(cs.toString());
+                controlSizeTitles.add(titleStr); 
+                controlSizesHash.put(titleStr, cs);
+                controlSizes.addItem(titleStr);
                 if (cs == UIHelper.getControlSize())
                 {
                     inx = i;

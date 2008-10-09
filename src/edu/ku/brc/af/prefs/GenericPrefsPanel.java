@@ -16,7 +16,9 @@ import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.ViewFactory;
@@ -39,11 +41,18 @@ import edu.ku.brc.ui.GetSetValueIFace;
 public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPanelIFace
 {
     private static final Logger log  = Logger.getLogger(GenericPrefsPanel.class);
+    
+    private static final String  securityPrefix    = "Prefs."; //$NON-NLS-1$
 
+    protected String    name;
+    protected String    title;
     protected ViewIFace formView  = null;
     protected Viewable  form      = null;
     protected String    hContext  = null;
     
+    // Security
+    protected PermissionIFace permissions = null;
+
     /**
      * Constructor.
      */
@@ -52,6 +61,38 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
         super(new BorderLayout());
     }
     
+    /**
+     * @return the name
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    /**
+     * @return the title
+     */
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
     /**
      * @param viewSetName
      * @param viewName
@@ -131,6 +172,43 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
     public boolean isFormValid()
     {
         return form != null ? form.getValidator().getState() == UIValidatable.ErrorType.Valid : false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#isOKToLoad()
+     */
+    @Override
+    public boolean isOKToLoad()
+    {
+        return true;
+    }
+
+    /**
+     * @return the permissions
+     */
+    public PermissionIFace getPermissions()
+    {
+        if (permissions == null)
+        {
+            permissions = SecurityMgr.getInstance().getPermission(securityPrefix + getPermissionName());
+        }
+        return permissions;
+    }
+
+    /**
+     * @return name to be used when getting permissions from SecurityMgr.
+     */
+    protected String getPermissionName()
+    {
+        return name;
+    }
+    
+    /**
+     * @param permissions the permissions to set
+     */
+    public void setPermissions(PermissionIFace permissions)
+    {
+        this.permissions = permissions;
     }
 
     /* (non-Javadoc)

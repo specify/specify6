@@ -16,6 +16,7 @@ package edu.ku.brc.af.prefs;
 
 import java.util.Properties;
 
+import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.ui.forms.validation.FormValidator;
 
 /**
@@ -29,11 +30,30 @@ import edu.ku.brc.af.ui.forms.validation.FormValidator;
 public interface PrefsPanelIFace
 {
     /**
+     * @return a unique name
+     */
+    public abstract String getName();
+
+    /**
+     * @param name the name to set
+     */
+    public abstract void setName(String name);
+    
+    /**
+     * @return a unique title
+     */
+    public abstract String getTitle();
+
+    /**
+     * @param title the title to set
+     */
+    public abstract void setTitle(String title);
+    
+    /**
      * Return the validator for the panel
      * @return Return the validator for the panel
      */
     public abstract FormValidator getValidator();
-    
     
     /**
      * @return whether the panel is valid
@@ -45,6 +65,22 @@ public interface PrefsPanelIFace
      * @param changeHash  the properties
      */
     public abstract void getChangedFields(Properties changeHash);
+    
+    /**
+     * @return true if it is OK to add the pref, false not load it.
+     */
+    public abstract boolean isOKToLoad();
+    
+    /**
+     * @return returns a permissions object
+     */
+    public abstract PermissionIFace getPermissions();
+    
+    /**
+     * Sets a permission object
+     * @param permissions the obj
+     */
+    public abstract void setPermissions(PermissionIFace permissions);
     
     /**
      * @return the help context for the panel.

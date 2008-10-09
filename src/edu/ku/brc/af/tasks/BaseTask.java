@@ -97,7 +97,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     
     private static final String  securityPrefix    = "Task."; //$NON-NLS-1$
     
-    protected enum ASK_TYPE { Cancel, EnterCats, ChooseRS}
+    public enum ASK_TYPE { Cancel, EnterCats, ChooseRS}
 
     
     public static final String APP_CMD_TYPE      = "App"; //$NON-NLS-1$
@@ -1366,7 +1366,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
       * Asks where the source of the COs should come from.
       * @return the source enum
       */
-     protected ASK_TYPE askSourceOfColObj()
+     public ASK_TYPE askSourceOfColObj()
      {
          Object[] options = { 
                  getResourceString("NEW_BT_USE_RS"), 
@@ -1392,7 +1392,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      /**
       * @return a RecordSet of newly entered Catalog Numbers
       */
-     protected RecordSetIFace askForCatNumbersRecordSet()
+     public RecordSetIFace askForCatNumbersRecordSet()
      {
          AskForNumbersDlg dlg = new AskForNumbersDlg("BT_COLOBJ_TITLE", "BT_LABEL", CollectionObject.class, "catalogNumber");
          dlg.setVisible(true);
@@ -1403,7 +1403,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
          return null;
      }
      
-     protected RecordSetIFace getRecordSetOfColObj(final RecordSetIFace recordSetArg,
+     public RecordSetIFace getRecordSetOfColObj(final RecordSetIFace recordSetArg,
                                                    final int numColObjRS)
      {
          RecordSetIFace recordSetFromDB = recordSetArg;

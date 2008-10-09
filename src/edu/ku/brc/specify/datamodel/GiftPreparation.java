@@ -51,7 +51,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="giftpreparation", indexes =
     {   @Index (name="GiftPrepColMemIDX", columnNames={"CollectionMemberID"})
     })
-public class GiftPreparation extends CollectionMember implements java.io.Serializable, Comparable<GiftPreparation>
+public class GiftPreparation extends CollectionMember implements java.io.Serializable, PreparationHolderIFace, Comparable<GiftPreparation>
 {
 
     // Fields    
@@ -62,9 +62,6 @@ public class GiftPreparation extends CollectionMember implements java.io.Seriali
     protected String                        outComments;          // Shipped Comments
     protected String                        inComments;           // Returned Comments
     protected String                        receivedComments;     // Received Comments
-    protected Integer                       quantityResolved;
-    protected Integer                       quantityReturned;
-    protected Boolean                       isResolved;
     protected Preparation                   preparation;
     protected Gift                          gift;
 
@@ -95,9 +92,6 @@ public class GiftPreparation extends CollectionMember implements java.io.Seriali
         outComments = null;
         inComments = null;
         receivedComments = null;
-        quantityResolved = null;
-        quantityReturned = null;
-        isResolved = false;
         preparation = null;
         gift = null;
         gift = null;
@@ -208,41 +202,14 @@ public class GiftPreparation extends CollectionMember implements java.io.Seriali
     }
 
     /**
-     * Number of specimens returned, deaccessioned or otherwise accounted for. (necessary for Lots)
-     */
-    @Column(name = "QuantityResolved", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getQuantityResolved() {
-        return this.quantityResolved;
-    }
-    
-    public void setQuantityResolved(Integer quantityResolved) {
-        this.quantityResolved = quantityResolved;
-    }
-
-    /**
      * Number of specimens returned. (necessary for Lots)
      */
-    @Column(name = "QuantityReturned", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getQuantityReturned() {
-        return this.quantityReturned;
+    @Transient
+    public Integer getQuantityReturned() 
+    {
+        return 0;
     }
     
-    public void setQuantityReturned(Integer quantityReturned) {
-        this.quantityReturned = quantityReturned;
-    }
-    
-    /**
-     * User definable
-     */
-    @Column(name="IsResolved",unique=false,nullable=false,insertable=true,updatable=true)
-    public Boolean getIsResolved() {
-        return this.isResolved;
-    }
-    
-    public void setIsResolved(Boolean isResolved) {
-        this.isResolved = isResolved;
-    }
-
     /**
      * 
      */
@@ -265,7 +232,8 @@ public class GiftPreparation extends CollectionMember implements java.io.Seriali
         return this.gift;
     }
     
-    public void setGift(Gift gift) {
+    public void setGift(Gift gift) 
+    {
         this.gift = gift;
     }
 
