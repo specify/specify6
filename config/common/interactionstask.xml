@@ -63,7 +63,7 @@
       </flavor>
     </droppableFlavors>
   </entry>
-  <entry name="exchangeout" table="exchangeout" view="ExchangeOut" type="Data_Entry" action="NEW_EXCHANGE_OUT" icon="ExchangeOut" isonleft="true" order="0">
+  <entry name="exchangeout" table="exchangeout" view="ExchangeOut" type="Data_Entry" action="OpenNewView" icon="ExchangeOut" isonleft="true" order="0">
     <draggableFlavors/>
     <droppableFlavors>
       <flavor isdrag="false" classname="edu.ku.brc.specify.tasks.RecordSetTask" humanreadable="Record_Set">

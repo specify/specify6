@@ -255,6 +255,12 @@ public class DataEntryTask extends BaseTask
         
         ViewIFace view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName) : 
                                           AppContextMgr.getInstance().getView(viewSetName, viewName);
+        if (view == null)
+        {
+            UIRegistry.showError("Couldn't find default form for ["+viewName+"]");
+            return;
+        }
+        
         Object           dataObj     = data;
         FormDataObjIFace formDataObj = data;
         if (formDataObj == null)
@@ -284,7 +290,6 @@ public class DataEntryTask extends BaseTask
                             formDataObj = FormHelper.createAndNewDataObj(dataClass);
                             dataObjList.add(formDataObj);
                             dataObj = dataObjList;
-                            //dataObj = formDataObj;
                             
                         } catch (Exception ex)
                         {
