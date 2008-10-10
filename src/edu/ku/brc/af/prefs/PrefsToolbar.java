@@ -219,7 +219,7 @@ public class PrefsToolbar extends JPanel
                             prefPanel.setName(prefName);
                             prefPanel.setTitle(prefTitle);
                             
-                            if (!prefPanel.isOKToLoad() || !prefPanel.getPermissions().canModify())
+                            if (!prefPanel.isOKToLoad() || (UIHelper.isSecurityOn() && !prefPanel.getPermissions().canModify()))
                             {
                                 continue;
                             }
