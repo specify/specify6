@@ -127,7 +127,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected boolean              wasCleared          = false;
     protected boolean              ignoreDocChange     = false;
     
-    protected boolean              isDoingCount        = false;
+    protected AtomicBoolean        isDoingCount        = new AtomicBoolean(false);
     protected Integer              returnCount         = null;
     protected String               prevEnteredText     = null;
     protected String               searchedForText     = null;
@@ -964,6 +964,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         {
             model.addElement(UIRegistry.getResourceString("TFWQ_ADD_LABEL")); //$NON-NLS-1$
         }
+        
         for (String val : list)
         {
             model.addElement(val);
@@ -1087,14 +1088,13 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     //@Override
     public void exectionDone(final CustomQueryIFace customQuery)
     {
-        if (isDoingCount)
+        if (isDoingCount.get())
         {
             List<?> dataObjList = customQuery.getDataObjects();
             if (dataObjList != null && dataObjList.size() > 0)
             {
                 returnCount = (Integer)dataObjList.get(0);
             }
-            isDoingCount = false;
             
             list.clear();
             idList.clear();
@@ -1102,7 +1102,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             String sqlStr = buildSQL(((JPAQuery)customQuery).getData().toString(), false);
             //log.debug(sqlStr);
             JPAQuery jpaQuery = new JPAQuery(sqlStr, this);
-            isDoingCount = false;
+            isDoingCount.set(false);
             jpaQuery.start();
             
         } else
@@ -1128,31 +1128,32 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     {
         prevEnteredText = newEntryStr;
 
-        if (hasNewText)
+        if (!isDoingQuery.get())
         {
-            if (!isDoingQuery.get())
+            if (hasNewText)
             {
+                
                 isDoingQuery.set(true);
+                isDoingCount.set(true);
                 
                 list.clear();
                 idList.clear();
                 
                 returnCount  = null;
-                isDoingCount = true;
                            
                 JPAQuery jpaQuery = new JPAQuery(buildSQL(newEntryStr, true), this);
                 jpaQuery.setUnique(true);
                 jpaQuery.setData(newEntryStr);
                 jpaQuery.start();
+                
+            } else if (returnCount > popupDlgThreshold)
+            {
+                showDialog();
+                
+            } else
+            {
+                showPopup();
             }
-            
-        } else if (returnCount > popupDlgThreshold)
-        {
-            showDialog();
-            
-        } else
-        {
-            showPopup();
         }
     }
     
