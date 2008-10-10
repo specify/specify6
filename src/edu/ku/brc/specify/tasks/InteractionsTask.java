@@ -360,6 +360,8 @@ public class InteractionsTask extends BaseTask
             } catch (CloneNotSupportedException ex) {}
         }
         
+        int origNumStd = stdList.size();
+        
         TaskConfigureDlg dlg = new TaskConfigureDlg(stdList, miscList, false,
                 "InteractionsConfig",
                 "IAT_TITLE",
@@ -420,6 +422,15 @@ public class InteractionsTask extends BaseTask
                 String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
                 AppPreferences.getRemote().putBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
                 prefsChanged(new CommandAction(null, null, AppPreferences.getRemote()));
+                
+                if (origNumStd == 0)
+                {
+                    JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
+                    int inx = indexOfTBB != -1 ? indexOfTBB : 4;
+                    TaskMgr.addToolbarBtn(toolBarBtn, inx);
+                    toolBar.validate();
+                    toolBar.repaint();  
+                }
             }
         }
     }
