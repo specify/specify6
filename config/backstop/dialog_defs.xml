@@ -45,6 +45,7 @@
     <dialog type="display" view="FieldNotebookPage"  name="FieldNotebookPageDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPage"/>
     <dialog type="display" view="ChronosStrat"       name="ChronosStratDisplay"      class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
     <dialog type="display" view="Geography"          name="GeographyDisplay"         class="edu.ku.brc.specify.datamodel.Geography"/>
+    <dialog type="display" view="GiftItems"          name="GiftItemsDisplay"         class="edu.ku.brc.specify.datamodel.GiftPreparation"/>
     <dialog type="display" view="GroupPerson"        name="GroupPersonDisplay"       class="edu.ku.brc.specify.datamodel.GroupPerson"/>
     <dialog type="display" view="Journal"            name="JournalDisplay"           class="edu.ku.brc.specify.datamodel.Journal"/>
     <dialog type="display" view="LithoStrat"         name="LithoStratDisplay"        class="edu.ku.brc.specify.datamodel.LithoStrat"/>
