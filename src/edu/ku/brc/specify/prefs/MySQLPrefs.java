@@ -10,13 +10,23 @@
 package edu.ku.brc.specify.prefs;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.af.core.db.MySQLBackupService;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
+import edu.ku.brc.af.tasks.BackupTask;
 import edu.ku.brc.af.ui.forms.validation.ValBrowseBtnPanel;
 import edu.ku.brc.specify.datamodel.Institution;
 
@@ -89,6 +99,55 @@ public class MySQLPrefs extends GenericPrefsPanel
         if (comp instanceof ValBrowseBtnPanel)
         {
             ((ValBrowseBtnPanel)comp).setValue(backupLoc, backupLoc);
+        }
+        
+        comp = form.getCompById("backup");
+        if (comp instanceof JButton)
+        {
+            ((JButton)comp).addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    if (mgr.closePrefs())
+                    {
+                        BackupServiceFactory.getInstance().doBackUp();
+                    }
+                }
+            });
+        }
+        comp = form.getCompById("restore");
+        if (comp instanceof JButton)
+        {
+            ((JButton)comp).addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    doRestore();
+                }
+            });
+        }
+    }
+    
+    /**
+     * Asks for the prefs to close and all the SubPanes so it can do a restore.
+     */
+    protected void doRestore()
+    {
+        if (mgr.closePrefs())
+        {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run()
+                {
+                    if (SubPaneMgr.getInstance().aboutToShutdown())
+                    {
+                        SubPaneIFace splash = ((BackupTask)TaskMgr.getTask("BackupTask")).getSplashPane();
+                        SubPaneMgr.getInstance().addPane(splash);
+                        SubPaneMgr.getInstance().showPane(splash);
+                        BackupServiceFactory.getInstance().doRestore();
+                    }
+                }
+            });
         }
     }
 

@@ -83,6 +83,12 @@ public interface PrefsPanelIFace
     public abstract void setPermissions(PermissionIFace permissions);
     
     /**
+     * Gives acces to the overall prefs manager.
+     * @param mgr the manager
+     */
+    public abstract void setPrefsPanelMgr(PrefsPanelMgrIFace mgr);
+    
+    /**
      * @return the help context for the panel.
      */
     public abstract String getHelpContext();

@@ -40,6 +40,7 @@ import java.util.prefs.BackingStoreException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -76,7 +77,7 @@ import edu.ku.brc.ui.UIRegistry;
  *
  */
 @SuppressWarnings("serial") //$NON-NLS-1$
-public class PreferencesDlg extends CustomDialog implements DataChangeListener
+public class PreferencesDlg extends CustomDialog implements DataChangeListener, PrefsPanelMgrIFace
 {
     protected static final Logger log = Logger.getLogger(PreferencesDlg.class);
     
@@ -142,6 +143,8 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         }
         
         showPanel(firstPanelName);
+        
+        addDataChangeListeners();
 
     }
 
@@ -342,10 +345,6 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         if (comp instanceof PrefsPanelIFace)
         {
             PrefsPanelIFace pp = (PrefsPanelIFace)comp;
-            if (pp.getValidator() != null)
-            {
-                pp.getValidator().addDataChangeListener(this);
-            }
             prefPanelsHash.put(name, pp);
         }
 
@@ -357,6 +356,19 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         return true;
     }
     
+    /**
+     * Hooks up the data changes listeners to the PrefPanels.
+     */
+    protected void addDataChangeListeners()
+    {
+        for (PrefsPanelIFace pp : prefPanelsHash.values())
+        {
+            if (pp.getValidator() != null)
+            {
+                pp.getValidator().addDataChangeListener(this);
+            }
+        }
+    }
     
 
     /* (non-Javadoc)
@@ -450,7 +462,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
     }
 
    /**
-     * Start animation where painting will occur for the given rect
+     * Start animation where painting will occur for the given rectangle
      * @param window the window to start it in
      * @param comp the component
      * @param delta the delta each time
@@ -461,15 +473,45 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         new Timer(10, new SlideInOutAnimation(window, comp, delta, fullStep)).start();
     }
 
-
-    //-----------------------------------------------------
-    // DataChangeListener
-    //-----------------------------------------------------
-
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.forms.validation.DataChangeNotifier)
+     * @see edu.ku.brc.af.prefs.PrefsPanelMgrIFace#closePrefs()
      */
-    public void dataChanged(String name, Component comp, DataChangeNotifier dcn)
+    @Override
+    public boolean closePrefs()
+    {
+        if (okBtn.isEnabled())
+        {
+            Object[] options = { getResourceString("PrefsDlg.SAVE_PREFS"),  //$NON-NLS-1$
+                                 getResourceString("PrefsDlg.DONT_SAVE_PREFS"),  //$NON-NLS-1$
+                                 getResourceString("CANCEL")  //$NON-NLS-1$
+                  };
+            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                         getResourceString("PrefsDlg.MSG"),  //$NON-NLS-1$
+                                                         getResourceString("PREFERENCES"),  //$NON-NLS-1$
+                                                         JOptionPane.YES_NO_CANCEL_OPTION,
+                                                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            if (userChoice == JOptionPane.YES_OPTION)
+            {
+                okButtonPressed();
+               
+            } else if (userChoice == JOptionPane.NO_OPTION)
+            {
+                cancelButtonPressed();
+            } else
+            {
+                return false;
+            }
+        } else
+        {
+            cancelButtonPressed();
+        }
+        return true;
+    }
+    
+    /**
+     * @return
+     */
+    protected boolean areThePrefsOK()
     {
         boolean okToEnable = true;
         for (PrefsPanelIFace pp : prefPanelsHash.values())
@@ -482,7 +524,20 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
                 break;
             }
         }
-        okBtn.setEnabled(okToEnable);
+        return okToEnable;
+    }
+    
+    
+    //-----------------------------------------------------
+    // DataChangeListener
+    //-----------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.forms.validation.DataChangeNotifier)
+     */
+    public void dataChanged(String name, Component comp, DataChangeNotifier dcn)
+    {
+        okBtn.setEnabled(areThePrefsOK());
     }
 
     //------------------------------------------------------------

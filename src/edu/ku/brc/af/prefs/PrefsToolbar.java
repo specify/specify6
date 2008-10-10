@@ -63,30 +63,33 @@ public class PrefsToolbar extends JPanel
     public static final String PANEL_CLASS = "panelClass"; //$NON-NLS-1$
     public static final String ICON_PATH   = "iconPath"; //$NON-NLS-1$
 
-    protected PreferencesDlg prefsDlg;
-    protected int           iconSize = 24;  // XXX PREF (Possible???)
-    protected int           numPrefs = 0;
+    protected PrefsPanelMgrIFace prefsPanelMgr;
+    protected int                iconSize = 24;  // XXX PREF (Possible???)
+    protected int                numPrefs = 0;
      /**
      * Constructor with the main panel so the icon know how to show their pane.
      *
      * @param prefsDlg the main pane that houses all the preference panes
      */
-    public PrefsToolbar(final PreferencesDlg prefsDlg)
+    public PrefsToolbar(final PrefsPanelMgrIFace prefsDlg)
     {
         super(new ToolbarLayoutManager(2, 8));
 
-        this.prefsDlg = prefsDlg;
+        this.prefsPanelMgr = prefsDlg;
 
         init();
     }
     
+    /**
+     * @return the number of panels
+     */
     public int getNumPrefs()
     {
         return numPrefs;
     }
 
     /**
-     * Initializes the toolbar with all the icon from all the diffrent groups or sections.
+     * Initializes the toolbar with all the icon from all the different groups or sections.
      */
     protected void init()
     {
@@ -220,6 +223,7 @@ public class PrefsToolbar extends JPanel
                             {
                                 continue;
                             }
+                            prefPanel.setPrefsPanelMgr(prefsPanelMgr);
                         }
                         
                         if (panelClassObj == GenericPrefsPanel.class)
@@ -236,9 +240,7 @@ public class PrefsToolbar extends JPanel
                             }
                         }
                         
-                        
-                        
-                        prefsDlg.addPanel(prefTitle, comp);
+                        prefsPanelMgr.addPanel(prefTitle, comp);
 
                         add(btn.getUIComponent());
 
@@ -281,7 +283,7 @@ public class PrefsToolbar extends JPanel
      */
     protected void showPanel(final String panelName)
     {
-        prefsDlg.showPanel(panelName);
+        prefsPanelMgr.showPanel(panelName);
     }
 
 

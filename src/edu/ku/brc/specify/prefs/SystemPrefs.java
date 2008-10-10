@@ -27,6 +27,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.validation.FormValidator;
+import edu.ku.brc.af.ui.forms.validation.UIValidator;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.Specify;
@@ -125,6 +126,7 @@ public class SystemPrefs extends GenericPrefsPanel
             @Override
             public void finished()
             {
+                UIValidator.setIgnoreAllValidation("SystemPrefs", true);
                 localeCBX.setEnabled(true);
                 localeCBX.getComboBox().setSelectedIndex(inx);
                 JTextField loadingLabel = (JTextField)form.getCompById("6");
@@ -132,6 +134,7 @@ public class SystemPrefs extends GenericPrefsPanel
                 {
                     loadingLabel.setText(UIRegistry.getResourceString("LOCALE_RESTART_REQUIRED"));
                 }
+                UIValidator.setIgnoreAllValidation("SystemPrefs", false);
             }
         };
         

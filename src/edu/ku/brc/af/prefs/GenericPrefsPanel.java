@@ -50,6 +50,8 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
     protected Viewable  form      = null;
     protected String    hContext  = null;
     
+    protected PrefsPanelMgrIFace mgr = null;
+    
     // Security
     protected PermissionIFace permissions = null;
 
@@ -183,8 +185,8 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
         return true;
     }
 
-    /**
-     * @return the permissions
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#getPermissions()
      */
     public PermissionIFace getPermissions()
     {
@@ -203,12 +205,21 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
         return name;
     }
     
-    /**
-     * @param permissions the permissions to set
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#setPermissions(edu.ku.brc.af.core.PermissionIFace)
      */
     public void setPermissions(PermissionIFace permissions)
     {
         this.permissions = permissions;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#setPrefsPanelMgr(edu.ku.brc.af.prefs.PrefsPanelMgrIFace)
+     */
+    @Override
+    public void setPrefsPanelMgr(PrefsPanelMgrIFace mgrArg)
+    {
+        this.mgr = mgrArg;
     }
 
     /* (non-Javadoc)
