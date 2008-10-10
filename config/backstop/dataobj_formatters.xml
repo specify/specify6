@@ -199,6 +199,18 @@
     </format>
     
     <format
+        name="Loan"
+        class="edu.ku.brc.specify.datamodel.Loan"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>loanNumber</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
         name="LoanPreparation"
         class="edu.ku.brc.specify.datamodel.LoanPreparation"
         default="true"
