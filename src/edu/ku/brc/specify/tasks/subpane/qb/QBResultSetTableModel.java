@@ -27,6 +27,7 @@ import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author timbo
@@ -49,17 +50,12 @@ public class QBResultSetTableModel extends ResultSetTableModel
      */
     @Override
     public void exectionDone(final CustomQueryIFace customQuery)
-    {
-        if (statusBar != null)
-        {
-            statusBar.incrementValue(getClass().getSimpleName());
-        }
-        
+    {        
         results.queryTaskDone(customQuery);
         List<?> list      = customQuery.getDataObjects();
         boolean hasIds = ((QBQueryForIdResultsHQL ) results).isHasIds();
         List<ERTICaptionInfo> captions = results.getVisibleCaptionInfo();
-                
+             
         if (!customQuery.isInError() && !customQuery.isCancelled() && list != null && list.size() > 0)
         {
                 int maxTableRows = results.getMaxTableRows();
@@ -110,6 +106,7 @@ public class QBResultSetTableModel extends ResultSetTableModel
                         row.add(id);
                     }
                     cache.add(row);
+                    UIRegistry.getStatusBar().incrementValue(((QBQueryForIdResultsHQL )results).getQueryName());
                     rowNum++;
                 }                
             

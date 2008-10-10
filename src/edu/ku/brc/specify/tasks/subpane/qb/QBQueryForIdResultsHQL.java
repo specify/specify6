@@ -347,7 +347,6 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
             }
             queryTask.set(null);
             if (!queryBuilder.queryTaskDone())
-            //if (queryBuilder.isCountOnly())
             {
                 query.get().cancel();
             }
@@ -487,5 +486,10 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     public boolean isPostSorted()
     {
         return sortElements != null; 
+    }
+    
+    public String getQueryName()
+    {
+        return queryBuilder.getQuery().getName();
     }
 }

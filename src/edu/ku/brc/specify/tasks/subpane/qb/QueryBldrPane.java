@@ -1373,7 +1373,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run()
                         {
-                            UIRegistry.getStatusBar().setIndeterminate(query.getName(), true);
+                            //UIRegistry.getStatusBar().setIndeterminate(query.getName(), true);
+                            UIRegistry.getStatusBar().setProgressRange(query.getName(), 0, 
+                                    Math.min(results, runningResults.get().getMaxTableRows()));
                         }
                     });
                 }
