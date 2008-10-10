@@ -11,7 +11,7 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
-import edu.ku.brc.specify.datamodel.Permit;
+import edu.ku.brc.specify.datamodel.Gift;
 
 /**
  * @author rod
@@ -40,14 +40,14 @@ public class GiftBusRules extends BaseBusRules
     {
         reasonList.clear();
         
-        if (!(dataObj instanceof Permit))
+        if (!(dataObj instanceof Gift))
         {
             return STATUS.Error;
         }
         
         STATUS duplicateNumberStatus = isCheckDuplicateNumberOK("giftNumber", 
                                                                 (FormDataObjIFace)dataObj, 
-                                                                Permit.class, 
+                                                                Gift.class, 
                                                                 "giftId");
 
         return duplicateNumberStatus;

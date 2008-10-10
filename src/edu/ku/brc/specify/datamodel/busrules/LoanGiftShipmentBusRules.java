@@ -20,6 +20,7 @@ import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextField;
+import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.Shipment;
 
@@ -31,10 +32,10 @@ import edu.ku.brc.specify.datamodel.Shipment;
  * Nov 26, 2007
  *
  */
-public class LoanShipmentBusRules extends BaseBusRules
+public class LoanGiftShipmentBusRules extends BaseBusRules
 {
 
-    private static final Logger log = Logger.getLogger(LoanShipmentBusRules.class);
+    private static final Logger log = Logger.getLogger(LoanGiftShipmentBusRules.class);
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
@@ -46,27 +47,40 @@ public class LoanShipmentBusRules extends BaseBusRules
         {
             if (formViewObj.getDataObj() instanceof Shipment)
             {
-                MultiView loanMV = formViewObj.getMVParent().getMultiViewParent();
-                if (loanMV != null)
+                MultiView multiView = formViewObj.getMVParent().getMultiViewParent();
+                if (multiView != null)
                 {
-                    FormViewObj loanFVO  = loanMV.getCurrentViewAsFormViewObj();
+                    FormViewObj fvo        = multiView.getCurrentViewAsFormViewObj();
+                    Shipment    shipment   = (Shipment)formViewObj.getDataObj();
+                    Loan        loan       = shipment.getLoan();
+                    Gift        gift       = shipment.getGift();
                     
-                    Shipment  shipment   = (Shipment)formViewObj.getDataObj();
-                    Loan      loan       = shipment.getLoan();
-                    
-                    //boolean   isNewObj = MultiView.isOptionOn(mvParent.getOptions(), MultiView.IS_NEW_OBJECT);
-                    //boolean   isEdit   = mvParent.isEditable();
-                    
-                    if (StringUtils.isEmpty(shipment.getShipmentNumber()))
+                    String controlName = null;
+                    if (loan != null)
                     {
-                        shipment.setShipmentNumber(loan.getLoanNumber());
+                        //boolean   isNewObj = MultiView.isOptionOn(mvParent.getOptions(), MultiView.IS_NEW_OBJECT);
+                        //boolean   isEdit   = mvParent.isEditable();
+                        
+                        if (StringUtils.isEmpty(shipment.getShipmentNumber()))
+                        {
+                            shipment.setShipmentNumber(loan.getLoanNumber());
+                        }
+                        //System.err.println(loan.getLoanNumber());
+                        controlName = "loanNumber";
+                        
+                    } else if (gift != null)
+                    {
+                        if (StringUtils.isEmpty(shipment.getShipmentNumber()))
+                        {
+                            shipment.setShipmentNumber(gift.getGiftNumber());
+                        }
+                        controlName = "giftNumber";
                     }
-                    //System.err.println(loan.getLoanNumber());
                     
-                    Component comp = loanFVO.getControlByName("loanNumber");
+                    Component comp = fvo.getControlByName(controlName);
                     if (comp != null)
                     {
-                        String loanNum = comp instanceof ValFormattedTextField ? ((ValFormattedTextField)comp).getText() : ((JTextField)comp).getText();
+                        String numberStr = comp instanceof ValFormattedTextField ? ((ValFormattedTextField)comp).getText() : ((JTextField)comp).getText();
                         
                         comp = formViewObj.getControlByName("shipmentNumber");
                         if (comp instanceof JTextField)
@@ -74,7 +88,7 @@ public class LoanShipmentBusRules extends BaseBusRules
                             JTextField tf = (JTextField)comp;
                             if (StringUtils.isEmpty(tf.getText()))
                             {
-                                tf.setText(loanNum);
+                                tf.setText(numberStr);
                             }
                         } else
                         {

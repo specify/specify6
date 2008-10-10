@@ -510,7 +510,7 @@
         
         <view name="Shipment"
             class="edu.ku.brc.specify.datamodel.Shipment"
-            busrules="edu.ku.brc.specify.datamodel.busrules.LoanShipmentBusRules"
+            busrules="edu.ku.brc.specify.datamodel.busrules.LoanGiftShipmentBusRules"
             resourcelabels="false">
             <desc><![CDATA[Shipment Subform within the Loan Object form.]]></desc>
             <altviews>
