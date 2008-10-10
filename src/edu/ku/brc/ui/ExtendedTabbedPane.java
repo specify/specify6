@@ -30,7 +30,6 @@ public class ExtendedTabbedPane extends JTabbedPane
     
     protected Rectangle closerRect = new Rectangle();
     protected boolean   isOver     = false;
-    protected ExtendedTabbedPane itself;
     
     /**
      * Constructor.
@@ -67,7 +66,6 @@ public class ExtendedTabbedPane extends JTabbedPane
      */
     protected void init()
     {
-        itself = this;
         
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
             @Override
@@ -127,45 +125,12 @@ public class ExtendedTabbedPane extends JTabbedPane
     }
     
     /* (non-Javadoc)
-     * @see javax.swing.JTabbedPane#addTab(java.lang.String, java.awt.Component)
-     */
-    @Override
-    public void addTab(String title, Component component)
-    {
-        super.addTab(title, component);
-        
-        adjustTab(title, null, component, getTabCount()-1);
-    }
-
-    /* (non-Javadoc)
-     * @see javax.swing.JTabbedPane#addTab(java.lang.String, javax.swing.Icon, java.awt.Component, java.lang.String)
-     */
-    @Override
-    public void addTab(String title, Icon icon, Component component, String tip)
-    {
-        super.addTab(title, icon, component, tip);
-        
-        adjustTab(title, icon, component, getTabCount()-1);
-    }
-
-    /* (non-Javadoc)
-     * @see javax.swing.JTabbedPane#addTab(java.lang.String, javax.swing.Icon, java.awt.Component)
-     */
-    @Override
-    public void addTab(String title, Icon icon, Component component)
-    {
-        super.addTab(title, icon, component);
-        
-        adjustTab(title, icon, component, getTabCount()-1);
-    }
-
-    /* (non-Javadoc)
      * @see javax.swing.JTabbedPane#insertTab(java.lang.String, javax.swing.Icon, java.awt.Component, java.lang.String, int)
      */
     @Override
     public void insertTab(String title, Icon icon, Component component, String tip, int index)
     {
-        super.insertTab(title, icon, component, tip, index);
+        super.insertTab(null, null, component, tip, index);
         
         adjustTab(title, icon, component, index);
     }

@@ -168,9 +168,9 @@ public class Scriptlet extends JRDefaultScriptlet
      * @return Formats a String to a float to a String
      * @throws JRScriptletException xxx
      */
-    public String formatCatNo(String catalogNumber) throws JRScriptletException
+    public String formatCatNo(String catalogNumber)
     {
-        log.debug("********* Catalog Formatter["+catalogFormatter+"]["+(catalogFormatter != null ? catalogFormatter.isFromUIFormatter() : "")+"]["+catalogNumber+"]");
+        //log.debug("********* Catalog Formatter["+catalogFormatter+"]["+(catalogFormatter != null ? catalogFormatter.isFromUIFormatter() : "")+"]["+catalogNumber+"]");
         if (catalogFormatter != null && catalogFormatter.isInBoundFormatter())
         {
             return catalogFormatter.formatToUI(catalogNumber).toString();

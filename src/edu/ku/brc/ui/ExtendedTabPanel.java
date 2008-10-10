@@ -31,12 +31,17 @@ import edu.ku.brc.af.core.SubPaneMgr;
 public class ExtendedTabPanel extends JPanel
 {
     protected JLabel textLabel;
+    protected Icon   icon;
+    protected Component comp;
+    
     
     public ExtendedTabPanel(final Component comp,
-                             final String    title,
-                             final Icon      icon)
+                            final String    title,
+                            final Icon      icon)
     {
         super(new BorderLayout());
+        this.comp = comp;
+        this.icon = icon;
         
         JLabel closeBtn = new JLabel(IconManager.getIcon("Close"));
         closeBtn.setBorder(null);
@@ -52,12 +57,28 @@ public class ExtendedTabPanel extends JPanel
         add(closeBtn, BorderLayout.EAST);
     }
     
+    public JLabel getTextLabel()
+    {
+        return textLabel;
+    }
+
+    public Icon getIcon()
+    {
+        return icon;
+    }
+
+    public Component getComp()
+    {
+        return comp;
+    }
+
     /**
      * @param titleStr
      */
     public void setTitle(final String titleStr)
     {
         textLabel.setText(titleStr);
+        validate();
     }
     
     class TabMouseAdapter extends MouseAdapter
