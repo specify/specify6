@@ -43,6 +43,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 /**
@@ -345,6 +347,7 @@ public class ExchangeIn extends DisciplineMember implements java.io.Serializable
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AddressOfRecordID", unique = false, nullable = true, insertable = true, updatable = true)
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public AddressOfRecord getAddressOfRecord()
     {
         return addressOfRecord;

@@ -96,6 +96,18 @@
         >
         <switch single="true">
             <fields>
+                <field>startDate</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
+        name="CollectingEventSFN"
+        class="edu.ku.brc.specify.datamodel.CollectingEvent"
+        default="false"
+        >
+        <switch single="true">
+            <fields>
                 <field>stationFieldNumber</field>
             </fields>
         </switch>
@@ -311,30 +323,6 @@
         </switch>
     </format>
     
-    <format
-        name="CollectingEvent"
-        class="edu.ku.brc.specify.datamodel.CollectingEvent"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>startDate</field>
-            </fields>
-        </switch>
-    </format>
-
-    <format
-        name="CollectingEventSFN"
-        class="edu.ku.brc.specify.datamodel.CollectingEvent"
-        default="false"
-        >
-        <switch single="true">
-            <fields>
-                <field>stationFieldNumber</field>
-            </fields>
-        </switch>
-    </format>
-
     <format
         name="Storage"
         class="edu.ku.brc.specify.datamodel.Storage"

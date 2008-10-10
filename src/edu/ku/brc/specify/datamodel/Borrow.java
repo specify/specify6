@@ -433,6 +433,7 @@ public class Borrow extends CollectionMember implements java.io.Serializable {
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AddressOfRecordID", unique = false, nullable = true, insertable = true, updatable = true)
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public AddressOfRecord getAddressOfRecord()
     {
         return addressOfRecord;

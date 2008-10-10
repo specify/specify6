@@ -524,8 +524,9 @@ public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanA
     /**
      * @return the addressOfRecord
      */
-    @ManyToOne(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AddressOfRecordID", unique = false, nullable = true, insertable = true, updatable = true)
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public AddressOfRecord getAddressOfRecord()
     {
         return addressOfRecord;

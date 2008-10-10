@@ -432,6 +432,7 @@ public class Gift extends DisciplineMember implements java.io.Serializable, Prep
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AddressOfRecordID", unique = false, nullable = true, insertable = true, updatable = true)
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public AddressOfRecord getAddressOfRecord()
     {
         return addressOfRecord;

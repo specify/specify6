@@ -230,7 +230,7 @@ public class AddressOfRecord extends DataModelObjBase
      * @return the accessions
      */
     @OneToMany( mappedBy = "addressOfRecord")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    //@Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Accession> getAccessions()
     {
         return accessions;
@@ -248,7 +248,7 @@ public class AddressOfRecord extends DataModelObjBase
      * @return the repositoryAgreements
      */
     @OneToMany( mappedBy = "addressOfRecord")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    //@Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<RepositoryAgreement> getRepositoryAgreements()
     {
         return repositoryAgreements;
@@ -266,7 +266,7 @@ public class AddressOfRecord extends DataModelObjBase
      * @return the loans
      */
     @OneToMany( mappedBy = "addressOfRecord")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    //@Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Loan> getLoans()
     {
         return loans;
