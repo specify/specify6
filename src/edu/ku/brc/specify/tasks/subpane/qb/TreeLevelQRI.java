@@ -33,7 +33,7 @@ public class TreeLevelQRI extends FieldQRI
 {
     protected final int rankId;
     protected final int treeDefId;
-    
+
     protected String    tableAlias = null;
     
     /**
@@ -64,7 +64,7 @@ public class TreeLevelQRI extends FieldQRI
     }
     
     /**
-     * @return
+     * @return the rankId
      */
     public int getRankId()
     {
@@ -99,23 +99,6 @@ public class TreeLevelQRI extends FieldQRI
     {
         tableAlias = ta.getAbbreviation(table.getTableTree());
         return tableAlias + ".nodeNumber";
-        
-//        StringBuilder result = new StringBuilder("(select treelevel.name from ");
-//        result.append(getTableInfo().getClassObj().getSimpleName());
-//        result.append(" treelevel where ");
-//        tableAlias = ta.getAbbreviation(table.getTableTree());
-//        result.append(ta.getAbbreviation(table.getTableTree()));
-//        result.append(".nodeNumber between treelevel.nodeNumber and treelevel.highestChildNodeNumber and treelevel.rankId = ");
-//        result.append(String.valueOf(rankId));
-//        String treeDef = getTreeDefIdFldName();
-//        result.append(" and treelevel.");
-//        result.append(treeDef);
-//        result.append("=");
-//        result.append(ta.getAbbreviation(table.getTableTree()));
-//        result.append(".");
-//        result.append(treeDef);
-//        result.append(")");
-//        return result.toString();
     }
     
     /**
@@ -134,6 +117,9 @@ public class TreeLevelQRI extends FieldQRI
         return treeDefId;
     }
     
+    /**
+     * @return the class of nodes in the tree.
+     */
     public Class<?> getTreeDataClass()
     {
         return getTableInfo().getClassObj();
@@ -158,32 +144,9 @@ public class TreeLevelQRI extends FieldQRI
     public String getSQLFldSpec(final TableAbbreviator ta, final boolean forWhereClause)
     {
         String result = getSQLFldName(ta);
-//        if (!forWhereClause)
-//        {
-//            result = result + " " + getFieldName().replace(' ', '_'); // can't figure out what
-//                                                                            // the delimiter is for
-//                                                                            // fld aliases so...
-//        }
         return result;
     }
     
-    /**
-     * @author timbo
-     *
-     * @code_status Alpha
-     *
-     */
-    public class NoTreeDefItemException extends Exception
-    {
-        /**
-         * @param rankId - rank of the level without a definition.
-         */
-        public NoTreeDefItemException(int rankId)
-        {
-            super("No TreeDefItem for " + String.valueOf(rankId));
-        }
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#isFieldHidden()
      */
@@ -199,6 +162,16 @@ public class TreeLevelQRI extends FieldQRI
         return toCap.substring(0, 1).toUpperCase().concat(toCap.substring(1));
     }
     
+    /**
+     * @param criteria
+     * @param ta
+     * @param operStr
+     * @param negate
+     * @return a where clause condition for the given criteria using tree node-numbers.
+     * 
+     * Looks up the matching node (1 node - opearators are restricted for TreeLevels) and creates 
+     * a condition to get it's descendants. 
+     */
     @SuppressWarnings("unchecked")
     public String getNodeNumberCriteria(final String criteria, final TableAbbreviator ta, 
                                         final String operStr, final boolean negate)
@@ -255,5 +228,16 @@ public class TreeLevelQRI extends FieldQRI
             session.close();
         }
     }
-    
+
+    public class NoTreeDefItemException extends Exception
+    {
+        /**
+         * @param rankId - rank of the level without a definition.
+         */
+        public NoTreeDefItemException(int rankId)
+        {
+            super("No TreeDefItem for " + String.valueOf(rankId));
+        }
+    }
+
 }

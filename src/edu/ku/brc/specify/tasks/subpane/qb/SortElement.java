@@ -13,16 +13,22 @@ package edu.ku.brc.specify.tasks.subpane.qb;
  * @author timbo
  *
  * @code_status Alpha
+ * 
+ * Describes the sort settings for a single column in a result set.
  *
  */
 public class SortElement 
 {
-    public static final int ASCENDING = 0;
+    public static final int ASCENDING  = 0;
     public static final int DESCENDING = 1;
+
+    protected final int     column;        // the column's index
+    protected final int     direction; 
     
-    protected final int column;
-    protected final int direction;
-    
+    /**
+     * @param column
+     * @param direction
+     */
     public SortElement(final int column, final int direction)
     {
         this.column = column;

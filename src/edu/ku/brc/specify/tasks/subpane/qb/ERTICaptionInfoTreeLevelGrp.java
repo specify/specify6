@@ -27,6 +27,12 @@ import edu.ku.brc.util.Pair;
  *
  * @code_status Alpha
  *
+ * A grouping of columns in a result-set that refer to levels in a common tree.
+ * 
+ * Node number(s) retrieved by initial db query are used to determine level names while results are
+ * prepared for display. 
+ * 
+ * At most one query is required per row to determine values for all columns in a group. 
  */
 public class ERTICaptionInfoTreeLevelGrp
 {
@@ -44,40 +50,40 @@ public class ERTICaptionInfoTreeLevelGrp
 
     protected LinkedList<Pair<Integer, String[]>>    lookupTbl    = null;
     protected static final int                       lookupSize   = 20;
-    protected boolean                                useCache     = true;
+    protected static final boolean                   useCache     = true;
  
-    //XXX stuff to test sorting in 
-//  Collections.sort(cache, new Comparator<Vector<Object>>() {
-    //
-//                    /* (non-Javadoc)
-//                     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-//                     */
-//                    @Override
-//                    public int compare(Vector<Object> o1, Vector<Object> o2)
-//                    {
-//                        String c1 = (String )o1.get(1);
-//                        String c2 = (String )o2.get(1);
-//                        if (c1 == null && c2 == null)
-//                        {
-//                            return 0;
-//                        }
-//                        if (c1 == null)
-//                        {
-//                            return -1;
-//                        }
-//                        if (c2 == null)
-//                        {
-//                            return 1;
-//                        }
-//                        return c1.compareTo(c2);
-//                    }
-//                    
-//                });
+    protected boolean                                isSetup      = false;
+    
 
-    
-    
+    /**
+     * @param treeClass
+     * @param treeDefId
+     * @param alias
+     */
+    public ERTICaptionInfoTreeLevelGrp(final Class<?> treeClass, final int treeDefId, final String alias)
+    {
+        this.treeClass = treeClass;
+        this.treeDefId = treeDefId;
+        this.alias = alias;
+        this.members = new Vector<ERTICaptionInfoTreeLevel>();
+        if (useCache)
+        {
+            lookupTbl = new LinkedList<Pair<Integer, String[]>>();
+        }
+    }
+
+    /**
+     * @param value
+     * @param rankIdx
+     * @return
+     */
     public Object processValue(final Object value, final int rankIdx)
     {
+        if (!isSetup)
+        {
+            throw new RuntimeException("ERTICaptionInfoTreeLevelGrp: " + treeClass.getName() + " group was not setup.");
+        }
+        
         if (value == null)
         {
             return null;
@@ -88,10 +94,14 @@ public class ERTICaptionInfoTreeLevelGrp
             newValue(value);
             currentVal = value;
         }
-        //XXX implement caching...
+        
         return currentRanks[rankIdx];
     }
 
+    /**
+     * @param ancestor
+     * @return Pair of ancestor's rank and name.
+     */
     protected Pair<Integer, String> getAncestorInfo(final Object ancestor)
     {
         if (ancestor == null)
@@ -102,8 +112,59 @@ public class ERTICaptionInfoTreeLevelGrp
         return new Pair<Integer, String>((Integer )info[1], (String )info[0]);
     }
     
+    /**
+     * @param value
+     * @return the ranks for the value.
+     * 
+     * Checks to see if value is in the cache of looked up values
+     * and returns it's ranks or null if it is not found.
+     */
+    protected String[] lookupValue(final Object value)
+    {
+        for (Pair<Integer, String[]> val : lookupTbl)
+        {
+            if (val.getFirst().equals(value))
+            {
+                return val.getSecond();
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * @param key
+     * @param value
+     */
+    protected void addToCache(final Integer key, final String[] value)
+    {
+        if (lookupTbl.size() == lookupSize)
+        {
+            lookupTbl.remove();
+        }
+        lookupTbl.add(new Pair<Integer, String[]>(key, value));
+    }
+    
     protected void newValue(final Object value)
     {
+        if (useCache)
+        {
+            String[] lookedUp = lookupValue(value);
+            if (lookedUp != null)
+            {
+                currentRanks = lookedUp;
+                return;
+            }
+        }
+
+        if (useCache)
+        {
+            currentRanks = new String[members.size()];
+            for (int r = 0; r < currentRanks.length; r++)
+            {
+                currentRanks[r] = null;
+            }
+        }
+        
         query.setParameter("descendantArg", value);
         Iterator<?> ancestors = query.list().iterator();
         Pair<Integer, String> ancestor = ancestors.hasNext() ? getAncestorInfo(ancestors.next()) : null;
@@ -124,27 +185,33 @@ public class ERTICaptionInfoTreeLevelGrp
                 currentRanks[member.getRankIdx()] = null;
             }
         }
-        //System.out.println("ERTICaptionInfoTreeGrp.newValue " + value);
+        
+        if (useCache)
+        {
+            addToCache((Integer )value, currentRanks);
+        }
     }
 
-    public ERTICaptionInfoTreeLevelGrp(final Class<?> treeClass, final int treeDefId, final String alias)
-    {
-        this.treeClass = treeClass;
-        this.treeDefId = treeDefId;
-        this.alias = alias;
-        this.members = new Vector<ERTICaptionInfoTreeLevel>();
-    }
     
+    /**
+     * @return the name of the 'name' field for nodes in the tree.
+     */
     protected String getNodeNameFld()
     {
         return "name";
     }
     
+    /**
+     * @return the table name for the tree.
+     */
     protected String getNodeTblName()
     {
         return treeClass.getSimpleName().toLowerCase();
     }
     
+    /**
+     * @return the field that stores the tree definition for the tree.
+     */
     protected String getNodeTreeFldName() 
     {
         return treeClass.getSimpleName().toLowerCase() + "TreeDefId";
@@ -188,8 +255,22 @@ public class ERTICaptionInfoTreeLevelGrp
         return alias;
     }
     
+    /**
+     * @param rank
+     * @param colName
+     * @param lbl
+     * @param id
+     * @return a ERTICaptionInfoTreeLevel object for the column.
+     * 
+     * Adds a member to the group and returns a CaptionInfo for the rank's column in the result-set.
+     */
     public ERTICaptionInfoTreeLevel addRank(final TreeLevelQRI rank, final String colName, final String lbl, final String id)
     {
+        if (isSetup)
+        {
+            throw new RuntimeException("ERTICaptionInfoTreeLevelGrp: tree for " + treeClass.getSimpleName() + " is already setup.");
+        }
+        
         if (!(treeDefId == rank.getTreeDefId() && treeClass.equals(rank.getTreeDataClass()) && alias.equals(rank.getTableAlias())))
         {
             return null;
@@ -199,8 +280,17 @@ public class ERTICaptionInfoTreeLevelGrp
         return result;
     }
     
+    /**
+     * Prepares group to process a result set.
+     * MUST be called after all members have been added to the group.
+     */
     public void setUp()
     {
+        if (isSetup)
+        {
+            throw new RuntimeException("ERTICaptionInfoTreeLevelGrp: tree for " + treeClass.getSimpleName() + " is already setup.");
+        }
+        
         Collections.sort(members, new Comparator<ERTICaptionInfoTreeLevel>() {
 
             /* (non-Javadoc)
@@ -249,5 +339,7 @@ public class ERTICaptionInfoTreeLevelGrp
             + getNodeTreeFldName() + "=" + this.treeDefId + " and rankId in(" + rankStr + ") order by rankId ";
         query = session.createQuery(ancestorSQL, true);
 
+        isSetup = true;
     }
+    
 }

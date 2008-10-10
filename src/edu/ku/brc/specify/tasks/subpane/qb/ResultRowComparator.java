@@ -11,7 +11,6 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.Vector;
 
 /**
@@ -19,11 +18,19 @@ import java.util.Vector;
  *
  * @code_status Alpha
  *
+ * Compares result-set rows by comparing individual columns as defined by
+ * a list of SortElement objects. 
  */
 public class ResultRowComparator implements Comparator<Vector<Object>>
 {
-    protected final List<SortElement> sortDef;
+    /**
+     * Describes the columns to be compared.
+     */
+    protected final List<SortElement> sortDef; 
     
+    /**
+     * @param sortDef
+     */
     public ResultRowComparator(final List<SortElement> sortDef)
     {
         this.sortDef = sortDef;
@@ -46,6 +53,15 @@ public class ResultRowComparator implements Comparator<Vector<Object>>
         return 0;
     }
     
+    /**
+     * @param s
+     * @param o1
+     * @param o2
+     * @return
+     * 
+     * Compares the elements in o1 and o2 at the index defined by s in the order defined by s.
+     */
+    @SuppressWarnings("unchecked")
     protected int doCompare(SortElement s, Vector<Object> o1, Vector<Object> o2)
     {
       Object obj1 = s.getDirection() == SortElement.ASCENDING ? o1.get(s.getColumn()) : o2.get(s.getColumn());
@@ -62,7 +78,18 @@ public class ResultRowComparator implements Comparator<Vector<Object>>
       {
           return 1;
       }
-      return obj1.toString().compareTo(obj2.toString());
+      
+      Class<?> cls = obj1.getClass();
+      if (cls.equals(obj2.getClass()))
+      {
+          if (Comparable.class.isAssignableFrom(cls))
+          {
+              return ((Comparable ) obj1).compareTo(obj2);
+          }
+      }
+      
+      //default if (somehow) objects are diferrend classes or their class does not implement Comparable:
+      return obj1.toString().compareTo(obj2.toString());      
     }
     
 }
