@@ -78,6 +78,42 @@
     </format>
     
     <format
+        name="CollectingTrip"
+        class="edu.ku.brc.specify.datamodel.CollectingTrip"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>collectingTripName</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
+        name="CollectingEvent"
+        class="edu.ku.brc.specify.datamodel.CollectingEvent"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>stationFieldNumber</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
+        name="Collection"
+        class="edu.ku.brc.specify.datamodel.Collection"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>collectionName</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
         name="CollectionObject"
         class="edu.ku.brc.specify.datamodel.CollectionObject"
         default="true"
