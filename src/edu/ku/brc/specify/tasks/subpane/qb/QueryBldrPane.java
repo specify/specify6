@@ -1310,7 +1310,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
        
         int results = completedResults.get().getQuery().getDataObjects().size();
         int max = completedResults.get().getMaxTableRows();
-        if (results > max && !countOnly)
+        if (results > max && !countOnly &&  !completedResults.get().getQuery().isCancelled())
         {
             UIRegistry.displayInfoMsgDlgLocalized("QB_PARTIAL_RESULTS_DISPLAY", max, results);
         }
@@ -1338,8 +1338,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * Called when the db record retrieval task has completed.
      */
-    public void queryTaskDone()
+    public boolean queryTaskDone()
     {
+        boolean result = true;
         doneTime.set(System.nanoTime());
         if (runningResults.get() != null && runningResults.get().getQuery() != null)
         {
@@ -1347,7 +1348,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 final int results = runningResults.get().getQuery().getDataObjects().size();
                 
-                String msg;
+                String msg = "";
                 if (results <= runningResults.get().getMaxTableRows())
                 {
                     msg = String.format(UIRegistry
@@ -1355,24 +1356,29 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         .valueOf(results), String
                         .valueOf((doneTime.get() - startTime.get()) / 1000000000D));
                 }
-                else
+                else if (!runningResults.get().isPostSorted())
                 {
                     msg = String.format(UIRegistry.getResourceString("QB_DISPLAYING_RETRIEVED_RESULTS_PARTIAL"), 
                             String.valueOf(results), 
                             String.valueOf((doneTime.get() - startTime.get()) / 1000000000D),
                             String.valueOf(runningResults.get().getMaxTableRows()));
                 }
-                    
-                UIRegistry.displayStatusBarText(msg);
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run()
-                    {
-                        UIRegistry.getStatusBar().setIndeterminate(query.getName(), true);
-                    }
-                });
-                
+                else
+                {
+                    result = false;
+                }
+                if (result)
+                {
+                    UIRegistry.displayStatusBarText(msg);
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run()
+                        {
+                            UIRegistry.getStatusBar().setIndeterminate(query.getName(), true);
+                        }
+                    });
+                }
             }
-            if (countOnly || runningResults.get().getQuery().isCancelled() || runningResults.get().getQuery().isInError())
+            if (!result || countOnly || runningResults.get().getQuery().isCancelled() || runningResults.get().getQuery().isInError())
             {
                 
                 UIRegistry.displayStatusBarText("");
@@ -1384,13 +1390,32 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         
                     }
                 });
+                result = false;
             }
-            if (countOnly && !runningResults.get().getQuery().isCancelled() && !runningResults.get().getQuery().isInError())
+            if (!result || (countOnly && !runningResults.get().getQuery().isCancelled() && !runningResults.get().getQuery().isInError()))
             {
-                UIRegistry.showLocalizedMsg("QB_COUNT_TITLE", "QB_COUNT_MSG", String.valueOf(runningResults.get().getQuery().getDataObjects().size()));
+                if (!runningResults.get().isPostSorted())
+                {
+                    UIRegistry.showLocalizedMsg("QB_COUNT_TITLE", "QB_COUNT_MSG", runningResults.get().getQuery().getDataObjects().size());
+                }
+                else
+                {
+                    PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
+                    pb.add(new JLabel(String.format(UIRegistry.getResourceString("QB_CANT_DISPLAY_MSG1"), runningResults.get().getQuery().getDataObjects().size())), new CellConstraints().xy(2, 2));
+                    pb.add(new JLabel(String.format(UIRegistry.getResourceString("QB_CANT_DISPLAY_MSG2"), runningResults.get().getMaxTableRows())), new CellConstraints().xy(2, 4));
+                    pb.add(new JLabel(UIRegistry.getResourceString("QB_CANT_DISPLAY_MSG3")), new CellConstraints().xy(2, 6));
+                    
+                    CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+                            UIRegistry.getResourceString("QB_CANT_DISPLAY_TITLE"),
+                            true,
+                            CustomDialog.OKHELP,
+                            pb.getPanel());
+                    UIHelper.centerAndShow(dlg);
+                    dlg.dispose();
+                }
             }
         }
-        
+        return result;
     }
     
     /**

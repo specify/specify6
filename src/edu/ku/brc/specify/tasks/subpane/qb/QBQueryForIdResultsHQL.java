@@ -346,8 +346,8 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
                 query.get().cancel();
             }
             queryTask.set(null);
-            queryBuilder.queryTaskDone();
-            if (queryBuilder.isCountOnly())
+            if (!queryBuilder.queryTaskDone())
+            //if (queryBuilder.isCountOnly())
             {
                 query.get().cancel();
             }
@@ -458,7 +458,10 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     @Override
     public void cacheFilled(final Vector<Vector<Object>> cacheData)
     {
-        Collections.sort(cacheData, new ResultRowComparator(sortElements));
+        if (sortElements != null)
+        {
+            Collections.sort(cacheData, new ResultRowComparator(sortElements));
+        }
         this.cache = cacheData;
     }
 
@@ -478,5 +481,11 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         this.hasIds = hasIds;
     }
     
-    
+    /**
+     * @return true if a sort will be applied to elements after retrieval from db.
+     */
+    public boolean isPostSorted()
+    {
+        return sortElements != null; 
+    }
 }
