@@ -322,8 +322,8 @@
             resourcelabels="false">
             <desc><![CDATA[Gift display form]]></desc>
             <altviews>
-                <!--    <altview name="LoanItems Table View" viewdef="LoanItems Table" mode="view"/>
-                    <altview name="LoanItems Table Edit" viewdef="LoanItems Table" mode="edit"/> -->
+                <altview name="GiftItems Table View" viewdef="GiftItems Table" mode="view"/>
+                <altview name="GiftItems Table Edit" viewdef="GiftItems Table" mode="edit"/>
                 <altview name="GiftItems View" viewdef="GiftItems" mode="view" default="true"/>
                 <altview name="GiftItems Edit" viewdef="GiftItems" mode="edit"/>
             </altviews>
@@ -1606,6 +1606,17 @@
         </viewdef>
         
         <viewdef
+            type="formtable"
+            name="GiftItems Table"
+            class="edu.ku.brc.specify.datamodel.GiftPreparation"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[{Preparation subform table for Gift form.]]></desc>
+            <definition>GiftItems</definition>
+        </viewdef>
+        
+        <viewdef
             type="form"
             name="GiftItems"
             class="edu.ku.brc.specify.datamodel.GiftPreparation"
@@ -1627,6 +1638,7 @@
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=2000" isrequired="true"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="preparation.prepType.name" uitype="dsptextfield" readonly="true"/>
                 </row>
                 <row>
