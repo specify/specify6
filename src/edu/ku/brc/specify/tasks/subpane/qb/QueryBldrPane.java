@@ -681,7 +681,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             SortElement orderSpec = qfi.getOrderSpec(distinct ? fldPosition-1 : fldPosition-2);
             if (orderSpec != null)
             {
-                treeSortPresent = qfi.getFieldQRI() instanceof TreeLevelQRI;
+                treeSortPresent |= qfi.getFieldQRI() instanceof TreeLevelQRI;
                 sortElements.add(orderSpec);
             }
 
