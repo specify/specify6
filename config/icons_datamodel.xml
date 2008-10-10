@@ -50,7 +50,7 @@
     <icon name="geocoorddetail"       file="geo_coord_detail.png" sizes="all"/>
     <icon name="geography"            file="geography.png" sizes="all"/>
     <icon name="gift"                 file="gift.png" sizes="all"/>
-    <icon name="geologictimeperiod"   file="geologic_time_period.png" sizes="all"/>
+    <icon name="geologictimeperiod"   file="chronostratigraphy.png" sizes="all"/>
     <icon name="inforequest"          file="information_request.png" sizes="all"/>
     <icon name="institution"          file="institution.png" sizes="all"/>
     <icon name="journal"              file="journal.png" sizes="all"/>
