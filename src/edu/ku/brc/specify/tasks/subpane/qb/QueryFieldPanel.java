@@ -674,7 +674,7 @@ public class QueryFieldPanel extends JPanel
                 {
                     for (int p = 0; p < criteriaStrs.length; p++)
                     {
-                        String paramName = "spparam" + paramList.size();
+                        String paramName = "spparam" + p;
                         try
                         {
                             Object arg = dateConverter.convert((String)criteriaStrs[p]);
@@ -757,20 +757,20 @@ public class QueryFieldPanel extends JPanel
                     
                 StringBuilder str = new StringBuilder();
 
-                str.append(fieldQRI.getSQLFldSpec(ta, true) + " ");
                 if (operStr.equals("="))
                 {
+                    str.append(fieldQRI.getSQLFldSpec(ta, true) + " ");
                     str.append(isNotCheckbox.isSelected() ? "!" : "");
                     str.append(operStr);
 
                 }
                 else
                 {
-                    str.append(isNotCheckbox.isSelected() ? "NOT" : "");
-                    str.append(' ');
+                    str.append(isNotCheckbox.isSelected() ? "NOT " : "");
+                    str.append(fieldQRI.getSQLFldSpec(ta, true) + " ");
                     str.append(operStr);
                 }
-                str.append(' ');
+                str.append(" ");
                 str.append(criteriaFormula);
                 return str.toString();
             }

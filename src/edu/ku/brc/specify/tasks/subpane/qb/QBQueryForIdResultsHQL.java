@@ -485,7 +485,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
      */
     public boolean isPostSorted()
     {
-        return sortElements != null; 
+        return sortElements != null && sortElements.size() > 0; 
     }
     
     public String getQueryName()
