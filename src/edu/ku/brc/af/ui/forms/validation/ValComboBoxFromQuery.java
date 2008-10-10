@@ -1175,9 +1175,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public Object getValue()
     {
-        Integer id    = textWithQuery.getSelectedId();
+        Integer id = textWithQuery.getSelectedId();
+        if (id == null)
+        {
+            return dataObj = null;
+        }
         
-        if (dataObj != null && id != null && dataObj.getId().intValue() == id.intValue())
+        if (dataObj != null && dataObj.getId().intValue() == id.intValue())
         {
             return dataObj;
         }
