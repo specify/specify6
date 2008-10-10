@@ -678,24 +678,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 System.out.println("\nNode: " + qfi.getFieldName());
             }
 
-            String orderSpec = qfi.getOrderSpec(fldPosition);
+            SortElement orderSpec = qfi.getOrderSpec(distinct ? fldPosition-1 : fldPosition-2);
             if (orderSpec != null)
             {
-                if (!treeSortPresent && qfi.getFieldQRI() instanceof TreeLevelQRI)
-                {
-                    treeSortPresent = true;
-                    orderStr.setLength(0); //don't care about the orderStr anymore.
-                }
-                if (!treeSortPresent)
-                {
-                    if (orderStr.length() > 0)
-                    {
-                        orderStr.append(", ");
-                    }
-                    orderStr.append(orderSpec);
-                }
-                int direction = orderSpec.endsWith("DESC") ? SortElement.DESCENDING : SortElement.ASCENDING;
-                sortElements.add(new SortElement(distinct ? fldPosition-1 : fldPosition-2, direction));
+                treeSortPresent = qfi.getFieldQRI() instanceof TreeLevelQRI;
+                sortElements.add(orderSpec);
             }
 
             // Create a Stack (list) of parent from
@@ -894,6 +881,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             sqlStr.append(criteriaStr);
         }
 
+        if (sortElements.size() > 0 && !treeSortPresent)
+        {
+            for (SortElement se : sortElements)
+            {
+                if (!StringUtils.isEmpty(orderStr.toString()))
+                {
+                    orderStr.append(", ");
+                }
+                orderStr.append(distinct ? se.getColumn()+1 : se.getColumn()+2);
+                if (se.getDirection() == SortElement.DESCENDING)
+                {
+                    orderStr.append(" DESC");
+                }
+            }
+            sortElements.clear();
+        }
+            
         if (orderStr.length() > 0)
         {
             sqlStr.append(" order by ");
