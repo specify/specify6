@@ -110,7 +110,8 @@ public class RelQRI extends FieldQRI
     @Override
     public String getSQLFldSpec(TableAbbreviator ta, final boolean forWhereClause)
     {
-        if (relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.OneToMany) /*What about ManyToMany?? And some OneToOnes???*/)
+        if (relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.OneToMany)
+                || relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.ZeroOrOne) /*What about ManyToMany?? And some OneToOnes???*/)
         {
             String name;
             if (StringUtils.isEmpty(relationshipInfo.getColName()) /*It should always be empty*/)
