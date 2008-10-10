@@ -63,8 +63,7 @@
         <view name="Borrow"
             class="edu.ku.brc.specify.datamodel.Borrow"
             busrules="edu.ku.brc.specify.datamodel.busrules.BorrowBusRules"
-            resourcelabels="false"
-            isinternal="false">
+            resourcelabels="false">
             <desc><![CDATA[Borrow display form]]></desc>
             <altviews>
                 <altview name="Borrow View" viewdef="Borrow" mode="view" default="true"/>
@@ -268,6 +267,26 @@
                 <altview name="DNASequence View" viewdef="DNASequence" mode="view"/>
                 <altview name="DNASequence Edit" viewdef="DNASequence" mode="edit" default="true"/>
             </altviews>
+	    </view>
+        
+        <view name="ExchangeIn"
+            class="edu.ku.brc.specify.datamodel.ExchangeIn"
+            resourcelabels="false">
+            <desc><![CDATA[Exchange In display form]]></desc>
+            <altviews>
+                <altview name="ExchangeIn View" viewdef="ExchangeIn" mode="view" default="true"/>
+                <altview name="ExchangeIn Edit" viewdef="ExchangeIn" mode="edit"/>
+            </altviews>
+        </view>
+        
+        <view name="ExchangeOut"
+            class="edu.ku.brc.specify.datamodel.ExchangeOut"
+            resourcelabels="false">
+            <desc><![CDATA[Exchange Out display form]]></desc>
+            <altviews>
+                <altview name="ExchangeOut View" viewdef="ExchangeOut" mode="view" default="true"/>
+                <altview name="ExchangeOut Edit" viewdef="ExchangeOut" mode="edit"/>
+            </altviews>
         </view>
         
         <view name="FieldNotebook"
@@ -308,8 +327,7 @@
         <view name="Gift"
             class="edu.ku.brc.specify.datamodel.Gift"
             busrules="edu.ku.brc.specify.datamodel.busrules.GiftBusRules"
-            resourcelabels="false"
-            isinternal="false">
+            resourcelabels="false">
             <desc><![CDATA[Gift display form]]></desc>
             <altviews>
                 <altview name="Gift View" viewdef="Gift" mode="view" default="true"/>
@@ -1443,7 +1461,84 @@
                     <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=DNASequenceAttachment;addsearch=true"/>
                 </row>
             </rows>
-      </viewdef>
+	  </viewdef>
+        
+        <viewdef
+            type="form"
+            name="ExchangeIn"
+            class="edu.ku.brc.specify.datamodel.ExchangeIn"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[ExchangeIn viewing form.]]></desc>
+            <columnDef>p,4px,p,10px,p,4px,p,5px,p,4px,p,p:g</columnDef>
+            <columnDef os="mac">p,4px,p,80px,p,4px,p,5px,p,4px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="1dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="Today"/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="agentReceivedFrom" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="agentCatalogedBy" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="quantityExchanged" uitype="text"/>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="descriptionOfMaterial" uitype="text" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="remarks" uitype="textarea" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="subview" id="6" name="addressOfRecord" viewname="AddressOfRecord" colspan="12"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="ExchangeOut"
+            class="edu.ku.brc.specify.datamodel.ExchangeOut"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[ExchangeOut viewing form.]]></desc>
+            <columnDef>p,4px,p,10px,p,4px,p,5px,p,4px,p,p:g</columnDef>
+            <columnDef os="mac">p,4px,p,80px,p,4px,p,5px,p,4px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="1dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="exchangeDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="Today"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="agentCatalogedBy" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="agentSentTo" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="quantityExchanged" uitype="text"/>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="descriptionOfMaterial" uitype="text" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="remarks" uitype="textarea" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="subview" id="6" name="addressOfRecord" viewname="AddressOfRecord" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" id="8" name="shipments" viewname="Shipment" colspan="12"/>
+                </row>
+            </rows>
+        </viewdef>
 
         <viewdef 
             type="form" 
