@@ -14479,7 +14479,7 @@
       <item name="acceptedGeologicTimePeriod">
         <names>
           <str language="en">
-            <text>Accepted Chronos Stratigraphy</text>
+            <text>Accepted Chronostratigraphy</text>
             <version>0</version>
           </str>
         </names>
@@ -14836,17 +14836,17 @@
     </items>
     <names>
       <str language="de" country="" variant="">
-        <text>Chronos Stratigraphy</text>
+        <text>Chronostratigraphy</text>
         <version>0</version>
       </str>
       <str language="en" country="" variant="">
-        <text>Chronos Stratigraphy</text>
+        <text>Chronostratigraphy</text>
         <version>0</version>
       </str>
     </names>
     <descs>
       <str language="en" country="" variant="">
-        <text>Describes Chronos Stratigraphy.</text>
+        <text>Describes Chronostratigraphy.</text>
         <version>0</version>
       </str>
     </descs>
@@ -21208,7 +21208,7 @@
     </names>
     <descs>
       <str language="en" country="" variant="">
-        <text>Describes the paleontologic information for a Collection Object. This also references Chronos Stratigraphy and Bio Stratigray.</text>
+        <text>Describes the paleontologic information for a Collection Object. This also references Chronostratigraphy and Bio Stratigray.</text>
         <version>0</version>
       </str>
     </descs>
@@ -32751,7 +32751,7 @@
       <item name="geologicTimePeriodTreeDef">
         <names>
           <str language="en">
-            <text>Chronos Stratigraphy Tree Def</text>
+            <text>Chronostratigraphy Tree Def</text>
             <version>0</version>
           </str>
         </names>
@@ -32768,7 +32768,7 @@
     </names>
     <descs>
       <str language="en" country="" variant="">
-        <text>May include one or more collections that share the Taxon, Geography, LithoStratigraphy, and Chronos Stratigraphy Trees, Localities, Agents and Determination Status.</text>
+        <text>May include one or more collections that share the Taxon, Geography, LithoStratigraphy, and Chronostratigraphy Trees, Localities, Agents and Determination Status.</text>
         <version>0</version>
       </str>
     </descs>
