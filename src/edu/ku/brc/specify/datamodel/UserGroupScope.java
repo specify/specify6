@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class UserGroupScope extends DataModelObjBase 
 {

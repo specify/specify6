@@ -40,7 +40,6 @@ import edu.ku.brc.af.core.AppContextMgr;
 
  */
 @Entity
-@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 //@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collection")
 @org.hibernate.annotations.Table(appliesTo="collection", indexes =
