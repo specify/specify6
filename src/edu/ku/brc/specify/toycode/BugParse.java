@@ -12,7 +12,6 @@ package edu.ku.brc.specify.toycode;
 import java.awt.Color;
 import java.io.File;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -38,22 +37,26 @@ import org.jfree.data.category.DefaultCategoryDataset;
  */
 public class BugParse
 {
-    protected Hashtable<Integer, Hashtable<Integer, Integer>> hash = new Hashtable<Integer, Hashtable<Integer,Integer>>();
+    protected Hashtable<Integer, Hashtable<Integer, Integer>> hashNew = new Hashtable<Integer, Hashtable<Integer,Integer>>();
+    protected Hashtable<Integer, Hashtable<Integer, Integer>> hashRes = new Hashtable<Integer, Hashtable<Integer,Integer>>();
+    protected Hashtable<Integer, Hashtable<Integer, Integer>> hashDif = new Hashtable<Integer, Hashtable<Integer,Integer>>();
+    
     public BugParse()
     {
-        process("20060901.html");
-        process("20070901.html");
-        process("20080301.html");
-        process("20081001.html");
+        process("20060901.html", hashNew);
+        process("20070901.html", hashNew);
+        process("20080301.html", hashNew);
+        process("20081001.html", hashNew);
         
         StringBuilder yearStr = new StringBuilder();
         StringBuilder dataStr = new StringBuilder();
         
-        Vector<Integer> keys = new Vector<Integer>(hash.keySet());
+        Vector<Integer> keys = new Vector<Integer>(hashNew.keySet());
         Collections.sort(keys);
+        
         for (Integer year : keys)
         {
-            Hashtable<Integer, Integer> yearHash = hash.get(year);
+            Hashtable<Integer, Integer> yearHash = hashNew.get(year);
             
             Vector<Integer> mKeys = new Vector<Integer>(yearHash.keySet());
             Collections.sort(mKeys);
@@ -61,7 +64,6 @@ public class BugParse
             {
                 if (yearStr.length() > 0) yearStr.append(',');
                 yearStr.append(mon+"/"+Integer.toString(year-2000));
-
                 if (dataStr.length() > 0) dataStr.append(',');
                 dataStr.append(yearHash.get(mon));
 
@@ -75,9 +77,56 @@ public class BugParse
         List<String> dataLines = new Vector<String>();
         dataLines.add(yearStr.toString());
         dataLines.add(dataStr.toString());
+        
+        process("20060901Fix.html", hashRes);
+        process("20070901Fix.html", hashRes);
+        process("20080301Fix.html", hashRes);
+        process("20081001Fix.html", hashRes);
+        
+        yearStr = new StringBuilder();
+        dataStr = new StringBuilder();
+        StringBuilder dataStrDif = new StringBuilder();
+        int diffTotal = 0;
+        
+        keys = new Vector<Integer>(hashRes.keySet());
+        Collections.sort(keys);
+        for (Integer year : keys)
+        {
+            Hashtable<Integer, Integer> yearHash    = hashRes.get(year);
+            Hashtable<Integer, Integer> yearHashNew = hashNew.get(year);
+            
+            Vector<Integer> mKeys = new Vector<Integer>(yearHash.keySet());
+            Collections.sort(mKeys);
+            for (Integer mon : mKeys)
+            {
+                if (yearStr.length() > 0) yearStr.append(',');
+                yearStr.append(mon+"/"+Integer.toString(year-2000));
+                
+                if (dataStr.length() > 0) dataStr.append(',');
+                dataStr.append(yearHash.get(mon));
+                
+                diffTotal += yearHashNew.get(mon) - yearHash.get(mon);
+                if (dataStrDif.length() > 0) dataStrDif.append(',');
+                dataStrDif.append(diffTotal);
+                
+                System.out.println(year+"  "+mon+"  "+yearHash.get(mon));
+            }
+        }
+        System.out.println(dataStr.toString());
+        
+        dataLines.add(dataStr.toString());
+        dataLines.add(dataStrDif.toString());
+        
         createChart(dataLines);
+
     }
     
+    /**
+     * @param ds
+     * @param vals
+     * @param col
+     * @param cat
+     */
     protected static void fill(DefaultCategoryDataset ds, double[] vals, String[] col, String cat)
     {
         double total = 0.0;
@@ -129,7 +178,17 @@ public class BugParse
         {
             dataset.addValue(vals[i], "Bugs", headers[i]);
         }
+        vals = valArray.get(1);
+        for (int i=0;i<vals.length;i++)
+        {
+            dataset.addValue(vals[i], "Resolved", headers[i]);
+        }
         
+        /*vals = valArray.get(2);
+        for (int i=0;i<vals.length;i++)
+        {
+            dataset.addValue(vals[i], "Open", headers[i]);
+        }*/
         
         JFreeChart chart;
             chart = ChartFactory.createLineChart("Bugs", "Time", "Bugs", 
@@ -155,7 +214,8 @@ public class BugParse
         frame.setVisible(true);
     }
     
-    protected void process(final String fileName)
+    @SuppressWarnings("unchecked")
+    protected void process(final String fileName, final Hashtable<Integer, Hashtable<Integer, Integer>> hash)
     {
         try
         {
@@ -182,6 +242,13 @@ public class BugParse
                                 hash.put(year, yearHash);
                             }
                             
+                            Hashtable<Integer, Integer> yearHashDif = hashDif.get(year);
+                            if (yearHashDif == null)
+                            {
+                                yearHashDif = new Hashtable<Integer, Integer>();
+                                hashDif.put(year, yearHashDif);
+                            }
+                            
                             Integer monTotal = yearHash.get(mon);
                             if (monTotal == null)
                             {
@@ -189,12 +256,11 @@ public class BugParse
                             }
                             monTotal++;
                             yearHash.put(mon, monTotal);
+                            yearHashDif.put(mon, 0);
                         }
                     }
                 }
             }
-            
-            
             
         } catch (Exception ex)
         {
