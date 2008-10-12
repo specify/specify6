@@ -12,7 +12,6 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -40,6 +39,8 @@ public class ERTICaptionInfoTreeLevelGrp
     protected final Class<?>                         treeClass;
     protected final int                              treeDefId;
     protected final String                           alias;
+    protected final LookupsCache                     lookupCache;
+    protected final boolean                          useCache;
     
     protected QueryIFace                             query = null;
 
@@ -48,10 +49,6 @@ public class ERTICaptionInfoTreeLevelGrp
 
     protected DataProviderSessionIFace               session = null;
 
-    protected LinkedList<Pair<Integer, String[]>>    lookupTbl    = null;
-    protected static final int                       lookupSize   = 20;
-    protected static final boolean                   useCache     = true;
- 
     protected boolean                                isSetup      = false;
     
 
@@ -60,15 +57,21 @@ public class ERTICaptionInfoTreeLevelGrp
      * @param treeDefId
      * @param alias
      */
-    public ERTICaptionInfoTreeLevelGrp(final Class<?> treeClass, final int treeDefId, final String alias)
+    public ERTICaptionInfoTreeLevelGrp(final Class<?> treeClass, final int treeDefId, final String alias,
+                                       final boolean useCache, final Integer cacheSize)
     {
         this.treeClass = treeClass;
         this.treeDefId = treeDefId;
         this.alias = alias;
         this.members = new Vector<ERTICaptionInfoTreeLevel>();
+        this.useCache = useCache;
         if (useCache)
         {
-            lookupTbl = new LinkedList<Pair<Integer, String[]>>();
+            lookupCache = cacheSize == null ? new LookupsCache() : new LookupsCache(cacheSize);
+        }
+        else
+        {
+            lookupCache = null;
         }
     }
 
@@ -112,43 +115,13 @@ public class ERTICaptionInfoTreeLevelGrp
         return new Pair<Integer, String>((Integer )info[1], (String )info[0]);
     }
     
-    /**
-     * @param value
-     * @return the ranks for the value.
-     * 
-     * Checks to see if value is in the cache of looked up values
-     * and returns it's ranks or null if it is not found.
-     */
-    protected String[] lookupValue(final Object value)
-    {
-        for (Pair<Integer, String[]> val : lookupTbl)
-        {
-            if (val.getFirst().equals(value))
-            {
-                return val.getSecond();
-            }
-        }
-        return null;
-    }
     
-    /**
-     * @param key
-     * @param value
-     */
-    protected void addToCache(final Integer key, final String[] value)
-    {
-        if (lookupTbl.size() == lookupSize)
-        {
-            lookupTbl.remove();
-        }
-        lookupTbl.add(new Pair<Integer, String[]>(key, value));
-    }
     
     protected void newValue(final Object value)
     {
         if (useCache)
         {
-            String[] lookedUp = lookupValue(value);
+            String[] lookedUp = (String[] )lookupCache.lookupKey((Integer )value);
             if (lookedUp != null)
             {
                 currentRanks = lookedUp;
@@ -188,7 +161,7 @@ public class ERTICaptionInfoTreeLevelGrp
         
         if (useCache)
         {
-            addToCache((Integer )value, currentRanks);
+            lookupCache.addKey((Integer )value, currentRanks);
         }
     }
 

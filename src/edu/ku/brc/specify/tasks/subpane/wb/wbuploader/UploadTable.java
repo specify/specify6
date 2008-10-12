@@ -1167,7 +1167,7 @@ public class UploadTable implements Comparable<UploadTable>
                                     result = false;
                                     break;
                                 }
-                                else if (!coll1.getAgent().getId().equals(coll2.getAgent().getId()))
+                                else if (coll2.getAgent() == null || !coll1.getAgent().getId().equals(coll2.getAgent().getId()))
                                 {
                                     result = false;
                                     break;

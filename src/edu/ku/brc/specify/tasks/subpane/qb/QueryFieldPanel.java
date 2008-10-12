@@ -1031,7 +1031,7 @@ public class QueryFieldPanel extends JPanel
         isNotCheckbox.setVisible(!isRel);
         operatorCBX.setVisible(!isRel);
         criteria.setVisible(!isRel && !isBool);
-        this.sortCheckbox.setVisible(!isRel);
+        //this.sortCheckbox.setVisible(!isRel);
         if (!ownerQuery.isPromptMode())
         {
             isDisplayedCkbx.setVisible(!isRel);

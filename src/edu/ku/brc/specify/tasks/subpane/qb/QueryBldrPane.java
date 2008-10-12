@@ -659,7 +659,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         StringBuilder criteriaStr = new StringBuilder();
         StringBuilder orderStr = new StringBuilder();
         LinkedList<SortElement> sortElements = new LinkedList<SortElement>();
-        boolean treeSortPresent = false;
+        boolean postSortPresent = false;
         boolean debug = true;
         ProcessNode root = new ProcessNode(null);
         int fldPosition = distinct ? 0 : 1;
@@ -681,7 +681,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             SortElement orderSpec = qfi.getOrderSpec(distinct ? fldPosition-1 : fldPosition-2);
             if (orderSpec != null)
             {
-                treeSortPresent |= qfi.getFieldQRI() instanceof TreeLevelQRI;
+                postSortPresent |= qfi.getFieldQRI() instanceof TreeLevelQRI || qfi.getFieldQRI() instanceof RelQRI;
                 sortElements.add(orderSpec);
             }
 
@@ -881,7 +881,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             sqlStr.append(criteriaStr);
         }
 
-        if (sortElements.size() > 0 && !treeSortPresent)
+        if (sortElements.size() > 0 && !postSortPresent)
         {
             for (SortElement se : sortElements)
             {
@@ -1071,7 +1071,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param fixLabels
      * @return ERTICaptionInfo for the visible columns returned by a query.
      */
-    protected static List<ERTICaptionInfoQB> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels)
+    protected static List<ERTICaptionInfoQB> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels,
+            final DBTableInfo rootTbl)
     {
         List<ERTICaptionInfoQB> result = new Vector<ERTICaptionInfoQB>();
         Vector<ERTICaptionInfoTreeLevelGrp> treeGrps = new Vector<ERTICaptionInfoTreeLevelGrp>(5);
@@ -1098,9 +1099,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 ERTICaptionInfoQB erti = null;
                 if (qfp.getFieldQRI() instanceof RelQRI)
                 {
+                    RelQRI rqri = (RelQRI )qfp.getFieldQRI();
+                    RelationshipType relType = rqri.getRelationshipInfo().getType();
+                    boolean useCache;
+                    if (relType == RelationshipType.ManyToOne || relType == RelationshipType.ManyToMany)
+                    {
+                        useCache = true;
+                    }
+                    else 
+                    {
+                        //XXX actually need to be sure that this rel's table has a many-to-one relationship (direct or indirect) to the root.
+                        useCache = rootTbl != null && rootTbl.getTableId() != rqri.getTableInfo().getTableId();
+                    }
                     erti = new ERTICaptionInfoRel(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0,
                             qfp.getStringId(),
-                            ((RelQRI)qfp.getFieldQRI()).getRelationshipInfo());
+                            ((RelQRI)qfp.getFieldQRI()).getRelationshipInfo(),
+                            useCache,
+                            null);
                 }
                 else if (qfp.getFieldQRI() instanceof TreeLevelQRI)
                 {
@@ -1115,7 +1130,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     if (erti == null)
                     {
                         TreeLevelQRI tqri = (TreeLevelQRI )qfp.getFieldQRI();
-                        ERTICaptionInfoTreeLevelGrp newTg = new ERTICaptionInfoTreeLevelGrp(tqri.getTreeDataClass(), tqri.getTreeDefId(), tqri.getTableAlias());
+                        ERTICaptionInfoTreeLevelGrp newTg = new ERTICaptionInfoTreeLevelGrp(tqri.getTreeDataClass(), 
+                                tqri.getTreeDefId(), tqri.getTableAlias(), true, null);
                         erti = newTg.addRank(tqri, colName, lbl, qfp.getStringId());
                         treeGrps.add(newTg);
                     }
@@ -1169,6 +1185,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param queryFields
      * @param fixLabels
      * @return ERTICaptionInfo for the visible columns represented in an SpQuery's queryFields.
+     * 
+     * This method is used by QBJRDataSourceConnection object which current do not actually need to
+     * retrieve any data, so ERTICaptionInfoQB objects are used for all columns.
      */
     public static List<ERTICaptionInfo> getColumnInfoSp(final Set<SpQueryField> queryFields, final boolean fixLabels)
     {
@@ -1294,7 +1313,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 return;
             }
             QBJRDataSource src = new QBJRDataSource(sql.getHql(), sql.getArgs(), sql.getSortElements(),
-                    getColumnInfo(qfps, true), includeRecordIds, report.getRepeats());
+                    getColumnInfo(qfps, true, rootQRI.getTableInfo()), includeRecordIds, report.getRepeats());
             
             final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
                     ReportsBaseTask.PRINT_REPORT, src);
@@ -1437,7 +1456,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                               final DBTableInfo                rootTable, 
                               final boolean                    distinct)
     {
-        List<? extends ERTICaptionInfo> captions = getColumnInfo(queryFieldItemsArg, false);
+        List<? extends ERTICaptionInfo> captions = getColumnInfo(queryFieldItemsArg, false, rootTable);
         
         String iconName = distinct ? "BlankIcon" : rootTable.getClassObj().getSimpleName();
         int tblId = distinct ? -1 : rootTable.getTableId();
