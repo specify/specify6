@@ -44,7 +44,7 @@ public class UploadResultSetTableModel extends ResultSetTableModel
         setPropertyListener(this.parentERTP);
         UploadResults uploadResults = (UploadResults )results;
         UploadResultsQuery q = new UploadResultsQuery(this, uploadResults.getUploadTable(), uploadResults.getUploadData());
-        results.setQueryTask(QueryExecutor.executeQuery(q));
+        results.setQueryTask(QueryExecutor.getInstance().executeQuery(q));
     }
 
 }

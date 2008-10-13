@@ -25,14 +25,22 @@ public class QueryExecutor
 {
     private static QueryExecutor instance = new QueryExecutor();
     
-    ExecutorService jpaQueryExecServ = Executors.newFixedThreadPool(5);
+    ExecutorService jpaQueryExecServ = null;
     
     /**
      * Private Constructor.
      */
-    private QueryExecutor()
+    public QueryExecutor()
     {
-        // no op
+        this(5);
+    }
+    
+    /**
+     * Private Constructor.
+     */
+    public QueryExecutor(final int queueSize)
+    {
+        jpaQueryExecServ = Executors.newFixedThreadPool(queueSize);
     }
     
     /**
@@ -46,9 +54,9 @@ public class QueryExecutor
     /**
      * Requests an immediate shutdown of the processing queue.
      */
-    public static void shutdown()
+    public void shutdown()
     {
-        instance.jpaQueryExecServ.shutdownNow();
+        jpaQueryExecServ.shutdownNow();
     }
     
     /**
@@ -56,7 +64,7 @@ public class QueryExecutor
      * @param customQuery
      */
     //public static void executeQuery(final CustomQueryIFace customQuery)
-    public static Future<CustomQueryIFace> executeQuery(final CustomQueryIFace customQuery)
+    public Future<CustomQueryIFace> executeQuery(final CustomQueryIFace customQuery)
     {
         // create a background thread to do the web service work
         @SuppressWarnings("unused") //$NON-NLS-1$
@@ -69,14 +77,14 @@ public class QueryExecutor
                 return customQuery;
             }
         };
-        return instance.jpaQueryExecServ.submit(customQueryWorker);
+        return jpaQueryExecServ.submit(customQueryWorker);
     }
     
     /**
      * Requests a Query be executed using the Queue.
      * @param sqlExeProc the query
      */
-    public static void executeQuery(final SQLExecutionProcessor sqlExeProc)
+    public void executeQuery(final SQLExecutionProcessor sqlExeProc)
     {
         // create a background thread to do the web service work
         @SuppressWarnings("unused") //$NON-NLS-1$
@@ -89,7 +97,6 @@ public class QueryExecutor
                 return sqlExeProc;
             }
         };
-        instance.jpaQueryExecServ.submit(sqlExeProcWorker);
+        jpaQueryExecServ.submit(sqlExeProcWorker);
     }
-
 }

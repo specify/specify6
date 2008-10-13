@@ -26,9 +26,18 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
     /**
      * A unique identifier for the column within the QB query which is independent of the column's caption.
      */
-    protected final String colStringId;
+    protected final String                 colStringId;
     protected final PickListDBAdapterIFace pickList;
     
+    /**
+     * @param colName
+     * @param colLabel
+     * @param isVisible
+     * @param uiFieldFormatter
+     * @param posIndex
+     * @param colStringId
+     * @param pickList
+     */
     public ERTICaptionInfoQB(String  colName, 
                            String  colLabel, 
                            boolean isVisible, 

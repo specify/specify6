@@ -18,7 +18,9 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
+import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
@@ -39,6 +41,10 @@ public class QBResultSetTableModel extends ResultSetTableModel
 {
     private static final Logger log = Logger.getLogger(ESResultsSubPane.class);
     
+    /**
+     * @param parentERTP
+     * @param results
+     */
     public QBResultSetTableModel(final ESResultsTablePanelIFace parentERTP,
                                  final QueryForIdResultsIFace results)
     {
@@ -48,9 +54,27 @@ public class QBResultSetTableModel extends ResultSetTableModel
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQuery)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void exectionDone(final CustomQueryIFace customQuery)
-    {        
+    {
+        if (customQuery instanceof JPAQuery)
+        {
+            JPAQuery jpa  = (JPAQuery)customQuery;
+            Object   data = jpa.getData();
+            if (data != null && data instanceof Vector<?>)
+            {
+                Vector<Object> info = (Vector<Object>)data;
+                int row = (Integer)info.get(0);
+                int col = (Integer)info.get(1);
+                Class<?> cls = (Class<?>)info.get(2);
+                Vector<Object> cols =  cache.get(row);
+                cols.set(col, DataObjFieldFormatMgr.getInstance().aggregate(jpa.getDataObjects(), cls));
+                fireTableCellUpdated(row, col);
+                return;
+            }
+        }
+        
         results.queryTaskDone(customQuery);
         List<?> list      = customQuery.getDataObjects();
         boolean hasIds = ((QBQueryForIdResultsHQL ) results).isHasIds();
@@ -91,9 +115,26 @@ public class QBResultSetTableModel extends ResultSetTableModel
                                 }
                             } else
                             {
-                                Object obj = cols.next().processValue(colObj);
-                                row.add(obj);
-                                if (doDebug) log.debug("*** 2 Adding id["+obj+"]");
+                                ERTICaptionInfo erti = cols.next();
+                                if (erti instanceof ERTICaptionInfoRel)
+                                {
+                                    ERTICaptionInfoRel ertiRel = (ERTICaptionInfoRel)erti;
+                                    JPAQuery jpa = new JPAQuery(ertiRel.getListHql(colObj), this);
+                                    Vector<Object> info = new Vector<Object>();
+                                    info.add(rowNum);
+                                    info.add(row.size());
+                                    info.add(ertiRel.getRelationship().getDataClass());
+                                    jpa.setData(info);
+                                    jpa.start();
+                                    
+                                    row.add("Loading...");
+                                    
+                                } else
+                                {
+                                    Object obj = erti.processValue(colObj);
+                                    row.add(obj);
+                                    if (doDebug) log.debug("*** 2 Adding id["+obj+"]");
+                                }
                             }
                             col++;
                         }
@@ -192,6 +233,12 @@ public class QBResultSetTableModel extends ResultSetTableModel
     {
         cache.remove(index);
         fireTableRowsDeleted(index, index);
+    }
+
+    @Override
+    public void cleanUp()
+    {
+        super.cleanUp();
     }
 
 }

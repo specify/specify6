@@ -47,6 +47,7 @@ public class JPAQuery implements CustomQueryIFace
 {
     private static final Logger log = Logger.getLogger(JPAQuery.class);
     
+    protected QueryExecutor             queryExecutor;
     protected String                    sqlStr;
     protected boolean                   inError     = false;
     protected List<?>                   resultsList = null;
@@ -63,13 +64,14 @@ public class JPAQuery implements CustomQueryIFace
     protected Query                     query       = null;
     
     protected final AtomicBoolean       cancelled   = new AtomicBoolean(false);
+    
     /**
      * Constructor.
      * @param sqlStr the query string
      */
     public JPAQuery(final String sqlStr)
     {
-        this(sqlStr, null);
+        this(null, sqlStr, null);
     }
     
     /**
@@ -80,8 +82,21 @@ public class JPAQuery implements CustomQueryIFace
     public JPAQuery(final String sqlStr,
                     final CustomQueryListener cql)
     {
-        this.sqlStr = sqlStr;
-        this.cql    = cql;
+        this(null, sqlStr, cql);
+    }
+    
+    /**
+     * Constructor to be used as a Runnable.
+     * @param sqlStr the query string
+     * @param cql the listener
+     */
+    public JPAQuery(final QueryExecutor queryExecutor,
+                    final String sqlStr,
+                    final CustomQueryListener cql)
+    {
+        this.queryExecutor = queryExecutor == null ? QueryExecutor.getInstance() : queryExecutor;
+        this.sqlStr        = sqlStr;
+        this.cql           = cql;
     }
     
     /**
@@ -92,8 +107,10 @@ public class JPAQuery implements CustomQueryIFace
     public JPAQuery(final Query query,
                     final CustomQueryListener cql)
     {
-        this.query  = query;
-        this.cql    = cql;
+        this.query         = query;
+        this.cql           = cql;
+        this.queryExecutor = QueryExecutor.getInstance();
+
     }
     
     /**
@@ -135,7 +152,7 @@ public class JPAQuery implements CustomQueryIFace
     //public void start()
     public Future<CustomQueryIFace> start()
     {
-        return QueryExecutor.executeQuery(this);
+        return queryExecutor.executeQuery(this);
     }
     
     /* (non-Javadoc)

@@ -359,7 +359,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     @Override
     public void setValueAt(Object aValue, int row, int column)
     {
-        //empty
+        // empty
     }
 
     /**
@@ -848,7 +848,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQuery)
      */
-    //@Override
+    @Override
     public void exectionDone(final CustomQueryIFace customQuery)
     {
         if (statusBar != null)

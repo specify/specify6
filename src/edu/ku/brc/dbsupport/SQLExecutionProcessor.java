@@ -39,9 +39,10 @@ public class SQLExecutionProcessor
     protected SQLExecutionListener listener;
     protected String               sqlStr;
 
-    protected Connection           dbConnection          = null;
+    protected Connection           dbConnection;
     protected Statement            dbStatement           = null;
     protected boolean              isAutoCloseConnection = true;
+    protected QueryExecutor        queryExecutor;
     
     protected Object               data                  = null;
     protected boolean              inError               = false;
@@ -51,9 +52,22 @@ public class SQLExecutionProcessor
      * @param listener the listener
      * @param sqlStr the SQL statement to be executed.
      */
-    public SQLExecutionProcessor(final SQLExecutionListener listener, final String sqlStr)
+    public SQLExecutionProcessor(final SQLExecutionListener listener, 
+                                 final String sqlStr)
     {
-        this(null, listener, sqlStr);
+        this(null, null, listener, sqlStr);
+    }
+
+    /**
+     * Constructs a an object to execute an SQL statement and then notify the listener. Sets isAutoCloseConnection to true, override with "setAutoCloseConnection".
+     * @param listener the listener
+     * @param sqlStr the SQL statement to be executed.
+     */
+    public SQLExecutionProcessor(final QueryExecutor queryExecutor,
+                                 final SQLExecutionListener listener, 
+                                 final String sqlStr)
+    {
+        this(null, queryExecutor, listener, sqlStr);
     }
 
     /**
@@ -62,11 +76,28 @@ public class SQLExecutionProcessor
      * @param listener the listener
      * @param sqlStr the SQL statement to be executed.
      */
-    public SQLExecutionProcessor(final Connection dbConnection, final SQLExecutionListener listener, final String sqlStr)
+    public SQLExecutionProcessor(final Connection dbConnection, 
+                                 final SQLExecutionListener listener, 
+                                 final String sqlStr)
     {
-        this.dbConnection = dbConnection;
-        this.listener     = listener;
-        this.sqlStr       = trimStr(sqlStr);
+        this(dbConnection, null, listener, sqlStr);
+    }
+    
+    /**
+     * @param dbConnection
+     * @param queryExecutor
+     * @param listener
+     * @param sqlStr
+     */
+    public SQLExecutionProcessor(final Connection           dbConnection,
+                                 final QueryExecutor        queryExecutor,
+                                 final SQLExecutionListener listener, 
+                                 final String               sqlStr)
+    {
+        this.dbConnection  = dbConnection;
+        this.queryExecutor = queryExecutor == null ? QueryExecutor.getInstance() : queryExecutor;
+        this.listener      = listener;
+        this.sqlStr        = trimStr(sqlStr);
         
         this.isAutoCloseConnection = dbConnection == null;
     }
@@ -177,7 +208,7 @@ public class SQLExecutionProcessor
      */
     public void start()
     {
-        QueryExecutor.executeQuery(this);
+        QueryExecutor.getInstance().executeQuery(this);
     }
 
     /**

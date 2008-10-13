@@ -1866,7 +1866,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     {
                         topFrame.setVisible(false);
                     }
-                    QueryExecutor.shutdown();
+                    QueryExecutor.getInstance().shutdown();
                     
                 } else
                 {

@@ -79,6 +79,14 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
         }
     }
     
+    /**
+     * @return
+     */
+    public DBRelationshipInfo getRelationship()
+    {
+        return relationship;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.ERTICaptionInfo#getAggClass()
      */
@@ -208,6 +216,14 @@ public class ERTICaptionInfoRel extends ERTICaptionInfoQB
         return null;
     }
     
+    /**
+     * @return
+     */
+    public String getListHql(final Object key)
+    {
+        return listHql + (key != null ? key.toString() : "");
+    }
+
     /**
      * @param value
      * @return related object if value is a key, or value itself if it is not a key.
