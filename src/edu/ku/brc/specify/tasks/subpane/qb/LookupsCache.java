@@ -17,7 +17,7 @@ import java.util.TreeMap;
  *
  * @code_status Alpha
  *
- * Implements a cache for previously formatted many-to-one related records.
+ * Implements a cache for previously formatted related records and previously determined tree ranks.
  * If there is much repetition of related data, the cache can really speed up results display. And even when there are
  * far more adds to the cache than finds, performance does not seem to adversely affected.
  * 
@@ -26,7 +26,7 @@ public class LookupsCache
 {
 //    private static final Logger      log               = Logger.getLogger(LookupsCache.class);
     
-    protected static final int         defaultLookupSize = 64;
+    protected static final int         defaultLookupSize = 128;
 
     protected LinkedList<Integer>      lookupList        = null;
     protected TreeMap<Integer, Object> lookupTbl         = null;
@@ -76,6 +76,7 @@ public class LookupsCache
     {
         if (lookupList.size() == lookupSize)
         {
+            //remove the 'oldest' lookup.
             lookupTbl.remove(lookupList.remove());
         }
 //        logDaBug(++adds + ": added: " + key);

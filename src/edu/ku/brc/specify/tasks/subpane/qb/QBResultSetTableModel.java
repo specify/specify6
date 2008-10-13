@@ -16,11 +16,13 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.JPAQuery;
+import edu.ku.brc.dbsupport.QueryExecutor;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
@@ -41,6 +43,8 @@ public class QBResultSetTableModel extends ResultSetTableModel
 {
     private static final Logger log = Logger.getLogger(ESResultsSubPane.class);
     
+    protected QueryExecutor queryExecutor = new QueryExecutor();
+    
     /**
      * @param parentERTP
      * @param results
@@ -60,18 +64,22 @@ public class QBResultSetTableModel extends ResultSetTableModel
     {
         if (customQuery instanceof JPAQuery)
         {
-            JPAQuery jpa  = (JPAQuery)customQuery;
-            Object   data = jpa.getData();
-            if (data != null && data instanceof Vector<?>)
+            synchronized (this)
             {
-                Vector<Object> info = (Vector<Object>)data;
-                int row = (Integer)info.get(0);
-                int col = (Integer)info.get(1);
-                Class<?> cls = (Class<?>)info.get(2);
-                Vector<Object> cols =  cache.get(row);
-                cols.set(col, DataObjFieldFormatMgr.getInstance().aggregate(jpa.getDataObjects(), cls));
-                fireTableCellUpdated(row, col);
-                return;
+                JPAQuery jpa = (JPAQuery) customQuery;
+                Object data = jpa.getData();
+                if (data != null && data instanceof Vector<?>)
+                {
+                    Vector<Object> info = (Vector<Object>) data;
+                    int row = (Integer) info.get(0);
+                    int col = (Integer) info.get(1);
+                    Class<?> cls = (Class<?>) info.get(2);
+                    Vector<Object> cols = cache.get(row);
+                    cols.set(col, DataObjFieldFormatMgr.getInstance().aggregate(
+                            jpa.getDataObjects(), cls));
+                    fireTableCellUpdated(row, col);
+                    return;
+                }
             }
         }
         
@@ -116,19 +124,20 @@ public class QBResultSetTableModel extends ResultSetTableModel
                             } else
                             {
                                 ERTICaptionInfo erti = cols.next();
-                                if (erti instanceof ERTICaptionInfoRel)
+                                if (!((QBQueryForIdResultsHQL) results).isPostSorted() 
+                                        && erti instanceof ERTICaptionInfoRel 
+                                        && ((ERTICaptionInfoRel)erti).getRelationship().getType() == RelationshipType.OneToMany)
                                 {
                                     ERTICaptionInfoRel ertiRel = (ERTICaptionInfoRel)erti;
-                                    JPAQuery jpa = new JPAQuery(ertiRel.getListHql(colObj), this);
-                                    Vector<Object> info = new Vector<Object>();
-                                    info.add(rowNum);
-                                    info.add(row.size());
-                                    info.add(ertiRel.getRelationship().getDataClass());
-                                    jpa.setData(info);
-                                    jpa.start();
-                                    
-                                    row.add("Loading...");
-                                    
+                                        JPAQuery jpa = new JPAQuery(queryExecutor, ertiRel.getListHql(colObj), this);
+                                        Vector<Object> info = new Vector<Object>();
+                                        info.add(rowNum);
+                                        info.add(row.size());
+                                        info.add(ertiRel.getRelationship().getDataClass());
+                                        jpa.setData(info);
+                                        jpa.start();
+                      
+                                        row.add(UIRegistry.getResourceString("QBResultSetTableModel.LOADING_CELL"));
                                 } else
                                 {
                                     Object obj = erti.processValue(colObj);
@@ -238,6 +247,7 @@ public class QBResultSetTableModel extends ResultSetTableModel
     @Override
     public void cleanUp()
     {
+        queryExecutor.shutdown();
         super.cleanUp();
     }
 
