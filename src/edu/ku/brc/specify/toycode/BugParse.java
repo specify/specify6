@@ -225,18 +225,18 @@ public class BugParse
         double[] vals = valArray.get(0);
         for (int i=0;i<vals.length;i++)
         {
-            dataset.addValue(vals[i], "Bugs", headers[i]);
+            dataset.addValue(vals[i], "Bugs", headers[i+startInx]);
         }
         vals = valArray.get(1);
         for (int i=0;i<vals.length;i++)
         {
-            dataset.addValue(vals[i], "Resolved", headers[i]);
+            dataset.addValue(vals[i], "Resolved", headers[i+startInx]);
         }
         
         vals = valArray.get(2);
         for (int i=0;i<vals.length;i++)
         {
-            dataset.addValue(vals[i], "Open", headers[i]);
+            dataset.addValue(vals[i], "Open", headers[i+startInx]);
         }
         
         JFreeChart chart = ChartFactory.createLineChart("Bugs - "+engineer, "Time", "Bugs", 
