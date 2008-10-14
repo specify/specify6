@@ -159,6 +159,21 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace, Clon
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace#getSingleField()
+     */
+    @Override
+    public String getSingleField()
+    {
+        if (fields.length == 1 && 
+            !StringUtils.contains(fields[0].getName(), ".") &&
+            fields[0].getUiFieldFormatter() == null)
+        {
+            return fields[0].getName();
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#format(java.lang.Object)
      */
     public String format(Object dataValue)

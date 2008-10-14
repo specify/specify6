@@ -70,6 +70,11 @@ public interface DataObjDataFieldFormatIFace
     public abstract boolean isDirectFormatter();
     
     /**
+     * @return returns the name of the field if there is only one and not dot notation.
+     */
+    public abstract String getSingleField();
+    
+    /**
      * Format the data object (as a Direct formatter).
      * @param dataValue the data value to be formatted
      * @return the formatted object as a string
