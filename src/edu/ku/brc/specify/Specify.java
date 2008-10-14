@@ -660,16 +660,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         appIcon = new JLabel("  "); //$NON-NLS-1$
         
         setAppIcon(AppPreferences.getRemote().get("ui.formatting.user_icon_image", null)); //$NON-NLS-1$
-        toolBar.add(appIcon);
-        
-        appIcon.addMouseListener(new MouseAdapter() 
-        {
-            //@Override
-            public void mouseClicked(MouseEvent e)
-            {
-                TaskMgr.getTask(StartUpTask.STARTUP).requestContext();
-            }
-        });
         
         CommandDispatcher.register("Preferences", new CommandListener() { //$NON-NLS-1$
             public void doCommand(CommandAction cmdAction)

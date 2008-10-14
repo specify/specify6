@@ -7,6 +7,9 @@
 
 package edu.ku.brc.specify.datamodel;
 
+import static edu.ku.brc.helpers.XMLHelper.addAttr;
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,6 +22,7 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -37,7 +41,7 @@ import edu.ku.brc.ui.UIRegistry;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "spqueryfield")
-public class SpQueryField extends DataModelObjBase implements Comparable<SpQueryField>
+public class SpQueryField extends DataModelObjBase implements Comparable<SpQueryField>, Cloneable
 {
     protected static final Logger                   log = Logger.getLogger(SpQueryField.class);
 
@@ -121,7 +125,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     }
     
     protected Integer      spQueryFieldId;
-    protected Short         position;      
+    protected Short        position;      
     protected String       fieldName;
     protected Boolean      isNot;
     protected Boolean      isDisplay;
@@ -671,4 +675,63 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     	log.error("Setting unprocessed alias because FieldInfo was not found: " + columnAliasTitle);
     	setColumnAlias(columnAliasTitle);
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        SpQueryField field = (SpQueryField)super.clone();
+        field.init();
+        
+        return field;
+    }
+    
+    /**
+     * @param sb
+     */
+    public void toXML(final StringBuilder sb)
+    {
+        sb.append("<field ");
+        addAttr(sb, "position",   position);
+        addAttr(sb, "fieldName",  fieldName);
+        addAttr(sb, "isNot",      isNot);
+        addAttr(sb, "isDisplay",  isDisplay);
+        addAttr(sb, "isPrompt",   isPrompt);
+        addAttr(sb, "isRelFld",   isRelFld);
+        addAttr(sb, "alwaysFilter", alwaysFilter);
+        addAttr(sb, "stringId",   stringId);
+        addAttr(sb, "operStart",  operStart);
+        addAttr(sb, "operEnd",    operEnd);
+        addAttr(sb, "startValue", startValue);
+        addAttr(sb, "endValue",   endValue);
+        addAttr(sb, "sortType",   sortType);
+        addAttr(sb, "tableList",  tableList);
+        addAttr(sb, "contextTableIdent", contextTableIdent);
+        addAttr(sb, "columnAlias", columnAlias);
+        
+        sb.append(" />\n");
+    }
+    
+    public void fromXML(Element element)
+    {
+        position     = getAttr(element, "position", (short)0);
+        fieldName    = getAttr(element, "fieldName", null);
+        isNot        = getAttr(element, "isNot", false);
+        isDisplay    = getAttr(element, "isDisplay", false);
+        isPrompt     = getAttr(element, "isPrompt", false);
+        isRelFld     = getAttr(element, "isRelFld", false);
+        alwaysFilter = getAttr(element, "alwaysFilter", false);
+        stringId     = getAttr(element, "stringId", null);
+        operStart    = getAttr(element, "operStart", (byte)0);
+        operEnd      = getAttr(element, "operEnd", (byte)0);
+        startValue   = getAttr(element, "startValue", null);
+        endValue     = getAttr(element, "endValue", null);
+        sortType     = getAttr(element, "sortType", (byte)0);
+        tableList    = getAttr(element, "tableList", null);
+        contextTableIdent = getAttr(element, "contextTableIdent", 0);
+        columnAlias  = getAttr(element, "columnAlias", null);
+    }
+
 }

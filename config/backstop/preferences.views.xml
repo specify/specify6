@@ -273,6 +273,9 @@
                 <row>
                     <cell type="field" id="2" name="Exporttask.OnTaskbar" uitype="checkbox" label="ADD_TOOLS" colspan="4"/>
                 </row>
+                <row>
+                    <cell type="field" id="3" name="StartupTask.OnTaskbar" uitype="checkbox" label="ADD_WELCOME" colspan="4"/>
+                </row>
             </rows>
             
         </viewdef>
@@ -340,6 +343,18 @@
                 </row>
                 <row>
                     <cell type="field" id="3" name="usage_tracking.send_stats" uitype="checkbox" label="SEND_USAGE" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="separator" label="SPECIFY_BG_IMG" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="field" id="7" name="specify.bg.image" cols="30" uitype="browse" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="separator" label="SPECIFY_BG_IMG" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="field" id="7" name="specify.bg.image" cols="30" uitype="browse" colspan="4"/>
                 </row>
             </rows>
         </viewdef>

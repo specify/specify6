@@ -11,8 +11,6 @@ package edu.ku.brc.specify.plugins;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Properties;
@@ -28,10 +26,13 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.UIPluginable;
+import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.plugins.latlon.LatLonUI;
 import edu.ku.brc.specify.rstools.BGMRecordSetProcessor;
 import edu.ku.brc.specify.rstools.GeoCoordData;
 import edu.ku.brc.specify.rstools.GeoLocateRecordSetProcessor;
@@ -44,7 +45,6 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -68,7 +68,10 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
     protected boolean          isViewMode = false;
     protected boolean          doGeoLocate = false;
     
-    protected String           watchId      = null;
+    protected String                 llId      = null;
+    protected String                 geoId     = null;
+    protected String                 locId     = null;
+    protected FormViewObj            parent    = null;
     protected Vector<ChangeListener> listeners = null;
     
     /**
@@ -101,6 +104,14 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
         if (locality != null)
         {
             Geography geo = locality.getGeography();
+            if (geo == null)
+            {
+                ValComboBoxFromQuery cbx = (ValComboBoxFromQuery)parent.getCompById(geoId);
+                if (cbx != null)
+                {
+                    geo = (Geography)cbx.getValue();
+                }
+            }
             
             if (geo != null)
             {
@@ -110,11 +121,20 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                 
                 int id = locality.getLocalityId() != null ? locality.getLocalityId() : 1;
                 
+                String locName = locality.getLocalityName();
+                if (StringUtils.isEmpty(locName))
+                {
+                    ValTextField txt = (ValTextField)parent.getCompById(locId);
+                    if (txt != null)
+                    {
+                        locName = (String)txt.getValue();
+                    }
+                }
                 GeoCoordData geoCoordData = new GeoCoordData(id,
                                                              country,
                                                              state,
-                                                             county,
-                                                             locality.getLocalityName());
+                                                             county == null ? "" : county,
+                                                             locName);
                 
                 List<GeoCoordDataIFace> items = new Vector<GeoCoordDataIFace>();
                 items.add(geoCoordData);
@@ -213,7 +233,9 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
     {
         this.isViewMode = isViewModeArg;
         
-        watchId = properties.getProperty("watch");
+        geoId = properties.getProperty("geoid");
+        locId = properties.getProperty("locid");
+        llId  = properties.getProperty("llid");
 
         adjustUIForTool();
     }
@@ -241,8 +263,9 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.UIPluginable#setParent(edu.ku.brc.af.ui.forms.FormViewObj)
      */
-    public void setParent(FormViewObj parent)
+    public void setParent(final FormViewObj parent)
     {
+        this.parent = parent;
     }
 
     /* (non-Javadoc)
@@ -266,33 +289,17 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
      */
     public void complete(final List<GeoCoordDataIFace> items, final int itemsUpdated)
     {
-       if (fvo != null && itemsUpdated > 0 && items.size() > 0)
+       if (parent != null && itemsUpdated > 0 && items.size() > 0)
        {
            GeoCoordDataIFace gcData = items.get(0);
            
-           Pair<BigDecimal, BigDecimal> oldValues = new Pair<BigDecimal, BigDecimal>(locality.getLatitude1(), locality.getLongitude1());
+           BigDecimal lat1 = new BigDecimal(Double.parseDouble(gcData.getLatitude()));
+           BigDecimal lon1 = new BigDecimal(Double.parseDouble(gcData.getLongitude()));
            
-           locality.setLatitude1(new BigDecimal(Double.parseDouble(gcData.getLatitude())));
-           locality.setLongitude1(new BigDecimal(Double.parseDouble(gcData.getLongitude())));
-           
-           
-           if (fvo != null)
+           LatLonUI latLonUI = (LatLonUI)parent.getCompById(llId);
+           if (latLonUI != null)
            {
-               if (fvo.getDataObj() != locality)
-               {
-                   fvo.setDataObj(locality);
-               }
-               
-               fvo.getValidator().setHasChanged(true);
-               fvo.getValidator().validateForm();
-           }
-           
-           Pair<BigDecimal, BigDecimal> newValues = new Pair<BigDecimal, BigDecimal>(locality.getLatitude1(), locality.getLongitude1());
-           
-           PropertyChangeEvent pce = new PropertyChangeEvent(this, "data", oldValues, newValues);
-           for (PropertyChangeListener l : getPropertyChangeListeners())
-           {
-               l.propertyChange(pce);
+               latLonUI.setLatLon(lat1, lon1, null, null);
            }
        }
     }
@@ -302,7 +309,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
      */
     public void shutdown()
     {
-        fvo = null;
+        parent = null;
         CommandDispatcher.unregister(PREFERENCES, this);
         
         if (listeners != null)

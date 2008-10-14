@@ -15,19 +15,28 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -122,20 +131,18 @@ public class SetupDialog extends JFrame
         
         UIFieldFormatterMgr.setDoingLocal(true);
         
-        //panels.add(new CatNumScheme(nextBtn));
-
         
         //panels.add(locationPanel);
         panels.add(new GenericFormPanel("agent", 
-                "Enter Agent Information", 
-                new String[] { "First Name", "Last Name"}, 
-                new String[] { "firstName", "lastName"}, 
+                "Enter Collection Manager Information", 
+                new String[] { "First Name", "Last Name", "Middle Initial"}, 
+                new String[] { "firstName", "lastName", "middleInitial"}, 
                 nextBtn));
          
         panels.add(new GenericFormPanel("inst", 
                 "Enter Institution Information",
-                new String[] { "Name", "Title"}, 
-                new String[] { "name", "title"}, 
+                new String[] { "Name", "Title", "Abbrev"}, 
+                new String[] { "name", "title", "abbrev"}, 
                 nextBtn));
          
         panels.add(new GenericFormPanel("div", 
@@ -149,6 +156,8 @@ public class SetupDialog extends JFrame
                 new String[] { "Prefix", "Name"}, 
                 new String[] { "prefix", "name"}, 
                 nextBtn));
+        
+        panels.add(new CatNumScheme(nextBtn));
          
          
         lastStep = panels.size();
@@ -224,6 +233,9 @@ public class SetupDialog extends JFrame
 
     }
     
+    /**
+     * 
+     */
     protected void updateBtnBar()
     {
         if (step == lastStep-1)
@@ -240,6 +252,10 @@ public class SetupDialog extends JFrame
         backBtn.setEnabled(step > 0); 
     }
     
+    /**
+     * @param doAutoLogin
+     * @return
+     */
     protected boolean fillPrefs(final boolean doAutoLogin)
     {
         AppPreferences.getLocalPrefs().putBoolean("login.rememberuser", true);
@@ -265,10 +281,6 @@ public class SetupDialog extends JFrame
             AppPreferences.getLocalPrefs().put("startup.password",  Encryption.encrypt(new String(userPanel.getPassword())));
         }
         
-        //AppPreferences.getLocalPrefs().put("startup.firstname", agentPanel.getFirstName());
-        //AppPreferences.getLocalPrefs().put("startup.lastname",  agentPanel.getLastName());
-        //AppPreferences.getLocalPrefs().put("startup.email",     agentPanel.getEmail());
-        
         try
         {
             AppPreferences.getLocalPrefs().flush();
@@ -281,36 +293,10 @@ public class SetupDialog extends JFrame
         return false;
     }
     
-    /*
-    protected boolean loginAndFixUserName()
-    {
-        HibernateUtil.shutdown();
-        
-        DatabaseDriverInfo driverInfo = userPanel.getDriver();
-        
-        String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, HOSTNAME, userPanel.getDbName());
-        if (connStr == null)
-        {
-            connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, HOSTNAME, userPanel.getDbName());
-        }
-        
-        if (UIHelper.tryLogin(driverInfo.getDriverClassName(), 
-                driverInfo.getDialectClassName(), 
-                userPanel.getDbName(), 
-                connStr, 
-                userPanel.getUsername(), 
-                userPanel.getPassword()))
-        {
-            
-            
-            specify.startUp();
-            return true;
-        }
-        
-        return false;
-    }*/
-
-    
+    /**
+     * @param path
+     * @return
+     */
     protected String stripSpecifyDir(final String path)
     {
         String appPath = path;
@@ -361,89 +347,6 @@ public class SetupDialog extends JFrame
         UIRegistry.setDefaultWorkingPath(baseAppDir);
         
         log.debug("********** Working path for App ["+baseAppDir+"]");
-        
-        /*
-        String derbyPath;
-        if (locationPanel != null && locationPanel.isUsingUserDefinedDirectory())
-        {
-            derbyPath = locationPanel.getUserDefinedPath() + File.separator + "DerbyDatabases";
-            
-        } else
-        {
-            if (locationPanel.isUseHomeDirectory())
-            {
-                // Copy over the database if we can't use this directory for writing.
-                // if it is being run off of a CD
-                if (!locationPanel.isLocalOKForWriting())
-                {
-                    log.debug("WORKING PATH["+UIRegistry.getDefaultWorkingPath()+"]");
-                    
-                    File derbyDestDir = new File(UIRegistry.getUserHomeDir() + File.separator + "DerbyDatabases");
-                    derbyPath = derbyDestDir.getAbsolutePath();
-                    
-                    String srcDerbyPath = UIRegistry.getJavaDBPath();
-                    
-                    log.debug("Derby Source Path["+srcDerbyPath+"] "+StringUtils.isNotEmpty(srcDerbyPath));
-                    if (StringUtils.isNotEmpty(srcDerbyPath))
-                    {
-                        File srcDir = new File(srcDerbyPath);
-                        log.debug("Derby Source Path ["+srcDir.getAbsoluteFile()+"] "+srcDir.exists());
-                        if (srcDir.exists())
-                        {
-                            File destDir = new File("");//destParentDirStr);
-                            log.debug("Derby Destination Path ["+destDir.getAbsoluteFile()+"] exists! "+destDir.exists());
-                            if (destDir.exists())
-                            {
-                                if (!derbyDestDir.exists())
-                                {
-                                    derbyDestDir.mkdir();
-                                }
-                                
-                                try
-                                {
-                                    log.debug("Copy Derby Databases from["+srcDir.getAbsoluteFile()+"] to["+derbyDestDir.getAbsoluteFile()+"]");
-                                    FileUtils.copyDirectory(srcDir, derbyDestDir);
-                                    UIRegistry.setJavaDBDir(derbyDestDir.getAbsolutePath());
-                                    
-                                } catch (Exception ex)
-                                {
-                                    log.error(ex);
-                                }
-                            } else
-                            {
-                                log.error("Dir ["+destDir.getAbsoluteFile()+"] DOESN'T exists!");
-                            }
-                            
-                        } else
-                        {
-                            log.error("Path doesn't exist ["+srcDir.getAbsolutePath()+"]");
-                        }
-                    } else
-                    {
-                        log.error("Empty sibling path for ["+srcDerbyPath+"]");
-                    }
-                } else
-                {
-                    derbyPath = UIRegistry.getJavaDBPath();
-                }
-                
-            } else
-            {
-                //log.debug((new File(baseAppDir).exists())+" baseAppDir["+baseAppDir+"]");
-                //
-                //derbyPath = baseAppDir + File.separator + "DerbyDatabases";
-                derbyPath = UIRegistry.getJavaDBPath();
-                if (StringUtils.isEmpty(derbyPath))
-                {
-                    derbyPath = (new File(UIRegistry.getUserHomeDir() + File.separator + "DerbyDatabases")).getAbsolutePath();
-                }
-                log.debug(" Derby Database Path ["+derbyPath+"]");
-            }
-        }
-        
-        UIRegistry.setJavaDBDir(derbyPath);
-        log.debug("**** JavaDB Path="+UIRegistry.getJavaDBPath());
-        */
         
         // Now initialize
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
@@ -528,5 +431,62 @@ public class SetupDialog extends JFrame
                 ex.printStackTrace();
             }
         }
+    }
+    
+    /**
+     * @param args
+     */
+    public static void main(String[] args)
+    {
+        try
+        {
+            ResourceBundle.getBundle("resources", Locale.getDefault()); //$NON-NLS-1$
+            
+        } catch (MissingResourceException ex)
+        {
+            Locale.setDefault(Locale.ENGLISH);
+            UIRegistry.setResourceLocale(Locale.ENGLISH);
+        }
+        
+        try
+        {
+            if (!System.getProperty("os.name").equals("Mac OS X"))
+            {
+                UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
+                PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        
+        // Now check the System Properties
+        String appDir = System.getProperty("appdir");
+        if (StringUtils.isNotEmpty(appDir))
+        {
+            UIRegistry.setDefaultWorkingPath(appDir);
+        }
+        
+        String appdatadir = System.getProperty("appdatadir");
+        if (StringUtils.isNotEmpty(appdatadir))
+        {
+            UIRegistry.setBaseAppDataDir(appdatadir);
+        }
+        
+        String javadbdir = System.getProperty("javadbdir");
+        if (StringUtils.isNotEmpty(javadbdir))
+        {
+            UIRegistry.setJavaDBDir(javadbdir);
+        }
+        
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                SetupDialog setup = new SetupDialog(null);
+                UIHelper.centerAndShow(setup);
+            }
+        });
     }
 }

@@ -17,10 +17,12 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
+import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.sql.Timestamp;
 import java.util.Collections;
@@ -42,6 +44,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -64,6 +68,7 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
@@ -128,6 +133,7 @@ public class QueryTask extends BaseTask
     public static final String QUERY      = "Query";
     public static final String SAVE_QUERY = "Save";
     public static final String QUERY_RESULTS_REPORT = "QueryResultsReport";
+    protected static final String XML_PATH_PREF = "Query.XML.Dir";
     
     public static final DataFlavor QUERY_FLAVOR = new DataFlavor(QueryTask.class, QUERY);
     
@@ -655,8 +661,29 @@ public class QueryTask extends BaseTask
             }
         });
         
+        mi = new JMenuItem(UIRegistry.getResourceString("QY_IMPORT_QUERIES"));
+        popupMenu.add(mi);
+        
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                importQueries();
+            }
+        });
+        
+        mi = new JMenuItem(UIRegistry.getResourceString("QY_EXPORT_QUERIES"));
+        popupMenu.add(mi);
+        
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                exportQueries();
+            }
+        });
+        
         return popupMenu;
     }
+
     
     /**
      * Builds the NavBtns for the grequently used list and the extra list.
@@ -1586,6 +1613,228 @@ public class QueryTask extends BaseTask
             }
         }
     }
+    
+    
+    /**
+     * 
+     */
+    protected void importQueries()
+    {
+        String path = AppPreferences.getLocalPrefs().get(XML_PATH_PREF, null);
+        
+        FileDialog fDlg = new FileDialog(((Frame)UIRegistry.getTopWindow()), "Open", FileDialog.LOAD);
+        if (path != null)
+        {
+            fDlg.setDirectory(path);
+        }
+        fDlg.setVisible(true);
+        
+        String dirStr   = fDlg.getDirectory();
+        String fileName = fDlg.getFile();
+        if (StringUtils.isEmpty(dirStr) || StringUtils.isEmpty(fileName))
+        {
+            return;
+        }
+        path = dirStr + fileName;
+        AppPreferences.getLocalPrefs().put(XML_PATH_PREF, path);
+        
+        Vector<SpQuery> queries = new Vector<SpQuery>();
+        try
+        {
+        
+            Element root = XMLHelper.readFileToDOM4J(new File(path));
+            for (Object obj : root.selectNodes("/queries/query"))
+            {
+                Element el = (Element)obj;
+                SpQuery query = new SpQuery();
+                query.initialize();
+                query.fromXML(el);
+                query.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+                queries.add(query);
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return;
+        }
+        
+        ToggleButtonChooserDlg<SpQuery> dlg = new ToggleButtonChooserDlg<SpQuery>((Frame)UIRegistry.getMostRecentWindow(),
+                getResourceString("QY_IMPORT_QUERIES"),
+                getResourceString("QY_SEL_QUERIES_IMP"),
+                queries,
+                getIcon(24),
+                ToggleButtonChooserDlg.OKCANCEL,
+                ToggleButtonChooserPanel.Type.Checkbox);
+        
+        dlg.setAddSelectAll(true);
+        dlg.setUseScrollPane(true);
+        UIHelper.centerAndShow(dlg);
+        List<SpQuery> queriesList = dlg.getSelectedObjects();
+        if (queriesList == null || queriesList.size() == 0)
+        {
+            return;
+        }
+        
+        Hashtable<String, Boolean> namesHash = new Hashtable<String, Boolean>();
+        for (NavBoxItemIFace nbi : navBox.getItems())
+        {
+            namesHash.put(nbi.getTitle(), true);
+        }
+        
+        // Persist out to database
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            session.beginTransaction();
+            
+            for (SpQuery query : queriesList)
+            {
+                String origName = query.getName();
+                int    cnt      = 0;
+                String qName    = origName;
+                while (namesHash.get(qName) != null)
+                {
+                    cnt++;
+                    qName = origName + cnt;
+                }
+                query.setName(qName);
+                session.saveOrUpdate(query);
+            }
+            
+            session.commit();
+            
+            for (SpQuery query : queriesList)
+            {
+                RecordSet rs = new RecordSet();
+                rs.initialize();
+                rs.set(query.getName(), SpQuery.getClassTableId(), RecordSet.GLOBAL);
+                rs.addItem(query.getSpQueryId());
+                addToNavBox(rs);
+            }
+            
+            navBox.validate();
+            navBox.repaint();
+                
+        } catch (Exception ex)
+        {
+            // XXX Error dialog
+            ex.printStackTrace();
+            session.rollback();
+            
+        }
+        finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+    }
+    
+    /**
+     * 
+     */
+    protected void exportQueries()
+    {
+        Vector<String> list = new Vector<String>();
+        for (NavBoxItemIFace nbi : navBox.getItems())
+        {
+            list.add(nbi.getTitle());
+        }
+        
+        List<String> selectedList = null;
+        if (list.size() == 1)
+        {
+            selectedList = list;
+        } else
+        {
+            ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getMostRecentWindow(),
+                    getResourceString("QY_EXPORT_QUERIES"),
+                    getResourceString("QY_SEL_QUERIES_EXP"),
+                    list,
+                    getIcon(24),
+                    ToggleButtonChooserDlg.OKCANCEL,
+                    ToggleButtonChooserPanel.Type.Checkbox);
+            dlg.setAddSelectAll(true);
+            dlg.setUseScrollPane(true);
+            UIHelper.centerAndShow(dlg);
+            selectedList = dlg.getSelectedObjects();
+        }
+        
+        String path = AppPreferences.getLocalPrefs().get(XML_PATH_PREF, null);
+        
+        FileDialog fDlg = new FileDialog(((Frame)UIRegistry.getTopWindow()), "Save", FileDialog.SAVE);
+        if (path != null)
+        {
+            fDlg.setDirectory(path);
+        }
+        fDlg.setVisible(true);
+        
+        String dirStr   = fDlg.getDirectory();
+        String fileName = fDlg.getFile();
+        if (StringUtils.isEmpty(dirStr) || StringUtils.isEmpty(fileName))
+        {
+            return;
+        }
+        
+        if (StringUtils.isEmpty(FilenameUtils.getExtension(fileName)))
+        {
+            fileName += ".xml";
+        }
+        path = dirStr + fileName;
+        AppPreferences.getLocalPrefs().put(XML_PATH_PREF, path);
+        
+        Hashtable<String, Boolean> hash = new Hashtable<String, Boolean>();
+        for (String qTitle : selectedList)
+        {
+            hash.put(qTitle, true);
+        }
+        
+        Vector<SpQuery> queries = new Vector<SpQuery>();
+        
+        // Persist out to database
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            for (NavBoxItemIFace nbi : navBox.getItems())
+            {
+                if (hash.get(nbi.getTitle()) != null)
+                {
+                    RecordSetIFace rs  = (RecordSetIFace)nbi.getData();
+                    if (rs != null)
+                    {
+                        SpQuery query = session.get(SpQuery.class, rs.getOnlyItem().getRecordId());
+                        queries.add(query);
+                    }
+                }
+            }
+            
+            StringBuilder sb = new StringBuilder();
+            sb.append("<queries>\n");
+            for (SpQuery q : queries)
+            {
+                q.toXML(sb);
+            }
+            sb.append("</queries>");
+            FileUtils.writeStringToFile(new File(path), sb.toString());
+            
+        } catch (Exception ex)
+        {
+            // XXX Error dialog
+            ex.printStackTrace();
+        }
+        finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+    }
+    
+    
 
     /**
      * @param treeRoot

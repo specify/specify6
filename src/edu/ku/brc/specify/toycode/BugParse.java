@@ -51,7 +51,7 @@ public class BugParse
         parse("20080701_.txt");
         parse("Now_.txt");
         
-        String eng = null;//"rods";
+        String eng = "meg";
         boolean doPriority = false;
         int cnt = 0;
         Vector<Integer> keys = new Vector<Integer>(bugHash.keySet());

@@ -319,7 +319,7 @@ public class LatLonConverter
     }
     
     /**
-     * Converts Decmal Degrees to BigDecimal.
+     * Converts Decimal Degrees to BigDecimal.
      * @param bc the DigDecimal to be converted.
      * @param direction the direction
      * @return a BigDecimal

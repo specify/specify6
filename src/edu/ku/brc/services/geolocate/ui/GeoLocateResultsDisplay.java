@@ -221,7 +221,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
      */
     protected JTextField createTextField()
     {
-        JTextField tf     = createTextField();
+        JTextField tf     = UIHelper.createTextField();
         Insets     insets = tf.getBorder().getBorderInsets(tf);
         tf.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
         tf.setForeground(Color.BLACK);

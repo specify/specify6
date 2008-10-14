@@ -6,6 +6,9 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import static edu.ku.brc.helpers.XMLHelper.addAttr;
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,6 +23,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.dom4j.Element;
 import org.hibernate.annotations.Index;
 
 /**
@@ -37,7 +41,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="spquery", indexes =
     {   @Index (name="SpQueryNameIDX", columnNames={"Name"})
     })
-public class SpQuery extends DataModelObjBase
+public class SpQuery extends DataModelObjBase implements Cloneable
 {
     protected Integer           spQueryId;
     protected String            name;
@@ -273,6 +277,63 @@ public class SpQuery extends DataModelObjBase
             }
         }
     }
+    
+    /**
+     * @param sb
+     */
+    public void toXML(final StringBuilder sb)
+    {
+        sb.append("<query ");
+        addAttr(sb, "name", name);
+        addAttr(sb, "contextName", contextName);
+        addAttr(sb, "contextTableId", contextTableId);
+        addAttr(sb, "isFavorite", isFavorite);
+        addAttr(sb, "named", named);
+        addAttr(sb, "ordinal", ordinal);
+        sb.append(">\n");
+        
+        if (sqlStr != null)
+        {
+            sb.append("<sqlStr><![CDATA[");
+            sb.append(sqlStr);
+            sb.append("]]></sqlStr>\n");
+        }
+        
+        sb.append("<fields>");
+        for (SpQueryField field : fields)
+        {
+            field.toXML(sb);
+        }
+        sb.append("</fields>\n");
+        sb.append("</query>\n");
+    }
+    
+    /**
+     * @param element
+     */
+    public void fromXML(final Element element)
+    {
+        name            = getAttr(element, "name", null);
+        contextName     = getAttr(element, "contextName", null);
+        contextTableId  = getAttr(element, "contextTableId", (short)0);
+        isFavorite      = getAttr(element, "isFavorite", false);
+        named           = getAttr(element, "named", false);
+        ordinal         = getAttr(element, "ordinal", (short)0);
+        
+        Element sqlNode = (Element)element.selectSingleNode("sqlStr");
+        sqlStr = sqlNode != null ? sqlNode.getTextTrim() : null;
+        
+        for (Object obj : element.selectNodes("fields/field"))
+        {
+            Element fieldEl = (Element)obj;
+            SpQueryField field = new SpQueryField();
+            field.initialize();
+            field.fromXML(fieldEl);
+            field.setQuery(this);
+            fields.add(field);
+        }
+    }
+    
     //----------------------------------------------------------------------
     //-- DataModelObjBase
     //----------------------------------------------------------------------
@@ -342,4 +403,26 @@ public class SpQuery extends DataModelObjBase
         return name;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        SpQuery query = (SpQuery)super.clone();
+        query.init();
+        
+        query.spQueryId = null;
+        
+        fields = new HashSet<SpQueryField>();
+        for (SpQueryField field : fields)
+        {
+            SpQueryField fld = (SpQueryField)field.clone();
+            fld.setQuery(query);
+            query.fields.add(fld);
+        }
+         
+        return query;
+    }
+
 }

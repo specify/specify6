@@ -30,7 +30,7 @@
     </section>
     
     <section title="Login">
-        <pref name="LOGIN" title="LOGIN" icon="SystemSetup" panelClass="edu.ku.brc.specify.prefs.LoginPrefs" viewsetname="Preferences" viewname="LoginPrefs" help="PrefsLogin"/>
+        <pref name="LOGIN" title="LOGIN" icon="Login" panelClass="edu.ku.brc.specify.prefs.LoginPrefs" viewsetname="Preferences" viewname="LoginPrefs" help="PrefsLogin"/>
     </section>
     
 </prefs>

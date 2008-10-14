@@ -234,6 +234,32 @@ public class XMLHelper
    }
 
    /**
+    * Get a byte attribute value from an element value
+    * @param element the element to get the attribute from
+    * @param attrName the name of the attribute to get
+    * @param defValue the default value if the attribute isn't there
+    * @return the attr value or the default value
+    */
+   public static byte getAttr(final Element element, final String attrName, final byte defValue)
+   {
+       String str = element.attributeValue(attrName);
+       return isNotEmpty(str) ? Byte.parseByte(str) : defValue;
+   }
+
+   /**
+    * Get a short attribute value from an element value
+    * @param element the element to get the attribute from
+    * @param attrName the name of the attribute to get
+    * @param defValue the default value if the attribute isn't there
+    * @return the attr value or the default value
+    */
+   public static short getAttr(final Element element, final String attrName, final short defValue)
+   {
+       String str = element.attributeValue(attrName);
+       return isNotEmpty(str) ? Short.parseShort(str) : defValue;
+   }
+
+   /**
     * Get a int attribute value from an element value
     * @param element the element to get the attribute from
     * @param attrName the name of the attribute to get
@@ -365,6 +391,42 @@ public class XMLHelper
    }
    
    public static void addAttr(final StringBuilder sb, final String name, final String value)
+   {
+       sb.append(' ');
+       sb.append(name);
+       sb.append("=\""); //$NON-NLS-1$
+       sb.append(value == null ? "" : value); //$NON-NLS-1$
+       sb.append('\"');
+   }
+   
+   public static void addAttr(final StringBuilder sb, final String name, final Integer value)
+   {
+       sb.append(' ');
+       sb.append(name);
+       sb.append("=\""); //$NON-NLS-1$
+       sb.append(value == null ? "" : value); //$NON-NLS-1$
+       sb.append('\"');
+   }
+   
+   public static void addAttr(final StringBuilder sb, final String name, final Short value)
+   {
+       sb.append(' ');
+       sb.append(name);
+       sb.append("=\""); //$NON-NLS-1$
+       sb.append(value == null ? "" : value); //$NON-NLS-1$
+       sb.append('\"');
+   }
+   
+   public static void addAttr(final StringBuilder sb, final String name, final Boolean value)
+   {
+       sb.append(' ');
+       sb.append(name);
+       sb.append("=\""); //$NON-NLS-1$
+       sb.append(value == null ? "" : value); //$NON-NLS-1$
+       sb.append('\"');
+   }
+   
+   public static void addAttr(final StringBuilder sb, final String name, final Byte value)
    {
        sb.append(' ');
        sb.append(name);

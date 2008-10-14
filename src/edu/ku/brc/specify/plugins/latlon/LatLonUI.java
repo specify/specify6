@@ -425,10 +425,10 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     // GetSetValueIFace Interface
     //--------------------------------------------------------
     
-    protected void setLatLon(final BigDecimal lat1, 
-                             final BigDecimal lon1,
-                             final BigDecimal lat2, 
-                             final BigDecimal lon2)
+    public void setLatLon(final BigDecimal lat1, 
+                          final BigDecimal lon1,
+                          final BigDecimal lat2, 
+                          final BigDecimal lon2)
     {
         // NOTE: Every other panel has point 1 or point 2
         int cnt = 1;
@@ -442,7 +442,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
                 panel.set(lat2, lon2);               
             }
             cnt++;
-        }   
+        }
     }
 
     /* (non-Javadoc)

@@ -4477,6 +4477,78 @@ public class BuildSampleDatabase
     }
     
     /**
+     * 
+     */
+    protected void loadQueries()
+    {
+        loadQueries(XMLHelper.getConfigDirPath("common" + File.separator + "queries.xml"));
+        
+        String discipline = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+        loadQueries(XMLHelper.getConfigDirPath(discipline + File.separator + "queries.xml"));
+    }
+    
+    /**
+     * @param path
+     */
+    protected void loadQueries(final String path)
+    {
+        File file = new File(path);
+        if (!file.exists())
+        {
+            return;
+        }
+        
+        Vector<SpQuery> queries = new Vector<SpQuery>();
+        try
+        {
+            Element root = XMLHelper.readFileToDOM4J(file);
+            for (Object obj : root.selectNodes("/queries/query"))
+            {
+                Element el = (Element)obj;
+                SpQuery query = new SpQuery();
+                query.initialize();
+                query.fromXML(el);
+                query.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
+                queries.add(query);
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return;
+        }
+        
+        // Persist out to database
+        DataProviderSessionIFace localSession = null;
+        try
+        {
+            localSession = DataProviderFactory.getInstance().createSession();
+            localSession.beginTransaction();
+            
+            for (SpQuery query : queries)
+            {
+                query.setName(query.getName());
+                localSession.saveOrUpdate(query);
+            }
+            
+            localSession.commit();
+            
+        } catch (Exception ex)
+        {
+            // XXX Error dialog
+            ex.printStackTrace();
+            localSession.rollback();
+            
+        }
+        finally
+        {
+            if (localSession != null)
+            {
+                localSession.close();
+            }
+        }
+    }
+    
+    /**
      * @param cc
      */
     private Pair<AutoNumberingScheme, AutoNumberingScheme> createAutoNumberingSchemes(final CollectionChoice cc)
