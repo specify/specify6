@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.UIHelper;
@@ -135,16 +136,20 @@ public class RelQRI extends FieldQRI
         //else ManyToOnes.   Is this OK for all OneToOnes too?
         
         //If the formatter only uses one field, just retrieve that field with hql.
-        UIFieldFormatterIFace formatter = getFormatter();
-        if (formatter != null && formatter instanceof DataObjDataFieldFormatIFace)
+        //XXX Formatter.getSingleField() checks for OneToOne rels
+        if (relationshipInfo.getType() == RelationshipType.ManyToOne)
         {
-            String formatField = ((DataObjDataFieldFormatIFace )formatter).getSingleField();
-            if (formatField != null)
+            UIFieldFormatterIFace formatter = getFormatter();
+            if (formatter != null && formatter instanceof DataObjDataFieldFormatIFace)
             {
-                return ta.getAbbreviation(table.getTableTree()) + "." + formatField;
+                String formatField = ((DataObjDataFieldFormatIFace )formatter).getSingleField();
+                if (formatField != null)
+                {
+                    return ta.getAbbreviation(table.getTableTree()) + "." + formatField;
+                }
             }
         }
-
+        
         return ta.getAbbreviation(table.getTableTree()) + "." + deCapitalize(table.getTableInfo().getClassObj().getSimpleName()) + "Id";
     }
 
