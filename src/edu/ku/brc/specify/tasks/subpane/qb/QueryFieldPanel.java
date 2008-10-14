@@ -54,6 +54,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
@@ -1031,7 +1032,15 @@ public class QueryFieldPanel extends JPanel
         isNotCheckbox.setVisible(!isRel);
         operatorCBX.setVisible(!isRel);
         criteria.setVisible(!isRel && !isBool);
-        //this.sortCheckbox.setVisible(!isRel);
+        if (!isRel)
+        {
+            this.sortCheckbox.setVisible(true);
+        }
+        else
+        {
+            this.sortCheckbox.setVisible(((RelQRI )fieldQRI).getRelationshipInfo().getType() != RelationshipType.OneToMany);
+        }
+        
         if (!ownerQuery.isPromptMode())
         {
             isDisplayedCkbx.setVisible(!isRel);

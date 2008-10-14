@@ -13,6 +13,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 
@@ -44,6 +45,12 @@ public class QBResultSetTableModel extends ResultSetTableModel
     private static final Logger log = Logger.getLogger(ESResultsSubPane.class);
     
     protected QueryExecutor queryExecutor = new QueryExecutor();
+    protected final AtomicBoolean loadingCache = new AtomicBoolean(false);
+    protected final AtomicBoolean isPostSorted = new AtomicBoolean(false);
+    protected final AtomicBoolean backgroundLoadsCancelled = new AtomicBoolean(false);
+    
+    protected boolean loadingCells = false;
+    protected int bgTaskCount = 0;
     
     /**
      * @param parentERTP
@@ -55,6 +62,21 @@ public class QBResultSetTableModel extends ResultSetTableModel
         super(parentERTP, results);
     }
     
+    /**
+     * @return true while background cell-loading tasks are still running.
+     */
+    public synchronized boolean isLoadingCells()
+    {
+        return bgTaskCount != 0;
+    }
+    
+    /**
+     * Stops background cell loading and clears the queue of cells to be loaded. 
+     */
+    public void cancelBackgroundLoads()
+    {
+        backgroundLoadsCancelled.set(true);
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQuery)
      */
@@ -64,22 +86,40 @@ public class QBResultSetTableModel extends ResultSetTableModel
     {
         if (customQuery instanceof JPAQuery)
         {
-            synchronized (this)
+            JPAQuery jpa = (JPAQuery) customQuery;
+            Object data = jpa.getData();
+            if (data != null && data instanceof Vector<?>)
             {
-                JPAQuery jpa = (JPAQuery) customQuery;
-                Object data = jpa.getData();
-                if (data != null && data instanceof Vector<?>)
+                if (backgroundLoadsCancelled.get())
                 {
-                    Vector<Object> info = (Vector<Object>) data;
-                    int row = (Integer) info.get(0);
-                    int col = (Integer) info.get(1);
-                    Class<?> cls = (Class<?>) info.get(2);
-                    Vector<Object> cols = cache.get(row);
-                    cols.set(col, DataObjFieldFormatMgr.getInstance().aggregate(
-                            jpa.getDataObjects(), cls));
-                    fireTableCellUpdated(row, col);
+                    queryExecutor.shutdown();
                     return;
                 }
+                Vector<Object> info = (Vector<Object>) data;
+                int row = (Integer) info.get(0);
+                int col = (Integer) info.get(1);
+                Class<?> cls = (Class<?>) info.get(2);
+                Vector<Object> cols = (Vector<Object>) info.get(3);
+
+                synchronized (this)
+                {
+                    cols.set(col, DataObjFieldFormatMgr.getInstance().aggregate(
+                            jpa.getDataObjects(), cls));
+                    bgTaskCount--;
+                }
+                if (!isPostSorted.get())
+                {
+                    fireTableCellUpdated(row, col);
+                }
+                else if (!loadingCache.get())
+                {
+                    //If postSorted then we don't actually know the row number.
+                    
+                    //it seems like overkill to fire this for every single background cell
+                    //but so far performance seems OK.
+                    fireTableDataChanged();
+                }
+                return;
             }
         }
         
@@ -90,6 +130,9 @@ public class QBResultSetTableModel extends ResultSetTableModel
              
         if (!customQuery.isInError() && !customQuery.isCancelled() && list != null && list.size() > 0)
         {
+                loadingCache.set(true);
+                isPostSorted.set(((QBQueryForIdResultsHQL )results).isPostSorted());
+                
                 int maxTableRows = results.getMaxTableRows();
                 int rowNum = 0;
                 for (Object rowObj : list)
@@ -124,8 +167,7 @@ public class QBResultSetTableModel extends ResultSetTableModel
                             } else
                             {
                                 ERTICaptionInfo erti = cols.next();
-                                if (!((QBQueryForIdResultsHQL) results).isPostSorted() 
-                                        && erti instanceof ERTICaptionInfoRel 
+                                if (erti instanceof ERTICaptionInfoRel 
                                         && ((ERTICaptionInfoRel)erti).getRelationship().getType() == RelationshipType.OneToMany)
                                 {
                                     ERTICaptionInfoRel ertiRel = (ERTICaptionInfoRel)erti;
@@ -134,9 +176,14 @@ public class QBResultSetTableModel extends ResultSetTableModel
                                         info.add(rowNum);
                                         info.add(row.size());
                                         info.add(ertiRel.getRelationship().getDataClass());
+                                        info.add(row);
                                         jpa.setData(info);
                                         jpa.start();
                       
+                                        synchronized(this)
+                                        {
+                                            bgTaskCount++;
+                                        }
                                         row.add(UIRegistry.getResourceString("QBResultSetTableModel.LOADING_CELL"));
                                 } else
                                 {
@@ -160,7 +207,15 @@ public class QBResultSetTableModel extends ResultSetTableModel
                     rowNum++;
                 }                
             
-            results.cacheFilled(cache);
+            if (customQuery.isCancelled())
+            {
+                queryExecutor.shutdown();
+            }
+            else
+            {
+                results.cacheFilled(cache);
+            }
+            loadingCache.set(false);
             
             fireTableDataChanged();
         }
@@ -248,7 +303,7 @@ public class QBResultSetTableModel extends ResultSetTableModel
     public void cleanUp()
     {
         queryExecutor.shutdown();
+        bgTaskCount = 0;
         super.cleanUp();
     }
-
 }
