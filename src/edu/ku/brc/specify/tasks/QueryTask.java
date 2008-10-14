@@ -1663,7 +1663,7 @@ public class QueryTask extends BaseTask
                 getResourceString("QY_SEL_QUERIES_IMP"),
                 queries,
                 getIcon(24),
-                ToggleButtonChooserDlg.OKCANCEL,
+                CustomDialog.OKCANCEL,
                 ToggleButtonChooserPanel.Type.Checkbox);
         
         dlg.setAddSelectAll(true);
@@ -1754,7 +1754,7 @@ public class QueryTask extends BaseTask
                     getResourceString("QY_SEL_QUERIES_EXP"),
                     list,
                     getIcon(24),
-                    ToggleButtonChooserDlg.OKCANCEL,
+                    CustomDialog.OKCANCEL,
                     ToggleButtonChooserPanel.Type.Checkbox);
             dlg.setAddSelectAll(true);
             dlg.setUseScrollPane(true);

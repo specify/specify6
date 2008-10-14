@@ -7,9 +7,13 @@
 
 package edu.ku.brc.specify.prefs;
 
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
@@ -19,19 +23,28 @@ import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.validation.FormValidator;
 import edu.ku.brc.af.ui.forms.validation.UIValidator;
+import edu.ku.brc.af.ui.forms.validation.ValBrowseBtnPanel;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.ui.IconEntry;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.AttachmentUtils;
 
 /**
  * @author rod
@@ -43,6 +56,12 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class SystemPrefs extends GenericPrefsPanel
 {
+    protected static final String SPECIFY_BG_IMG_PATH = "specify.bg.image";
+    protected static final String ATTCH_PATH          = "attachment.path";
+    
+    protected String oldAttachmentPath = null;
+    protected String oldSplashPath     = null;
+    
     /**
      * Constructor.
      */
@@ -67,6 +86,21 @@ public class SystemPrefs extends GenericPrefsPanel
                 }
             }
         });
+        
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        ValBrowseBtnPanel browse = (ValBrowseBtnPanel)form.getCompById("7");
+        if (browse != null)
+        {
+            oldSplashPath = localPrefs.get(SPECIFY_BG_IMG_PATH, null);
+            browse.setValue(oldSplashPath, null);
+        }
+        
+        browse = (ValBrowseBtnPanel)form.getCompById("8");
+        if (browse != null)
+        {
+            oldAttachmentPath = localPrefs.get(ATTCH_PATH, null);
+            browse.setValue(oldAttachmentPath, null);
+        }
         
         final ValComboBox localeCBX = (ValComboBox)form.getCompById("5");
         localeCBX.getComboBox().setRenderer(new LocaleRenderer());
@@ -162,49 +196,194 @@ public class SystemPrefs extends GenericPrefsPanel
         {
             super.savePrefs();
             
+            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            
             ValComboBox localeCBX = (ValComboBox)form.getCompById("5");
             Locale item = (Locale)localeCBX.getComboBox().getSelectedItem();
             if (item != null)
             {
                 if (item.equals(UIRegistry.getPlatformLocale()))
                 {
-                    AppPreferences.getLocalPrefs().remove("locale.lang");
-                    AppPreferences.getLocalPrefs().remove("locale.country");
-                    AppPreferences.getLocalPrefs().remove("locale.var");
+                    localPrefs.remove("locale.lang");
+                    localPrefs.remove("locale.country");
+                    localPrefs.remove("locale.var");
                     
-                    //System.out.println("["+AppPreferences.getLocalPrefs().get("locale.lang", null)+"]");
+                    //System.out.println("["+localPrefs.get("locale.lang", null)+"]");
                     Locale.setDefault(UIRegistry.getPlatformLocale());
                     
                 } else
                 {
                     if (item.getLanguage() == null)
                     {
-                        AppPreferences.getLocalPrefs().remove("locale.lang");
+                        localPrefs.remove("locale.lang");
                     } else
                     {
-                        AppPreferences.getLocalPrefs().put("locale.lang", item.getLanguage());
+                        localPrefs.put("locale.lang", item.getLanguage());
                     }
                     
                     if (item.getCountry() == null)
                     {
-                        AppPreferences.getLocalPrefs().remove("locale.country");
+                        localPrefs.remove("locale.country");
                     } else
                     {
-                        AppPreferences.getLocalPrefs().put("locale.country", item.getCountry());
+                        localPrefs.put("locale.country", item.getCountry());
                     }
                     
                     if (item.getVariant() == null)
                     {
-                        AppPreferences.getLocalPrefs().remove("locale.var");
+                        localPrefs.remove("locale.var");
                     } else
                     {
-                        AppPreferences.getLocalPrefs().put("locale.var", item.getVariant());
+                        localPrefs.put("locale.var", item.getVariant());
                     }
                 }
+                
+                ValBrowseBtnPanel browse = (ValBrowseBtnPanel)form.getCompById("7");
+                if (browse != null)
+                {
+                    String newSplashPath = browse.getValue().toString();
+                    if (newSplashPath != null && oldSplashPath != null && !oldSplashPath.equals(newSplashPath))
+                    {
+                        if (newSplashPath.isEmpty())
+                        {
+                            resetSplashImage();
+                            localPrefs.remove(SPECIFY_BG_IMG_PATH);
+                            
+                        } else
+                        {
+                            localPrefs.put(SPECIFY_BG_IMG_PATH, newSplashPath);
+                            changeSplashImage();
+                        }
+                    }
+                }
+                
+                browse = (ValBrowseBtnPanel)form.getCompById("8");
+                if (browse != null)
+                {
+                    String newAttachmentPath = browse.getValue().toString();
+                    if (newAttachmentPath != null && 
+                        StringUtils.isNotEmpty(oldAttachmentPath) && 
+                        !oldAttachmentPath.equals(newAttachmentPath))
+                    {
+                        if (newAttachmentPath.isEmpty())
+                        {
+                            UIRegistry.showLocalizedError("SystemPrefs.NOEMPTY_ATTCH");
+                            
+                        } else if (okChangeAttachmentPath(oldAttachmentPath, newAttachmentPath))
+                        {
+                            localPrefs.put(ATTCH_PATH, newAttachmentPath);
+                        }
+                    }
+                }
+                
                 try
                 {
-                    AppPreferences.getLocalPrefs().flush();
+                    localPrefs.flush();
+                    
                 } catch (BackingStoreException ex) {}
+            }
+        }
+    }
+    
+    /**
+     * @param oldPath
+     * @param newPath
+     * @return
+     */
+    protected boolean okChangeAttachmentPath(final String oldPath, final String newPath)
+    {
+        File  oldDir = new File(oldPath);
+        if (oldDir.exists())
+        {
+            File origDir = new File(oldPath + File.separator + "originals");
+            
+            boolean doMoveFiles = false;
+            int numFiles = origDir.listFiles().length;
+            if (numFiles > 0)
+            {
+                Object[] options = { getResourceString("SystemPrefs.MV_FILES"),  //$NON-NLS-1$
+                                     getResourceString("CANCEL")  //$NON-NLS-1$
+                                   };
+                int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                            getLocalizedMessage("SystemPrefs.MV_FILES_MSG"),  //$NON-NLS-1$
+                                                            getResourceString("SystemPrefs.ATTCH_TITLE"),  //$NON-NLS-1$
+                                                            JOptionPane.YES_NO_OPTION,
+                                                            JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                if (userChoice == JOptionPane.YES_OPTION)
+                {
+                    doMoveFiles = true;
+                } else
+                {
+                    return false;
+                }
+            }
+            
+            if (doMoveFiles)
+            {
+                File newDir = new File(newPath);
+                try
+                {
+                    AttachmentUtils.getAttachmentManager().setDirectory(newDir);
+                    
+                    //File newParentDir = new File(newDir.getParent());
+                    for (File file : oldDir.listFiles())
+                    {
+                        if (file.isDirectory())
+                        {
+                            FileUtils.copyDirectoryToDirectory(file, newDir);
+                            
+                        } else if (!file.getName().equals(".") && !file.getName().equals(".."))
+                        {
+                            FileUtils.copyFileToDirectory(file, newDir);
+                        }
+                    }
+                    //FileUtils.copyDirectoryToDirectory(oldDir, newParentDir);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    try
+                    {
+                        AttachmentUtils.getAttachmentManager().setDirectory(oldDir);
+                        
+                    } catch (Exception ex2)
+                    {
+                        ex2.printStackTrace();
+                    }
+                    UIRegistry.showLocalizedError("SystemPrefs.NO_MOVE_ATTCH", newDir.getAbsoluteFile());
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    public static void resetSplashImage()
+    {
+        IconEntry entry      = IconManager.getIconEntryByName("SpecifySplash");
+        IconEntry entryCache = IconManager.getIconEntryByName("SpecifySplashCache");
+        entry.setIcon(entryCache.getIcon());
+    }
+    
+    /**
+     * 
+     */
+    public static void changeSplashImage()
+    {
+        String userSplashIconPath = AppPreferences.getLocalPrefs().get(SPECIFY_BG_IMG_PATH, null);
+        if (StringUtils.isNotEmpty(userSplashIconPath))
+        {
+            IconEntry entry = IconManager.getIconEntryByName("SpecifySplash");
+            if (entry != null)
+            {
+                try
+                {   
+                    entry.setIcon(new ImageIcon(userSplashIconPath));
+                    
+                } catch (Exception ex)
+                {
+                     ex.printStackTrace();
+                }
             }
         }
     }

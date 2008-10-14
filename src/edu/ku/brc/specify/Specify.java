@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -103,7 +104,6 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.af.tasks.StartUpTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
@@ -130,7 +130,6 @@ import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
-import edu.ku.brc.specify.config.init.SetupDivsionCollection;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -157,6 +156,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
+import edu.ku.brc.specify.prefs.SystemPrefs;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tools.FormDisplayer;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
@@ -168,6 +168,7 @@ import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.GraphicsUtils;
+import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
@@ -198,6 +199,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     private static final Logger  log                = Logger.getLogger(Specify.class);
     
     public static final boolean IS_DEVELOPMENT     = true;
+    
+    private static final String ATTACHMENT_PATH_PREF = "attachment.path";
     
     // The preferred size of the demo
     private static final int    PREFERRED_WIDTH    = 900;
@@ -346,13 +349,36 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         thumb.setQuality(.5f);
         thumb.setMaxHeight(128);
         thumb.setMaxWidth(128);
-
+        
+        // Load Local Prefs
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.setDirPath(UIRegistry.getAppDataDir());
+        //localPrefs.load(); moved to end for not-null constraint
+        /*String         derbyPath  = localPrefs.get("javadb.location", null);
+        if (StringUtils.isNotEmpty(derbyPath))
+        {
+            UIRegistry.setJavaDBDir(derbyPath);
+            log.debug("JavaDB Path: "+UIRegistry.getJavaDBPath());
+        }*/
+        
+        String userSplashIconPath = AppPreferences.getLocalPrefs().get("specify.bg.image", null);
+        if (userSplashIconPath != null)
+        {
+            SystemPrefs.changeSplashImage();
+        }
+        
         AttachmentManagerIface attachMgr = null;
         
         File location = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
         try
         {
-            attachMgr = new FileStoreAttachmentManager(location);
+            String path = localPrefs.get(ATTACHMENT_PATH_PREF, null);
+            attachMgr = new FileStoreAttachmentManager(path != null ? new File(path) : location);
+            
+            if (path == null)
+            {
+                localPrefs.put(ATTACHMENT_PATH_PREF, location.getAbsolutePath());
+            }
         }
         catch (IOException e1)
         {
@@ -386,19 +412,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         defClassActionHandler.registerActionHandler(TaxonAttachment.class,                attachmentDisplayer);
         
         //defClassActionHandler.registerActionHandler(Collector.class, new CollectorActionListener());
-        
-        
-        // Load Local Prefs
-        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        localPrefs.setDirPath(UIRegistry.getAppDataDir());
-        //localPrefs.load(); moved to end for not-null constraint
-        /*String         derbyPath  = localPrefs.get("javadb.location", null);
-        if (StringUtils.isNotEmpty(derbyPath))
-        {
-            UIRegistry.setJavaDBDir(derbyPath);
-            log.debug("JavaDB Path: "+UIRegistry.getJavaDBPath());
-        }*/
-        
         
         
         /////////////////////////////////////////////

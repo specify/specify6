@@ -17,6 +17,7 @@ import javax.swing.event.HyperlinkListener;
 
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.AttachmentUtils;
 
 /**
@@ -41,7 +42,7 @@ public class HtmlDescPane extends SimpleDescPane implements HyperlinkListener
         super(name,task,""); //$NON-NLS-1$
         this.removeAll();
         JEditorPane htmlPane   = new JEditorPane("text/html", htmlDesc); //$NON-NLS-1$
-        final JScrollPane scrollPane = new JScrollPane(htmlPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        final JScrollPane scrollPane = UIHelper.createScrollPane(htmlPane);
         this.add(scrollPane, BorderLayout.CENTER);
         htmlPane.setEditable(false);
         htmlPane.addHyperlinkListener(this);

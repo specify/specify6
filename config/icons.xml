@@ -10,6 +10,7 @@
     <icon name="Specify16"        file="specify16.png" sizes="16"/>
     <icon name="SpecifyLargeIcon" file="specify128.png" sizes="NonStd"/>
     <icon name="SpecifySplash"    file="SpecifyBigSplash.png" sizes="NonStd"/>
+    <icon name="SpecifySplashCache" file="SpecifyBigSplash.png" sizes="NonStd"/>
     
     <icon name="Save"             file="Save32x32.png" sizes="all"/>
     <icon name="Import"           file="ImportData16x16.png" sizes="16"/>

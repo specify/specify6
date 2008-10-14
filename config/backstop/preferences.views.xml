@@ -351,10 +351,10 @@
                     <cell type="field" id="7" name="specify.bg.image" cols="30" uitype="browse" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="separator" label="SPECIFY_BG_IMG" colspan="5"/>
+                    <cell type="separator" label="ATTCH_PATH" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="field" id="7" name="specify.bg.image" cols="30" uitype="browse" colspan="4"/>
+                    <cell type="field" id="8" name="attachment.path" cols="30" uitype="browse" colspan="4"/>
                 </row>
             </rows>
         </viewdef>

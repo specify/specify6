@@ -77,6 +77,13 @@ public interface AttachmentManagerIface
     public void deleteAttachmentFiles(Attachment attachment) throws IOException;
     
     /**
+     * Resets the baseDirectory.
+     * @param baseDir the new base directory
+     * @throws IOException
+     */
+    public void setDirectory(File baseDir) throws IOException;
+    
+    /**
      * Perform any internal cleanup needed before shutdown.
      */
     public void cleanup();

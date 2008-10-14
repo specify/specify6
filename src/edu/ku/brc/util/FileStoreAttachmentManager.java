@@ -44,9 +44,18 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      */
     public FileStoreAttachmentManager(final File baseDirectory) throws IOException
     {
-        this.baseDirectory = baseDirectory.getAbsolutePath();
-        originalsDir = new File(baseDirectory + File.separator + "originals");
-        thumbsDir    = new File(baseDirectory + File.separator + "thumbnails");
+        setDirectory(baseDirectory);
+    }
+    
+    /**
+     * @param baseDir
+     * @throws IOException
+     */
+    public void setDirectory(final File baseDir) throws IOException
+    {
+        this.baseDirectory = baseDir.getAbsolutePath();
+        this.originalsDir  = new File(baseDirectory + File.separator + "originals");
+        this.thumbsDir     = new File(baseDirectory + File.separator + "thumbnails");
         
         // create the directories, if they don't already exist
         originalsDir.mkdirs();
@@ -68,11 +77,11 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#setStorageLocationIntoAttachment(edu.ku.brc.specify.datamodel.Attachment)
      */
-    public void setStorageLocationIntoAttachment(Attachment attachment)
+    public void setStorageLocationIntoAttachment(final Attachment attachment)
     {
-        String attName = attachment.getOrigFilename();
-        int lastPeriod = attName.lastIndexOf('.');
-        String suffix = ".att";
+        String attName    = attachment.getOrigFilename();
+        int    lastPeriod = attName.lastIndexOf('.');
+        String suffix     = ".att";
         if (lastPeriod!=-1)
         {
             // Make sure the file extension (if any) remains the same so the host
@@ -97,7 +106,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getOriginal(edu.ku.brc.specify.datamodel.Attachment)
      */
-    public File getOriginal(Attachment attachment)
+    public File getOriginal(final Attachment attachment)
     {
         String fileLoc = attachment.getAttachmentLocation();
         File storedFile = new File(baseDirectory + File.separator + "originals" + File.separator + fileLoc);
@@ -111,7 +120,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#getThumbnail(edu.ku.brc.specify.datamodel.Attachment)
      */
-    public File getThumbnail(Attachment attachment)
+    public File getThumbnail(final Attachment attachment)
     {
         String fileLoc = attachment.getAttachmentLocation();
         File storedFile = new File(baseDirectory + File.separator + "thumbnails" + File.separator + fileLoc);
@@ -126,7 +135,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#storeAttachmentFile(edu.ku.brc.specify.datamodel.Attachment, java.io.File, java.io.File)
      */
-    public void storeAttachmentFile(Attachment attachment, File attachmentFile, File thumbnail) throws IOException
+    public void storeAttachmentFile(final Attachment attachment, final File attachmentFile, final File thumbnail) throws IOException
     {
         // copy the original into the storage system
         String attachLoc = attachment.getAttachmentLocation();
@@ -148,7 +157,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#replaceOriginal(edu.ku.brc.specify.datamodel.Attachment, java.io.File)
      */
-    public void replaceOriginal(Attachment attachment, File newOriginal, File newThumbnail) throws IOException
+    public void replaceOriginal(final Attachment attachment, final File newOriginal, final File newThumbnail) throws IOException
     {
         String attachLoc = attachment.getAttachmentLocation();
         File origFile = new File(baseDirectory + File.separator + "originals" + File.separator + attachLoc);
@@ -165,7 +174,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
      * @param newFile the replacement version
      * @throws IOException a disk IO error occurred during the process
      */
-    protected void replaceFile(File origFile, File newFile) throws IOException
+    protected void replaceFile(final File origFile, final File newFile) throws IOException
     {
         File tmpOrig = File.createTempFile("sp6-", ".tmp");
         FileUtils.copyFile(origFile, tmpOrig);
@@ -189,7 +198,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#deleteAttachmentFiles(edu.ku.brc.specify.datamodel.Attachment)
      */
-    public void deleteAttachmentFiles(Attachment attachment) throws IOException
+    public void deleteAttachmentFiles(final Attachment attachment) throws IOException
     {
         String attachLoc = attachment.getAttachmentLocation();
         File origFile = new File(baseDirectory + File.separator + "originals" + File.separator + attachLoc);
