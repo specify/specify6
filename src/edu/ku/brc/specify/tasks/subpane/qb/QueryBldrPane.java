@@ -81,6 +81,8 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
+import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -692,19 +694,36 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             list.clear();
             FieldQRI pqri = qfi.getFieldQRI();
             TableTree parent = pqri.getTableTree();
+            boolean addToList = true;
             if (pqri instanceof RelQRI)
             {
                 RelQRI relQRI = (RelQRI)pqri;
                 RelationshipType relType = relQRI.getRelationshipInfo().getType();
+                
+                //XXX Formatter.getSingleField() checks for ZeroOrOne and OneToOne rels.
+                
                 if (!relType.equals(RelationshipType.ManyToOne) 
                         && !relType.equals(RelationshipType.ManyToMany)/*treat manytomany as onetomany*/) //Maybe need to consider some types of OneToOne also?????????
                 {
                     //parent will initially point to the related table
                     //and don't need to add related table unless it has children displayed/queried,
                     parent = parent.getParent();
+                    addToList = false;
+                }
+                else
+                {
+                    UIFieldFormatterIFace formatter = relQRI.getFormatter();
+                    if (formatter != null && formatter instanceof DataObjDataFieldFormatIFace)
+                    {
+                        addToList = ((DataObjDataFieldFormatIFace )formatter).getSingleField() != null;
+                    }
+                    else
+                    {
+                        addToList = false;
+                    }
                 }
             }
-            else
+            if (addToList)
             {
                 list.insertElementAt(pqri, 0);
             }
@@ -1097,7 +1116,33 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     lbl = fixFldNameForJR(lbl);
                 }
                 ERTICaptionInfoQB erti = null;
+                
+                //Test to see if it is actually necessary to use a ERTICaptionInfoRel for the field.
+                boolean buildRelERTI = false;
                 if (qfp.getFieldQRI() instanceof RelQRI)
+                {
+                    //Test to see if it is actually necessary to use a ERTICaptionInfoRel for the field.
+                    RelationshipType relType = ((RelQRI )qfp.getFieldQRI()).getRelationshipInfo().getType();
+                    //XXX Formatter.getSingleField() checks for ZeroOrOne and OneToOne rels.
+                    if (relType != RelationshipType.ManyToOne /*&& relType != RelationshipType.ZeroOrOne && relType != RelationshipType.OneToOne*/)
+                    {
+                        buildRelERTI = true;
+                    }
+                    else
+                    {
+                        UIFieldFormatterIFace formatter = qfp.getFieldQRI().getFormatter();
+                        if (formatter != null && formatter instanceof DataObjDataFieldFormatIFace)
+                        {
+                            buildRelERTI = ((DataObjDataFieldFormatIFace )formatter).getSingleField() == null;
+                        }
+                        else
+                        {
+                            buildRelERTI = true;
+                        }
+                    }
+                }
+                
+                if (buildRelERTI)
                 {
                     RelQRI rqri = (RelQRI )qfp.getFieldQRI();
                     RelationshipType relType = rqri.getRelationshipInfo().getType();

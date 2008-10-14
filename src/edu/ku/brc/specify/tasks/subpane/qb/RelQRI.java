@@ -13,6 +13,8 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -113,6 +115,8 @@ public class RelQRI extends FieldQRI
         if (relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.OneToMany)
                 || relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.ZeroOrOne) /*What about ManyToMany?? And some OneToOnes???*/)
         {
+            //XXX Formatter.getSingleField() checks for ZeroOrOne rels
+
             String name;
             if (StringUtils.isEmpty(relationshipInfo.getColName()) /*It should always be empty*/)
             {
@@ -129,6 +133,18 @@ public class RelQRI extends FieldQRI
             return ta.getAbbreviation(table.getTableTree().getParent()) + "." + name;
         }
         //else ManyToOnes.   Is this OK for all OneToOnes too?
+        
+        //If the formatter only uses one field, just retrieve that field with hql.
+        UIFieldFormatterIFace formatter = getFormatter();
+        if (formatter != null && formatter instanceof DataObjDataFieldFormatIFace)
+        {
+            String formatField = ((DataObjDataFieldFormatIFace )formatter).getSingleField();
+            if (formatField != null)
+            {
+                return ta.getAbbreviation(table.getTableTree()) + "." + formatField;
+            }
+        }
+
         return ta.getAbbreviation(table.getTableTree()) + "." + deCapitalize(table.getTableInfo().getClassObj().getSimpleName()) + "Id";
     }
 
