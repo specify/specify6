@@ -15,6 +15,8 @@ import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.af.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -102,6 +104,19 @@ public class RelQRI extends FieldQRI
         return table.getTableInfo();    
     }
 
+    /**
+     * @return the DataObjDataFieldFormatter for the related table.
+     */
+    public DataObjDataFieldFormatIFace getDataObjFormatter()
+    {
+        DataObjSwitchFormatter sf = DataObjFieldFormatMgr.getInstance().getDataFormatter(getTableInfo().getShortClassName());
+        if (sf != null && sf.isSingle())
+        {
+            return sf.getSingle();
+        }
+        return null;
+    }
+    
     protected String deCapitalize(final String toDecap)
     {
         return toDecap.substring(0, 1).toLowerCase().concat(toDecap.substring(1));
@@ -139,10 +154,10 @@ public class RelQRI extends FieldQRI
         //XXX Formatter.getSingleField() checks for OneToOne rels
         if (relationshipInfo.getType() == RelationshipType.ManyToOne)
         {
-            UIFieldFormatterIFace formatter = getFormatter();
-            if (formatter != null && formatter instanceof DataObjDataFieldFormatIFace)
+            DataObjDataFieldFormatIFace formatter = getDataObjFormatter();
+            if (formatter != null)
             {
-                String formatField = ((DataObjDataFieldFormatIFace )formatter).getSingleField();
+                String formatField = formatter.getSingleField();
                 if (formatField != null)
                 {
                     return ta.getAbbreviation(table.getTableTree()) + "." + formatField;

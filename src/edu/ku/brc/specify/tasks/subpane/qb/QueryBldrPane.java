@@ -712,10 +712,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 else
                 {
-                    UIFieldFormatterIFace formatter = relQRI.getFormatter();
-                    if (formatter != null && formatter instanceof DataObjDataFieldFormatIFace)
+                    DataObjDataFieldFormatIFace formatter = relQRI.getDataObjFormatter();
+                    if (formatter != null)
                     {
-                        addToList = ((DataObjDataFieldFormatIFace )formatter).getSingleField() != null;
+                        addToList = formatter.getSingleField() != null;
                     }
                     else
                     {
@@ -1130,10 +1130,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     }
                     else
                     {
-                        UIFieldFormatterIFace formatter = qfp.getFieldQRI().getFormatter();
-                        if (formatter != null && formatter instanceof DataObjDataFieldFormatIFace)
+                        DataObjDataFieldFormatIFace formatter = ((RelQRI )qfp.getFieldQRI()).getDataObjFormatter();
+                        if (formatter != null)
                         {
-                            buildRelERTI = ((DataObjDataFieldFormatIFace )formatter).getSingleField() == null;
+                            buildRelERTI = formatter.getSingleField() == null;
                         }
                         else
                         {
