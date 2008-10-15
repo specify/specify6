@@ -11,8 +11,7 @@ import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.DefaultComboBoxModel;
@@ -30,6 +29,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 
 /**
@@ -40,36 +40,35 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
  * Jan 18, 2008
  *
  */
-public class CatNumScheme extends BaseSetupPanel
+public class FormatterPickerPanel extends BaseSetupPanel
 {
     protected JCheckBox isNumericChk    = createCheckBox("Is Numeric Only?");// I18N
-    protected JComboBox catNumSchemeCBX = createComboBox(new DefaultComboBoxModel());
+    protected JComboBox formatterCBX    = createComboBox(new DefaultComboBoxModel());
     protected JLabel    isNumericLbl    = createLabel("");
+    protected boolean   doingCatNums;
+    protected List<UIFieldFormatterIFace> fmtList;
     
-    public CatNumScheme(final JButton nextBtn)
+    public FormatterPickerPanel(final JButton nextBtn, 
+                                final boolean doingCatNums)
     {
-        super("cns", nextBtn);
+        super("autonumber", nextBtn);
         
+        this.doingCatNums = doingCatNums;
         
-        catNumSchemeCBX.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                UIFieldFormatterIFace fmt = (UIFieldFormatterIFace)catNumSchemeCBX.getSelectedItem();
-                if (fmt != null)
-                {
-                    isNumericLbl.setText(getResourceString(fmt.isNumeric() ? "Yes" : "No"));
-                }
-            }
-        });
-        catNumSchemeCBX.getModel().addListDataListener(new ListDataListener() {
+        formatterCBX.getModel().addListDataListener(new ListDataListener() {
             public void contentsChanged(ListDataEvent e)
             {
-                UIFieldFormatterIFace fmt = (UIFieldFormatterIFace)catNumSchemeCBX.getSelectedItem();
-                if (fmt != null)
+                int index = formatterCBX.getSelectedIndex();
+                if (index > -1)
                 {
-                    isNumericLbl.setText(getResourceString(fmt.isNumeric() ? "Yes" : "No"));
+                    UIFieldFormatterIFace fmt = fmtList.get(index);
+                    if (fmt != null)
+                    {
+                        isNumericLbl.setText(getResourceString(fmt.isNumeric() ? "Yes" : "No"));
+                    }
                 }
             }
+            
             public void intervalAdded(ListDataEvent e)
             {
                 contentsChanged(e);
@@ -80,21 +79,34 @@ public class CatNumScheme extends BaseSetupPanel
             }
         });
         
-        for (UIFieldFormatterIFace fmt : UIFieldFormatterMgr.getInstance().getFormatterList(CollectionObject.class))
+        fmtList = UIFieldFormatterMgr.getInstance().getFormatterList(doingCatNums ? CollectionObject.class : Accession.class);
+        
+        if (!doingCatNums)
         {
-            //System.out.println(fmt.getName()+"  "+fmt.getTitle());
-            ((DefaultComboBoxModel)catNumSchemeCBX.getModel()).addElement(fmt);
+            ((DefaultComboBoxModel)formatterCBX.getModel()).addElement("None"); // I18N
         }
         
+        for (UIFieldFormatterIFace fmt : fmtList)
+        {
+            ((DefaultComboBoxModel)formatterCBX.getModel()).addElement(fmt.getName());
+        }
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder pb = new PanelBuilder(new FormLayout("p,4px,p,f:p:g", "p,4px,p,4px,p"), this);
-        pb.add(createLabel("Choose a Catalog Numbering Format:"), cc.xywh(1, 1, 4, 1)); // I18N
-        pb.add(createLabel("Format:", SwingConstants.RIGHT), cc.xy(1, 3));// I18N
-        pb.add(catNumSchemeCBX, cc.xy(3, 3));
+        int y = 1;
+        pb.add(createLabel("Choose a "+(doingCatNums ? "Catalog" : "Acccesion")+ " Numbering Format:"), cc.xywh(1, y, 4, 1)); // I18N
+        y +=2;
         
-        pb.add(createLabel("Is Numeric:", SwingConstants.RIGHT), cc.xy(1, 5));// I18N
-        pb.add(isNumericLbl, cc.xy(3, 5));
+        pb.add(createLabel("Format:", SwingConstants.RIGHT), cc.xy(1, y));// I18N
+        pb.add(formatterCBX, cc.xy(3, y));
+        y +=2;
+
+        if (doingCatNums)
+        {
+            pb.add(createLabel("Is Numeric:", SwingConstants.RIGHT), cc.xy(1, y));// I18N
+            pb.add(isNumericLbl, cc.xy(3, y));
+            y +=2;
+        }
 
     }
 
@@ -104,7 +116,13 @@ public class CatNumScheme extends BaseSetupPanel
     @Override
     public void getValues(final Properties props)
     {
-        props.put(makeName("catnumsheme"), catNumSchemeCBX.getSelectedItem().toString());
+        if (doingCatNums || formatterCBX.getSelectedIndex() > 0)
+        {
+            props.put(doingCatNums ? "catnumfmt" : "accnumfmt", formatterCBX.getSelectedItem());
+        } else
+        {
+            props.remove(doingCatNums ? "catnumfmt" : "accnumfmt");
+        }
     }
 
     /* (non-Javadoc)
@@ -113,9 +131,6 @@ public class CatNumScheme extends BaseSetupPanel
     @Override
     public void setValues(Properties values)
     {
-        //dbNameTxt.setText(values.getProperty(makeName("dbname")));
-        
-        //String driverName = values.get(makeName("driver");
     }
     
     /* (non-Javadoc)
@@ -133,7 +148,6 @@ public class CatNumScheme extends BaseSetupPanel
     @Override
     public void updateBtnUI()
     {
-        // TODO Auto-generated method stub
 
     }
 

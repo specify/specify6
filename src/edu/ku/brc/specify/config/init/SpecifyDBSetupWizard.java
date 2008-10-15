@@ -1,14 +1,14 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
+ */
 package edu.ku.brc.specify.config.init;
 
-import static edu.ku.brc.specify.config.init.BaseSetupPanel.makeName;
 import static edu.ku.brc.ui.UIHelper.createButton;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +23,8 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -38,12 +40,23 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.RecordSetFactory;
+import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.af.core.db.BackupServiceFactory;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.af.ui.weblink.WebLinkMgr;
+import edu.ku.brc.dbsupport.CustomQueryFactory;
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
@@ -51,11 +64,18 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
-public class SetupDialog extends JFrame
+/**
+ * @author rods
+ *
+ * @code_status Alpha
+ *
+ * Created Date: Oct 15, 2008
+ *
+ */
+public class SpecifyDBSetupWizard extends JFrame
 {
-    private static final Logger log = Logger.getLogger(SetupDialog.class);
+    private static final Logger log = Logger.getLogger(SpecifyDBSetupWizard.class);
     
-    private static final boolean     DO_CHANGE_USERNAME = false;
     protected boolean                assumeDerby = false;
     protected final String           HOSTNAME = "localhost";
     protected boolean                doLoginOnly = false;
@@ -84,7 +104,7 @@ public class SetupDialog extends JFrame
     /**
      * @param specify
      */
-    public SetupDialog(final Specify specify)
+    public SpecifyDBSetupWizard(final Specify specify)
     {
         super();
         
@@ -98,11 +118,12 @@ public class SetupDialog extends JFrame
             
         }
         
+        setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
+        
         this.specify = specify;
         
         setTitle("Configuring a Database");
         cardPanel = new JPanel(cardLayout);
-        
         
         cancelBtn  = createButton(UIRegistry.getResourceString("CANCEL"));
         helpBtn    = createButton(UIRegistry.getResourceString("HELP"));
@@ -124,40 +145,69 @@ public class SetupDialog extends JFrame
         
         //agentPanel    = new NewAgentPanel(nextBtn);
         //panels.add(agentPanel);
+
+        boolean doTesting = true;
+        if (doTesting)
+        {
+            props.put("hostName", "localhost");
+            props.put("dbName", "testfish");
+            props.put("userName", "Specify");
+            props.put("password", "Specify");
+            
+            props.put("firstName", "Test");
+            props.put("lastName", "Usewr");
+            props.put("middleInitial", "a");
+            props.put("usrUsername", "testuser");
+            props.put("usrPassword", "testuser");
+    
+            props.put("instName", "KU natural History Museum");
+            props.put("instTitle", "KU natural History Museum");
+            props.put("instAbbrev", "KU-NHM");
+    
+            props.put("divName", "Fish");
+            props.put("divTitle", "Ichty");
+            props.put("divAbbrev", "IT");
+    
+            props.put("collPrefix", "KUFSH");
+            props.put("collName", "Fish");
+        }
+
+        props.put("userType", "CollectionManager");
         
-        userPanel     = new DatabasePanel(nextBtn, true);
+        userPanel = new DatabasePanel(nextBtn, true);
         panels.add(userPanel);
         //locationPanel = new DBLocationPanel(nextBtn);
-        
+               
         UIFieldFormatterMgr.setDoingLocal(true);
         
         
         //panels.add(locationPanel);
         panels.add(new GenericFormPanel("agent", 
                 "Enter Collection Manager Information", 
-                new String[] { "First Name", "Last Name", "Middle Initial"}, 
-                new String[] { "firstName", "lastName", "middleInitial"}, 
+                new String[] { "First Name", "Last Name", "Middle Initial", "User Login Info", "Username", "Password"}, 
+                new String[] { "firstName", "lastName", "middleInitial", "-", "usrUsername", "usrPassword"}, 
                 nextBtn));
          
         panels.add(new GenericFormPanel("inst", 
                 "Enter Institution Information",
                 new String[] { "Name", "Title", "Abbrev"}, 
-                new String[] { "name", "title", "abbrev"}, 
+                new String[] { "instName", "instTitle", "instAbbrev"}, 
                 nextBtn));
          
         panels.add(new GenericFormPanel("div", 
                 "Enter Division Information", 
                 new String[] { "Name", "Title", "Abbrev"}, 
-                new String[] { "name", "title", "abbrev"}, 
+                new String[] { "divName", "divTitle", "divAbbrev"}, 
                 nextBtn));
          
         panels.add(new GenericFormPanel("collection", 
                 "Enter Collection Information", 
                 new String[] { "Prefix", "Name"}, 
-                new String[] { "prefix", "name"}, 
+                new String[] { "collPrefix", "collName"}, 
                 nextBtn));
         
-        panels.add(new CatNumScheme(nextBtn));
+        panels.add(new FormatterPickerPanel(nextBtn, true));
+        panels.add(new FormatterPickerPanel(nextBtn, false));
          
          
         lastStep = panels.size();
@@ -227,7 +277,15 @@ public class SetupDialog extends JFrame
         
         builder.setDefaultDialogBorder();
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setContentPane(builder.getPanel());
+        
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        PanelBuilder    iconBldr    = new PanelBuilder(new FormLayout("f:p:g,130px,f:p:g", "f:p:g,130px,f:p:g"));
+        iconBldr.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(2, 2));
+        mainPanel.add(iconBldr.getPanel(), BorderLayout.WEST);
+        mainPanel.add(builder.getPanel(), BorderLayout.CENTER);
+            
+        
+        setContentPane(mainPanel);
         
         pack();
 
@@ -250,47 +308,6 @@ public class SetupDialog extends JFrame
         }
         
         backBtn.setEnabled(step > 0); 
-    }
-    
-    /**
-     * @param doAutoLogin
-     * @return
-     */
-    protected boolean fillPrefs(final boolean doAutoLogin)
-    {
-        AppPreferences.getLocalPrefs().putBoolean("login.rememberuser", true);
-        AppPreferences.getLocalPrefs().putBoolean("login.rememberpassword", true);
-        AppPreferences.getLocalPrefs().putBoolean("login.autologin", doAutoLogin);
-        
-        AppPreferences.getLocalPrefs().put("login.username", "guest");
-        AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt("guest"));
-        
-        AppPreferences.getLocalPrefs().put("login.databases", userPanel.getDbName());
-        AppPreferences.getLocalPrefs().put("login.servers",   HOSTNAME);
-        
-        AppPreferences.getLocalPrefs().put("login.servers_selected", HOSTNAME);
-        AppPreferences.getLocalPrefs().put("login.dbdriver_selected", userPanel.getDriver().getName());
-        AppPreferences.getLocalPrefs().put("login.databases_selected", userPanel.getDbName());
-        
-        AppPreferences.getLocalPrefs().put("javadb.location", UIRegistry.getJavaDBPath());
-        log.debug(UIRegistry.getJavaDBPath());
-
-        if (DO_CHANGE_USERNAME)
-        {
-            AppPreferences.getLocalPrefs().put("startup.username",  userPanel.getUsername());
-            AppPreferences.getLocalPrefs().put("startup.password",  Encryption.encrypt(new String(userPanel.getPassword())));
-        }
-        
-        try
-        {
-            AppPreferences.getLocalPrefs().flush();
-            return true;
-            
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return false;
     }
     
     /**
@@ -355,10 +372,10 @@ public class SetupDialog extends JFrame
 
         if (doLoginOnly && assumeDerby)
         {
-            if (fillPrefs(true))
-            {
+            //if (fillPrefs(true))
+            //{
                 specify.startUp();
-            }
+            //}
             
         } else
         {
@@ -374,35 +391,29 @@ public class SetupDialog extends JFrame
                         try
                         {
                             DatabaseDriverInfo driverInfo = userPanel.getDriver();
+                            props.put("driver", driverInfo);
+                            
                             if (driverInfo == null)
                             {
                                 throw new RuntimeException("Couldn't find driver by name ["+driverInfo+"] in driver list.");
                             }
 
                             BuildSampleDatabase builder = new BuildSampleDatabase();
-                            builder.getFrame().setIconImage(IconManager.getImage("Specify16", IconManager.IconSize.Std16).getImage());
                             
-                            DBConfigInfo config = new DBConfigInfo(driverInfo,
-                                                                    HOSTNAME,
-                                                                    userPanel.getDbName(),
-                                                                    userPanel.getUsername(), 
-                                                                    userPanel.getPassword(), 
-                                                                    props.getProperty(makeName("agent", "lastName")), 
-                                                                    props.getProperty(makeName("agent", "firstName")), 
-                                                                    "", // email
-                                                                    userPanel.getDiscipline(),
-                                                                    props.getProperty(makeName("inst", "name")), 
-                                                                    props.getProperty(makeName("div", "name"))
-                                                                    );
-                            config.setCollectionName(props.getProperty(makeName("collection", "name")));
-                            config.setCollectionPrefix(props.getProperty(makeName("collection", "prefix")));
-                            config.setDivAbbrev(props.getProperty(makeName("div", "prefix")));
-                            config.setDivTitle(props.getProperty(makeName("div", "title")));
+                            //builder.getFrame().setIconImage(IconManager.getImage("Specify16", IconManager.IconSize.Std16).getImage());
                             
-                            config.setInstTitle(props.getProperty(makeName("inst", "title")));
-
-                            isOK = builder.buildEmptyDatabase(config);
-                                                              
+                            props.put("disciplineType", userPanel.getDisciplineType());
+                            
+                            /*for (Object key : props.keySet())
+                            {
+                                System.out.println("["+key+"]["+props.get(key)+"]");
+                            }*/
+                            isOK = builder.buildEmptyDatabase(props);
+                            
+                            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                                    "The Specify database build process "+(isOK ? "completed with no errors." : "did not complete correctly."),
+                                    "Complete", JOptionPane.INFORMATION_MESSAGE);
+                            
                         } catch (Exception ex)
                         {
                             ex.printStackTrace();
@@ -416,11 +427,7 @@ public class SetupDialog extends JFrame
                         log.debug("isOK "+isOK);
                         if (isOK)
                         {
-                            //if (fillPrefs(false))
-                            //{
-                                HibernateUtil.shutdown();
-                                //specify.startUp();
-                            //}
+                            HibernateUtil.shutdown();
                         }
                     }
                 };
@@ -431,6 +438,31 @@ public class SetupDialog extends JFrame
                 ex.printStackTrace();
             }
         }
+    }
+    
+    /**
+     * Setup all the System properties. This names all the needed factories. 
+     */
+    public static void setUpSystemProperties()
+    {
+        // Name factories
+        System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
+        System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences //$NON-NLS-1$
+        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");            // Needed By UIRegistry //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and logging transactions //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty(DataProviderFactory.factoryName,             "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty(CustomQueryFactory.factoryName,              "edu.ku.brc.specify.dbsupport.SpecifyCustomQueryFactory"); //$NON-NLS-1$
+        System.setProperty(UIFieldFormatterMgr.factoryName,             "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");           // Needed for CatalogNumberign //$NON-NLS-1$
+        System.setProperty(QueryAdjusterForDomain.factoryName,          "edu.ku.brc.specify.dbsupport.SpecifyQueryAdjusterForDomain"); // Needed for ExpressSearch //$NON-NLS-1$
+        System.setProperty(SchemaI18NService.factoryName,               "edu.ku.brc.specify.config.SpecifySchemaI18NService");         // Needed for Localization and Schema //$NON-NLS-1$
+        System.setProperty(WebLinkMgr.factoryName,                      "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                // Needed for WebLnkButton //$NON-NLS-1$
+        System.setProperty(DataObjFieldFormatMgr.factoryName,           "edu.ku.brc.specify.ui.SpecifyDataObjFieldFormatMgr");         // Needed for WebLnkButton //$NON-NLS-1$
+        System.setProperty(RecordSetFactory.factoryName,                "edu.ku.brc.specify.config.SpecifyRecordSetFactory");          // Needed for Searching //$NON-NLS-1$
+        System.setProperty(DBTableIdMgr.factoryName,                    "edu.ku.brc.specify.config.SpecifyDBTableIdMgr");              // Needed for Tree Field Names //$NON-NLS-1$
+        System.setProperty(SecurityMgr.factoryName,                     "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");              // Needed for Tree Field Names //$NON-NLS-1$
+        System.setProperty(BackupServiceFactory.factoryName,            "edu.ku.brc.af.core.db.MySQLBackupService");                   // Needed for Backup and Restore //$NON-NLS-1$
     }
     
     /**
@@ -484,7 +516,17 @@ public class SetupDialog extends JFrame
         {
             public void run()
             {
-                SetupDialog setup = new SetupDialog(null);
+                // Set App Name, MUST be done very first thing!
+                UIRegistry.setAppName("Specify");  //$NON-NLS-1$
+                
+                // Then set this
+                IconManager.setApplicationClass(Specify.class);
+                IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
+                IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
+                IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
+                
+                setUpSystemProperties();
+                SpecifyDBSetupWizard setup = new SpecifyDBSetupWizard(null);
                 UIHelper.centerAndShow(setup);
             }
         });

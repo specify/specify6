@@ -17,6 +17,7 @@ package edu.ku.brc.ui;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,8 +26,11 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -53,12 +57,27 @@ public class ProgressFrame extends JFrame
     protected boolean      isProcessPercent = false;
     protected int          origMax          = 0;
     
-    public ProgressFrame(String title)
+    /**
+     * @param title
+     */
+    public ProgressFrame(final String title)
     {
-        createUI(title);
+        createUI(title, null);
     }
     
-    protected void createUI(String title)
+    /**
+     * @param title
+     */
+    public ProgressFrame(final String title, final String iconName)
+    {
+        createUI(title, iconName);
+    }
+    
+    /**
+     * @param title
+     * @param iconName
+     */
+    protected void createUI(final String title, final String iconName)
     {
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,5px,p,5px,p,10px,p"));
         CellConstraints cc         = new CellConstraints();
@@ -82,7 +101,21 @@ public class ProgressFrame extends JFrame
         builder.add( closeBtn, cc.xy(1,7));
         
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        setContentPane(builder.getPanel());
+        
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        if (StringUtils.isNotEmpty(iconName))
+        {
+            PanelBuilder    iconBldr    = new PanelBuilder(new FormLayout("f:p:g,130px,f:p:g", "f:p:g,130px,f:p:g"));
+            iconBldr.add(new JLabel(IconManager.getIcon(iconName)), cc.xy(2, 2));
+            mainPanel.add(iconBldr.getPanel(), BorderLayout.WEST);
+            mainPanel.add(builder.getPanel(), BorderLayout.CENTER);
+            
+        } else
+        {
+            mainPanel = builder.getPanel();
+        }
+        
+        setContentPane(mainPanel);
         
         setSize(new Dimension(500,125));
         
@@ -100,6 +133,8 @@ public class ProgressFrame extends JFrame
         });
         
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        
+        pack();
     }
     
     public synchronized void incOverall()

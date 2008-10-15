@@ -89,9 +89,13 @@ public class GenericFormPanel extends BaseSetupPanel
         int i = 0;
         for (String fName : fields)
         {
-            //DBFieldInfo fldInfo = tblInfo != null ? tblInfo.getFieldByName(fName) : null;
-            
-            comps.put(fName, createField(builder, labels[i], row));
+            if (fName.equals("-"))
+            {
+                builder.addSeparator(labels[i], cc.xyw(1, row, 4));
+            } else
+            {
+                comps.put(fName, createField(builder, labels[i], row));
+            }
             row += 2;
             i++;
         }
@@ -130,7 +134,7 @@ public class GenericFormPanel extends BaseSetupPanel
             if (comp instanceof JTextField)
             {
                 String val = ((JTextField)comp).getText();
-                props.put(makeName(fName), val);
+                props.put(fName, val);
                 
                 if (dataObj != null && setter != null)
                 {
@@ -158,7 +162,7 @@ public class GenericFormPanel extends BaseSetupPanel
             JComponent comp = comps.get(fName);
             if (comp instanceof JTextField)
             {
-                String val = values.getProperty(makeName(fName));
+                String val = values.getProperty(fName);
                 if (dataObj != null && getter != null)
                 {
                     Object dataVal = getter.getFieldValue(dataObj, fName);

@@ -211,7 +211,7 @@ public class TestAutoNumbering extends TestCase
                     "Test", 
                     "Test");
             
-            bsd.createEmptyDiscipline(config, null);
+            //bsd.createEmptyDiscipline(config, null);
             
     
             log.info("Saving data into "+dbName+"....");

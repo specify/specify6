@@ -50,6 +50,7 @@ public class DatabasePanel extends BaseSetupPanel
     protected JTextField         usernameTxt;
     protected JTextField         passwordTxt;
     protected JTextField         dbNameTxt;
+    protected JTextField         hostNameTxt;
     protected JComboBox          drivers;
     protected JComboBox          disciplines;
     
@@ -59,7 +60,8 @@ public class DatabasePanel extends BaseSetupPanel
     /**
      * Creates a dialog for entering database name and selecting the appropriate driver.
      */
-    public DatabasePanel(final JButton nextBtn, final boolean doSetDefaultValues)
+    public DatabasePanel(final JButton nextBtn, 
+                         final boolean doSetDefaultValues)
     {
         super("Database", nextBtn);
         
@@ -88,7 +90,7 @@ public class DatabasePanel extends BaseSetupPanel
         
         CellConstraints cc = new CellConstraints();
         
-        int numRows = 3 + (doLoginOnly ? 0 : 2);
+        int numRows = 4 + (doLoginOnly ? 0 : 2);
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", "p:g,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", numRows)+",p:g"), this);
         int row = 1;
         
@@ -97,6 +99,7 @@ public class DatabasePanel extends BaseSetupPanel
         usernameTxt     = createField(builder, "Username",      row);row += 2;
         passwordTxt     = createField(builder, "Password",      row, true);row += 2;
         dbNameTxt       = createField(builder, "Database Name", row);row += 2;
+        hostNameTxt     = createField(builder, "Host Name", row);row += 2;
 
         if (!doLoginOnly)
         {
@@ -122,20 +125,6 @@ public class DatabasePanel extends BaseSetupPanel
             }
         }
         
-        if (doSetDefaultValues)
-        {
-            usernameTxt.setText("guest");
-            passwordTxt.setText("guest");
-            dbNameTxt.setText("WorkBench");  
-        }
-        
-        if (DO_DEBUG) // XXX Debug
-        {
-            usernameTxt.setText("rods");
-            passwordTxt.setText("rods");
-            dbNameTxt.setText("WorkBench");
-            drivers.setSelectedIndex(0);
-        }
         updateBtnUI();
     }
     
@@ -145,10 +134,11 @@ public class DatabasePanel extends BaseSetupPanel
     @Override
     public void getValues(final Properties props)
     {
-        props.put(makeName("username"), usernameTxt.getText());
-        props.put(makeName("password"), passwordTxt.getText());
-        props.put(makeName("dbname"), dbNameTxt.getText());
-        props.put(makeName("driver"), drivers.getSelectedItem().toString());
+        props.put("userName", usernameTxt.getText());
+        props.put("password", passwordTxt.getText());
+        props.put("dbName", dbNameTxt.getText());
+        props.put("hostName", hostNameTxt.getText());
+        props.put("driver", drivers.getSelectedItem().toString());
     }
 
     /* (non-Javadoc)
@@ -157,9 +147,15 @@ public class DatabasePanel extends BaseSetupPanel
     @Override
     public void setValues(Properties values)
     {
-        usernameTxt.setText(values.getProperty(makeName("username")));
-        passwordTxt.setText(values.getProperty(makeName("password")));
-        dbNameTxt.setText(values.getProperty(makeName("dbname")));
+        usernameTxt.setText(values.getProperty("userName"));
+        passwordTxt.setText(values.getProperty("password"));
+        dbNameTxt.setText(values.getProperty("dbName"));
+        hostNameTxt.setText(values.getProperty("hostName"));
+        
+        if (doSetDefaultValues)
+        {
+            drivers.setSelectedIndex(0);
+        }
         
         //String driverName = values.get(makeName("driver");
     }
@@ -230,7 +226,7 @@ public class DatabasePanel extends BaseSetupPanel
         return usernameTxt.getText();
     }
 
-    public DisciplineType getDiscipline()
+    public DisciplineType getDisciplineType()
     {
         return (DisciplineType)disciplines.getSelectedItem();
     }

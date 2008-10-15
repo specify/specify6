@@ -39,7 +39,7 @@ import com.jgoodies.forms.layout.CellConstraints;
  */
 public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
 {
-    protected static final boolean DO_DEBUG = false;
+    protected static final boolean DO_DEBUG = true;
     
     protected String             panelName;
     protected KeyAdapter         keyAdapter;
@@ -71,16 +71,6 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
         return panelName;
     }
     
-    protected String makeName(final String fName)
-    {
-        return makeName(panelName, fName);
-    }
-    
-    public static String makeName(final String pName, final String fName)
-    {
-        return pName+"_"+fName;
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.config.init.SetupPanelIFace#getValues(java.util.Properties)
      */

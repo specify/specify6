@@ -18,7 +18,7 @@ import java.awt.Dimension;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.config.init.SetupDialog;
+import edu.ku.brc.specify.config.init.SpecifyDBSetupWizard;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -66,7 +66,7 @@ public class SpecifyInitializer
         
         if (true)//StringUtils.isEmpty(localPrefs.get("login.dbdriver_selected", null)))
         {
-            final SetupDialog specifyInitFrame = new SetupDialog(specify);
+            final SpecifyDBSetupWizard specifyInitFrame = new SpecifyDBSetupWizard(specify);
             specifyInitFrame.setTitle("SpecifyDBInit - "); //$NON-NLS-1$
             // I can't believe I have to do the following....
             UIHelper.centerWindow(specifyInitFrame);
