@@ -645,11 +645,6 @@ public class QueryFieldPanel extends JPanel
             {
                 if (fieldQRI.getDataClass().equals(Boolean.class))
                 {
-                    if (criteriaStrs.length != 0) { throw new ParseException(getLabel() + " - "
-                            + UIRegistry.getResourceString("QB_INVALID_CRITERIA"), -1); }
-
-                    // kind of a goofy way to handle booleans but works without worrying about
-                    // disabling/removing isNotCheckbox (and criteria)
                     if (operStr.equals(SpQueryField.OperatorType
                             .getString(SpQueryField.OperatorType.TRUE.getOrdinal())))
                     {
