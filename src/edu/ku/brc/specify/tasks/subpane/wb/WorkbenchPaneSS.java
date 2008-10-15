@@ -2542,8 +2542,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             logDebug("-------- " + System.nanoTime());
 
             hasChanged = false;
-            String msg = String.format(getResourceString("WB_SAVED"), new Object[] { workbench
-                    .getName() });
+            String msg = String.format(getResourceString("WB_SAVED"), new Object[] { workbench.getName() });
             UIRegistry.getStatusBar().setText(msg);
         }
         catch (StaleObjectException ex) // was StaleObjectStateException

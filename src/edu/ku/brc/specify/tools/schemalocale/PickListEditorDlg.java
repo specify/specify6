@@ -314,38 +314,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         if (dlg.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
         {
             dlg.getMultiView().getCurrentViewAsFormViewObj().traverseToGetDataFromForms();
-            return savePL(pickList);
-        }
-        return false;
-    }
-    
-    /**
-     * @param pickList
-     */
-    protected boolean savePL(final PickList pickList)
-    {
-        DataProviderSessionIFace session = null;
-        try
-        {
-            session = DataProviderFactory.getInstance().createSession();
-            session.beginTransaction();
-            //collection = session.merge(collection);
-            session.saveOrUpdate(pickList);
-            session.commit();
-            
-            return true;
-            
-        } catch (Exception ex)
-        {
-            //log.error(ex);
-            ex.printStackTrace();
-            
-        } finally 
-        {
-            if (session != null)
-            {
-                session.close();
-            }
+            return PickList.save(true, pickList);
         }
         return false;
     }

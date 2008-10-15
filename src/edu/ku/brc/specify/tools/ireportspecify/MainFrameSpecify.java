@@ -359,8 +359,7 @@ public class MainFrameSpecify extends MainFrame
                 if (freshQ != null)
                 {
                     spRep.setQuery(freshQ);
-                    spRep.setSpecifyUser(AppContextMgr.getInstance().getClassObject(
-                            SpecifyUser.class));
+                    spRep.setSpecifyUser(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
                     session.beginTransaction();
                     transOpen = true;
                     session.save(spRep);

@@ -25,6 +25,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Collection;
 
@@ -50,7 +53,11 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkDataProviderIFace;
+import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 @MappedSuperclass
 public abstract class DataModelObjBase implements FormDataObjIFace,
@@ -68,6 +75,9 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     protected Agent     modifiedByAgent;
     
     protected int       version;
+    
+    // Transient
+    protected static String errMsg = null;
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#initialize()
@@ -742,6 +752,204 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     public String toString()
     {
         return super.toString() + " : " + timestampModified;
+    }
+    
+    /**
+     * Saves the data object.
+     * @return true is ok, false if not
+     */
+    public static boolean save(final Object...dataObjs)
+    {
+        return save(false, dataObjs);
+    }
+    
+    /**
+     * Saves the data object.
+     * @param doShowError whether to show the an error dialog
+     * @return true is ok, false if not
+     */
+    public static boolean save(final boolean doShowError, final Object...dataObjs)
+    {
+        errMsg = null;
+        
+        // save to database
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            session.beginTransaction();
+            
+            boolean doSave = true;
+            if (dataObjs.length == 1)
+            {
+                for (Object obj : dataObjs)
+                {
+                    if (obj instanceof Collection<?>)
+                    {
+                        for (Object dObj : (Collection<?>)obj)
+                        {
+                            session.saveOrUpdate(dObj);
+                        }
+                        doSave = false;
+                    }
+                }
+            }
+            
+            if (doSave)
+            {
+                for (Object obj : dataObjs)
+                {
+                    session.saveOrUpdate(obj);
+                }
+            }
+            session.commit();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+            errMsg = ex.toString();
+            
+            if (doShowError)
+            {
+                UIRegistry.showError(errMsg);
+            }
+            return false;
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Deletes the data object.
+     * @return true is ok, false if not
+     */
+    public static boolean delete(final Object...dataObjs)
+    {
+        return delete(false, dataObjs);
+    }
+    
+    /**
+     * Deletes the data object.
+     * @param doShowError whether to show the an error dialog
+     * @return true is ok, false if not
+     */
+    public static boolean delete(final boolean doShowError, final Object...dataObjs)
+    {
+        errMsg = null;
+        
+        // save to database
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            session.beginTransaction();
+            for (Object obj : dataObjs)
+            {
+                session.delete(obj);
+            }
+            session.commit();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+            errMsg = ex.toString();
+            
+            if (doShowError)
+            {
+                UIRegistry.showError(errMsg);
+            }
+            return false;
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Deletes the data object.
+     * @return true is ok, false if not
+     */
+    public static boolean delete(final int id, final int tableId)
+    {
+        return delete(id, tableId, false);
+    }
+    
+    /**
+     * Deletes the data object.
+     * @param doShowError whether to show the an error dialog
+     * @return true is ok, false if not
+     */
+    public static boolean delete(final int id, final int tableId, final boolean doShowError)
+    {
+        errMsg = null;
+        
+        DBTableInfo ti         = DBTableIdMgr.getInstance().getInfoById(tableId);
+        Connection  connection = DBConnection.getInstance().createConnection();
+        Statement   stmt       = null;
+        try
+        {
+            stmt = connection.createStatement();
+            int numRecs = stmt.executeUpdate("DELETE FROM "+ti.getName()+" WHERE "+ti.getIdColumnName()+" = "+id);
+            if (numRecs != 1)
+            {
+                // TODO need error message
+                return false;
+            }
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            errMsg = ex.toString();
+            
+            try
+            {
+                connection.rollback();
+                
+            } catch (SQLException ex2)
+            {
+                ex.printStackTrace();
+            }
+            return false;
+            
+        } finally
+        {
+            try
+            {
+                if (stmt != null)
+                {
+                    stmt.close();
+                }
+                if (connection != null)
+                {
+                    connection.close();
+                }
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * @return the error message from saving or deleting
+     */
+    public static String getErrorMsg()
+    {
+        return errMsg;
     }
     
 }

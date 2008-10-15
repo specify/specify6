@@ -89,30 +89,11 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
      */
     public PickListDBAdapter(final String name)
     {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            PickList pl = new PickList();
-            pl.initialize();                 
-            pl.setName(name);
-            pickList = pl;
-            
-            session.beginTransaction();
-            session.save(pickList);
-            session.commit();
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-            session.rollback();
-            
-        } finally 
-        {
-            if (session != null)
-            {
-                session.close();
-            }
-        }
+        pickList = new PickList();
+        pickList.initialize();                 
+        pickList.setName(name);
+        
+        PickList.save(pickList);
     }
     
     /* (non-Javadoc)

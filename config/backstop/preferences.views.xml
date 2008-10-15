@@ -291,7 +291,7 @@
             <desc><![CDATA[System Preference Form.]]></desc>
             
             <columnDef>p:g,2px,max(150px;p):g,280px,f:p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rowDef>p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px</rowDef>
             
             <rows>
                 <row>

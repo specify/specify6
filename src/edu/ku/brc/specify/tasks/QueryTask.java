@@ -1121,32 +1121,17 @@ public class QueryTask extends BaseTask
     
     /**
      * Save it out to persistent storage.
-     * @param recordSets the RecordSet
+     * @param query the SpQuery
      */
-    protected void persistRecordSet(final SpQuery query)
+    protected void persistQuery(final SpQuery query)
     {
         // TODO Add StaleObject Code from FormView
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
+        if (SpQuery.save(true, query))
         {
-            session.beginTransaction();
-            session.saveOrUpdate(query);
-            session.commit();
-            session.flush();
-            
             FormHelper.updateLastEdittedInfo(query);
-
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            log.error(ex);
-        }
-        finally
-        {
-            session.close();
         }
     }
+    
     /**
      * Save a record set.
      * @param recordSets the rs to be saved
@@ -1160,7 +1145,7 @@ public class QueryTask extends BaseTask
             query.setIsFavorite(true);
         }
         
-        persistRecordSet(query);
+        persistQuery(query);
         
         RecordSet rs = new RecordSet();
         rs.initialize();
@@ -1681,29 +1666,21 @@ public class QueryTask extends BaseTask
             namesHash.put(nbi.getTitle(), true);
         }
         
-        // Persist out to database
-        DataProviderSessionIFace session = null;
-        try
+        for (SpQuery query : queriesList)
         {
-            session = DataProviderFactory.getInstance().createSession();
-            session.beginTransaction();
-            
-            for (SpQuery query : queriesList)
+            String origName = query.getName();
+            int    cnt      = 0;
+            String qName    = origName;
+            while (namesHash.get(qName) != null)
             {
-                String origName = query.getName();
-                int    cnt      = 0;
-                String qName    = origName;
-                while (namesHash.get(qName) != null)
-                {
-                    cnt++;
-                    qName = origName + cnt;
-                }
-                query.setName(qName);
-                session.saveOrUpdate(query);
+                cnt++;
+                qName = origName + cnt;
             }
-            
-            session.commit();
-            
+            query.setName(qName);
+        }
+        
+        if (SpQuery.save(true, queriesList))
+        {
             for (SpQuery query : queriesList)
             {
                 RecordSet rs = new RecordSet();
@@ -1714,21 +1691,7 @@ public class QueryTask extends BaseTask
             }
             
             navBox.validate();
-            navBox.repaint();
-                
-        } catch (Exception ex)
-        {
-            // XXX Error dialog
-            ex.printStackTrace();
-            session.rollback();
-            
-        }
-        finally
-        {
-            if (session != null)
-            {
-                session.close();
-            }
+            navBox.repaint();  
         }
     }
     

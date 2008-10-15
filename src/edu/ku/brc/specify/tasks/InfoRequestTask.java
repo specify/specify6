@@ -183,66 +183,14 @@ public class InfoRequestTask extends BaseTask
         Timestamp now = new Timestamp(System.currentTimeMillis());
         infoRequest.setTimestampCreated(now);
         
-        // save to database
-        DataProviderSessionIFace session = null;
-        try
+        if (InfoRequest.save(true, infoRequest))
         {
-            session = DataProviderFactory.getInstance().createSession();
-            session.beginTransaction();
-            session.saveOrUpdate(infoRequest);
-            session.commit();
+            NavBoxMgr.getInstance().addBox(navBox);
             
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            log.error(ex);
-            
-        } finally
-        {
-            if (session != null)
-            {
-                session.close();
-            }
-        }
-        
-        NavBoxMgr.getInstance().addBox(navBox);
-        
-        // XXX This needs to be made generic
-        navBox.invalidate();
-        navBox.doLayout();
-        navBox.repaint();
-        
-        // ?? 
-        //CommandDispatcher.dispatch(new CommandAction("Labels", "NewRecordSet", nbi));
-        
-    }
-    
-    /**
-     * Delete a record set
-     * @param rs the recordSet to be deleted
-     */
-    protected void deleteInfoRequest(final InfoRequest infoRequest)
-    {
-        // delete from database
-        DataProviderSessionIFace session = null;
-        try
-        {
-            session = DataProviderFactory.getInstance().createSession();
-            session.beginTransaction();
-            session.delete(infoRequest);
-            session.commit();
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            log.error(ex);
-            
-        } finally
-        {
-            if (session != null)
-            {
-                session.close();
-            }
+            // XXX This needs to be made generic
+            navBox.invalidate();
+            navBox.doLayout();
+            navBox.repaint();
         }
     }
     
@@ -543,8 +491,10 @@ public class InfoRequestTask extends BaseTask
         } else if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSetIFace)
         {
             InfoRequest inforRequest = (InfoRequest)cmdAction.getData();
-            deleteInfoRequest(inforRequest);
-            deleteInfoRequestFromUI(null, inforRequest);
+            if (InfoRequest.delete(true, inforRequest))
+            {
+                deleteInfoRequestFromUI(null, inforRequest);
+            }
 
         } else if (cmdAction.isAction("Create") && cmdAction.getData() instanceof RecordSetIFace)
         {
@@ -553,9 +503,6 @@ public class InfoRequestTask extends BaseTask
             {
                 createInfoRequest((RecordSetIFace)data);
             }
-            //InfoRequest inforRequest = (InfoRequest)cmdAction.getData();
-            //createInfoRequest(inforRequest);
-
         }
     }
     

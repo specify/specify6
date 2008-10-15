@@ -1598,7 +1598,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
 
     /**
-     * 
+     * @param saveAs
+     * @return
      */
     protected boolean saveQuery(final boolean saveAs)
     {
@@ -1667,29 +1668,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 
                 SubPaneMgr.getInstance().renamePane(this, query.getName());
             }
-            else
-            {
-                try
-                {
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                    try
-                    {
-                        session.beginTransaction();
-                        session.saveOrUpdate(query);
-                        session.commit();
-                    }
-                    finally
-                    {
-                        session.close();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    log.error(ex);
-                    ex.printStackTrace();
-                }
-            }
-            return true;
+            return SpQuery.save(true, query);
         }
         //else
         {

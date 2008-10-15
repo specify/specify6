@@ -28,6 +28,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceData;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
@@ -221,38 +222,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 }
                 byteOut.close();
                 
-                DataProviderSessionIFace session = null;
-                try 
-                {
-                    session = DataProviderFactory.getInstance().createSession();
-                    if (session != null)
-                    {
-                        session.beginTransaction();
-                        
-                        session.saveOrUpdate(spAppResourceDir);
-                        session.saveOrUpdate(spAppResource);
-                        
-                        session.commit();
-                    }
-
-                } catch (Exception ex) 
-                {
-                    if (session != null)
-                    {
-                        session.rollback();
-                    }
-                    
-                    log.error(ex);
-                    
-                    throw new BackingStoreException(ex);
-                    
-                } finally 
-                {
-                    if (session != null)
-                    {
-                        session.close();
-                    }
-                } 
+                DataModelObjBase.save(true, spAppResourceDir, spAppResource);
                 
             } catch (IOException ex)
             {
