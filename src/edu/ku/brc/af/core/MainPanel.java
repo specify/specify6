@@ -14,8 +14,11 @@
  */
 package edu.ku.brc.af.core;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
 
@@ -49,7 +52,9 @@ public class MainPanel extends JSplitPane
         navBoxMgr  = NavBoxMgr.getInstance();
         subPaneMgr = SubPaneMgr.getInstance();
         
-        this.setLeftComponent(navBoxMgr);
+        JScrollPane sp = new JScrollPane(navBoxMgr, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        sp.setBorder(BorderFactory.createEmptyBorder());
+        this.setLeftComponent(sp);
         this.setRightComponent(subPaneMgr);
         
         setTabPlacement(SwingConstants.BOTTOM);  // PREF
