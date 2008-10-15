@@ -1071,7 +1071,7 @@ public class InteractionsTask extends BaseTask
      */
     protected void createInfoRequest(final RecordSetIFace recordSetArg)
     {
-        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(InfoRequest.class.getSimpleName());
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(InfoRequest.getClassTableId());
         
         ViewIFace view = AppContextMgr.getInstance().getView(tableInfo.getDefaultFormName());
 
@@ -1618,7 +1618,8 @@ public class InteractionsTask extends BaseTask
      * Loads a InfoRequest into a form
      * @param cmdAction the command action containing the InfoRequest
      */
-    private void showInfoReqForm(final CommandActionForDB cmdAction)
+    private void showInfoReqForm(final CommandActionForDB cmdAction, 
+                                 final RecordSetIFace irRS)
     {
         // Launch Info Req Form
         DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
@@ -1629,7 +1630,7 @@ public class InteractionsTask extends BaseTask
             DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
             try
             {
-                infoReq = session.get(InfoRequest.class, cmdAction.getId());
+                infoReq = session.get(InfoRequest.class, cmdAction != null ? cmdAction.getId() : irRS.getItems().iterator().next().getRecordId());
                 
             } catch (Exception ex)
             {
@@ -1783,12 +1784,20 @@ public class InteractionsTask extends BaseTask
                 Object data = cmdAction.getData();
                 if (data instanceof RecordSetIFace)
                 {
-                    createInfoRequest((RecordSetIFace)data);
+                    RecordSetIFace rs = (RecordSetIFace)data;
+                    if (rs.getDbTableId() == infoRequestTableId)
+                    {
+                        showInfoReqForm(null, rs);
+                        
+                    } else if (rs.getTableId() == CollectionObject.getClassTableId())
+                    {
+                        createInfoRequest((RecordSetIFace)data);
+                    }
                 }
             } else if (cmdAction.getData() instanceof CommandActionForDB)
             {
                 // We get here when a InfoRequest is dropped on an InfoRequest NB action
-                showInfoReqForm((CommandActionForDB)cmdAction.getData());
+                showInfoReqForm((CommandActionForDB)cmdAction.getData(), null);
             }
             
         } else if (cmdAction.isAction("ReturnLoan"))
