@@ -34,6 +34,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.persistence.CascadeType;
+
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
 import org.apache.commons.io.FileUtils;
@@ -498,6 +500,7 @@ public class DatamodelGenerator
      * @param leftSideVarName
      * @return
      */
+    @SuppressWarnings("cast")
     protected String getRightSideForManyToOne(final Class<?> leftSide,
                                               final Class<?> rightSide, 
                                               final String   leftSideVarName)
@@ -559,6 +562,7 @@ public class DatamodelGenerator
      * @param isMappedBy
      * @return
      */
+    @SuppressWarnings("cast")
     protected String getRightSideForManyToMany(final Class<?> leftSide,
                                                final Class<?> rightSide, 
                                                final String   leftSideVarName)
@@ -687,6 +691,7 @@ public class DatamodelGenerator
      * @param className
      * @param tableList
      */
+    @SuppressWarnings("cast")
     protected void processClass(final String className, final List<Table> tableList)
     {
         try
@@ -803,6 +808,17 @@ public class DatamodelGenerator
                         
                     } else if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
                     {
+                        javax.persistence.ManyToOne oneToMany = (javax.persistence.ManyToOne)method.getAnnotation(javax.persistence.ManyToOne.class);
+                        
+                        boolean isSave = false;
+                        for (CascadeType ct : oneToMany.cascade())
+                        {
+                            if (ct == CascadeType.ALL || ct == CascadeType.PERSIST)
+                            {
+                                isSave = true;
+                            }
+                        }
+                        isSave = !isSave ? isOKToSave(method) : isSave;
                         
                         String otherSideName = getRightSideForManyToOne(classObj, typeClass, thisSideName);
                         
@@ -812,6 +828,8 @@ public class DatamodelGenerator
                             //String othersideName = typeClass == null ? "" : getOthersideName(classObj, typeClass, thisSideName, RelType.OneToMany);
                             Relationship rel = createRelationsip(method, "many-to-one", join, otherSideName, join != null ? !join.nullable() : false);
                             table.addRelationship(rel);
+                            rel.setSave(isSave);
+                            
                             if (includeDesc)
                             {
                                 rel.setDesc(getFieldDesc(tableName, rel.getRelationshipName()));
@@ -823,6 +841,7 @@ public class DatamodelGenerator
                             log.error("No Join!");
                         }
                         
+                        
                     } else if (method.isAnnotationPresent(javax.persistence.ManyToMany.class))
                     {
                         javax.persistence.ManyToMany manyToMany = method.getAnnotation(javax.persistence.ManyToMany.class);
@@ -833,8 +852,20 @@ public class DatamodelGenerator
                             othersideName = getRightSideForManyToMany(classObj, typeClass, getFieldNameFromMethod(method));
                         }
                         
+                        boolean isSave = false;
+                        for (CascadeType ct : manyToMany.cascade())
+                        {
+                            if (ct == CascadeType.ALL || ct == CascadeType.PERSIST)
+                            {
+                                isSave = true;
+                            }
+                        }
+                        isSave = !isSave ? isOKToSave(method) : isSave;
+                        
                         javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
                         Relationship rel = createRelationsip(method, "many-to-many", join, othersideName, join != null ? !join.nullable() : false);
+                        rel.setSave(isSave);
+                        
                         table.addRelationship(rel);
                         if (includeDesc)
                         {
@@ -847,7 +878,6 @@ public class DatamodelGenerator
                         {
                             rel.setJoinTableName(joinTable.name());
                         }
-
                         
                     } else if (method.isAnnotationPresent(javax.persistence.OneToMany.class))
                     {
@@ -860,8 +890,19 @@ public class DatamodelGenerator
                             othersideName = getRightSideForOneToMany(classObj, typeClass, oneToMany.mappedBy());
                         }
                         
+                        boolean isSave = false;
+                        for (CascadeType ct : oneToMany.cascade())
+                        {
+                            if (ct == CascadeType.ALL || ct == CascadeType.PERSIST)
+                            {
+                                isSave = true;
+                            }
+                        }
+                        isSave = !isSave ? isOKToSave(method) : isSave;
+                        
                         javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
                         Relationship rel = createRelationsip(method, "one-to-many", join, othersideName, join != null ? !join.nullable() : false);
+                        rel.setSave(isSave);
                         table.addRelationship(rel);
                         if (includeDesc)
                         {
@@ -880,15 +921,28 @@ public class DatamodelGenerator
                             isMappedBy    = false;
                             othersideName = getRightSideForOneToOne(classObj, typeClass, leftSideVarName, othersideName, isMappedBy);
                         }
-                        
+
+                        boolean isSave = false;
+                        for (CascadeType ct : oneToOne.cascade())
+                        {
+                            if (ct == CascadeType.ALL || ct == CascadeType.PERSIST)
+                            {
+                                isSave = true;
+                            }
+                        }
+                        isSave = !isSave ? isOKToSave(method) : isSave;
+
                         javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
                         Relationship rel = createRelationsip(method, "one-to-one", join, othersideName, join != null ? !join.nullable() : false);
+                        rel.setSave(isSave);
                         table.addRelationship(rel);
                         if (includeDesc)
                         {
                             rel.setDesc(getFieldDesc(tableName, rel.getRelationshipName()));
                             rel.setNameDesc(getFieldNameDesc(tableName, rel.getRelationshipName()));
                         }
+                        
+
                     }
                     isLob = false;
                 }
@@ -901,6 +955,29 @@ public class DatamodelGenerator
         {
             ex.printStackTrace();
         }  
+    }
+    
+    /**
+     * @param method
+     * @return
+     */
+    @SuppressWarnings("cast")
+    protected boolean isOKToSave(final Method method)
+    {
+        org.hibernate.annotations.Cascade hibCascade = (org.hibernate.annotations.Cascade)method.getAnnotation(org.hibernate.annotations.Cascade.class);
+        if (hibCascade != null)
+        {
+            for (org.hibernate.annotations.CascadeType ct : hibCascade.value())
+            {
+                if (ct == org.hibernate.annotations.CascadeType.ALL || 
+                    ct == org.hibernate.annotations.CascadeType.PERSIST || 
+                    ct == org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @SuppressWarnings("unchecked")

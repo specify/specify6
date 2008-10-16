@@ -223,7 +223,8 @@ public class DBTableIdMgr
                                                             irNode.attributeValue("othersidename"), //$NON-NLS-1$
                                                             irNode.attributeValue("jointable"), //$NON-NLS-1$
                                                             getAttr(irNode, "required", false), //$NON-NLS-1$
-                                                            getAttr(irNode, "updatable", false)); //$NON-NLS-1$
+                                                            getAttr(irNode, "updatable", false), //$NON-NLS-1$
+                                                            getAttr(irNode, "save", false)); //$NON-NLS-1$
                         tblInfo.getRelationships().add(tblRel);
                     }
                     

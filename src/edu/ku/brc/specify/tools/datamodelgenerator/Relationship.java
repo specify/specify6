@@ -23,6 +23,7 @@ public class Relationship implements Comparable<Relationship>
     protected String   otherSideName;
     protected boolean  isRequired;
     protected boolean  isUpdatable;
+    protected boolean  isSave       = false;
     
     protected LocalizedStrIFace desc;
     protected LocalizedStrIFace nameDesc;
@@ -219,6 +220,16 @@ public class Relationship implements Comparable<Relationship>
         this.nameDesc = nameDesc;
     }
 
+    public boolean isSave()
+    {
+        return isSave;
+    }
+
+    public void setSave(boolean isSave)
+    {
+        this.isSave = isSave;
+    }
+    
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */

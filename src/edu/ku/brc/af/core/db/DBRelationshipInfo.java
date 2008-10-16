@@ -40,6 +40,7 @@ public class DBRelationshipInfo extends DBInfoBase implements DBTableChildIFace
     protected String           joinTable;
     protected boolean          isRequired;
     protected boolean          isUpdatable;
+    protected boolean          isSavable;
     
     protected Class<?>         dataClass = null;
     
@@ -50,7 +51,8 @@ public class DBRelationshipInfo extends DBInfoBase implements DBTableChildIFace
                               final String otherSide, 
                               final String joinTable, 
                               final boolean isRequired, 
-                              final boolean isUpdatable)
+                              final boolean isUpdatable, 
+                              final boolean isSavable)
     {
         super(name);
         
@@ -61,7 +63,8 @@ public class DBRelationshipInfo extends DBInfoBase implements DBTableChildIFace
         this.isRequired  = isRequired;
         this.isUpdatable = isUpdatable;
         this.joinTable   = joinTable;
-        
+        this.isSavable   = isSavable;
+               
         try
         {
             dataClass = Class.forName(className);
@@ -130,6 +133,11 @@ public class DBRelationshipInfo extends DBInfoBase implements DBTableChildIFace
     public boolean isUpdatable()
     {
         return isUpdatable;
+    }
+
+    public boolean isSavable()
+    {
+        return isSavable;
     }
 
     /**

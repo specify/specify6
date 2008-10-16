@@ -144,7 +144,8 @@ public class TableViewObj implements Viewable,
 
     // Data Members
     protected DataProviderSessionIFace      session        = null;
-    protected boolean                       isEditing     = false;
+    protected boolean                       isEditing      = false;
+    protected boolean                       isSavable      = false;  // via the relationship
     protected boolean                       formIsInNewDataMode = false; // when this is true it means the form was cleared and new data is expected
     protected MultiView                     mvParent       = null;
     protected ViewIFace                     view;
@@ -174,6 +175,7 @@ public class TableViewObj implements Viewable,
     protected Object                        dataObj         = null;
     protected Set<Object>                   origDataSet     = null;
     protected Vector<Object>                dataObjList     = null;
+    protected Vector<Object>                newObjsList     = new Vector<Object>();;
     protected Object[]                      singleItemArray = new Object[1];
     protected DateWrapper                   scrDateFormat;
     protected boolean                       isLoaded        = false;
@@ -530,12 +532,12 @@ public class TableViewObj implements Viewable,
                     }
 
                     // Set the data and validate
-                    this.setDataIntoUI();
+                    /*this.setDataIntoUI();
                     
                     if (formValidator != null)
                     {
                         formValidator.validateForm();
-                    }
+                    }*/
                 }
                 
                 if (newDataObjects != null && newDataObjects.size() > 0)
@@ -553,7 +555,7 @@ public class TableViewObj implements Viewable,
                                 // when adding searched items they weren't getting the parent object
                                 // might need to have it true only for search items
                                 parentDataObj.addReference((FormDataObjIFace)dObj, dataSetFieldName, true);
-                                if (addSearch && mvParent != null && ((FormDataObjIFace)dObj).getId() != null)
+                                if (!isSavable && addSearch && mvParent != null && ((FormDataObjIFace)dObj).getId() != null)
                                 {
                                     mvParent.getTopLevel().addToBeSavedItem(dObj);
                                 }
@@ -569,9 +571,19 @@ public class TableViewObj implements Viewable,
                             tellMultiViewOfChange();
                             formValidator.validateRoot();
                             
+                            newObjsList.addAll(newDataObjects);
+                            
                         } else 
                         {
                             setDataObj(newDataObjects.get(0));
+                        }
+                        
+                        // Set the data and validate
+                        this.setDataIntoUI();
+                        
+                        if (formValidator != null)
+                        {
+                            formValidator.validateForm();
                         }
                     }
                 }
@@ -1301,6 +1313,8 @@ public class TableViewObj implements Viewable,
                 dataObjList = new Vector<Object>((List<Object>)dataObj);
             }
             
+            newObjsList.addAll(dataObjList);
+            
         } else
         {
             if (dataObjList == null)
@@ -1329,7 +1343,7 @@ public class TableViewObj implements Viewable,
                     }
                 }
                 dataObjList.addAll(newList);
-
+                newObjsList.addAll(newList);
                 
             } else if (dataObj instanceof RecordSetIFace)
             {
@@ -1354,6 +1368,7 @@ public class TableViewObj implements Viewable,
             {
                 // single object
                 dataObjList.add(dataObj);
+                newObjsList.add(dataObj);
             }
         }
         
@@ -1404,16 +1419,20 @@ public class TableViewObj implements Viewable,
      */
     public void setDataIntoUI()
     {
+        if (newObjsList.size() == 0)
+        {
+            return;
+        }
+        
         //log.debug(dataObjList.size());
         //if (parentDataObj.getId() != null && dataObjList != null && model != null)
         if (dataObjList != null && model != null)
         {
-
             DataProviderSessionIFace tmpSession = session;
             if (tmpSession == null)
             {
                 tmpSession = DataProviderFactory.getInstance().createSession();
-                for (Object dObj : dataObjList)
+                for (Object dObj : newObjsList)
                 {
                     if (dObj != null && dObj instanceof FormDataObjIFace && ((FormDataObjIFace)dObj).getId() != null)
                     {
@@ -1440,6 +1459,7 @@ public class TableViewObj implements Viewable,
                 
             }
         }
+        newObjsList.clear();
     }
 
     /* (non-Javadoc)
@@ -1591,6 +1611,19 @@ public class TableViewObj implements Viewable,
         if (parentDataObj == null)
         {
             this.dataClassName = viewDef.getClassName();
+        }
+        
+        if (cellName != null)
+        {
+            DBTableInfo parentTI = DBTableIdMgr.getInstance().getByClassName(mvParent.getMultiViewParent().getView().getClassName());
+            if (parentTI != null)
+            {
+                DBRelationshipInfo rel = parentTI.getRelationshipByName(cellName);
+                if (rel != null)
+                {
+                    isSavable = rel.isSavable();
+                }
+            }
         }
     }
     
@@ -2365,7 +2398,7 @@ public class TableViewObj implements Viewable,
          */
         public Object getValueAt(int row, int column)
         {
-            //log.debug(row+","+column+"  isLoaded:"+isLoaded);
+            log.debug(row+","+column+"  isLoaded:"+isLoaded);
             
             if (isLoading)
             {
