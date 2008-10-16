@@ -25,7 +25,7 @@ import com.apple.eawt.ApplicationEvent;
 /**
  * Needed for Mac Integration
 
- * @code_status Unknown (auto-generated)
+ * @code_status Complete
  **
  * @author rods
  *

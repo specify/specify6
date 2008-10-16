@@ -860,7 +860,7 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[Loan viewing form.]]></desc>
+            <desc><![CDATA[Borrow viewing form.]]></desc>
             <columnDef>85px,4px,p,10px,p,4px,75px,5px,p,4px,p,p:g</columnDef>
             <columnDef os="mac">110px,4px,p,80px,p,4px,p,5px,p,4px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
@@ -899,7 +899,7 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[Loan viewing form.]]></desc>
+            <desc><![CDATA[BorrowMaterial viewing form.]]></desc>
             <columnDef>125px,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
             <columnDef os="mac">110px,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
@@ -1683,7 +1683,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="giftNumber" uitype="formattedtext" uifieldformatter="LoanNumber" isrequired="true"/>
+                    <cell type="field" id="1" name="giftNumber" uitype="formattedtext" uifieldformatter="GiftNumber" isrequired="true"/>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="giftDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
                 </row>

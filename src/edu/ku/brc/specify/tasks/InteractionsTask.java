@@ -829,14 +829,7 @@ public class InteractionsTask extends BaseTask
         Vector<RecordSetIFace> rsList = new Vector<RecordSetIFace>();
         for (NavBoxItemIFace nbi : infoRequestNavBox.getItems())
         {
-            Object obj = nbi.getData();
-            //if (obj instanceof CommandActionForDB)
-            //{
-                //CommandActionForDB cmdAction = (CommandActionForDB)obj;
-                //RecordSetIFace     rs       = RecordSetFactory.getInstance().createRecordSet(nbi.getTitle(), cmdAction.getTableId(), RecordSet.GLOBAL);
-                //rs.addItem(cmdAction.getId());
-                rsList.add((RecordSet)obj);
-            //}
+            rsList.add((RecordSet)nbi.getData());
         }
         return rsList;
     }
