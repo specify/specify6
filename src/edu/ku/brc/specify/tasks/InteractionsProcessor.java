@@ -36,7 +36,6 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.InfoRequest;
-import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationsProviderIFace;
 import edu.ku.brc.specify.ui.SelectPrepsDlg;
@@ -57,13 +56,15 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
     private static final Logger log = Logger.getLogger(InteractionsProcessor.class);
     
     protected InteractionsTask task;
+    protected boolean          isLoan;
     
     /**
      * 
      */
-    public InteractionsProcessor(final InteractionsTask task)
+    public InteractionsProcessor(final InteractionsTask task, final boolean isLoan)
     {
-        this.task = task;
+        this.task   = task;
+        this.isLoan = isLoan;
     }
     
     
@@ -114,11 +115,17 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
         createOrAdd(null, null, null);
     }
     
+    /**
+     * @param recordSetArg
+     */
     public void createOrAdd(final RecordSetIFace recordSetArg)
     {
         createOrAdd(null, null, recordSetArg);
     }
     
+    /**
+     * @param currPrepProvider
+     */
     public void createOrAdd(final T currPrepProvider)
     {
         createOrAdd(currPrepProvider, null, null);
@@ -291,7 +298,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                         
                         statusBar.setText(getResourceString("CreatingLoan"));
                         
-                        if (prepProvider instanceof Loan)
+                        if (isLoan)
                         {
                             task.addPrepsToLoan(prepProvider, infoRequest, prepsHash);
                         } else

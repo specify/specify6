@@ -18,9 +18,7 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Dialog;
-import java.awt.Frame;
 
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;

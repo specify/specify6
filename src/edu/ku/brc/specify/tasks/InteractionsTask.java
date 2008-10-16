@@ -173,8 +173,8 @@ public class InteractionsTask extends BaseTask
     
     protected Vector<InteractionEntry>  entries = new Vector<InteractionEntry>();
     
-    InteractionsProcessor<Gift> giftProcessor = new InteractionsProcessor<Gift>(this);
-    InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this);
+    InteractionsProcessor<Gift> giftProcessor = new InteractionsProcessor<Gift>(this, false);
+    InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this, true);
     
     static 
     {
@@ -183,7 +183,6 @@ public class InteractionsTask extends BaseTask
         colObjTableId      = DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName());
         
         INFOREQUEST_FLAVOR.addTableId(50);
-        
     }
 
    /**

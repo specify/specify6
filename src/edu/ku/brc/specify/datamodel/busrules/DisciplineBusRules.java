@@ -304,10 +304,10 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         
     }
     
-    public void disciplinehasBeenAdded(Division division, final Discipline discipline)
+    /*public void disciplinehasBeenAdded(Division division, final Discipline discipline)
     {
         
-    }
+    }*/
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)

@@ -82,7 +82,7 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
                 
             } else
             {
-                isOK = okToDelete(0, new String[] {"collectionobject", "CollectingEventID"}, (Integer)ce.getId());
+                isOK = okToDelete(0, new String[] {"collectionobject", "CollectingEventID"}, ce.getId());
             }
             deletable.doDeleteDataObj(dataObj, session, isOK);
             

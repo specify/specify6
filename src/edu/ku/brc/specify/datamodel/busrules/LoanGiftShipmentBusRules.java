@@ -58,14 +58,10 @@ public class LoanGiftShipmentBusRules extends BaseBusRules
                     String controlName = null;
                     if (loan != null)
                     {
-                        //boolean   isNewObj = MultiView.isOptionOn(mvParent.getOptions(), MultiView.IS_NEW_OBJECT);
-                        //boolean   isEdit   = mvParent.isEditable();
-                        
                         if (StringUtils.isEmpty(shipment.getShipmentNumber()))
                         {
                             shipment.setShipmentNumber(loan.getLoanNumber());
                         }
-                        //System.err.println(loan.getLoanNumber());
                         controlName = "loanNumber";
                         
                     } else if (gift != null)
