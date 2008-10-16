@@ -134,6 +134,31 @@
         <scriptLines />
       </customScript>
     </launcher>
+    <launcher name="SpecifyDBSetupWizard" id="720" external="false" excludeFromMenu="false" menuName="" icnsFile="../InstallerFiles/specify.icns" pngIcon16File="../InstallerFiles/specify16.png" pngIcon32File="../InstallerFiles/specify32.png" macServiceDependencies="" swtApp="false" fileset="">
+      <executable name="SpecifyDBSetupWizard" type="1" iconSet="true" iconFile="" executableDir="bin" redirectStderr="true" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="../" singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker">
+        <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" />
+      </executable>
+      <splashScreen show="true" autoOff="true" alwaysOnTop="true" width="0" height="0" bitmapFile="../InstallerFiles/SpecifyBigSplash.png" java6SplashScreen="false">
+        <text>
+          <statusLine x="20" y="20" text="" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+          <versionLine x="20" y="40" text="version ${compiler:sys.version}" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+        </text>
+      </splashScreen>
+      <java mainClass="edu.ku.brc.specify.config.init.SpecifyDBSetupWizard" vmParameters="-Xmx512m" arguments="-Dappdir=.. -Dcom.apple.macos.useSmallTabs=true -Dapple.laf.useScreenMenuBar=true -Xdock:icon=&quot;src/edu/ku/brc/specify/images/specify128.png&quot; -Dcom.apple.mrj.application.apple.menu.about.name=SpecifyDBSetupWizard" allowVMPassthroughParameters="true" preferredVM="">
+        <classPath>
+          <archive location="specify.jar" failOnError="true" />
+          <scanDirectory location="libs" failOnError="true" />
+          <scanDirectory location="hibernate_libs" failOnError="true" />
+          <scanDirectory location="iReportLibs" failOnError="true" />
+        </classPath>
+        <nativeLibraryDirectories />
+      </java>
+      <includedFiles />
+      <unextractableFiles />
+      <customScript mode="1" file="">
+        <scriptLines />
+      </customScript>
+    </launcher>
   </launchers>
   <installerGui installerType="1" suggestPreviousProgramGroup="false" addOnAppId="5397-6897-2502-8965" suggestPreviousLocations="true">
     <customCode useInstalledFiles="false" />
