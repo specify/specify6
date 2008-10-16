@@ -9,7 +9,7 @@
  */
 package edu.ku.brc.specify.config.init;
 
-import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createPasswordField;
 import static edu.ku.brc.ui.UIHelper.createTextField;
 
@@ -136,7 +136,7 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
         
         JTextField txt = isPassword ? createPasswordField(15) : createTextField(15);
         
-        builder.add(createLabel(label+":", SwingConstants.RIGHT), cc.xy(1, row));
+        builder.add(createI18NFormLabel(label, SwingConstants.RIGHT), cc.xy(1, row));
         builder.add(txt,                                          cc.xy(3, row));
         //txt.addFocusListener(this);
         //txt.addKeyListener(keyAdapter);

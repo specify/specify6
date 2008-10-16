@@ -60,7 +60,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="ProjectNameIDX", columnNames={"ProjectName"}),
         @Index (name="ProjectNumberIDX", columnNames={"ProjectNumber"}) 
     })
-public class Project extends DataModelObjBase implements java.io.Serializable {
+public class Project extends CollectionMember implements java.io.Serializable {
 
     // Fields    
 

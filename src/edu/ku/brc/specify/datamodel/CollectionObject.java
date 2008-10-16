@@ -127,7 +127,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Set<CollectionObjectCitation> collectionObjectCitations;
     protected Set<Preparation>              preparations;
     protected Set<Determination>            determinations;
-    protected Set<Project>  projects;
+    protected Set<Project>                  projects;
     // protected Set<DeaccessionPreparation> deaccessionPreparations;
     protected Set<OtherIdentifier>          otherIdentifiers;
     protected Collection                    collection;
@@ -885,7 +885,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
      *
      */
     @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionObjects")
-    @Cascade( {CascadeType.SAVE_UPDATE} )
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Project> getProjects() 
     {
         return this.projects;

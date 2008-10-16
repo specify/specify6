@@ -169,14 +169,7 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                     // if we got at least one result...
                     if (resCount > 0)
                     {
-                        // everything must have worked and returned at least 1 result
-                        // XXX TEMP FIX FOR BUG 4562 RELEASE 
-                        // For now, all calls the setBioGeomancerResults() and getBioGeomancerResults() have been converted
-                        // to calls to setTmpBgResults() and getTmpBgResults() to allow for continued use of the BG features
-                        // without causing Hibernate to store the results to the DB, throwing the BUG 4562.
-                        //row.setBioGeomancerResults(bgResults);
                         item.setXML(bgResults);
-                        // ZZZ setChanged(true);
                     }
                     
                     // update the progress bar UI and move on

@@ -10,7 +10,9 @@
 package edu.ku.brc.specify.config.init;
 
 import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.util.Properties;
 import java.util.Vector;
@@ -67,7 +69,7 @@ public class DatabasePanel extends BaseSetupPanel
         
         this.doSetDefaultValues = doSetDefaultValues;
         
-        String header = "Fill in following information for the database:";
+        String header = getResourceString("ENTER_DB_INFO") + ":";
 
         Vector<DisciplineType> dispList = new Vector<DisciplineType>();
         for (DisciplineType disciplineType : DisciplineType.getDisciplineList())
@@ -96,18 +98,18 @@ public class DatabasePanel extends BaseSetupPanel
         
         builder.add(createLabel(header), cc.xywh(1,row,3,1));row += 2;
         
-        usernameTxt     = createField(builder, "Username",      row);row += 2;
-        passwordTxt     = createField(builder, "Password",      row, true);row += 2;
-        dbNameTxt       = createField(builder, "Database Name", row);row += 2;
-        hostNameTxt     = createField(builder, "Host Name", row);row += 2;
+        usernameTxt     = createField(builder, "USERNAME",      row);row += 2;
+        passwordTxt     = createField(builder, "PASSWORD",      row, true);row += 2;
+        dbNameTxt       = createField(builder, "DB_NAME", row);row += 2;
+        hostNameTxt     = createField(builder, "HOST_NAME", row);row += 2;
 
         if (!doLoginOnly)
         {
-            builder.add(createLabel("DisciplineType:", SwingConstants.RIGHT), cc.xy(1, row));
+            builder.add(createI18NFormLabel("DSP_TYPE", SwingConstants.RIGHT), cc.xy(1, row));
             builder.add(disciplines, cc.xy(3, row));
             row += 2;
             
-            builder.add(createLabel("Driver:", SwingConstants.RIGHT), cc.xy(1, row));
+            builder.add(createI18NFormLabel("DRIVER", SwingConstants.RIGHT), cc.xy(1, row));
             builder.add(drivers, cc.xy(3, row));
             row += 2;
         }

@@ -7,6 +7,8 @@
 package edu.ku.brc.specify.config.init;
 
 import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -21,9 +23,13 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -42,6 +48,8 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.FrameworkAppIFace;
+import edu.ku.brc.af.core.MacOSAppHandler;
 import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.BackupServiceFactory;
@@ -63,6 +71,7 @@ import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.IconManager.IconSize;
 
 /**
  * @author rods
@@ -72,7 +81,7 @@ import edu.ku.brc.ui.UIRegistry;
  * Created Date: Oct 15, 2008
  *
  */
-public class SpecifyDBSetupWizard extends JFrame
+public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
 {
     private static final Logger log = Logger.getLogger(SpecifyDBSetupWizard.class);
     
@@ -98,15 +107,25 @@ public class SpecifyDBSetupWizard extends JFrame
     protected CardLayout             cardLayout = new CardLayout();
     protected Vector<BaseSetupPanel> panels     = new Vector<BaseSetupPanel>();
     
-    protected Specify                specify;
     protected String                 setupXMLPath;
     
     /**
      * @param specify
      */
-    public SpecifyDBSetupWizard(final Specify specify)
+    public SpecifyDBSetupWizard()
     {
         super();
+        
+        new MacOSAppHandler(this);
+        
+        // Now initialize
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
+
+        ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16); //$NON-NLS-1$
+        HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
+        
+        UIRegistry.loadAndPushResourceBundle("specifydbsetupwiz");
         
         setupXMLPath = UIRegistry.getUserHomeAppDir() + File.separator + "setup_prefs.xml";
         try
@@ -120,31 +139,24 @@ public class SpecifyDBSetupWizard extends JFrame
         
         setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
         
-        this.specify = specify;
-        
-        setTitle("Configuring a Database");
+        setTitle(getResourceString("MAIN_TITLE"));
         cardPanel = new JPanel(cardLayout);
         
-        cancelBtn  = createButton(UIRegistry.getResourceString("CANCEL"));
+        cancelBtn  = createButton(UIRegistry.getResourceString("EXIT"));
         helpBtn    = createButton(UIRegistry.getResourceString("HELP"));
         
         JPanel btnBar;
         backBtn    = createButton(UIRegistry.getResourceString("BACK"));
         nextBtn    = createButton(UIRegistry.getResourceString("NEXT"));
         
-        HelpMgr.registerComponent(helpBtn, "ConfiguringDatabase");
+        HelpMgr.registerComponent(helpBtn, "SetupSpecifyDB");
         CellConstraints cc = new CellConstraints();
         PanelBuilder bbpb = new PanelBuilder(new FormLayout("f:p:g,p,4px,p,4px,p,4px,p,4px", "p"));
         bbpb.add(helpBtn, cc.xy(2,1));
         bbpb.add(backBtn, cc.xy(4,1));
         bbpb.add(nextBtn, cc.xy(6,1));
         bbpb.add(cancelBtn, cc.xy(8,1));
-        //btnBar = ButtonBarFactory.buildWizardBar(helpBtn, backBtn, nextBtn, cancelBtn);
         btnBar = bbpb.getPanel();
-            
-        
-        //agentPanel    = new NewAgentPanel(nextBtn);
-        //panels.add(agentPanel);
 
         boolean doTesting = true;
         if (doTesting)
@@ -180,29 +192,28 @@ public class SpecifyDBSetupWizard extends JFrame
                
         UIFieldFormatterMgr.setDoingLocal(true);
         
-        
         //panels.add(locationPanel);
         panels.add(new GenericFormPanel("agent", 
-                "Enter Collection Manager Information", 
-                new String[] { "First Name", "Last Name", "Middle Initial", "User Login Info", "Username", "Password"}, 
+                "ENTER_COLMGR_INFO", 
+                new String[] { "FIRSTNAME", "LASTNAME", "MIDNAME", "USERLOGININFO", "USERNAME", "PASSWORD"}, 
                 new String[] { "firstName", "lastName", "middleInitial", "-", "usrUsername", "usrPassword"}, 
                 nextBtn));
          
         panels.add(new GenericFormPanel("inst", 
-                "Enter Institution Information",
-                new String[] { "Name", "Title", "Abbrev"}, 
+                "ENTER_INST_INFO",
+                new String[] { "NAME", "TITLE", "ABBREV"}, 
                 new String[] { "instName", "instTitle", "instAbbrev"}, 
                 nextBtn));
          
         panels.add(new GenericFormPanel("div", 
-                "Enter Division Information", 
-                new String[] { "Name", "Title", "Abbrev"}, 
+                "ENTER_DIV_INFO",
+                new String[] { "NAME", "TITLE", "ABBREV"}, 
                 new String[] { "divName", "divTitle", "divAbbrev"}, 
                 nextBtn));
          
         panels.add(new GenericFormPanel("collection", 
-                "Enter Collection Information", 
-                new String[] { "Prefix", "Name"}, 
+                "ENTER_COL_INFO",
+                new String[] { "PREFIX", "NAME"}, 
                 new String[] { "collPrefix", "collName"}, 
                 nextBtn));
         
@@ -254,6 +265,7 @@ public class SpecifyDBSetupWizard extends JFrame
                 isCancelled = true;
                 setVisible(false);
                 dispose();
+                doExit(true);
             }
          });
 
@@ -279,16 +291,23 @@ public class SpecifyDBSetupWizard extends JFrame
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
         JPanel mainPanel = new JPanel(new BorderLayout());
-        PanelBuilder    iconBldr    = new PanelBuilder(new FormLayout("f:p:g,130px,f:p:g", "f:p:g,130px,f:p:g"));
-        iconBldr.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(2, 2));
+        PanelBuilder    iconBldr    = new PanelBuilder(new FormLayout("8px, f:p:g,130px,f:p:g", "8px,f:p:g,130px,f:p:g, 8px"));
+        iconBldr.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(3, 3));
         mainPanel.add(iconBldr.getPanel(), BorderLayout.WEST);
         mainPanel.add(builder.getPanel(), BorderLayout.CENTER);
             
         
         setContentPane(mainPanel);
         
+        JMenuBar menuBar = createMenus();
+        if (menuBar != null)
+        {
+            setJMenuBar(menuBar);
+        }
+        UIRegistry.register(UIRegistry.MENUBAR, menuBar);
+        
         pack();
-
+        
     }
     
     /**
@@ -365,54 +384,57 @@ public class SpecifyDBSetupWizard extends JFrame
         
         log.debug("********** Working path for App ["+baseAppDir+"]");
         
-        // Now initialize
-        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
-        System.out.println(UIRegistry.getDefaultWorkingPath()+" "+doLoginOnly+" "+assumeDerby);
-
-        if (doLoginOnly && assumeDerby)
+       //System.err.println(UIRegistry.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
+        try
         {
-            //if (fillPrefs(true))
-            //{
-                specify.startUp();
-            //}
-            
-        } else
-        {
-            //System.err.println(UIRegistry.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
-            try
+            final SwingWorker worker = new SwingWorker()
             {
-                final SwingWorker worker = new SwingWorker()
+                protected boolean isOK = false;
+                
+                public Object construct()
                 {
-                    protected boolean isOK = false;
-                    
-                    public Object construct()
+                    try
                     {
-                        try
+                        DatabaseDriverInfo driverInfo = userPanel.getDriver();
+                        props.put("driver", driverInfo);
+                        
+                        if (driverInfo == null)
                         {
-                            DatabaseDriverInfo driverInfo = userPanel.getDriver();
-                            props.put("driver", driverInfo);
-                            
-                            if (driverInfo == null)
-                            {
-                                throw new RuntimeException("Couldn't find driver by name ["+driverInfo+"] in driver list.");
-                            }
+                            throw new RuntimeException("Couldn't find driver by name ["+driverInfo+"] in driver list.");
+                        }
 
-                            BuildSampleDatabase builder = new BuildSampleDatabase();
+                        BuildSampleDatabase builder = new BuildSampleDatabase();
+                        
+                        //builder.getFrame().setIconImage(IconManager.getImage("Specify16", IconManager.IconSize.Std16).getImage());
+                        
+                        props.put("disciplineType", userPanel.getDisciplineType());
+                        
+                        boolean proceed = true;
+                        if (checkForDatabase(props))
+                        {
+                            Object[] options = { 
+                                    getResourceString("PROCEED"), 
+                                    getResourceString("EXIT")
+                                  };
+                            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                                         getResourceString("DEL_CUR_DB"), 
+                                                                         getResourceString("DEL_CUR_DB_TITLE"), 
+                                                                         JOptionPane.YES_NO_OPTION,
+                                                                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                            proceed = userChoice == JOptionPane.YES_OPTION;
                             
-                            //builder.getFrame().setIconImage(IconManager.getImage("Specify16", IconManager.IconSize.Std16).getImage());
-                            
-                            props.put("disciplineType", userPanel.getDisciplineType());
-                            
-                            /*for (Object key : props.keySet())
-                            {
-                                System.out.println("["+key+"]["+props.get(key)+"]");
-                            }*/
+                        } 
+
+                        if (proceed)
+                        {
                             isOK = builder.buildEmptyDatabase(props);
-                            
+
                             JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
-                                    "The Specify database build process "+(isOK ? "completed with no errors." : "did not complete correctly."),
-                                    "Complete", JOptionPane.INFORMATION_MESSAGE);
+                                    getLocalizedMessage("BLD_DONE", getResourceString(isOK ? "BLD_OK" :"BLD_NOTOK")),
+                                    getResourceString("COMPLETE"), JOptionPane.INFORMATION_MESSAGE);                                
+                        }
+                        
+                        UIRegistry.popResourceBundle();
                             
                         } catch (Exception ex)
                         {
@@ -424,7 +446,6 @@ public class SpecifyDBSetupWizard extends JFrame
                     //Runs on the event-dispatching thread.
                     public void finished()
                     {
-                        log.debug("isOK "+isOK);
                         if (isOK)
                         {
                             HibernateUtil.shutdown();
@@ -437,7 +458,122 @@ public class SpecifyDBSetupWizard extends JFrame
             {
                 ex.printStackTrace();
             }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.FrameworkAppIFace#doExit(boolean)
+     */
+    public boolean doExit(boolean doAppExit)
+    {
+        System.exit(0);
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.FrameworkAppIFace#doAbout()
+     */
+    public void doAbout()
+    {
+        Specify specify = new Specify();
+        specify.doAbout();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.FrameworkAppIFace#doPreferences()
+     */
+    public void doPreferences()
+    {
+        
+    }
+    
+    /**
+     * @return
+     */
+    public JMenuBar createMenus()
+    {
+        JMenuBar mb = new JMenuBar();
+        JMenuItem mi;
+
+        //--------------------------------------------------------------------
+        //-- File Menu
+        //--------------------------------------------------------------------
+
+        if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
+        {
+            JMenu menu = UIHelper.createLocalizedMenu(mb, "Specify.FILE_MENU", "Specify.FILE_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+            
+            menu.addSeparator();
+            String title = "Specify.EXIT"; //$NON-NLS-1$
+            String mnu = "Specify.Exit_MNEU"; //$NON-NLS-1$
+            mi = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, true, null); 
+            mi.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            doExit(true);
+                        }
+                    });
         }
+        
+        JMenu helpMenu = UIHelper.createLocalizedMenu(mb, "Specify.HELP_MENU", "Specify.HELP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+        HelpMgr.createHelpMenuItem(helpMenu, "Specify"); //$NON-NLS-1$
+        helpMenu.addSeparator();
+        
+        if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
+        {
+            String ttle = "Specify.ABOUT";//$NON-NLS-1$ 
+            String mneu = "Specify.ABOUTMNEU";//$NON-NLS-1$ 
+            String desc = "Specify.ABOUT";//$NON-NLS-1$ 
+            mi = UIHelper.createLocalizedMenuItem(helpMenu,ttle , mneu, desc,  true, null); 
+            mi.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                           doAbout();
+                        }
+                    });
+        }
+        return mb;
+    }
+
+    
+    /**
+     * @param properties
+     * @return
+     */
+    private boolean checkForDatabase(final Properties properties)
+    {
+        final String dbName = properties.getProperty("dbName");
+        
+        DatabaseDriverInfo driverInfo = (DatabaseDriverInfo)properties.get("driver");
+        
+        try
+        {
+            
+            String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, 
+                                                         properties.getProperty("hostName"), 
+                                                         dbName);
+            if (connStr == null)
+            {
+                connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, properties.getProperty("hostName"),  dbName);
+            }
+            String userName = properties.getProperty("userName");
+            String password = properties.getProperty("password");
+            
+            if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
+                    driverInfo.getDialectClassName(), 
+                    dbName, 
+                    connStr, 
+                    userName, 
+                    password))
+            {
+                return false;
+            }
+        } catch (Exception ex)
+        {
+            return false;
+        }
+        return true;
     }
     
     /**
@@ -526,7 +662,7 @@ public class SpecifyDBSetupWizard extends JFrame
                 IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
                 
                 setUpSystemProperties();
-                SpecifyDBSetupWizard setup = new SpecifyDBSetupWizard(null);
+                SpecifyDBSetupWizard setup = new SpecifyDBSetupWizard();
                 UIHelper.centerAndShow(setup);
             }
         });

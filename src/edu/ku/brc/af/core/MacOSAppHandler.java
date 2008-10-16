@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify;
+package edu.ku.brc.af.core;
 
 
 import java.lang.ref.WeakReference;
@@ -20,6 +20,7 @@ import java.lang.ref.WeakReference;
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationAdapter;
 import com.apple.eawt.ApplicationEvent;
+
 
 /**
  * Needed for Mac Integration
@@ -31,11 +32,11 @@ import com.apple.eawt.ApplicationEvent;
  */
 public class MacOSAppHandler extends Application
 {
-    protected WeakReference<Specify> app;
+    protected WeakReference<FrameworkAppIFace> app;
 
-    public MacOSAppHandler(final Specify app)
+    public MacOSAppHandler(final FrameworkAppIFace app)
     {
-        this.app = new WeakReference<Specify>(app);
+        this.app = new WeakReference<FrameworkAppIFace>(app);
 
         addApplicationListener(new AppHandler());
 
@@ -52,13 +53,13 @@ public class MacOSAppHandler extends Application
 
         public void handleAppPrefsMgr(ApplicationEvent event)
         {
-            app.get().preferences();
+            app.get().doPreferences();
             event.setHandled(true);
         }
         
         public void handlePreferences(ApplicationEvent event) 
         {
-            app.get().preferences();
+            app.get().doPreferences();
             event.setHandled(true);
         }
 

@@ -2066,7 +2066,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 else
                 {
-                    colHeaderLbl.setText("Query Fields");
+                    colHeaderLbl.setText("Query Fields"); // I18N
                 }
             }
 

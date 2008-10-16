@@ -9,7 +9,7 @@
  */
 package edu.ku.brc.specify.config.init;
 
-import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.*;
 
 import java.util.Hashtable;
 import java.util.Properties;
@@ -28,6 +28,7 @@ import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.DataSetterForObj;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -84,14 +85,14 @@ public class GenericFormPanel extends BaseSetupPanel
                                                UIHelper.createDuplicateJGoodiesDef("p", "2px", fields.length)+",p:g"), this);
         int row = 1;
         
-        builder.add(createLabel(title), cc.xywh(1,row,3,1));row += 2;
+        builder.add(createI18NFormLabel(title), cc.xywh(1,row,3,1));row += 2;
 
         int i = 0;
         for (String fName : fields)
         {
             if (fName.equals("-"))
             {
-                builder.addSeparator(labels[i], cc.xyw(1, row, 4));
+                builder.addSeparator(UIRegistry.getResourceString(labels[i]), cc.xyw(1, row, 4));
             } else
             {
                 comps.put(fName, createField(builder, labels[i], row));

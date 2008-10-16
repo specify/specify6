@@ -8,7 +8,9 @@ package edu.ku.brc.specify.config.init;
 
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.util.List;
@@ -42,7 +44,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
  */
 public class FormatterPickerPanel extends BaseSetupPanel
 {
-    protected JCheckBox isNumericChk    = createCheckBox("Is Numeric Only?");// I18N
+    protected JCheckBox isNumericChk    = createCheckBox(getResourceString("IS_NUM_CHK"));
     protected JComboBox formatterCBX    = createComboBox(new DefaultComboBoxModel());
     protected JLabel    isNumericLbl    = createLabel("");
     protected boolean   doingCatNums;
@@ -83,7 +85,7 @@ public class FormatterPickerPanel extends BaseSetupPanel
         
         if (!doingCatNums)
         {
-            ((DefaultComboBoxModel)formatterCBX.getModel()).addElement("None"); // I18N
+            ((DefaultComboBoxModel)formatterCBX.getModel()).addElement(getResourceString("NONE"));
         }
         
         for (UIFieldFormatterIFace fmt : fmtList)
@@ -94,16 +96,17 @@ public class FormatterPickerPanel extends BaseSetupPanel
         CellConstraints cc = new CellConstraints();
         PanelBuilder pb = new PanelBuilder(new FormLayout("p,4px,p,f:p:g", "p,4px,p,4px,p"), this);
         int y = 1;
-        pb.add(createLabel("Choose a "+(doingCatNums ? "Catalog" : "Acccesion")+ " Numbering Format:"), cc.xywh(1, y, 4, 1)); // I18N
+        String label = getLocalizedMessage("CHOOSE_FMT", getResourceString(doingCatNums ? "CATALOG" : "ACCESSION"));
+        pb.add(createLabel(label), cc.xywh(1, y, 4, 1)); // I18N
         y +=2;
         
-        pb.add(createLabel("Format:", SwingConstants.RIGHT), cc.xy(1, y));// I18N
+        pb.add(createI18NFormLabel("FORMAT", SwingConstants.RIGHT), cc.xy(1, y));// I18N
         pb.add(formatterCBX, cc.xy(3, y));
         y +=2;
 
         if (doingCatNums)
         {
-            pb.add(createLabel("Is Numeric:", SwingConstants.RIGHT), cc.xy(1, y));// I18N
+            pb.add(createI18NFormLabel("IS_NUM", SwingConstants.RIGHT), cc.xy(1, y));// I18N
             pb.add(isNumericLbl, cc.xy(3, y));
             y +=2;
         }
@@ -148,7 +151,5 @@ public class FormatterPickerPanel extends BaseSetupPanel
     @Override
     public void updateBtnUI()
     {
-
     }
-
 }

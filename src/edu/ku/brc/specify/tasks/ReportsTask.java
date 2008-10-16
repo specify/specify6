@@ -94,29 +94,6 @@ public class ReportsTask extends ReportsBaseTask
                 new CommandAction(REPORTS, RUN_REPORT, SpReport.getClassTableId()), null, false, false);// true means make it draggable
         roc.addDropDataFlavor(runReportFlavor);
         
-        if (!UIHelper.isSecurityOn() || getPermissions().canModify() || getPermissions().canAdd())
-        {
-            actionNavBox.add(NavBox.createBtnWithTT(getResourceString("RefreshReports"), name,
-                getResourceString("REFRESH_REPORT_TT"), IconManager.STD_ICON_SIZE,
-                new ActionListener()
-                {
-                    /*
-                     * (non-Javadoc)
-                     * 
-                     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-                     */
-                    // @Override
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        //this is probably overkill, but doesn't seem to hurt anything and is not slow.
-                        ((SpecifyAppContextMgr) AppContextMgr.getInstance()).setContext(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
-                                ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
-                                true, false);
-                        refreshCommands();
-                    }
-                }));
-        }
-        
         if (!UIHelper.isSecurityOn() || getPermissions().canAdd())
         {
             actionNavBox.add(NavBox.createBtnWithTT(getResourceString("ImportReport"), name,
@@ -139,6 +116,29 @@ public class ReportsTask extends ReportsBaseTask
                         
                         CommandDispatcher.dispatch(new CommandAction(ReportsBaseTask.REPORTS,
                                 ReportsBaseTask.IMPORT, null));
+                    }
+                }));
+        }
+        
+        if (!UIHelper.isSecurityOn() || getPermissions().canModify() || getPermissions().canAdd())
+        {
+            actionNavBox.add(NavBox.createBtnWithTT(getResourceString("RefreshReports"), "Reload",
+                getResourceString("REFRESH_REPORT_TT"), IconManager.STD_ICON_SIZE,
+                new ActionListener()
+                {
+                    /*
+                     * (non-Javadoc)
+                     * 
+                     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+                     */
+                    // @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        //this is probably overkill, but doesn't seem to hurt anything and is not slow.
+                        ((SpecifyAppContextMgr) AppContextMgr.getInstance()).setContext(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName(), 
+                                ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName(), 
+                                true, false);
+                        refreshCommands();
                     }
                 }));
         }

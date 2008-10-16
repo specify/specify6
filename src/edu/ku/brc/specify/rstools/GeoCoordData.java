@@ -27,6 +27,13 @@ public class GeoCoordData implements GeoCoordDataIFace
     private String longitude;
     private String xml;
     
+    /**
+     * @param id
+     * @param country
+     * @param state
+     * @param county
+     * @param localityStr
+     */
     public GeoCoordData(final int id, final String country, final String state, final String county, final String localityStr)
     {
         super();

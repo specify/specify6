@@ -105,8 +105,8 @@ public class ProgressFrame extends JFrame
         JPanel mainPanel = new JPanel(new BorderLayout());
         if (StringUtils.isNotEmpty(iconName))
         {
-            PanelBuilder    iconBldr    = new PanelBuilder(new FormLayout("f:p:g,130px,f:p:g", "f:p:g,130px,f:p:g"));
-            iconBldr.add(new JLabel(IconManager.getIcon(iconName)), cc.xy(2, 2));
+            PanelBuilder    iconBldr    = new PanelBuilder(new FormLayout("8px, f:p:g,130px,f:p:g", "8px,f:p:g,130px,f:p:g, 8px"));
+            iconBldr.add(new JLabel(IconManager.getIcon(iconName)), cc.xy(3, 3));
             mainPanel.add(iconBldr.getPanel(), BorderLayout.WEST);
             mainPanel.add(builder.getPanel(), BorderLayout.CENTER);
             

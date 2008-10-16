@@ -35,11 +35,13 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
@@ -546,32 +548,56 @@ public class NavBox extends JPanel implements NavBoxIFace
      */
     public static void refresh(final NavBoxIFace nb)
     {
-        NavBox box = (NavBox)nb;
+        final NavBox box = (NavBox)nb;
         //log.debug("0box "+box.getPreferredSize()+" "+box.getSize());
         
-        box.invalidate();
-        box.validate();
-        box.doLayout();
-        //box.setSize(box.getPreferredSize());
-        box.repaint();
-        
-        if (box.itemsPanel != null)
-        {
-            box.itemsPanel.validate();
-            box.itemsPanel.invalidate();
-        }
-        
-        NavBoxMgr.getInstance().invalidate();
-        NavBoxMgr.getInstance().doLayout();
-        NavBoxMgr.getInstance().repaint();
-        
-        /*log.debug("1box "+box.getPreferredSize()+" "+box.getSize());
-        for (NavBoxItemIFace nbi : box.items)
-        {
-            Component c = (Component)nbi;
-            log.debug("nbi "+c.getPreferredSize()+" "+c.getSize());
-        }*/
-        UIRegistry.forceTopFrameRepaint();
+        SwingUtilities.invokeLater(new Runnable() {
+
+            /* (non-Javadoc)
+             * @see java.lang.Runnable#run()
+             */
+            @Override
+            public void run()
+            {
+                for (NavBoxItemIFace nbii : box.getItems())
+                {
+                    if (nbii instanceof RolloverCommand)
+                    {
+                        RolloverCommand rc = (RolloverCommand)nbii;
+                        //rc.invalidate();
+                        //rc.validate();
+                        //rc.doLayout();
+                        //rc.paintImmediately(rc.getBounds());
+                        rc.revalidate();
+                    }
+                }
+                //box.invalidate();
+                //box.validate();
+                //box.doLayout();
+                //box.paintImmediately(box.getBounds());
+                //box.setSize(box.getPreferredSize());
+                //box.repaint();
+                box.revalidate();
+                
+                if (box.itemsPanel != null)
+                {
+                    box.itemsPanel.validate();
+                    box.itemsPanel.invalidate();
+                }
+                
+                NavBoxMgr.getInstance().invalidate();
+                NavBoxMgr.getInstance().doLayout();
+                NavBoxMgr.getInstance().repaint();
+                
+                /*log.debug("1box "+box.getPreferredSize()+" "+box.getSize());
+                for (NavBoxItemIFace nbi : box.items)
+                {
+                    Component c = (Component)nbi;
+                    log.debug("nbi "+c.getPreferredSize()+" "+c.getSize());
+                }*/
+                UIRegistry.forceTopFrameRepaint();
+            }
+        });
     }
     
     /**

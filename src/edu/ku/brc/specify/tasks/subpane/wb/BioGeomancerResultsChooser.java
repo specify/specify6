@@ -152,7 +152,7 @@ public class BioGeomancerResultsChooser extends CustomDialog
         
         try
         {
-            resultsDisplayPanel.setBioGeomancerResultsData(rows.get(rowIndex).getTmpBgResults());
+            resultsDisplayPanel.setBioGeomancerResultsData(rows.get(rowIndex).getBioGeomancerResults());
             resultsDisplayPanel.setSelectedResult(0);
         }
         catch (Exception e)

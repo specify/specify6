@@ -1129,7 +1129,7 @@
         <table id="124" tableid="66" name="ProjectSearch" priority="1" color="30, 144, 255">
             <detailView icon="Project">
                 <sql>
-                    <![CDATA[SELECT ProjectID, ProjectName, ProjectNumber FROM project WHERE DisciplineID = DSPLNID AND (%s)]]>
+                    <![CDATA[SELECT ProjectID, ProjectName, ProjectNumber FROM project WHERE CollectionMemberID = COLMEMID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="66" col="ProjectID" visible="false"/>

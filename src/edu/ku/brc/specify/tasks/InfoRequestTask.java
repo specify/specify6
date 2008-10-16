@@ -158,7 +158,9 @@ public class InfoRequestTask extends BaseTask
                                             true,
                                             true);
         setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, InteractionsTask.LOAN_FLAVOR}, new NavBoxAction("Data_Entry", "Edit"));
-        
+        navBox.validate();
+        navBox.repaint();
+        NavBox.refresh(navBox);
         //setUpDraggable(nbi, new DataFlavor[]{InteractionsTask.LOAN_FLAVOR}, null);//new NavBoxAction(InteractionsTask.INTERACTIONS, InteractionsTask.NEW_LOAN));
     }
     

@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.sql.Timestamp;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -88,6 +87,8 @@ import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.FrameworkAppIFace;
+import edu.ku.brc.af.core.MacOSAppHandler;
 import edu.ku.brc.af.core.MainPanel;
 import edu.ku.brc.af.core.RecordSetFactory;
 import edu.ku.brc.af.core.SchemaI18NService;
@@ -168,7 +169,6 @@ import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.GraphicsUtils;
-import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
@@ -192,7 +192,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  * @author rods
  */
 @SuppressWarnings("serial") //$NON-NLS-1$
-public class Specify extends JPanel implements DatabaseLoginListener, CommandListener
+public class Specify extends JPanel implements DatabaseLoginListener, CommandListener, FrameworkAppIFace
 {
 
     private static final boolean isRelease          = false;
@@ -688,9 +688,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     }
 
     /**
-     * Create menus
+     * Show preferences.
      */
-    public void preferences()
+    public void doPreferences()
     {
         PreferencesDlg dlg = new PreferencesDlg(false);
         dlg.setVisible(true);
@@ -786,7 +786,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
-                            preferences();
+                            doPreferences();
                         }
                     });
             mi.setEnabled(true);
@@ -1744,9 +1744,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     }
 
     /**
-     * Checks to see if cache has changed before exiting.
+     * Shows the About dialog.
      */
-    protected void doAbout()
+    public void doAbout()
     {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon")); //$NON-NLS-1$
@@ -1774,7 +1774,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      * Checks to see if cache has changed before exiting.
      *
      */
-    protected boolean doExit(boolean doAppExit)
+    public boolean doExit(boolean doAppExit)
     {
         boolean okToShutdown = true;
         try
@@ -1830,12 +1830,14 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 
             		log.info("Application shutdown"); //$NON-NLS-1$
             		
-                    Rectangle r = topFrame.getBounds();
-                    AppPreferences.getLocalPrefs().putInt("APP.X", r.x);
-                    AppPreferences.getLocalPrefs().putInt("APP.Y", r.y);
-                    AppPreferences.getLocalPrefs().putInt("APP.W", r.width);
-                    AppPreferences.getLocalPrefs().putInt("APP.H", r.height);
-    
+            		if (topFrame != null)
+            		{
+                        Rectangle r = topFrame.getBounds();
+                        AppPreferences.getLocalPrefs().putInt("APP.X", r.x);
+                        AppPreferences.getLocalPrefs().putInt("APP.Y", r.y);
+                        AppPreferences.getLocalPrefs().putInt("APP.W", r.width);
+                        AppPreferences.getLocalPrefs().putInt("APP.H", r.height);
+            		}
             
                     AppPreferences.shutdownLocalPrefs();
                     
