@@ -126,7 +126,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 sb.append(" substring("+fieldName+","+(pos.first+1)+","+pos.second+") desc"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             }
             
-            //System.err.println(sb.toString());
+            System.err.println(sb.toString());
             List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
             if (list.size() == 1)
             {
@@ -178,7 +178,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
     protected Integer getYearValue(final UIFieldFormatterIFace formatter, final String value)
     {
         UIFieldFormatterField  yearField = formatter.getYear();
-        if (yearField != null && yearField.isByYear())
+        if (yearField != null)
         {
             return extractIntegerValue(formatter.getYearPosition(), value);
         }
@@ -267,6 +267,11 @@ public class AutoNumberGeneric implements AutoNumberIFace
             }
         } else
         {
+            if (formatter.getYear() != null)
+            {
+                yearToUse = getYearValue(formatter, formValue);
+            }
+            
             if (StringUtils.isNotEmpty(highestValue))
             {
                 valToBeInc = extractIntegerValue(formatter.getIncPosition(), strToUseForInc);
@@ -345,7 +350,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 session = HibernateUtil.getNewSession();
                 
                 UIFieldFormatterField  yearField = formatter.getYear();
-                Pair<Integer, Integer> yrPos     = yearField != null && yearField.isByYear() ? formatter.getYearPosition() : null;
+                Pair<Integer, Integer> yrPos     = yearField != null ? formatter.getYearPosition() : null;
                 
                 Object                 dataObj       = getHighestObject(session, formValue, yrPos, formatter.getIncPosition());
                 String                 highestValue  = dataObj != null ? (String)getter.getFieldValue(dataObj, fieldName) : null;
