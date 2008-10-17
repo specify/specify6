@@ -472,10 +472,7 @@
             resourcelabels="false">
             <desc><![CDATA[Project form.]]></desc>
             <altviews>
-                <altview name="ProjectSub Table Edit" viewdef="ProjectSub Table" mode="edit"/>
-                <altview name="ProjectSub Table View" viewdef="ProjectSub Table" mode="view"/>
-                <altview name="ProjectSub View" viewdef="ProjectSub" mode="view" default="true"/>
-                <altview name="ProjectSub Edit" viewdef="ProjectSub" mode="edit"/>
+                <altview name="ProjectSub Table View" viewdef="ProjectSub Table" mode="view" default="true"/>
             </altviews>
         </view>
         
@@ -955,6 +952,9 @@
                     <cell type="label" labelfor="5"/>
                     <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
                 </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12" initialize="btn=true;icon=CollectingEventAttachment"/>
+                </row>
             </rows>
         </viewdef>
         
@@ -1007,9 +1007,6 @@
                 <row>
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="remarks" uitype="textarea" colspan="10" cols="40" rows="3"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Collecting Events" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" id="3" name="collectingEvents" viewname="CollectingEventSubform" colspan="12"/>
@@ -1222,7 +1219,9 @@
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="conditionReport" uitype="textarea" colspan="10"/>
                 </row>
-     
+                <row>
+                    <cell type="subview" id="4" name="conservEventAttachments" viewname="ObjectAttachment" initialize="btn=true;icon=ConservEventAttachment;addsearch=true"/>
+                </row>
             </rows>
         </viewdef>
        
@@ -1309,6 +1308,9 @@
                 <row> 
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="description" uitype="textarea" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="subview" id="13" name="conservDescriptionAttachments" viewname="ObjectAttachment" initialize="btn=true;icon=ConservDescriptionAttachment;addsearch=true"/>
                 </row>
             </rows>
         </viewdef>
@@ -1624,10 +1626,9 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="description" uitype="textarea" colspan="10"/>
                 </row>
-                <!--   
-                    <row>
-                    <cell type="subview" id="5" name="collectionObjects" viewname="CollectionObjectSub" colspan="12"/>
-                    </row> -->
+                <row>
+                    <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=FieldNotebookPageAttachment;addsearch=true"/>
+                </row>
             </rows>
         </viewdef>
         
@@ -1655,15 +1656,9 @@
                 <row>
                     <cell type="subview" id="6" name="pages" viewname="FieldNotebookPage" defaulttype="table" colspan="12"/>
                 </row>
-                
-                <!--     <row>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="method" uitype="text"/>
-                    </row>  
-                    <row>
-                    <cell type="separator" label="Attachments"/>
-                    <cell type="subview" id="6" name="attachments" viewname="FieldNotebookPageSetAttachment" initialize="btn=true;icon=FieldNotebookPageSetAttachment;addsearch=true"/>
-                    </row> -->
+                <row>
+                    <cell type="subview" id="4" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=FieldNotebookPageSetAttachment;addsearch=true"/>
+                </row>
             </rows>
         </viewdef>
         
@@ -1907,6 +1902,9 @@
                     
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="storageLocation" uitype="text" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" colspan="8" initialize="btn=true;icon=PreparationAttachment"/>
                 </row>
             </rows>
         </viewdef>
