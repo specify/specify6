@@ -29,9 +29,9 @@ public class UsageTracker
      */
     public synchronized static void incrUsageCount(String featureName)
     {
-        AppPreferences appPrefs = AppPreferences.getLocalPrefs();
-        String usagePrefName = "Usage." + featureName; //$NON-NLS-1$
-        int currentUsageCount = appPrefs.getInt(usagePrefName, 0);
+        AppPreferences appPrefs          = AppPreferences.getLocalPrefs();
+        String         usagePrefName     = "Usage." + featureName; //$NON-NLS-1$
+        int            currentUsageCount = appPrefs.getInt(usagePrefName, 0);
         appPrefs.putInt(usagePrefName, ++currentUsageCount);
     }
     

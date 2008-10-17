@@ -17,8 +17,10 @@ import java.util.Vector;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.CollectingTrip;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -31,6 +33,7 @@ import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.TreatmentEvent;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -69,9 +72,51 @@ public class DivisionBusRules extends BaseBusRules
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
-        return super.okToEnableDelete(dataObj);
+        return true;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
+     */
+    @Override
+    public void okToDelete(final Object dataObj,
+                           final DataProviderSessionIFace session,
+                           final BusinessRulesOkDeleteIFace deletable)
+    {
+        reasonList.clear();
+        
+        if (deletable != null)
+        {
+            Division division = (Division)dataObj;
+            
+            Integer id = division.getId();
+            if (id != null)
+            {
+                Division currDivision = AppContextMgr.getInstance().getClassObject(Division.class);
+                if (currDivision.getId().equals(division.getId()))
+                {
+                    UIRegistry.showError("You cannot delete the current Division.");
+                    
+                } else
+                {
+                    String sql = "SELECT count(*) FROM agent a WHERE a.DivisionID = " + division.getId();
+                    int count = BasicSQLUtils.getCount(sql);
+                    if (count > 0)
+                    {
+                        UIRegistry.showError(String.format("There are too many agents associated with this the `%s` Division.", division.getTitle()));
+                    }
+                }
+            } else
+            {
+                super.okToDelete(dataObj, session, deletable);
+            }
+            
+        } else
+        {
+            super.okToDelete(dataObj, session, deletable);
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */

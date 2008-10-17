@@ -51,7 +51,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
  */
 public class SpecifyDeleteHelper
 {
-    protected boolean debug       = false;
+    protected boolean debug       = true;
     protected boolean debugUpdate = true;
     protected boolean doTrees     = false;
 
@@ -81,10 +81,10 @@ public class SpecifyDeleteHelper
 
         try
         {
-            //delRecordFromTable(Discipline.class, 3, true);
+            delRecordFromTable(Discipline.class, 6, true);
             
-            delRecordFromTable(Division.class, 2, false);
-            cleanUpAgentsForDivision(2);
+            //delRecordFromTable(Division.class, 2, false);
+            //cleanUpAgentsForDivision(2);
             
             checkTables();
             
@@ -1042,7 +1042,7 @@ public class SpecifyDeleteHelper
         ids = getIds(sql, 0);
         for (Integer id : ids)
         {
-            stmt.executeUpdate("DELETE FROM spappresourcedata WHERE SçDataID "+id);
+            stmt.executeUpdate("DELETE FROM spappresourcedata WHERE SÔøΩDataID "+id);
         }
         sql = "DELETE FROM spviewsetobj WHERE SpAppResourceDirID = "+appResDirId;
         stmt.executeUpdate(sql);

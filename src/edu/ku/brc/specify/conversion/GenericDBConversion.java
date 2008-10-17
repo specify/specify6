@@ -1927,9 +1927,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             strBuf.setLength(0);
             
             // Adding Institution
-            strBuf.append("INSERT INTO institution (InstitutionID, IsServerBased, TimestampModified, Name, TimestampCreated, StorageTreeDefID, ");
+            strBuf.append("INSERT INTO institution (InstitutionID, IsServerBased, IsAR, IsMR, TimestampModified, Name, TimestampCreated, StorageTreeDefID, ");
             strBuf.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
-            strBuf.append(institutionId + ",FALSE,");
+            strBuf.append(institutionId + ",FALSE,TRUE,TRUE,");
             strBuf.append("'" + dateFormatter.format(now) + "',"); // TimestampModified
             strBuf.append("'" + instName + "',");
             strBuf.append("'" + dateFormatter.format(now) + "',"); // TimestampCreated

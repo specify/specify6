@@ -123,8 +123,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     protected void createSysNavBtn(final NavBox sysNavBox, final int tableId)
     {
         final DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
-        sysNavBox.add(NavBox.createBtnWithTT(ti.getTitle(), ti.getShortClassName(), 
-                "", IconManager.STD_ICON_SIZE, new ActionListener() {
+        sysNavBox.add(NavBox.createBtnWithTT(ti.getTitle(), ti.getShortClassName(), "", IconManager.STD_ICON_SIZE, new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 startEditor(ti.getClassObj(), SYSTEMSETUPTASK, ti.getShortClassName());

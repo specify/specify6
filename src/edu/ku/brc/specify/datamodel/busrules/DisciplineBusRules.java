@@ -25,12 +25,15 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Vector;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectingTrip;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -40,9 +43,11 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
+import edu.ku.brc.ui.UIRegistry;
 
 public class DisciplineBusRules extends BaseBusRules implements CommandListener
 {   
@@ -67,42 +72,50 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         CommandDispatcher.unregister(CMD_TYPE, this);
     }
 
+    
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#okToDelete(java.lang.Object)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
      */
     @Override
-    public boolean okToEnableDelete(Object dataObj)
+    public void okToDelete(final Object dataObj,
+                           final DataProviderSessionIFace session,
+                           final BusinessRulesOkDeleteIFace deletable)
     {
-        /*if (dataObj != null)
+        reasonList.clear();
+        
+        if (deletable != null)
         {
-            Discipline dis     = AppContextMgr.getInstance().getClassObject(Discipline.class);
-            Discipline dataDis = (Discipline)dataObj;
-            if (dis.getId() != null && dataDis.getId() != null && dis.getId().equals(dataDis.getId()))
+            Discipline discipline = (Discipline)dataObj;
+            
+            Integer id = discipline.getId();
+            if (id != null)
             {
-                return false;
+                Discipline currDiscipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+                if (currDiscipline.getId().equals(discipline.getId()))
+                {
+                    UIRegistry.showError("You cannot delete the current Discipline.");
+                    
+                } else
+                {
+                    try
+                    {
+                        SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper();
+                        delHelper.delRecordFromTable(Discipline.class, discipline.getId(), false);
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            } else
+            {
+                super.okToDelete(dataObj, session, deletable);
             }
             
-            reasonList.clear();
-            
-            if (!okToDelete("collection", "DisciplineID", ((FormDataObjIFace)dataObj).getId()))
-            {
-                return false;
-            }
-            
-            if (!okToDelete("attributedef", "DisciplineID", ((FormDataObjIFace)dataObj).getId()))
-            {
-                return false;
-            }
-            
-            if (!okToDelete("spappresourcedir", "DisciplineID", ((FormDataObjIFace)dataObj).getId()))
-            {
-                return false;
-            }
-            return true;
+        } else
+        {
+            super.okToDelete(dataObj, session, deletable);
         }
-        return false;
-        */
-        return true;
     }
     
     /* (non-Javadoc)
