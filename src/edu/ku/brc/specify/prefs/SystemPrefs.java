@@ -38,6 +38,7 @@ import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.validation.FormValidator;
 import edu.ku.brc.af.ui.forms.validation.UIValidator;
 import edu.ku.brc.af.ui.forms.validation.ValBrowseBtnPanel;
+import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.Specify;
@@ -58,6 +59,7 @@ public class SystemPrefs extends GenericPrefsPanel
 {
     protected static final String SPECIFY_BG_IMG_PATH = "specify.bg.image";
     protected static final String ATTCH_PATH          = "attachment.path";
+    protected static final String VERSION_CHECK       = "version_check.auto";
     
     protected String oldAttachmentPath = null;
     protected String oldSplashPath     = null;
@@ -174,6 +176,9 @@ public class SystemPrefs extends GenericPrefsPanel
         
         // start the background task
         workerThread.start();
+        
+        ValCheckBox chk = (ValCheckBox)form.getCompById("2");
+        chk.setValue(localPrefs.getBoolean(VERSION_CHECK, true), "true");
     }
 
     /* (non-Javadoc)
@@ -197,6 +202,9 @@ public class SystemPrefs extends GenericPrefsPanel
             super.savePrefs();
             
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            
+            ValCheckBox chk = (ValCheckBox)form.getCompById("2");
+            localPrefs.putBoolean(VERSION_CHECK, (Boolean)chk.getValue());
             
             ValComboBox localeCBX = (ValComboBox)form.getCompById("5");
             Locale item = (Locale)localeCBX.getComboBox().getSelectedItem();

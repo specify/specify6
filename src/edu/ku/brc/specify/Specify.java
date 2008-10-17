@@ -2627,9 +2627,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   // Load Local Prefs
                   AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                   localPrefs.setDirPath(UIRegistry.getAppDataDir());
+                  
+                  // Check to see if we should check for a new version
+                  String VERSION_CHECK = "version_check.auto";
+                  if (AppPreferences.getLocalPrefs().getBoolean(VERSION_CHECK, null) == null)
+                  {
+                      AppPreferences.getLocalPrefs().putBoolean(VERSION_CHECK, true);
+                  }
 
-                  String home = System.getProperty("user.home");
-                  if (localPrefs.getBoolean("check.for.updates", true) || !home.equals("/home/rods"))
+                  if (localPrefs.getBoolean(VERSION_CHECK, true))
                   {
                       try
                       {
@@ -2643,16 +2649,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
                           if (entry != null)
                           {
-                               //log.debug("Found Entry for update: " + entry);
-                               //log.debug("URL: " + entry.getURL());
-                               //log.debug("Ver: " + entry.getNewVersion());
                                setLastVersion(entry.getNewVersion());
                           }
                           
-                          //System.err.println("Last["+lastVersion+"]  New["+entry.getNewVersion()+"]");
                           if (StringUtils.isNotEmpty(lastVersion) && lastVersion.equals(entry.getNewVersion()))
                           {
-                              //System.err.println("Skipping update check");
                               startApp(doConfig);
                               return;
                           }
@@ -2669,7 +2670,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                          {
                              public void exited(int exitValue)
                              {
-                                 //System.err.println("exitValue: "+exitValue);
                                  startApp(doConfig);
                              }
                              public void prepareShutdown()
