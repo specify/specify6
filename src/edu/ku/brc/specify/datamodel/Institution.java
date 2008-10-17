@@ -62,6 +62,8 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      protected String        description;
      protected String        license;
      protected Boolean       isServerBased;
+     protected Boolean       isAR;
+     protected Boolean       isMR;
      
      protected Address       address;
      protected Set<Agent>    technicalContacts;
@@ -102,6 +104,8 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         license           = null;
         address           = null;
         isServerBased     = false;
+        isAR              = false;
+        isMR              = false;
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
         divisions         = new HashSet<Division>();
@@ -290,6 +294,24 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
+     * @return the isAR
+     */
+    @Column(name = "IsAR", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsAR()
+    {
+        return isAR;
+    }
+
+    /**
+     * @return the isMR
+     */
+    @Column(name = "IsMR", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsMR()
+    {
+        return isMR;
+    }
+
+    /**
      * @param contentContacts the contentContacts to set
      */
     public void setContentContacts(Set<Agent> contentContacts)
@@ -399,6 +421,22 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     public void setIsServerBased(Boolean isServerBased)
     {
         this.isServerBased = isServerBased;
+    }
+
+    /**
+     * @param isAR the isAR to set
+     */
+    public void setIsAR(Boolean isAR)
+    {
+        this.isAR = isAR;
+    }
+
+    /**
+     * @param isMR the isMR to set
+     */
+    public void setIsMR(Boolean isMR)
+    {
+        this.isMR = isMR;
     }
 
     /**

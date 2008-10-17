@@ -55,7 +55,13 @@ public class NumberingSchemeSetup extends JPanel implements SetupPanelIFace
     protected JTextField           disciplineTxt;
     protected Properties           props      = null;
 
-    
+    /*
+      Localization:
+            DB_NAME=Database Name
+            HOST_NAME=Host Name
+            DSP_TYPE=DisciplineType
+            DRIVER=Driver
+    */
     /**
      * 
      */
@@ -71,15 +77,15 @@ public class NumberingSchemeSetup extends JPanel implements SetupPanelIFace
         PanelBuilder bldr = new PanelBuilder(new FormLayout("p,2px,p", "p,4px,p,10px,p,4px,p"), this);
         
         int y = 1;
-        bldr.add(UIHelper.createI18NFormLabel("Division"), cc.xy(1, y));
+        bldr.add(UIHelper.createI18NFormLabel("DIVISION"), cc.xy(1, y));
         bldr.add(divisionTxt = UIHelper.createTextField(""), cc.xy(3, y));
         y += 2;
         
-        bldr.add(UIHelper.createI18NFormLabel("Discipline"), cc.xy(1, y));
+        bldr.add(UIHelper.createI18NFormLabel("DISCILPINE"), cc.xy(1, y));
         bldr.add(disciplineTxt = UIHelper.createTextField(), cc.xy(3, y));
         y += 2;
 
-        bldr.add(UIHelper.createI18NFormLabel("Select a Numbering Scheme"), cc.xy(1, y));
+        bldr.add(UIHelper.createI18NFormLabel("SEL_NUM_SCHEME"), cc.xy(1, y));
         bldr.add(cbx, cc.xy(3, y));
         y += 2;
         
@@ -123,8 +129,8 @@ public class NumberingSchemeSetup extends JPanel implements SetupPanelIFace
     @SuppressWarnings("unchecked")
     protected void load(final DefaultComboBoxModel model)
     {
-        model.addElement("None");
-        model.addElement("Create New AutoNumberingScheme");
+        model.addElement(UIRegistry.getResourceString("NONE"));
+        model.addElement("CREATE_NEW_NUM_SCHEME");
         DataProviderSessionIFace localSession = null;
         
         try

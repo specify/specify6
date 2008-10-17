@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListDataEvent;
@@ -96,20 +97,24 @@ public class DatabasePanel extends BaseSetupPanel
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", "p:g,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", numRows)+",p:g"), this);
         int row = 1;
         
-        builder.add(createLabel(header), cc.xywh(1,row,3,1));row += 2;
+        builder.add(createLabel(header, SwingConstants.CENTER), cc.xywh(1,row,3,1));row += 2;
         
-        usernameTxt     = createField(builder, "USERNAME",      row);row += 2;
-        passwordTxt     = createField(builder, "PASSWORD",      row, true);row += 2;
-        dbNameTxt       = createField(builder, "DB_NAME", row);row += 2;
-        hostNameTxt     = createField(builder, "HOST_NAME", row);row += 2;
+        usernameTxt     = createField(builder, "USERNAME",  true, row);row += 2;
+        passwordTxt     = createField(builder, "PASSWORD",  true, row, true);row += 2;
+        dbNameTxt       = createField(builder, "DB_NAME",   true, row);row += 2;
+        hostNameTxt     = createField(builder, "HOST_NAME", true, row);row += 2;
 
         if (!doLoginOnly)
         {
-            builder.add(createI18NFormLabel("DSP_TYPE", SwingConstants.RIGHT), cc.xy(1, row));
+            JLabel lbl = createI18NFormLabel("DSP_TYPE", SwingConstants.RIGHT);
+            lbl.setFont(bold);
+            builder.add(lbl, cc.xy(1, row));
             builder.add(disciplines, cc.xy(3, row));
             row += 2;
             
-            builder.add(createI18NFormLabel("DRIVER", SwingConstants.RIGHT), cc.xy(1, row));
+            lbl = createI18NFormLabel("DRIVER", SwingConstants.RIGHT);
+            lbl.setFont(bold);
+            builder.add(lbl, cc.xy(1, row));
             builder.add(drivers, cc.xy(3, row));
             row += 2;
         }

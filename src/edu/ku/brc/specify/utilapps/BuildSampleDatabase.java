@@ -12,7 +12,7 @@ import static edu.ku.brc.specify.config.init.DataBuilder.buildDarwinCoreSchema;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccession;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAddress;
-import static edu.ku.brc.specify.config.init.DataBuilder.createAdminPrincipal;
+import static edu.ku.brc.specify.config.init.DataBuilder.*;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAgentVariant;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAttachment;
@@ -91,9 +91,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -422,7 +420,20 @@ public class BuildSampleDatabase
         
         List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
         
-        institution    = createInstitution(props.getProperty("divTitle"));        
+        institution = createInstitution(props.getProperty("instName"));
+        institution.setTitle(props.getProperty("instTitle"));
+        Address instAddress = new Address();
+        instAddress.initialize();
+        instAddress.setAddress(props.getProperty("addr1"));
+        instAddress.setAddress2(props.getProperty("addr2"));
+        instAddress.setCity(props.getProperty("city"));
+        instAddress.setCountry(props.getProperty("country"));
+        instAddress.setState(props.getProperty("state"));
+        instAddress.setPostalCode(props.getProperty("zip"));
+        instAddress.setPhone1(props.getProperty("phone"));
+        
+        institution.setAddress(instAddress);
+        instAddress.getInsitutions().add(institution);
         
         SpecifyUser specifyUser = createSpecifyUser(username, email, password, userType);
 //            SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(user);
@@ -446,7 +457,11 @@ public class BuildSampleDatabase
         
         startTx();
 
-        division = createDivision(institution, disciplineType.getName(), disciplineType.getTitle(), disciplineType.getAbbrev(), disciplineType.getTitle());
+        division = createDivision(institution, 
+                                 disciplineType.getName(), 
+                                 props.getProperty("divName"), 
+                                 props.getProperty("divAbbrev"), 
+                                 props.getProperty("divTitle"));
         
         // create tree defs (later we will make the def items and nodes)
         TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
@@ -455,9 +470,14 @@ public class BuildSampleDatabase
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
         StorageTreeDef            stgTreeDef        = createStorageTreeDef("Storage");
         
-        discipline = createDiscipline(division, disciplineType.getName(), disciplineType.getTitle(), 
-                                                             dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, 
-                                                             lithoStratTreeDef);
+        discipline = createDiscipline(division, 
+                                      disciplineType.getName(), 
+                                      disciplineType.getTitle(), 
+                                      dataType, 
+                                      taxonTreeDef, 
+                                      geoTreeDef, 
+                                      gtpTreeDef, 
+                                      lithoStratTreeDef);
         
         AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
         AppContextMgr.getInstance().setClassObject(Institution.class, institution);
@@ -484,10 +504,10 @@ public class BuildSampleDatabase
         
         startTx();
         loadSchemaLocalization(discipline, 
-                SpLocaleContainer.CORE_SCHEMA, 
-                DBTableIdMgr.getInstance(),
-                catNumFmt,
-                accNumFmt);
+                                SpLocaleContainer.CORE_SCHEMA, 
+                                DBTableIdMgr.getInstance(),
+                                catNumFmt,
+                                accNumFmt);
         persist(discipline);
         commitTx();
         
@@ -496,11 +516,11 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        String           title            = props.getProperty("title",    "mr");
+        String           title            = props.getProperty("title",     "mr");
         String           firstName        = props.getProperty("firstName", "Test");
-        String           lastName         = props.getProperty("lastName", "User");
+        String           lastName         = props.getProperty("lastName",  "User");
         String           midInit          = props.getProperty("middleInitial", "A");
-        String           abbrev           = props.getProperty("abbrev", "");
+        String           abbrev           = props.getProperty("abbrev",    "");
         
         System.out.println("----- User Agent -----");
         System.out.println("Title:     "+title);
@@ -564,10 +584,10 @@ public class BuildSampleDatabase
         frame.setDesc("Creating a Collection");
         
         Collection collection = createCollection(props.getProperty("collPrefix"), 
-                                                disciplineType.getTitle(), 
-                                                catANS,
-                                                discipline, 
-                                                disciplineType.isEmbeddedCollecingEvent());
+                                                 props.getProperty("collName"), 
+                                                 catANS,
+                                                 discipline, 
+                                                 disciplineType.isEmbeddedCollecingEvent());
         persist(collection);
         
         DataBuilder.createStandardGroups(groups, collection);

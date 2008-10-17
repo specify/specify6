@@ -13,12 +13,15 @@ import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.createPasswordField;
 import static edu.ku.brc.ui.UIHelper.createTextField;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Properties;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -44,7 +47,8 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
     protected String             panelName;
     protected KeyAdapter         keyAdapter;
     protected JButton            nextBtn;
-    
+    protected Font               bold      = (new JLabel()).getFont().deriveFont(Font.BOLD);
+
     /**
      * @param panelName
      * @param nextBtn
@@ -114,9 +118,9 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
      * @param row the row to place it on
      * @return the create JTextField (or JPasswordField)
      */
-    protected JTextField createField(final PanelBuilder builder, final String label, final int row)
+    protected JTextField createField(final PanelBuilder builder, final String label, final boolean isReq, final int row)
     {
-        return createField(builder, label, row, false);
+        return createField(builder, label, isReq, row, false);
     }
     
     /**
@@ -129,6 +133,7 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
      */
     protected JTextField createField(final PanelBuilder builder, 
                                      final String       label, 
+                                     final boolean      isRequired,
                                      final int          row, 
                                      final boolean      isPassword)
     {
@@ -136,8 +141,18 @@ public abstract class BaseSetupPanel extends JPanel implements SetupPanelIFace
         
         JTextField txt = isPassword ? createPasswordField(15) : createTextField(15);
         
-        builder.add(createI18NFormLabel(label, SwingConstants.RIGHT), cc.xy(1, row));
-        builder.add(txt,                                          cc.xy(3, row));
+        
+        JLabel lbl = createI18NFormLabel(label, SwingConstants.RIGHT);
+        if (isRequired)
+        {
+            lbl.setFont(bold);
+        }
+        builder.add(lbl, cc.xy(1, row));
+        builder.add(txt, cc.xy(3, row));
+        if (isRequired)
+        {
+            txt.setBackground(new Color(215, 230, 253));
+        }
         //txt.addFocusListener(this);
         //txt.addKeyListener(keyAdapter);
         

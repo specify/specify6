@@ -97,10 +97,12 @@ public class FormatterPickerPanel extends BaseSetupPanel
         PanelBuilder pb = new PanelBuilder(new FormLayout("p,4px,p,f:p:g", "p,4px,p,4px,p"), this);
         int y = 1;
         String label = getLocalizedMessage("CHOOSE_FMT", getResourceString(doingCatNums ? "CATALOG" : "ACCESSION"));
-        pb.add(createLabel(label), cc.xywh(1, y, 4, 1)); // I18N
+        pb.add(createLabel(label, SwingConstants.CENTER), cc.xywh(1, y, 4, 1)); // I18N
         y +=2;
         
-        pb.add(createI18NFormLabel("FORMAT", SwingConstants.RIGHT), cc.xy(1, y));// I18N
+        JLabel lbl = createI18NFormLabel("FORMAT", SwingConstants.RIGHT);
+        lbl.setFont(bold);
+        pb.add(lbl, cc.xy(1, y));// I18N
         pb.add(formatterCBX, cc.xy(3, y));
         y +=2;
 

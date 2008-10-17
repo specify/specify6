@@ -9,7 +9,7 @@
  */
 package edu.ku.brc.specify.config.init;
 
-import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 
 import java.util.Hashtable;
 import java.util.Properties;
@@ -17,6 +17,7 @@ import java.util.Properties;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -45,6 +46,8 @@ public class GenericFormPanel extends BaseSetupPanel
     protected FormDataObjIFace dataObj;
     protected DataGetterForObj getter    = null;
     protected DataSetterForObj setter    = null;
+    protected Hashtable<String, Boolean> reqHash  = null;
+
     
     /**
      * @param panelName
@@ -62,7 +65,18 @@ public class GenericFormPanel extends BaseSetupPanel
                             final String[] fields, 
                             final JButton  nextBtn)
     {
-        this(null, name, title, labels, fields,  nextBtn);
+        this(null, name, title, labels, fields, null, nextBtn);
+    }
+    
+    public GenericFormPanel(final String   name,
+                            final String   title,
+                            final String[] labels,
+                            final String[] fields, 
+                            final boolean[] required, 
+                            final JButton  nextBtn)
+    {
+        this(null, name, title, labels, fields, required, nextBtn);
+        
     }
     
     public GenericFormPanel(final FormDataObjIFace dataObj,
@@ -70,6 +84,7 @@ public class GenericFormPanel extends BaseSetupPanel
                             final String   title,
                             final String[] labels,
                             final String[] fields, 
+                            final boolean[] required, 
                             final JButton  nextBtn)
     {
         super(name, nextBtn);
@@ -85,8 +100,13 @@ public class GenericFormPanel extends BaseSetupPanel
                                                UIHelper.createDuplicateJGoodiesDef("p", "2px", fields.length)+",p:g"), this);
         int row = 1;
         
-        builder.add(createI18NFormLabel(title), cc.xywh(1,row,3,1));row += 2;
+        builder.add(createI18NLabel(title, SwingConstants.CENTER), cc.xywh(1,row,3,1));row += 2;
 
+        if (required != null)
+        {
+            reqHash = new Hashtable<String, Boolean>();
+        }
+        
         int i = 0;
         for (String fName : fields)
         {
@@ -95,7 +115,11 @@ public class GenericFormPanel extends BaseSetupPanel
                 builder.addSeparator(UIRegistry.getResourceString(labels[i]), cc.xyw(1, row, 4));
             } else
             {
-                comps.put(fName, createField(builder, labels[i], row));
+                if (reqHash != null)
+                {
+                    reqHash.put(fName, required[i]);
+                }
+                comps.put(fName, createField(builder, labels[i], required != null ? required[i] : true, row));
             }
             row += 2;
             i++;
@@ -188,16 +212,18 @@ public class GenericFormPanel extends BaseSetupPanel
     @Override
     public boolean isUIValid()
     {
+        int i = 0;
         for (String fName : comps.keySet())
         {
             JComponent comp = comps.get(fName);
             if (comp instanceof JTextField)
             {
-                if (StringUtils.isEmpty(((JTextField)comp).getText()))
+                if ((reqHash == null || reqHash.get(fName)) && StringUtils.isEmpty(((JTextField)comp).getText()))
                 {
                     return false;
                 }
             }
+            i++;
         }
         return true;
     }

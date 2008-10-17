@@ -15,7 +15,7 @@ import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.StartUpTask;
-import edu.ku.brc.af.tasks.VersionCheckerTask;
+import edu.ku.brc.af.tasks.StatsTrackerTask;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 
@@ -43,7 +43,7 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
      */
     protected boolean isTaskOK(final Taskable task)
     {
-        if (!(VersionCheckerTask.class.isAssignableFrom(task.getTaskClass()) ||
+        if (!(StatsTrackerTask.class.isAssignableFrom(task.getTaskClass()) ||
               StartUpTask.class.isAssignableFrom(task.getTaskClass())))
         {
             return true;

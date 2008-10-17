@@ -182,6 +182,16 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
     
             props.put("collPrefix", "KUFSH");
             props.put("collName", "Fish");
+            
+            // Address
+            props.put("addr1", "1345 Jayhawk Blvd");
+            props.put("addr2", "606 Dyche Hall");
+            props.put("city", "Lawrence");
+            props.put("state", "KS");
+            props.put("country", "USA");
+            props.put("zip", "66044");
+            props.put("phone", "785-864-5555");
+
         }
 
         props.put("userType", "CollectionManager");
@@ -204,7 +214,14 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                 new String[] { "NAME", "TITLE", "ABBREV"}, 
                 new String[] { "instName", "instTitle", "instAbbrev"}, 
                 nextBtn));
-         
+        
+        panels.add(new GenericFormPanel("addr", 
+                "ENTER_ADDR_INFO",
+                new String[] { "ADDR1", "ADDR2", "CITY",  "STATE", "COUNTRY", "ZIP", "PHONE"}, 
+                new String[] { "addr1", "addr2", "city", "state", "country", "zip", "phone"}, 
+                new boolean[] {true, false, true, true, true, true, true},
+                nextBtn));
+        
         panels.add(new GenericFormPanel("div", 
                 "ENTER_DIV_INFO",
                 new String[] { "NAME", "TITLE", "ABBREV"}, 

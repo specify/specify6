@@ -56,9 +56,9 @@ public class NewAgentPanel extends BaseSetupPanel
         
         builder.add(createLabel(header), cc.xywh(1,row,3,1));row += 2;
 
-        firstNameTxt    = createField(builder, "First Name", row);row += 2;
-        lastNameTxt     = createField(builder, "Last Name",  row);row += 2;
-        emailTxt        = createField(builder, "EMail",      row);row += 2;
+        firstNameTxt    = createField(builder, "First Name", true, row);row += 2;
+        lastNameTxt     = createField(builder, "Last Name",  true, row);row += 2;
+        emailTxt        = createField(builder, "EMail",      true, row);row += 2;
         
         if (DO_DEBUG) // XXX Debug
         {

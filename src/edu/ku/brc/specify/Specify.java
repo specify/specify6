@@ -131,6 +131,7 @@ import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
+import edu.ku.brc.specify.config.init.RegisterSpecify;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -352,7 +353,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        localPrefs.setDirPath(UIRegistry.getAppDataDir());
+        //localPrefs.setDirPath(UIRegistry.getAppDataDir());
         //localPrefs.load(); moved to end for not-null constraint
         /*String         derbyPath  = localPrefs.get("javadb.location", null);
         if (StringUtils.isNotEmpty(derbyPath))
@@ -2058,6 +2059,12 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             //    setupUIControlSize(AppPreferences.getRemote());
             //}
             
+            if (!RegisterSpecify.hasAutoRegistered())
+            {
+                RegisterSpecify reg = new RegisterSpecify();
+                reg.doRegister();
+            }
+            
             String key = "ui.formatting.controlSizes"; //$NON-NLS-1$
             String  fontName = AppPreferences.getRemote().get(key+".FN", null);
             Integer fontSize = AppPreferences.getRemote().getInt(key+".SZ", null);
@@ -2400,9 +2407,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
   public static void startApp(final boolean doConfig)
   {
-      // Set App Name, MUST be done very first thing!
-      UIRegistry.setAppName("Specify");  //$NON-NLS-1$
-      
       // Then set this
       IconManager.setApplicationClass(Specify.class);
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
@@ -2617,8 +2621,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
               log.debug("Checking for update....");
               try
               {
+                  // Set App Name, MUST be done very first thing!
+                  UIRegistry.setAppName("Specify");  //$NON-NLS-1$
+                  
+                  // Load Local Prefs
+                  AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+                  localPrefs.setDirPath(UIRegistry.getAppDataDir());
+
                   String home = System.getProperty("user.home");
-                  if (!home.equals("/home/rods"))
+                  if (localPrefs.getBoolean("check.for.updates", true) || !home.equals("/home/rods"))
                   {
                       try
                       {
