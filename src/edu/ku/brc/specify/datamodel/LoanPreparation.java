@@ -254,7 +254,7 @@ public class LoanPreparation extends CollectionMember implements java.io.Seriali
     @Column(name="IsResolved",unique=false,nullable=false,insertable=true,updatable=true)
     public Boolean getIsResolved() 
     {
-        return this.isResolved;
+        return this.isResolved == null ? false : this.isResolved;
     }
     
     public void setIsResolved(Boolean isResolved) 

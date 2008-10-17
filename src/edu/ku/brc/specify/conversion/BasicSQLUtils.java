@@ -418,6 +418,44 @@ public class BasicSQLUtils
 
         return count;
     }
+    
+    /**
+     * @param sql
+     * @return
+     */
+    public static int getCount(final String sql)
+    {
+        int count = 0;
+        Statement stmt = null;
+        try
+        {
+            Connection connection = dbConn != null ? dbConn : DBConnection.getInstance().getConnection();
+
+            stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.next())
+            {
+                count = rs.getInt(1);
+            }
+            rs.close();
+
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (stmt != null)
+            {
+                try
+                {
+                    stmt.close();
+                } catch (Exception ex) {}
+            }
+        }
+
+        return count;
+    }
 
     /**
      * Deletes all the records from a table

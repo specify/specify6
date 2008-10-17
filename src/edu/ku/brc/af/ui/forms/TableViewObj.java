@@ -2398,7 +2398,7 @@ public class TableViewObj implements Viewable,
          */
         public Object getValueAt(int row, int column)
         {
-            log.debug(row+","+column+"  isLoaded:"+isLoaded);
+            //log.debug(row+","+column+"  isLoaded:"+isLoaded);
             
             if (isLoading)
             {

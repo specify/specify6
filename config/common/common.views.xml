@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<viewset name="Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
+<viewset name="Common" i18nresname="common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <views>
     
@@ -2406,7 +2405,8 @@
             name="Preparation"
             class="edu.ku.brc.specify.datamodel.Preparation"
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj"
+            useresourcelabels="true">
             <desc><![CDATA[Preparation for Collection Object form.]]></desc>
             <enableRules/>
 
@@ -2414,10 +2414,12 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
-               <row>
+                <row>
                    <cell type="label" labelfor="7"/>
                    <cell type="field" id="7" name="prepType" uitype="combobox" picklist="PrepType" isrequired="true"/>
-               </row>
+                   <cell type="label" label="  "/>
+                   <cell type="field" id="isOnLoan" name="isOnLoan" uitype="checkbox" label="ISONLOAN" readonly="true"/>
+                </row>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="preparedDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>

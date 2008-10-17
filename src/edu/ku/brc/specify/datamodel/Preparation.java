@@ -54,6 +54,7 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.AttributeProviderIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 /**
 
@@ -102,6 +103,9 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected PreparationAttribute        preparationAttribute;    // Specify 5 Attributes table
     protected Set<PreparationAttr>        preparationAttrs;        // Generic Expandable Attributes
     protected Set<PreparationAttachment>  preparationAttachments;
+    
+    // Transient
+    protected Boolean                     isOnLoan = null;
     
     // Constructors
 
@@ -254,6 +258,28 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
             stillOut += (quantityLoaned - quantityReturned);
         }
         return stillOut;
+    }
+    
+    /**
+     * @return
+     */
+    @Transient
+    public Boolean getIsOnLoan()
+    {
+        if (isOnLoan == null)
+        {
+            String sql = "SELECT count(*) FROM preparation p INNER JOIN loanpreparation lp ON p.PreparationID = lp.PreparationID WHERE lp.Quantity > 0 AND lp.IsResolved = 0 AND p.PreparationID = "+getId();
+            isOnLoan = BasicSQLUtils.getCount(sql) > 0;
+        }
+        return isOnLoan;
+    }
+    
+    /**
+     * @param isOnLoan
+     */
+    public void setIsOnLoan(final Boolean isOnLoan)
+    {
+        
     }
 
     /**
