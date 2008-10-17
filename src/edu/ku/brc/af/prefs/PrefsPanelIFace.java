@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.af.prefs;
 
+import java.awt.Color;
 import java.util.Properties;
 
 import edu.ku.brc.af.core.PermissionIFace;
@@ -97,5 +98,10 @@ public interface PrefsPanelIFace
      * @param hContext the context
      */
     public abstract void setHelpContext(String hContext);
+    
+    /**
+     * @param color
+     */
+    public abstract void setShadeColor(Color color);
     
 }

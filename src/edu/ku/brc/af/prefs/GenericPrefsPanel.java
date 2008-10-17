@@ -7,7 +7,10 @@
 package edu.ku.brc.af.prefs;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
@@ -49,6 +52,7 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
     protected ViewIFace formView  = null;
     protected Viewable  form      = null;
     protected String    hContext  = null;
+    protected Color     shadeColor = null;
     
     protected PrefsPanelMgrIFace mgr = null;
     
@@ -150,6 +154,21 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
     }
     
     /* (non-Javadoc)
+     * @see javax.swing.JComponent#paint(java.awt.Graphics)
+     */
+    public void paint(Graphics g)
+    {
+        super.paint(g);
+        
+        if (shadeColor != null)
+        {
+            Dimension size = getSize();
+            g.setColor(shadeColor);
+            g.fillRect(0, 0, size.width, size.height);
+        }
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.PrefsSavable#savePrefs()
      */
     public void savePrefs()
@@ -237,4 +256,15 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
     {
         hContext = context;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#setShadeColor(java.awt.Color)
+     */
+    @Override
+    public void setShadeColor(Color color)
+    {
+        shadeColor = color;
+    }
+    
+    
 }

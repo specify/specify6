@@ -316,11 +316,15 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
                     // With Animation
                     //startAnimation(this, comp, currentComp.getPreferredSize().height - oldSize.height, false);
                     
+                    ((PrefsPanelIFace)comp).setShadeColor(new Color(255, 255, 255, 255));
+                    
                     // Without Animation
                     comp.setVisible(true);
                     winDim.height += currentComp.getPreferredSize().height - oldSize.height;
                     winDim.height = Math.max(winDim.height, 250);
                     setSize(winDim);
+                    
+                    new Timer(10, new ShadeAnimation(comp, 7)).start();
                 }
             }
         }
@@ -414,7 +418,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
 
         searchBtn   = createButton(getResourceString("PreferencesDlg.SEARCH")); //$NON-NLS-1$
 
-        searchText  = createTextField("", 10); //$NON-NLS-1$
+        searchText  = createTextField("", 15); //$NON-NLS-1$
         textBGColor = searchText.getBackground();
 
         searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));
@@ -543,6 +547,35 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
     //------------------------------------------------------------
     // Inner Class
     //------------------------------------------------------------
+    
+    private class ShadeAnimation implements ActionListener
+    {
+        private int        delta;
+        private Component  comp;
+        private int        alpha = 255;
+
+        ShadeAnimation(final Component comp, final int delta)
+        {
+            this.delta     = delta;
+            this.comp      = comp;
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            
+            alpha -= delta;
+            
+            ((PrefsPanelIFace)comp).setShadeColor(new Color(255, 255, 255, Math.max(alpha, 0)));
+            
+            if (alpha <= 0)
+            {
+                ((PrefsPanelIFace)comp).setShadeColor(null);
+                ((Timer)e.getSource()).stop();
+            }
+            comp.repaint();
+         }
+    }
+    
     private class SlideInOutAnimation implements ActionListener
     {
         private int        endHeight;
