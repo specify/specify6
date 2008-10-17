@@ -261,6 +261,9 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="remarks" uitype="textarea" colspan="10"/>
                 </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12" initialize="btn=true;icon=CollectingEventAttachment"/>
+                </row>
             </rows>
         </viewdef>
         

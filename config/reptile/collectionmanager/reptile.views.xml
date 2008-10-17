@@ -248,6 +248,9 @@
                     <cell type="label" labelfor="5"/>
                     <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
                 </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12" initialize="btn=true;icon=CollectingEventAttachment"/>
+                </row>
             </rows>
         </viewdef>
         
