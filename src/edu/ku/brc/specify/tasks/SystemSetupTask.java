@@ -29,6 +29,7 @@ import java.util.Vector;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -41,6 +42,7 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
@@ -120,13 +122,13 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      * @param sysNavBox
      * @param tableId
      */
-    protected void createSysNavBtn(final NavBox sysNavBox, final int tableId)
+    protected void createSysNavBtn(final NavBox sysNavBox, final int tableId, final boolean useJoinAndSpecCols)
     {
         final DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
         sysNavBox.add(NavBox.createBtnWithTT(ti.getTitle(), ti.getShortClassName(), "", IconManager.STD_ICON_SIZE, new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                startEditor(ti.getClassObj(), SYSTEMSETUPTASK, ti.getShortClassName());
+                startEditor(ti.getClassObj(), SYSTEMSETUPTASK, ti.getShortClassName(), useJoinAndSpecCols);
             }
         }));
     }
@@ -143,11 +145,12 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             // Temporary
             NavBox sysNavBox = new NavBox(getResourceString("CORE_DATA_OBJECTS"));
             //createSysNavBtn(sysNavBox, DataType.getClassTableId());
-            createSysNavBtn(sysNavBox, Division.getClassTableId());
-            createSysNavBtn(sysNavBox, Discipline.getClassTableId());
-            createSysNavBtn(sysNavBox, edu.ku.brc.specify.datamodel.Collection.getClassTableId());
-            createSysNavBtn(sysNavBox, PrepType.getClassTableId());
-            createSysNavBtn(sysNavBox, DeterminationStatus.getClassTableId());
+            createSysNavBtn(sysNavBox, Division.getClassTableId(), false);
+            createSysNavBtn(sysNavBox, Discipline.getClassTableId(), false);
+            createSysNavBtn(sysNavBox, edu.ku.brc.specify.datamodel.Collection.getClassTableId(), false);
+            
+            createSysNavBtn(sysNavBox, PrepType.getClassTableId(), true);
+            createSysNavBtn(sysNavBox, DeterminationStatus.getClassTableId(), true);
             
             sysNavBox.add(NavBox.createBtnWithTT(getResourceString("PICKLIST_EDITOR"), "PickList", "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
@@ -356,7 +359,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     protected void startEditor(final Class<?> clazz, 
                                final String iconNameArg, 
-                               final String viewName)
+                               final String viewName, 
+                               final boolean useJoinAndSpecCols)
     {
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(clazz.getName());
         String      tiTitle   = tableInfo.getTitle();
@@ -373,23 +377,23 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 sb.append(" as ");
                 sb.append(tableInfo.getAbbrev());
 
-                /*String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true, null, false); // false means SQL
-                if (joinSnipet != null)
+                if (useJoinAndSpecCols)
                 {
-                    sb.append(' ');
-                    sb.append(joinSnipet);
-                    sb.append(' ');
-                }
-                
-                if (tableInfo != null)
-                {
-                    String specialWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
-                    if (StringUtils.isNotEmpty(specialWhere))
+                    String joins = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true, null, true);
+                    if (StringUtils.isNotEmpty(joins))
+                    {
+                        sb.append(" ");
+                        sb.append(joins);
+                    }
+                    
+                    String specialCols = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
+                    if (StringUtils.isNotEmpty(specialCols))
                     {
                         sb.append(" WHERE ");
-                        sb.append(specialWhere);
+                        sb.append(specialCols);
                     }
-                }*/
+                }
+                
                 log.debug(sb.toString());
                 dataItems = session.getDataList(sb.toString());
                 
