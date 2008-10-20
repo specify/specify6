@@ -724,7 +724,6 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 worker.start();
             }
         }
-        
     }
     
     /* (non-Javadoc)

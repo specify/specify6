@@ -336,7 +336,14 @@
                     <cell type="separator" label="VERS_CHECK" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="field" id="2" name="version_check.auto" uitype="checkbox" label="CHECK_UPDATES_STARTUP" colspan="3"/>
+                    <cell type="panel" id="99" name="cfu" coldef="p,10px,p,f:p:g" rowdef="p" colspan="5">
+                        <rows>
+                            <row>
+                                <cell type="field" id="2" name="version_check.auto" uitype="checkbox" label="CHECK_UPDATES_STARTUP"/>
+                                <cell type="command" id="checkforupdates" name="checkforupdates" label="CHECK_FOR_UPDATES" commandtype="App" action="CheckForUpdates"/>
+                            </row>
+                        </rows>
+                    </cell>
                 </row>
                 <row>
                     <cell type="separator" label="USAGE_STATS" colspan="5"/>

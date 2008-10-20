@@ -1352,7 +1352,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     protected void checkForUpdates()
     {
-        
         try
         {
             
@@ -2345,6 +2344,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             } else if (cmdAction.isAction(BaseTask.APP_REQ_EXIT))
             {
                 doExit(true);
+                
+            } else if (cmdAction.isAction("CheckForUpdates"))
+            {
+                checkForUpdates();
             }
         }
     }

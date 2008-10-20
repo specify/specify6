@@ -2536,6 +2536,32 @@ public final class UIHelper
     }
     
     /**
+     * @param color The color to lighten
+     * @param percentage to be added to the current value 0.0 > val < 1.0
+     * @return
+     */
+    public static Color makeLighter(final Color color, final double percentage)
+    {
+        int r = Math.min(color.getRed() + (int)(color.getRed() * percentage), 255);
+        int g = Math.min(color.getGreen() + (int)(color.getGreen() * percentage), 255);
+        int b = Math.min(color.getBlue() + (int)(color.getBlue() * percentage), 255);
+        return new Color(r, g, b);
+    }
+    
+    /**
+     * @param color The color to lighten
+     * @param percentage to be added to the current value 0.0 > val < 1.0
+     * @return
+     */
+    public static Color makeDarker(final Color color, final double percentage)
+    {
+        int r = Math.max(color.getRed() - (int)(color.getRed() * percentage), 0);
+        int g = Math.max(color.getGreen() - (int)(color.getGreen() * percentage), 0);
+        int b = Math.max(color.getBlue() - (int)(color.getBlue() * percentage), 0);
+        return new Color(r, g, b);
+    }
+    
+    /**
      * @param addAL
      * @param addTT
      * @param removeAL

@@ -45,7 +45,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.border.BevelBorder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -365,7 +364,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
                     {
                         ((PrefsPanelIFace)currentComp).setShadeColor(new Color(255, 255, 255, 0));
                          
-                        new Timer(10, new FadeOutAnimation(currentComp, comp, oldSize, 12)).start();
+                        new Timer(10, new FadeOutAnimation(comp, oldSize, 12)).start();
                     }
                 }
 
@@ -578,8 +577,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
      * @param comp
      * @param oldSize
      */
-    protected void showAndResizePane(final Component currComp, 
-                                     final Component comp, 
+    protected void showAndResizePane(final Component comp, 
                                      final Dimension oldSize)
     {
         mainPanel.remove(currentComp);
@@ -666,7 +664,6 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         private int        delta;
         private int        alpha = 0;
         
-        private Component  currComp;
         private Component  comp;
         private Dimension oldSize;
 
@@ -676,10 +673,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
          * @param oldSize
          * @param delta
          */
-        FadeOutAnimation(final Component currComp, final Component comp, final Dimension oldSize, final int delta)
+        FadeOutAnimation(final Component comp, final Dimension oldSize, final int delta)
         {
             this.delta     = delta;
-            this.currComp  = currComp;
             this.comp      = comp;
             this.oldSize   = oldSize;
         }
@@ -698,7 +694,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
                 ((PrefsPanelIFace)currentComp).setShadeColor(null);
                 ((Timer)e.getSource()).stop();
                 
-                showAndResizePane(currComp, comp, oldSize);
+                showAndResizePane(comp, oldSize);
             }
             currentComp.repaint();
          }

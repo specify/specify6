@@ -105,13 +105,17 @@ public class PrefsToolbar extends JPanel
         Color     base = getBackground();
         Dimension size = getSize();
         
-        Color grad_top = base;//.brighter();
-        Color grad_bot = base.darker();        
+        
+        Color grad_top = base;
+        Color grad_bot = UIHelper.makeDarker(base, 0.1);     
         GradientPaint bg = new GradientPaint(new Point(0,0), grad_top,
-                                             new Point(0,size.height), grad_bot);
+                                             new Point(0, size.height), grad_bot);
         Graphics2D g2 = (Graphics2D)g;
         g2.setPaint(bg);
         g2.fillRect(0, 0, size.width, size.height);
+        
+        g.setColor(UIHelper.makeDarker(base, 0.5));
+        g.drawLine(0, size.height-1, size.width, size.height-1);
     }
 
     /**

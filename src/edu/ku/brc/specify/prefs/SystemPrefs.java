@@ -13,6 +13,8 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
@@ -102,6 +104,15 @@ public class SystemPrefs extends GenericPrefsPanel
         {
             oldAttachmentPath = localPrefs.get(ATTCH_PATH, null);
             browse.setValue(oldAttachmentPath, null);
+            
+            browse.getTextField().addFocusListener(new FocusAdapter() {
+                @Override
+                public void focusLost(FocusEvent e)
+                {
+                    super.focusLost(e);
+                    verifyAttachmentPath();
+                }
+            });
         }
         
         final ValComboBox localeCBX = (ValComboBox)form.getCompById("5");
@@ -190,6 +201,39 @@ public class SystemPrefs extends GenericPrefsPanel
         return "PrefsSystem";
     }
     
+    /**
+     * 
+     */
+    private void verifyAttachmentPath()
+    {
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        
+        ValBrowseBtnPanel browse = (ValBrowseBtnPanel)form.getCompById("8");
+        if (browse != null)
+        {
+            String newAttachmentPath = browse.getValue().toString();
+            if (newAttachmentPath != null && 
+                StringUtils.isNotEmpty(oldAttachmentPath) && 
+                !oldAttachmentPath.equals(newAttachmentPath))
+            {
+                if (newAttachmentPath.isEmpty())
+                {
+                    UIRegistry.showLocalizedError("SystemPrefs.NOEMPTY_ATTCH");
+                    browse.setValue(oldAttachmentPath, oldAttachmentPath);
+                    
+                } else if (okChangeAttachmentPath(oldAttachmentPath, newAttachmentPath))
+                {
+                    localPrefs.put(ATTCH_PATH, newAttachmentPath);
+                    
+                } else
+                {
+                    UIRegistry.showLocalizedError("SystemPrefs.DOESNT_EXIST", newAttachmentPath);
+                    browse.setValue(oldAttachmentPath, oldAttachmentPath);
+                }
+            }
+        }
+    }
+    
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.GenericPrefsPanel#savePrefs()
@@ -265,24 +309,7 @@ public class SystemPrefs extends GenericPrefsPanel
                     }
                 }
                 
-                browse = (ValBrowseBtnPanel)form.getCompById("8");
-                if (browse != null)
-                {
-                    String newAttachmentPath = browse.getValue().toString();
-                    if (newAttachmentPath != null && 
-                        StringUtils.isNotEmpty(oldAttachmentPath) && 
-                        !oldAttachmentPath.equals(newAttachmentPath))
-                    {
-                        if (newAttachmentPath.isEmpty())
-                        {
-                            UIRegistry.showLocalizedError("SystemPrefs.NOEMPTY_ATTCH");
-                            
-                        } else if (okChangeAttachmentPath(oldAttachmentPath, newAttachmentPath))
-                        {
-                            localPrefs.put(ATTCH_PATH, newAttachmentPath);
-                        }
-                    }
-                }
+                verifyAttachmentPath();
                 
                 try
                 {
@@ -300,69 +327,77 @@ public class SystemPrefs extends GenericPrefsPanel
      */
     protected boolean okChangeAttachmentPath(final String oldPath, final String newPath)
     {
-        File  oldDir = new File(oldPath);
-        if (oldDir.exists())
+        if (false)
         {
-            File origDir = new File(oldPath + File.separator + "originals");
-            
-            boolean doMoveFiles = false;
-            int numFiles = origDir.listFiles().length;
-            if (numFiles > 0)
+            File  oldDir = new File(oldPath);
+            if (oldDir.exists())
             {
-                Object[] options = { getResourceString("SystemPrefs.MV_FILES"),  //$NON-NLS-1$
-                                     getResourceString("CANCEL")  //$NON-NLS-1$
-                                   };
-                int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                            getLocalizedMessage("SystemPrefs.MV_FILES_MSG"),  //$NON-NLS-1$
-                                                            getResourceString("SystemPrefs.ATTCH_TITLE"),  //$NON-NLS-1$
-                                                            JOptionPane.YES_NO_OPTION,
-                                                            JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                if (userChoice == JOptionPane.YES_OPTION)
+                File origDir = new File(oldPath + File.separator + "originals");
+                
+                boolean doMoveFiles = false;
+                int numFiles = origDir.listFiles().length;
+                if (numFiles > 0)
                 {
-                    doMoveFiles = true;
-                } else
-                {
-                    return false;
-                }
-            }
-            
-            if (doMoveFiles)
-            {
-                File newDir = new File(newPath);
-                try
-                {
-                    AttachmentUtils.getAttachmentManager().setDirectory(newDir);
-                    
-                    //File newParentDir = new File(newDir.getParent());
-                    for (File file : oldDir.listFiles())
+                    Object[] options = { getResourceString("SystemPrefs.MV_FILES"),  //$NON-NLS-1$
+                                         getResourceString("CANCEL")  //$NON-NLS-1$
+                                       };
+                    int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                                getLocalizedMessage("SystemPrefs.MV_FILES_MSG"),  //$NON-NLS-1$
+                                                                getResourceString("SystemPrefs.ATTCH_TITLE"),  //$NON-NLS-1$
+                                                                JOptionPane.YES_NO_OPTION,
+                                                                JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                    if (userChoice == JOptionPane.YES_OPTION)
                     {
-                        if (file.isDirectory())
-                        {
-                            FileUtils.copyDirectoryToDirectory(file, newDir);
-                            
-                        } else if (!file.getName().equals(".") && !file.getName().equals(".."))
-                        {
-                            FileUtils.copyFileToDirectory(file, newDir);
-                        }
+                        doMoveFiles = true;
+                    } else
+                    {
+                        return false;
                     }
-                    //FileUtils.copyDirectoryToDirectory(oldDir, newParentDir);
-                    
-                } catch (Exception ex)
+                }
+                
+                if (doMoveFiles)
                 {
-                    ex.printStackTrace();
+                    File newDir = new File(newPath);
                     try
                     {
-                        AttachmentUtils.getAttachmentManager().setDirectory(oldDir);
+                        AttachmentUtils.getAttachmentManager().setDirectory(newDir);
                         
-                    } catch (Exception ex2)
+                        //File newParentDir = new File(newDir.getParent());
+                        for (File file : oldDir.listFiles())
+                        {
+                            if (file.isDirectory())
+                            {
+                                FileUtils.copyDirectoryToDirectory(file, newDir);
+                                
+                            } else if (!file.getName().equals(".") && !file.getName().equals(".."))
+                            {
+                                FileUtils.copyFileToDirectory(file, newDir);
+                            }
+                        }
+                        //FileUtils.copyDirectoryToDirectory(oldDir, newParentDir);
+                        
+                    } catch (Exception ex)
                     {
-                        ex2.printStackTrace();
+                        ex.printStackTrace();
+                        try
+                        {
+                            AttachmentUtils.getAttachmentManager().setDirectory(oldDir);
+                            
+                        } catch (Exception ex2)
+                        {
+                            ex2.printStackTrace();
+                        }
+                        UIRegistry.showLocalizedError("SystemPrefs.NO_MOVE_ATTCH", newDir.getAbsoluteFile());
+                        return false;
                     }
-                    UIRegistry.showLocalizedError("SystemPrefs.NO_MOVE_ATTCH", newDir.getAbsoluteFile());
-                    return false;
                 }
             }
+        } else
+        {
+            File newDir = new File(newPath);
+            return newDir.exists();
         }
+        
         return true;
     }
     
