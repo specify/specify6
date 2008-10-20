@@ -274,58 +274,101 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
                 return;
             }
     
-            boolean   makeVis = false;
-            Dimension oldSize = null;
-            if (currentComp != null)
+            if (false)
             {
-                oldSize = currentComp.getSize();
-                remove(currentComp);
-    
+                boolean   makeVis = false;
+                Dimension oldSize = null;
+                if (currentComp != null)
+                {
+                    oldSize = currentComp.getSize();
+                    mainPanel.remove(currentComp);
+        
+                } else
+                {
+                    makeVis = true;
+                }
+                
+                String hContext = prefPanelsHash.get(name).getHelpContext();
+                if (StringUtils.isNotEmpty(hContext))
+                {
+                    HelpMgr.registerComponent(helpBtn, hContext);
+                }
+        
+                if (comp != null)
+                {
+                    comp.setVisible(makeVis);
+                    mainPanel.add(comp, BorderLayout.CENTER);
+                    comp.invalidate();
+                    doLayout();
+                    repaint();
+                    currentComp = comp;
+                    if (oldSize != null)
+                    {
+                        Dimension winDim = getSize();
+                        winDim.width += currentComp.getPreferredSize().width - oldSize.width;
+                        winDim.width  = Math.max(winDim.width, 400);
+                        winDim.height = Math.max(winDim.height, 250);
+                        
+                        Dimension pSize = prefsToolbar.getPreferredSize();
+                        winDim.width  = Math.max(winDim.width, pSize.width+30);
+                        
+                        setSize(winDim);
+                        currentComp.setSize(new Dimension(currentComp.getPreferredSize().width, oldSize.height));
+                        
+                        // With Animation
+                        //startAnimation(this, comp, currentComp.getPreferredSize().height - oldSize.height, false);
+                        
+                        ((PrefsPanelIFace)comp).setShadeColor(new Color(255, 255, 255, 255));
+                        
+                        // Without Animation
+                        comp.setVisible(true);
+                        winDim.height += currentComp.getPreferredSize().height - oldSize.height;
+                        winDim.height = Math.max(winDim.height, 250);
+                        setSize(winDim);
+                        
+                        new Timer(10, new FadeInAnimation(comp, 7)).start();
+                    }
+                }
             } else
             {
-                makeVis = true;
-            }
-            
-            String hContext = prefPanelsHash.get(name).getHelpContext();
-            if (StringUtils.isNotEmpty(hContext))
-            {
-                HelpMgr.registerComponent(helpBtn, hContext);
-            }
-    
-            if (comp != null)
-            {
-                comp.setVisible(makeVis);
-                mainPanel.add(comp, BorderLayout.CENTER);
-                comp.invalidate();
-                doLayout();
-                repaint();
-                currentComp = comp;
-                if (oldSize != null)
+                boolean   makeVis = false;
+                Dimension oldSize = null;
+                if (currentComp != null)
                 {
-                    Dimension winDim = getSize();
-                    winDim.width += currentComp.getPreferredSize().width - oldSize.width;
-                    winDim.width  = Math.max(winDim.width, 400);
-                    winDim.height = Math.max(winDim.height, 250);
-                    
-                    Dimension pSize = prefsToolbar.getPreferredSize();
-                    winDim.width  = Math.max(winDim.width, pSize.width+30);
-                    
-                    setSize(winDim);
-                    currentComp.setSize(new Dimension(currentComp.getPreferredSize().width, oldSize.height));
-                    
-                    // With Animation
-                    //startAnimation(this, comp, currentComp.getPreferredSize().height - oldSize.height, false);
-                    
-                    ((PrefsPanelIFace)comp).setShadeColor(new Color(255, 255, 255, 255));
-                    
-                    // Without Animation
-                    comp.setVisible(true);
-                    winDim.height += currentComp.getPreferredSize().height - oldSize.height;
-                    winDim.height = Math.max(winDim.height, 250);
-                    setSize(winDim);
-                    
-                    new Timer(10, new ShadeAnimation(comp, 7)).start();
+                    oldSize = currentComp.getSize();
+        
+                } else
+                {
+                    makeVis = true;
                 }
+                
+                String hContext = prefPanelsHash.get(name).getHelpContext();
+                if (StringUtils.isNotEmpty(hContext))
+                {
+                    HelpMgr.registerComponent(helpBtn, hContext);
+                }
+        
+                if (comp != null)
+                {
+                    if (currentComp == null)
+                    {
+                        comp.setVisible(makeVis);
+                        mainPanel.add(comp, BorderLayout.CENTER);
+                        comp.invalidate();
+                        doLayout();
+                        repaint();
+                        currentComp = comp;
+                        return;
+                    }
+                    
+                    if (oldSize != null)
+                    {
+                        ((PrefsPanelIFace)currentComp).setShadeColor(new Color(255, 255, 255, 0));
+                         
+                        new Timer(10, new FadeOutAnimation(currentComp, comp, oldSize, 12)).start();
+                    }
+                }
+
             }
         }
     }
@@ -531,6 +574,48 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         return okToEnable;
     }
     
+    /**
+     * @param comp
+     * @param oldSize
+     */
+    protected void showAndResizePane(final Component currComp, 
+                                     final Component comp, 
+                                     final Dimension oldSize)
+    {
+        mainPanel.remove(currentComp);
+        
+        currentComp.setVisible(false);
+        mainPanel.add(comp, BorderLayout.CENTER);
+        comp.invalidate();
+        doLayout();
+        repaint();
+        currentComp = comp;
+        currentComp.setVisible(true);
+        
+        
+        Dimension winDim = getSize();
+        winDim.width += currentComp.getPreferredSize().width - oldSize.width;
+        winDim.width  = Math.max(winDim.width, 400);
+        winDim.height = Math.max(winDim.height, 250);
+        
+        Dimension pSize = prefsToolbar.getPreferredSize();
+        winDim.width  = Math.max(winDim.width, pSize.width+30);
+        
+        setSize(winDim);
+        currentComp.setSize(new Dimension(currentComp.getPreferredSize().width, oldSize.height));
+        
+        // With Animation
+        //startAnimation(this, comp, currentComp.getPreferredSize().height - oldSize.height, false);
+        
+        ((PrefsPanelIFace)comp).setShadeColor(null);
+        
+        // Without Animation
+        comp.setVisible(true);
+        winDim.height += currentComp.getPreferredSize().height - oldSize.height;
+        winDim.height = Math.max(winDim.height, 250);
+        setSize(winDim);
+    }
+    
     
     //-----------------------------------------------------
     // DataChangeListener
@@ -548,13 +633,13 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
     // Inner Class
     //------------------------------------------------------------
     
-    private class ShadeAnimation implements ActionListener
+    private class FadeInAnimation implements ActionListener
     {
         private int        delta;
         private Component  comp;
         private int        alpha = 255;
 
-        ShadeAnimation(final Component comp, final int delta)
+        FadeInAnimation(final Component comp, final int delta)
         {
             this.delta     = delta;
             this.comp      = comp;
@@ -576,6 +661,49 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
          }
     }
     
+    private class FadeOutAnimation implements ActionListener
+    {
+        private int        delta;
+        private int        alpha = 0;
+        
+        private Component  currComp;
+        private Component  comp;
+        private Dimension oldSize;
+
+        /**
+         * @param currComp
+         * @param comp
+         * @param oldSize
+         * @param delta
+         */
+        FadeOutAnimation(final Component currComp, final Component comp, final Dimension oldSize, final int delta)
+        {
+            this.delta     = delta;
+            this.currComp  = currComp;
+            this.comp      = comp;
+            this.oldSize   = oldSize;
+        }
+
+        /* (non-Javadoc)
+         * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+         */
+        public void actionPerformed(ActionEvent e)
+        {
+            alpha += delta;
+            
+            ((PrefsPanelIFace)currentComp).setShadeColor(new Color(255, 255, 255, Math.min(alpha, 255)));
+            
+            if (alpha >= 255)
+            {
+                ((PrefsPanelIFace)currentComp).setShadeColor(null);
+                ((Timer)e.getSource()).stop();
+                
+                showAndResizePane(currComp, comp, oldSize);
+            }
+            currentComp.repaint();
+         }
+    }
+
     private class SlideInOutAnimation implements ActionListener
     {
         private int        endHeight;
@@ -600,7 +728,6 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
             rect.height += pixelStep;
             delta       -= pixelStep;
 
-            //System.out.println(delta+"  "+pixelStep+"  "+rect);
             if (delta < 0 && pixelStep > 0)
             {
                 rect.height = endHeight;

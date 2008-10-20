@@ -101,6 +101,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                     {
                         SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper();
                         delHelper.delRecordFromTable(Discipline.class, discipline.getId(), false);
+                        delHelper.done();
+                        
                         
                     } catch (Exception ex)
                     {

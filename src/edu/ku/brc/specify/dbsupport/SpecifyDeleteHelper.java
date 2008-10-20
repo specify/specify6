@@ -25,13 +25,14 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
-import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.AddressOfRecord;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -51,18 +52,14 @@ import edu.ku.brc.specify.datamodel.Treeable;
  */
 public class SpecifyDeleteHelper
 {
-    protected boolean debug       = true;
-    protected boolean debugUpdate = true;
+    protected boolean debug       = false;
+    protected boolean debugUpdate = false;
     protected boolean doTrees     = false;
 
     protected Integer totalCount  = null;
     protected int     counter     = 0;
     
     protected Connection connection;
-    
-    protected Hashtable<String, DBTableChildIFace> hash      = new Hashtable<String, DBTableChildIFace>();
-    protected Hashtable<String, DBTableChildIFace> otherHash = new Hashtable<String, DBTableChildIFace>();
-
     
     /**
      * 
@@ -79,38 +76,58 @@ public class SpecifyDeleteHelper
                                                           "Specify");
         connection = dbConn.createConnection();
 
-        try
-        {
-            delRecordFromTable(Discipline.class, 6, true);
-            
-            //delRecordFromTable(Division.class, 2, false);
-            //cleanUpAgentsForDivision(2);
-            
-            checkTables();
-            
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
-            try
-            {
-                connection.rollback();
-            } catch (SQLException ex2)
-            {
-                ex.printStackTrace();
-            }
-            
-        } finally
+        if (false)
         {
             try
             {
-                if (connection != null)
-                {
-                    connection.close();
-                }
+                delRecordFromTable(Discipline.class, 3, true);
+                
+                //delRecordFromTable(Division.class, 2, false);
+                //cleanUpAgentsForDivision(2);
+                
+                checkTables();
+                
             } catch (SQLException ex)
             {
                 ex.printStackTrace();
+                try
+                {
+                    connection.rollback();
+                } catch (SQLException ex2)
+                {
+                    ex.printStackTrace();
+                }
+                
+            } finally
+            {
+                try
+                {
+                    if (connection != null)
+                    {
+                        connection.close();
+                    }
+                } catch (SQLException ex)
+                {
+                    ex.printStackTrace();
+                }
             }
+        }
+    }
+    
+    /**
+     * 
+     */
+    public void done()
+    {
+        try
+        {
+            if (connection != null)
+            {
+                connection.close();
+            }
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
         }
     }
 
@@ -132,7 +149,7 @@ public class SpecifyDeleteHelper
         String sqlStr = "SELECT "+tblInfo.getIdColumnName()+" FROM "+ tblInfo.getName() + " WHERE " +tblInfo.getIdColumnName()+" = ";
         String delStr = doDeleteId ? "DELETE FROM "+ tblInfo.getName() + " WHERE " +tblInfo.getIdColumnName()+" = " : null;
         
-        getSubTables(root, cls, id, sqlStr, delStr, 0);
+        getSubTables(root, cls, id, sqlStr, delStr, 0, null);
         
         if (debug)
         {
@@ -197,7 +214,8 @@ public class SpecifyDeleteHelper
                                      final int       id,
                                      final String    sqlStr,
                                      final String    delSqlStr,
-                                     final int       level)
+                                     final int       level,
+                                     final Hashtable<String, Boolean> inUseHashArg)
     {
         if (debug)
         {
@@ -209,7 +227,7 @@ public class SpecifyDeleteHelper
         
         StackItem child = parent.push(tblInfo, sqlStr, delSqlStr);
         
-        
+        Hashtable<String, Boolean> inUseHash = inUseHashArg == null && level == 1 ? new Hashtable<String, Boolean>() : inUseHashArg;
         
         if (tblInfo.getTableId() == 4)
         {
@@ -263,6 +281,7 @@ public class SpecifyDeleteHelper
                     {
                         sql = "SELECT "+primaryKeyTD+" FROM "+tblInfo.getName() + " WHERE "+tblInfo.getIdColumnName()+" = "+id;
                         if (debugUpdate) System.err.println(sql);
+                        
                         Vector<Integer> ids = getIds(sql, level);
                         if (ids != null && ids.size() > 0)
                         {
@@ -368,8 +387,7 @@ public class SpecifyDeleteHelper
                     
                     if (cls != Agent.class)
                     {
-                        hash.put(relInfo.getClassName(), relInfo);
-                        otherHash.put(relInfo.getClassName(), relInfo);
+                        if (inUseHash != null) inUseHash.put(relInfo.getClassName(), true);
                         
                         String sql    = "SELECT "+joinColName+ " FROM " + joinTableName + " WHERE " + joinColName + " = ";
                         String delSql = "DELETE FROM "+joinTableName+ " WHERE " + joinColName + " = ";
@@ -431,12 +449,11 @@ public class SpecifyDeleteHelper
                         
                         if (relInfo.getDataClass() != Agent.class)
                         {
-                            hash.put(relInfo.getClassName(), relInfo);
-                            otherHash.put(relInfo.getDataClass().getSimpleName(), relInfo);
+                            if (inUseHash != null) inUseHash.put(relInfo.getClassName(), true);
                             
                             if (ti.getClassObj() != cls || (doTrees && !Treeable.class.isAssignableFrom(cls)))
                             {
-                                getSubTables(child, ti.getClassObj(), id, sql, delSql, level+1);
+                                getSubTables(child, ti.getClassObj(), id, sql, delSql, level+1, inUseHash);
                             } else
                             {
                                 System.err.println("Skipping "+ti.getClassObj().getSimpleName());
@@ -484,8 +501,8 @@ public class SpecifyDeleteHelper
 
                     if (ri.getDataClass() != Agent.class)
                     {
-
-                        if (ri.getDataClass() == tblInfo.getClassObj() && StringUtils.isEmpty(ri.getOtherSide()))
+                        boolean hashOK = inUseHash == null || inUseHash.get(ti.getClassName()) == null;
+                        if (ri.getDataClass() == tblInfo.getClassObj() && hashOK && StringUtils.isEmpty(ri.getOtherSide()))
                         {
                             String sql    = "SELECT "+ti.getIdColumnName()+ " FROM "+ti.getName() + "  WHERE " + ri.getColName() + " = ";
                             String delSql = "DELETE FROM "+ti.getName() + "  WHERE " + ti.getIdColumnName() + " = ";
@@ -493,12 +510,26 @@ public class SpecifyDeleteHelper
                             if (debug)
                             {
                                 printLevel(level);
+
                                 System.out.println("Missed "+ti.getClassName()+" for "+tblInfo.getClassObj());
                                 printLevel(level);
                                 System.out.println(sql);
                             }
                             
-                            getSubTables(child, ti.getClassObj(), id, sql, delSql, level+1);
+                            if (ti.getTableId() == Borrow.getClassTableId() ||
+                                ti.getTableId() == AddressOfRecord.getClassTableId())
+                            {
+                                int x= 0;
+                                x++;
+                            }
+                            if (inUseHash != null) inUseHash.put(ti.getClassName(), true);
+                            getSubTables(child, ti.getClassObj(), id, sql, delSql, level+1, inUseHash);
+                            
+                        } else if (ri.getDataClass() == tblInfo.getClassObj() && !hashOK && StringUtils.isEmpty(ri.getOtherSide()))
+                        {
+                            System.out.println("Skipping "+ti.getClassObj().getSimpleName()+" for "+tblInfo.getClassObj().getSimpleName());
+                            int x = 0;
+                            x++;
                         }
                     } else
                     {
