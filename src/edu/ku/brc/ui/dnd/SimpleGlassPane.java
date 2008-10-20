@@ -21,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -149,7 +150,6 @@ public class SimpleGlassPane extends JPanel
         g2.setColor(new Color(255, 255, 255, 128));
         g2.fillRect(0, 0, size.width, size.height);
         
-        
         g2.setFont(new Font((new JLabel()).getFont().getName(), Font.BOLD, pointSize));
         FontMetrics fm = g2.getFontMetrics();
         
@@ -160,10 +160,13 @@ public class SimpleGlassPane extends JPanel
         
         int expand = 20;
         int arc    = expand * 2;
-        g2.setColor(Color.WHITE);
+        g2.setColor(Color.LIGHT_GRAY);
+        g2.fillRoundRect(tx-(expand / 2)+4, ty-fm.getAscent()-(expand / 2)+6, tw+expand, th+expand, arc, arc);
+        
+        g2.setColor(UIHelper.isMacOS() ? Color.WHITE : new Color(200, 220, 255));
         g2.fillRoundRect(tx-(expand / 2), ty-fm.getAscent()-(expand / 2), tw+expand, th+expand, arc, arc);
         
-        g2.setColor(Color.DARK_GRAY);
+        g2.setColor(Color.BLACK);
         g2.drawRoundRect(tx-(expand / 2), ty-fm.getAscent()-(expand / 2), tw+expand, th+expand, arc, arc);
         
         g2.setColor(Color.BLACK);

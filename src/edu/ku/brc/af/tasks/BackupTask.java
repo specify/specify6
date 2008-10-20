@@ -15,13 +15,9 @@
 package edu.ku.brc.af.tasks;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -29,8 +25,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -70,7 +64,7 @@ public class BackupTask extends BaseTask
      */
     public List<MenuItemDesc> getMenuItems()
     {
-        if (UIHelper.isSecurityOn())
+        /*if (UIHelper.isSecurityOn())
         {
             getPermissions(); // Gets the Permissions
             if (permissions != null && permissions.hasNoPerm())
@@ -122,6 +116,8 @@ public class BackupTask extends BaseTask
             menuItems.add(rsMI);
         }
         return menuItems;
+        */
+        return null;
     }  
     
     

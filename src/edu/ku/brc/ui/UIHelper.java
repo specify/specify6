@@ -2507,17 +2507,29 @@ public final class UIHelper
         throw new ConfigurationException("R,G,B value is bad ["+rgb+"]");
     }
     
+    /**
+     * @param val
+     * @return
+     */
     protected static String getHexStr(final int val)
     {
         String str = Integer.toHexString(val).toUpperCase();
         return str.length() == 1 ? ("0" + str) : str;
     }
     
+    /**
+     * @param color
+     * @return
+     */
     public static String getBGRHexFromColor(final Color color)
     {
         return getHexStr(color.getBlue()) + getHexStr(color.getGreen()) + getHexStr(color.getRed());
     }
     
+    /**
+     * @param color
+     * @return
+     */
     public static String getRGBHexFromColor(final Color color)
     {
         return getHexStr(color.getRed()) + getHexStr(color.getGreen()) + getHexStr(color.getBlue());

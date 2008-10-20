@@ -125,7 +125,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         
         if (prefsToolbar.getNumPrefs() > 1)
         {
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p, r:p:g", "p")); //$NON-NLS-1$ //$NON-NLS-2$
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("f:p:g", "p")); //$NON-NLS-1$ //$NON-NLS-2$
             CellConstraints cc         = new CellConstraints();
     
             builder.add( prefsToolbar, cc.xy(1,1));
@@ -134,8 +134,8 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
                 builder.add( createSearchPanel(), cc.xy(3,1));
             }
     
-            builder.getPanel().setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));//.createEmptyBorder(1,1,0,1));
-            builder.getPanel().setBackground(Color.WHITE);
+            //builder.getPanel().setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));//.createEmptyBorder(1,1,0,1));
+            //builder.getPanel().setBackground(Color.WHITE);
             mainPanel.add(builder.getPanel(), BorderLayout.NORTH);
             
             prefsToolbar.setPreferredSize(prefsToolbar.getPreferredSize());

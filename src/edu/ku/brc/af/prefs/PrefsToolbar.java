@@ -17,8 +17,14 @@ package edu.ku.brc.af.prefs;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
@@ -86,6 +92,26 @@ public class PrefsToolbar extends JPanel
     public int getNumPrefs()
     {
         return numPrefs;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+     */
+    @Override
+    protected void paintComponent(Graphics g)
+    {
+        super.paintComponent(g);
+        
+        Color     base = getBackground();
+        Dimension size = getSize();
+        
+        Color grad_top = base;//.brighter();
+        Color grad_bot = base.darker();        
+        GradientPaint bg = new GradientPaint(new Point(0,0), grad_top,
+                                             new Point(0,size.height), grad_bot);
+        Graphics2D g2 = (Graphics2D)g;
+        g2.setPaint(bg);
+        g2.fillRect(0, 0, size.width, size.height);
     }
 
     /**

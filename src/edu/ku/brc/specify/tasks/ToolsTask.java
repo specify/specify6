@@ -72,7 +72,7 @@ public class ToolsTask extends BaseTask
     private static final Logger log = Logger.getLogger(ToolsTask.class);
             
     // Static Data Members
-    public static final DataFlavor TOOLS_FLAVOR = new DataFlavor(ToolsTask.class, "Tools");
+    public static final DataFlavor TOOLS_FLAVOR = new DataFlavor(ToolsTask.class, "Plugins");
     
     public static final String GE_BALLOON_FG_COLOR     = "google.earth.fgcolor";
     public static final String GE_BALLOON_FG_COLOR_STR = "255, 255, 255";
@@ -93,13 +93,11 @@ public class ToolsTask extends BaseTask
     public static String GE_BALLOON_PRIMARY_URL_TITLE_STR   = "fb";
     public static String GE_BALLOON_SECONDARY_URL_TITLE_STR = "ad";
 
-    public static final String TOOLS = "Tools";
+    public static final String TOOLS = "Plugins";
 
-    //public static final String DOLABELS_ACTION     = "DoLabels";
     public static final String EXPORT_RS     = "ExportRecordSet";
     public static final String EXPORT_LIST   = "ExportList";
     public static final String EXPORT_JTABLE = "ExportJTable";
-    //public static final String PRINT_LABEL         = "PrintLabel";
 
     // Data Members
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
@@ -119,7 +117,7 @@ public class ToolsTask extends BaseTask
      */
     public ToolsTask()
     {
-        super(TOOLS, getResourceString("TOOLS_MENU"));
+        super(TOOLS, getResourceString("Plugins"));
         
         CommandDispatcher.register(TOOLS, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
@@ -212,7 +210,7 @@ public class ToolsTask extends BaseTask
             if (isVisible)
             {
                 extendedNavBoxes.clear();
-                NavBox navBox = new NavBox(getResourceString("Tools"));
+                NavBox navBox = new NavBox(getResourceString("Plugins"));
                 
                 // for each registered exporter, create a TaskCommandDef for it
                 for (RecordSetToolsIFace tool : loadedToolsList)
@@ -461,8 +459,8 @@ public class ToolsTask extends BaseTask
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
-        String label    = getResourceString("Tools");
-        //String iconName = "Tools";
+        String label    = getResourceString("Plugins");
+        //String iconName = "Plugins";
         String hint     = getResourceString("export_hint");
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
@@ -482,6 +480,8 @@ public class ToolsTask extends BaseTask
     @Override
     public List<MenuItemDesc> getMenuItems()
     {
+        String menuDesc = "Specify.SYSTEM_MENU";
+        
         menuItems = new Vector<MenuItemDesc>();
         
         if (permissions == null || permissions.canModify())
@@ -497,7 +497,7 @@ public class ToolsTask extends BaseTask
                     ToolsTask.this.requestContext();
                 }
             });
-            MenuItemDesc rsMI = new MenuItemDesc(mi, "FileMenu/Specify.CHANGE_COLLECTION");
+            MenuItemDesc rsMI = new MenuItemDesc(mi, menuDesc);
             rsMI.setPosition(MenuItemDesc.Position.After);
             menuItems.add(rsMI);
         }
