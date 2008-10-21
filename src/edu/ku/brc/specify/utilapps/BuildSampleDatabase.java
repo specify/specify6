@@ -91,6 +91,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -7056,7 +7057,12 @@ public class BuildSampleDatabase
         {
             UIHelper.centerWindow(frame);
             frame.setVisible(true);
-            frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
+            
+            ImageIcon imgIcon = IconManager.getIcon("AppIcon", IconManager.IconSize.Std16);
+            if (imgIcon != null)
+            {
+                frame.setIconImage(imgIcon.getImage());
+            }
         }
         
         frame.setProcessPercent(true);
