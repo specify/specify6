@@ -6876,7 +6876,11 @@ public class BuildSampleDatabase
         {
             UIHelper.centerWindow(frame);
             frame.setVisible(true);
-            frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
+            ImageIcon imgIcon = IconManager.getIcon("AppIcon", IconManager.IconSize.Std16);
+            if (imgIcon != null)
+            {
+                frame.setIconImage(imgIcon.getImage());
+            }
             
         } else
         {
