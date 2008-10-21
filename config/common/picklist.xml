@@ -5,9 +5,6 @@
   <picklist name="DeterminationStatus" issystem="true" type="1" tablename="determinationstatus" formatter="DeterminationStatus" readonly="true" sizelimit="-1">
     <items/>
   </picklist>
-  <picklist name="DataType" issystem="true" type="1" tablename="datatype" formatter="DataType" readonly="true" sizelimit="-1">
-    <items/>
-  </picklist>
   <picklist name="Department" issystem="true" type="2" tablename="accession" fieldname="text1" readonly="true" sizelimit="-1">
     <items/>
   </picklist>
@@ -15,9 +12,6 @@
     <items/>
   </picklist>
   <picklist name="Discipline" issystem="true" type="1" tablename="discipline" formatter="Discipline" readonly="true" sizelimit="-1">
-    <items/>
-  </picklist>
-  <picklist name="GeologicTimePeriodTreeDef" issystem="true" type="1" tablename="geologictimeperiodtreedef" formatter="GeologicTimePeriodTreeDef" readonly="true" sizelimit="-1">
     <items/>
   </picklist>
   <picklist name="PermitType" issystem="true" type="0" readonly="true" sizelimit="5">
@@ -100,9 +94,6 @@
       <picklistitem title="%G %S (%A1 ex. %A2)" value="%G %S (%A1 ex. %A2)"/>
     </items>
   </picklist>
-  <picklist name="ExpressSearch" issystem="true" type="0" readonly="false" sizelimit="50">
-    <items/>
-  </picklist>
   <picklist name="AgentTitles" issystem="true" type="0" readonly="true" sizelimit="6">
     <items>
       <picklistitem title="Asst. Director" value="asstdir"/>
@@ -112,14 +103,7 @@
       <picklistitem title="Ms." value="ms"/>
       <picklistitem title="Dr." value="dr"/>
     </items>
-  </picklist>
-  <picklist name="Languages" issystem="true" type="0" readonly="true" sizelimit="10">
-    <items>
-      <picklistitem title="English" value="English"/>
-      <picklistitem title="Spanish" value="Spanish"/>
-      <picklistitem title="German" value="Spanish"/>
-      <picklistitem title="Portuguese" value="Portuguese"/>
-    </items>
+   </picklist>
    </picklist>
     <picklist name="TreatmentType" issystem="true" type="0" readonly="true" sizelimit="10">
       <items>

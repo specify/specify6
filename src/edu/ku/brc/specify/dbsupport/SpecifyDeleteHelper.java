@@ -27,6 +27,7 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Accession;
@@ -41,6 +42,8 @@ import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -52,21 +55,27 @@ import edu.ku.brc.specify.datamodel.Treeable;
  */
 public class SpecifyDeleteHelper
 {
-    protected boolean debug       = false;
-    protected boolean debugUpdate = false;
-    protected boolean doTrees     = false;
+    protected boolean    debug             = false;
+    protected boolean    debugUpdate       = false;
+    protected boolean    doTrees           = false;
 
-    protected Integer totalCount  = null;
-    protected int     counter     = 0;
+    protected Integer    totalCount        = null;
+    protected int        counter           = 0;
+    protected JStatusBar statusBar         = null;
     
     protected Connection connection;
     
     /**
      * 
      */
-    public SpecifyDeleteHelper()
+    public SpecifyDeleteHelper(final boolean doUpdateStatusBar)
     {
         super();
+        
+        if (doUpdateStatusBar)
+        {
+            statusBar = UIRegistry.getStatusBar();
+        }
         
         DBConnection dbConn = DBConnection.createInstance("com.mysql.jdbc.Driver", 
                                                           "org.hibernate.dialect.MySQLDialect", 
@@ -119,6 +128,11 @@ public class SpecifyDeleteHelper
      */
     public void done()
     {
+        if (totalCount != null)
+        {
+            statusBar.setValue(FormViewObj.STATUSBAR_NAME, totalCount);
+        }
+        
         try
         {
             if (connection != null)
@@ -142,8 +156,7 @@ public class SpecifyDeleteHelper
                                       final int         id,
                                       final boolean     doDeleteId) throws SQLException
     {
-        StackItem root = new StackItem(null, null, null);
-        
+        StackItem root      = new StackItem(null, null, null);
         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(cls.getSimpleName());
         
         String sqlStr = "SELECT "+tblInfo.getIdColumnName()+" FROM "+ tblInfo.getName() + " WHERE " +tblInfo.getIdColumnName()+" = ";
@@ -174,7 +187,13 @@ public class SpecifyDeleteHelper
             if (!debug)
             {
                 totalCount = counter;
-                counter = 0;
+                counter    = 0;
+                
+                if (statusBar != null && totalCount != null)
+                {
+                    statusBar.setProgressRange(FormViewObj.STATUSBAR_NAME, 0, totalCount, 0);
+                }
+                
                 for (StackItem si : root.getStack())
                 {
                     deleteRecords(si, 0, id, stmt, true);
@@ -454,7 +473,8 @@ public class SpecifyDeleteHelper
                             if (ti.getClassObj() != cls || (doTrees && !Treeable.class.isAssignableFrom(cls)))
                             {
                                 getSubTables(child, ti.getClassObj(), id, sql, delSql, level+1, inUseHash);
-                            } else
+                                
+                            } else if (debug)
                             {
                                 System.err.println("Skipping "+ti.getClassObj().getSimpleName());
                             }
@@ -726,6 +746,14 @@ public class SpecifyDeleteHelper
                             {
                                 String delSql = si.getDelSql() + itemId;
 
+                                //System.err.println(delSql);
+                                /*if (delSql.indexOf("FROM discipline") > -1)
+                                {
+                                    System.err.println(delSql);
+                                    int x= 0;
+                                    x++;
+                                }*/
+                                
                                 if (StringUtils.contains(si.getDelSql(), "XXX"))
                                 {
                                     delSql = StringUtils.replace(si.getDelSql(), "XXX", Integer.toString(itemId));
@@ -776,9 +804,14 @@ public class SpecifyDeleteHelper
             System.out.println("Records to delete: "+cnt);
         }
             
-        if (totalCount != null)
+        if (totalCount != null && debugUpdate)
         {
             System.err.println(counter+" / "+totalCount);
+        }
+        
+        if (statusBar != null)
+        {
+            statusBar.setValue(FormViewObj.STATUSBAR_NAME, counter);
         }
     }
     
@@ -849,39 +882,39 @@ public class SpecifyDeleteHelper
     protected void cleanUpTree(final Class<?> treeDefClass, 
                                final int      treeDefId) throws SQLException
     {
-        Statement   stmt    = connection.createStatement();
-        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(treeDefClass.getSimpleName());
-        
-        String className        = treeDefClass.getSimpleName().substring(0, treeDefClass.getSimpleName().length()-7);
-        String tableNameTD      = tblInfo.getName();
-        String primaryKeyTD     = tblInfo.getIdColumnName();
-        String itemTableNameTDI = tableNameTD + "item";
+        Statement   stmt             = connection.createStatement();
+        DBTableInfo tblInfo          = DBTableIdMgr.getInstance().getByShortClassName(treeDefClass.getSimpleName());
+        String      className        = treeDefClass.getSimpleName().substring(0, treeDefClass.getSimpleName().length()-7);
+        String      tableNameTD      = tblInfo.getName();
+        String      primaryKeyTD     = tblInfo.getIdColumnName();
+        String      itemTableNameTDI = tableNameTD + "item";
 
         String delSql;
         
         if (treeDefClass == TaxonTreeDef.class)
         {
             String tmpSql = "SELECT tc.TaxonCitationID FROM taxoncitation tc INNER JOIN taxon tx ON tc.TaxonID = tx.TaxonID INNER JOIN taxontreedef ttd ON tx.TaxonTreeDefID = ttd.TaxonTreeDefID = "+treeDefId;
-            System.err.println(tmpSql);
+            if (debugUpdate) System.err.println(tmpSql);
+            
             Vector<Integer> ids = getIds(tmpSql, 0);
             for (Integer id : ids)
             {
                 delSql = "DELETE FROM taxoncitation WHERE TaxonCitationID = "+id;
                 int count =stmt.executeUpdate(delSql);
-                System.err.println(count +" - "+delSql);
+                if (debugUpdate) System.err.println(count +" - "+delSql);
             }
         }
         
         delSql = "DELETE FROM "+className.toLowerCase() + " WHERE "+primaryKeyTD+" = "+treeDefId+" ORDER BY AcceptedID DESC, ParentID DESC";
-        System.err.println(delSql);
+        if (debugUpdate) System.err.println(delSql);
         stmt.executeUpdate(delSql);
         
         delSql = "DELETE FROM "+itemTableNameTDI + " WHERE "+primaryKeyTD+" = "+treeDefId+" ORDER BY RankID DESC";
-        System.err.println(delSql);
+        if (debugUpdate) System.err.println(delSql);
         stmt.executeUpdate(delSql);
         
         delSql = "DELETE FROM "+tableNameTD + " WHERE "+primaryKeyTD+" = "+treeDefId;
-        System.err.println(delSql);
+        if (debugUpdate) System.err.println(delSql);
         stmt.executeUpdate(delSql);
         
         stmt.close();
@@ -1276,7 +1309,7 @@ public class SpecifyDeleteHelper
         DBTableIdMgr.getInstance().getByShortClassName(Accession.class.getSimpleName()); // Preload
         
         
-        new SpecifyDeleteHelper();
+        new SpecifyDeleteHelper(false);
         
         //s.getSubTables(Discipline.class);
         //s.getSubTables(Division.class);

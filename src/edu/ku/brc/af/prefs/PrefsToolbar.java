@@ -107,7 +107,7 @@ public class PrefsToolbar extends JPanel
         
         
         Color grad_top = base;
-        Color grad_bot = UIHelper.makeDarker(base, 0.1);     
+        Color grad_bot = UIHelper.makeDarker(base, UIHelper.isMacOS() ? 0.15 : 0.1);     
         GradientPaint bg = new GradientPaint(new Point(0,0), grad_top,
                                              new Point(0, size.height), grad_bot);
         Graphics2D g2 = (Graphics2D)g;

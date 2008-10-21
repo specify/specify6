@@ -19,29 +19,20 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createGeologicTimePerio
 import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDef;
 import static edu.ku.brc.specify.config.init.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.List;
-import java.util.Vector;
-
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.CollectingTrip;
-import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
-import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.ui.CommandAction;
@@ -71,8 +62,33 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         super.formShutdown();
         CommandDispatcher.unregister(CMD_TYPE, this);
     }
-
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
+     */
+    @Override
+    public STATUS processBusinessRules(Object dataObj)
+    {
+        reasonList.clear();
+        
+        if (!(dataObj instanceof Division))
+        {
+            return STATUS.Error;
+        }
+        
+        STATUS nameStatus = isCheckDuplicateNumberOK("name", 
+                                                      (FormDataObjIFace)dataObj, 
+                                                      Discipline.class, 
+                                                      "disciplineId");
+        
+        STATUS titleStatus = isCheckDuplicateNumberOK("title", 
+                                                    (FormDataObjIFace)dataObj, 
+                                                    Discipline.class, 
+                                                    "disciplineId");
+        
+        return nameStatus != STATUS.OK || titleStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
      */
@@ -99,10 +115,15 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 {
                     try
                     {
-                        SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper();
-                        delHelper.delRecordFromTable(Discipline.class, discipline.getId(), false);
+                        SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper(true);
+                        delHelper.delRecordFromTable(Discipline.class, discipline.getId(), true);
                         delHelper.done();
                         
+                        // This is called instead of calling 'okToDelete' because we had the SpecifyDeleteHelper
+                        // delete the actual dataObj and now we tell the form to remove the dataObj from
+                        // the form's list and them update the controller appropriately
+                        
+                        formViewObj.updateAfterRemove(true); // true removes item from list and/or set
                         
                     } catch (Exception ex)
                     {
@@ -165,6 +186,9 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
 
         Discipline discipline = (Discipline)newDataObj;
+        
+        DataType dataType = AppContextMgr.getInstance().getClassObject(DataType.class);
+        discipline.setDataType(dataType);
 
         taxonTreeDef.setDiscipline(discipline);
         discipline.setTaxonTreeDef(taxonTreeDef);
@@ -211,7 +235,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
     {
         super.beforeDelete(dataObj, session);
         
-        Discipline discipline = (Discipline)dataObj;
+        /*Discipline discipline = (Discipline)dataObj;
         Integer dspId = discipline.getId();
         
         Statement stmt = null;
@@ -306,7 +330,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
             }
         }
 
-
+*/
     }
 
     /* (non-Javadoc)

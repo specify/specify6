@@ -687,7 +687,8 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         {
             alpha += delta;
             
-            ((PrefsPanelIFace)currentComp).setShadeColor(new Color(255, 255, 255, Math.min(alpha, 255)));
+            Color bc = currentComp.getBackground();
+            ((PrefsPanelIFace)currentComp).setShadeColor(new Color(bc.getRed(), bc.getGreen(), bc.getBlue(), Math.min(alpha, 255)));
             
             if (alpha >= 255)
             {

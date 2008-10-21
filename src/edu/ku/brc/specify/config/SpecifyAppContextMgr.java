@@ -72,6 +72,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -1135,6 +1136,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
             Division division = discipline.getDivision();
             division.forceLoad();
             AppContextMgr.getInstance().setClassObject(Division.class, division);
+            
+            DataType dataType = discipline.getDataType();
+            dataType.forceLoad();
+            AppContextMgr.getInstance().setClassObject(DataType.class, dataType);
             
             //--------------------------------------------------------------------------------
             //Check for locks set uploader, tree update, ...

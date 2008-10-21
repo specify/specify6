@@ -148,13 +148,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
     @Override
     public String toString()
     {
-        StringBuffer buffer = new StringBuffer(128);
-
-        buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
-        buffer.append("name").append("='").append(getName()).append("' ");
-        buffer.append("]");
-
-        return buffer.toString();
+        return getIdentityTitle();
     }
 
     /* (non-Javadoc)

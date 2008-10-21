@@ -2113,7 +2113,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 // CollectionObjectTypeName
                 BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "datatype", BasicSQLUtils.myDestinationServerType);
 
-                int dataTypeId = createDataType(taxonomyTypeName);
+                int dataTypeId = createDataType("Biota");
                 if (dataTypeId == -1)
                 {
                     log.error("**** Had to Skip record because of DataType mapping error[" + taxonomyTypeName + "]");

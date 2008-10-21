@@ -18,6 +18,7 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
@@ -28,6 +29,8 @@ import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -160,6 +163,32 @@ public class CollectionBusRules extends BaseBusRules
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
+     */
+    @Override
+    public STATUS processBusinessRules(Object dataObj)
+    {
+        reasonList.clear();
+        
+        if (!(dataObj instanceof Division))
+        {
+            return STATUS.Error;
+        }
+        
+        STATUS nameStatus = isCheckDuplicateNumberOK("collectionName", 
+                                                      (FormDataObjIFace)dataObj, 
+                                                      Collection.class, 
+                                                      "collectionId");
+        
+        STATUS titleStatus = isCheckDuplicateNumberOK("collectionPrefix", 
+                                                    (FormDataObjIFace)dataObj, 
+                                                    Collection.class, 
+                                                    "collectionId");
+        
+        return nameStatus != STATUS.OK || titleStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToEnableDelete(java.lang.Object)
      */
     @Override
@@ -214,4 +243,55 @@ public class CollectionBusRules extends BaseBusRules
         return false;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
+     */
+    @Override
+    public void okToDelete(final Object                     dataObj,
+                           final DataProviderSessionIFace   session,
+                           final BusinessRulesOkDeleteIFace deletable)
+    {
+        reasonList.clear();
+        
+        if (deletable != null)
+        {
+            Collection collection = (Collection)dataObj;
+            
+            Integer id = collection.getId();
+            if (id != null)
+            {
+                Collection currDiscipline = AppContextMgr.getInstance().getClassObject(Collection.class);
+                if (currDiscipline.getId().equals(collection.getId()))
+                {
+                    UIRegistry.showError("You cannot delete the current Collection.");
+                    
+                } else
+                {
+                    try
+                    {
+                        SpecifyDeleteHelper delHelper = new SpecifyDeleteHelper(true);
+                        delHelper.delRecordFromTable(Collection.class, collection.getId(), true);
+                        delHelper.done();
+                        
+                        // This is called instead of calling 'okToDelete' because we had the SpecifyDeleteHelper
+                        // delete the actual dataObj and now we tell the form to remove the dataObj from
+                        // the form's list and them update the controller appropriately
+                        
+                        formViewObj.updateAfterRemove(true); // true removes item from list and/or set
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            } else
+            {
+                super.okToDelete(dataObj, session, deletable);
+            }
+            
+        } else
+        {
+            super.okToDelete(dataObj, session, deletable);
+        }
+    }
 }

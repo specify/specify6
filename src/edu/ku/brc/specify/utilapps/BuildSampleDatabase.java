@@ -12,7 +12,7 @@ import static edu.ku.brc.specify.config.init.DataBuilder.buildDarwinCoreSchema;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccession;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAddress;
-import static edu.ku.brc.specify.config.init.DataBuilder.*;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAdminPrincipal;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAgentVariant;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAttachment;
@@ -5851,7 +5851,7 @@ public class BuildSampleDatabase
         groups.add(admin);
         user.addUserToSpPrincipalGroup(admin);
         
-        dataType = createDataType("Animalia");
+        dataType = createDataType("Biota");
         
         startTx();
         persist(institution);        
@@ -5869,7 +5869,7 @@ public class BuildSampleDatabase
             isChoosen(DisciplineType.STD_DISCIPLINES.fish, true))
         {
             createFishCollection(DisciplineType.getDiscipline("fish"), institution, user,
-                    getChoice(DisciplineType.STD_DISCIPLINES.fish, false));
+                                 getChoice(DisciplineType.STD_DISCIPLINES.fish, false));
             //done = true;
         }
         

@@ -182,7 +182,7 @@ public class FormViewObj implements Viewable,
     protected static ColorWrapper           viewFieldColor  = null;
     protected static CellConstraints        cc              = new CellConstraints();
     protected static boolean                useDebugForm    = false;
-    protected static final String           SHORT_CLASSNAME = "FormViewObj";
+    public    static final String           STATUSBAR_NAME  = "FormViewObj";
 
     // Data Members
     protected DataProviderSessionIFace      session        = null;
@@ -2577,7 +2577,7 @@ public class FormViewObj implements Viewable,
                 
             } else
             {
-                UIRegistry.getStatusBar().setIndeterminate(SHORT_CLASSNAME, true);
+                UIRegistry.getStatusBar().setIndeterminate(STATUSBAR_NAME, true);
                 final SwingWorker worker = new SwingWorker()
                 {
                     public Object construct()
@@ -2589,7 +2589,7 @@ public class FormViewObj implements Viewable,
                     //Runs on the event-dispatching thread.
                     public void finished()
                     {
-                        UIRegistry.getStatusBar().setProgressDone(SHORT_CLASSNAME);
+                        UIRegistry.getStatusBar().setProgressDone(STATUSBAR_NAME);
                         if (session != null)
                         {
                             session.close();
@@ -2743,6 +2743,7 @@ public class FormViewObj implements Viewable,
                         setSession(session);
                     }
                     
+                    session.evict(dataObj);
                     // Reload the object from the database  to avoid a stale object exception.
                     Object dbDataObj = session.getData(fdo.getDataClass(), "id", objId, DataProviderSessionIFace.CompareType.Equals);
                     if (dbDataObj != null)
@@ -2773,20 +2774,7 @@ public class FormViewObj implements Viewable,
                         UIRegistry.showLocalizedMsg("Warning", "OBJ_ALREADY_DEL");
                     }
                     
-                    isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
-                    if (rsController != null)
-                    {
-                        rsController.setNewObj(isNewlyCreatedDataObj);
-                    }
-                    if (formValidator != null)
-                    {
-                        formValidator.setNewObj(isNewlyCreatedDataObj);
-                    }
-
-                    if (mvParent != null)
-                    {
-                        mvParent.shutdownDisplayFrames();
-                    }
+                    updateAfterRemove(false);
                 }
                 
             } catch (edu.ku.brc.dbsupport.StaleObjectException e)
@@ -2798,6 +2786,7 @@ public class FormViewObj implements Viewable,
                 
             } catch (Exception e)
             {
+                e.printStackTrace();
                 doClearObj = false;
                 session.rollback();
                 recoverFromStaleObject("DELETE_DATA_STALE", null);
@@ -2829,6 +2818,34 @@ public class FormViewObj implements Viewable,
             }
         }
         
+    }
+    
+    /**
+     * Sets the "newly created object" in the controller and the validator to false
+     * and closes and frames that are showing.
+     * @param doAdjustRS true calls adjustRSControllerAfterRemove and removes the item from the list
+     */
+    public void updateAfterRemove(final boolean doAdjustRS)
+    {
+        isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
+        if (rsController != null)
+        {
+            rsController.setNewObj(isNewlyCreatedDataObj);
+        }
+        if (formValidator != null)
+        {
+            formValidator.setNewObj(isNewlyCreatedDataObj);
+        }
+
+        if (mvParent != null)
+        {
+            mvParent.shutdownDisplayFrames();
+        }
+        
+        if (doAdjustRS)
+        {
+            adjustRSControllerAfterRemove();
+        }
     }
 
     /**
