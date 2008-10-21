@@ -104,7 +104,6 @@
       <picklistitem title="Dr." value="dr"/>
     </items>
    </picklist>
-   </picklist>
     <picklist name="TreatmentType" issystem="true" type="0" readonly="true" sizelimit="10">
       <items>
         <picklistitem title="Bug Room" value="bugroom"/>
