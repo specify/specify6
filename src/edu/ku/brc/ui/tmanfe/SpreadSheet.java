@@ -979,13 +979,13 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
     }
     
 
-    /**
-     * @return the model
+    /* (non-Javadoc)
+     * @see javax.swing.JTable#getModel()
      */
     @Override
     public SpreadSheetModel getModel()
     {
-        return model;
+        return (SpreadSheetModel )super.getModel();
     }
     
     /**

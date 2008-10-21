@@ -118,7 +118,7 @@ public class IReportLauncher implements DatabaseLoginListener
     
     protected void openIReportEditor() 
     {
-        SwingUtilities.invokeLater(new Runnable()
+       SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
             {
@@ -141,4 +141,6 @@ public class IReportLauncher implements DatabaseLoginListener
             }
         });
     }
+        
 }
+

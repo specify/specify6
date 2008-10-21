@@ -29,7 +29,9 @@ ant										1.7.0
 	ant-launcher						dist w/ ant
 
 derby									10.3.1.4
-commons-httpclient						3.0.1
+commons-codec					1.3
+commons-digester				1.7
+commons-httpclient						3.1
 commons-lang							2.2
 commons-jexl							1.1
 commons-beanutils (all-in-one JAR)		1.7.0
@@ -51,7 +53,7 @@ jfreechart								1.0.6
 	jcommon								1.0.12 dist w/ jfreechart
 
 mail (JavaMail from Sun)				1.4
-jasper reports							2.0.2
+jasper reports							3.0.0
 TimingFramework							0.55
 junit									4.1
 mysql-connector-java					5.1.6
@@ -74,6 +76,6 @@ jazzy-core                              0.5.2
 
 Missing information:
 --------------------
-commons-codec.jar
+
 servlet-api.jar
 

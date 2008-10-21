@@ -92,8 +92,10 @@ public class SearchableJXTable  extends JXTable
     
     public void clearSorter()
     {
-        this.resetSorter();
+        //Later version of swingx (required by iReport 3.0) has dropped resetSorter().
+        //this.resetSorter();
     }
+    
     
 //    public void setSearchableJXTableProperties()
 //    {
