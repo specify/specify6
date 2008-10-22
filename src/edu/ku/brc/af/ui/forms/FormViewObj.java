@@ -1696,6 +1696,24 @@ public class FormViewObj implements Viewable,
             obj = FormHelper.createAndNewDataObj(view.getClassName());
         }
         
+        // The order needs to be set here because some Sets are TreSets which
+        // require the ordinal to be set BEFORE it is added to the TreeSet
+        if (obj instanceof Orderable)
+        {
+            // They really should all be Orderable, 
+            // but just in case we check each one.
+            int maxOrder = -1;
+            for (Object listObj : list)
+            {
+                if (listObj instanceof Orderable)
+                {
+                    maxOrder = Math.max(((Orderable)listObj).getOrderIndex(), maxOrder);
+                }
+            }
+            
+            ((Orderable)obj).setOrderIndex(maxOrder+1);
+        }
+        
         boolean isManyToOne  = false;
         if (parentDataObj instanceof FormDataObjIFace)
         {
@@ -1780,22 +1798,6 @@ public class FormViewObj implements Viewable,
         if (formValidator != null && formValidator.hasChanged())
         {
             formValidator.setHasChanged(false);
-        }
-        
-        if (obj instanceof Orderable)
-        {
-            // They really should all be Orderable, 
-            // but just in case we check each one.
-            int maxOrder = -1;
-            for (Object listObj : list)
-            {
-                if (listObj instanceof Orderable)
-                {
-                    maxOrder = Math.max(((Orderable)listObj).getOrderIndex(), maxOrder);
-                }
-            }
-            
-            ((Orderable)obj).setOrderIndex(maxOrder+1);
         }
         
         dataObj = obj;
