@@ -281,8 +281,6 @@ public class BuildSampleDatabase
      */
     public BuildSampleDatabase()
     {
-        frame = new ProgressFrame("Building Specify Database", "SpecifyLargeIcon");
-        frame.pack();
     }
     
     public Session getSession()
@@ -6766,6 +6764,12 @@ public class BuildSampleDatabase
             System.out.println("Derby Path [ "+UIRegistry.getJavaDBPath()+" ]");
         }
         
+        // Then set this
+        IconManager.setApplicationClass(Specify.class);
+        
+        frame = new ProgressFrame("Building Specify Database", "SpecifyLargeIcon");
+        frame.pack();
+        
         System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences
         System.setProperty("edu.ku.brc.dbsupport.DataProvider", "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
         System.setProperty(SecurityMgr.factoryName,             "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");       // Needed for Tree Field Names //$NON-NLS-1$
@@ -7642,52 +7646,14 @@ public class BuildSampleDatabase
             e.printStackTrace();
         }
         
-        if (args != null && args.length > 0)
+        SwingUtilities.invokeLater(new Runnable()
         {
-            System.out.println("BuildSampleDatabase ");
-           
-            BuildSampleDatabase builder = new BuildSampleDatabase();
-            builder.buildSetup(args);
-   
-        } else
-        {
-            // Now check the System Properties
-            String appDir = System.getProperty("appdir");
-            if (StringUtils.isNotEmpty(appDir))
+            public void run()
             {
-                UIRegistry.setDefaultWorkingPath(appDir);
+                BuildSampleDatabase builder = new BuildSampleDatabase();
+                builder.buildSetup(args);
             }
-            
-            String appdatadir = System.getProperty("appdatadir");
-            if (StringUtils.isNotEmpty(appdatadir))
-            {
-                UIRegistry.setBaseAppDataDir(appdatadir);
-            }
-            
-            String javadbdir = System.getProperty("javadbdir");
-            if (StringUtils.isNotEmpty(javadbdir))
-            {
-                UIRegistry.setJavaDBDir(javadbdir);
-            }
-            
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                public void run()
-                {
-                    // Set App Name, MUST be done very first thing!
-                    UIRegistry.setAppName("Specify");  //$NON-NLS-1$
-                    
-                    // Then set this
-                    IconManager.setApplicationClass(Specify.class);
-                    IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
-                    IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
-                    IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
-                    
-                    BuildSampleDatabase builder = new BuildSampleDatabase();
-                    builder.buildSetup(null);
-                }
-            });
-        }
+        });
     }
     
 

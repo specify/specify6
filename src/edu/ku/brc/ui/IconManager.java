@@ -197,6 +197,7 @@ public class IconManager extends Component
         
         if (icon != null)
         {
+            //log.debug(iconName+"  "+id+"  "+path);
             IconEntry entry = new IconEntry(iconName, id, path);
             
             instance.defaultEntries.put(iconName, entry);
