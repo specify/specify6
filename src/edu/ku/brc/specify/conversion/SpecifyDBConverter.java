@@ -1002,6 +1002,7 @@ public class SpecifyDBConverter
                         
                     } else
                     {
+                        log.debug("Loading Discipline with Id["+conversion.getCurDisciplineID()+"]");
                         List<?> list = localSession.createQuery("FROM Discipline WHERE id = "+conversion.getCurDisciplineID()).list();
                         dscp = (Discipline)list.get(0);
                     }
