@@ -18,6 +18,8 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
@@ -29,6 +31,7 @@ import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.tasks.BackupTask;
 import edu.ku.brc.af.ui.forms.validation.ValBrowseBtnPanel;
 import edu.ku.brc.specify.datamodel.Institution;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rod
@@ -40,7 +43,8 @@ import edu.ku.brc.specify.datamodel.Institution;
  */
 public class MySQLPrefs extends GenericPrefsPanel
 {
-
+    final static String MYSQL_PREF_NAME = "Prefs.MYSQL";
+    
     private final String MYSQLDUMP_LOC = "mysqldump.location";
     private final String MYSQL_LOC     = "mysql.location";
     private final String MYSQLBCK_LOC  = "backup.location";
@@ -104,7 +108,8 @@ public class MySQLPrefs extends GenericPrefsPanel
         comp = form.getCompById("backup");
         if (comp instanceof JButton)
         {
-            ((JButton)comp).addActionListener(new ActionListener() {
+            JButton btn = (JButton)comp;
+            btn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
@@ -114,17 +119,32 @@ public class MySQLPrefs extends GenericPrefsPanel
                     }
                 }
             });
+            
+            if (UIHelper.isSecurityOn())
+            {
+                PermissionSettings perm = SecurityMgr.getInstance().getPermission(MYSQL_PREF_NAME);
+                btn.setEnabled(perm.canView()); // this means Enabled
+            }
         }
+        
+
         comp = form.getCompById("restore");
         if (comp instanceof JButton)
         {
-            ((JButton)comp).addActionListener(new ActionListener() {
+            JButton btn = (JButton)comp;
+            btn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
                     doRestore();
                 }
             });
+            
+            if (UIHelper.isSecurityOn())
+            {
+                PermissionSettings perm = SecurityMgr.getInstance().getPermission(MYSQL_PREF_NAME);
+                btn.setEnabled(perm.canModify()); // this means Enabled
+            }
         }
     }
     

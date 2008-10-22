@@ -191,7 +191,7 @@ public class PrefsToolbar extends JPanel
                 {
                     PermissionSettings perm = SecurityMgr.getInstance().getPermission("Prefs."+prefName);
                     PermissionSettings.dumpPermissions("Prefs: "+prefName, perm.getOptions());
-                    if (!perm.canModify())
+                    if (!perm.canView()) // this means Enabled
                     {
                         continue;
                     }
@@ -249,7 +249,7 @@ public class PrefsToolbar extends JPanel
                             prefPanel.setName(prefName);
                             prefPanel.setTitle(prefTitle);
                             
-                            if (!prefPanel.isOKToLoad() || (UIHelper.isSecurityOn() && !prefPanel.getPermissions().canModify()))
+                            if (!prefPanel.isOKToLoad() || (UIHelper.isSecurityOn() && !prefPanel.getPermissions().canView()))
                             {
                                 continue;
                             }
