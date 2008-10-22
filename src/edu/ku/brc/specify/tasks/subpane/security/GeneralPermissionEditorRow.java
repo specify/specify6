@@ -65,7 +65,7 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
 	 */
 	public List<SpPermission> getPermissionList() 
 	{
-	    ArrayList<SpPermission> list = new ArrayList<SpPermission>();
+	    ArrayList<SpPermission> list = new ArrayList<SpPermission>(1);
 	    list.add(permission);
 		return list;
 	}

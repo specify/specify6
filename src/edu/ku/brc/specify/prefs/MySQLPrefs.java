@@ -43,7 +43,7 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class MySQLPrefs extends GenericPrefsPanel
 {
-    final static String MYSQL_PREF_NAME = "Prefs.MYSQL";
+    final static String MYSQL_PREF_NAME = "Task.BackupTask";
     
     private final String MYSQLDUMP_LOC = "mysqldump.location";
     private final String MYSQL_LOC     = "mysql.location";
@@ -123,11 +123,10 @@ public class MySQLPrefs extends GenericPrefsPanel
             if (UIHelper.isSecurityOn())
             {
                 PermissionSettings perm = SecurityMgr.getInstance().getPermission(MYSQL_PREF_NAME);
-                btn.setEnabled(perm.canView()); // this means Enabled
+                btn.setVisible(perm.canView()); // this means Enabled
             }
         }
         
-
         comp = form.getCompById("restore");
         if (comp instanceof JButton)
         {
@@ -143,7 +142,7 @@ public class MySQLPrefs extends GenericPrefsPanel
             if (UIHelper.isSecurityOn())
             {
                 PermissionSettings perm = SecurityMgr.getInstance().getPermission(MYSQL_PREF_NAME);
-                btn.setEnabled(perm.canModify()); // this means Enabled
+                btn.setVisible(perm.canModify()); // this means Enabled
             }
         }
     }
