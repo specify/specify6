@@ -647,6 +647,12 @@
                 </row>
 			    <row>
                     <cell type="subview" viewname="AgentVariant" id="10" name="variants" colspan="6"/>
+			    </row>
+                <row>
+                    <cell type="separator" label="Attachments" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="subview" id="agentAttachments" viewname="ObjectAttachment" name="agentAttachments" colspan="6" initialize="btn=true;icon=AgentAttachment"/>
                 </row>
                 
                 <!-- Unadded relationships from specify_datamodel.xml
