@@ -340,7 +340,7 @@
                     <cell type="field" id="10" name="latLongMethod" uitype="combobox" picklist="LatLongMethod"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Tools" colspan="12"/>
+                    <cell type="separator" label="Plugins" colspan="12"/>
                 </row>
                 <row>
                     <cell type="panel" id="outerPanel" name="outerPanel" coldef="p,f:p:g,p,f:p:g,p,f:p:g" rowdef="p" colspan="12">
