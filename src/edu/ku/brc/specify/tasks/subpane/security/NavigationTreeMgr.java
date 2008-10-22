@@ -201,7 +201,7 @@ public class NavigationTreeMgr
         tree.setSelectionPath(new TreePath(discNode.getPath()));
     }
     
-    public void deleteItem(DefaultMutableTreeNode node) {
+    public void deleteItem(@SuppressWarnings("unused")DefaultMutableTreeNode node) {
         
     }
     

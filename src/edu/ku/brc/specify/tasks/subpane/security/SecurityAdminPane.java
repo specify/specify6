@@ -816,12 +816,15 @@ public class SecurityAdminPane extends BaseSubPane
     private void createUserPanel()
     {
         final EditorPanel     infoPanel = new EditorPanel(this);
-        final CellConstraints cc       = new CellConstraints();
+        final CellConstraints cc        = new CellConstraints();
 
+        PermissionEditor prefsEdt = new PermissionEditor("Preferences",  new PrefsPermissionEnumerator(), infoPanel,
+                                                         false, "SEC_NAME_TITLE", "SEC_ENABLE_PREF", null, null, null);
+        
         PermissionPanelEditor generalEditor = new PermissionPanelEditor();
         generalEditor.addPanel(new PermissionEditor("Data Objects", new DataObjPermissionEnumerator(), infoPanel));
         generalEditor.addPanel(new IndvPanelPermEditor("Tasks",     new TaskPermissionEnumerator(),    infoPanel));
-        generalEditor.addPanel(new PermissionEditor("Preferences",  new PrefsPermissionEnumerator(),   infoPanel));
+        generalEditor.addPanel(prefsEdt);
         
         PermissionPanelEditor objEditor = new PermissionPanelEditor();
         objEditor.addPanel(new IndvPanelPermEditor("Data Objects", new ObjectPermissionEnumerator(), infoPanel));

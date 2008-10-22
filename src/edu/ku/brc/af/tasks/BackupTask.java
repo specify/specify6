@@ -147,8 +147,7 @@ public class BackupTask extends BaseTask
     @Override
     public PermissionEditorIFace getPermEditorPanel()
     {
-        String permTitle = UIRegistry.getLocalizedMessage("SEC_PARAM_TITLE", getTitle());
-        return new BasicPermisionPanel(permTitle, "BackupEditorPanel.BKUP", "BackupEditorPanel.RSTR", null, null);
+        return new BasicPermisionPanel("BackupEditorPanel.TITLE", "BackupEditorPanel.BKUP", "BackupEditorPanel.RSTR", null, null);
     }
 
 }

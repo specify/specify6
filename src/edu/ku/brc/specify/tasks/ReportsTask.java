@@ -32,7 +32,6 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.SpReport;
-import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -150,11 +149,7 @@ public class ReportsTask extends ReportsBaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        //starterPane = new SimpleDescPane(name, this, "Welcome to Specify's Label Maker");
-        LabelsPane labelsPane = new LabelsPane(name, this, null);
-        labelsPane.setLabelText("This is the Reports Pane"); // XXX I18N
-        starterPane = labelsPane;
-        return starterPane;
+        return starterPane = StartUpTask.createFullImageSplashPanel(title, this);
     }
 
     /*

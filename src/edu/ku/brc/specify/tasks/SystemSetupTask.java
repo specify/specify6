@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxButton;
@@ -92,8 +93,9 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     public static final DataFlavor SYSTEMSETUPTASK_FLAVOR = new DataFlavor(SystemSetupTask.class, SYSTEMSETUPTASK);
 
     // Data Members
-    protected NavBox           navBox = null;
+    protected NavBox           navBox           = null;
     protected PickListBusRules pickListBusRules = new PickListBusRules();
+    protected FormPane         formPane         = null;
 
     /**
      * Default Constructor
@@ -102,8 +104,10 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     public SystemSetupTask()
     {
         super(SYSTEMSETUPTASK, getResourceString(SYSTEMSETUPTASK));
+        
         CommandDispatcher.register(SYSTEMSETUPTASK, this);
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
+        
         isShowDefault = true;
     }
 
@@ -170,6 +174,30 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             navBoxes.add(sysNavBox);
         }
         isShowDefault = true;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#requestContext()
+     */
+    public void requestContext()
+    {
+        ContextMgr.requestContext(this);
+
+        if (starterPane == null)
+        {
+            if (formPane == null)
+            {
+                super.requestContext();
+                
+            } else
+            {
+                SubPaneMgr.getInstance().showPane(formPane);
+            }
+            
+        } else  
+        {
+            SubPaneMgr.getInstance().showPane(starterPane);
+        }
     }
     
     /**
@@ -421,13 +449,13 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             {
                 ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", viewName);
                 
-                createFormPanel(tiTitle, 
-                                view.getViewSetName(), 
-                                view.getName(), 
-                                "edit", 
-                                dataItems,  
-                                MultiView.RESULTSET_CONTROLLER,
-                                IconManager.getIcon(clazz.getSimpleName(), IconManager.IconSize.Std16));
+                formPane = createFormPanel(tiTitle, 
+                                            view.getViewSetName(), 
+                                            view.getName(), 
+                                            "edit", 
+                                            dataItems,  
+                                            MultiView.RESULTSET_CONTROLLER,
+                                            IconManager.getIcon(clazz.getSimpleName(), IconManager.IconSize.Std16));
                 starterPane = null;
             }
 
@@ -476,14 +504,14 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             
             ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", viewName);
             
-            createFormPanel(plTitle,
-                            view.getViewSetName(), 
-                            view.getName(), 
-                            "edit", 
-                            dataObj, 
-                            MultiView.NO_OPTIONS,
-                            IconManager.getIcon(iconNameArg, IconManager.IconSize.Std16),
-                            this);
+            formPane = createFormPanel(plTitle,
+                                        view.getViewSetName(), 
+                                        view.getName(), 
+                                        "edit", 
+                                        dataObj, 
+                                        MultiView.NO_OPTIONS,
+                                        IconManager.getIcon(iconNameArg, IconManager.IconSize.Std16),
+                                        this);
             starterPane = null;
         } 
     }
@@ -580,18 +608,12 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
+     * @see edu.ku.brc.af.core.BaseTask#getStarterPane()
      */
     @Override
     public SubPaneIFace getStarterPane()
     {
-       // View view = appContextMgr.getView("SystemSetup", AppContextMgr.getInstance().getClassObject(Discipline.class));
-        //createFormPanel(view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT);
-
-        //recentFormPane = new FormPane(null, name, this, "");
-        //return recentFormPane;
-        
-        return starterPane = new SimpleDescPane(SYSTEMSETUPTASK, this, "System Tools");
+        return starterPane = StartUpTask.createFullImageSplashPanel(title, this);
     }
 
     /*

@@ -23,17 +23,25 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
+import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -73,7 +81,27 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
         splashPanel.add(new JLabel(new ImageIcon(img)), BorderLayout.CENTER);
         return splashPanel;
     }
+    
+    /**
+     * @param title
+     * @param task
+     * @return
+     */
+    public static SubPaneIFace createFullImageSplashPanel(final String title, final Taskable task)
+    {
+        PanelBuilder    display = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,150px,f:p:g"));
+        CellConstraints cc      = new CellConstraints();
 
+        display.add(new JLabel(IconManager.getIcon("SpecifySplash")), cc.xy(2, 2));
+        
+        if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
+        {
+            display.getPanel().setBackground(Color.WHITE);
+        }
+        
+        return new SimpleDescPane(title, task, display.getPanel());
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.StartUpTask#getToolBarItems()
      */

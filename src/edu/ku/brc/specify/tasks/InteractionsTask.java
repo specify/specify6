@@ -65,7 +65,6 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.ui.db.CommandActionForDB;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
@@ -684,11 +683,7 @@ public class InteractionsTask extends BaseTask
             return starterPane;
         }
         
-        //DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
-        //DroppableFormRecordSetAccepter spDroppable = dataEntryTask.createDroppableFormRecordSetAccepter(title, this, getResourceString("INTERACTIONS_OVERVIEW"));
-        //spDroppable.addDropFlavor(INFOREQUEST_FLAVOR);
-        //return starterPane = spDroppable;
-        return starterPane = new SimpleDescPane(title, this, getResourceString("INTERACTIONS_OVERVIEW"));
+        return starterPane = StartUpTask.createFullImageSplashPanel(title, this);
     }
 
     /* (non-Javadoc)

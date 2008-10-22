@@ -37,9 +37,9 @@ public class ObjectPermissionEditor// extends PermissionEditor
      * @return
      */
     protected static PermissionEditor createObjectPermissionsEditor(final JTable         table,
-                                                                    final JComboBox      typeSwitcherCBX,
+                                                                    @SuppressWarnings("unused")final JComboBox      typeSwitcherCBX,
                                                                     final ChangeListener listener,
-                                                                    final boolean        readOnly)
+                                                                    @SuppressWarnings("unused")final boolean        readOnly)
     {
         return null;//new ObjectPermissionEditor(table, typeSwitcherCBX, listener, new ObjectPermissionEnumerator(), readOnly);
     }

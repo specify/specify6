@@ -16,7 +16,6 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Color;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
@@ -37,7 +36,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -50,9 +48,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -70,7 +65,6 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.FormHelper;
@@ -130,10 +124,10 @@ public class QueryTask extends BaseTask
     private static final Logger log = Logger.getLogger(QueryTask.class);
     
     // Static Data Members
-    public static final String QUERY      = "Query";
-    public static final String SAVE_QUERY = "Save";
+    public static final String QUERY                = "Query";
+    public static final String SAVE_QUERY           = "Save";
     public static final String QUERY_RESULTS_REPORT = "QueryResultsReport";
-    protected static final String XML_PATH_PREF = "Query.XML.Dir";
+    protected static final String XML_PATH_PREF     = "Query.XML.Dir";
     
     public static final DataFlavor QUERY_FLAVOR = new DataFlavor(QueryTask.class, QUERY);
     
@@ -242,17 +236,7 @@ public class QueryTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        PanelBuilder    display = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,150px,f:p:g"));
-        CellConstraints cc      = new CellConstraints();
-
-        display.add(new JLabel(IconManager.getIcon("SpecifySplash")), cc.xy(2, 2));
-        
-        if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
-        {
-            display.getPanel().setBackground(Color.WHITE);
-        }
-        
-        return starterPane = new SimpleDescPane(title, this, display.getPanel());
+        return starterPane = StartUpTask.createFullImageSplashPanel(title, this);
     }
     
     //-------------------------------------------------------

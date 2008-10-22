@@ -447,7 +447,6 @@ public class ReportsBaseTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        //starterPane = new SimpleDescPane(name, this, "Welcome to Specify's Label Maker");
         LabelsPane labelsPane = new LabelsPane(name, this, null);
         labelsPane.setLabelText("Welcome to Specify's Label Maker"); // XXX I18N
         starterPane = labelsPane;

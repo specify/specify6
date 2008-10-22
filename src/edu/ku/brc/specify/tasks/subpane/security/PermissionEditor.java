@@ -64,11 +64,11 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 	protected DefaultTableModel     model;
 	protected ImageIcon             icon;
 	
-    protected String                nameColTitle = UIRegistry.getResourceString("SEC_NAME_TITLE");
-    protected String                viewColTitle = UIRegistry.getResourceString("SEC_VIEW_TITLE");
-    protected String                addColTitle  = UIRegistry.getResourceString("SEC_ADD_TITLE");
-    protected String                modColTitle  = UIRegistry.getResourceString("SEC_MOD_TITLE");
-    protected String                delColTitle  = UIRegistry.getResourceString("SEC_DEL_TITLE");
+    protected String                nameColTitle;
+    protected String                viewColTitle;
+    protected String                addColTitle;
+    protected String                modColTitle;
+    protected String                delColTitle;
     
     protected Vector<PermissionEditorRowIFace> rowDataList = new Vector<PermissionEditorRowIFace>();
 	
@@ -81,7 +81,8 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 	                        final PermissionEnumerator enumerator,
 	                        final ChangeListener       listener)
 	{
-        this(panelName, enumerator, listener, false);
+        this(panelName, enumerator, listener, false, 
+             "SEC_NAME_TITLE", "SEC_VIEW_TITLE", "SEC_ADD_TITLE", "SEC_MOD_TITLE", "SEC_DEL_TITLE");
 	}
 
 	/**
@@ -90,12 +91,24 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 	 * @param listener
 	 * @param readOnly
 	 */
-	public PermissionEditor(final String panelName,
+	public PermissionEditor(final String               panelName,
                             final PermissionEnumerator enumerator,
                             final ChangeListener       listener, 
-	                        final boolean              readOnly)
+	                        final boolean              readOnly,
+                            final String               nameKey,
+                            final String               viewKey,
+                            final String               addKey,
+                            final String               modKey,
+                            final String               delKey)
 	{
 	    super(new BorderLayout());
+	    
+	    nameColTitle = UIRegistry.getResourceString(nameKey);
+	    viewColTitle = viewKey != null ? UIRegistry.getResourceString(viewKey) : null;
+	    addColTitle  = addKey  != null ? UIRegistry.getResourceString(addKey) : null;
+	    modColTitle  = modKey  != null ? UIRegistry.getResourceString(modKey) : null;
+	    delColTitle  = delKey  != null ? UIRegistry.getResourceString(delKey) : null;
+
 	    
         this.panelName  = panelName;
         this.table      = new JTable();
@@ -246,10 +259,11 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 	{
 		modelArg.addColumn("");
 		modelArg.addColumn(nameColTitle);
-		modelArg.addColumn(viewColTitle);
-		modelArg.addColumn(addColTitle);
-		modelArg.addColumn(modColTitle);
-		modelArg.addColumn(delColTitle);
+		
+		if (viewColTitle != null) modelArg.addColumn(viewColTitle);
+		if (addColTitle != null) modelArg.addColumn(addColTitle);
+		if (modColTitle != null) modelArg.addColumn(modColTitle);
+		if (delColTitle != null) modelArg.addColumn(delColTitle);
 	}
 	
 	/* (non-Javadoc)
@@ -268,11 +282,11 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
         principal = session.merge(principal);
 
 		int numRows = model.getRowCount();
-		int taskCol = table.getColumn(nameColTitle).getModelIndex();
-		int viewCol = table.getColumn(viewColTitle).getModelIndex();
-		int addCol  = table.getColumn(addColTitle).getModelIndex();
-		int modCol  = table.getColumn(modColTitle).getModelIndex();
-		int delCol  = table.getColumn(delColTitle).getModelIndex();
+		int taskCol = nameColTitle != null ? table.getColumn(nameColTitle).getModelIndex() : -1;
+		int viewCol = viewColTitle != null ? table.getColumn(viewColTitle).getModelIndex() : -1;
+		int addCol  = addColTitle != null ? table.getColumn(addColTitle).getModelIndex() : -1;
+		int modCol  = modColTitle != null ? table.getColumn(modColTitle).getModelIndex() : -1;
+		int delCol  = delColTitle != null ? table.getColumn(delColTitle).getModelIndex() : -1;
 
 		for (int row = 0; row < numRows; ++row)
 		{
@@ -280,10 +294,10 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 			SpPermission perm = wrapper.getPermissionList().get(0); // Only has one
             //log.debug("Checking Perm: "+perm.getName());
 		    
-			Boolean canView = (Boolean) model.getValueAt(row, viewCol);
-			Boolean canAdd  = (Boolean) model.getValueAt(row, addCol);
-			Boolean canMod  = (Boolean) model.getValueAt(row, modCol);
-			Boolean canDel  = (Boolean) model.getValueAt(row, delCol);
+			Boolean canView = viewCol > -1 ? (Boolean) model.getValueAt(row, viewCol) : false;
+			Boolean canAdd  = addCol > -1 ? (Boolean) model.getValueAt(row, addCol) : false;
+			Boolean canMod  = modCol > -1 ? (Boolean) model.getValueAt(row, modCol) : false;
+			Boolean canDel  = delCol > -1 ? (Boolean) model.getValueAt(row, delCol) : false;
 			
 			if ( !(canView || canAdd || canMod || canDel) )
 			{

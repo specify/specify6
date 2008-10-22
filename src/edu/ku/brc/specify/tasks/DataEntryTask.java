@@ -16,7 +16,10 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Graphics;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -883,7 +886,7 @@ public class DataEntryTask extends BaseTask
         
         if (starterPane == null)
         {
-            starterPane = new DroppableFormRecordSetAccepter(title, this, getResourceString("DET_DROP_BUNDLE"));
+            starterPane = new DroppableFormRecordSetAccepter(title, this, "");//getResourceString("DET_DROP_BUNDLE"));
         }
         
         return starterPane;
@@ -1340,7 +1343,13 @@ public class DataEntryTask extends BaseTask
     //-------------------------------------------------------------------------
     public class DroppableFormRecordSetAccepter extends FormPane
     {
-       
+        protected ImageIcon bgImg = IconManager.getIcon("SpecifySplash");
+        
+        /**
+         * @param name
+         * @param task
+         * @param desc
+         */
         public DroppableFormRecordSetAccepter(final String   name, 
                                               final Taskable task,
                                               final String   desc)
@@ -1350,6 +1359,25 @@ public class DataEntryTask extends BaseTask
             dropFlavors.add(RecordSetTask.RECORDSET_FLAVOR);
             this.createMouseInputAdapter();
             this.icon = IconManager.getIcon(DATA_ENTRY, IconManager.IconSize.Std16);
+            setBackground(Color.WHITE);
+        }
+        
+        /* (non-Javadoc)
+         * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+         */
+        public void paintComponent(Graphics g)
+        {
+            super.paintComponent(g);
+            
+            if (bgImg != null)
+            {
+                Dimension size = getSize();
+                int imgW = Math.min(size.width, bgImg.getIconWidth());
+                int imgH = Math.min(size.height, bgImg.getIconHeight());
+                int x = (size.width - imgW) / 2;
+                int y = (size.height - imgH) / 2;
+                g.drawImage(bgImg.getImage(), x, y, imgW, imgH, null);
+            }
         }
 
         public void addDropFlavor(final DataFlavor df)
