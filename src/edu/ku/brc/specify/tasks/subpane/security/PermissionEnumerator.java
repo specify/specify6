@@ -66,7 +66,7 @@ public abstract class PermissionEnumerator
 			perm.setActions("");
 			perm.setPermissionClass(BasicSpPermission.class.getCanonicalName());
 		}
-		return new GeneralPermissionEditorRow(perm, oPerm, type, title, description, null);
+		return new GeneralPermissionEditorRow(perm, oPerm, type, title, description, null, null);
 	}
 
 	/**

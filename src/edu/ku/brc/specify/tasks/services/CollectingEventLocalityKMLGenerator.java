@@ -25,7 +25,7 @@ import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.specify.tasks.ToolsTask;
+import edu.ku.brc.specify.tasks.PluginsTask;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.services.GenericKMLGenerator;
@@ -382,10 +382,10 @@ public class CollectingEventLocalityKMLGenerator
 		sb.append("</ul>\n");
 		sb.append("<br/><h3>"+UIRegistry.getResourceString("GE_COLLECTION_OBJECTS")+":</h3>\n<table>\n");
 		
-        String primaryURL        = AppPreferences.getRemote().get(ToolsTask.GE_BALLOON_PRIMARY_URL, null);
-        String primaryURLTitle   = AppPreferences.getRemote().get(ToolsTask.GE_BALLOON_PRIMARY_URL_TITLE, null);
-        String secondaryURL      = AppPreferences.getRemote().get(ToolsTask.GE_BALLOON_SECONDARY_URL, null);
-        String secondaryURLTitle = AppPreferences.getRemote().get(ToolsTask.GE_BALLOON_SECONDARY_URL_TITLE, null);
+        String primaryURL        = AppPreferences.getRemote().get(PluginsTask.GE_BALLOON_PRIMARY_URL, null);
+        String primaryURLTitle   = AppPreferences.getRemote().get(PluginsTask.GE_BALLOON_PRIMARY_URL_TITLE, null);
+        String secondaryURL      = AppPreferences.getRemote().get(PluginsTask.GE_BALLOON_SECONDARY_URL, null);
+        String secondaryURLTitle = AppPreferences.getRemote().get(PluginsTask.GE_BALLOON_SECONDARY_URL_TITLE, null);
         
         sb.append("<tr>");
         sb.append("<th><center>");

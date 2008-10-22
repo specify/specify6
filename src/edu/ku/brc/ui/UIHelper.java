@@ -2859,6 +2859,13 @@ public final class UIHelper
         return chkbx;
     }
     
+    public static JCheckBox createI18NCheckBox(final String key)
+    {
+        JCheckBox chkbx = new JCheckBox(getResourceString(key));
+        setControlSize(chkbx);
+        return chkbx;
+    }
+    
     public static JProgressBar createProgressBar(final int start, final int end)
     {
         JProgressBar pb = new JProgressBar(start, end);

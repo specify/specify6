@@ -18,7 +18,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.rstools.ExportToFile;
-import edu.ku.brc.specify.tasks.ToolsTask;
+import edu.ku.brc.specify.tasks.PluginsTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.UIRegistry;
@@ -146,7 +146,7 @@ public class WorkbenchBackupMgr
             props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
             props.setProperty("fileName", backupName);
  
-            CommandAction command = new CommandAction(ToolsTask.TOOLS, ToolsTask.EXPORT_LIST);
+            CommandAction command = new CommandAction(PluginsTask.TOOLS, PluginsTask.EXPORT_LIST);
             command.setProperty("tool", ExportToFile.class);
             command.setProperty("statusmsgkey", "WB_BACKUP_TO");
             command.setProperty("statusdonemsgkey", "WB_BACKUP_TO_DONE");

@@ -6,12 +6,15 @@
  */
 package edu.ku.brc.specify.tasks.subpane.security;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 
+import edu.ku.brc.af.auth.PermissionEditorIFace;
+import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
@@ -24,7 +27,7 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
  * Jul 20, 2008
  *
  */
-public class ObjectPermissionEditorRow implements PermissionEditorRowIFace 
+public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 {
     private String       type;
     private String       title;
@@ -34,15 +37,27 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 	private SpPermission otherPermission;
 	private List<SpPermission> customPermissions;
 	private ImageIcon    icon;
+    protected PermissionEditorIFace editorPanel;
 
 
+	/**
+	 * @param ownerPermission
+	 * @param groupPermission
+	 * @param otherPermission
+	 * @param type
+	 * @param title
+	 * @param description
+	 * @param icon
+	 * @param editorPanel
+	 */
 	public ObjectPermissionEditorRow(final SpPermission ownerPermission,
 	                                 final SpPermission groupPermission, 
 	                                 final SpPermission otherPermission,
                                      final String type, 
                                      final String title, 
 	                                 final String description, 
-	                                 final ImageIcon icon) 
+	                                 final ImageIcon icon,
+                                     final PermissionEditorIFace editorPanel) 
 	{
 		this.ownerPermission = ownerPermission;
 		this.groupPermission = groupPermission;
@@ -53,40 +68,143 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
         this.title       = title;
         this.description = description;
         this.icon        = icon;
+        this.editorPanel = editorPanel;
 	}
 
-	public String getTitle() {
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#getTitle()
+	 */
+    @Override
+	public String getTitle() 
+	{
 		return title;
 	}
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#getIcon()
+     */
+    @Override
+    public ImageIcon getIcon()
+    {
+        return icon;
+    }
 
-	public String getDescription() {
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#getDescription()
+     */
+    @Override
+    public String getDescription() 
+	{
 		return description;
 	}
 	
-	/**
+	/* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#getEditorPanel()
+     */
+    @Override
+    public PermissionEditorIFace getEditorPanel()
+    {
+        return editorPanel;
+    }
+
+    /**
      * @return the type
      */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#getType()
+     */
+    @Override
     public String getType()
     {
         return type;
     }
-
+    
+    /**
+     * @param permission
+     * @return
+     */
+    private PermissionSettings createPermissionSettings(final SpPermission permission)
+    {
+        int options = PermissionSettings.NO_PERM;
+        options |= permission.canModify() ? PermissionSettings.CAN_MODIFY : 0;
+        options |= permission.canView()   ?   PermissionSettings.CAN_VIEW : 0;
+        options |= permission.canAdd()    ?    PermissionSettings.CAN_ADD : 0;
+        options |= permission.canDelete() ? PermissionSettings.CAN_DELETE : 0;
+        return new PermissionSettings(options);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#getPermissions()
+     */
+    @Override
+    public List<PermissionSettings> getPermissions()
+    {
+        ArrayList<PermissionSettings> list = new ArrayList<PermissionSettings>(1);
+        
+        list.add(createPermissionSettings(ownerPermission));
+        list.add(createPermissionSettings(groupPermission));
+        list.add(createPermissionSettings(otherPermission));
+        
+        return list;
+    }
+    
+    private void setPermSettings(final PermissionSettings permSettings, 
+                                 final SpPermission permission)
+    {
+        permission.setActions(permSettings.canView(), permSettings.canAdd(), permSettings.canModify(), permSettings.canDelete());
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#setPermissions(edu.ku.brc.af.auth.PermissionSettings)
+     */
+    @Override
+    public void setPermissions(final List<PermissionSettings> permSettings)
+    {
+        setPermSettings(permSettings.get(0), ownerPermission);
+        setPermSettings(permSettings.get(1), groupPermission);
+        setPermSettings(permSettings.get(2), otherPermission);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#getPermissionList()
+     */
+    @Override
+    public List<SpPermission> getPermissionList() 
+    {
+        ArrayList<SpPermission> list = new ArrayList<SpPermission>();
+        list.add(ownerPermission);
+        list.add(groupPermission);
+        list.add(otherPermission);
+        return list;
+    }
+    
+    /**
+     * @return
+     */
     public SpPermission getOwnerPermission() 
 	{
 		return ownerPermission;
 	}
 
+	/**
+	 * @param ownerPermission
+	 */
 	public void setOwnerPermission(SpPermission ownerPermission) 
 	{
 		this.ownerPermission = ownerPermission;
 	}
 
+	/**
+	 * @return
+	 */
 	public SpPermission getGroupPermission() 
 	{
 		return groupPermission;
 	}
 
+	/**
+	 * @param groupPermission
+	 */
 	public void setGroupPermission(SpPermission groupPermission) 
 	{
 		this.groupPermission = groupPermission;

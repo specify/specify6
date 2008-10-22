@@ -40,7 +40,7 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
 
 /**
  * 
- * @code_status Unknown
+ * @code_status Alpha
  * 
  * @author megkumin
  * @author ricardo

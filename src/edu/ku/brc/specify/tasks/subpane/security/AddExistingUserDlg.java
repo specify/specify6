@@ -104,10 +104,10 @@ public class AddExistingUserDlg extends CustomDialog
             listModel.addElement("Group has all users already.");
             
         }
-        JList userList = new JList(listModel);
-        userList.setEnabled(!listEmpty);
+        JList usrList = new JList(listModel);
+        usrList.setEnabled(!listEmpty);
         
-        userList.addMouseListener(new MouseAdapter()
+        usrList.addMouseListener(new MouseAdapter()
         {
             @Override
             public void mouseClicked(MouseEvent e)
@@ -119,12 +119,16 @@ public class AddExistingUserDlg extends CustomDialog
             }
         });
 
-        return userList;
+        return usrList;
     }
     
-    private final Set<Integer> getUserIdsFromGroup(final SpPrincipal group)
+    /**
+     * @param groupArg
+     * @return
+     */
+    private final Set<Integer> getUserIdsFromGroup(final SpPrincipal groupArg)
     {
-        Set<SpecifyUser> groupUsers = group.getSpecifyUsers();
+        Set<SpecifyUser> groupUsers = groupArg.getSpecifyUsers();
         if (groupUsers == null)
         {
             groupUsers = new HashSet<SpecifyUser>();

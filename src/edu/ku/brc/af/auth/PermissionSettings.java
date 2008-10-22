@@ -77,6 +77,66 @@ public class PermissionSettings implements PermissionIFace
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.PermissionIFace#setCanAdd()
+     */
+    @Override
+    public void setCanAdd(final boolean value)
+    {
+        if (value)
+        {
+            permissions |= CAN_ADD;
+        } else
+        {
+            permissions &= ~CAN_ADD;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.PermissionIFace#setCanDelete()
+     */
+    @Override
+    public void setCanDelete(final boolean value)
+    {
+        if (value)
+        {
+            permissions |= CAN_DELETE;
+        } else
+        {
+            permissions &= ~CAN_DELETE;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.PermissionIFace#setCanModify()
+     */
+    @Override
+    public void setCanModify(final boolean value)
+    {
+        if (value)
+        {
+            permissions |= CAN_MODIFY;
+        } else
+        {
+            permissions &= ~CAN_MODIFY;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.PermissionIFace#setCanView()
+     */
+    @Override
+    public void setCanView(final boolean value)
+    {
+        if (value)
+        {
+            permissions |= CAN_VIEW;
+        } else
+        {
+            permissions &= ~CAN_VIEW;
+        }
+   }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.PermissionIFace#isViewOnly()
      */
     public boolean isViewOnly()
@@ -93,11 +153,19 @@ public class PermissionSettings implements PermissionIFace
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.PermissionIFace#clear()
+     */
+    public void clear()
+    {
+        permissions = NO_PERM;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.PermissionIFace#hasNoPerm()
      */
     public boolean hasNoPerm()
     {
-        return permissions == 0;
+        return permissions == NO_PERM;
     }
     
     /**

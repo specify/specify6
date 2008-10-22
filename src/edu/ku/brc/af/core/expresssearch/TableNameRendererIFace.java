@@ -12,10 +12,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/**
- * 
- */
 package edu.ku.brc.af.core.expresssearch;
+
 
 /**
  * @author rods
@@ -27,8 +25,14 @@ package edu.ku.brc.af.core.expresssearch;
  */
 public interface TableNameRendererIFace
 {
+    /**
+     * @return
+     */
     public String getIconName();
     
+    /**
+     * @return
+     */
     public String getTitle();
     
 }

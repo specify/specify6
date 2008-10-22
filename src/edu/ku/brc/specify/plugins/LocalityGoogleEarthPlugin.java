@@ -41,7 +41,7 @@ import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.plugins.latlon.LatLonUI;
 import edu.ku.brc.specify.rstools.GoogleEarthExporter;
 import edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace;
-import edu.ku.brc.specify.tasks.ToolsTask;
+import edu.ku.brc.specify.tasks.PluginsTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
@@ -129,7 +129,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         JStatusBar statusBar = getStatusBar();
         if (items.size() > 0)
         {
-            CommandAction command = new CommandAction(ToolsTask.TOOLS,ToolsTask.EXPORT_LIST);
+            CommandAction command = new CommandAction(PluginsTask.TOOLS,PluginsTask.EXPORT_LIST);
             command.setData(items);
             command.setProperty("tool", GoogleEarthExporter.class);
             statusBar.setText(getResourceString("WB_OPENING_GOOGLE_EARTH"));

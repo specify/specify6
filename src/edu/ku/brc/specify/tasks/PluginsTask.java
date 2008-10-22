@@ -67,12 +67,12 @@ import edu.ku.brc.ui.UIRegistry;
  * @author jstewart
  */
 @SuppressWarnings("serial")
-public class ToolsTask extends BaseTask
+public class PluginsTask extends BaseTask
 {
-    private static final Logger log = Logger.getLogger(ToolsTask.class);
+    private static final Logger log = Logger.getLogger(PluginsTask.class);
             
     // Static Data Members
-    public static final DataFlavor TOOLS_FLAVOR = new DataFlavor(ToolsTask.class, "Plugins");
+    public static final DataFlavor TOOLS_FLAVOR = new DataFlavor(PluginsTask.class, "Plugins");
     
     public static final String GE_BALLOON_FG_COLOR     = "google.earth.fgcolor";
     public static final String GE_BALLOON_FG_COLOR_STR = "255, 255, 255";
@@ -115,7 +115,7 @@ public class ToolsTask extends BaseTask
     /**
      * Constructor.
      */
-    public ToolsTask()
+    public PluginsTask()
     {
         super(TOOLS, getResourceString("Plugins"));
         
@@ -486,15 +486,15 @@ public class ToolsTask extends BaseTask
         
         if (permissions == null || permissions.canModify())
         {
-            String    menuTitle = "ToolsTask.PLUGIN_MENU"; //$NON-NLS-1$
-            String    mneu      = "ToolsTask.PLUGIN_MNEU"; //$NON-NLS-1$
-            String    desc      = "ToolsTask.PLUGIN_DESC"; //$NON-NLS-1$
+            String    menuTitle = "PluginsTask.PLUGIN_MENU"; //$NON-NLS-1$
+            String    mneu      = "PluginsTask.PLUGIN_MNEU"; //$NON-NLS-1$
+            String    desc      = "PluginsTask.PLUGIN_DESC"; //$NON-NLS-1$
             JMenuItem mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
             mi.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    ToolsTask.this.requestContext();
+                    PluginsTask.this.requestContext();
                 }
             });
             MenuItemDesc rsMI = new MenuItemDesc(mi, menuDesc);

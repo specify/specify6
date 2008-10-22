@@ -67,7 +67,7 @@ public class FormPermissionEnumerator extends PermissionEnumerator
 			String desc = "Permissions to view, add, modify and delete data using form " + view.getTitle();
 			
 			// add newly created permission to the bag that will be returned
-			perms.add(new GeneralPermissionEditorRow(perm, oPerm, type, title, desc, null));
+			perms.add(new GeneralPermissionEditorRow(perm, oPerm, type, title, desc, null, null));
 		}
 
 		return perms;

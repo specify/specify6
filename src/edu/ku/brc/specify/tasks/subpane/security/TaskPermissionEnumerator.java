@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 
+import edu.ku.brc.af.auth.PermissionEditorIFace;
+import edu.ku.brc.af.auth.SecurityPanelProviderIFace;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
@@ -90,8 +92,14 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
         		
         		String desc = "Permissions to view, add, modify and delete data in task " + task.getTitle();
         
+        		PermissionEditorIFace editPanel = null;
+        		if (task instanceof SecurityPanelProviderIFace)
+        		{
+        		    editPanel = ((SecurityPanelProviderIFace)task).getPermEditorPanel();
+        		}
         		// add newly created permission to the bag that will be returned
-        		perms.add(new GeneralPermissionEditorRow(perm, oPerm, type, task.getShortDesc(), desc, task.getIcon(Taskable.StdIcon20)));
+        		perms.add(new GeneralPermissionEditorRow(perm, oPerm, type, task.getShortDesc(), desc, 
+        		                                         task.getIcon(Taskable.StdIcon20), editPanel));
 		    }
 		}
 		

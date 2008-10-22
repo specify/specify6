@@ -37,7 +37,7 @@ import edu.ku.brc.specify.rstools.BGMRecordSetProcessor;
 import edu.ku.brc.specify.rstools.GeoCoordData;
 import edu.ku.brc.specify.rstools.GeoLocateRecordSetProcessor;
 import edu.ku.brc.specify.rstools.GeoRefRecordSetProcessorBase;
-import edu.ku.brc.specify.tasks.ToolsTask;
+import edu.ku.brc.specify.tasks.PluginsTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -139,7 +139,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                 List<GeoCoordDataIFace> items = new Vector<GeoCoordDataIFace>();
                 items.add(geoCoordData);
                 
-                CommandAction command = new CommandAction(ToolsTask.TOOLS, ToolsTask.EXPORT_LIST);
+                CommandAction command = new CommandAction(PluginsTask.TOOLS, PluginsTask.EXPORT_LIST);
                 command.setData(items);
                 command.setProperty("tool", doGeoLocate ? GeoLocateRecordSetProcessor.class : BGMRecordSetProcessor.class);
                 command.setProperty("listener", this);

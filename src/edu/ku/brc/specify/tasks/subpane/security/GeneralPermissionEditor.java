@@ -49,7 +49,7 @@ public class GeneralPermissionEditor
         enumerator.addEnumerator(e1);
         enumerator.addEnumerator(e2);
         enumerator.addEnumerator(e3);
-        return new PermissionEditor(table, typeSwitcherCBX, listener, enumerator, readOnly);
+        return null;//new PermissionEditor(table, typeSwitcherCBX, listener, enumerator, readOnly);
     }
     
     public static JPanel createGeneralPermissionsPanel(final JTable generalPermissionsTable, 

@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipalHibernateService;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 
@@ -26,18 +27,18 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
  */
 public class AdminInfoSubPanelWrapper
 {
-	private JPanel                 displayPanel;
-	private List<PermissionEditor> permissionEditors; 
+	private JPanel                      displayPanel;
+	private List<PermissionPanelEditor> permissionEditors; 
 	
 	/**
 	 * Constructor taking only a JPanel as parameter
 	 * 
 	 * @param displayPanel
 	 */
-	public AdminInfoSubPanelWrapper(JPanel displayPanel)
+	public AdminInfoSubPanelWrapper(final JPanel displayPanel)
 	{
 		this.displayPanel = displayPanel;
-		permissionEditors = new ArrayList<PermissionEditor>();
+		permissionEditors = new ArrayList<PermissionPanelEditor>();
 	}
 
 	public void clearPermissionEditors()
@@ -45,12 +46,12 @@ public class AdminInfoSubPanelWrapper
 		permissionEditors.clear();
 	}
 	
-	public void addPermissionEditor(PermissionEditor permissionEditor)
+	public void addPermissionEditor(PermissionPanelEditor permissionEditor)
 	{
 		permissionEditors.add(permissionEditor);
 	}
 	
-	public void removePermissionEditor(PermissionEditor permissionEditor)
+	public void removePermissionEditor(PermissionPanelEditor permissionEditor)
 	{
 		permissionEditors.remove(permissionEditor);
 	}
@@ -60,14 +61,17 @@ public class AdminInfoSubPanelWrapper
 		return displayPanel;
 	}
 	
-	public void savePermissionData()
+	/**
+	 * @param session
+	 */
+	public void savePermissionData(final DataProviderSessionIFace session) throws Exception
 	{
         MultiView   mv  = getMultiView();
         mv.getDataFromUI();
         
-		for (PermissionEditor editor : permissionEditors)
+		for (PermissionPanelEditor editor : permissionEditors)
 		{
-			editor.savePermissions();			
+			editor.savePermissions(session);			
 		}
 	}
 	
@@ -107,7 +111,7 @@ public class AdminInfoSubPanelWrapper
 
 			if (principal != null && permissionEditors.size() > 0)
 			{
-				for (PermissionEditor editor : permissionEditors)
+				for (PermissionPanelEditor editor : permissionEditors)
 				{
 					editor.updateTable(principal, secondPrincipal);
 				}

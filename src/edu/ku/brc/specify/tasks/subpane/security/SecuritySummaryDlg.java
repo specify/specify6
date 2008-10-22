@@ -76,7 +76,7 @@ public class SecuritySummaryDlg extends CustomDialog
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                generalPermissionsEditor.fillWithType();
+                //generalPermissionsEditor.fillWithType();
             }
         });
         
@@ -94,7 +94,7 @@ public class SecuritySummaryDlg extends CustomDialog
         	@Override
         	public void actionPerformed(ActionEvent e)
         	{
-        		objectPermissionsEditor.fillWithType();
+        		//objectPermissionsEditor.fillWithType();
         	}
         });
         // create tabbed panel for different kinds of permission editing tables
@@ -116,8 +116,8 @@ public class SecuritySummaryDlg extends CustomDialog
 		SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
 		SpPrincipal principal = UserPrincipalHibernateService.getUserPrincipalBySpecifyUser(user);
         
-        generalPermissionsEditor.updateTable(principal, null);
-        objectPermissionsEditor.updateTable(principal, null);
+        generalPermissionsEditor.updateData(principal, null);
+        objectPermissionsEditor.updateData(principal, null);
         
         YesNoCellRenderer yesNoRenderer = new YesNoCellRenderer();
         TableColumnModel tblModel = generalPermissionsTable.getColumnModel();

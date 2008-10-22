@@ -22,28 +22,28 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
  */
 public class CompositePermissionEnumerator extends PermissionEnumerator {
 
-	protected List<PermissionEnumerator> enumerators = new ArrayList<PermissionEnumerator>();
-	
-	//@Override
-	public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
-											 final Hashtable<String, SpPermission> existingUserPerms,
-											 final Hashtable<String, SpPermission> existingGroupPerms) 
-	{
-		List<PermissionEditorRowIFace> allPerms = new ArrayList<PermissionEditorRowIFace>();
-		for (PermissionEnumerator currEnumerator : enumerators)
-		{
-			allPerms.addAll(currEnumerator.getPermissions(principal, existingUserPerms, existingGroupPerms));
-		}
-		return allPerms;
-	}
-	
-	public void clear()
-	{
-		enumerators.clear();
-	}
-	
-	public void addEnumerator(PermissionEnumerator enumerator)
-	{
-		enumerators.add(enumerator);
-	}
+    protected List<PermissionEnumerator> enumerators = new ArrayList<PermissionEnumerator>();
+    
+    //@Override
+    public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
+                                                         final Hashtable<String, SpPermission> existingUserPerms,
+                                                         final Hashtable<String, SpPermission> existingGroupPerms) 
+    {
+        List<PermissionEditorRowIFace> allPerms = new ArrayList<PermissionEditorRowIFace>();
+        for (PermissionEnumerator currEnumerator : enumerators)
+        {
+            allPerms.addAll(currEnumerator.getPermissions(principal, existingUserPerms, existingGroupPerms));
+        }
+        return allPerms;
+    }
+    
+    public void clear()
+    {
+        enumerators.clear();
+    }
+    
+    public void addEnumerator(PermissionEnumerator enumerator)
+    {
+        enumerators.add(enumerator);
+    }
 }

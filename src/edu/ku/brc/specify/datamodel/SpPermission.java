@@ -194,16 +194,26 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 		return this.principals;
 	}
 
+	/**
+	 * @param principals
+	 */
 	public void setPrincipals(Set<SpPrincipal> principals)
 	{
 		this.principals = principals;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString()
 	{
 		return name; 
 	}
 	
+	/**
+	 * @param other
+	 * @return
+	 */
 	public boolean equals(SpPermission other)
 	{
 		if (permissionId == null)
@@ -213,26 +223,45 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	}
 	
 	// helper methods to parse actions
+	/**
+	 * @return
+	 */
 	public boolean canView()
 	{
 		return (actions != null) && (actions.indexOf("view") >= 0);
 	}
 
+	/**
+	 * @return
+	 */
 	public boolean canAdd()
 	{
 		return (actions != null) && (actions.indexOf("add") >= 0);
 	}
 
+	/**
+	 * @return
+	 */
 	public boolean canModify()
 	{
 		return (actions != null) && (actions.indexOf("modify") >= 0);
 	}
 
+	/**
+	 * @return
+	 */
 	public boolean canDelete()
 	{
 		return (actions != null) && (actions.indexOf("delete") >= 0);
 	}
 	
+	/**
+	 * @param canView
+	 * @param canAdd
+	 * @param canModify
+	 * @param canDelete
+	 * @return
+	 */
 	public boolean hasSameFlags(boolean canView, boolean canAdd, boolean canModify, boolean canDelete)
 	{
 		return 	(canView   == canView())   &&
@@ -241,6 +270,12 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 				(canDelete == canDelete());
 	}
 	
+	/**
+	 * @param canView
+	 * @param canAdd
+	 * @param canModify
+	 * @param canDelete
+	 */
 	public void setActions(boolean canView, boolean canAdd, boolean canModify, boolean canDelete)
 	{
 		actions = "";

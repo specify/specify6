@@ -43,7 +43,32 @@ public interface PermissionIFace
      * @return
      */
     public abstract boolean canDelete();
+    
+    /**
+     * @return
+     */
+    public abstract void setCanModify(boolean value);
 
+    /**
+     * @return
+     */
+    public abstract void setCanView(boolean value);
+
+    /**
+     * @return
+     */
+    public abstract void setCanAdd(boolean value);
+
+    /**
+     * @return
+     */
+    public abstract void setCanDelete(boolean value);
+
+    /**
+     * Clears all the permissions.
+     */
+    public abstract void clear();
+    
     /**
      * @return
      */

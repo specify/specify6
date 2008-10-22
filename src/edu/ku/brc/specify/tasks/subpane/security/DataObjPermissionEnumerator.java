@@ -118,7 +118,8 @@ public class DataObjPermissionEnumerator extends PermissionEnumerator
                 String desc  = "Permissions to view, add, modify and delete data using form " + tblInfo.getTitle(); // I18N
                 
                 // add newly created permission to the bag that will be returned
-                perms.add(new GeneralPermissionEditorRow(perm, oPerm, type, title, desc, IconManager.getImage(tblInfo.getName(), IconManager.IconSize.Std20)));
+                perms.add(new GeneralPermissionEditorRow(perm, oPerm, type, title, desc, 
+                           IconManager.getImage(tblInfo.getName(), IconManager.IconSize.Std20), null));
             }
         }
 

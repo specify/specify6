@@ -1,8 +1,6 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -11,14 +9,10 @@ import javax.swing.JTable;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
-import org.apache.log4j.Logger;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -29,41 +23,11 @@ import edu.ku.brc.ui.UIHelper;
  * Jul 20, 2008
  *
  */
-public class ObjectPermissionEditor extends PermissionEditor 
+public class ObjectPermissionEditor// extends PermissionEditor 
 {
-    private static final Logger log = Logger.getLogger(ObjectPermissionEditor.class);
+    //private static final Logger log = Logger.getLogger(ObjectPermissionEditor.class);
 
-	/**
-	 * @param permissionTable
-	 * @param listener
-	 * @param enumerator
-	 */
-	public ObjectPermissionEditor(final JTable                     permissionTable, 
-	                              final JComboBox                  typeSwitcherCBX,
-	                              final ChangeListener             listener, 
-	                              final ObjectPermissionEnumerator enumerator)
-	{
-		// we can only create instances of this class providing the right enumerator class
-		super(permissionTable, typeSwitcherCBX, listener, enumerator);
-	}
 
-	public ObjectPermissionEditor(final JTable                     permissionTable, 
-								  final JComboBox                  typeSwitcherCBX,
-			                      final ChangeListener             listener, 
-			                      final ObjectPermissionEnumerator enumerator,
-			                      final boolean                    readOnly)
-	{
-		//	we can only create instances of this class providing the right enumerator class
-		super(permissionTable, typeSwitcherCBX, listener, enumerator, readOnly);
-	}
-
-    protected static PermissionEditor createObjectPermissionsEditor(
-    		final JTable         table,
-            final JComboBox      typeSwitcherCBX,
-            final ChangeListener listener) 
-    {
-    	return createObjectPermissionsEditor(table, typeSwitcherCBX, listener, false);
-    }
 
     /**
      * A factory for the ObjectPermissionEditor
@@ -77,7 +41,7 @@ public class ObjectPermissionEditor extends PermissionEditor
                                                                     final ChangeListener listener,
                                                                     final boolean        readOnly)
     {
-        return new ObjectPermissionEditor(table, typeSwitcherCBX, listener, new ObjectPermissionEnumerator(), readOnly);
+        return null;//new ObjectPermissionEditor(table, typeSwitcherCBX, listener, new ObjectPermissionEnumerator(), readOnly);
     }
 
     /**
@@ -102,16 +66,17 @@ public class ObjectPermissionEditor extends PermissionEditor
     	innerPanel.add(new JScrollPane(objectPermissionsTable), BorderLayout.CENTER);
     	objectPermissionsPanel.add(innerPanel, BorderLayout.CENTER);
 
+    	/*
     	final PermissionEditor objectsPermissionEditor = ObjectPermissionEditor.
     	createObjectPermissionsEditor(objectPermissionsTable, objTypeSwitcher, infoPanel);
     	objTypeSwitcher.addActionListener(new ActionListener() {
     		@Override
     		public void actionPerformed(ActionEvent e)
     		{
-    			objectsPermissionEditor.fillWithType();
+    			//objectsPermissionEditor.fillWithType();
     		}
     	});
-    	
+    	*/
     	return objectPermissionsPanel;
     }    
     
@@ -142,7 +107,7 @@ public class ObjectPermissionEditor extends PermissionEditor
 	public void savePermissions()
 	{
 		// nothing to save if we didn't specify a principal yet
-		if (principal == null)
+		/*if (principal == null)
 			return;
 		
         DataProviderSessionIFace session = null;
@@ -176,6 +141,6 @@ public class ObjectPermissionEditor extends PermissionEditor
             {
                 session.close();
             }
-        }
+        }*/
 	}
 }

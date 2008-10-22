@@ -1,7 +1,6 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.util.HashSet;
-import java.util.Set;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;

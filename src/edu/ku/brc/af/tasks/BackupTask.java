@@ -23,6 +23,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
@@ -137,6 +139,16 @@ public class BackupTask extends BaseTask
         }
         
         return starterPane = new SimpleDescPane(title, this, display.getPanel());
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
+     */
+    @Override
+    public PermissionEditorIFace getPermEditorPanel()
+    {
+        String permTitle = UIRegistry.getLocalizedMessage("SEC_PARAM_TITLE", getTitle());
+        return new BasicPermisionPanel(permTitle, "BackupEditorPanel.BKUP", "BackupEditorPanel.RSTR", null, null);
     }
 
 }

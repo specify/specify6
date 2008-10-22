@@ -113,9 +113,15 @@ public class PrefsPermissionEnumerator extends PermissionEnumerator
                         }
                         
                         String desc = "Permissions to view, add, modify and delete data in pref " + title;
-                
+                        
+                        /*PermissionPanelIFace editPanel = null;
+                        if (task instanceof SecurityPanelProviderIFace)
+                        {
+                            editPanel = ((SecurityPanelProviderIFace)task).getPanel();
+                        }*/
                         // add newly created permission to the bag that will be returned
-                        perms.add(new GeneralPermissionEditorRow(perm, oPerm, type, title, desc, IconManager.getIcon(iconName, IconManager.IconSize.Std20)));
+                        perms.add(new GeneralPermissionEditorRow(perm, oPerm, type, title, desc, 
+                                IconManager.getIcon(iconName, IconManager.IconSize.Std20), null));
                     }
                 }
             }

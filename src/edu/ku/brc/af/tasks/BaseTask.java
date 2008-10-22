@@ -36,7 +36,9 @@ import javax.swing.SwingConstants;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.SecurityPanelProviderIFace;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
@@ -90,7 +92,7 @@ import edu.ku.brc.ui.dnd.Trash;
  * @author rods
  *
  */
-public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrListener
+public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrListener, SecurityPanelProviderIFace
 {
     // Static Data Members
     //private static final Logger log = Logger.getLogger(BaseTask.class);
@@ -1403,7 +1405,12 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
          return null;
      }
      
-     public RecordSetIFace getRecordSetOfColObj(final RecordSetIFace recordSetArg,
+     /**
+     * @param recordSetArg
+     * @param numColObjRS
+     * @return
+     */
+    public RecordSetIFace getRecordSetOfColObj(final RecordSetIFace recordSetArg,
                                                    final int numColObjRS)
      {
          RecordSetIFace recordSetFromDB = recordSetArg;
@@ -1428,9 +1435,21 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
          return recordSetFromDB;
      }
      
-     //--------------------------------------------------------------
-     // Inner Classes
-     //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    // SecurityPanelProviderIFace
+    //--------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityPanelProviderIFace#getPermEditorPanel()
+     */
+    public PermissionEditorIFace getPermEditorPanel()
+    {
+        return null;
+    }
+    
+    //--------------------------------------------------------------
+    // Inner Classes
+    //--------------------------------------------------------------
 
     /**
      * XXX This is now generic and should be moved out of here

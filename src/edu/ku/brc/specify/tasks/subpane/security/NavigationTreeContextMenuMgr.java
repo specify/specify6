@@ -206,6 +206,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
     {
     }
 
+    //-------------------------------------------------------------------
     public class LabelAction extends AbstractAction {
         LabelAction(final String label) {
             super(label);
@@ -216,16 +217,17 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
         }
     }
     
+    //-------------------------------------------------------------------
     public abstract class NavigationTreeContextMenuAction extends AbstractAction
     {
         private TreePath clickedObject;
-        private NavigationTreeMgr treeMgr;
+        private NavigationTreeMgr treeManager;
 
-        public NavigationTreeContextMenuAction(String label, TreePath clickedObject, NavigationTreeMgr treeMgr)
+        public NavigationTreeContextMenuAction(String label, TreePath clickedObject, NavigationTreeMgr treeManager)
         {
             super(label);
             this.clickedObject = clickedObject;
-            this.treeMgr = treeMgr;
+            this.treeManager   = treeManager;
         }
         
         public TreePath getClickedObject()
@@ -235,7 +237,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
         
         public NavigationTreeMgr getTreeMgr()
         {
-            return treeMgr;
+            return treeManager;
         }
     }
     

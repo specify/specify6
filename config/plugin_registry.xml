@@ -33,7 +33,7 @@
 		<plugin class="edu.ku.brc.af.tasks.EditorTask" addui="true"/>
 		 -->
 		 
-		<plugin class="edu.ku.brc.specify.tasks.ToolsTask" addui="true"/>
+		<plugin class="edu.ku.brc.specify.tasks.PluginsTask" addui="true"/>
 		
 		<plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask" addui="true"/>
 		

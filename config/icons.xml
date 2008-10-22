@@ -72,7 +72,7 @@
     <icon name="CardImage"     file="ImageWindow20x20.png" sizes="NonStd"/>
     <icon name="LocalityMapper" file="map20x20.png" sizes="NonStd"/>
     <icon name="ControlEdit"    file="EditProperties20x20.png" sizes="NonStd"/>
-    <icon name="Tools"          file="plug_in.png" sizes="32"/>
+    <icon name="Plugins"        file="plug_in.png" sizes="32"/>
     <icon name="DropIndicator"  file="dropindicator.png" sizes="NonStd"/>
     <icon name="Formatting"     file="formatting.png" sizes="32"/>
     <icon name="WebLink"        file="weblink.png" sizes="32"/>

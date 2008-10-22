@@ -1,0 +1,111 @@
+/*
+     * Copyright (C) 2008  The University of Kansas
+     *
+     * [INSERT KU-APPROVED LICENSE TEXT HERE]
+     *
+     */
+/**
+ * 
+ */
+package edu.ku.brc.specify.tasks.subpane.security;
+
+import java.awt.CardLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
+import edu.ku.brc.af.auth.PermissionPanelContainerIFace;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.SpPrincipal;
+
+/**
+ * A class that manages several panels where each panel is a Permissions Editor.
+ * 
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ * Oct 21, 2008
+ *
+ */
+public class PermissionPanelEditor extends JPanel
+{
+
+    protected JPanel     cardPanel    = new JPanel();
+    protected CardLayout cardLayout   = new CardLayout();
+    protected JComboBox  switcherCBX;
+    
+    protected Vector<PermissionPanelContainerIFace> panels = new Vector<PermissionPanelContainerIFace>();
+    
+    /**
+     * 
+     */
+    public PermissionPanelEditor()
+    {
+        super();
+        
+        cardPanel = new JPanel(cardLayout);
+        switcherCBX = new JComboBox(new DefaultComboBoxModel());
+        
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder topPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
+        topPB.add(switcherCBX, cc.xy(2, 1));
+        
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,10px,p"), this);
+        pb.add(topPB.getPanel(), cc.xy(1, 1));
+        pb.add(cardPanel,        cc.xy(1, 3));
+        
+        cardPanel.setBorder(BorderFactory.createEtchedBorder());
+        switcherCBX.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                cardLayout.show(cardPanel, switcherCBX.getSelectedItem().toString());
+            }
+        });
+    }
+    
+    /**
+     * @param panel
+     */
+    public void addPanel(final PermissionPanelContainerIFace panel)
+    {
+        cardPanel.add(panel.getPanelName(), panel.getUIComponent());
+        panels.add(panel);
+        ((DefaultComboBoxModel)switcherCBX.getModel()).addElement(panel.getPanelName());
+    }
+    
+    /**
+     * 
+     */
+    public void savePermissions(final DataProviderSessionIFace session) throws Exception
+    {
+        for (PermissionPanelContainerIFace panel : panels)
+        {
+            panel.savePermissions(session);
+        }
+    }
+    
+    /**
+     * @param principalArg
+     * @param overrulingPrincipal
+     */
+    public void updateTable(final SpPrincipal principalArg, final SpPrincipal overrulingPrincipal)
+    {
+        for (PermissionPanelContainerIFace panel : panels)
+        {
+            panel.updateData(principalArg, overrulingPrincipal);
+        }
+    }
+
+    
+}

@@ -145,7 +145,7 @@ import edu.ku.brc.specify.rstools.ExportToFile;
 import edu.ku.brc.specify.rstools.GoogleEarthExporter;
 import edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace;
 import edu.ku.brc.specify.rstools.WorkbenchRowPlacemarkWrapper;
-import edu.ku.brc.specify.tasks.ToolsTask;
+import edu.ku.brc.specify.tasks.PluginsTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
@@ -1910,7 +1910,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             selectedRows.add(row);
         }
         
-        CommandAction command = new CommandAction(ToolsTask.TOOLS, ToolsTask.EXPORT_LIST);
+        CommandAction command = new CommandAction(PluginsTask.TOOLS, PluginsTask.EXPORT_LIST);
         command.setData(selectedRows);
         command.setProperty("tool", ExportToFile.class);
         
@@ -2147,7 +2147,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         // get an icon URL that is specific to the current context
-        CommandAction command = new CommandAction(ToolsTask.TOOLS,ToolsTask.EXPORT_LIST);
+        CommandAction command = new CommandAction(PluginsTask.TOOLS,PluginsTask.EXPORT_LIST);
         command.setData(selectedRows);
         command.setProperty("tool",           GoogleEarthExporter.class);
         command.setProperty("description",    workbench.getRemarks() != null ? workbench.getRemarks() : "");
