@@ -201,8 +201,8 @@ public class GiftPreparation extends CollectionMember implements java.io.Seriali
         this.receivedComments = receivedComments;
     }
 
-    /**
-     * Number of specimens returned. (necessary for Lots)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.PreparationHolderIFace#getQuantityReturned()
      */
     @Transient
     public Integer getQuantityReturned() 

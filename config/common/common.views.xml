@@ -336,6 +336,7 @@
         
         <view name="GiftItems"
             class="edu.ku.brc.specify.datamodel.GiftPreparation"
+            busrules="edu.ku.brc.specify.datamodel.busrules.GiftPreparationBusRules"
             resourcelabels="false">
             <desc><![CDATA[Gift display form]]></desc>
             <altviews>
@@ -382,12 +383,12 @@
         </view>
         
         <view name="LoanPreparation"
-            class="edu.ku.brc.specify.datamodel.Preparation"
-            busrules="edu.ku.brc.specify.datamodel.busrules.PreparationBusRules"
+            class="edu.ku.brc.specify.datamodel.LoanPreparation"
+            busrules="edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRules"
             resourcelabels="false">
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
-                <altview name="Preparation View" viewdef="LoanPreparation" mode="view"/>
+                <altview name="LoanPreparation View" viewdef="LoanPreparation" mode="view"/>
             </altviews>
         </view>
 

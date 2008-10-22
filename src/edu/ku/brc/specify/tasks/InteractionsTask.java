@@ -1020,7 +1020,7 @@ public class InteractionsTask extends BaseTask
             }
         } else 
         {
-            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_LOAN_PREPS", gift));
+            CommandDispatcher.dispatch(new CommandAction(INTERACTIONS, "REFRESH_GIFT_PREPS", gift));
         }
     }
     
