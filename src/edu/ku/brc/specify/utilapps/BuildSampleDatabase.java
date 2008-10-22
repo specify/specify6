@@ -6704,6 +6704,16 @@ public class BuildSampleDatabase
         }
     }
     
+    protected ProgressFrame createProgressFrame()
+    {
+        if (frame == null)
+        {
+            frame = new ProgressFrame("Building Specify Database", "SpecifyLargeIcon");
+            frame.pack();
+        } 
+        return frame;
+    }
+    
     /**
      * Creates the dialog to find out what database and what database driver to use. 
      */
@@ -6767,8 +6777,7 @@ public class BuildSampleDatabase
         // Then set this
         IconManager.setApplicationClass(Specify.class);
         
-        frame = new ProgressFrame("Building Specify Database", "SpecifyLargeIcon");
-        frame.pack();
+        createProgressFrame();
         
         System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences
         System.setProperty("edu.ku.brc.dbsupport.DataProvider", "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
@@ -6868,6 +6877,8 @@ public class BuildSampleDatabase
      */
     public boolean buildEmptyDatabase(final Properties props)
     {
+        createProgressFrame();
+
         final String dbName = props.getProperty("dbName");
         
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
