@@ -191,6 +191,22 @@ public class CommandAction implements Cloneable
         return type;
     }
 
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type)
+    {
+        this.type = type;
+    }
+
+    /**
+     * @param action the action to set
+     */
+    public void setAction(String action)
+    {
+        this.action = action;
+    }
+
     public boolean isConsumed()
     {
         return isConsumed;

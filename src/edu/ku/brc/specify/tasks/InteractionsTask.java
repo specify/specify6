@@ -150,7 +150,8 @@ public class InteractionsTask extends BaseTask
     protected static final String CREATE_MAILMSG       = "CreateMailMsg";
     protected static final String ADD_TO_LOAN          = "AddToLoan";
     protected static final String ADD_TO_GIFT          = "AddToGift";
-    
+    protected static final String OPEN_NEW_VIEW        = "OpenNewView";
+
     
     protected static final int    loanTableId;
     protected static final int    infoRequestTableId;
@@ -1797,6 +1798,24 @@ public class InteractionsTask extends BaseTask
             {
                 deleteInfoRequest((CommandActionForDB)cmdAction);
             }
+        } else if (cmdAction.isAction(OPEN_NEW_VIEW))
+        {
+            try
+            {
+                final CommandAction cmd = (CommandAction)cmdAction.clone();
+                cmd.setType("Data_Entry");
+                cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
+                    {
+                        CommandDispatcher.dispatch(cmd);
+                    }
+                });
+            } catch (CloneNotSupportedException ex)
+            {
+                
+            }
+            
         }
     }
     
