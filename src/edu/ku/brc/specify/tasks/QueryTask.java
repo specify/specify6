@@ -76,6 +76,7 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
@@ -1110,7 +1111,7 @@ public class QueryTask extends BaseTask
     protected void persistQuery(final SpQuery query)
     {
         // TODO Add StaleObject Code from FormView
-        if (SpQuery.save(true, query))
+        if (DataModelObjBase.save(true, query))
         {
             FormHelper.updateLastEdittedInfo(query);
         }
@@ -1663,7 +1664,7 @@ public class QueryTask extends BaseTask
             query.setName(qName);
         }
         
-        if (SpQuery.save(true, queriesList))
+        if (DataModelObjBase.save(true, queriesList))
         {
             for (SpQuery query : queriesList)
             {

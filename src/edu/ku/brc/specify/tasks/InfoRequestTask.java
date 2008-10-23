@@ -59,6 +59,7 @@ import edu.ku.brc.dbsupport.TableModel2Excel;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -185,7 +186,7 @@ public class InfoRequestTask extends BaseTask
         Timestamp now = new Timestamp(System.currentTimeMillis());
         infoRequest.setTimestampCreated(now);
         
-        if (InfoRequest.save(true, infoRequest))
+        if (DataModelObjBase.save(true, infoRequest))
         {
             NavBoxMgr.getInstance().addBox(navBox);
             
@@ -493,7 +494,7 @@ public class InfoRequestTask extends BaseTask
         } else if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSetIFace)
         {
             InfoRequest inforRequest = (InfoRequest)cmdAction.getData();
-            if (InfoRequest.delete(true, inforRequest))
+            if (DataModelObjBase.delete(true, inforRequest))
             {
                 deleteInfoRequestFromUI(null, inforRequest);
             }

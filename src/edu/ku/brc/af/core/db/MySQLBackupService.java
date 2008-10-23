@@ -37,6 +37,7 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -44,6 +45,7 @@ import javax.swing.SwingWorker;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.tasks.subpane.BackupCompareDlg;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -134,6 +136,62 @@ public class MySQLBackupService extends BackupServiceFactory
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.db.BackupServiceFactory#getTableNames()
+     */
+    @Override
+    public Vector<String> getTableNames()
+    {
+        Vector<String> tablesNames = new Vector<String>();
+        
+        Connection dbConnection = DBConnection.getInstance().createConnection();
+        Statement dbStatement = null;
+        try
+        {
+            dbConnection = DBConnection.getInstance().createConnection();
+            if (dbConnection != null)
+            {
+                dbStatement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                ResultSet resultSet = dbStatement.executeQuery("show tables");
+                
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                while (resultSet.next())
+                {
+                    for (int i=0;i<metaData.getColumnCount();i++)
+                    {
+                        String name = resultSet.getString(i+1);
+                        tablesNames.add(name);
+                    }
+                }
+                resultSet.close();
+                return tablesNames;
+            }
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            try
+            {
+                if (dbStatement != null)
+                {
+                    dbStatement.close();
+                }
+                if (dbConnection != null)
+                {
+                    dbConnection.close();
+                }
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        
+        return null;
+
+    }
+
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.core.db.BackupServiceFactory#doBackUp()
      */
     @Override
@@ -191,14 +249,17 @@ public class MySQLBackupService extends BackupServiceFactory
                 {
                     Thread.sleep(100);
                     
-                    String cmdLine = mysqldumpLoc + " -u Specify --password=Specify " + databaseName;// XXX RELEASE
-                    String[] args = StringUtils.split(cmdLine, ' ');
-                    Process process = Runtime.getRuntime().exec(args);
-                    
                     // Create output file
                     SimpleDateFormat sdf      = new SimpleDateFormat("yyyy_MM_dd_kk_mm_ss");
                     String           fileName = sdf.format(Calendar.getInstance().getTime()) + (isMonthly ? "_monthly" : "") + ".sql";
-                    backupOut = new BufferedWriter(new FileWriter(backupLoc + File.separator + fileName));
+                    String           fullPath = backupLoc + File.separator + fileName;
+                    backupOut = new BufferedWriter(new FileWriter(fullPath));
+                    
+                    writeStats(getCollectionStats(getTableNames()), getStatsName(fullPath));
+                    
+                    String cmdLine = mysqldumpLoc + " -u Specify --password=Specify " + databaseName;// XXX RELEASE
+                    String[] args = StringUtils.split(cmdLine, ' ');
+                    Process process = Runtime.getRuntime().exec(args);
                     
                     String        line = null;
                     StringBuilder sb   = new StringBuilder();
@@ -301,6 +362,55 @@ public class MySQLBackupService extends BackupServiceFactory
         return true;
     }
     
+    /**
+     * @param newFilePath
+     * @param isMonthly
+     */
+    public void doCompareBeforeRestore(final String restoreFilePath)
+    {
+        SwingWorker<Integer, Integer> backupWorker = new SwingWorker<Integer, Integer>()
+        {
+            protected Vector<Object[]> rowData = null;
+            
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#doInBackground()
+             */
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                rowData = doCompare(MySQLBackupService.this.getTableNames(), restoreFilePath);
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                if (rowData != null && rowData.size() > 0)
+                {
+                    UIRegistry.getStatusBar().setProgressDone(STATUSBAR_NAME);
+                    
+                    BackupCompareDlg dlg = new BackupCompareDlg(rowData);
+                    dlg.setVisible(true);
+                    if (!dlg.isCancelled())
+                    {
+                        doActualRestore(restoreFilePath);
+                    } else
+                    {
+                        UIRegistry.clearSimpleGlassPaneMsg();
+                    }
+                } else
+                {
+                  doActualRestore(restoreFilePath);
+                }
+            }
+        };
+        backupWorker.execute();
+    }
+    
+
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.db.BackupServiceFactory#doRestore()
      */
@@ -338,11 +448,29 @@ public class MySQLBackupService extends BackupServiceFactory
             return;
         }
         
+        
         errorMsg = null;
         
-        final String databaseName = AppPreferences.getLocalPrefs().get("CURRENT_DB", null);
-        final String path         = dirStr + fileName;
+        final String path = dirStr + fileName;
         
+        final JStatusBar statusBar = UIRegistry.getStatusBar();
+        statusBar.setIndeterminate(STATUSBAR_NAME, true);
+        
+        final String   databaseName = AppPreferences.getLocalPrefs().get("CURRENT_DB", null);
+        UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("MySQLBackupService.RESTORING", databaseName), 24);
+
+        doCompareBeforeRestore(path);
+    }
+    
+    /**
+     * @param restoreFilePath
+     */
+    protected void doActualRestore(final String restoreFilePath)
+    {
+        AppPreferences remotePrefs  = AppPreferences.getLocalPrefs();
+        final String   mysqlLoc     = remotePrefs.get(MYSQL_LOC,     getDefaultMySQLLoc());
+        final String   databaseName = AppPreferences.getLocalPrefs().get("CURRENT_DB", null);
+
         getNumberofTables();
         
         SwingWorker<Integer, Integer> backupWorker = new SwingWorker<Integer, Integer>()
@@ -368,7 +496,7 @@ public class MySQLBackupService extends BackupServiceFactory
                     // wait as long it takes till the other process has prompted.
                     try 
                     {
-                        input = new BufferedReader(new FileReader(path));
+                        input = new BufferedReader(new FileReader(restoreFilePath));
                         try 
                         {
                             String line = null; //not declared within while loop
@@ -462,7 +590,7 @@ public class MySQLBackupService extends BackupServiceFactory
         final JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setProgressRange(STATUSBAR_NAME, 0, 100);
         
-        UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("MySQLBackupService.RESTORING", databaseName), 24);
+        //UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("MySQLBackupService.RESTORING", databaseName), 24);
         
         backupWorker.addPropertyChangeListener(
                 new PropertyChangeListener() {
