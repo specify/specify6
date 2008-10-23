@@ -1971,7 +1971,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             popupMenu.setDeleteEnabled(false);
         }
 
-        popupMenu.setUnSynEnabled(selectedNode != null && selectedNode.getAcceptedParentId() != null);
+        //popupMenu.setUnSynEnabled(selectedNode != null && selectedNode.getAcceptedParentId() != null);      
+        popupMenu.setUnSynEnabled(false);
 
         SwingWorker bgWork = new SwingWorker()
         {
