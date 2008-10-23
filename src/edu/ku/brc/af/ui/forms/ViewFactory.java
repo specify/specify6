@@ -1065,7 +1065,7 @@ public class ViewFactory
                log.debug("No DBChild ["+cellField.getName()+"]"); 
             }*/
             
-            bi.isRequired = cellField.isRequired() || (childInfo != null && childInfo.isRequired());
+            bi.isRequired = bi.isRequired || cellField.isRequired() || (childInfo != null && childInfo.isRequired());
             
             DBFieldInfo fieldInfo = childInfo instanceof DBFieldInfo ? (DBFieldInfo)childInfo : null;
             if (fieldInfo != null && fieldInfo.isHidden())
