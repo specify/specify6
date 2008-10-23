@@ -8,7 +8,6 @@ package edu.ku.brc.specify.ui.treetables;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createTextArea;
-import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -25,8 +24,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -91,8 +88,6 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
 import edu.ku.brc.specify.treeutils.ChildNodeCounter;
-import edu.ku.brc.specify.treeutils.NodeNumberVerifier;
-import edu.ku.brc.specify.treeutils.NodeNumberer;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
@@ -185,7 +180,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     protected JButton newChild1     = null;
     protected JButton editNode1     = null;
     protected JButton deleteNode1   = null;
-    
+     
     protected TreeDataService<T,D,I> dataService;
     
     protected BusinessRulesIFace businessRules;
@@ -595,7 +590,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             newChild0 = new JButton(icon_newChild);
             newChild0.setSize(20,20);
-            newChild0.setToolTipText("Add Child to Selection");
+            newChild0.setToolTipText("Add Child to Selection"); //XXX i18n
             newChild0.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -606,7 +601,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     
             editNode0 = new JButton(icon_editNode);
             editNode0.setSize(20,20);
-            editNode0.setToolTipText("Edit Selected Node");
+            editNode0.setToolTipText("Edit Selected Node"); //XXX i18n
             editNode0.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -617,7 +612,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     
             deleteNode0 = new JButton(icon_delNode);
             deleteNode0.setSize(20,20);
-            deleteNode0.setToolTipText("Delete Selected Node");
+            //XXX i18n            
+            deleteNode0.setToolTipText("Delete Selected Node"); 
             deleteNode0.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -625,6 +621,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     deleteSelectedNode(lists[0]);
                 }
             });
+            
         }
 
         // view manipulation buttons
@@ -776,6 +773,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     deleteSelectedNode(lists[1]);
                 }
             });
+            
         }
         
         // view manipulation buttons
@@ -1062,6 +1060,23 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		showEditDialog(newT, "New Node Form", true);
 	}
 
+	public void unSynSelectedNode(final JList list)
+	{
+        // get the selected TreeNode
+        Object selection = list.getSelectedValue();
+        if ( selection == null )
+        {
+            return;
+        }
+        TreeNode node = (TreeNode)selection;
+        T nodeRecord = getRecordForNode(node);
+        
+        log.debug("Node selected for Un-synonymize: " + node);
+
+        String statusMsg = dataService.unSynonymize(nodeRecord);
+
+        
+	}
 	/**
 	 * Deletes the currently selected node and all descendants if and
 	 * only if it is determined possible without violating any business
@@ -1955,6 +1970,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
             popupMenu.setDeleteEnabled(false);
         }
+
+        popupMenu.setUnSynEnabled(selectedNode != null && selectedNode.getAcceptedParentId() != null);
 
         SwingWorker bgWork = new SwingWorker()
         {

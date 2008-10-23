@@ -367,7 +367,7 @@ public class TreeHelper
         return String.format(getResourceString("TTV_TreeRelationshipCreatedMsg"),source.getFullName(),destination.getFullName());
     }
     
-    /**
+     /**
      * Determines if the child node can be reparented to newParent while not
      * violating any of the business rules.  Currently, the only rule on
      * reparenting is that the new parent must be of rank equal to or less than

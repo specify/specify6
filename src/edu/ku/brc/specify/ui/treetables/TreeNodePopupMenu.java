@@ -32,6 +32,7 @@ public class TreeNodePopupMenu extends JPopupMenu
 	@SuppressWarnings("unchecked")
 	protected TreeTableViewer ttv;
     protected JMenuItem delete;
+    protected JMenuItem unSyn;
     protected JMenuItem find;
     protected JMenuItem edit;
     protected JMenuItem newChild;
@@ -61,15 +62,18 @@ public class TreeNodePopupMenu extends JPopupMenu
         {
             edit     = new JMenuItem(getResourceString("TTV_EDITING"));
             delete   = new JMenuItem(getResourceString("TTV_DELETE"));
+            unSyn    = new JMenuItem(getResourceString("TTV_UNSYN"));
             newChild = new JMenuItem(getResourceString("TTV_NEW_CHILD"));
             
             selectionSensativeButtons.add(edit);
             selectionSensativeButtons.add(newChild);
             selectionSensativeButtons.add(delete);
+            selectionSensativeButtons.add(unSyn);
         } else
         {
             edit     = null;
             delete   = null;
+            unSyn    = null;
             newChild = null;
         }
         
@@ -117,6 +121,14 @@ public class TreeNodePopupMenu extends JPopupMenu
     			}
     		});
     
+            unSyn.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    ttv.unSynSelectedNode(list);
+                }
+            });
+
     		newChild.addActionListener(new ActionListener()
     		{
     			public void actionPerformed(ActionEvent ae)
@@ -127,6 +139,7 @@ public class TreeNodePopupMenu extends JPopupMenu
             this.add(edit);
             this.add(delete);
             this.add(newChild);
+            this.add(unSyn);
 		}
 
 	}
@@ -146,6 +159,14 @@ public class TreeNodePopupMenu extends JPopupMenu
         if (delete != null)
         {
             delete.setEnabled(enable);
+        }
+    }
+
+    public void setUnSynEnabled(boolean enable)
+    {
+        if (unSyn != null)
+        {
+            unSyn.setEnabled(enable);
         }
     }
 

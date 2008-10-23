@@ -930,8 +930,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.treeutils.TreeDataService#createNodeLink(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#synonymize(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public String synonymize(final T source, final T destination)
     {
@@ -969,6 +970,48 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return statusMsg;
     }
     
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#unSynonymize(edu.ku.brc.specify.datamodel.Treeable)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public String unSynonymize(T node)
+    {
+        String statusMsg = null;
+        Session session = getNewSession(node);
+        try
+        {
+            T mergedNode = (T)mergeIntoSession(session, node);
+            Transaction tx = session.beginTransaction();
+            
+            if (fixAdditionalRelationsips(session, mergedNode,  null))
+            {
+                mergedNode.setIsAccepted(true);
+                mergedNode.setAcceptedParent(null);
+                
+                if (!commitTransaction(session, tx)) // NOTE: this call will close an open session.
+                {
+                    statusMsg = "Failed to create node relationship.";
+                }
+            } else
+            {
+                // Error Dialog
+            }
+
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        } finally
+        {
+            if (session != null && session.isOpen())
+            {
+                session.close();
+            }
+        }
+        return statusMsg;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#getSynonyms(edu.ku.brc.specify.datamodel.Treeable)
      */

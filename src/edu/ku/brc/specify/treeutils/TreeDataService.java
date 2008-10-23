@@ -166,6 +166,16 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      */
     public String synonymize(T source, T destination);
     
+    
+    /**
+     * Updates (clears) values of AcceptedParent and Accepted fields.
+     * And for some types (current only Taxon) additional changes in other tables (Determination for Taxon) may be made.
+     * 
+     * @param node 
+     * @return a localized, human-readable status message, or null
+     */
+    public String unSynonymize(T node);
+    
     /**
      * @param node
      * @return
