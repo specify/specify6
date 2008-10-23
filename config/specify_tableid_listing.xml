@@ -60,7 +60,8 @@
         	<display view="AutoNumberingScheme" searchdlg="AutoNumberingScheme" newobjdlg="AutoNumberingScheme"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Borrow" abbrev="bo" id="18" searchable="true">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.Borrow</businessrule>
+            <display view="Borrow" dataobjformatter="Borrow" />
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.BorrowBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.BorrowAgent" abbrev="boa" id="19" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.BorrowMaterial" abbrev="bom" id="20" searchable="true"/>

@@ -61,7 +61,7 @@ public class BorrowBusRules extends BaseBusRules
                 }
             }
         }
-        return STATUS.Error;
+        return STATUS.OK;
     }
 
 }

@@ -78,6 +78,18 @@
     </format>
     
     <format
+        name="Borrow"
+        class="edu.ku.brc.specify.datamodel.Borrow"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>receivedDate</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
         name="CollectingTrip"
         class="edu.ku.brc.specify.datamodel.CollectingTrip"
         default="true"
