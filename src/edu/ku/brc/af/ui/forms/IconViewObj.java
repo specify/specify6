@@ -31,6 +31,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
@@ -255,9 +257,20 @@ public class IconViewObj implements Viewable
                     doDoubleClick();
                 }
             }
+            
         });
         
-         
+        iconTray.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    updateEnableUI();
+                }
+            }
+        });
+        
         if (isEditing)
         {
             addActionListenerToEditButton();
@@ -414,6 +427,8 @@ public class IconViewObj implements Viewable
                 {
                     dialog.getMultiView().getDataFromUI();
                     rootHasChanged();
+                    iconTray.validate();
+                    iconTray.repaint();
                 }
                 dialog.dispose();
             }
@@ -878,6 +893,11 @@ public class IconViewObj implements Viewable
         if (switcherUI != null)
         {
             switcherUI.set(altView);
+        }
+        
+        if (!show)
+        {
+            iconTray.setSelectedIndex(-1);
         }
         
         // Moving this to the MultiView

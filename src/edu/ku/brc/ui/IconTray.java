@@ -24,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
@@ -94,6 +95,23 @@ public class IconTray extends JPanel
     {
         super.addMouseListener(l);
         iconListWidget.addMouseListener(l);
+        
+    }
+    
+    /**
+     * @param listener
+     */
+    public void addListSelectionListener(final ListSelectionListener listener)
+    {
+        iconListWidget.addListSelectionListener(listener);
+    }
+
+    /**
+     * @param listener
+     */
+    public void removeListSelectionListener(final ListSelectionListener listener)
+    {
+        iconListWidget.removeListSelectionListener(listener);
     }
 
     public FormDataObjIFace getSelectedValue()
@@ -220,12 +238,20 @@ public class IconTray extends JPanel
     public FormDataObjIFace getSelection()
     {
         Object selection = iconListWidget.getSelectedValue();
-        if (selection==null)
+        if (selection == null)
         {
             return null;
         }
         
         return (FormDataObjIFace)selection;
+    }
+    
+    /**
+     * @param index index to be selected
+     */
+    public void setSelectedIndex(final int index)
+    {
+        iconListWidget.setSelectedIndex(-1);
     }
     
     /**
