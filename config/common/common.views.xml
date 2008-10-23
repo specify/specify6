@@ -395,6 +395,7 @@
         <view name="Locality"
             class="edu.ku.brc.specify.datamodel.Locality"
             busrules="edu.ku.brc.specify.datamodel.busrules.LocalityBusRules"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Locality form.]]></desc>
             <altviews>

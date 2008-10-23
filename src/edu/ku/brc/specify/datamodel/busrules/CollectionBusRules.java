@@ -11,6 +11,9 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import java.util.Vector;
 
+import javax.swing.JComponent;
+import javax.swing.JTextField;
+
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -101,7 +104,7 @@ public class CollectionBusRules extends BaseBusRules
         super.afterFillForm(dataObj);
         
         Collection   collection = (Collection)dataObj;
-        ValTextField txt        = (ValTextField)formViewObj.getControlById("4");
+        JTextField txt        = (JTextField)formViewObj.getControlById("4");
         if (txt != null && collection != null)
         {
             AutoNumberingScheme ans = collection.getNumberingSchemes().iterator().next();
