@@ -1074,7 +1074,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         log.debug("Node selected for Un-synonymize: " + node);
 
         String statusMsg = dataService.unSynonymize(nodeRecord);
-
+        node.setAcceptedParentId(null);
+        node.setAcceptedParentFullName(null);
+        UIRegistry.displayStatusBarText(statusMsg);
+        updateAllUI();
         
 	}
 	/**
@@ -1971,8 +1974,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             popupMenu.setDeleteEnabled(false);
         }
 
-        //popupMenu.setUnSynEnabled(selectedNode != null && selectedNode.getAcceptedParentId() != null);      
-        popupMenu.setUnSynEnabled(false);
+        popupMenu.setUnSynEnabled(selectedNode != null && selectedNode.getAcceptedParentId() != null);      
+        //popupMenu.setUnSynEnabled(false);
 
         SwingWorker bgWork = new SwingWorker()
         {

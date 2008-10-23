@@ -187,6 +187,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected Integer                                       detStatusCurrentID     = 0;
     protected Integer                                       detStatusNotCurrID     = 0;
     protected Integer                                       detStatusOldDetID      = 0;
+    protected Integer                                       detStatusCurrAccID     = 0;
     
     // edu.ku.brc.specify.datamodel.Collection
     // edu.ku.brc.specify.datamodel.Discipline
@@ -1783,6 +1784,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             stmt.executeUpdate(insertStr);
             detStatusOldDetID  = BasicSQLUtils.getInsertedId(stmt);
             
+            insertStr = createDetStatausInsert("Current Accepted", DeterminationStatus.CURRENTTOACCEPTED);
+            log.debug(insertStr);
+            stmt.executeUpdate(insertStr);
+            detStatusCurrAccID  = BasicSQLUtils.getInsertedId(stmt);
+
             stmt.close();
 
         } catch (SQLException e)

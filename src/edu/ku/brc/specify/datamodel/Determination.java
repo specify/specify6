@@ -67,7 +67,14 @@ public class Determination extends CollectionMember implements java.io.Serializa
      protected CollectionObject    collectionObject;
      protected Set<DeterminationCitation> determinationCitations;
      protected Agent               determiner;
-
+     //The SpSynonymyDetermination records (actually should only be one ot them) created when this
+     //determination's taxon was made un-accepted
+     protected Set<SpSynonymyDetermination> oldSynonymyDeterminations;
+     //The SpSynonymyDetermination records (actually should only be one ot them) created when this
+     //determination was created as result of the taxon for the previously current determination being made
+     //a synonym of this determination's taxon 
+     protected Set<SpSynonymyDetermination> newSynonymyDeterminations;
+     
 
     // Constructors
 
@@ -110,6 +117,8 @@ public class Determination extends CollectionMember implements java.io.Serializa
         taxon = null;
         collectionObject = null;
         determinationCitations = new HashSet<DeterminationCitation>();
+        oldSynonymyDeterminations = new HashSet<SpSynonymyDetermination>();
+        newSynonymyDeterminations = new HashSet<SpSynonymyDetermination>();
         determiner = null;
     }
     // End Initializer
@@ -171,7 +180,12 @@ public class Determination extends CollectionMember implements java.io.Serializa
     @Transient
     public boolean isCurrent()
     {
-        return status.getType() == DeterminationStatus.CURRENT;
+        if (status != null)
+        {
+            return DeterminationStatus.isCurrentType(status.getType());
+        }
+        
+        return false;
     }
 
     /**
@@ -374,6 +388,40 @@ public class Determination extends CollectionMember implements java.io.Serializa
     public void setTaxon(Taxon taxon) 
     {
         this.taxon = taxon;
+    }
+
+    /**
+     * @return oldSynonymyDeterminations
+     */
+    @OneToMany(mappedBy = "oldDetermination")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<SpSynonymyDetermination> getOldSynonymyDeterminations() {
+        return this.oldSynonymyDeterminations;
+    }
+
+    /**
+     * @param arg
+     */
+    public void setOldSynonymyDeterminations(Set<SpSynonymyDetermination> arg)
+    {
+        oldSynonymyDeterminations = arg;
+    }
+
+    /**
+     * @return oldSynonymyDeterminations
+     */
+    @OneToMany(mappedBy = "newDetermination")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<SpSynonymyDetermination> getNewSynonymyDeterminations() {
+        return this.newSynonymyDeterminations;
+    }
+
+    /**
+     * @param arg
+     */
+    public void setNewSynonymyDeterminations(Set<SpSynonymyDetermination> arg)
+    {
+        newSynonymyDeterminations = arg;
     }
 
     /**

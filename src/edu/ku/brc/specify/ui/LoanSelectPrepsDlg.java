@@ -235,7 +235,7 @@ public class LoanSelectPrepsDlg extends CustomDialog
     {
         for (Determination d : colObj.getDeterminations())
         {
-            if (d.getStatus().getType() == DeterminationStatus.CURRENT)
+            if (DeterminationStatus.isCurrentType(d.getStatus().getType()))
             {
                 return d;
             }
@@ -330,7 +330,7 @@ public class LoanSelectPrepsDlg extends CustomDialog
             String taxonName = null;
             for (Determination deter : colObj.getDeterminations())
             {
-                if (deter.getStatus() != null && deter.getStatus().getType() == DeterminationStatus.CURRENT)
+                if (deter.getStatus() != null && DeterminationStatus.isCurrentType(deter.getStatus().getType()))
                 {
                     taxonName = getTaxonName(deter);
                     break;

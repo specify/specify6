@@ -77,10 +77,15 @@ public class DeterminationStatusBusRules extends BaseBusRules
     {
         reasonList.clear();
         
-        DeterminationStatus DeterminationStatus = (DeterminationStatus)dataObj;
-        if (DeterminationStatus.getId() == null)
+        DeterminationStatus determinationStatus = (DeterminationStatus)dataObj;
+        if (determinationStatus.getId() == null)
         {
             return true;
+        }
+        
+        if (determinationStatus.getType() < DeterminationStatus.USERDEFINED)
+        {
+            return false;
         }
         
         Connection conn = null;
@@ -89,7 +94,7 @@ public class DeterminationStatusBusRules extends BaseBusRules
         {
             conn = DBConnection.getInstance().createConnection();
             stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select count(*) from determination where determination.DeterminationStatusID = "+DeterminationStatus.getId());
+            ResultSet rs = stmt.executeQuery("select count(*) from determination where determination.DeterminationStatusID = "+determinationStatus.getId());
             return rs.next() && rs.getInt(1) == 0;
             
         } catch (Exception ex)
@@ -183,6 +188,10 @@ public class DeterminationStatusBusRules extends BaseBusRules
                     
                 case DeterminationStatus.NOTCURRENT :
                     desc = UIRegistry.getResourceString("DTS_NOTCURRENT");
+                    break;
+                
+                case DeterminationStatus.CURRENTTOACCEPTED :
+                    desc = UIRegistry.getResourceString("DTS_CURRENTTOACCEPTED");
                     break;
                     
                 default:

@@ -259,10 +259,11 @@ public class BuildSampleDatabase
     
     protected Vector<Locality>    globalLocalities = new Vector<Locality>();
     protected Vector<Agent>       globalAgents = new Vector<Agent>();
-    protected DeterminationStatus current      = null;
-    protected DeterminationStatus notCurrent   = null;
-    protected DeterminationStatus incorrect    = null;
-    protected DeterminationStatus oldDet       = null;
+    protected DeterminationStatus current                   = null;
+    protected DeterminationStatus notCurrent                = null;
+    protected DeterminationStatus incorrect                 = null;
+    protected DeterminationStatus oldDet                    = null;
+    protected DeterminationStatus currentAccepted           = null;
     
     protected int                 stationFieldNumberCounter = 100;
     protected String              STATION_FIELD_FORMAT = "RS%03d";
@@ -706,6 +707,7 @@ public class BuildSampleDatabase
         notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
         incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
+        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
         
         frame.setDesc("Commiting...");
         //startTx();
@@ -713,6 +715,7 @@ public class BuildSampleDatabase
         persist(notCurrent);
         persist(incorrect);
         persist(oldDet);
+        persist(currentAccepted);
         commitTx();
         
         frame.setProcess(++createStep);
@@ -1390,12 +1393,14 @@ public class BuildSampleDatabase
         notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
         incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
+        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
 
         
         persist(current);
         persist(notCurrent);
         persist(incorrect);
         persist(oldDet);
+        persist(currentAccepted);
         
         ////////////////////////////////
         // collection objects
@@ -2080,11 +2085,13 @@ public class BuildSampleDatabase
         notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
         incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
+        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
         
         persist(current);
         persist(notCurrent);
         persist(incorrect);
         persist(oldDet);
+        persist(currentAccepted);
         
         persist(dataObjects);
         dataObjects.clear();
@@ -2666,12 +2673,14 @@ public class BuildSampleDatabase
         notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
         incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
+        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
 
         
         persist(current);
         persist(notCurrent);
         persist(incorrect);
         persist(oldDet);
+        persist(currentAccepted);
         
         ////////////////////////////////
         // collection objects
@@ -3766,12 +3775,14 @@ public class BuildSampleDatabase
         notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
         incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
+        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
 
         
         persist(current);
         persist(notCurrent);
         persist(incorrect);
         persist(oldDet);
+        persist(currentAccepted);
         
         ////////////////////////////////
         // collection objects
@@ -5103,11 +5114,13 @@ public class BuildSampleDatabase
             notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
             incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
             oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
+            currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
 
             persist(current);
             persist(notCurrent);
             persist(incorrect);
             persist(oldDet);
+            persist(currentAccepted);
         }
 
         ////////////////////////////////

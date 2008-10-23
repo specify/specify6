@@ -132,7 +132,7 @@ public class DeterminationBusRules extends BaseBusRules
             if (item != null)
             {
                 DeterminationStatus status = (DeterminationStatus)item.getValueObject();
-                if (status != null && status.getType().equals(DeterminationStatus.CURRENT))
+                if (status != null && DeterminationStatus.isCurrentType(status.getType()))
                 {
                     determination.setStatus(status);
                     
@@ -160,11 +160,11 @@ public class DeterminationBusRules extends BaseBusRules
      */
     protected boolean checkDeterminationStatus(final CollectionObject colObj, final Determination deter)
     {
-        if (deter.getStatus() != null && deter.getStatus().getType().equals(DeterminationStatus.CURRENT))
+        if (deter.isCurrent())
         {
             for (Determination det : colObj.getDeterminations())
             {
-                if (det != deter && det.getStatus() != null && det.getStatus().getType().equals(DeterminationStatus.CURRENT))
+                if (det != deter && det.isCurrent())
                 {
                     return false;
                 }
@@ -232,4 +232,25 @@ public class DeterminationBusRules extends BaseBusRules
 
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#okToEnableDelete(java.lang.Object)
+     */
+    @Override
+    public boolean okToEnableDelete(Object dataObj)
+    {
+        if (!super.okToEnableDelete(dataObj))
+        {
+            return false;
+        }
+        
+        Determination detObj = (Determination )dataObj;
+        if (detObj.getOldSynonymyDeterminations().size() > 0 || detObj.getNewSynonymyDeterminations().size() > 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    
 }

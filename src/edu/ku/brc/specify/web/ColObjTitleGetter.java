@@ -50,7 +50,7 @@ public class ColObjTitleGetter implements TitleGetterIFace
                 //System.out.print("Det: "+colObj.getDeterminations());
                 for (Determination det : colObj.getDeterminations())
                 {
-                    if (det.getStatus().getType().equals(DeterminationStatus.CURRENT))
+                    if (DeterminationStatus.isCurrentType(det.getStatus().getType()))
                     {
                         UIFieldFormatterIFace fmt = field.getFormatter();
                         return fmt.formatToUI(colObj.getCatalogNumber()) + " - " + det.getTaxon().getFullName();

@@ -1300,7 +1300,7 @@ public class SpecifyExplorer extends HttpServlet
         {
             for (Determination det : ((Taxon)dataObj).getDeterminations())
             {
-                if (det.getStatus().getType().equals(DeterminationStatus.CURRENT))
+                if (DeterminationStatus.isCurrentType(det.getStatus().getType()))
                 {
                     list.add(det.getCollectionObject());
                 }
@@ -3369,7 +3369,7 @@ public class SpecifyExplorer extends HttpServlet
     {
         for (Determination det : co.getDeterminations())
         {
-            if (det.getStatus().getType().equals(DeterminationStatus.CURRENT))
+            if (DeterminationStatus.isCurrentType(det.getStatus().getType()))
             {
                 return det.getTaxon();
             }

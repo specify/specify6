@@ -94,8 +94,8 @@ public class SpSynonymyDetermination extends DataModelObjBase
     /**
      * @return the oldDetermination
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "OldDeterminationID", unique = false, nullable = true, insertable = true, updatable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "OldDeterminationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Determination getOldDetermination()
     {
         return oldDetermination;
@@ -117,7 +117,7 @@ public class SpSynonymyDetermination extends DataModelObjBase
      * @return the newDetermination
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "NewDeterminationID", unique = false, nullable = true, insertable = true, updatable = true)
+    @JoinColumn(name = "NewDeterminationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Determination getNewDetermination()
     {
         return newDetermination;

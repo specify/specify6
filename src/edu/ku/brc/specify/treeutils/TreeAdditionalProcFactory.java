@@ -131,8 +131,7 @@ public class TreeAdditionalProcFactory
             session.saveOrUpdate(syn); //assuming at this point that caller has opened a transaction on session???
             
             DeterminationStatus detStatusOld = getDeterminationStatus(session, DeterminationStatus.OLDDETERMINATION);
-            DeterminationStatus detStatusCur = getDeterminationStatus(session, DeterminationStatus.CURRENT);
-            
+            DeterminationStatus detStatusCur = getDeterminationStatus(session, DeterminationStatus.CURRENTTOACCEPTED);
             try
             {
                 log.debug("Source:");
@@ -144,7 +143,7 @@ public class TreeAdditionalProcFactory
                 log.debug("Source:");
                 for (Determination det : new Vector<Determination>(srcTaxon.getDeterminations()))
                 {
-                    if (det.getStatus().getDeterminationStatusId().equals(detStatusCur.getDeterminationStatusId()))
+                    if (DeterminationStatus.isCurrentType(det.getStatus().getType()))
                     {
                         log.debug(det.getIdentityTitle()+"  "+det.getCollectionObject().getIdentityTitle());
                         
@@ -220,7 +219,7 @@ public class TreeAdditionalProcFactory
             if (synRec != null)
             {
                 DeterminationStatus detStatusOld = getDeterminationStatus(session, DeterminationStatus.OLDDETERMINATION);
-                DeterminationStatus detStatusCur = getDeterminationStatus(session, DeterminationStatus.CURRENT);
+                DeterminationStatus detStatusCur = getDeterminationStatus(session, DeterminationStatus.CURRENTTOACCEPTED);
                 
                 for (SpSynonymyDetermination synDet : new Vector<SpSynonymyDetermination>(synRec.getDeterminations()))
                 {
@@ -233,7 +232,6 @@ public class TreeAdditionalProcFactory
                     
                     //XXX check for edits. Should edits be prevented???
                     //XXX check for existence??? What happens if user deletes a determination? Should/Is that prevented?
-                    //XXX multiple currents are allowed in 6? Check ramifications if so...
                     
                     if (newDet != null && newDet.getStatus().getId().equals(detStatusCur.getId())
                             && oldDet != null && oldDet.getStatus().getId().equals(detStatusOld.getId()))

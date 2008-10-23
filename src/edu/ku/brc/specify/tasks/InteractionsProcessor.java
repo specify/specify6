@@ -413,7 +413,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                         {
                             if (det.getStatus() != null && 
                                 det.getStatus().getType() != null &&
-                                det.getStatus().getType().equals(DeterminationStatus.CURRENT))
+                                DeterminationStatus.isCurrentType(det.getStatus().getType()))
                             {
                                 hasCurrDet = true;
                                 availColObjList.add(co);

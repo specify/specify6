@@ -61,10 +61,11 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
                                                                      Comparable<DeterminationStatus>
 {
     
-    public static final byte CURRENT          = 1;
-    public static final byte OLDDETERMINATION = 2;
-    public static final byte NOTCURRENT       = 3;
-    public static final byte USERDEFINED      = 64;
+    public static final byte CURRENT           = 1;
+    public static final byte OLDDETERMINATION  = 2;
+    public static final byte NOTCURRENT        = 3;
+    public static final byte CURRENTTOACCEPTED = 4;
+    public static final byte USERDEFINED       = 64;
     
     protected Integer            determinationStatusId;
     protected Byte               type;
@@ -230,6 +231,15 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     }
     
     /**
+     * @param type
+     * @return true if type indicates 'Current' status
+     */
+    public static boolean isCurrentType(final byte type)
+    {
+        return type == CURRENT || type == CURRENTTOACCEPTED;
+    }
+    
+    /**
      * @return List of pick lists for predefined system type codes.
      * 
      * The QueryBuilder function is used to generate picklist criteria controls for querying,
@@ -241,11 +251,14 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     @Transient
     public static List<PickListDBAdapterIFace> getSpSystemTypeCodes()
     {
+        //um.... shouldn't it be possible to just use DeterminationStatus.getName()???
+        
         List<PickListDBAdapterIFace> result = new Vector<PickListDBAdapterIFace>(1);
         Vector<PickListItemIFace> stats = new Vector<PickListItemIFace>(4);
         stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("DeterminationStatus_CURRENT"), DeterminationStatus.CURRENT));
         stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("DeterminationStatus_OLDDETERMINATION"), DeterminationStatus.OLDDETERMINATION));
         stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("DeterminationStatus_NOTCURRENT"), DeterminationStatus.NOTCURRENT));
+        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("DeterminationStatus_CURRENTTOACCEPTED"), DeterminationStatus.CURRENTTOACCEPTED));
         //XXX UserDefined???
         stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("DeterminationStatus_USERDEFINED"), DeterminationStatus.USERDEFINED));
         result.add(new RecordTypeCode(stats, "type"));

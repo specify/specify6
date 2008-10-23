@@ -403,7 +403,7 @@ public class LoanReturnDlg extends JDialog
             String taxonName = "";
             for (Determination deter : colObj.getDeterminations())
             {
-                if (deter.getStatus().getType() == DeterminationStatus.CURRENT)
+                if (DeterminationStatus.isCurrentType(deter.getStatus().getType()))
                 {
                     if (deter.getTaxon().getFullName() == null)
                     {
