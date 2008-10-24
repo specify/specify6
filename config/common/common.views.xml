@@ -231,6 +231,16 @@
                 <altview name="DeaccessionAgent Edit" viewdef="DeaccessionAgent" mode="edit" default="true"/>
             </altviews>
         </view>
+        
+        <view name="DeaccessionPreparation"
+            class="edu.ku.brc.specify.datamodel.DeaccessionPreparation"
+            resourcelabels="false">
+            <desc><![CDATA[The Deaccession Preparation subform.]]></desc>
+            <altviews>
+                <altview name="DeaccessionPreparation View" viewdef="DeaccessionPreparation" mode="view" default="true"/>
+                <altview name="DeaccessionPreparation Edit" viewdef="DeaccessionPreparation" mode="edit"/>
+            </altviews>
+        </view>
 
         <view name="Determination"
               class="edu.ku.brc.specify.datamodel.Determination"
@@ -825,7 +835,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Form For Appraisal]]></desc>
             
-            <columnDef>100px,2px,p,2px,125px,2px,125px,2px,125px,2px,125px,p:g</columnDef>
+            <columnDef>p,2px,p,2px,p,2px,125px,2px,125px,2px,125px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
@@ -899,7 +909,7 @@
             
             <desc><![CDATA[BorrowMaterial viewing form.]]></desc>
             <columnDef>125px,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
-            <columnDef os="mac">110px,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
+            <columnDef os="mac">p,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
@@ -930,7 +940,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Collecting Event]]></desc>
-            <columnDef>110px,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
@@ -968,7 +978,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[CollectingTrip Form]]></desc>
             
-            <columnDef>110px,2px,100px,2px,p,2px,100px,2px,p,2px,p,p:g</columnDef>
+            <columnDef>p,2px,100px,2px,p,2px,100px,2px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row> 
@@ -995,7 +1005,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[CollectingTrip Form]]></desc>
             
-            <columnDef>110px,2px,100px,2px,p,2px,100px,2px,p,2px,p,p:g</columnDef>
+            <columnDef>p,2px,100px,2px,p,2px,100px,2px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row> 
@@ -1237,7 +1247,7 @@
             <desc><![CDATA[Conservation Description]]></desc>
             <enableRules/>
             
-            <columnDef>125px,2px,p,2px,100px,2px,p,2px,100px,2px,p,p:g</columnDef>
+            <columnDef>p,2px,p,2px,100px,2px,p,2px,100px,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row> 
@@ -1317,7 +1327,7 @@
             </rows>
         </viewdef>
        
-       <viewdef
+        <viewdef
             type="form"
             name="Deaccession"
             class="edu.ku.brc.specify.datamodel.Deaccession"
@@ -1325,21 +1335,30 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Deaccession form.]]></desc>
             <enableRules/>
-
-            <columnDef>100px,2px,p,2px,100px,2px,p,2px,p,50px,100px,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-
+            
+            <columnDef>p,2px,p,80px,p,2px,p,40px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="deaccessionNumber" uitype="formattedtext" isrequired="true" uifieldformatter="DeaccessionNumber"/>                                  </row>
-                <row>
+                    <cell type="field" id="1" name="deaccessionNumber" uitype="formattedtext" isrequired="true" uifieldformatter="DeaccessionNumber"/>                                  
+                    
                     <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="deaccessionDate" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
                 </row>
                 <row>
-                    <cell type="iconview" viewname="Deaccession Agent" id="8" name="deaccessionAgents" desc="Agents" colspan="11"/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession;newbtn=false;editbtn=false"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="type" uitype="combobox" picklist="DeaccessionType"/>
+                </row>
+                <row>
+                    <cell type="iconview" viewname="Deaccession Agent" id="8" name="deaccessionAgents" desc="Agents" colspan="12"/>
                 </row> 
+                <!--   <row>
+                    <cell type="subview" viewname="DeaccessionPreparation" id="4" name="deaccessionPreparations" colspan="12"/>
+                    </row> --> 
                 <row>
                     <cell type="separator" label="" colspan="12"/>
                 </row>
@@ -1361,10 +1380,10 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[The DeaccessionAgent subform for Deaccession form.]]></desc>
             <enableRules/>
-
-            <columnDef>60px,2px,p,2px,35px,2px,p</columnDef>
+            
+            <columnDef>60px,2px,p,2px,35px,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
-
+            
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
@@ -1374,7 +1393,32 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="5" cols="40" rows="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="6"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="DeaccessionPreparation"
+            class="edu.ku.brc.specify.datamodel.DeaccessionPreparation"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Deaccession form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>85px,4px,p,10px,p,4px,75px,5px,p,4px,p,p:g</columnDef>
+            <columnDef os="mac">110px,4px,p,80px,p,4px,p,5px,p,4px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=2000"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="preparation.prepType.name" uitype="dsptextfield" readonly="true"/> 
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="preparation.storageLocation" uitype="dsptextfield" colpsan="2"/>
                 </row>
             </rows>
         </viewdef>
@@ -1441,7 +1485,7 @@
       	<desc><![CDATA[DNA Sequence Form]]></desc>
         <enableRules/>
         
-            <columnDef>90px,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
+            <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
@@ -1475,7 +1519,7 @@
             
             <desc><![CDATA[ExchangeIn viewing form.]]></desc>
             <columnDef>p,4px,p,10px,p,4px,p,5px,p,4px,p,p:g</columnDef>
-            <columnDef os="mac">p,4px,p,80px,p,4px,p,5px,p,4px,p,p:g</columnDef>
+            <columnDef os="mac">p,4px,p,4px,p,4px,p,5px,p,4px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
@@ -1512,7 +1556,7 @@
             
             <desc><![CDATA[ExchangeOut viewing form.]]></desc>
             <columnDef>p,4px,p,10px,p,4px,p,5px,p,4px,p,p:g</columnDef>
-            <columnDef os="mac">p,4px,p,80px,p,4px,p,5px,p,4px,p,p:g</columnDef>
+            <columnDef os="mac">p,4px,p,4px,p,4px,p,5px,p,4px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
@@ -2101,7 +2145,7 @@
             <desc><![CDATA[Permit subform for Acessions.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g</columnDef>
+            <columnDef>p,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -2210,7 +2254,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form For Project]]></desc>
-            <columnDef>100px,2px,p,2px,p,2px,100px,2px,100px,2px,100px,p:g</columnDef>
+            <columnDef>p,2px,p,2px,p,2px,100px,2px,100px,2px,100px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             
             <rows>
@@ -2250,7 +2294,7 @@
                     <cell type="field" id="7" name="remarks" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="CollectionObjectSub" id="11" colspan="10" name="collectionObjects" initialize="addsearch=true"/>
+                    <cell type="subview" viewname="CollectionObjectSub" id="11" colspan="12" name="collectionObjects" initialize="addsearch=true"/>
                 </row>
                 
             </rows>
@@ -2275,7 +2319,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form For Project]]></desc>
-            <columnDef>100px,2px,p,2px,100px,2px,p,2px,100px,2px,100px,p:g</columnDef>
+            <columnDef>p,2px,p,2px,100px,2px,p,2px,100px,2px,100px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
                 
              <rows>
