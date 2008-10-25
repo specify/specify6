@@ -392,16 +392,6 @@
             </altviews>
         </view>
         
-        <view name="LoanPreparation"
-            class="edu.ku.brc.specify.datamodel.LoanPreparation"
-            busrules="edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRules"
-            resourcelabels="false">
-            <desc><![CDATA[Subform within the Collection Object form.]]></desc>
-            <altviews>
-                <altview name="LoanPreparation View" viewdef="LoanPreparation" mode="view"/>
-            </altviews>
-        </view>
-
         <view name="Locality"
             class="edu.ku.brc.specify.datamodel.Locality"
             busrules="edu.ku.brc.specify.datamodel.busrules.LocalityBusRules"
@@ -840,7 +830,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="appraisalDate" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
+                    <cell type="field" id="1" name="appraisalDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="appraisalNumber" uitype="text"/>
 
@@ -1780,8 +1770,6 @@
                     <cell type="label" labelfor="5" />
                     <cell type="field" id="5" name="preparation.count" uitype="dsptextfield"/>
                     
-                    <cell type="field" id="8" name="isResolved" uitype="checkbox" label="Resolved" colspan="3"/>
-                    
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="preparation.storageLocation" uitype="dsptextfield" colpsan="2"/>
                 </row>
@@ -1928,33 +1916,6 @@
             </rows>
         </viewdef>
         
-        <viewdef
-            type="form"
-            name="LoanPreparation"
-            class="edu.ku.brc.specify.datamodel.Preparation"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            <desc><![CDATA[Preparation for Collection Object form.]]></desc>
-            <enableRules/>
-            
-            <columnDef>85px,4px,p,4px,100px,4px,p,p:g</columnDef>
-            <columnDef os="mac">110px,4px,p,4px,100px,4px,p,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="count" uitype="text"/>
-                    
-                    <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="storageLocation" uitype="text" colspan="2"/>
-                </row>
-                <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" colspan="8" initialize="btn=true;icon=PreparationAttachment"/>
-                </row>
-            </rows>
-        </viewdef>
-   
         <viewdef
             type="form"
             name="Locality"

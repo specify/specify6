@@ -114,6 +114,7 @@
     			<row>
     			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5" initialize="noscrollbars=true;border=line;bordercolor=150,150,150;"/>
     			</row>
+    			<row>
     		        <cell type="subview" id="26" name="collectingEvent" viewname="CollectingEventSub" colspan="12"/>
     		    </row>
     			<row>
