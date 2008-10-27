@@ -25,7 +25,7 @@ public class QueryExecutor
 {
     private static QueryExecutor instance = new QueryExecutor();
     
-    ExecutorService jpaQueryExecServ = null;
+    protected ExecutorService jpaQueryExecServ = null;
     
     /**
      * Private Constructor.

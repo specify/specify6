@@ -309,4 +309,26 @@ public class TreeNode
         memoryLocation = memoryLocation.substring(memoryLocation.length() - 8);
         return getClass().getSimpleName() + "@0x" + memoryLocation + ": " + name + ", " + id + ", " + rank + ", " + parentId + ", " + parentRank;
     }
+
+    /**
+     * @param synonymId
+     * 
+     * Removes item with id equal tosynonymId from list of synonyms for this node.
+     * 
+     * @return true if node was removed.
+     */
+    public boolean removeSynonym(int synonymId)
+    {
+        boolean result = false;
+        for (Pair<Integer, String> syn : synonymIdsAndNames)
+        {
+            if (syn.getFirst().equals(synonymId))
+            {
+                synonymIdsAndNames.remove(syn);
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
 }

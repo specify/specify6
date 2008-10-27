@@ -1069,6 +1069,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             return;
         }
         TreeNode node = (TreeNode)selection;
+        TreeNode acceptedNode = ((TreeViewerListModel )list.getModel()).getNodeById(node.getAcceptedParentId());
+        
         T nodeRecord = getRecordForNode(node);
         
         log.debug("Node selected for Un-synonymize: " + node);
@@ -1076,10 +1078,16 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         String statusMsg = dataService.unSynonymize(nodeRecord);
         node.setAcceptedParentId(null);
         node.setAcceptedParentFullName(null);
+        if (acceptedNode != null)
+        {
+            acceptedNode.removeSynonym(node.getId());
+        }
         UIRegistry.displayStatusBarText(statusMsg);
         updateAllUI();
         
 	}
+	
+	
 	/**
 	 * Deletes the currently selected node and all descendants if and
 	 * only if it is determined possible without violating any business
