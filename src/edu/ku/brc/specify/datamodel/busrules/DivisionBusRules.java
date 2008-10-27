@@ -9,33 +9,16 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
-
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.CollectingTrip;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.ConservDescription;
 import edu.ku.brc.specify.datamodel.Division;
-import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.Institution;
-import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.Permit;
-import edu.ku.brc.specify.datamodel.RepositoryAgreement;
-import edu.ku.brc.specify.datamodel.SpAppResourceDir;
-import edu.ku.brc.specify.datamodel.TreatmentEvent;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -80,52 +63,10 @@ public class DivisionBusRules extends BaseBusRules
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
-     */
-    //@Override
-    public void okToDeleteXX(final Object dataObj,
-                           final DataProviderSessionIFace session,
-                           final BusinessRulesOkDeleteIFace deletable)
-    {
-        reasonList.clear();
-        
-        if (deletable != null)
-        {
-            Division division = (Division)dataObj;
-            
-            Integer id = division.getId();
-            if (id != null)
-            {
-                Division currDivision = AppContextMgr.getInstance().getClassObject(Division.class);
-                if (currDivision.getId().equals(division.getId()))
-                {
-                    UIRegistry.showError("You cannot delete the current Division.");
-                    
-                } else
-                {
-                    String sql = "SELECT count(*) FROM agent a WHERE a.DivisionID = " + division.getId();
-                    int count = BasicSQLUtils.getCount(sql);
-                    if (count > 0)
-                    {
-                        UIRegistry.showError(String.format("There are too many agents associated with this the `%s` Division.", division.getTitle()));
-                    }
-                }
-            } else
-            {
-                super.okToDelete(dataObj, session, deletable);
-            }
-            
-        } else
-        {
-            super.okToDelete(dataObj, session, deletable);
-        }
-    }
-    
-    /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
      */
     @Override
-    public STATUS processBusinessRules(Object dataObj)
+    public STATUS processBusinessRules(final Object dataObj)
     {
         reasonList.clear();
         
@@ -222,7 +163,7 @@ public class DivisionBusRules extends BaseBusRules
     {
         super.beforeDelete(dataObj, session);
         
-        Division division = (Division)dataObj;
+        /*Division division = (Division)dataObj;
         
         Statement stmt = null;
         try
@@ -436,7 +377,7 @@ public class DivisionBusRules extends BaseBusRules
                 //log.error(ex);
                 throw new RuntimeException(ex);
             }
-        }
+        }*/
 
     }
 

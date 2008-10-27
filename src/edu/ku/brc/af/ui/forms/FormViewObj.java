@@ -2037,7 +2037,7 @@ public class FormViewObj implements Viewable,
     private BusinessRulesIFace recurseProcessBR(final MultiView mv)
     {
         FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
-        if (fvo != null)
+        if (fvo != null && fvo.getAltView().getMode() == AltViewIFace.CreationMode.EDIT)
         {
             Object             fvoDataObj = fvo.getCurrentDataObj();
             BusinessRulesIFace busRules   = fvo.getBusinessRules();
@@ -4630,6 +4630,14 @@ public class FormViewObj implements Viewable,
         return true;
     }
     
+    /**
+     * @return whether it is in Edit Mode
+     */
+    public boolean isEditing()
+    {
+        return isEditing;
+    }
+
     /**
      * @param comp
      * @param isSingleValueFromSet
