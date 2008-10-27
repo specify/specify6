@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2007  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.af.tasks.subpane.formeditor;
 
@@ -88,14 +85,14 @@ public class DefItemEditorPanel extends JPanel
     }
 
     /**
-     * @param numInUse
+     * @param numInUseArg
      * @param isRow
      */
-    protected void createUI(final int     numInUse,
+    protected void createUI(final int     numInUseArg,
                             final boolean isRow)
     {
-        propsPanel     = new RowColDefPanel(item, numInUse, isRow);
-        autoPropsPanel = createAutoPropertyPanel(numInUse, isRow);
+        propsPanel     = new RowColDefPanel(item, numInUseArg, isRow);
+        autoPropsPanel = createAutoPropertyPanel(numInUseArg, isRow);
         
         cardPanel = new JPanel(cardLayout);
         cardPanel.add("Auto",  autoPropsPanel);
@@ -133,16 +130,16 @@ public class DefItemEditorPanel extends JPanel
     }
     
     /**
-     * @param numInUse
+     * @param numInUseArg
      * @param isRow
      * @return
      */
-    protected JPanel createAutoPropertyPanel(final int     numInUse,
+    protected JPanel createAutoPropertyPanel(final int     numInUseArg,
                                              final boolean isRow)
     {
         
-        cellItemPanel = new DefItemPropPanel(numInUse, isRow);
-        sepItemPanel = new DefItemPropPanel(numInUse, isRow);
+        cellItemPanel = new DefItemPropPanel(numInUseArg, isRow);
+        sepItemPanel = new DefItemPropPanel(numInUseArg, isRow);
         
         CellConstraints cc = new CellConstraints();
         PanelBuilder    pb = new PanelBuilder(new FormLayout("p,16px,p", "p,2px,p")); //$NON-NLS-1$ //$NON-NLS-2$

@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.beans.PropertyChangeEvent;
@@ -57,14 +58,18 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
     
     protected InteractionsTask task;
     protected boolean          isLoan;
+    protected int              tableId;
     
     /**
      * 
      */
-    public InteractionsProcessor(final InteractionsTask task, final boolean isLoan)
+    public InteractionsProcessor(final InteractionsTask task, 
+                                 final boolean isLoan,
+                                 final int     tableId)
     {
-        this.task   = task;
-        this.isLoan = isLoan;
+        this.task    = task;
+        this.isLoan  = isLoan;
+        this.tableId = tableId;
     }
     
     
@@ -268,7 +273,9 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
     {
         try
         {
-            final SelectPrepsDlg loanSelectPrepsDlg = new SelectPrepsDlg(availColObjList, prepProvider);
+            final DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
+
+            final SelectPrepsDlg loanSelectPrepsDlg = new SelectPrepsDlg(availColObjList, prepProvider, ti.getTitle());
             loanSelectPrepsDlg.createUI();
             
             if (!loanSelectPrepsDlg.hasAvaliblePrepsToLoan())
@@ -296,7 +303,8 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                         JStatusBar statusBar = UIRegistry.getStatusBar();
                         statusBar.setIndeterminate("INTERACTIONS", true);
                         
-                        statusBar.setText(getResourceString("CreatingLoan"));
+                        
+                        statusBar.setText(getLocalizedMessage("CREATING_INTERACTION", ti.getTitle()));
                         
                         if (isLoan)
                         {

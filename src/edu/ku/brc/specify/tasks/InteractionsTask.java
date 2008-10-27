@@ -173,8 +173,8 @@ public class InteractionsTask extends BaseTask
     
     protected Vector<InteractionEntry>  entries = new Vector<InteractionEntry>();
     
-    InteractionsProcessor<Gift> giftProcessor = new InteractionsProcessor<Gift>(this, false);
-    InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this, true);
+    InteractionsProcessor<Gift> giftProcessor = new InteractionsProcessor<Gift>(this, false, Gift.getClassTableId());
+    InteractionsProcessor<Loan> loanProcessor = new InteractionsProcessor<Loan>(this, true, Loan.getClassTableId());
     
     static 
     {
@@ -459,7 +459,7 @@ public class InteractionsTask extends BaseTask
             extendedNavBoxes.clear();
             invoiceList.clear();
 
-            actionsNavBox = new NavBox(getResourceString("Actions"));
+            actionsNavBox = new NavBox(getResourceString("CreateAndUpdate"));
             
             for (InteractionEntry entry : entries)
             {
@@ -1777,7 +1777,7 @@ public class InteractionsTask extends BaseTask
                     {
                         showInfoReqForm(null, rs);
                         
-                    } else if (rs.getTableId() == CollectionObject.getClassTableId())
+                    } else if (rs.getDbTableId() == CollectionObject.getClassTableId())
                     {
                         createInfoRequest((RecordSetIFace)data);
                     }

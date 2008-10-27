@@ -18,8 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.util.Orderable;
@@ -33,7 +31,7 @@ import edu.ku.brc.util.Orderable;
 public class OrderedIconTray extends IconTray implements ActionListener, ListSelectionListener
 {
     /** A logger for emitting errors, warnings, etc. */
-    private static final Logger oitLogger = Logger.getLogger(OrderedIconTray.class);
+    //private static final Logger oitLogger = Logger.getLogger(OrderedIconTray.class);
     
     /** A panel to hold the order manipulation controls. */
     protected JPanel southPanel;

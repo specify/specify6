@@ -9,9 +9,9 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.JComponent;
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,7 +24,6 @@ import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
-import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.init.NumberingSchemeSetupDlg;
@@ -107,8 +106,15 @@ public class CollectionBusRules extends BaseBusRules
         JTextField txt        = (JTextField)formViewObj.getControlById("4");
         if (txt != null && collection != null)
         {
-            AutoNumberingScheme ans = collection.getNumberingSchemes().iterator().next();
-            txt.setText(ans.getIdentityTitle());
+            Set<AutoNumberingScheme> set = collection.getNumberingSchemes();
+            if (set != null)
+            {
+                if (set.size() > 0)
+                {
+                    AutoNumberingScheme ans = set.iterator().next();
+                    txt.setText(ans.getIdentityTitle());
+                }
+            }
         }
     }
 

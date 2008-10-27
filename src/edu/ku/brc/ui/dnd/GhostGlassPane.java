@@ -41,7 +41,7 @@ import edu.ku.brc.ui.RolloverCommand;
 public class GhostGlassPane extends JPanel
 {
     public enum ImagePaintMode {CENTERED, DRAG, ABSOLUTE}
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     
     private static GhostGlassPane instance = new GhostGlassPane();
 
@@ -54,6 +54,7 @@ public class GhostGlassPane extends JPanel
     protected BufferedImage dragged     = null;
     protected Point         location    = new Point(0, 0);
     protected Point         oldLocation = new Point(0, 0);
+    protected MouseAdapter  mouseAdapter;
 
     protected int           width;
     protected int           height;
@@ -70,7 +71,7 @@ public class GhostGlassPane extends JPanel
     
     protected Vector<GhostActionable> actionables = new Vector<GhostActionable>();
     protected Vector<GhostActionable> enumList    = new Vector<GhostActionable>();
-
+    
     /**
      * Default Constructor
      */
@@ -78,80 +79,48 @@ public class GhostGlassPane extends JPanel
     {
         setOpaque(false);
         
-        addMouseListener(new MouseAdapter() {
-
-            /* (non-Javadoc)
-             * @see java.awt.event.MouseAdapter#mouseClicked(java.awt.event.MouseEvent)
-             */
+        mouseAdapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e)
             {
                 e.consume();
             }
-
-            /* (non-Javadoc)
-             * @see java.awt.event.MouseAdapter#mouseDragged(java.awt.event.MouseEvent)
-             */
             @Override
             public void mouseDragged(MouseEvent e)
             {
                 e.consume();
             }
-
-            /* (non-Javadoc)
-             * @see java.awt.event.MouseAdapter#mouseEntered(java.awt.event.MouseEvent)
-             */
             @Override
             public void mouseEntered(MouseEvent e)
             {
                 e.consume();
             }
-
-            /* (non-Javadoc)
-             * @see java.awt.event.MouseAdapter#mouseExited(java.awt.event.MouseEvent)
-             */
             @Override
             public void mouseExited(MouseEvent e)
             {
                 e.consume();
             }
-
-            /* (non-Javadoc)
-             * @see java.awt.event.MouseAdapter#mouseMoved(java.awt.event.MouseEvent)
-             */
             @Override
             public void mouseMoved(MouseEvent e)
             {
                 e.consume();
             }
-
-            /* (non-Javadoc)
-             * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
-             */
             @Override
             public void mousePressed(MouseEvent e)
             {
                 e.consume();
             }
-
-            /* (non-Javadoc)
-             * @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
-             */
             @Override
             public void mouseReleased(MouseEvent e)
             {
                 e.consume();
             }
-
-            /* (non-Javadoc)
-             * @see java.awt.event.MouseAdapter#mouseWheelMoved(java.awt.event.MouseWheelEvent)
-             */
             @Override
             public void mouseWheelMoved(MouseWheelEvent e)
             {
                 e.consume();
             }
-        });
+        };
 
     }
     
@@ -532,6 +501,20 @@ public class GhostGlassPane extends JPanel
         actionables.clear();
     }
 
+    /**
+     * @param isMaskingEvents the isMaskingEvents to set
+     */
+    public void setMaskingEvents(boolean isMaskingEvents)
+    {
+        if (isMaskingEvents)
+        {
+            addMouseListener(mouseAdapter);
+        } else
+        {
+            removeMouseListener(mouseAdapter);
+        }
+    }
+
     //------------------------------------------------------------
     // Inner Class
     //------------------------------------------------------------
@@ -572,5 +555,4 @@ public class GhostGlassPane extends JPanel
             repaint(getRepaintRect());
         }
     }
-
 }

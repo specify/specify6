@@ -63,7 +63,7 @@ import edu.ku.brc.ui.CustomDialog;
  */
 public class UIFormatterListEdtDlg extends CustomDialog
 {
-	protected DBFieldInfo               fieldInfo = null;
+    protected DBFieldInfo               fieldInfo = null;
     
     // used to hold changes to formatters before committing them to DB
     protected DataObjFieldFormatMgr 	dataObjFieldFormatMgrCache;
@@ -198,8 +198,8 @@ public class UIFormatterListEdtDlg extends CustomDialog
             }
         };
         
-        dedaPanel = new DefEditDeleteAddPanel(addListener, deleteListener, editListener, defListener,
-                                              "FFE_ADD", "FFE_DEL", "FFE_EDT", "FFE_DEF");
+        dedaPanel = new DefEditDeleteAddPanel(defListener,  editListener, deleteListener, addListener, 
+                                              "FFE_DEF", "FFE_EDT", "FFE_DEL", "FFE_ADD");
         dedaPanel.getAddBtn().setEnabled(true);
         
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:max(250px;p):g", "p,4px,p,2px,f:p:g,4px,p"));
@@ -304,20 +304,27 @@ public class UIFormatterListEdtDlg extends CustomDialog
         try
         {
             UIFieldFormatterIFace tempCopy = isNew ? uif : (UIFieldFormatterIFace)uif.clone();
+            boolean isDefault = tempCopy.isDefault();
             
-            UIFormatterEditorDlg dlg = new UIFormatterEditorDlg(this, fieldInfo, tempCopy, uiFieldFormatterMgrCache);
+            UIFormatterEditorDlg dlg = new UIFormatterEditorDlg(this, fieldInfo, tempCopy, isNew, uiFieldFormatterMgrCache);
             dlg.setVisible(true);
             if (!dlg.isCancelled())
             {
+                UIFieldFormatterIFace selectedUIF = dlg.getSelectedFormat();
+                selectedUIF.setDefault(isDefault);
+                
+                DefaultListModel model = (DefaultListModel) formatList.getModel();
                 if (isNew)
                 {
-                    DefaultListModel model = (DefaultListModel) formatList.getModel();
-                    model.addElement(uif);
-                    uiFieldFormatterMgrCache.addFormatter(uif);
+                    model.addElement(selectedUIF);
+                    uiFieldFormatterMgrCache.addFormatter(selectedUIF);
                     
                 } else
                 {
-                    uiFieldFormatterMgrCache.addFormatter(uif);
+                    model.removeElement(uif);
+                    model.addElement(selectedUIF);
+                    uiFieldFormatterMgrCache.removeFormatter(uif);
+                    uiFieldFormatterMgrCache.addFormatter(selectedUIF);
                 }
                 setHasChanged(true);
             }
@@ -371,6 +378,14 @@ public class UIFormatterListEdtDlg extends CustomDialog
         }
         this.hasChanged = hasChanged;
         updateUIEnabled();
+    }
+    
+    /**
+     * @return
+     */
+    public UIFieldFormatterIFace getSelectedFormat()
+    {
+        return (UIFieldFormatterIFace)formatList.getSelectedValue();
     }
     
 }

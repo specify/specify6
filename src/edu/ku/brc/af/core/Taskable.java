@@ -19,6 +19,8 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 
+import edu.ku.brc.af.auth.SecurityOptionIFace;
+
 /**
  * Interface for any task in the system, most of the methods are "getters" that
  * enable the Task to play nice within the system.
@@ -31,7 +33,7 @@ import javax.swing.JPopupMenu;
  * @author rods
  *
  */
-public interface Taskable
+public interface Taskable extends SecurityOptionIFace
 {
     public final static int StdIcon32 = 32;
     public final static int StdIcon24 = 24;
@@ -41,69 +43,64 @@ public interface Taskable
     /**
      * @return whether this Taskable should only ever have a single pane.
      */
-    public boolean isSingletonPane();
+    public abstract boolean isSingletonPane();
     
     
     /**
      * Returns all a collection of Nav Boxes for the NavBox Pane.
      * @return a collection of Nav Boxes
      */
-    public List<NavBoxIFace> getNavBoxes();
+    public abstract List<NavBoxIFace> getNavBoxes();
 
     /**
      * Return the icon that represents the task.
      * @param size use standard size (i.e. 32, 24, 20, 26)
      * @return the icon that represents the task
      */
-    public ImageIcon getIcon(int size);
+    public abstract ImageIcon getIcon(int size);
 
     /**
      * Returns the name of the task (NOT Localized).
      * @return the name of the task (NOT Localized)
      */
-    public String getName();
+    public abstract String getName();
 
     /**
      * Returns the title of the task (Localized).
      * @return the title of the task (Localized)
      */
-    public String getTitle();
-
-    /**
-     * @return a short description of what the task is (or does).
-     */
-    public String getShortDesc();
+    public abstract String getTitle();
 
     /**
      * Initializes the task. The Taskable is responsible for making sure this method
      * can be called mulitple times with no ill effects.
      *
      */
-    //public void initialize();
+    //public abstract void initialize();
 
     /**
      * Requests the context for this task.
      *
      */
-    public void requestContext();
+    public abstract void requestContext();
     
     /**
      * Returns the toolbar items (usually only one item).
      * @return the toolbar items (usually only one item)
      */
-    public List<ToolBarItemDesc> getToolBarItems();
+    public abstract List<ToolBarItemDesc> getToolBarItems();
 
     /**
      * Returns the menu item to be registered.
      * @return the menu item to be registered
      */
-    public List<MenuItemDesc> getMenuItems();
+    public abstract List<MenuItemDesc> getMenuItems();
     
     /**
      * Pre-Initializes the task. This is called after all the tasks are created and registered, 
      * but before Initialize is called.
      */
-    public void preInitialize();
+    public abstract void preInitialize();
 
     /**
      * Initializes the task. The Taskable is responsible for making sure this method
@@ -111,7 +108,7 @@ public interface Taskable
      *
      * @param cmds the list of commands for the task
      */
-    public void initialize(List<TaskCommandDef> cmds, boolean isVisible);
+    public abstract void initialize(List<TaskCommandDef> cmds, boolean isVisible);
 
     /**
      * Returns the implementing Class type.
@@ -157,24 +154,15 @@ public interface Taskable
     public abstract boolean isVisible();
     
     /**
+     * Sets the icon name for the task
+     * @param iconName the the name
+     */
+    public abstract void setIconName(String iconName); 
+
+    /**
      * Sets whether the Task is available.
      * @param enabled true/false
      */
     public abstract void setEnabled(boolean enabled);
     
-    /**
-     * @return returns a permissions object
-     */
-    public abstract PermissionIFace getPermissions();
-    
-    /**
-     * Sets a permission object
-     * @param permissions the obj
-     */
-    public abstract void setPermissions(PermissionIFace permissions); 
-    /**
-     * Sets the icon name for the task
-     * @param iconName the the name
-     */
-    public abstract void setIconName(String iconName); 
 }

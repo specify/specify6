@@ -83,7 +83,7 @@ public class UIFormatterEditorDlg extends CustomDialog
     protected DocumentListener          formatChangedDL             = null;
     protected boolean                   hasChanged                  = false;
     protected boolean                   isInError                   = false;
-    
+    protected boolean                   isNew;
     protected String                    fmtErrMsg                   = null;
     
     /**
@@ -94,8 +94,9 @@ public class UIFormatterEditorDlg extends CustomDialog
      * @throws HeadlessException
      */
     public UIFormatterEditorDlg(final CustomDialog          parentDlg, 
-                                final DBFieldInfo           fieldInfo, 
+                                final DBFieldInfo           fieldInfo,
                                 final UIFieldFormatterIFace selectedFormat,
+                                final boolean               isNew,
                                 final UIFieldFormatterMgr	uiFieldFormatterMgrCache) throws HeadlessException
     {
         super(parentDlg, getResourceString("FFE_DLG_TITLE"), true, OKCANCELHELP, null);
@@ -103,6 +104,7 @@ public class UIFormatterEditorDlg extends CustomDialog
         this.fieldInfo                   = fieldInfo;
         this.selectedFormat              = selectedFormat;
         this.uiFieldFormatterMgrCache    = uiFieldFormatterMgrCache;
+        this.isNew                       = isNew;
         this.fieldFormatterSampler       = new UIFieldFormatterSampler(fieldInfo);
         this.formatFactory               = UIFieldFormatterMgr.getFormatFactory(fieldInfo);
         this.helpContext                 = "UIF_EDITOR";
@@ -218,6 +220,7 @@ public class UIFormatterEditorDlg extends CustomDialog
         
         setByYearSelected(selectedFormat);
         
+        nameTF.setEditable(isNew);
         nameTF.setText(selectedFormat.getTitle());
         titleTF.setText(selectedFormat.getName());
         formatTF.setText(selectedFormat.toPattern());
@@ -236,6 +239,29 @@ public class UIFormatterEditorDlg extends CustomDialog
         
         pack();
     }
+    
+    /**
+     * 
+     */
+    protected void getDataFromUI()
+    {
+        selectedFormat.setTitle(titleTF.getText());
+        selectedFormat.setName(nameTF.getText());
+        selectedFormat.setByYear(byYearCB.isSelected());
+        selectedFormat.setDefault(false);
+        selectedFormat.setDataClass(fieldInfo.getTableInfo().getClassObj());
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
+     */
+    @Override
+    protected void okButtonPressed()
+    {
+        super.okButtonPressed();
+        getDataFromUI();
+    }
+
 
     /**
      * 

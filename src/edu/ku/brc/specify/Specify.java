@@ -128,7 +128,6 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DebugLoggerDialog;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.LoggerDialog;
-import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.config.init.RegisterSpecify;
@@ -153,7 +152,6 @@ import edu.ku.brc.specify.datamodel.PermitAttachment;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
-import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -161,7 +159,6 @@ import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.prefs.SystemPrefs;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tools.FormDisplayer;
-import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CommandAction;
@@ -914,56 +911,18 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         UIRegistry.registerAction("AutoNumbering", autoNumberOnOffAction); //$NON-NLS-1$
         mb.add(dataMenu);
         
-        //----------------------------------
-        if (!isWorkbenchOnly)
-        {
-            menu = UIHelper.createLocalizedMenu(mb, "Specify.SYSTEM_MENU", "Specify.SYSTEM_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
-            
-            //--------------------------------------------------------------------
-            //-- System Menu
-            //--------------------------------------------------------------------
-
-            JMenu setupMenu = UIHelper.createLocalizedMenu(mb, "Specify.COLSETUP_MENU", "Specify.COLSETUP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
-            menu.add(setupMenu);
-            
-            title = "Specify.SCHEMA_CONFIG"; //$NON-NLS-1$
-            String mnu = "Specify.SCHEMA_CONFIG_MNU";  //$NON-NLS-1$
-            mi = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, true, null);
-            mi.addActionListener(new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            doSchemaConfig(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
-                        }
-                    });
-
-            title = "Specify.RIE_MENU"; //$NON-NLS-1$
-            mnu = "Specify.RIE_MNU";  //$NON-NLS-1$
-            mi = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, true, null); 
-            mi.addActionListener(new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            doResourceImportExport();
-                        }
-                    });
-            title = "Specify.WBSCHEMA_CONFIG"; //$NON-NLS-1$
-            mnu = "Specify.WBSCHEMA_CONFIG_MNU";  //$NON-NLS-1$
-            mi = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, true, null); 
-            mi.addActionListener(new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            DBTableIdMgr schema = new DBTableIdMgr(false);
-                            schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml"))); //$NON-NLS-1$
-                            doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
-                        }
-                    });
-        }
-                     
-                     /*if (true)
-        }
+        //--------------------------------------------------------------------
+        //-- System Menu
+        //--------------------------------------------------------------------
         
+        // TODO This needs to be moved into the SystemTask, but right now there is no way
+        // to ask a task for a menu.
+        menu = UIHelper.createLocalizedMenu(mb, "Specify.SYSTEM_MENU", "Specify.SYSTEM_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+        
+        JMenu setupMenu = UIHelper.createLocalizedMenu(mb, "Specify.COLSETUP_MENU", "Specify.COLSETUP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+        menu.insert(setupMenu, 0); // insert at the top
+        
+
         /*if (true)
         {
             menu = UIHelper.createMenu(mb, "Forms", "o");
@@ -1631,39 +1590,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     }
     
     /**
-     * 
-     */
-    protected void doSchemaConfig(final Byte schemaType, final DBTableIdMgr tableMgr)
-    {
-        UIRegistry.getStatusBar().setIndeterminate(appName, true);
-        UIRegistry.getStatusBar().setText(getResourceString("Specify.LOADING_LOCALES")); //$NON-NLS-1$
-        UIRegistry.getStatusBar().repaint();
-        
-        SwingWorker workerThread = new SwingWorker()
-        {
-            @Override
-            public Object construct()
-            {
-                Locale.getAvailableLocales(); // load all the locales
-                return null;
-            }
-            
-            @Override
-            public void finished()
-            {
-                UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
-                UIRegistry.getStatusBar().setProgressDone(appName);
-                
-                SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)UIRegistry.getTopWindow(), schemaType, tableMgr);
-                dlg.setVisible(true);
-            }
-        };
-        
-        // start the background task
-        workerThread.start();
-    }
-    
-    /**
      * CReates a scrollpane with the text fro the log file.
      * @param path the path to the files
      * @param doError indicates it should display the erro log
@@ -1727,19 +1653,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             dialog.setSize(800, 600);
             UIHelper.centerWindow(dialog);
             dialog.setVisible(true);
-        }
-    }
-    
-    /**
-     * Launches dialog for Importing and Exporting Forms and Resources.
-     */
-    protected void doResourceImportExport()
-    {
-        ResourceImportExportDlg dlg = new ResourceImportExportDlg();
-        dlg.setVisible(true);
-        if (dlg.hasChanged())
-        {
-            CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_RESTART));
         }
     }
 

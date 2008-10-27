@@ -95,7 +95,7 @@ public class SelectPrepsDlg extends CustomDialog
 {
     protected ColorWrapper              requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     protected List<CollectionObject>    colObjs;
-    protected PreparationsProviderIFace loan;
+    protected PreparationsProviderIFace prepProvider;
     protected List<ColObjPanel>         colObjPanels = new Vector<ColObjPanel>();
     protected JLabel                    summaryLabel;
     protected int                       totalCntLoanablePreps = 0;
@@ -103,15 +103,16 @@ public class SelectPrepsDlg extends CustomDialog
     
     /**
      * @param colObjs
-     * @param loan
+     * @param prepProvider
      */
-    public SelectPrepsDlg(final List<CollectionObject> colObjs, 
-                          final PreparationsProviderIFace loan)
+    public SelectPrepsDlg(final List<CollectionObject>    colObjs, 
+                          final PreparationsProviderIFace prepProvider,
+                          final String                    title)
     {
-        super((Frame)UIRegistry.getTopWindow(), getResourceString("LoanSelectPrepsDlg.CREATE_LN_FR_PREP"),//$NON-NLS-1$
+        super((Frame)UIRegistry.getTopWindow(), getLocalizedMessage("LoanSelectPrepsDlg.CREATE_FR_PREP", title),//$NON-NLS-1$
                 true, OKCANCELAPPLYHELP, null);
-        this.colObjs = colObjs;
-        this.loan    = loan;
+        this.colObjs      = colObjs;
+        this.prepProvider = prepProvider;
     }
         
     /* (non-Javadoc)
@@ -124,10 +125,10 @@ public class SelectPrepsDlg extends CustomDialog
         
         super.createUI();
         
-        if (loan != null)
+        if (prepProvider != null)
         {
             prepToLoanPrepHash = new Hashtable<Integer, PreparationHolderIFace>();
-            for (PreparationHolderIFace lp : loan.getPreparations())
+            for (PreparationHolderIFace lp : prepProvider.getPreparations())
             {
                 prepToLoanPrepHash.put(lp.getPreparation().getId(), lp);
             }

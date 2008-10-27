@@ -193,7 +193,7 @@ public class AvailableFieldsComponent
             fieldsByName.put(fieldWrapper.toString(), fieldWrapper);
             
             // add UI field formatters for this field here
-            List<UIFieldFormatterIFace> formatters = uiFieldFormatterMgrCache.getFormatterList(field.getDataClass(), field.getName());
+            List<UIFieldFormatterIFace> formatters = uiFieldFormatterMgrCache.getFormatterList(field.getTableInfo().getClassObj(), field.getName());
             for (UIFieldFormatterIFace formatter : formatters)
             {
                 dataField = new DataObjDataField(field.getName(), field.getDataClass(), null, "", null, formatter.getName());

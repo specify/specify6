@@ -28,6 +28,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -727,44 +728,45 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             
             if (srcRecordSet != null && dstRecordSet != null)
             {
-                // It' just easier to build this up front
+               // It' just easier to build this up front
                 DBTableInfo srcTI = DBTableIdMgr.getInstance().getInfoById(srcRecordSet.getDbTableId());
                 DBTableInfo dstTI = DBTableIdMgr.getInstance().getInfoById(dstRecordSet.getDbTableId());
                 String mergeErrStr = String.format(getResourceString(MERGE_ERR), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()});
 
-                if (srcRecordSet.getDbTableId().intValue() == dstRecordSet.getDbTableId().intValue())
+                if (srcRecordSet.getDbTableId().equals(dstRecordSet.getDbTableId()))
                 {
-                    int oldSize = dstRecordSet.getNumItems();
-                    //Vector<RecordSetItemIFace> dstList  = new Vector<RecordSetItemIFace>(dstRecordSet.getItems());
+                    List<Integer> dstIdList = RecordSet.getIdList(dstRecordSet.getRecordSetId(), null);
+                    List<Integer> srcIdList = RecordSet.getIdList(srcRecordSet.getRecordSetId(), null);
+                    
                     boolean debug = false;
                     if (debug)
                     {
                         log.debug("Source:");
-                        for (RecordSetItemIFace rsi : srcRecordSet.getItems())
+                        for (Integer id : srcIdList)
                         {
-                            log.debug(" "+rsi.getRecordId());
+                            log.debug(" "+id);
                         }                
                         log.debug("\nDest:");
-                        for (RecordSetItemIFace rsi : dstRecordSet.getItems())
+                        for (Integer id : dstIdList)
                         {
-                            log.debug(" "+rsi.getRecordId());
+                            log.debug(" "+id);
                         }    
                         log.debug("");
                     }
                     
                     Hashtable<Integer, Boolean> dupHash = new Hashtable<Integer, Boolean>();
-                    for (RecordSetItemIFace rsi : dstRecordSet.getItems())
+                    for (Integer id : dstIdList)
                     {
-                        dupHash.put(rsi.getRecordId().intValue(), true);
+                        dupHash.put(id, true);
                     }    
 
-                    for (RecordSetItemIFace rsi : srcRecordSet.getItems())
+                    List<Integer> newIdsList = new ArrayList<Integer>(srcIdList.size() + dstIdList.size());
+                    for (Integer id : srcIdList)
                     {
-                        if (dupHash.get(rsi.getRecordId().intValue()) == null)
+                        if (dupHash.get(id) == null)
                         {
-                            RecordSetItem newrsi = new RecordSetItem(rsi.getRecordId());
-                            dstRecordSet.addItem(newrsi);
-                            newrsi.setRecordSet(dstRecordSet);
+                            //dstRecordSet.addItem(id); // for saving with Hibernate
+                            newIdsList.add(id);
                         }
                     }
                     
@@ -779,9 +781,58 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                         log.debug("");
                     }
                     
-                    if (dstRecordSet.getNumItems() > oldSize)
+                    if (newIdsList.size() > 0)
                     {
-                        boolean success = persistRecordSet(dstRecordSet);
+                        //long start = System.currentTimeMillis();
+                        boolean success = false;
+                        
+                        if (true) // Use SQL to save the merge RecordSets
+                        {
+                            boolean    doRollback = false;
+                            Connection connection = DBConnection.getInstance().getConnection();
+                            Statement  stmt       = null;
+                            try
+                            {
+                                connection.setAutoCommit(false);
+                                stmt = connection.createStatement();
+                                for (Integer id : newIdsList)
+                                {
+                                    stmt.executeUpdate("INSERT INTO recordsetitem (RecordSetID, RecordID) VALUES ("+dstRecordSet.getRecordSetId()+","+id+")");
+                                }
+                                connection.commit();
+                                success = true;
+                                
+                            } catch (SQLException ex)
+                            {
+                                ex.printStackTrace();
+                                doRollback = true;
+                                
+                            } finally
+                            {
+                                try
+                                {
+                                    if (doRollback)
+                                    {
+                                        connection.rollback();
+                                    }
+                                    if (stmt != null)
+                                    {
+                                        stmt.close();
+                                    }
+                                    
+                                    connection.setAutoCommit(true);
+                                    
+                                } catch (SQLException ex2)
+                                {
+                                    ex2.printStackTrace();
+                                }
+                            }
+                        } else
+                        {
+                            success = persistRecordSet(dstRecordSet);
+                        }
+                        //System.err.println("Time: "+(System.currentTimeMillis() - start));
+                        
                         if (success)
                         {
                             String msg = String.format(getResourceString("RecordSetTask.MERGE_SUCCESS"), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()});

@@ -349,7 +349,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             formatMoreBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    UIFormatterListEdtDlg dlg = new UIFormatterListEdtDlg((Frame)UIRegistry.getTopWindow(), 
+                    UIFormatterListEdtDlg dlg = new UIFormatterListEdtDlg((Frame)UIRegistry.getTopWindow(),
                                                             fieldInfo,
                                                             schemaPanel.getUiFieldFormatterMgrCache());
                     dlg.setVisible(true);

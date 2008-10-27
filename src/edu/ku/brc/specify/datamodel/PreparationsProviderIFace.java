@@ -27,4 +27,7 @@ public interface PreparationsProviderIFace
      */
     public abstract Set<PreparationHolderIFace> getPreparations();
     
+    
+    public abstract int getTableId();
+
 }

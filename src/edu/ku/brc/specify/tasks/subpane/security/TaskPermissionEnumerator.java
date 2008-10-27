@@ -11,8 +11,10 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 
+import javax.swing.ImageIcon;
+
 import edu.ku.brc.af.auth.PermissionEditorIFace;
-import edu.ku.brc.af.auth.SecurityPanelProviderIFace;
+import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
@@ -29,7 +31,8 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
  */
 public class TaskPermissionEnumerator extends PermissionEnumerator 
 {
-	public final String permissionBaseName = "Task";
+	public    final String permissionBaseName = "Task";
+	protected final String type               = "Task";
 
 	/**
 	 * 
@@ -40,7 +43,7 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
 	}
 	
     /**
-     * @param tblInfo
+     * @param task
      * @return
      */
     protected boolean isTaskOK(final Taskable task)
@@ -52,17 +55,50 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
         }
         return false;
     }
+    
+    protected void checkAndAddPermission(List<PermissionEditorRowIFace> perms,
+                                         final SecurityOptionIFace      securityOption,
+                                         final ImageIcon                icon,
+                                         final SpPrincipal              principal, 
+                                         final Hashtable<String, SpPermission> existingPerms,
+                                         final Hashtable<String, SpPermission> overrulingPerms)
+    {
+     // first check if there is a permission with this name
+        String       taskName = permissionBaseName + "." + securityOption.getPermissionName();
+        SpPermission perm     = existingPerms.get(taskName);
+        SpPermission oPerm    = (overrulingPerms != null)? overrulingPerms.get(taskName) : null;
 
-	//@Override
+        if (perm == null)
+        {
+            perm = new SpPermission();
+            perm.setName(taskName);
+            perm.setActions("");
+            perm.setPermissionClass(BasicSpPermission.class.getCanonicalName());
+        }
+        
+        String desc = "Permissions to view, add, modify and delete data in task " + securityOption.getShortDesc();
+
+        PermissionEditorIFace editPanel = null;
+        editPanel = securityOption.getPermEditorPanel();
+        
+        // add newly created permission to the bag that will be returned
+        perms.add(new GeneralPermissionEditorRow(perm, oPerm, type, securityOption.getPermissionTitle(), desc, 
+                                                 icon, editPanel));
+    }
+
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEnumerator#getPermissions(edu.ku.brc.specify.datamodel.SpPrincipal, java.util.Hashtable, java.util.Hashtable)
+	 */
+    @Override
 	public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
-			 final Hashtable<String, SpPermission> existingPerms,
-			 final Hashtable<String, SpPermission> overrulingPerms) 
+			                                             final Hashtable<String, SpPermission> existingPerms,
+			                                             final Hashtable<String, SpPermission> overrulingPerms) 
 	{
 		// iterate through all possible tasks
-		Collection<Taskable> tasks = TaskMgr.getInstance().getAllTasks();
+		Collection<Taskable>           tasks = TaskMgr.getInstance().getAllTasks();
 		List<PermissionEditorRowIFace> perms = new ArrayList<PermissionEditorRowIFace>(tasks.size());
 		
-		String type = "Task";
+		
 		// create a special permission that allows user to see all forms
 		perms.add(getStarPermission(permissionBaseName, 
 		                            type,
@@ -72,34 +108,27 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
 				                    overrulingPerms));
 
 		// sort permissions by their string representations 
-		//Arrays.sort(perms, new ComparatorByStringRepresentation<SpPermission>());
 		for (Taskable task : tasks)
 		{
 		    if (isTaskOK(task))
 		    {
-        		// first check if there is a permission with this name
-        		String       taskName = permissionBaseName + "." + task.getName();
-        		SpPermission perm     = existingPerms.get(taskName);
-        		SpPermission oPerm    = (overrulingPerms != null)? overrulingPerms.get(taskName) : null;
-        
-        		if (perm == null)
-        		{
-        			perm = new SpPermission();
-        			perm.setName(taskName);
-        			perm.setActions("");
-        			perm.setPermissionClass(BasicSpPermission.class.getCanonicalName());
-        		}
-        		
-        		String desc = "Permissions to view, add, modify and delete data in task " + task.getTitle();
-        
-        		PermissionEditorIFace editPanel = null;
-        		if (task instanceof SecurityPanelProviderIFace)
-        		{
-        		    editPanel = ((SecurityPanelProviderIFace)task).getPermEditorPanel();
-        		}
-        		// add newly created permission to the bag that will be returned
-        		perms.add(new GeneralPermissionEditorRow(perm, oPerm, type, task.getShortDesc(), desc, 
-        		                                         task.getIcon(Taskable.StdIcon20), editPanel));
+		        ImageIcon taskIcon = task.getIcon(Taskable.StdIcon20);
+		        
+		        checkAndAddPermission(perms, task, taskIcon, principal, existingPerms, overrulingPerms);
+		        
+		        List<SecurityOptionIFace> additionalOptions = task.getAdditionalSecurityOptions();
+		        if (additionalOptions != null)
+		        {
+		            for (SecurityOptionIFace sOpt : additionalOptions)
+		            {
+		                ImageIcon icon = sOpt.getIcon(Taskable.StdIcon20);
+		                if (icon == null)
+		                {
+		                    icon = taskIcon;
+		                }
+		                checkAndAddPermission(perms, sOpt, icon, principal, existingPerms, overrulingPerms);
+		            }
+		        }
 		    }
 		}
 		

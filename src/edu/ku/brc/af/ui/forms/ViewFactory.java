@@ -1179,16 +1179,17 @@ public class ViewFactory
 
             // Create the UI Component
             
+            boolean isReq = (cellField != null && cellField.isRequired()) || (fieldInfo != null && fieldInfo.isRequired());
             switch (uiType)
             {
                 case text:
                     
-                    bi.compToAdd = createTextField(validator, cellField, fieldInfo, bi.isRequired, adapter);
+                    bi.compToAdd = createTextField(validator, cellField, fieldInfo, isReq, adapter);
                     bi.doAddToValidator = validator == null; // might already added to validator
                     break;
                 
                 case formattedtext:
-                    bi.compToAdd = createFormattedTextField(validator, cellField, uiFormatName, mode == AltViewIFace.CreationMode.VIEW, bi.isRequired, cellField.getPropertyAsBoolean("alledit", false));
+                    bi.compToAdd = createFormattedTextField(validator, cellField, uiFormatName, mode == AltViewIFace.CreationMode.VIEW, isReq, cellField.getPropertyAsBoolean("alledit", false));
                     bi.doAddToValidator = validator == null; // might already added to validator
                     break;
                     
@@ -1205,7 +1206,7 @@ public class ViewFactory
                         bi.compToAdd = text;
                     } else
                     {
-                        bi.compToAdd = createTextField(validator, cellField, fieldInfo, bi.isRequired, adapter);
+                        bi.compToAdd = createTextField(validator, cellField, fieldInfo, isReq, adapter);
                         bi.doAddToValidator = validator == null; // might already added to validator
                     }
                     break;
@@ -1229,7 +1230,7 @@ public class ViewFactory
                     break;
                 
                 case combobox:
-                    bi.compToAdd = createValComboBox(validator, cellField, adapter, bi.isRequired);
+                    bi.compToAdd = createValComboBox(validator, cellField, adapter, isReq);
                     bi.doAddToValidator = validator != null; // might already added to validator
                     break;
                     
@@ -1242,7 +1243,7 @@ public class ViewFactory
                         cellField.setDerived(true);
                     }
                     ValCheckBox checkbox = new ValCheckBox(lblStr, 
-                                                           bi.isRequired, 
+                                                           isReq, 
                                                            cellField.isReadOnly() || mode == AltViewIFace.CreationMode.VIEW);
                     if (validator != null)
                     {
@@ -1261,7 +1262,7 @@ public class ViewFactory
                     String maxStr = cellField.getProperty("max");
                     int    max    = StringUtils.isNotEmpty(maxStr) ? Integer.parseInt(maxStr) : 0; 
                     
-                    ValSpinner spinner = new ValSpinner(min, max, bi.isRequired, 
+                    ValSpinner spinner = new ValSpinner(min, max, isReq, 
                                                            cellField.isReadOnly() || mode == AltViewIFace.CreationMode.VIEW);
                     if (validator != null)
                     {
@@ -1273,7 +1274,7 @@ public class ViewFactory
                 }                            
                  
                 case password:
-                    bi.compToAdd        = createPasswordField(validator, cellField, bi.isRequired);
+                    bi.compToAdd        = createPasswordField(validator, cellField, isReq);
                     bi.doAddToValidator = validator == null; // might already added to validator
                     break;
                 
@@ -1298,7 +1299,7 @@ public class ViewFactory
                 
                 case browse:
                 {
-                    JTextField textField = createTextField(validator, cellField, null, bi.isRequired, null);
+                    JTextField textField = createTextField(validator, cellField, null, isReq, null);
                     if (textField instanceof ValTextField)
                     {
                         ValBrowseBtnPanel bbp = new ValBrowseBtnPanel((ValTextField)textField, 
@@ -1318,7 +1319,7 @@ public class ViewFactory
                     
                 case querycbx:
                 {
-                    ValComboBoxFromQuery cbx = createQueryComboBox(validator, cellField, bi.isRequired);
+                    ValComboBoxFromQuery cbx = createQueryComboBox(validator, cellField, isReq);
                     cbx.setMultiView(parent);
                     cbx.setFrameTitle(cellField.getProperty("title"));
                     
@@ -1329,7 +1330,7 @@ public class ViewFactory
                 
                 case list:
                 {
-                    JList list = createList(validator, cellField, bi.isRequired);
+                    JList list = createList(validator, cellField, isReq);
                     
                     JScrollPane scrollPane = new JScrollPane(list);
                     scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -1369,7 +1370,7 @@ public class ViewFactory
                                                 validator, 
                                                 cellField, 
                                                 mode == AltViewIFace.CreationMode.VIEW, 
-                                                bi.isRequired);
+                                                isReq);
                     if (uip != null)
                     {
                         bi.compToAdd = uip.getUIComponent();
@@ -1756,6 +1757,7 @@ public class ViewFactory
                          (cell instanceof FormCellFieldIFace && ((FormCellFieldIFace)cell).isRequired())))
                 {
                     bi.isRequired = true;
+                    ((FormCellFieldIFace)cell).setRequired(true);
                 }
             }
             

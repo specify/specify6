@@ -1237,6 +1237,8 @@ public class UIRegistry
             glassPane.finishDnD();
         }
         
+        glassPane.setMaskingEvents(true);
+        
         Component mainComp = get(MAINPANE);
         if (mainComp != null && glassPane != null)
         {
@@ -1310,6 +1312,7 @@ public class UIRegistry
         Component mainComp = UIRegistry.get(UIRegistry.MAINPANE);
         if (mainComp != null && getGlassPane() != null && getGlassPane().isVisible())
         {
+            getGlassPane().setMaskingEvents(false);
             getGlassPane().setVisible(false);
             mainComp.setVisible(true);
             mainComp.repaint();

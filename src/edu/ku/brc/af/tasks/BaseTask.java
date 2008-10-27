@@ -38,7 +38,7 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.auth.SecurityMgr;
-import edu.ku.brc.af.auth.SecurityPanelProviderIFace;
+import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
@@ -92,12 +92,12 @@ import edu.ku.brc.ui.dnd.Trash;
  * @author rods
  *
  */
-public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrListener, SecurityPanelProviderIFace
+public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrListener, SecurityOptionIFace
 {
     // Static Data Members
     //private static final Logger log = Logger.getLogger(BaseTask.class);
     
-    private static final String  securityPrefix    = "Task."; //$NON-NLS-1$
+    protected static final String  securityPrefix    = "Task"; //$NON-NLS-1$
     
     public enum ASK_TYPE { Cancel, EnterCats, ChooseRS}
 
@@ -954,23 +954,6 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     {
         return true;
     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.Taskable#getShortDesc()
-     */
-    @Override
-    public String getShortDesc()
-    {
-        return this.shortDesc == null ? title : this.shortDesc;
-    }
-
-    /**
-     * @param shortDesc the shortDesc to set
-     */
-    public void setShortDesc(String shortDesc)
-    {
-        this.shortDesc = shortDesc;
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getName()
@@ -1216,34 +1199,6 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             }
         }
     }
-
-    /**
-     * @return the permissions
-     */
-    public PermissionIFace getPermissions()
-    {
-        if (permissions == null)
-        {
-            permissions = SecurityMgr.getInstance().getPermission(securityPrefix + getPermissionName());
-        }
-        return permissions;
-    }
-
-    /**
-     * @return name to be used when getting permissions from SecurityMgr.
-     */
-    protected String getPermissionName()
-    {
-        return name;
-    }
-    
-    /**
-     * @param permissions the permissions to set
-     */
-    public void setPermissions(PermissionIFace permissions)
-    {
-        this.permissions = permissions;
-    }
     
     //--------------------------------------------------------------
     // NavBoxButton Helpers
@@ -1434,13 +1389,76 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
          }
          return recordSetFromDB;
      }
-     
+    
     //--------------------------------------------------------------
-    // SecurityPanelProviderIFace
+    // SecurityOptionIFace
     //--------------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityOptionIFace#getPermissions()
+     */
+    public PermissionIFace getPermissions()
+    {
+        if (permissions == null)
+        {
+            permissions = SecurityMgr.getInstance().getPermission(securityPrefix + "." + getPermissionName());
+        }
+        return permissions;
+    }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.auth.SecurityPanelProviderIFace#getPermEditorPanel()
+     * @see edu.ku.brc.af.auth.SecurityOptionIFace#getShortDesc()
+     */
+    @Override
+    public String getShortDesc()
+    {
+        return this.shortDesc == null ? title : this.shortDesc;
+    }
+
+    /**
+     * @param shortDesc the shortDesc to set
+     */
+    public void setShortDesc(String shortDesc)
+    {
+        this.shortDesc = shortDesc;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityOptionIFace#getPermissionName()
+     */
+    public String getPermissionName()
+    {
+        return name;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityOptionIFace#getPermissionTitle()
+     */
+    @Override
+    public String getPermissionTitle()
+    {
+        return title;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityOptionIFace#setPermissions(edu.ku.brc.af.core.PermissionIFace)
+     */
+    public void setPermissions(final PermissionIFace permissions)
+    {
+        this.permissions = permissions;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityOptionIFace#getAdditionalSecurityOptions()
+     */
+    @Override
+    public List<SecurityOptionIFace> getAdditionalSecurityOptions()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityOptionIFace#getPermEditorPanel()
      */
     public PermissionEditorIFace getPermEditorPanel()
     {

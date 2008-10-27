@@ -81,7 +81,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     protected static Color           dropColor   = new Color(255, 140, 0, 100);
     
     protected static final int       ICON_TEXT_GAP  = 4;
-    protected static ImageIcon       hoverImg       = null;
+    public static ImageIcon          hoverImg       = null;
     protected static Font            defaultFont    = null;
     protected static int             vertGap        = 0;      // the Old Default was 2
     protected static boolean         useEmptyBorder = false;
@@ -603,9 +603,9 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     /**
      * @param hoverImg the hoverImg to set
      */
-    public static void setHoverImg(ImageIcon hoverImg)
+    public static void setHoverImg(final ImageIcon hoverImgArg)
     {
-        RolloverCommand.hoverImg = hoverImg;
+        RolloverCommand.hoverImg = hoverImgArg;
     }
 
     /**

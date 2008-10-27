@@ -66,6 +66,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getTitle()
      */
+    @Override
     public String getTitle()
     {
         return this.title;
@@ -74,6 +75,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#setTitle(java.lang.String)
      */
+    @Override
     public void setTitle(String title)
     {
         this.title = title;
@@ -82,6 +84,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#setName(java.lang.String)
      */
+    @Override
     public void setName(final String name)
     {
         this.name = name;
@@ -90,6 +93,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getFieldName()
      */
+    @Override
     public String getFieldName()
     {
         return "catalogNumber"; //$NON-NLS-1$
@@ -98,19 +102,33 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getDataClass()
      */
+    @Override
     public Class<?> getDataClass()
     {
         return String.class;
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#setDataClass(java.lang.Class)
+     */
+    @Override
+    public void setDataClass(Class<?> dataClass)
+    {
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getSample()
      */
+    @Override
     public String getSample()
     {
     	return "123"; //$NON-NLS-1$
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace#byYearApplies()
+     */
+    @Override
     public boolean byYearApplies()
     {
     	// no auto-year field in here
@@ -131,6 +149,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getDateWrapper()
      */
+    @Override
     public DateWrapper getDateWrapper()
     {
         return null;
@@ -139,6 +158,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getFields()
      */
+    @Override
     public List<UIFieldFormatterField> getFields()
     {
         return fields;
@@ -156,6 +176,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getIncPosition()
      */
+    @Override
     public Pair<Integer, Integer> getIncPosition()
     {
         return incPos;
@@ -164,6 +185,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getYearPosition()
      */
+    @Override
     public Pair<Integer, Integer> getYearPosition()
     {
         return null;
@@ -180,6 +202,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getUILength()
      */
+    @Override
     public int getUILength()
     {
         return uiLength;
@@ -188,6 +211,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isLengthOK(int)
      */
+    @Override
     public boolean isLengthOK(int lengthOfData)
     {
         return lengthOfData == getLength();
@@ -204,6 +228,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getPartialDateType()
      */
+    @Override
     public PartialDateEnum getPartialDateType()
     {
         return null;
@@ -228,6 +253,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#setDefault(boolean)
      */
+    @Override
     public void setDefault(boolean isDefault)
     {
         this.isDefault = isDefault;
@@ -244,6 +270,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isOutBoundFormatter()
      */
+    @Override
     public boolean isFromUIFormatter()
     {
         return isNumericCatalogNumber;
@@ -276,6 +303,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#formatInBound(java.lang.Object)
      */
+    @Override
     public Object formatToUI(Object data)
     {
         if (isNumericCatalogNumber)
@@ -295,6 +323,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isInBoundFormatter()
      */
+    @Override
     public boolean isInBoundFormatter()
     {
         return isNumericCatalogNumber;
@@ -303,6 +332,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#toPattern()
      */
+    @Override
     public String toPattern()
     {
         return pattern;
@@ -311,6 +341,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getAutoNumber()
      */
+    @Override
     public AutoNumberIFace getAutoNumber()
     {
         return autoNumber;
@@ -319,6 +350,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getAutoNumber(edu.ku.brc.dbsupport.AutoNumberIFace)
      */
+    @Override
     public void setAutoNumber(AutoNumberIFace autoNumber)
     {
         this.autoNumber = autoNumber;
@@ -327,6 +359,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getNextNumber(java.lang.String)
      */
+    @Override
     public String getNextNumber(final String value)
     {
         if (autoNumber != null)
@@ -347,6 +380,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isUserInputNeeded()
      */
+    @Override
     public boolean isUserInputNeeded()
     {
         if (!isNumericCatalogNumber)
@@ -371,6 +405,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isNumeric()
      */
+    @Override
     public boolean isNumeric()
     {
         return isNumericCatalogNumber;
@@ -379,7 +414,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getMaxValue()
      */
-    //@Override
+    @Override
     public Number getMaxValue()
     {
         return isNumericCatalogNumber ? Integer.MAX_VALUE : null;
@@ -388,7 +423,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getMinValue()
      */
-    //@Override
+    @Override
     public Number getMinValue()
     {
         return isNumericCatalogNumber ? 0 : null;
@@ -397,6 +432,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString()
     {
         return title;
@@ -405,6 +441,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isSystem()
      */
+    @Override
     public boolean isSystem()
     {
         return true;
@@ -413,6 +450,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isValid(java.lang.String)
      */
+    @Override
     public boolean isValid(String value)
     {
         if (isNumericCatalogNumber)
@@ -427,6 +465,7 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#toXML(java.lang.StringBuilder)
      */
+    @Override
     public void toXML(final StringBuilder sb)
     {
         sb.append("  <format"); //$NON-NLS-1$

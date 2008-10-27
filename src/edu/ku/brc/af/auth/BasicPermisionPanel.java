@@ -64,6 +64,29 @@ public class BasicPermisionPanel extends JPanel implements PermissionEditorIFace
     /**
      * @param titleKey
      * @param viewKey
+     */
+    public BasicPermisionPanel(final String titleKey,
+                               final String viewKey)
+    {
+        this(null, titleKey, viewKey, null, null, null);
+    }
+    
+    /**
+     * @param titleKey
+     * @param viewKey
+     * @param modKey
+     */
+    public BasicPermisionPanel(final String titleKey,
+                               final String viewKey,
+                               final String modKey)
+    {
+        this(null, titleKey, viewKey, modKey, null, null);
+    }
+    
+
+    /**
+     * @param titleKey
+     * @param viewKey
      * @param modKey
      * @param addKey
      * @param delKey

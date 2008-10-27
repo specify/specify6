@@ -28,7 +28,12 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -50,10 +55,12 @@ import javax.swing.ImageIcon;
 
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.auth.specify.policy.DatabaseService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 
 
 /**
@@ -386,6 +393,7 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
         if (this.items == null)
         {
             this.items = new Vector<RecordSetItemIFace>();
+            this.items.addAll(this.recordSetItems);
             
         } else if (doClear)
         {
@@ -523,7 +531,69 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
         ((RecordSetItem)item).setRecordSet(this);
         return item;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.RecordSetIFace#getIdList()
+     */
+    public static List<Integer> getIdList(final Integer rsId, final Set<RecordSetItem>rsiSet)
+    {
+        
+        if (rsId != null)
+        {
+            String sql = "FROM RecordSetItem WHERE RecordSetID = "+rsId;
+            
+            int count = BasicSQLUtils.getCount("SELECT count(*) " + sql);
+            if (count > 0)
+            {
+                ArrayList<Integer> ids = new ArrayList<Integer>(count);
+                
+                Connection    conn = null;
+                Statement     stmt = null;
+                try
+                {
+                    conn = DatabaseService.getInstance().getConnection();
+                    stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    ResultSet rs = stmt.executeQuery("SELECT REcordSetItemID "+sql);
+                    
+                    while (rs.next())
+                    {
+                        ids.add(rs.getInt(1));
+                    }
+                    rs.close();
+                    
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    
+                } finally
+                {
+                    try
+                    {
+                        if (conn != null)  conn.close();
+                        if (stmt != null)  stmt.close(); 
+                        
+                    } catch (SQLException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                return ids;
+            }
+            return new ArrayList<Integer>();
+        }
+        
+        if (rsiSet != null && rsiSet.size() > 0)
+        {
+            ArrayList<Integer> ids = new ArrayList<Integer>(rsiSet.size());
+            for (RecordSetItem item : rsiSet)
+            {
+                ids.add(item.getRecordSetItemId());
+            }
+        }
+        
+        return new ArrayList<Integer>();
+    }
+    
     //--------------------------------------------------------------
     //-- Non-Database Methods
     //--------------------------------------------------------------

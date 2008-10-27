@@ -16,14 +16,18 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 import javax.swing.JMenuItem;
@@ -32,6 +36,10 @@ import javax.swing.JPopupMenu;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.BasicPermisionPanel;
+import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.SecurityOption;
+import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
@@ -58,13 +66,17 @@ import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
 import edu.ku.brc.specify.tools.schemalocale.PickListEditorDlg;
+import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -87,7 +99,10 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
 {
     // Static Data Members
     private static final Logger log  = Logger.getLogger(SystemSetupTask.class);
-
+    private static final String RESIMPORTEXPORT_SECURITY = "RESIMPORTEXPORT";
+    private static final String SCHEMACONFIG_SECURITY    = "SCHEMACONFIG";
+    private static final String WBSCHEMACONFIG_SECURITY  = "WBSCHEMACONFIG";
+    
     public static final String     SYSTEMSETUPTASK        = "SystemSetup";
     public static final DataFlavor SYSTEMSETUPTASK_FLAVOR = new DataFlavor(SystemSetupTask.class, SYSTEMSETUPTASK);
 
@@ -605,6 +620,53 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             UIRegistry.forceTopFrameRepaint();
         }
     }
+    
+    /**
+     * 
+     */
+    protected void doSchemaConfig(final Byte schemaType, final DBTableIdMgr tableMgr)
+    {
+        UIRegistry.getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);
+        UIRegistry.getStatusBar().setText(getResourceString(getI18NKey("LOADING_LOCALES"))); //$NON-NLS-1$
+        UIRegistry.getStatusBar().repaint();
+        
+        SwingWorker workerThread = new SwingWorker()
+        {
+            @Override
+            public Object construct()
+            {
+                Locale.getAvailableLocales(); // load all the locales
+                return null;
+            }
+            
+            @Override
+            public void finished()
+            {
+                UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
+                UIRegistry.getStatusBar().setProgressDone(SYSTEMSETUPTASK);
+                
+                SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)UIRegistry.getTopWindow(), schemaType, tableMgr);
+                dlg.setVisible(true);
+            }
+        };
+        
+        // start the background task
+        workerThread.start();
+    }
+    
+    
+    /**
+     * Launches dialog for Importing and Exporting Forms and Resources.
+     */
+    protected void doResourceImportExport()
+    {
+        ResourceImportExportDlg dlg = new ResourceImportExportDlg();
+        dlg.setVisible(true);
+        if (dlg.hasChanged())
+        {
+            CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_RESTART));
+        }
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.BaseTask#getStarterPane()
@@ -615,30 +677,113 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         return starterPane = StartUpTask.createFullImageSplashPanel(title, this);
     }
 
+    /**
+     * @param key
+     * @return
+     */
+    private String getI18NKey(final String key)
+    {
+        return "SystemSetupTask." + key;
+    }
+    
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
      */
     public List<MenuItemDesc> getMenuItems()
     {
+        final String COLSETUP_MENU   = "Specify.COLSETUP_MENU";
+        final String SYSTEM_MENU     = "Specify.SYSTEM_MENU";
+        
+        SecurityMgr secMgr = SecurityMgr.getInstance();
+        
         menuItems = new Vector<MenuItemDesc>();
         
-        String titleArg = "SystemSetupTask.COLL_CONFIG"; 
-        String mneu     = "SystemSetupTask.COLL_CONFIG_MNEU"; 
-        String desc     = ""; 
+        String    titleArg; 
+        String    mneu; 
+        JMenuItem mi;
+        String    menuDesc = SYSTEM_MENU;
+        MenuItemDesc mid;
         
-        JMenuItem mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, desc, true, null);
-        mi.addActionListener(new ActionListener()
+        if (!UIHelper.isSecurityOn() || 
+            (secMgr.getPermission(WBSCHEMACONFIG_SECURITY) != null && 
+             secMgr.getPermission(WBSCHEMACONFIG_SECURITY).canAdd()))
         {
-            public void actionPerformed(ActionEvent ae)
+            titleArg = getI18NKey("WBSCHEMA_CONFIG"); //$NON-NLS-1$
+            mneu     = getI18NKey("WBSCHEMA_CONFIG_MNU");  //$NON-NLS-1$
+            mi       = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null); 
+            mi.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            DBTableIdMgr schema = new DBTableIdMgr(false);
+                            schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml"))); //$NON-NLS-1$
+                            doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
+                        }
+                    });
+            mid = new MenuItemDesc(mi, menuDesc);
+            mid.setPosition(MenuItemDesc.Position.After, COLSETUP_MENU);
+            menuItems.add(mid);
+        }
+        
+        if (!UIHelper.isSecurityOn() || 
+            (secMgr.getPermission(RESIMPORTEXPORT_SECURITY) != null && 
+             !secMgr.getPermission(RESIMPORTEXPORT_SECURITY).hasNoPerm()))
+        {
+            titleArg = getI18NKey("RIE_MENU"); //$NON-NLS-1$
+            mneu     = getI18NKey("RIE_MNU");  //$NON-NLS-1$
+            mi       = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null); 
+            mi.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            doResourceImportExport();
+                        }
+                    });
+            mid = new MenuItemDesc(mi, menuDesc);
+            mid.setPosition(MenuItemDesc.Position.After, COLSETUP_MENU);
+            menuItems.add(mid);
+        }
+        
+        if (!UIHelper.isSecurityOn() || 
+            (secMgr.getPermission(SCHEMACONFIG_SECURITY) != null && 
+             secMgr.getPermission(SCHEMACONFIG_SECURITY).canAdd()))
+        {
+            titleArg = getI18NKey("SCHEMA_CONFIG"); //$NON-NLS-1$
+            mneu = getI18NKey("SCHEMA_CONFIG_MNU");  //$NON-NLS-1$
+            mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null);
+            mi.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            doSchemaConfig(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+                        }
+                    });
+            mid = new MenuItemDesc(mi, menuDesc);
+            mid.setPosition(MenuItemDesc.Position.After, COLSETUP_MENU);
+            menuItems.add(mid);
+        }
+        
+        if (!UIHelper.isSecurityOn() || 
+             (getPermissions() != null && getPermissions().canAdd()))
+        {
+            menuDesc = SYSTEM_MENU + "/" + COLSETUP_MENU;
+            titleArg = getI18NKey("COLL_CONFIG"); 
+            mneu     = getI18NKey("COLL_CONFIG_MNEU"); 
+            mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null);
+            mi.addActionListener(new ActionListener()
             {
-                SystemSetupTask.this.requestContext();
-            }
-        }); 
-        String menuDesc = "Specify.SYSTEM_MENU/Specify.COLSETUP_MENU";
-        menuItems.add(new MenuItemDesc(mi, menuDesc, MenuItemDesc.Position.Top));
+                public void actionPerformed(ActionEvent ae)
+                {
+                    SystemSetupTask.this.requestContext();
+                }
+            }); 
+            mid = new MenuItemDesc(mi, menuDesc);
+            mid.setPosition(MenuItemDesc.Position.Top, COLSETUP_MENU);
+            menuItems.add(mid);
+        }
+        
         return menuItems;
-
     }
     
     /* (non-Javadoc)
@@ -689,6 +834,41 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         }
     }
 
+    //-------------------------------------------------------
+    // SecurityOption Interface
+    //-------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getAdditionalSecurityOptions()
+     */
+    @Override
+    public List<SecurityOptionIFace> getAdditionalSecurityOptions()
+    {
+        List<SecurityOptionIFace> list = new ArrayList<SecurityOptionIFace>();
+        
+        list.add(new SecurityOption(RESIMPORTEXPORT_SECURITY, 
+                getResourceString("RIE_TITLE"), 
+                securityPrefix,
+                new BasicPermisionPanel("RIE_TITLE", 
+                                        "RIE_SEC_IMPORT", 
+                                        "RIE_SEC_EXPORT")));
+
+        list.add(new SecurityOption(SCHEMACONFIG_SECURITY, 
+                getResourceString(getI18NKey("SCHEMA_CONFIG")), 
+                securityPrefix,
+                new BasicPermisionPanel(getI18NKey("SCHEMA_CONFIG"), 
+                                        "Enable")));
+
+        list.add(new SecurityOption(WBSCHEMACONFIG_SECURITY, 
+                getResourceString(getI18NKey("WBSCHEMA_CONFIG")), 
+                securityPrefix,
+                new BasicPermisionPanel(getI18NKey("WBSCHEMA_CONFIG"), 
+                                        "Enable")));
+
+        return list;
+    }
+    
+    
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------

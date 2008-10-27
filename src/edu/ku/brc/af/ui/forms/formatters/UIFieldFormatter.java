@@ -880,19 +880,23 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         sb.append("  </format>\n\n");
     }
 
-	public void setSystem(boolean isSystem) {
+	public void setSystem(boolean isSystem) 
+	{
 		this.isSystem = isSystem;
 	}
 
-	public void setFieldName(String fieldName) {
+	public void setFieldName(String fieldName) 
+	{
 		this.fieldName = fieldName;
 	}
 
-	public void setDataClass(Class<?> dataClass) {
+	public void setDataClass(Class<?> dataClass) 
+	{
 		this.dataClass = dataClass;
 	}
 
-	public void setType(FormatterType type) {
+	public void setType(FormatterType type) 
+	{
 		this.type = type;
 	}
 

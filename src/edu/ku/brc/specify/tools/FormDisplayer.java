@@ -84,7 +84,7 @@ public class FormDisplayer
     protected File    baseDir;
     protected File    outputDir;
     protected boolean doPNG       = true;
-    protected boolean doAll       = false;
+    protected boolean doAll       = true;
     
     protected List<Pair<String, File>> entries = new Vector<Pair<String, File>>();
     protected List<ViewIFace> viewList;
@@ -246,8 +246,11 @@ public class FormDisplayer
             });
         } else
         {
-            frame.setVisible(false);
-            frame.dispose();
+            if (frame != null)
+            {
+                frame.setVisible(false);
+                frame.dispose();
+            }
             
             createIndexFile();
             

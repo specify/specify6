@@ -1370,7 +1370,7 @@ public class ReportsBaseTask extends BaseTask
      * @see edu.ku.brc.af.tasks.BaseTask#getPermissionName()
      */
     @Override
-    protected String getPermissionName()
+    public String getPermissionName()
     {
         //This is required(?) because the Reports and Labels tasks are currently merged. 
         return REPORTS;

@@ -419,7 +419,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             }
             //disabling editing of name and rank for standard levels.
             final I nodeInForm = (I)formViewObj.getDataObj();
-            if (nodeInForm != null)
+            if (nodeInForm != null && nodeInForm.getTreeDef() != null)
             {
                 List<TreeDefItemStandardEntry> stds = nodeInForm.getTreeDef().getStandardLevels();
                 boolean isStandardLevel = false;

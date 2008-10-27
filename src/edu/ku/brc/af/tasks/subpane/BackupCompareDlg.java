@@ -17,6 +17,9 @@
  */
 package edu.ku.brc.af.tasks.subpane;
 
+import static edu.ku.brc.ui.UIRegistry.getMostRecentWindow;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.HeadlessException;
@@ -31,7 +34,6 @@ import javax.swing.table.DefaultTableModel;
 
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -55,12 +57,12 @@ public class BackupCompareDlg extends CustomDialog
      */
     public BackupCompareDlg(final Vector<Object[]> rowData) throws HeadlessException
     {
-        super((Frame)UIRegistry.getMostRecentWindow(), "BKCMP_TABLE_TITLE", true, null);
+        super((Frame)getMostRecentWindow(), getResourceString("BKCMP_TABLE_TITLE"), true, null);
         
         this.rowData = rowData;
         
-        okLabel     = UIRegistry.getResourceString("BKCMP_TABLE_RESTORE");
-        cancelLabel = UIRegistry.getResourceString("Cancel");
+        okLabel     = getResourceString("BKCMP_TABLE_RESTORE");
+        cancelLabel = getResourceString("Cancel");
         
     }
 
@@ -108,7 +110,7 @@ public class BackupCompareDlg extends CustomDialog
             int i = 0;
             for (String key : keys)
             {
-                headers[i++] = UIRegistry.getResourceString(key); 
+                headers[i++] = getResourceString(key); 
             }
         }
 

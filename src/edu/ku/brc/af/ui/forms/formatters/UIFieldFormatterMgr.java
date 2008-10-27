@@ -290,13 +290,16 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     public List<UIFieldFormatterIFace> getFormatterList(final Class<?> clazz,
                                                         final String fieldName)
     {
-        Vector<UIFieldFormatterIFace> list = classToListHash.get(clazz);
-        if (list != null)
+        if (fieldName == null)
         {
-            return list;
+            Vector<UIFieldFormatterIFace> list = classToListHash.get(clazz);
+            if (list != null)
+            {
+                return list;
+            }
         }
         
-        list = new Vector<UIFieldFormatterIFace>();
+        Vector<UIFieldFormatterIFace> list = new Vector<UIFieldFormatterIFace>();
         
         UIFieldFormatterIFace defFormatter = null;
         for (Enumeration<UIFieldFormatterIFace> e = hash.elements(); e.hasMoreElements();)
@@ -321,7 +324,10 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
             list.insertElementAt(defFormatter, 0);
         }
         
-        classToListHash.put(clazz, list);
+        if (fieldName == null)
+        {
+            classToListHash.put(clazz, list);
+        }
         
         return list;
     }
@@ -370,6 +376,15 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     public void addFormatter(UIFieldFormatterIFace formatter)
     {
         getFormatterUniqueName(formatter);
+        
+        Vector<UIFieldFormatterIFace> list = classToListHash.get(formatter.getDataClass());
+        if (list == null)
+        {
+            list = new Vector<UIFieldFormatterIFace>();
+            classToListHash.put(formatter.getDataClass(), list);
+        }
+        
+        list.add(formatter);
         hash.put(formatter.getName(), formatter);
     }
 
@@ -379,6 +394,13 @@ public class UIFieldFormatterMgr implements AppPrefsChangeListener
     public void removeFormatter(UIFieldFormatterIFace formatter)
     {
         hash.remove(formatter.getName());
+        
+        Vector<UIFieldFormatterIFace> list = classToListHash.get(formatter.getDataClass());
+        if (list != null)
+        {
+            list.remove(formatter);
+            classToListHash.put(formatter.getDataClass(), list);
+        }
     }
 
     /**

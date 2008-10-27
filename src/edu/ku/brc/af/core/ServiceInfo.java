@@ -211,7 +211,7 @@ public class ServiceInfo implements Comparable<ServiceInfo>
     }
     
     /**
-     * 
+     * Nulls out the permissions so they are reloaded.
      */
     public void resetPermissions()
     {

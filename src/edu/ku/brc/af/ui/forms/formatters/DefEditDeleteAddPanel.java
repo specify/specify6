@@ -47,7 +47,7 @@ public class DefEditDeleteAddPanel extends EditDeleteAddPanel
                                  final ActionListener addAL)
     {
         
-        this(addAL, delAL, editAL, defAL, "", "", "", "");
+        this(defAL, editAL, delAL, addAL, "", "", "", "");
 
     }
     

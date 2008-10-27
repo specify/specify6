@@ -91,6 +91,11 @@ public interface UIFieldFormatterIFace
      * @return the class of data object that the format is intended for
      */
     public abstract Class<?> getDataClass();
+    
+    /**
+     * @param dataClass sets the data class (of the table)
+     */
+    public abstract void setDataClass(Class<?> dataClass);
 
     /**
      * @return true if it is the default formatter

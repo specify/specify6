@@ -25,6 +25,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -61,9 +62,12 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author ricardo
@@ -507,17 +511,19 @@ public class DataObjFieldFormatSinglePanel extends DataObjFieldFormatPanel
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    throw new RuntimeException("FIX ME!");
-                    
                     // open UI field formatter dialog to format this field 
-                    /*DBFieldInfo    fi  = dataObjFieldWrapper.getFormatterField().getFieldInfo();
-                    UIFormatterDlg dlg = new UIFormatterDlg((Frame) UIRegistry.getTopWindow(), fi, 0, uiFieldFormatterMgrCache);
+                    DBFieldInfo    fi  = dataObjFieldWrapper.getFormatterField().getFieldInfo();
+                    UIFormatterListEdtDlg dlg = new UIFormatterListEdtDlg((Frame) UIRegistry.getTopWindow(),
+                                                                          fi, uiFieldFormatterMgrCache);
                     dlg.setVisible(true);
                     
                     if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                     {
-                        setFormatter(dlg.getSelectedFormat());
-                    }*/
+                        if (dlg.getSelectedFormat() != null)
+                        {    
+                            setFormatter(dlg.getSelectedFormat());
+                        }
+                    }
                 }
             };
             
