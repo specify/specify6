@@ -449,7 +449,12 @@ public class MainFrameSpecify extends MainFrame
             	modifyFieldsForEditing(rep);
             }
             boolean success = saveXML(xmlOut, apr, rep, saveAs);
-            if (!success)
+            if (success)
+            {
+                jrf.setIsDocDirty(false);
+                jrf.getReport().setReportChanges(0);
+            }
+            else
             {
                 JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("REP_UNABLE_TO_SAVE_IREPORT"), UIRegistry.getResourceString("Error"), JOptionPane.ERROR_MESSAGE);                        
             }
