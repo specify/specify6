@@ -694,7 +694,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         final String COLSETUP_MENU   = "Specify.COLSETUP_MENU";
         final String SYSTEM_MENU     = "Specify.SYSTEM_MENU";
-        
+        final String FULL_SYSTEM_MENU = SYSTEM_MENU + "/" + COLSETUP_MENU;
+
         SecurityMgr secMgr = SecurityMgr.getInstance();
         
         menuItems = new Vector<MenuItemDesc>();
@@ -702,7 +703,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         String    titleArg; 
         String    mneu; 
         JMenuItem mi;
-        String    menuDesc = SYSTEM_MENU;
+        String    menuDesc = getResourceString(COLSETUP_MENU);
         MenuItemDesc mid;
         
         if (!UIHelper.isSecurityOn() || 
@@ -721,8 +722,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                             doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
                         }
                     });
-            mid = new MenuItemDesc(mi, menuDesc);
-            mid.setPosition(MenuItemDesc.Position.After, COLSETUP_MENU);
+            mid = new MenuItemDesc(mi, SYSTEM_MENU);
+            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
             menuItems.add(mid);
         }
         
@@ -740,8 +741,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                             doResourceImportExport();
                         }
                     });
-            mid = new MenuItemDesc(mi, menuDesc);
-            mid.setPosition(MenuItemDesc.Position.After, COLSETUP_MENU);
+            mid = new MenuItemDesc(mi, SYSTEM_MENU);
+            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
             menuItems.add(mid);
         }
         
@@ -759,15 +760,14 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                             doSchemaConfig(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
                         }
                     });
-            mid = new MenuItemDesc(mi, menuDesc);
-            mid.setPosition(MenuItemDesc.Position.After, COLSETUP_MENU);
+            mid = new MenuItemDesc(mi, SYSTEM_MENU);
+            mid.setPosition(MenuItemDesc.Position.After, menuDesc);
             menuItems.add(mid);
         }
         
         if (!UIHelper.isSecurityOn() || 
              (getPermissions() != null && getPermissions().canAdd()))
         {
-            menuDesc = SYSTEM_MENU + "/" + COLSETUP_MENU;
             titleArg = getI18NKey("COLL_CONFIG"); 
             mneu     = getI18NKey("COLL_CONFIG_MNEU"); 
             mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, titleArg, true, null);
@@ -778,8 +778,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     SystemSetupTask.this.requestContext();
                 }
             }); 
-            mid = new MenuItemDesc(mi, menuDesc);
-            mid.setPosition(MenuItemDesc.Position.Top, COLSETUP_MENU);
+            mid = new MenuItemDesc(mi, FULL_SYSTEM_MENU);
+            mid.setPosition(MenuItemDesc.Position.Top, FULL_SYSTEM_MENU);
             menuItems.add(mid);
         }
         
