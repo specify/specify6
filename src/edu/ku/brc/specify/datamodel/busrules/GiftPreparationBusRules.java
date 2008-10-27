@@ -16,7 +16,6 @@ import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.TableViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
-import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.specify.datamodel.GiftPreparation;
 import edu.ku.brc.ui.CommandAction;
@@ -115,6 +114,9 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
             
             //boolean    isNewObj         = giftPrep.getId() == null;
             ValSpinner quantity         = (ValSpinner)comp;
+            
+            // TODO I think this would be better if the Max Range 
+            // was set to the available number of items.
             
             quantity.setRange(0, giftPrep.getQuantity(), giftPrep.getQuantity());
             
