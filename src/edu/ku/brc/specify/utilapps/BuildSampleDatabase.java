@@ -704,18 +704,18 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating determinations status");
         current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
+        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
         notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
         incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
-        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
         
         frame.setDesc("Commiting...");
         //startTx();
         persist(current);
+        persist(currentAccepted);
         persist(notCurrent);
         persist(incorrect);
         persist(oldDet);
-        persist(currentAccepted);
         commitTx();
         
         frame.setProcess(++createStep);
@@ -1390,17 +1390,17 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating determinations status");
         current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
+        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
         notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
         incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
-        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
 
         
         persist(current);
+        persist(currentAccepted);
         persist(notCurrent);
         persist(incorrect);
         persist(oldDet);
-        persist(currentAccepted);
         
         ////////////////////////////////
         // collection objects
@@ -2082,16 +2082,16 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating determinations status");
         current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
+        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
         notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
         incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
-        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
         
         persist(current);
+        persist(currentAccepted);
         persist(notCurrent);
         persist(incorrect);
         persist(oldDet);
-        persist(currentAccepted);
         
         persist(dataObjects);
         dataObjects.clear();
@@ -2670,17 +2670,17 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating determinations status");
         current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
+        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
         notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
         incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
-        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
 
         
         persist(current);
+        persist(currentAccepted);
         persist(notCurrent);
         persist(incorrect);
         persist(oldDet);
-        persist(currentAccepted);
         
         ////////////////////////////////
         // collection objects
@@ -3772,17 +3772,17 @@ public class BuildSampleDatabase
         frame.setDesc("Creating determinations status...");
 
         current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
+        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
         notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
         incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
-        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
 
         
         persist(current);
+        persist(currentAccepted);
         persist(notCurrent);
         persist(incorrect);
         persist(oldDet);
-        persist(currentAccepted);
         
         ////////////////////////////////
         // collection objects
@@ -5111,16 +5111,16 @@ public class BuildSampleDatabase
         if (isVoucherCol)
         {
             current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
+            currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
             notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
             incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
             oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
-            currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
 
             persist(current);
+            persist(currentAccepted);
             persist(notCurrent);
             persist(incorrect);
             persist(oldDet);
-            persist(currentAccepted);
         }
 
         ////////////////////////////////

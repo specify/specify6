@@ -223,4 +223,15 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         retVal = super.beforeSaveCommit(dataObj, session);
         return retVal;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#canAccessSynonymy(java.lang.Object)
+     */
+    @Override
+    protected boolean canAccessSynonymy(Object dataObj)
+    {
+        return false;
+    }
+    
+    
 }

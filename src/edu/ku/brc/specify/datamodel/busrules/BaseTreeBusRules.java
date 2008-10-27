@@ -476,22 +476,36 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             // TODO: the form system MUST require the accepted parent widget to be present if the isAccepted checkbox is present
             final JCheckBox            acceptedCheckBox     = (JCheckBox)formViewObj.getControlByName("isAccepted");
             final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery)formViewObj.getControlByName("acceptedParent");
-            if (acceptedCheckBox != null && acceptedParentWidget != null)
+            if (canAccessSynonymy(dataObj))
             {
-                if (acceptedCheckBox.isSelected() && nodeInForm != null && nodeInForm.getDefinition() != null)
+                if (acceptedCheckBox != null && acceptedParentWidget != null)
                 {
-                    //disable if necessary
-                    boolean canSynonymize = nodeInForm.getDefinition().getSynonymizedLevel() <= nodeInForm.getRankId()
-                        && nodeInForm.getDescendantCount() == 0;
-                    acceptedCheckBox.setEnabled(canSynonymize);
-                }
-                acceptedParentWidget.setEnabled(!acceptedCheckBox.isSelected() && acceptedCheckBox.isEnabled());
-                if (acceptedCheckBox.isSelected())
-                {
-                    acceptedParentWidget.setValue(null, null);
+                    if (acceptedCheckBox.isSelected() && nodeInForm != null && nodeInForm.getDefinition() != null)
+                    {
+                        //disable if necessary
+                        boolean canSynonymize = nodeInForm.getDefinition().getSynonymizedLevel() <= nodeInForm.getRankId()
+                            && nodeInForm.getDescendantCount() == 0;
+                        acceptedCheckBox.setEnabled(canSynonymize);
+                    }
+                    acceptedParentWidget.setEnabled(!acceptedCheckBox.isSelected() && acceptedCheckBox.isEnabled());
+                    if (acceptedCheckBox.isSelected())
+                    {
+                        acceptedParentWidget.setValue(null, null);
+                    }
                 }
             }
-    
+            else
+            {
+                if (acceptedCheckBox != null)
+                {
+                    acceptedCheckBox.setEnabled(false);
+                }
+                if (acceptedParentWidget != null)
+                {
+                    acceptedParentWidget.setEnabled(false);
+                }
+            }
+            
             if (parentField instanceof ValComboBoxFromQuery)
             {
                 parentChanged(formViewObj, (ValComboBoxFromQuery)parentField, rankComboBox);
@@ -499,6 +513,16 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         }
     }
 
+    /**
+     * @param dataObj
+     * 
+     * return true if acceptedParent and accepted fields should be enabled on data forms.
+     */
+    protected boolean canAccessSynonymy(final Object dataObj)
+    {
+        return true;
+    }
+    
     /**
      * Updates the fullname field of any nodes effected by changes to <code>node</code> that are about
      * to be saved to the DB.

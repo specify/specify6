@@ -2249,7 +2249,32 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             
             draggedNode.setAcceptedParentFullName(droppedOnNode.getFullName());
             droppedOnNode.getSynonymIdsAndNames().add(new Pair<Integer,String>(draggedNode.getId(),draggedNode.getFullName()));
+            draggedNode.setCalcCount(false);
+            droppedOnNode.setCalcCount(false);
+            draggedNode.setCalcCount2(false);
+            droppedOnNode.setCalcCount2(false);
+            draggedNode.setHasCalcCount(false);
+            droppedOnNode.setHasCalcCount(false);
+            draggedNode.setHasCalcCount2(false);
+            droppedOnNode.setHasCalcCount2(false);
             
+            T draggedParent = draggedRecord.getParent();
+            T droppedParent = droppedRecord.getParent();
+            Vector<TreeNode> draggedChildren = new Vector<TreeNode>();
+            Vector<TreeNode> droppedChildren = new Vector<TreeNode>();
+            if (droppedParent.getTreeId().equals(draggedParent.getTreeId()))
+            {
+                draggedChildren.add(draggedNode);
+                draggedChildren.add(droppedOnNode);
+                showCounts(draggedParent, draggedChildren);
+            }
+            else
+            {
+                draggedChildren.add(draggedNode);
+                droppedChildren.add(droppedOnNode);
+                showCounts(draggedParent, draggedChildren);
+                showCounts(droppedParent, droppedChildren);
+            }
             updateAllUI();
 			if (statusMsg != null)
 			{

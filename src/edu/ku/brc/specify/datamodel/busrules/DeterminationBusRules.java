@@ -24,7 +24,10 @@ import javax.swing.SwingUtilities;
 
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
@@ -110,6 +113,9 @@ public class DeterminationBusRules extends BaseBusRules
                 {
                     cbx.addActionListener(detAL);
                 }
+                
+                
+                comp.setEnabled(!isSynonymyDet(determination));
             }
         }
     }
@@ -238,17 +244,87 @@ public class DeterminationBusRules extends BaseBusRules
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
-        if (!super.okToEnableDelete(dataObj))
+//        if (!super.okToEnableDelete(dataObj))
+//        {
+//            return false;
+//        }
+//        
+//        Determination detObj = (Determination )dataObj;
+//        if (detObj.getOldSynonymyDeterminations().size() > 0 || detObj.getNewSynonymyDeterminations().size() > 0)
+//        {
+//            return false;
+//        }
+
+        return super.okToEnableDelete(dataObj);
+    }
+
+    /**
+     * @param det
+     * @return true if det was created or modified as a result of a synonymization
+     */
+    protected boolean isSynonymyDet(final Determination det)
+    {
+        if (det.getId() == null)
+        {
+            return false;
+        }
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            return session.createQuery("select id from SpSynonymyDetermination where oldDeterminationId = " 
+                    + det.getId() + " or newDeterminationId = " + det.getId(), false).list().size() > 0;
+        }
+        finally
+        {
+            session.close();
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace)
+     */
+    @Override
+    public void okToDelete(Object dataObj,
+                           DataProviderSessionIFace session,
+                           BusinessRulesOkDeleteIFace deletable)
+    {
+        if (deletable != null)
+        {
+            Determination det = (Determination )dataObj;
+            boolean doDelete = true;
+            if (isSynonymyDet(det))
+            {
+                doDelete = UIRegistry.displayConfirmLocalized("DeterminationBusRule.SynDetDelTitle", "DeterminationBusRule.SynDetDelMsg", "YES", "CANCEL", JOptionPane.QUESTION_MESSAGE);
+            }
+            if (doDelete)
+            {
+                deletable.doDeleteDataObj(dataObj, session, true);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session)
+            throws Exception
+    {
+        if (!super.beforeSaveCommit(dataObj, session))
         {
             return false;
         }
         
-        Determination detObj = (Determination )dataObj;
-        if (detObj.getOldSynonymyDeterminations().size() > 0 || detObj.getNewSynonymyDeterminations().size() > 0)
+        if (dataObj == null)
         {
-            return false;
+            return true;
         }
-
+        
+        if (isSynonymyDet((Determination )dataObj))
+        {
+            return UIRegistry.displayConfirmLocalized("DeterminationBusRule.SynDetDelTitle", "DeterminationBusRule.SynDetDelMsg", "YES", "CANCEL", JOptionPane.QUESTION_MESSAGE);
+        }
+        
         return true;
     }
 

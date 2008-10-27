@@ -33,6 +33,7 @@ import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.ui.treetables.TreeNode;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -950,7 +951,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
                 
                 if (!commitTransaction(session, tx)) // NOTE: this call will close an open session.
                 {
-                    statusMsg = "Failed to create node relationship.";
+                    statusMsg = UIRegistry.getResourceString("HibernateTreeDataService.NodeSynonymizedAddlRelError");
                 }
             } else
             {
@@ -992,7 +993,11 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
                 
                 if (!commitTransaction(session, tx)) // NOTE: this call will close an open session.
                 {
-                    statusMsg = "Failed to create node relationship.";
+                    statusMsg = UIRegistry.getResourceString("HibernateTreeDataService.NodeUnSynonymizedAddlRelError");
+                }
+                else
+                {
+                    statusMsg = String.format(UIRegistry.getResourceString("HibernateTreeDataService.NodeUnSynonymized"), node.getFullName());
                 }
             } else
             {

@@ -1774,6 +1774,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             stmt.executeUpdate(insertStr);
             detStatusCurrentID = BasicSQLUtils.getInsertedId(stmt);
             
+            insertStr = createDetStatausInsert("Current Accepted", DeterminationStatus.CURRENTTOACCEPTED);
+            log.debug(insertStr);
+            stmt.executeUpdate(insertStr);
+            detStatusCurrAccID  = BasicSQLUtils.getInsertedId(stmt);
+
             insertStr = createDetStatausInsert("Not Current", DeterminationStatus.NOTCURRENT);
             log.debug(insertStr);
             stmt.executeUpdate(insertStr);
@@ -1784,10 +1789,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             stmt.executeUpdate(insertStr);
             detStatusOldDetID  = BasicSQLUtils.getInsertedId(stmt);
             
-            insertStr = createDetStatausInsert("Current Accepted", DeterminationStatus.CURRENTTOACCEPTED);
-            log.debug(insertStr);
-            stmt.executeUpdate(insertStr);
-            detStatusCurrAccID  = BasicSQLUtils.getInsertedId(stmt);
 
             stmt.close();
 
