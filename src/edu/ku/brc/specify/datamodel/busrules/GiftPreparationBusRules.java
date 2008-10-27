@@ -6,6 +6,7 @@
      */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -15,6 +16,8 @@ import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.TableViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
+import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.specify.datamodel.GiftPreparation;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -73,6 +76,7 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
                     }
                 });
             }
+            
         } else if (viewableArg instanceof TableViewObj)
         {
             final TableViewObj tvo = (TableViewObj)viewableArg;
@@ -101,6 +105,27 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
         }
     }
     
+    @Override
+    public void afterFillForm(Object dataObj)
+    {
+        Component comp = formViewObj.getControlByName("quantity");
+        if (comp instanceof ValSpinner && dataObj != null)
+        {
+            GiftPreparation  giftPrep   = (GiftPreparation)dataObj;
+            
+            //boolean    isNewObj         = giftPrep.getId() == null;
+            ValSpinner quantity         = (ValSpinner)comp;
+            
+            quantity.setRange(0, giftPrep.getQuantity(), giftPrep.getQuantity());
+            
+            //quantityReturned.setEnabled(!isNewObj);
+            //int max = Math.max(loanPrep.getQuantity(), loanPrep.getQuantityReturned());
+            //quantityReturned.setRange(0, max, loanPrep.getQuantityReturned());
+            //formViewObj.getLabelFor(quantityReturned).setEnabled(!isNewObj);
+        }
+
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#formShutdown()
      */
