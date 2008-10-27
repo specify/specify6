@@ -540,7 +540,7 @@ public class RecordSet extends CollectionMember implements java.io.Serializable,
         
         if (rsId != null)
         {
-            String sql = "FROM RecordSetItem WHERE RecordSetID = "+rsId;
+            String sql = "FROM recordsetitem WHERE RecordSetID = "+rsId;
             
             int count = BasicSQLUtils.getCount("SELECT count(*) " + sql);
             if (count > 0)
