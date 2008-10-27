@@ -556,7 +556,17 @@ public class MainFrameSpecify extends MainFrame
     protected static AppResAndProps getProps(final String repResName, final Integer tableId, final ReportSpecify rep, 
     		final AppResourceIFace appRes)
     {
-        RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, "Report", tableId == null, rep);
+        String repType;
+        if (appRes == null)
+        {
+            repType = "Report";
+        }
+        else
+        {
+            String mime = appRes.getMimeType();
+            repType = mime.equals(ReportsBaseTask.LABELS_MIME) ? "Label" : "Report";
+        }
+        RepResourcePropsPanel propPanel = new RepResourcePropsPanel(repResName, repType, tableId == null, rep);
         boolean goodProps = false;
         boolean overwrite = false;
         SpAppResource match = null;
