@@ -23,6 +23,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -34,6 +35,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -163,6 +165,7 @@ public class UIFormatterListEdtDlg extends CustomDialog
         
         formatList = createList(listModel);
         formatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        //formatList.setCellRenderer(new FmtListRenderer());
         hookFormatListSelectionListener();
         hookFormatListMouseListener();
         
@@ -215,6 +218,8 @@ public class UIFormatterListEdtDlg extends CustomDialog
         //pb.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
+        
+        okBtn.setEnabled(false);
         
         pack();
         
@@ -277,6 +282,7 @@ public class UIFormatterListEdtDlg extends CustomDialog
         dedaPanel.getDelBtn().setEnabled(selected);
         dedaPanel.getEditBtn().setEnabled(selected);
         dedaPanel.getDefBtn().setEnabled(selected);
+        okBtn.setEnabled(formatList.getSelectedIndex() > -1);
     }
     
     /**
@@ -318,6 +324,11 @@ public class UIFormatterListEdtDlg extends CustomDialog
                 {
                     model.addElement(selectedUIF);
                     uiFieldFormatterMgrCache.addFormatter(selectedUIF);
+                    if (model.size() == 1)
+                    {
+                        selectedUIF.setDefault(true);
+                        formatList.setSelectedValue(selectedUIF, true);
+                    }
                     
                 } else
                 {
@@ -388,4 +399,24 @@ public class UIFormatterListEdtDlg extends CustomDialog
         return (UIFieldFormatterIFace)formatList.getSelectedValue();
     }
     
+    //-----------------------------------------------------------
+    //-- List Renderer
+    //-----------------------------------------------------------
+    class FmtListRenderer extends DefaultListCellRenderer
+    {
+
+        @Override
+        public Component getListCellRendererComponent(JList list,
+                                                      Object value,
+                                                      int index,
+                                                      boolean isSelected,
+                                                      boolean cellHasFocus)
+        {
+            UIFieldFormatterIFace fmt = (UIFieldFormatterIFace)value;
+            JLabel label = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            label.setText(fmt.getTitle() + "  ("+fmt.toPattern() + ")");
+            return label;
+        }
+    }
+
 }

@@ -353,9 +353,12 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                                                             fieldInfo,
                                                             schemaPanel.getUiFieldFormatterMgrCache());
                     dlg.setVisible(true);
-                    if (dlg.isCancelled() && dlg.hasChanged())
+                    if (!dlg.isCancelled() && dlg.hasChanged())
                     {
                         schemaPanel.setHasChanged(true);
+                        
+                        //fillFormatBox(dlg.getSelectedFormat());
+                        setSelectedFieldFormatter(dlg.getSelectedFormat());
                     }
                 }
             });
@@ -611,7 +614,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     	fld.setFormat( newFormat );
     	
     	// first reset combo box in case any formatters have been deleted
-    	fillWithFieldFormatter();
+    	fillWithFieldFormatter(formatter);
     	
 		setHasChanged(newFormat.equals(oldFormat));
     	
@@ -706,7 +709,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     /**
      * Fills the format Combobox with the available formatters.
      */
-    protected void fillFormatBox()
+    protected void fillFormatBox(final UIFieldFormatterIFace fmtr)
     {
         if (formatCombo != null)
         {
@@ -730,7 +733,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                         
                     } else 
                     {
-                        fillWithFieldFormatter();
+                        fillWithFieldFormatter(fmtr);
                     }
                 }
             }
@@ -762,7 +765,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     /**
      * @return
      */
-    protected UIFieldFormatterIFace fillWithFieldFormatter()
+    protected UIFieldFormatterIFace fillWithFieldFormatter(final UIFieldFormatterIFace formatter)
     {
         formatHash.clear();
         DefaultComboBoxModel cbxModel = (DefaultComboBoxModel)formatCombo.getModel();
@@ -775,19 +778,6 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         {
             formatCombo.setEnabled(true);
             formatMoreBtn.setEnabled(true);
-        }
-        
-        boolean              isUIFormatter = false;
-        String               formatName    = null;
-        LocalizableItemIFace fld           = getSelectedFieldItem();
-        if (fld != null)
-        {
-            formatName    = fld.getFormat();
-            isUIFormatter = fld.getIsUIFormatter() == null ? false : fld.getIsUIFormatter();
-            
-        } else
-        {
-            return null; // Why did this happen?
         }
         
         int selectedInx = 0; // default to 'None'
@@ -810,7 +800,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 
                 cbxModel.addElement(fmt);
                 
-                if (isUIFormatter && formatName != null && formatName.equals(fmt.getName()))
+                if (formatter != null && formatter.getName().equals(fmt.getName()))
                 {
                     selectedInx = cbxModel.getSize() - 1;
                     selectedFmt = fmt;
@@ -822,14 +812,6 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         webLinkCombo.setEnabled(hasFormat);
         
         formatCombo.setSelectedIndex(selectedInx);
-        
-        if (hasFormat)
-        {
-            
-        } else
-        {
-            
-        }
         
         return selectedFmt;
     }
@@ -1064,6 +1046,33 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
     }
     
     /**
+     * @param field
+     */
+    protected void getFormatterFromUI(final LocalizableItemIFace field)
+    {
+        Object item = formatCombo.getSelectedItem();
+        if (item != null) // should never be null
+        {
+            // there is only one string in the list... the None string
+            // others are the formatter objects (not only strings with their names) 
+            boolean isNone = item instanceof String; 
+            if (!isNone)
+            {
+                UIFieldFormatterIFace frmt = (UIFieldFormatterIFace) item;
+                field.setFormat(frmt.getName());
+                field.setIsUIFormatter(true);
+            
+            } else
+            {
+                field.setIsUIFormatter(false);
+                field.setFormat(null);
+            }
+        } else
+        {
+            log.error("We should never get here!");
+        }
+    }
+    /**
      * 
      */
     protected boolean getItemDataFromUI()
@@ -1094,27 +1103,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
                 
             } else if (formatCombo != null && formatCombo.getSelectedIndex() > 0)
             {
-                Object item = formatCombo.getSelectedItem();
-                if (item != null) // should never be null
-                {
-                	// there is only one string in the list... the None string
-                	// others are the formatter objects (not only strings with their names) 
-                	boolean isNone = item instanceof String; 
-                    if (!isNone)
-                    {
-                    	UIFieldFormatterIFace frmt = (UIFieldFormatterIFace) item;
-                        prevField.setFormat(frmt.getName());
-                        prevField.setIsUIFormatter(true);
-                    
-                    } else
-                    {
-                        prevField.setIsUIFormatter(false);
-                        prevField.setFormat(null);
-                    }
-                } else
-                {
-                    log.error("We should never get here!");
-                }
+                getFormatterFromUI(prevField);
                     
             } else if (webLinkCombo != null && webLinkCombo.getSelectedIndex() > 0)
             {
@@ -1430,7 +1419,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             fieldLengthTxt.setText("");
         }
         
-        fillFormatBox();
+        fillFormatBox(null);
         fillWebLinkBox();
         
         String label = SL_NONE;

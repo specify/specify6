@@ -583,7 +583,17 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
      */
     public String toString()
     {
-    	return toPattern() + (isDefault ? (' ' + deftitle) : "");
+        StringBuilder str = new StringBuilder(getTitle());
+        str.append(" [");
+        for (UIFieldFormatterField field : fields)
+        {
+            str.append(field.getValue());
+        }
+        str.append("]");
+
+        str.append(isDefault ? (' ' + deftitle) : "");
+        
+    	return str.toString();
     }
 
     /* (non-Javadoc)

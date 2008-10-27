@@ -71,6 +71,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -104,6 +105,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
+import javax.swing.text.MaskFormatter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -2968,11 +2970,38 @@ public final class UIHelper
 
     public static JList createList(final Vector<?> items)
     {
-    	JList lst = new JList(items);
+        JList lst = new JList(items);
         if (isMacOS_10_5_X)
         {
-        	lst.putClientProperty("JComboBox.isPopDown", Boolean.TRUE);
+            lst.putClientProperty("JComboBox.isPopDown", Boolean.TRUE);
         }
         return lst;
     }
+    
+    public static JFormattedTextField createFormattedTexField(final String mask)
+    {
+        JFormattedTextField ftf = new JFormattedTextField(createFormatterMask(mask));
+        setControlSize(ftf);
+        return ftf;
+    }
+    
+    /**
+     * @param mask
+     * @return
+     */
+    public static MaskFormatter createFormatterMask(final String mask)
+    {
+        MaskFormatter maskFormatter = null;
+        try
+        {
+            maskFormatter = new MaskFormatter(mask);
+            
+        } catch (java.text.ParseException exc)
+        {
+            System.err.println("formatter is bad: " + exc.getMessage());
+            System.exit(-1);
+        }
+        return maskFormatter;
+    }
+    
 }

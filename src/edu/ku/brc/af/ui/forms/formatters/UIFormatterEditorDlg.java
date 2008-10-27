@@ -461,7 +461,11 @@ public class UIFormatterEditorDlg extends CustomDialog
         boolean byYearEnabled = (selectedFormat != null) && (selectedFormat.byYearApplies());
         byYearCB.setEnabled(byYearEnabled);
         
-        okBtn.setEnabled(hasChanged && !isInError);
+        okBtn.setEnabled(hasChanged && 
+                         !isInError && 
+                         nameTF.getText().length() > 0 && 
+                         titleTF.getText().length() > 0 && 
+                         formatTF.getText().length() > 0);
     }
 
 
@@ -472,5 +476,4 @@ public class UIFormatterEditorDlg extends CustomDialog
     {
         return selectedFormat;
     }
-    
 }

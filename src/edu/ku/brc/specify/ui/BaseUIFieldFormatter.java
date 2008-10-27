@@ -23,6 +23,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatter.PartialDateEnum;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -37,6 +38,8 @@ import edu.ku.brc.util.Pair;
  */
 public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
 {
+    protected static final String  deftitle = UIRegistry.getResourceString("FFE_DEFAULT");
+    
     protected String                name;
     protected String                title;
     protected boolean               isNumericCatalogNumber;
@@ -435,7 +438,17 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     @Override
     public String toString()
     {
-        return title;
+        StringBuilder str = new StringBuilder(getTitle());
+        str.append(" [");
+        for (UIFieldFormatterField fld : fields)
+        {
+            str.append(fld.getValue());
+        }
+        str.append("]");
+
+        str.append(isDefault ? (' ' + deftitle) : "");
+        
+        return str.toString();
     }
     
     /* (non-Javadoc)
