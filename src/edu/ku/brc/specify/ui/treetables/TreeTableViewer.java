@@ -1078,10 +1078,45 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         String statusMsg = dataService.unSynonymize(nodeRecord);
         node.setAcceptedParentId(null);
         node.setAcceptedParentFullName(null);
+        
+        T synParent = nodeRecord.getParent();
+        T acceptedNodeParent = null;
+        
+        node.setCalcCount(false);
+        node.setCalcCount2(false);
+        node.setHasCalcCount(false);
+        node.setHasCalcCount2(false);
         if (acceptedNode != null)
         {
+            acceptedNode.setCalcCount(false);
+            acceptedNode.setCalcCount2(false);
+            acceptedNode.setHasCalcCount(false);
+            acceptedNode.setHasCalcCount2(false);
+            
+            T acceptedRecord = getRecordForNode(acceptedNode);
+            acceptedNodeParent = acceptedRecord.getParent();
+            
             acceptedNode.removeSynonym(node.getId());
         }
+        
+        
+        Vector<TreeNode> draggedChildren = new Vector<TreeNode>();
+        Vector<TreeNode> droppedChildren = new Vector<TreeNode>();
+        if (acceptedNodeParent == null || synParent.getTreeId().equals(acceptedNodeParent.getTreeId()))
+        {
+            draggedChildren.add(node);
+            if (acceptedNodeParent != null)
+            draggedChildren.add(acceptedNode);
+            showCounts(synParent, draggedChildren);
+        }
+        else if (acceptedNodeParent != null)
+        {
+            draggedChildren.add(node);
+            droppedChildren.add(acceptedNode);
+            showCounts(synParent, draggedChildren);
+            showCounts(acceptedNodeParent, droppedChildren);
+        }
+        
         UIRegistry.displayStatusBarText(statusMsg);
         updateAllUI();
         

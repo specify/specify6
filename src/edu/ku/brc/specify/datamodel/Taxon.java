@@ -1028,7 +1028,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
             "WHERE tx.TaxonID = " +getId() + " AND co.CollectionMemberID = COLMEMID";
         if (current)
         {
-            sql += " AND ds.Type = 1";
+            sql += " AND ds.Type in (1, 2)";
         }
         return BasicSQLUtils.getNumRecords(QueryAdjusterForDomain.getInstance().adjustSQL(sql));
     }
