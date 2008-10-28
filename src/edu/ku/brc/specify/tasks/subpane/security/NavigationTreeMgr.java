@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
+import java.awt.Frame;
 import java.util.HashSet;
 
 import javax.swing.JTree;
@@ -10,8 +11,11 @@ import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
@@ -19,6 +23,7 @@ import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroupScope;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This class perform operations on the security administration navigation tree, such as 
@@ -34,48 +39,87 @@ public class NavigationTreeMgr
 
     private JTree tree;
     
-    NavigationTreeMgr(JTree tree) {
+    /**
+     * @param tree
+     */
+    NavigationTreeMgr(final JTree tree)
+    {
         this.tree = tree;
     }
-    
-    public final JTree getTree() {
+
+    /**
+     * @return
+     */
+    public final JTree getTree()
+    {
         return tree;
     }
     
-    public void addNewUser(DefaultMutableTreeNode grpNode) {
+    /**
+     * @param grpNode
+     */
+    public void addNewUser(final DefaultMutableTreeNode grpNode) 
+    {
         if (grpNode == null || !(grpNode.getUserObject() instanceof DataModelObjBaseWrapper))
-            // Nothing is selected or object type isn't relevant    
-            return;
-
+        {
+            return; // Nothing is selected or object type isn't relevant 
+        }
+        
         DataModelObjBaseWrapper parentWrp  = (DataModelObjBaseWrapper) (grpNode.getUserObject());
         if (!parentWrp.isGroup())
-            // selection isn't a suitable parent for a group
-            return;
+        {
+            return; // selection isn't a suitable parent for a group
+        }
         
         SpPrincipal group = (SpPrincipal) parentWrp.getDataObj();
         SpecifyUser user = new SpecifyUser();
         user.initialize();
-        addGroupToUser(group, user);
         
-        DataModelObjBaseWrapper userWrp  = new DataModelObjBaseWrapper(user);
-        DefaultMutableTreeNode  userNode = new DefaultMutableTreeNode(userWrp);
-        
-        DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-        model.insertNodeInto(userNode, grpNode, grpNode.getChildCount());
-        
-        tree.setSelectionPath(new TreePath(userNode.getPath()));
+        ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getMostRecentWindow(),
+                                                                null,
+                                                                "User",
+                                                                null,
+                                                                "New User",
+                                                                null,
+                                                                user.getClass().getName(),
+                                                                "specifyUserId",
+                                                                true,
+                                                               MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE);
+        dlg.setData(user);
+        dlg.setVisible(true);
+        if (!dlg.isCancelled())
+        {
+            user.setUserType(group.getGroupType());
+            addGroupToUser(group, user);
+            
+            DataModelObjBaseWrapper userWrp  = new DataModelObjBaseWrapper(user);
+            DefaultMutableTreeNode  userNode = new DefaultMutableTreeNode(userWrp);
+            
+            DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+            model.insertNodeInto(userNode, grpNode, grpNode.getChildCount());
+            
+            tree.setSelectionPath(new TreePath(userNode.getPath()));
+        }
     }
     
-    public void addExistingUser(DefaultMutableTreeNode grpNode, final SpecifyUser[] userArray) {
+    /**
+     * @param grpNode
+     * @param userArray
+     */
+    public void addExistingUser(final DefaultMutableTreeNode grpNode, 
+                                final SpecifyUser[] userArray) 
+    {
         if (userArray.length == 0 || grpNode == null || 
                 !(grpNode.getUserObject() instanceof DataModelObjBaseWrapper))
-            // Nothing is selected or object type isn't relevant    
-            return;
+        {
+            return; // Nothing is selected or object type isn't relevant 
+        }
 
         DataModelObjBaseWrapper parentWrp  = (DataModelObjBaseWrapper) (grpNode.getUserObject());
         if (!parentWrp.isGroup())
-            // selection isn't a suitable parent for a group
-            return;
+        {
+            return; // selection isn't a suitable parent for a group
+        }
         
         SpPrincipal group = (SpPrincipal) parentWrp.getDataObj();
         addGroupToUser(group, userArray);
@@ -85,8 +129,8 @@ public class NavigationTreeMgr
         tree.setSelectionPath(new TreePath(lastUserNode.getPath()));
     }
     
-    private DefaultMutableTreeNode addUsersToTree(
-            DefaultMutableTreeNode grpNode, final SpecifyUser[] userArray)
+    private DefaultMutableTreeNode addUsersToTree(final  DefaultMutableTreeNode grpNode, 
+                                                  final SpecifyUser[] userArray)
     {
         DefaultMutableTreeNode lastUserNode = null;
         for (SpecifyUser user : userArray) 
@@ -102,15 +146,21 @@ public class NavigationTreeMgr
         return lastUserNode;
     }
     
-    public void addNewGroup(DefaultMutableTreeNode parentNode) {
+    /**
+     * @param parentNode
+     */
+    public void addNewGroup(final DefaultMutableTreeNode parentNode) 
+    {
         if (parentNode == null || !(parentNode.getUserObject() instanceof DataModelObjBaseWrapper))
-            // Nothing is selected or object type isn't relevant    
-            return;
+        {
+            return; // Nothing is selected or object type isn't relevant    
+        }
 
         DataModelObjBaseWrapper parentWrp  = (DataModelObjBaseWrapper) (parentNode.getUserObject());
         if (!parentWrp.isInstitution() && !parentWrp.isDiscipline() && !parentWrp.isCollection())
-            // selection isn't a suitable parent for a group
-            return;
+        {
+            return; // selection isn't a suitable parent for a group
+        }
         
         UserGroupScope scope = (UserGroupScope) parentWrp.getDataObj();
         SpPrincipal group = new SpPrincipal();
@@ -129,15 +179,21 @@ public class NavigationTreeMgr
         tree.setSelectionPath(new TreePath(grpNode.getPath()));
     }
     
-    public void addNewCollection(DefaultMutableTreeNode discNode) {
+    /**
+     * @param discNode
+     */
+    public void addNewCollection(final DefaultMutableTreeNode discNode) 
+    {
         if (discNode == null || !(discNode.getUserObject() instanceof DataModelObjBaseWrapper))
-            // Nothing is selected or object type isn't relevant    
-            return;
+        {
+            return;// Nothing is selected or object type isn't relevant    
+        }
 
         DataModelObjBaseWrapper discWrp  = (DataModelObjBaseWrapper) (discNode.getUserObject());
         if (!discWrp.isDiscipline())
-            // selection isn't a discipline
-            return;
+        {
+            return; // selection isn't a discipline
+        }
         
         Discipline discipline = (Discipline) discWrp.getDataObj();
         Collection collection = new Collection();
@@ -155,18 +211,20 @@ public class NavigationTreeMgr
         tree.setSelectionPath(new TreePath(collNode.getPath()));
     }
     
-    public void addNewDiscipline(DefaultMutableTreeNode instNode) {
+    /**
+     * @param instNode
+     */
+    public void addNewDiscipline(final DefaultMutableTreeNode instNode) 
+    {
         if (instNode == null || !(instNode.getUserObject() instanceof DataModelObjBaseWrapper))
         {
-            // Nothing is selected or object type isn't relevant    
-            return;
+            return;// Nothing is selected or object type isn't relevant    
         }
 
         DataModelObjBaseWrapper instWrp  = (DataModelObjBaseWrapper) (instNode.getUserObject());
         if (!instWrp.isInstitution())
         {
-            // selection isn't an institution
-            return;
+            return; // selection isn't an institution
         }
         
         Institution institution = (Institution) instWrp.getDataObj();
@@ -201,15 +259,26 @@ public class NavigationTreeMgr
         tree.setSelectionPath(new TreePath(discNode.getPath()));
     }
     
-    public void deleteItem(@SuppressWarnings("unused")DefaultMutableTreeNode node) {
+    /**
+     * @param node
+     */
+    public void deleteItem(@SuppressWarnings("unused")DefaultMutableTreeNode node) 
+    {
         
     }
     
-    private final void save(Object object) {
+    /**
+     * @param object
+     */
+    private final void save(final Object object) 
+    {
         save(new Object[] {object});
     }
     
-    private final void save(Object[] objectArray) 
+    /**
+     * @param objectArray
+     */
+    private final void save(final Object[] objectArray) 
     {
         DataProviderSessionIFace session = null;
         try
@@ -222,14 +291,14 @@ public class NavigationTreeMgr
                 session.saveOrUpdate(object);
             }
             session.commit();
-        }
-        catch (final Exception e1)
+            
+        } catch (final Exception e1)
         {
             session.rollback();
             log.error("Exception caught: " + e1.toString());
             e1.printStackTrace();
-        } 
-        finally
+            
+        } finally
         {
             if (session != null)
             {
@@ -238,11 +307,21 @@ public class NavigationTreeMgr
         }
     }
     
-    private final void addGroupToUser(SpPrincipal group, SpecifyUser user) {
+    /**
+     * @param group
+     * @param user
+     */
+    private final void addGroupToUser(final SpPrincipal group, final SpecifyUser user)
+    {
         addGroupToUser(group, new SpecifyUser[] { user });
     }
     
-    private final void addGroupToUser(SpPrincipal group, SpecifyUser[] users) {
+    /**
+     * @param group
+     * @param users
+     */
+    private final void addGroupToUser(final SpPrincipal group, final SpecifyUser[] users)
+    {
         DataProviderSessionIFace session = null;
         try
         {
@@ -250,23 +329,36 @@ public class NavigationTreeMgr
             session.beginTransaction();
             for (SpecifyUser user : users) 
             {
-                session.attach(user);
+                if (user.getId() != null)
+                {
+                    session.attach(user);
+                }
+                
                 session.attach(group);
-                if (user.getSpPrincipals() == null) {
+                if (user.getSpPrincipals() == null)
+                {
                     user.setSpPrincipals(new HashSet<SpPrincipal>());
                 }
+                
+                SpPrincipal userPrincipal = DataBuilder.createUserPrincipal(user);
+                user.addUserToSpPrincipalGroup(userPrincipal);
+
                 user.getSpPrincipals().add(group);
+                group.getSpecifyUsers().add(user);
+                
                 session.saveOrUpdate(user);
+                session.saveOrUpdate(userPrincipal);
+                session.saveOrUpdate(group);
             }
             session.commit();
-        }
-        catch (final Exception e1)
+            
+        } catch (final Exception e1)
         {
             session.rollback();
             log.error("Exception caught: " + e1.toString());
             e1.printStackTrace();
-        } 
-        finally
+            
+        } finally
         {
             if (session != null)
             {

@@ -981,6 +981,9 @@ public class BuildSampleDatabase
         persist(division);
         persist(discipline);
         
+        AppContextMgr.getInstance().setClassObject(Division.class, division);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
+        AppContextMgr.getInstance().setClassObject(Institution.class, institution);
 
         loadSchemaLocalization(discipline, 
                 SpLocaleContainer.CORE_SCHEMA, 
@@ -1017,7 +1020,7 @@ public class BuildSampleDatabase
         
         persist(userAgent);
         persist(user);
-
+        
         // Tester
         Agent testerAgent = createAgent("mr", "Bob", "", "Botony", "", "botanyuser@ku.edu");
         testerAgent.setDivision(division);
@@ -1103,6 +1106,11 @@ public class BuildSampleDatabase
         persist(gtps);
         persist(lithoStrats);
         commitTx();
+        
+        AppContextMgr.getInstance().setClassObject(Division.class, division);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
+        AppContextMgr.getInstance().setClassObject(Institution.class, institution);
+
         
         startTx();
         frame.setProcess(++createStep);
@@ -1794,6 +1802,11 @@ public class BuildSampleDatabase
         persist(institution);
         persist(division);
         persist(discipline);
+        
+        AppContextMgr.getInstance().setClassObject(Division.class, division);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
+        AppContextMgr.getInstance().setClassObject(Institution.class, institution);
+
 
         loadSchemaLocalization(discipline, 
                 SpLocaleContainer.CORE_SCHEMA, 
@@ -2247,6 +2260,11 @@ public class BuildSampleDatabase
         persist(division);
         persist(discipline);
         //persist(disciplineGroup);
+        
+        AppContextMgr.getInstance().setClassObject(Division.class, division);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
+        AppContextMgr.getInstance().setClassObject(Institution.class, institution);
+
 
         loadSchemaLocalization(discipline, 
                 SpLocaleContainer.CORE_SCHEMA, 
@@ -3320,6 +3338,11 @@ public class BuildSampleDatabase
 
         persist(division);
         persist(discipline);
+        
+        AppContextMgr.getInstance().setClassObject(Division.class, division);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
+        AppContextMgr.getInstance().setClassObject(Institution.class, institution);
+
 
         frame.setDesc("Loading Schema...");
         
@@ -4404,6 +4427,8 @@ public class BuildSampleDatabase
         commitTx();
         
         AppContextMgr.getInstance().setClassObject(Division.class, division);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
+        AppContextMgr.getInstance().setClassObject(Institution.class, institution);
         
         ////////////////////////////////
         // Create the really high-level stuff

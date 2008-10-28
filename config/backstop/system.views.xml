@@ -768,6 +768,10 @@
                     <cell type="label" labelfor="3" label="Password"/>
                     <cell type="field" id="3" name="password" uitype="password" cols="15"/> 
                 </row>
+                <row>
+                    <cell type="label" label="Agent"/>
+                    <cell type="field" id="4" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true" ignore="true"/>
+                </row>            
                 <!--row>
                     <cell type="label" labelfor="4" label="Retype Password"/>
                     <cell type="field" id="4" name="password" uitype="text" cols="15"/>

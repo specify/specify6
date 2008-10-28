@@ -48,6 +48,10 @@ public class UserPrincipalHibernateService
         // TODO Auto-generated constructor stub
     }
 
+    /**
+     * @param user
+     * @return
+     */
     static public SpPrincipal getUserPrincipalBySpecifyUser(SpecifyUser user)
     {
         DataProviderSessionIFace session = null;
@@ -55,7 +59,7 @@ public class UserPrincipalHibernateService
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            String sql = "FROM SpPrincipal WHERE GroupSubClass='" + UserPrincipal.class.getCanonicalName() + "' AND Name='" + user.getName() + "'";
+            String sql = "FROM SpPrincipal WHERE GroupSubClass='" + UserPrincipal.class.getCanonicalName() + "' AND name = '" + user.getName() + "'";
             log.debug(sql);
             final List<?> lister = session.getDataList(sql);
             principal = (SpPrincipal)lister.get(0);
@@ -64,6 +68,7 @@ public class UserPrincipalHibernateService
         {
             log.error("Exception caught: " + e1.toString());
             e1.printStackTrace();
+            
         } finally
         {
             if (session != null)
@@ -74,6 +79,10 @@ public class UserPrincipalHibernateService
         return principal;
     }
     
+    /**
+     * @param name
+     * @return
+     */
     static public SpecifyUser getUserByName(String name)
     {
         DataProviderSessionIFace session = null;
@@ -98,25 +107,31 @@ public class UserPrincipalHibernateService
         return user;
     }
 
-    // XXX TODO convert to hibernate
+    /**
+     * @param user
+     * @param group
+     * @return
+     */
     static public boolean addToUserGroup(SpecifyUser user, SpPrincipal group)
     {
         Connection conn = null;
         try
         {
             log.debug("executing sql to add user to group"); //$NON-NLS-1$
+            
             conn = DatabaseService.getInstance().getConnection();
-            PreparedStatement pstmt = conn
-                    .prepareStatement("INSERT INTO specifyuser_spprincipal VALUES (?, ?)"); //$NON-NLS-1$
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO specifyuser_spprincipal VALUES (?, ?)"); //$NON-NLS-1$
             pstmt.setString(1, user.getId() + ""); //$NON-NLS-1$
             pstmt.setString(2, group.getId() + ""); //$NON-NLS-1$
             log.debug("executing: " + pstmt.toString()); //$NON-NLS-1$
             int res = pstmt.executeUpdate();
             return 0 < res;
+            
         } catch (SQLException e)
         {
             log.error("addToUserGroup - " + e); //$NON-NLS-1$
             e.printStackTrace();
+            
         } finally
         {
             if (conn != null)
@@ -134,11 +149,15 @@ public class UserPrincipalHibernateService
         return false;
     }
 
-    // XXX TODO convert to hibernate
+    /**
+     * @param user
+     * @param group
+     * @return
+     */
     static public boolean isUserInGroup(SpecifyUser user, SpPrincipal group)
     {
-        boolean empty = true;
-        Connection conn = null;
+        boolean    empty = true;
+        Connection conn  = null;
         try
         {
             log.debug("checking to see if user is in group before attempting to delete"); //$NON-NLS-1$
@@ -164,10 +183,12 @@ public class UserPrincipalHibernateService
                         + "]"); //$NON-NLS-1$
             }
             return !empty;
+            
         } catch (SQLException e)
         {
             log.error("Exception caught: " + e); //$NON-NLS-1$
             e.printStackTrace();
+            
         } finally
         {
             if (conn != null)
@@ -199,18 +220,25 @@ public class UserPrincipalHibernateService
         // return false;
     }
 
-    // XXX TODO convert to hibernate
+    /**
+     * @param user
+     * @param group
+     * @return
+     */
     static public boolean removeUserFromGroups(SpecifyUser user, SpPrincipal group)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        String qStr = "DELETE FROM specifyuser_spprincipal WHERE SpecifyUserID = " + user.getId() //$NON-NLS-1$
-                + " AND SpPrincipalID=" + group.getId(); //$NON-NLS-1$
+        String qStr = "DELETE FROM specifyuser_spprincipal WHERE SpecifyUserID = " + user.getId() + //$NON-NLS-1$
+                      " AND SpPrincipalID=" + group.getId(); //$NON-NLS-1$
         session.createQuery(qStr, false).executeUpdate();
         session.close();
         return true;
     }
 
-    // XXX TODO convert to hibernate
+    /**
+     * @param group
+     * @return
+     */
     static public boolean addUserGroup(SpPrincipal group)// throws SQLException
     {
         Connection conn = null;
@@ -223,6 +251,7 @@ public class UserPrincipalHibernateService
             pstmt.setString(1, group.getName());
             pstmt.setString(2, group.getClass().getName());
             return 0 < pstmt.executeUpdate();
+            
         } catch (Exception e)
         {
             log.error("Executing sql" + pstmt.toString()); //$NON-NLS-1$
@@ -243,7 +272,10 @@ public class UserPrincipalHibernateService
         }
     }
 
-    // XXX TODO convert to hibernate
+    /**
+     * @param group
+     * @throws SQLException
+     */
     static public void removeUserGroup(SpPrincipal group) throws SQLException
     {
         Connection conn = null;
@@ -251,13 +283,11 @@ public class UserPrincipalHibernateService
         {
             conn = DatabaseService.getInstance().getConnection();
 
-            PreparedStatement pstmtGrp = conn
-                    .prepareStatement("DELETE FROM specifyuser_spprincipal WHERE SpPrincipalID=?"); //$NON-NLS-1$
+            PreparedStatement pstmtGrp = conn.prepareStatement("DELETE FROM specifyuser_spprincipal WHERE SpPrincipalID=?"); //$NON-NLS-1$
             pstmtGrp.setString(1, group.getId() + ""); //$NON-NLS-1$
             pstmtGrp.executeUpdate();
 
-            PreparedStatement pstmt = conn
-                    .prepareStatement("DELETE FROM spprincipal WHERE SpPrincipalID=?"); //$NON-NLS-1$
+            PreparedStatement pstmt = conn .prepareStatement("DELETE FROM spprincipal WHERE SpPrincipalID=?"); //$NON-NLS-1$
             pstmt.setString(1, group.getId() + ""); //$NON-NLS-1$
             pstmt.executeUpdate();
 
@@ -265,6 +295,7 @@ public class UserPrincipalHibernateService
 
         {
             log.error("Exception caught: " + e); //$NON-NLS-1$
+            
         } finally
         {
             if (conn != null)
@@ -275,7 +306,11 @@ public class UserPrincipalHibernateService
 
     }
 
-    // XXX TODO convert to hibernate
+    /**
+     * @param user
+     * @param group
+     * @return
+     */
     static public boolean removeUserFromGroup(SpecifyUser user, SpPrincipal group)
     {
         Connection conn = null;
@@ -288,10 +323,12 @@ public class UserPrincipalHibernateService
             pstmt.setString(2, group.getId() + ""); //$NON-NLS-1$
             int res = pstmt.executeUpdate();
             return 0 < res;
+            
         } catch (SQLException e)
         {
             log.error("addToUserGroup - " + e); //$NON-NLS-1$
             e.printStackTrace();
+            
         } finally
         {
             if (conn != null)
@@ -308,14 +345,4 @@ public class UserPrincipalHibernateService
         }
         return false;
     }
-
-    /**
-     * @param args
-     */
-    public static void main(String[] args)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
 }

@@ -92,14 +92,14 @@ public class TaskConfigureDlg extends CustomDialog
      * @param mvLeftTTKey the locale title key for the tooltip for the move right btn
      */
     public TaskConfigureDlg(final Vector<TaskConfigItemIFace> stdList, 
-                                   final Vector<TaskConfigItemIFace> miscList,
-                                   final boolean includeAddPanels,
-                                   final String helpContext,
-                                   final String titleKey,
-                                   final String stdTitle,
-                                   final String miscTitle,
-                                   final String mvRightTTKey,
-                                   final String mvLeftTTKey)
+                            final Vector<TaskConfigItemIFace> miscList,
+                            final boolean includeAddPanels,
+                            final String helpContext,
+                            final String titleKey,
+                            final String stdTitle,
+                            final String miscTitle,
+                            final String mvRightTTKey,
+                            final String mvLeftTTKey)
     {
         super((Frame)getTopWindow(), getResourceString(titleKey), true, OKCANCELHELP, null);
         
@@ -235,8 +235,8 @@ public class TaskConfigureDlg extends CustomDialog
     /**
      * @param list
      */
-    protected void addItem(final JList list, @SuppressWarnings("unused")
-                                             final Vector<TaskConfigItemIFace> itemList)
+    protected void addItem(final JList list, 
+                           @SuppressWarnings("unused") final Vector<TaskConfigItemIFace> itemList)
     {
 
     }
