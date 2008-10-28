@@ -69,7 +69,7 @@
       <picklistitem title="Receiver" value="receiver"/>
     </items>
   </picklist>
-  <picklist name="DeaccessionRole" issystem="true" type="0" readonly="true" sizelimit="5">
+ <!-- <picklist name="DeaccessionRole" issystem="true" type="0" readonly="true" sizelimit="5">
     <items>
       <picklistitem title="Collector" value="collector"/>
       <picklistitem title="Staff" value="staff"/>
@@ -85,7 +85,7 @@
             <picklistitem title="Lost" value="lost"/>
             <picklistitem title="Other" value="other"/>
         </items>
-    </picklist>
+    </picklist> -->
   <picklist name="ReferenceWorkType" issystem="true" type="0" readonly="true" sizelimit="6">
     <items>
       <picklistitem title="Book" value="0"/>
