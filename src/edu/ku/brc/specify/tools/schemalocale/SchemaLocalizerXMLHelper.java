@@ -194,6 +194,53 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 }
             }
             
+            // remove non-english locales
+            if (false)
+            {
+                if (discipline == null)
+                {
+                    for (DisciplineBasedContainer dbc : containers)
+                    {
+                        for (SpLocaleContainerItem sci : dbc.getItems())
+                        {
+                            for (SpLocaleItemStr n : new Vector<SpLocaleItemStr>(sci.getNames()))
+                            {
+                                if (!n.getLanguage().equals("en"))
+                                {
+                                    sci.getNames().remove(n);
+                                    changesMadeDuringStartup = true;
+                                }
+                            }
+                            for (SpLocaleItemStr d : new Vector<SpLocaleItemStr>(sci.getDescs()))
+                            {
+                                if (!d.getLanguage().equals("en"))
+                                {
+                                    sci.getDescs().remove(d);
+                                    changesMadeDuringStartup = true;
+                                }
+                            }
+                        }
+                        
+                        for (SpLocaleItemStr n : new Vector<SpLocaleItemStr>(dbc.getNames()))
+                        {
+                            if (!n.getLanguage().equals("en"))
+                            {
+                                dbc.getNames().remove(n);
+                                changesMadeDuringStartup = true;
+                            }
+                        }
+                        for (SpLocaleItemStr d : new Vector<SpLocaleItemStr>(dbc.getDescs()))
+                        {
+                            if (!d.getLanguage().equals("en"))
+                            {
+                                dbc.getDescs().remove(d);
+                                changesMadeDuringStartup = true;
+                            }
+                        }
+                    }
+                }
+            }
+            
             if (containers != null)
             {
                 for (SpLocaleContainer ct : containers)

@@ -30,6 +30,8 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.PrepType;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 
 /**
  * Business Rules for PrepTypes.
@@ -181,6 +183,35 @@ public class PrepTypeBusRules extends BaseBusRules
                 session.close();
             }
         }
-        
+    }
+    
+    
+    /**
+     * Notifies the PickList Cache (Factory) that the PickList has changed.
+     * @param pickList the pickList that has changed
+     */
+    private void dispatchChangeNotification(final String pickListName)
+    {
+        CommandDispatcher.dispatch(new CommandAction("PICKLIST", "CLEAR",pickListName));
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterDeleteCommit(java.lang.Object)
+     */
+    @Override
+    public void afterDeleteCommit(Object dataObj)
+    {
+        super.afterDeleteCommit(dataObj);
+        dispatchChangeNotification(dataObj.getClass().getSimpleName());
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object)
+     */
+    @Override
+    public boolean afterSaveCommit(Object dataObj)
+    {
+        dispatchChangeNotification(dataObj.getClass().getSimpleName());
+        return super.afterSaveCommit(dataObj);
     }
 }

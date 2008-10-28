@@ -40,6 +40,8 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.EditDeleteAddPanel;
 import edu.ku.brc.ui.UIHelper;
@@ -278,7 +280,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             try
             {
                 pickListCache = list;
-                session = DataProviderFactory.getInstance().createSession();
+                session       = DataProviderFactory.getInstance().createSession();
                 plBusRules.okToDelete(pickList, session, this);
                 
             } catch (Exception ex)
@@ -314,9 +316,23 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         if (dlg.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
         {
             dlg.getMultiView().getCurrentViewAsFormViewObj().traverseToGetDataFromForms();
-            return PickList.save(true, pickList);
+            boolean isOK = PickList.save(true, pickList);
+            if (isOK)
+            {
+                dispatchChangeNotification(pickList);
+            }
+            return isOK;
         }
         return false;
+    }
+    
+    /**
+     * Notifies the PickList Cache (Factory) that the PickList has changed.
+     * @param pickList the pickList that has changed
+     */
+    private void dispatchChangeNotification(final PickList pickList)
+    {
+        CommandDispatcher.dispatch(new CommandAction("PICKLIST", "CLEAR", pickList.getName()));
     }
     
     /**
@@ -400,6 +416,8 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                     ((DefaultListModel)pickListCache.getModel()).remove(pickListCache.getSelectedIndex());
                     pickListCache = null;
                 }
+                
+                dispatchChangeNotification(pickList);
                 
                 UIRegistry.displayLocalizedStatusBarText("PL_DELETED", pickList.getName());
                 

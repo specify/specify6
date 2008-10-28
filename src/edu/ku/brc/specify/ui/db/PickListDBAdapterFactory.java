@@ -6,7 +6,8 @@
 */
 package edu.ku.brc.specify.ui.db;
 
-import java.util.List;
+import java.lang.ref.SoftReference;
+import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
 
@@ -19,6 +20,9 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
 
 /**
  * Factory for creating PickListDBAdapterIFace objects and PickListIFace objects.
@@ -30,10 +34,34 @@ import edu.ku.brc.specify.datamodel.PickListItem;
  * Created Date: Nov 10, 2006
  *
  */
-public class PickListDBAdapterFactory extends edu.ku.brc.af.ui.db.PickListDBAdapterFactory
+public class PickListDBAdapterFactory extends edu.ku.brc.af.ui.db.PickListDBAdapterFactory implements CommandListener
 {
+    protected static final String APP_CMD_TYPE      = "App"; //$NON-NLS-1$
+    protected static final String APP_START_ACT     = "StartUp"; //$NON-NLS-1$
+    protected static final String APP_RESTART_ACT   = "AppRestart"; //$NON-NLS-1$
+    protected static final String PICKLIST_TYPE     = "PICKLIST"; //$NON-NLS-1$
+
     protected static final Logger log = Logger.getLogger(PickListDBAdapterFactory.class);
     
+    // Data Members
+    //protected Hashtable<String, PickList> hash = new Hashtable<String, PickList>();
+    
+    protected static SoftReference<Hashtable<String, PickList>> hashSoftRef = null;
+    
+    /**
+     * 
+     */
+    public PickListDBAdapterFactory()
+    {
+        super();
+        
+        CommandDispatcher.register(PICKLIST_TYPE, this);
+        CommandDispatcher.register(APP_CMD_TYPE, this);
+        
+        Hashtable<String, PickList> hash = new Hashtable<String, PickList>();
+        hashSoftRef = new SoftReference<Hashtable<String,PickList>>(hash);
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListDBAdapterFactory#create(java.lang.String, boolean)
      */
@@ -63,41 +91,68 @@ public class PickListDBAdapterFactory extends edu.ku.brc.af.ui.db.PickListDBAdap
     }
     
     /**
+     * @return PickList Hashtable from SoftReference
+     */
+    private Hashtable<String, PickList> getHash()
+    {
+        Hashtable<String, PickList> hash = null;
+        if (hashSoftRef != null)
+        {
+            hash = hashSoftRef.get();
+            if (hash == null)
+            {
+                hash        = new Hashtable<String, PickList>();
+                hashSoftRef = new SoftReference<Hashtable<String,PickList>>(hash);
+            }
+        }
+        return hash;
+    }
+    
+    /**
      * Gets the PickList Item from the Database.
      * @param name the name of the picklist to get
      * @return the picklist
      */
-    @SuppressWarnings("unchecked")
     protected PickList getPickListInternal(final String name)
     {
-        PickList                 pkList  = null;
-        DataProviderSessionIFace session = null;
-        try
-        {
-            session = DataProviderFactory.getInstance().createSession();
-
-            // unchecked warning: Criteria results are always the requested class
-            String sql = "FROM PickList WHERE name = '" + name + "' AND collectionId = "+ AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId();
-            List<PickList> itemsList = (List<PickList>)session.getDataList(sql);
-            if (itemsList != null && itemsList.size() > 0)
-            {
-                pkList = itemsList.get(0);
-            }
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-            ex.printStackTrace();
-            
-        } finally 
-        {
-            if (session != null)
-            {
-                session.close();
-            }
-        }
+        Hashtable<String, PickList> hash     = getHash();
+        PickList                    pickList = null;
         
-        return pkList;
+        if (hash != null)
+        {
+            pickList = hash.get(name);
+            if (pickList == null)
+            {
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+        
+                    String sql = "FROM PickList WHERE name = '" + name + "' AND collectionId = "+ AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionId();
+                    pickList = (PickList)session.getData(sql);
+                    if (pickList != null)
+                    {
+                        hash.put(name, pickList);
+                    }
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    ex.printStackTrace();
+                    
+                } finally 
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+            }
+        } else
+        {
+            log.error("PickList hash was null!");
+        }
+        return pickList;
     }
     
     /* (non-Javadoc)
@@ -119,6 +174,30 @@ public class PickListDBAdapterFactory extends edu.ku.brc.af.ui.db.PickListDBAdap
         pli.initialize();
         return pli;
     }
-
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(final CommandAction cmdAction)
+    {
+        if (cmdAction.isAction(APP_RESTART_ACT) ||
+            cmdAction.isAction(APP_START_ACT))
+        {
+            Hashtable<String, PickList> hash = hashSoftRef.get();
+            if (hash != null)
+            {
+                hash.clear();
+            }
+            
+        } else if (cmdAction.isType(PICKLIST_TYPE) && cmdAction.isAction("CLEAR"))
+        {
+            String                      pickListName = (String)cmdAction.getData();
+            Hashtable<String, PickList> hash         = getHash();
+            if (hash != null)
+            {
+                hash.remove(pickListName);
+            }
+        }
+    }
  }

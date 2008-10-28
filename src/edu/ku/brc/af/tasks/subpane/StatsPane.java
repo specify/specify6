@@ -315,7 +315,7 @@ public class StatsPane extends BaseSubPane
         String title     = getAttr(boxElement, "title", " "); //$NON-NLS-1$ //$NON-NLS-2$
         String noresults = getAttr(boxElement, "noresults", null); //$NON-NLS-1$
         
-        log.debug("***** "+title+" *******");
+        //log.debug("***** "+title+" *******");
         
         String[] colNames = null;
         if (valCol != -1 && descCol == -1)
