@@ -18,7 +18,7 @@ package edu.ku.brc.specify.config;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.io.FileInputStream;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -45,9 +45,9 @@ public class UserGroupType implements Comparable<UserGroupType>
 {
     private static final Logger  log = Logger.getLogger(UserGroupType.class);
     
-    // Static WeakReference Data Members
-    protected static WeakReference<Vector<UserGroupType>>            userTypeList  = null;
-    protected static WeakReference<Hashtable<String, UserGroupType>> userTypeHash  = null;
+    // Static SoftReference Data Members
+    protected static SoftReference<Vector<UserGroupType>>            userTypeList  = null;
+    protected static SoftReference<Hashtable<String, UserGroupType>> userTypeHash  = null;
     
     // Data Members
     protected String  name;
@@ -126,7 +126,7 @@ public class UserGroupType implements Comparable<UserGroupType>
         
         if (list == null)
         {
-            userTypeList = new WeakReference<Vector<UserGroupType>>(loadUserTypeList());
+            userTypeList = new SoftReference<Vector<UserGroupType>>(loadUserTypeList());
         }
         
         return userTypeList.get();
@@ -181,7 +181,7 @@ public class UserGroupType implements Comparable<UserGroupType>
         
         if (hash == null)
         {
-        	userTypeHash = new WeakReference<Hashtable<String, UserGroupType>>(loadUserTypeHash());
+        	userTypeHash = new SoftReference<Hashtable<String, UserGroupType>>(loadUserTypeHash());
         }
         
         return userTypeHash.get();

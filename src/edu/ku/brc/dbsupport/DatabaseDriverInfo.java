@@ -17,7 +17,7 @@ package edu.ku.brc.dbsupport;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.io.FileInputStream;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -45,7 +45,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
     
     private static final Logger log  = Logger.getLogger(DatabaseDriverInfo.class);
     
-    protected static WeakReference<Vector<DatabaseDriverInfo>> driverList = null;
+    protected static SoftReference<Vector<DatabaseDriverInfo>> driverList = null;
     
     protected String name;
     protected String driver;
@@ -269,7 +269,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
         
         if (list == null)
         {
-            driverList = new WeakReference<Vector<DatabaseDriverInfo>>(loadDatabaseDriverInfo());
+            driverList = new SoftReference<Vector<DatabaseDriverInfo>>(loadDatabaseDriverInfo());
         }
         
         return driverList.get();

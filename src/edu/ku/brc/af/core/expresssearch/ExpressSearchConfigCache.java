@@ -17,7 +17,7 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -57,15 +57,15 @@ public class ExpressSearchConfigCache
     private static final Logger log = Logger.getLogger(ExpressSearchConfigCache.class);
             
     protected static ExpressSearchConfigCache        instance  = new ExpressSearchConfigCache();
-    protected static WeakReference<TableInfoWeakRef> tableInfo = null;
+    protected static SoftReference<TableInfoSoftRef> tableInfo = null;
     
     /**
      * Returns the HashMap of ExpressResultsTableInfo items mapped By Name.
      * @return the HashMap of ExpressResultsTableInfo items mapped By Name.
      */
-    public static synchronized TableInfoWeakRef getTableInfoWeakRef()
+    public static synchronized TableInfoSoftRef getTableInfoWeakRef()
     {
-        TableInfoWeakRef tableInfoWR = null;
+        TableInfoSoftRef tableInfoWR = null;
      
         if (instance != null)
         {
@@ -77,7 +77,7 @@ public class ExpressSearchConfigCache
             if (tableInfoWR == null)
             {
                 tableInfoWR = intializeTableInfo();
-                tableInfo = new WeakReference<TableInfoWeakRef>(tableInfoWR);
+                tableInfo = new SoftReference<TableInfoSoftRef>(tableInfoWR);
             }
         }
         return tableInfoWR;
@@ -190,7 +190,7 @@ public class ExpressSearchConfigCache
      * Collects information about all the tables that will be processed for any search.
      * @return hash of named ExpressResultsTableInfo
      */
-    protected static synchronized TableInfoWeakRef intializeTableInfo()
+    protected static synchronized TableInfoSoftRef intializeTableInfo()
     {
         if (instance != null)
         {
@@ -227,7 +227,7 @@ public class ExpressSearchConfigCache
             
             // This is sort of bad because it assumes the Task has already been created
             // It really shoud be in nearly all cases, but I can't absolutely guareentee it
-            return instance.new TableInfoWeakRef(tables, idToTableInfoHash, joinIdToTableInfoHash);
+            return instance.new TableInfoSoftRef(tables, idToTableInfoHash, joinIdToTableInfoHash);
         }
         // else
         return null;
@@ -250,14 +250,14 @@ public class ExpressSearchConfigCache
     //------------------------------------------------
     //-- TableInfoWeakRef Inner Class
     //------------------------------------------------
-    public class TableInfoWeakRef
+    public class TableInfoSoftRef
     {
         protected Hashtable<String, ExpressResultsTableInfo>       tables                = new Hashtable<String, ExpressResultsTableInfo>();
         
         protected Hashtable<String, ExpressResultsTableInfo>       idToTableInfoHash     = new Hashtable<String, ExpressResultsTableInfo>();
         protected Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash = new Hashtable<String, List<ExpressResultsTableInfo>>();
         
-        public TableInfoWeakRef(final Hashtable<String, ExpressResultsTableInfo> tables, 
+        public TableInfoSoftRef(final Hashtable<String, ExpressResultsTableInfo> tables, 
                                 final Hashtable<String, ExpressResultsTableInfo> idToTableInfoHash, 
                                 final Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash)
         {

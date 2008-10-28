@@ -18,7 +18,7 @@ package edu.ku.brc.specify.config;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.io.FileInputStream;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -49,9 +49,9 @@ public class DisciplineType implements Comparable<DisciplineType>
                                  mammal, insect, botany, invertebrate, minerals, fungi, 
                                  anthropology}
             
-    // Static WeakReference Data Members
-    protected static WeakReference<Vector<DisciplineType>>            disciplineList  = null;
-    protected static WeakReference<Hashtable<String, DisciplineType>> disciplineHash  = null;
+    // Static SoftReference Data Members
+    protected static SoftReference<Vector<DisciplineType>>            disciplineList  = null;
+    protected static SoftReference<Hashtable<String, DisciplineType>> disciplineHash  = null;
     
     // Data Members
     protected String  name;
@@ -205,7 +205,7 @@ public class DisciplineType implements Comparable<DisciplineType>
         
         if (list == null)
         {
-            disciplineList = new WeakReference<Vector<DisciplineType>>(loadDisciplineList());
+            disciplineList = new SoftReference<Vector<DisciplineType>>(loadDisciplineList());
         }
         
         return disciplineList.get();
@@ -264,7 +264,7 @@ public class DisciplineType implements Comparable<DisciplineType>
         
         if (hash == null)
         {
-            disciplineHash = new WeakReference<Hashtable<String, DisciplineType>>(loadDisciplineHash());
+            disciplineHash = new SoftReference<Hashtable<String, DisciplineType>>(loadDisciplineHash());
         }
         
         return disciplineHash.get();

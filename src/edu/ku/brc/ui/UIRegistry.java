@@ -33,7 +33,7 @@ import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.lang.reflect.Constructor;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -1191,7 +1191,7 @@ public class UIRegistry
     //---------------------------------------------------------------------------------
     //-- Glass Pane Buffered Image
     //---------------------------------------------------------------------------------
-    protected static WeakReference<BufferedImage> glassPaneBufferedImageWR;
+    protected static SoftReference<BufferedImage> glassPaneBufferedImageSR;
     
     /**
      * Reads in the disciplines file (is loaded when the class is loaded).
@@ -1201,9 +1201,9 @@ public class UIRegistry
     {
         BufferedImage bufImg = null;
         
-        if (glassPaneBufferedImageWR != null)
+        if (glassPaneBufferedImageSR != null)
         {
-            bufImg = glassPaneBufferedImageWR.get();
+            bufImg = glassPaneBufferedImageSR.get();
         }
         
         if (bufImg != null)
@@ -1216,10 +1216,10 @@ public class UIRegistry
         
         if (bufImg == null)
         {
-            glassPaneBufferedImageWR = new WeakReference<BufferedImage>(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
+            glassPaneBufferedImageSR = new SoftReference<BufferedImage>(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
         }
         
-        return glassPaneBufferedImageWR.get();
+        return glassPaneBufferedImageSR.get();
     }
 
     

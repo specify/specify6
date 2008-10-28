@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,7 +38,7 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
     protected byte[]       cardImageData;
     protected String       cardImageFullPath;
     protected WorkbenchRow workbenchRow;
-    protected WeakReference<ImageIcon> fullSizeImageWR = null;
+    protected SoftReference<ImageIcon> fullSizeImageSR = null;
     protected ImageIcon thumbnail = null;
     
     /**
@@ -155,20 +155,20 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
         {
             ImageIcon fullSizeImage = null;
             
-            // try to get the image from the WeakReference
-            if (fullSizeImageWR != null)
+            // try to get the image from the SoftReference
+            if (fullSizeImageSR != null)
             {
-                fullSizeImage = fullSizeImageWR.get();
+                fullSizeImage = fullSizeImageSR.get();
             }
             
-            // if the image is still null, reload the WeakReference
+            // if the image is still null, reload the SoftReference
             if (fullSizeImage == null)
             {
                 ImageIcon iconImage = new ImageIcon(cardImageFullPath);
-                fullSizeImageWR = new WeakReference<ImageIcon>(iconImage);
+                fullSizeImageSR = new SoftReference<ImageIcon>(iconImage);
             }
             
-            return fullSizeImageWR.get();
+            return fullSizeImageSR.get();
         }
         return null;
     }

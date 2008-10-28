@@ -26,7 +26,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -165,7 +165,7 @@ public class WorkbenchTask extends BaseTask
     public static final String     IMPORT_FILE_PATH      = "wb.importfilepath";
     public static final String     EXPORT_FILE_PATH      = "wb.exportfilepath";
        
-    protected static WeakReference<DBTableIdMgr> databasechema = null;
+    protected static SoftReference<DBTableIdMgr> databasechema = null;
 
     // Data Members
     protected NavBox                      workbenchNavBox;
@@ -359,7 +359,7 @@ public class WorkbenchTask extends BaseTask
         {
             schema = new DBTableIdMgr(false);
             schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
-            databasechema = new WeakReference<DBTableIdMgr>(schema);
+            databasechema = new SoftReference<DBTableIdMgr>(schema);
             
             SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
             schemaLocalizer.load();

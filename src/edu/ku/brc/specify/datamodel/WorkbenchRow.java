@@ -17,7 +17,7 @@ package edu.ku.brc.specify.datamodel;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
@@ -81,7 +81,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     protected int                      maxWidth  = 500;
     protected int                      maxHeight = 500;
     protected int                      maxImageSize = 16000000; // ~ 16 MB
-    protected WeakReference<ImageIcon> fullSizeImageWR = null;
+    protected SoftReference<ImageIcon> fullSizeImageSR = null;
     
     // Transient Data Members
     protected Hashtable<Short, WorkbenchDataItem>            items         = new Hashtable<Short, WorkbenchDataItem>();
@@ -389,7 +389,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         {
             setCardImageData(null);
             setCardImageFullPath(null);
-            fullSizeImageWR = null;
+            fullSizeImageSR = null;
             return;
         }
         
@@ -443,9 +443,9 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         // clear out the weak reference to the card image, since it's out of date now
         synchronized(this)
         {
-            if (fullSizeImageWR != null)
+            if (fullSizeImageSR != null)
             {
-                fullSizeImageWR = null;
+                fullSizeImageSR = null;
             }
         }
     }
@@ -637,9 +637,9 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         {
             ImageIcon fullSizeImage = null;
             
-            if (fullSizeImageWR != null)
+            if (fullSizeImageSR != null)
             {
-                fullSizeImage = fullSizeImageWR.get();
+                fullSizeImage = fullSizeImageSR.get();
             }
             
             if (fullSizeImage == null)
@@ -647,7 +647,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
                 try
                 {
                     ImageIcon iconImage = new ImageIcon(cardImageFullPath);
-                    fullSizeImageWR = new WeakReference<ImageIcon>(iconImage);
+                    fullSizeImageSR = new SoftReference<ImageIcon>(iconImage);
                     
                 } catch (java.lang.OutOfMemoryError memEx)
                 {
@@ -665,7 +665,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
                 }
             }
             
-            return fullSizeImageWR.get();
+            return fullSizeImageSR.get();
         }
         return null;
     }

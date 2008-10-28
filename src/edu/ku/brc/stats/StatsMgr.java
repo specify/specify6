@@ -2,7 +2,7 @@ package edu.ku.brc.stats;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class StatsMgr
 {
     private static final Logger log = Logger.getLogger(StatsMgr.class);
     
-    protected static WeakReference<Element> statDOM = null;
+    protected static SoftReference<Element> statDOM = null;
 
     protected static final String DISPLAY   = "display";
     protected static final String BAR_CHART = "bar chart";
@@ -77,7 +77,7 @@ public class StatsMgr
         
         if (dom == null)
         {
-            statDOM = new WeakReference<Element>(loadDOM());
+            statDOM = new SoftReference<Element>(loadDOM());
             dom     = statDOM.get();
         }
         return dom;

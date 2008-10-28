@@ -22,7 +22,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
@@ -133,8 +133,8 @@ public class QueryTask extends BaseTask
     public static final DataFlavor QUERY_FLAVOR = new DataFlavor(QueryTask.class, QUERY);
     
     protected QueryBldrPane                               queryBldrPane             = null;
-    protected WeakReference<TableTree>                    tableTree                 = null;
-    protected WeakReference<Hashtable<String, TableTree>> tableTreeHash             = null;
+    protected SoftReference<TableTree>                    tableTree                 = null;
+    protected SoftReference<Hashtable<String, TableTree>> tableTreeHash             = null;
     protected final AtomicBoolean                         localizationOrTreeDefEdit = new AtomicBoolean(false);
     
     protected Vector<ToolBarDropDownBtn> tbList           = new Vector<ToolBarDropDownBtn>();
@@ -1403,11 +1403,11 @@ public class QueryTask extends BaseTask
         if (tableTree == null || tableTree.get() == null)
         {
             tableTreeHash = null;
-            tableTree = new WeakReference<TableTree>(readTables());
+            tableTree = new SoftReference<TableTree>(readTables());
         }
         if (tableTreeHash == null || tableTreeHash.get() == null)
         {
-            tableTreeHash = new WeakReference<Hashtable<String, TableTree>>(buildTableTreeHash(tableTree.get()));
+            tableTreeHash = new SoftReference<Hashtable<String, TableTree>>(buildTableTreeHash(tableTree.get()));
         }
         localizationOrTreeDefEdit.set(false);
     }
