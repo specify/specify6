@@ -36,9 +36,10 @@ public interface ViewBasedSearchQueryBuilderIFace
     /**
      * Builds and returns the query.
      * @param searchText the text that needs to be search for by the query.
+     * @param isForCount true if the result is to be used to determine the count of matches.
      * @return the full SQL String
      */
-    public String buildSQL(String searchText);
+    public String buildSQL(String searchText, boolean isForCount);
     
     /**
      * Builds and returns the query.

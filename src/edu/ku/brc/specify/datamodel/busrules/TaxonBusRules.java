@@ -14,6 +14,7 @@ import java.awt.event.ItemListener;
 import javax.swing.JCheckBox;
 
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -228,9 +229,35 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
      * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#canAccessSynonymy(java.lang.Object)
      */
     @Override
-    protected boolean canAccessSynonymy(Object dataObj)
+    protected boolean canAccessSynonymy(Taxon dataObj)
     {
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#afterFillForm(java.lang.Object)
+     */
+    @Override
+    public void afterFillForm(Object dataObj)
+    {
+        super.afterFillForm(dataObj);
+        // TODO: the form system MUST require the hybridParent1 and hybridParent2 widgets to be present if the isHybrid checkbox is present
+        final JCheckBox        hybridCheckBox = (JCheckBox)formViewObj.getControlByName("isHybrid");
+        final ValComboBoxFromQuery hybrid1Widget  = (ValComboBoxFromQuery)formViewObj.getControlByName("hybridParent1");
+        final ValComboBoxFromQuery hybrid2Widget  = (ValComboBoxFromQuery)formViewObj.getControlByName("hybridParent2");
+        
+        
+        if (hybridCheckBox != null)
+        {
+            //XXX TaxonSearchBuilder will still allow both hybrid parents to be the same.
+            Taxon nodeInForm = (Taxon )formViewObj.getDataObj();
+            if (nodeInForm != null)
+            {
+                hybrid1Widget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, false));
+                hybrid2Widget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, false));
+            }
+        }
+        
     }
     
     

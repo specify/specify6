@@ -1073,6 +1073,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     public void registerQueryBuilder(final ViewBasedSearchQueryBuilderIFace builderArg)
     {
         this.builder = builderArg;
+        this.textWithQuery.setBuilder(builderArg);
     }
 
     // --------------------------------------------------------
@@ -1311,7 +1312,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             if (builder != null)
             {
-                return builder.buildSQL(searchText);
+                return builder.buildSQL(searchText, false);
             }
             return super.buildSQL(searchText);
         }

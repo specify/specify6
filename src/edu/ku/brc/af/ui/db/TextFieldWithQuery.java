@@ -106,18 +106,19 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     
     protected boolean              doAddAddItem   = false;
     
-    protected DBTableInfo          tableInfo;
-    protected DBFieldInfo          fieldInfo;
-    protected String               sql;
-    protected String               displayColumns;
-    protected String               format;
-    protected String               fieldFormatterName;
-    protected UIFieldFormatterIFace uiFieldFormatter    = null;
-    protected String               sqlTemplate         = null;
-    protected String[]             keyColumns;
-    protected int                  numColumns          = -1;
-    protected Object[]             values;
-    protected Hashtable<Integer, Object[]> duplicatehash = new Hashtable<Integer, Object[]>();
+    protected DBTableInfo                      tableInfo;
+    protected DBFieldInfo                      fieldInfo;
+    protected String                           sql;
+    protected String                           displayColumns;
+    protected String                           format;
+    protected String                           fieldFormatterName;
+    protected UIFieldFormatterIFace            uiFieldFormatter         = null;
+    protected String                           sqlTemplate              = null;
+    protected ViewBasedSearchQueryBuilderIFace builder                  = null;
+    protected String[]                         keyColumns;
+    protected int                              numColumns               = -1;
+    protected Object[]                         values;
+    protected Hashtable<Integer, Object[]>     duplicatehash            = new Hashtable<Integer, Object[]>();
     
     protected List<ListSelectionListener> listSelectionListeners = new ArrayList<ListSelectionListener>();
     protected PopupMenuListener    popupMenuListener   = null;
@@ -1099,7 +1100,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             list.clear();
             idList.clear();
             
-            String sqlStr = buildSQL(((JPAQuery)customQuery).getData().toString(), false);
+            String sqlStr = builder == null ? buildSQL(((JPAQuery)customQuery).getData().toString(), false)
+                    : builder.buildSQL(((JPAQuery)customQuery).getData().toString(), false);
             //log.debug(sqlStr);
             JPAQuery jpaQuery = new JPAQuery(sqlStr, this);
             isDoingCount.set(false);
@@ -1141,7 +1143,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 
                 returnCount  = null;
                            
-                JPAQuery jpaQuery = new JPAQuery(buildSQL(newEntryStr, true), this);
+                String newSql = builder == null ? buildSQL(newEntryStr, true) : builder.buildSQL(newEntryStr, true); 
+                JPAQuery jpaQuery = new JPAQuery(newSql, this);
                 jpaQuery.setUnique(true);
                 jpaQuery.setData(newEntryStr);
                 jpaQuery.start();
@@ -1309,6 +1312,22 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             g2.setPaint(bg);
             g2.fillRoundRect(x, y, w, h, 6, 6);
         }
+    }
+
+    /**
+     * @return the builder
+     */
+    public ViewBasedSearchQueryBuilderIFace getBuilder()
+    {
+        return builder;
+    }
+
+    /**
+     * @param builder the builder to set
+     */
+    public void setBuilder(ViewBasedSearchQueryBuilderIFace builder)
+    {
+        this.builder = builder;
     }
     
 }

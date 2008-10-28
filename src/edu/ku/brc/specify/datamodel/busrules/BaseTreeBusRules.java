@@ -30,6 +30,8 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
@@ -123,6 +125,11 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                         {
                             acceptedParentWidget.setValue(null, null);
                             acceptedParentWidget.setChanged(true); // This should be done automatically
+                            acceptedParentWidget.setEnabled(false);
+                        }
+                        else
+                        {
+                            acceptedParentWidget.setEnabled(true);
                         }
                     }
                 });
@@ -449,7 +456,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         }
         
         final T nodeInForm = (T)formViewObj.getDataObj();
-
+        
         GetSetValueIFace  parentField  = (GetSetValueIFace)formViewObj.getControlByName("parent");
         Component comp = formViewObj.getControlByName("definitionItem");
         if (comp instanceof ValComboBox)
@@ -461,7 +468,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                 final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery)parentField;
                 if (parentCBX != null && rankComboBox != null)
                 {
-                    parentCBX.registerQueryBuilder(new SearchQueryBuilder<T>(nodeInForm));
+                    parentCBX.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, rankComboBox, true));
                 }
             }
             
@@ -476,7 +483,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             // TODO: the form system MUST require the accepted parent widget to be present if the isAccepted checkbox is present
             final JCheckBox            acceptedCheckBox     = (JCheckBox)formViewObj.getControlByName("isAccepted");
             final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery)formViewObj.getControlByName("acceptedParent");
-            if (canAccessSynonymy(dataObj))
+            if (canAccessSynonymy(nodeInForm))
             {
                 if (acceptedCheckBox != null && acceptedParentWidget != null)
                 {
@@ -491,6 +498,11 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                     if (acceptedCheckBox.isSelected())
                     {
                         acceptedParentWidget.setValue(null, null);
+                    }
+                    
+                    if (acceptedParentWidget != null && rankComboBox != null)
+                    {
+                        acceptedParentWidget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, true));
                     }
                 }
             }
@@ -514,13 +526,50 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     }
 
     /**
+     * @param tableInfo
+     * 
+     * @return Select (i.e. everything before where clause) of sqlTemplate
+     */
+    protected String getSqlSelectTemplate(final DBTableInfo tableInfo)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select %s1 FROM "); //$NON-NLS-1$
+        sb.append(tableInfo.getClassName());
+        sb.append(" as "); //$NON-NLS-1$
+        sb.append(tableInfo.getAbbrev());
+        
+        String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true, null, false); //arg 2: false means SQL
+        if (joinSnipet != null)
+        {
+            sb.append(' ');
+            sb.append(joinSnipet);
+        }
+        sb.append(' ');
+        return sb.toString();
+    }
+    
+    /**
      * @param dataObj
      * 
      * return true if acceptedParent and accepted fields should be enabled on data forms.
      */
-    protected boolean canAccessSynonymy(final Object dataObj)
+    protected boolean canAccessSynonymy(final T dataObj)
     {
-        return true;
+        if (dataObj == null)
+        {
+            return false; //??
+        }
+        TreeDefItemIface<?,?,?> defItem = dataObj.getDefinitionItem();
+        if (defItem == null)
+        {
+            return false; //??? 
+        }
+        TreeDefIface<?,?,?> def = dataObj.getDefinition();
+        if (def == null)
+        {
+            return false; //??? 
+        }
+        return defItem.getRankId() >= def.getSynonymizedLevel();
     }
     
     /**

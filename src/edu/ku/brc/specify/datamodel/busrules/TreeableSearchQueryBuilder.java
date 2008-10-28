@@ -25,52 +25,90 @@ import edu.ku.brc.af.core.expresssearch.SearchTermField;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Storage;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.Treeable;
 
 /**
  * @author rod
  *
  * @code_status Beta
  *
+ * This class adds extra lookup conditions required for Combo Query Boxes that access Treeable objects.
+ *  
  * Feb 19, 2008
  *
  */
-public class SearchQueryBuilder<T> implements ViewBasedSearchQueryBuilderIFace
+public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIFace
 {
-    protected T                     nodeInForm;
-    protected List<ERTICaptionInfo> cols        = new Vector<ERTICaptionInfo>();
+    protected Treeable<?, ?, ?>     nodeInForm;
+    protected ValComboBox           rankCombo;
+    protected boolean               accepted;
+    protected List<ERTICaptionInfo> cols = new Vector<ERTICaptionInfo>();
     
     /**
      * @param nodeInForm
      */
-    public SearchQueryBuilder(final T nodeInForm)
+    public TreeableSearchQueryBuilder(final Treeable<?,?,?> nodeInForm, final ValComboBox rankCombo, final boolean accepted)
     {
         this.nodeInForm = nodeInForm;
+        this.rankCombo = rankCombo;
+        this.accepted = accepted;
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace#buildSQL(java.lang.String)
      */
-    public String buildSQL(String searchText)
+    @SuppressWarnings("unchecked")
+    public String buildSQL(String searchText, boolean isForCount)
     {
         String queryStr = "";
         if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(searchText))
         {
-            int disciplineID = AppContextMgr.getInstance().getClassObject(Discipline.class).getId();
-
-            // get node table and primary key column names
+            TreeDefIface<?, ?, ?> treeDef = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).getTreeDefForClass((Class<? extends Treeable<?,?,?>> )nodeInForm.getClass());
+            Integer treeDefId = treeDef.getTreeDefId();
+            
             DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());
-            String tableName = tableInfo.getName();
-            String idColName = tableInfo.getIdColumnName();
             
             // get definition table and primary key column names
             DBTableInfo defTableInfo = DBTableIdMgr.getInstance().getByClassName(tableInfo.getRelationshipByName("definition").getClassName());
-            String defTableName = defTableInfo.getName();
-            String defIdColName = defTableInfo.getIdColumnName();
+            String defMemberName = defTableInfo.getShortClassName();
+            defMemberName = defMemberName.substring(0, 1).toLowerCase().concat(defMemberName.substring(1));
             
-            String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN discipline dsp ON d.%s = dsp.%s WHERE lower(n.FullName) LIKE \'%s\' AND dsp.DisciplineID = %d ORDER BY n.FullName asc";
-            queryStr = String.format(queryFormatStr, idColName, tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, searchText.toLowerCase() + "%", disciplineID);
+            String queryFormatStr;
+            if (isForCount)
+            {
+                queryFormatStr = "Select count(n.id) "; 
+            }
+            else
+            {
+                queryFormatStr = "SELECT n.fullName, n.id ";
+            }
+            queryFormatStr += "from %s n INNER JOIN n.definition d WHERE lower(n.fullName) LIKE \'%s\' AND d.id = %d";
+            queryStr = String.format(queryFormatStr, tableInfo.getShortClassName(), searchText.toLowerCase() + "%", treeDefId);
+            
+            Integer nodeId = nodeInForm == null ? null : nodeInForm.getTreeId();
+            if (nodeId != null)
+            {
+                queryStr += " and n.id != " + nodeId;
+            }
+            if (rankCombo != null)
+            {
+                Object rank = rankCombo.getValue();
+                if (rank != null)
+                {
+                    queryStr += " and n.rankId < " + rank;
+                }
+            }
+            if (accepted)
+            {
+                queryStr += " and n.accepted = true";
+            }
+            queryStr += " ORDER BY n.fullName asc";
+
             //log.debug(queryStr);
         }
         return queryStr;
