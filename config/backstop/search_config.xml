@@ -29,7 +29,7 @@
  INNER JOIN agent ON determination.DeterminerID = agent.AgentID
  INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
  INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID
- WHERE determination.CollectionMemberID = COLMEMID AND determinationstatus.Type = 1 AND %s]]>
+ WHERE determination.CollectionMemberID = COLMEMID AND determinationstatus.Type IN(1,2) AND %s]]>
                 </sql>
                 <captions>
                     <caption tableid="4" col="taxon.TaxonID" visible="false"/>
@@ -129,7 +129,7 @@
  INNER JOIN determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID
  INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
  INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID
- WHERE collectionobject.CollectionMemberID = COLMEMID AND determinationstatus.Type = 1 AND %s]]>
+ WHERE collectionobject.CollectionMemberID = COLMEMID AND determinationstatus.Type IN(1,2) AND %s]]>
                 </sql>
                 <captions>
                     <caption tableid="4" col="taxon.TaxonID"         visible="false"/>
@@ -300,7 +300,7 @@
  %s 
  From collectionobject 
  Inner Join determination AS DT ON DT.CollectionObjectID = collectionobject.CollectionObjectID
- Inner Join determinationstatus ON DT.DeterminationStatusID = determinationstatus.DeterminationStatusID AND determinationstatus.Type = 1
+ Inner Join determinationstatus ON DT.DeterminationStatusID = determinationstatus.DeterminationStatusID AND determinationstatus.Type IN(1,2)
  Inner Join taxon ON taxon.TaxonID = DT.TaxonID 
  WHERE DT.CollectionMemberID = COLMEMID AND 
  collectionobject.CollectionMemberID = COLMEMID AND 
