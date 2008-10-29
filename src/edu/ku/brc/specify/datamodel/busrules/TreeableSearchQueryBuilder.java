@@ -91,10 +91,14 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             queryStr = String.format(queryFormatStr, tableInfo.getShortClassName(), searchText.toLowerCase() + "%", treeDefId);
             
             Integer nodeId = nodeInForm == null ? null : nodeInForm.getTreeId();
+            Integer nodeNumber = nodeInForm == null ? null : nodeInForm.getNodeNumber();
+            Integer highestChildNodeNumber = nodeInForm == null ? null : nodeInForm.getHighestChildNodeNumber();
+            
             if (nodeId != null)
             {
                 queryStr += " and n.id != " + nodeId;
             }
+            
             if (rankCombo != null)
             {
                 Object rank = rankCombo.getValue();
@@ -103,6 +107,12 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
                     queryStr += " and n.rankId < " + rank;
                 }
             }
+            else if (nodeNumber != null && highestChildNodeNumber != null)
+            {
+                //don't allow children to be used as (for example). hybrid parents
+                queryStr += " and (n.nodeNumber not between " + nodeNumber + " and " + highestChildNodeNumber + ")";
+            }
+            
             if (accepted)
             {
                 queryStr += " and n.accepted = true";

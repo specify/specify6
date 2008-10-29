@@ -559,6 +559,12 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         {
             return false; //??
         }
+        
+        if (dataObj.getDescendantCount() > 0)
+        {
+            return false;
+        }
+        
         TreeDefItemIface<?,?,?> defItem = dataObj.getDefinitionItem();
         if (defItem == null)
         {
