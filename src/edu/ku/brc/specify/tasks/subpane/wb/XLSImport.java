@@ -23,6 +23,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.hssf.usermodel.HSSFHyperlink;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -46,13 +47,13 @@ import edu.ku.brc.ui.UIRegistry;
 public class XLSImport extends DataImport implements DataImportIFace
 {
     private static final Logger log = Logger.getLogger(XLSImport.class);
-    private Vector<Short> cardImageCols = new Vector<Short>();
-    private short geoCol = -1;
+    private Vector<Integer> cardImageCols = new Vector<Integer>();
+    private int geoCol = -1;
     protected ConfigureExternalDataIFace config;
     
     private void getSystemCols(final HSSFRow headerRow)
     {
-        for (short c = headerRow.getFirstCellNum(); c <= headerRow.getLastCellNum(); c++)
+        for (int c = headerRow.getFirstCellNum(); c <= headerRow.getLastCellNum(); c++)
         {
             HSSFCell cell = headerRow.getCell(c);
             if (cell != null)
@@ -114,7 +115,8 @@ public class XLSImport extends DataImport implements DataImportIFace
                 Collections.sort(wbtmiList);
                 
                 this.truncations.clear();
-    
+                Vector<HSSFHyperlink> activeHyperlinks = new Vector<HSSFHyperlink>();
+                
                 // Iterate over each row in the sheet
                 Iterator<?> rows = sheet.rowIterator();
                 while (rows.hasNext())
@@ -131,12 +133,12 @@ public class XLSImport extends DataImport implements DataImportIFace
                     
                     for (WorkbenchTemplateMappingItem wbtmi : wbtmiList)
                     {
-                        short cellNum = wbtmi.getOrigImportColumnIndex().shortValue();
+                        int cellNum = wbtmi.getOrigImportColumnIndex().intValue();
                         if (cellNum == -1)
                         {
                             if (wbtmi.getViewOrder() != null)
                             {
-                                cellNum = wbtmi.getViewOrder().shortValue();
+                                cellNum = wbtmi.getViewOrder().intValue();
                                 if (cellNum == -1)
                                 {
                                     continue;
@@ -181,7 +183,15 @@ public class XLSImport extends DataImport implements DataImportIFace
                             }
     
                             case HSSFCell.CELL_TYPE_STRING:
-                                value = cell.getRichStringCellValue().getString();
+                                HSSFHyperlink hl = checkHyperlinks(cell, activeHyperlinks);
+                                if (hl == null)
+                                {
+                                    value = cell.getRichStringCellValue().getString();
+                                }
+                                else
+                                {
+                                    value = hl.getAddress();
+                                }
                                 break;
     
                             case HSSFCell.CELL_TYPE_BLANK:
@@ -208,6 +218,10 @@ public class XLSImport extends DataImport implements DataImportIFace
                     addGeoInfo(row, wbRow);
                     numRows++;
                 }
+                if (activeHyperlinks.size() > 0)
+                {
+                    log.warn("Hyperlinks vector not empty after import. Overlapping hyperlink ranges?");
+                }
                 return status = this.truncations.size() == 0 && this.messages.size() == 0 ? DataImportIFace.Status.Valid : DataImportIFace.Status.Modified;
             } catch (IOException ex)
             {
@@ -217,9 +231,43 @@ public class XLSImport extends DataImport implements DataImportIFace
         return status = DataImportIFace.Status.Error;
     }
 
+    /**
+     * @param cell
+     * @param activeHyperlinks
+     * @return the Hyperlink applicable for the cell.
+     * 
+     * NOTE: This code assumes that hyperlinks' row and column ranges do not overlap.   
+     */
+    protected HSSFHyperlink checkHyperlinks(final HSSFCell cell, final Vector<HSSFHyperlink> activeHyperlinks)
+    {
+        if (cell.getHyperlink() != null)
+        {
+            if (cell.getHyperlink().getLastRow() > cell.getRowIndex() || cell.getHyperlink().getLastColumn() > cell.getColumnIndex())
+            {
+                activeHyperlinks.add(cell.getHyperlink());
+            }
+            return cell.getHyperlink();
+        }
+        
+        for (HSSFHyperlink hl : activeHyperlinks)
+        {
+            if (cell.getRowIndex() >= hl.getFirstRow() && cell.getRowIndex() <= hl.getLastRow() 
+                    && cell.getColumnIndex() >= hl.getFirstColumn() && cell.getColumnIndex() <= hl.getLastColumn())
+            {
+                if (cell.getRowIndex() == hl.getLastRow())
+                {
+                    activeHyperlinks.remove(hl);
+                }
+                return hl;
+            }
+        }
+        
+        return null;
+    }
+    
     private void addImageInfo(final HSSFRow row, final WorkbenchRow wbRow)
     {
-        for (Short c : cardImageCols)
+        for (Integer c : cardImageCols)
         {
             HSSFCell imgCell = row.getCell(c);
             if (imgCell != null)

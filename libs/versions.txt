@@ -42,7 +42,7 @@ jaxen									1.1
 forms (JGoodies)						1.1.1
 looks (JGoodies)						2.1.4
 log4j									1.2.15
-poi										3.0.1 final 20070705
+poi										3.2 final 20081019
 
 # Needed for JSON (Web Search)
 json-lib                                2.2.1
