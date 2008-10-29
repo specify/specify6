@@ -39,7 +39,7 @@
 		
 		<plugin class="edu.ku.brc.af.tasks.StatsTrackerTask" addui="true"/>
 		
-		<plugin class="edu.ku.brc.af.tasks.BackupTask" addui="true"/>
+		<plugin class="edu.ku.brc.specify.tasks.BackupTask" addui="true"/>
 		
 	</core>
 	

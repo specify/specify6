@@ -52,7 +52,7 @@ public class UserPrincipalHibernateService
      * @param user
      * @return
      */
-    static public SpPrincipal getUserPrincipalBySpecifyUser(SpecifyUser user)
+    static public SpPrincipal getUserPrincipalBySpecifyUser(final SpecifyUser user)
     {
         DataProviderSessionIFace session = null;
         SpPrincipal principal = null;
@@ -63,6 +63,7 @@ public class UserPrincipalHibernateService
             log.debug(sql);
             final List<?> lister = session.getDataList(sql);
             principal = (SpPrincipal)lister.get(0);
+            principal.getPermissions().size();
             
         } catch (final Exception e1)
         {
@@ -83,7 +84,7 @@ public class UserPrincipalHibernateService
      * @param name
      * @return
      */
-    static public SpecifyUser getUserByName(String name)
+    static public SpecifyUser getUserByName(final String name)
     {
         DataProviderSessionIFace session = null;
         @SuppressWarnings("unused") //$NON-NLS-1$
@@ -93,6 +94,7 @@ public class UserPrincipalHibernateService
             session = DataProviderFactory.getInstance().createSession();
             final List<?> lister = session.getDataList(SpecifyUser.class, "name", name); //$NON-NLS-1$
             user = (SpecifyUser)lister.get(0);
+            
         } catch (final Exception e1)
         {
             log.error("Exception caught: " + e1.toString()); //$NON-NLS-1$

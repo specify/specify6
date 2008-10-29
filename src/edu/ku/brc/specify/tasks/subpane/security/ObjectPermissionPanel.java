@@ -19,7 +19,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.BasicPermisionPanel;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
-import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.core.PermissionIFace;
 
 /**
  * @author rod
@@ -85,13 +85,13 @@ public class ObjectPermissionPanel extends JPanel implements PermissionEditorIFa
      * @see edu.ku.brc.af.auth.PermissionEditorIFace#getPermissions()
      */
     @Override
-    public List<PermissionSettings> getPermissions()
+    public List<PermissionIFace> getPermissions()
     {
-        ArrayList<PermissionSettings> list = new ArrayList<PermissionSettings>(3);
+        ArrayList<PermissionIFace> list = new ArrayList<PermissionIFace>(3);
         
         for (BasicPermisionPanel p : panels)
         {
-            List<PermissionSettings> tmpList = p.getPermissions();
+            List<PermissionIFace> tmpList = p.getPermissions();
             list.add(tmpList.get(0));
         }
         return list;
@@ -148,17 +148,17 @@ public class ObjectPermissionPanel extends JPanel implements PermissionEditorIFa
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.auth.PermissionEditorIFace#setPermissions(edu.ku.brc.af.auth.PermissionSettings)
+     * @see edu.ku.brc.af.auth.PermissionEditorIFace#setPermissions(edu.ku.brc.af.auth.PermissionIFace)
      */
     @Override
-    public void setPermissions(List<PermissionSettings> permissions)
+    public void setPermissions(List<PermissionIFace> permissions)
     {
         if (permissions.size() == 3)
         {
-            ArrayList<PermissionSettings> tmpList = new ArrayList<PermissionSettings>(1);
+            ArrayList<PermissionIFace> tmpList = new ArrayList<PermissionIFace>(1);
             
             int i = 0;
-            for (PermissionSettings ps : permissions)
+            for (PermissionIFace ps : permissions)
             {
                 tmpList.clear();
                 tmpList.add(ps);

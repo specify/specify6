@@ -176,6 +176,15 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.PermissionPanelContainerIFace#getPermissionEnumerator()
+     */
+    @Override
+    public PermissionEnumerator getPermissionEnumerator()
+    {
+        return enumerator;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.PermissionPanelMgrIFace#savePermissions(edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
@@ -247,17 +256,19 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.auth.PermissionPanelIFace#updateTable(edu.ku.brc.specify.datamodel.SpPrincipal, edu.ku.brc.specify.datamodel.SpPrincipal)
+     * @see edu.ku.brc.af.auth.PermissionPanelContainerIFace#updateData(edu.ku.brc.specify.datamodel.SpPrincipal, edu.ku.brc.specify.datamodel.SpPrincipal, boolean)
      */
     @Override
-    public void updateData(SpPrincipal principalArg, SpPrincipal overrulingPrincipal)
+    public void updateData(final SpPrincipal principalArg, 
+                           final SpPrincipal overrulingPrincipal, 
+                           final boolean     doAddDefaultPermissions)
     {
         // save principal used when saving permissions later
         this.principal = principalArg;
         
         rowDataList.clear();
         
-        List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, overrulingPrincipal);
+        List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, overrulingPrincipal, doAddDefaultPermissions);
         Collections.sort(perms, new ComparatorByStringRepresentation<PermissionEditorRowIFace>(true));
         for (PermissionEditorRowIFace permWrapper : perms) 
         {

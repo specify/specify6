@@ -34,9 +34,9 @@ public class LatLonConverter
     
     private static boolean useDB = false;
     
-    public static DecimalFormat decFormatter = new DecimalFormat("#0.0000000000#");
+    public static DecimalFormat decFormatter = new DecimalFormat("#0.0000000#");
     
-    protected static BigDecimal     minusOne      = new BigDecimal("-1.0");
+    protected static BigDecimal    minusOne       = new BigDecimal("-1.0");
     protected static DecimalFormat decFormatter2  = new DecimalFormat("#0");
     protected static BigDecimal    one            = new BigDecimal("1.0");
     protected static BigDecimal    sixty          = new BigDecimal("60.0");
@@ -61,12 +61,19 @@ public class LatLonConverter
      * @param bc the DigDecimal to be converted.
      * @return a 3 piece string
      */
-    public static String convertToDDMMSS(final BigDecimal bc)
+    public static String convertToDDMMSS(final BigDecimal bc,
+                                         final int        decimalLen)
     {
-        return convertToDDMMSS(bc, DEGREES_FORMAT.None, DIRECTION.None);
+        return convertToDDMMSS(bc, DEGREES_FORMAT.None, DIRECTION.None, decimalLen);
     }
     
-    public static String convertToSignedDDMMSS(final BigDecimal dd)
+    /**
+     * @param dd
+     * @param decimalLen
+     * @return
+     */
+    public static String convertToSignedDDMMSS(final BigDecimal dd,
+                                               final int        decimalLen)
     {
         String sign = "";
         if (dd.compareTo(dd.abs()) < 0)
@@ -74,8 +81,27 @@ public class LatLonConverter
             sign = "-";
         }
         
-        String convertedAbs = convertToDDMMSS(dd);
+        String convertedAbs = convertToDDMMSS(dd, decimalLen);
         return sign + convertedAbs;
+    }
+    
+    /**
+     * Calculates how many decimal places there is in the string.
+     * @param latLonStr the string to be checked
+     * @return the number of decimals places
+     */
+    public static int getDecimalLength(final String latLonStr)
+    {
+        int decimalFmtLen = 0;
+        if (StringUtils.isNotEmpty(latLonStr))
+        {
+            int decIndex = latLonStr.lastIndexOf('.');
+            if (decIndex > -1 && latLonStr.length() > decIndex)
+            {
+                decimalFmtLen = latLonStr.length() - decIndex;
+            }
+        }
+        return decimalFmtLen;
     }
     
     /**
@@ -85,7 +111,8 @@ public class LatLonConverter
      */
     public static String convertToDDMMSS(final BigDecimal     bc, 
                                          final DEGREES_FORMAT degreesFMT,
-                                         final DIRECTION      direction)
+                                         final DIRECTION      direction,
+                                         final int            decimalLen)
     {
         if (bc.doubleValue() == 0.0)
         {
@@ -131,8 +158,7 @@ public class LatLonConverter
         }
         
         // round to 2 decimal places precision
-        seconds = Math.round(seconds * 1000);
-        seconds = seconds / 1000.00;
+        seconds = Math.round(seconds * 1000) / 1000.0;
         
         int secondsWhole = (int)Math.floor(seconds);
         if (secondsWhole == 60)
@@ -163,12 +189,19 @@ public class LatLonConverter
      * @param bc the DigDecimal to be converted.
      * @return a 2 piece string
      */
-    public static String convertToDDMMMM(final BigDecimal bc)
+    public static String convertToDDMMMM(final BigDecimal bc,
+                                         final int        decimalLen)
     {
-        return convertToDDMMMM(bc, DEGREES_FORMAT.None, DIRECTION.None);
+        return convertToDDMMMM(bc, DEGREES_FORMAT.None, DIRECTION.None, decimalLen);
     }
     
-    public static String convertToSignedDDMMMM(final BigDecimal dd)
+    /**
+     * @param dd
+     * @param decimalLen
+     * @return
+     */
+    public static String convertToSignedDDMMMM(final BigDecimal dd,
+                                               final int        decimalLen)
     {
         String sign = "";
         if (dd.compareTo(dd.abs()) < 0)
@@ -176,7 +209,7 @@ public class LatLonConverter
             sign = "-";
         }
         
-        String convertedAbs = convertToDDMMMM(dd);
+        String convertedAbs = convertToDDMMMM(dd, decimalLen);
         return sign + convertedAbs;
     }
     
@@ -187,7 +220,8 @@ public class LatLonConverter
      */
     public static String convertToDDMMMM(final BigDecimal     bc, 
                                          final DEGREES_FORMAT degreesFMT,
-                                         final DIRECTION      direction)
+                                         final DIRECTION      direction,
+                                         final int            deimalLen)
     {
         if (bc.doubleValue() == 0.0)
         {
@@ -224,8 +258,7 @@ public class LatLonConverter
         sb.append(' ');
         
         // round to four decimal places of precision
-        minutes = Math.round(minutes*10000);
-        minutes = minutes / 10000;
+        minutes = Math.round(minutes*10000) / 10000;
         
         sb.append(StringUtils.stripEnd(String.format("%10.10f", new Object[] {minutes}), "0"));
         
@@ -245,12 +278,19 @@ public class LatLonConverter
      * @param bc the DigDecimal to be converted.
      * @return a 1 piece string
      */
-    public static String convertToDDDDDD(final BigDecimal bc)
+    public static String convertToDDDDDD(final BigDecimal bc,
+                                         final int        decimalLen)
     {
-        return convertToDDDDDD(bc, DEGREES_FORMAT.None, DIRECTION.None);
+        return convertToDDDDDD(bc, DEGREES_FORMAT.None, DIRECTION.None, decimalLen);
     }
     
-    public static String convertToSignedDDDDDD(final BigDecimal dd)
+    /**
+     * @param dd
+     * @param decimalLen
+     * @return
+     */
+    public static String convertToSignedDDDDDD(final BigDecimal dd,
+                                               final int        decimalLen)
     {
         String sign = "";
         if (dd.compareTo(dd.abs()) < 0)
@@ -258,7 +298,7 @@ public class LatLonConverter
             sign = "-";
         }
         
-        String convertedAbs = convertToDDDDDD(dd);
+        String convertedAbs = convertToDDDDDD(dd, decimalLen);
         return sign + convertedAbs;
     }
     
@@ -270,7 +310,8 @@ public class LatLonConverter
      */
     public static String convertToDDDDDD(final BigDecimal     bc, 
                                          final DEGREES_FORMAT degreesFMT,
-                                         final DIRECTION      direction)
+                                         final DIRECTION      direction,
+                                         final int            decimalLen)
     {
         if (bc == null || bc.doubleValue() == 0.0)
         {
@@ -462,26 +503,31 @@ public class LatLonConverter
      * @param degreesFMT indicates whether to use a symbol or append single character text representation of the direction ('N', 'S', 'E', 'W")
      * @return string of the value
      */
-    public static String format(final BigDecimal value, 
-                                final LATLON latOrLon, 
-                                final FORMAT format,
-                                final DEGREES_FORMAT degreesFMT)
+    public static String format(final BigDecimal     value, 
+                                final LATLON         latOrLon, 
+                                final FORMAT         format,
+                                final DEGREES_FORMAT degreesFMT,
+                                final int            decimalLen)
     {
         DIRECTION dir = latOrLon == LATLON.Latitude ? DIRECTION.NorthSouth : DIRECTION.EastWest;
         switch (format)
         {
             case DDDDDD:
-                return convertToDDDDDD(value, degreesFMT, dir);
+                return convertToDDDDDD(value, degreesFMT, dir, decimalLen);
                 
             case DDMMMM:
-                return convertToDDMMMM(value, degreesFMT, dir);
+                return convertToDDMMMM(value, degreesFMT, dir, decimalLen);
                 
             case DDMMSS: 
-                return convertToDDMMSS(value, degreesFMT, dir);
+                return convertToDDMMSS(value, degreesFMT, dir, decimalLen);
         }
         return "";
     }
     
+    /**
+     * @param str
+     * @return
+     */
     public static BigDecimal convertDirectionalDDMMSSToDDDD(final String str)
     {
         String[] parts = StringUtils.split(str," d°'\"");
@@ -500,6 +546,10 @@ public class LatLonConverter
         return val;
     }
 
+    /**
+     * @param dm
+     * @return
+     */
     public static BigDecimal convertDirectionalDDMMMMToDDDD(final String dm)
     {
         String[] parts = StringUtils.split(dm," d°'\"");
@@ -517,6 +567,10 @@ public class LatLonConverter
         return val;
     }
 
+    /**
+     * @param str
+     * @return
+     */
     public static BigDecimal convertDirectionalDDDDToDDDD(final String str)
     {
         String[] parts = StringUtils.split(str," d°'\"");

@@ -14,6 +14,8 @@ import java.util.List;
 
 import javax.swing.event.ChangeListener;
 
+import edu.ku.brc.af.core.PermissionIFace;
+
 /**
  * @author rod
  *
@@ -27,12 +29,12 @@ public interface PermissionEditorIFace
     /**
      * @param permissions
      */
-    public abstract void setPermissions(List<PermissionSettings> permissions);
+    public abstract void setPermissions(List<PermissionIFace> permissions);
     
     /**
      * @return
      */
-    public abstract List<PermissionSettings> getPermissions();
+    public abstract List<PermissionIFace> getPermissions();
     
     /**
      * @return

@@ -30,12 +30,14 @@ import edu.ku.brc.specify.datamodel.Workbench;
  * Jul 20, 2008
  *
  */
-public class ObjectPermissionEnumerator extends PermissionEnumerator {
+public class ObjectPermissionEnumerator extends PermissionEnumerator 
+{
 
     //@Override
-    public List<PermissionEditorRowIFace> getPermissions(SpPrincipal principal,
-            Hashtable<String, SpPermission> existingPerms,
-            Hashtable<String, SpPermission> overrulingPerms) 
+    public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal,
+                                                         final Hashtable<String, SpPermission> existingPerms,
+                                                         final Hashtable<String, SpPermission> overrulingPerms, 
+                                                         final boolean     doAddDefaultPermissions) 
     {
         int userId = UserPrincipalSQLService.getSpecifyUserId(principal);
         List<PermissionEditorRowIFace> perms = new ArrayList<PermissionEditorRowIFace>();
@@ -77,6 +79,13 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator {
         return perms;
     }
 
+    /**
+     * @param taskName
+     * @param subType
+     * @param targetId
+     * @param existingPerms
+     * @return
+     */
     private SpPermission createPermission(final String taskName, 
                                           final String subType, 
                                           final Integer targetId, 
@@ -98,6 +107,12 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator {
         return perm;
     }
     
+    /**
+     * @param wrapper
+     * @param taskName
+     * @param targetId
+     * @param existingPerms
+     */
     private void addCustomPermissions(@SuppressWarnings("unused")final ObjectPermissionEditorRow wrapper, 
                                       @SuppressWarnings("unused")final String taskName, 
                                       @SuppressWarnings("unused")final Integer targetId, 

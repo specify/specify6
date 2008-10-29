@@ -308,6 +308,20 @@ public class DBTableIdMgr
     }
     
     /**
+     * @param tableId the table id
+     * @return the localized title for a table by id, returns "" if in error
+     */
+    public String getTitleForId(final int tableId)
+    {
+        DBTableInfo ti = getInfoById(tableId);
+        if (ti != null)
+        {
+            return ti.getTitle();
+        }
+        return "";
+    }
+    
+    /**
      * Returns the full collection of Tables. 
      * @return a collection of DBTableInfo objects
      */

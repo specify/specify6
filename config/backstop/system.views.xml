@@ -112,6 +112,7 @@
 
         <view name="User"
             class="edu.ku.brc.specify.datamodel.SpecifyUser"
+            busrules="edu.ku.brc.specify.datamodel.busrules.SpecifyUserBusRules"
             resourcelabels="false">
             <desc><![CDATA[User form.]]></desc>
             <altviews defaultmode="view">

@@ -116,8 +116,8 @@ public class SecuritySummaryDlg extends CustomDialog
 		SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
 		SpPrincipal principal = UserPrincipalHibernateService.getUserPrincipalBySpecifyUser(user);
         
-        generalPermissionsEditor.updateData(principal, null);
-        objectPermissionsEditor.updateData(principal, null);
+        generalPermissionsEditor.updateData(principal, null, false);
+        objectPermissionsEditor.updateData(principal, null, false);
         
         YesNoCellRenderer yesNoRenderer = new YesNoCellRenderer();
         TableColumnModel tblModel = generalPermissionsTable.getColumnModel();

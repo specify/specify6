@@ -78,7 +78,7 @@ public class GeoRefConverter implements StringConverter
     /* (non-Javadoc)
      * @see edu.ku.brc.util.StringConverter#convert(java.lang.String, java.lang.String)
      */
-    public String convert(String original, String destFormat) throws Exception
+    public String convert(final String original, final String destFormat) throws Exception
     {
         if (original == null)
         {
@@ -99,6 +99,13 @@ public class GeoRefConverter implements StringConverter
             }
         }
         
+        int decimalFmtLen = 0;
+        int decIndex = original.lastIndexOf('.');
+        if (decIndex > -1 && original.length() > decIndex)
+        {
+            decimalFmtLen = original.length() - decIndex;
+        }
+        
         // if we weren't able to find a matching format, throw an exception
         if (degreesPlusMinus == null)
         {
@@ -107,15 +114,15 @@ public class GeoRefConverter implements StringConverter
         
         if (destFormat == GeoRefFormat.DMS_PLUS_MINUS.name())
         {
-            return LatLonConverter.convertToSignedDDMMSS(degreesPlusMinus);
+            return LatLonConverter.convertToSignedDDMMSS(degreesPlusMinus, decimalFmtLen);
         }
         else if (destFormat == GeoRefFormat.DM_PLUS_MINUS.name())
         {
-            return LatLonConverter.convertToSignedDDMMMM(degreesPlusMinus);
+            return LatLonConverter.convertToSignedDDMMMM(degreesPlusMinus, decimalFmtLen);
         }
         else if (destFormat == GeoRefFormat.D_PLUS_MINUS.name())
         {
-            return LatLonConverter.convertToSignedDDDDDD(degreesPlusMinus);
+            return LatLonConverter.convertToSignedDDDDDD(degreesPlusMinus, decimalFmtLen);
         }
         
         return null;
@@ -355,18 +362,26 @@ public class GeoRefConverter implements StringConverter
                 continue;
             }
             
+            int decimalFmtLen = 0;
+            int decIndex = input.lastIndexOf('.');
+            if (decIndex > -1 && input.length() > decIndex)
+            {
+                decimalFmtLen = input.length() - decIndex;
+            }
+
+            
             String convertedVal = null;
             if (destFormat == GeoRefFormat.DMS_PLUS_MINUS.name())
             {
-                convertedVal = LatLonConverter.convertToSignedDDMMSS(degreesPlusMinus);
+                convertedVal = LatLonConverter.convertToSignedDDMMSS(degreesPlusMinus, decimalFmtLen);
             }
             else if (destFormat == GeoRefFormat.DM_PLUS_MINUS.name())
             {
-                convertedVal = LatLonConverter.convertToSignedDDMMMM(degreesPlusMinus);
+                convertedVal = LatLonConverter.convertToSignedDDMMMM(degreesPlusMinus, decimalFmtLen);
             }
             else if (destFormat == GeoRefFormat.D_PLUS_MINUS.name())
             {
-                convertedVal = LatLonConverter.convertToSignedDDDDDD(degreesPlusMinus);
+                convertedVal = LatLonConverter.convertToSignedDDDDDD(degreesPlusMinus, decimalFmtLen);
             }
             
             System.out.println("Converted value:   " + convertedVal);

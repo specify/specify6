@@ -47,36 +47,38 @@ public class LatLonConversionTest extends TestCase
 {
     protected static final Logger log = Logger.getLogger(LatLonConversionTest.class);
     
+    protected int        decimalLen = 10;
+    
     /**
      * Test method for {@link edu.ku.brc.util.LatLonConverter#convertToDDMMSS(java.math.BigDecimal)}.
      */
     public void testConvertToDDMMSS()
     {
         BigDecimal before = new BigDecimal("38.95402");
-        String     str    = convertToDDMMSS(before);
+        String     str    = convertToDDMMSS(before, decimalLen);
         BigDecimal after  =  convertDDMMSSToDDDD(str, "N");
         
         assertEquals(str, "38 57 14.472");
         assertEquals(before.doubleValue(), after.doubleValue());
-        assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDMMSS, DEGREES_FORMAT.String), "38 57 14.472 N");
-        assertEquals(LatLonConverter.format(before, LATLON.Longitude, FORMAT.DDMMSS, DEGREES_FORMAT.String), "38 57 14.472 E");
+        assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDMMSS, DEGREES_FORMAT.String, decimalLen), "38 57 14.472 N");
+        assertEquals(LatLonConverter.format(before, LATLON.Longitude, FORMAT.DDMMSS, DEGREES_FORMAT.String, decimalLen), "38 57 14.472 E");
         
         before = new BigDecimal("-38.95402");
-        str    = convertToDDMMSS(before);
+        str    = convertToDDMMSS(before, decimalLen);
         after  =  convertDDMMSSToDDDD(str, "S");
         
         assertEquals(before.doubleValue(), after.doubleValue());
-        assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDMMSS, DEGREES_FORMAT.String), "38 57 14.472 S");
-        assertEquals(LatLonConverter.format(before, LATLON.Longitude, FORMAT.DDMMSS, DEGREES_FORMAT.String), "38 57 14.472 W");
+        assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDMMSS, DEGREES_FORMAT.String, decimalLen), "38 57 14.472 S");
+        assertEquals(LatLonConverter.format(before, LATLON.Longitude, FORMAT.DDMMSS, DEGREES_FORMAT.String, decimalLen), "38 57 14.472 W");
        
         before = new BigDecimal("38.95402");
-        str    = convertToDDMMSS(before);
+        str    = convertToDDMMSS(before, decimalLen);
         after  =  convertDDMMSSToDDDD(str, "E");
         
         assertEquals(before.doubleValue(), after.doubleValue());
         
         before = new BigDecimal("-38.95402");
-        str    = convertToDDMMSS(before);
+        str    = convertToDDMMSS(before, decimalLen);
         after  =  convertDDMMSSToDDDD(str, "W");
         
         assertEquals(before.doubleValue(), after.doubleValue());
@@ -89,30 +91,30 @@ public class LatLonConversionTest extends TestCase
     public void testConvertToDDMMMM()
     {
         BigDecimal before = new BigDecimal("38.95402");
-        String     str    = convertToDDMMMM(before);
+        String     str    = convertToDDMMMM(before, decimalLen);
         BigDecimal after  =  convertDDMMMMToDDDD(str, "N");
         
         assertEquals(str, "38 57.2412");
         assertEquals(before.doubleValue(), after.doubleValue());
-        assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDMMMM, DEGREES_FORMAT.String), "38 57.2412 N");
-        assertEquals(LatLonConverter.format(before, LATLON.Longitude, FORMAT.DDMMMM, DEGREES_FORMAT.String), "38 57.2412 E");
+        assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDMMMM, DEGREES_FORMAT.String, decimalLen), "38 57.2412 N");
+        assertEquals(LatLonConverter.format(before, LATLON.Longitude, FORMAT.DDMMMM, DEGREES_FORMAT.String, decimalLen), "38 57.2412 E");
         
         before = new BigDecimal("-38.95402");
-        str    = convertToDDMMMM(before);
+        str    = convertToDDMMMM(before, decimalLen);
         after  =  convertDDMMMMToDDDD(str, "S");
         
         assertEquals(before.doubleValue(), after.doubleValue());
-        assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDMMMM, DEGREES_FORMAT.String), "38 57.2412 S");
-        assertEquals(LatLonConverter.format(before, LATLON.Longitude, FORMAT.DDMMMM, DEGREES_FORMAT.String), "38 57.2412 W");
+        assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDMMMM, DEGREES_FORMAT.String, decimalLen), "38 57.2412 S");
+        assertEquals(LatLonConverter.format(before, LATLON.Longitude, FORMAT.DDMMMM, DEGREES_FORMAT.String, decimalLen), "38 57.2412 W");
 
         before = new BigDecimal("38.95402");
-        str    = convertToDDMMMM(before);
+        str    = convertToDDMMMM(before, decimalLen);
         after  =  convertDDMMMMToDDDD(str, "E");
         
         assertEquals(before.doubleValue(), after.doubleValue());
         
         before = new BigDecimal("-38.95402");
-        str    = convertToDDMMMM(before);
+        str    = convertToDDMMMM(before, decimalLen);
         after  =  convertDDMMMMToDDDD(str, "W");
         
         assertEquals(before.doubleValue(), after.doubleValue());
@@ -125,7 +127,7 @@ public class LatLonConversionTest extends TestCase
     public void testOneMinute()
     {
         BigDecimal latitude = LatLonConverter.convertDDMMMMToDDDD("1 1", "N");
-        String     ddmmVal  = LatLonConverter.convertToDDMMMM(latitude);
+        String     ddmmVal  = LatLonConverter.convertToDDMMMM(latitude, decimalLen);
         
         String s1 = String.format("%10.7f", latitude);
         String s2 = String.format("%10.7f", 1.01666666667);
@@ -141,41 +143,41 @@ public class LatLonConversionTest extends TestCase
     public void testConvertDDDDToDDDDString()
     {
         BigDecimal before = new BigDecimal("38.95402");
-        String     str    = convertToDDDDDD(before);
+        String     str    = convertToDDDDDD(before, decimalLen);
         BigDecimal after  =  convertDDDDToDDDD(str, "N");
         
         assertEquals(str, "38.95402");
         assertEquals(before.doubleValue(), after.doubleValue());
-        assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDDDDD, DEGREES_FORMAT.String), "38.95402 N");
-        assertEquals(LatLonConverter.format(before, LATLON.Longitude, FORMAT.DDDDDD, DEGREES_FORMAT.String), "38.95402 E");
+        assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDDDDD, DEGREES_FORMAT.String, decimalLen), "38.95402 N");
+        assertEquals(LatLonConverter.format(before, LATLON.Longitude, FORMAT.DDDDDD, DEGREES_FORMAT.String, decimalLen), "38.95402 E");
         
         before = new BigDecimal("-38.95402");
-        str    = convertToDDDDDD(before);
+        str    = convertToDDDDDD(before, decimalLen);
         after  =  convertDDDDToDDDD(str, "S");
         
         assertEquals(before.doubleValue(), after.doubleValue());
-        assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDDDDD, DEGREES_FORMAT.String), "38.95402 S");
-        assertEquals(LatLonConverter.format(before, LATLON.Longitude, FORMAT.DDDDDD, DEGREES_FORMAT.String), "38.95402 W");
+        assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDDDDD, DEGREES_FORMAT.String, decimalLen), "38.95402 S");
+        assertEquals(LatLonConverter.format(before, LATLON.Longitude, FORMAT.DDDDDD, DEGREES_FORMAT.String, decimalLen), "38.95402 W");
         
         before = new BigDecimal("38.95402");
-        str    = convertToDDDDDD(before);
+        str    = convertToDDDDDD(before, decimalLen);
         after  =  convertDDDDToDDDD(str, "E");
         
         assertEquals(before.doubleValue(), after.doubleValue());
         
         before = new BigDecimal("-38.95402");
-        str    = convertToDDDDDD(before);
+        str    = convertToDDDDDD(before, decimalLen);
         after  =  convertDDDDToDDDD(str, "W");
         
         before = new BigDecimal("0.0");
-        str    = convertToDDDDDD(before);
+        str    = convertToDDDDDD(before, decimalLen);
         after  =  convertDDDDToDDDD(str, "W");
         
         assertEquals(str, "0.0");
         assertEquals(before.doubleValue(), after.doubleValue());
 
         before = new BigDecimal("-0.0");
-        str    = convertToDDDDDD(before);
+        str    = convertToDDDDDD(before, decimalLen);
         after  =  convertDDDDToDDDD(str, "W");
         
         assertEquals(str, "0.0");
@@ -190,16 +192,16 @@ public class LatLonConversionTest extends TestCase
     {
         // this test just outputs some conversions
         BigDecimal before = new BigDecimal("38.95402");
-        String     str    = convertToDDDDDD(before, DEGREES_FORMAT.Symbol, DIRECTION.NorthSouth);
+        String     str    = convertToDDDDDD(before, DEGREES_FORMAT.Symbol, DIRECTION.NorthSouth, decimalLen);
         log.info(str);
         
-        str = convertToDDDDDD(before, DEGREES_FORMAT.String, DIRECTION.NorthSouth);
+        str = convertToDDDDDD(before, DEGREES_FORMAT.String, DIRECTION.NorthSouth, decimalLen);
         log.info(str);
         
-        str = convertToDDDDDD(before, DEGREES_FORMAT.Symbol, DIRECTION.EastWest);
+        str = convertToDDDDDD(before, DEGREES_FORMAT.Symbol, DIRECTION.EastWest, decimalLen);
         log.info(str);
         
-        str = convertToDDDDDD(before, DEGREES_FORMAT.String, DIRECTION.EastWest);
+        str = convertToDDDDDD(before, DEGREES_FORMAT.String, DIRECTION.EastWest, decimalLen);
         log.info(str);
         
         assertTrue(true);

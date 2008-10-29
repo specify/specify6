@@ -47,8 +47,9 @@ public class PrefsPermissionEnumerator extends PermissionEnumerator
 	
 	@Override
 	public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
-			 final Hashtable<String, SpPermission> existingPerms,
-			 final Hashtable<String, SpPermission> overrulingPerms) 
+                                            			 final Hashtable<String, SpPermission> existingPerms,
+                                            			 final Hashtable<String, SpPermission> overrulingPerms, 
+                                                         final boolean     doAddDefaultPermissions) 
 	{
 		// iterate through all possible tasks
 	    Vector<PermissionEditorRowIFace> perms = new Vector<PermissionEditorRowIFace>();

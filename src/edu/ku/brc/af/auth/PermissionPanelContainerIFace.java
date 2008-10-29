@@ -10,6 +10,7 @@ import java.awt.Component;
 
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
+import edu.ku.brc.specify.tasks.subpane.security.PermissionEnumerator;
 
 /**
  * @author rod
@@ -34,11 +35,19 @@ public interface PermissionPanelContainerIFace
     /**
      * @param principalArg
      * @param overrulingPrincipal
+     * @param doAddDefaultPermissions
      */
-    public abstract void updateData(SpPrincipal principalArg, SpPrincipal overrulingPrincipal);
+    public abstract void updateData(SpPrincipal principalArg, 
+                                    SpPrincipal overrulingPrincipal, 
+                                    boolean     doAddDefaultPermissions);
     
     /**
      * 
      */
     public abstract void savePermissions(DataProviderSessionIFace session) throws Exception;
+    
+    /**
+     * @return the enumerator used to display the permissions
+     */
+    public abstract PermissionEnumerator  getPermissionEnumerator();
 }

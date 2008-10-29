@@ -70,12 +70,14 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
     
     // Transient
     protected JList              pickListCache = null; // needed when deleting a PL
+    protected boolean            doImportExport;
     
     /**
      * @param localizableIO
      * @throws HeadlessException
      */
-    public PickListEditorDlg(final LocalizableIOIFace localizableIO) throws HeadlessException
+    public PickListEditorDlg(final LocalizableIOIFace localizableIO,
+                             final boolean doImportExport) throws HeadlessException
     {
         super((Frame)getTopWindow(), 
               getResourceString("PICKLIST_EDITOR"), true, OKHELP, null, OK_BTN);
@@ -83,6 +85,7 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         this.localizableIO = localizableIO;
         this.helpContext   = "PL_HELP_CONTEXT";
         this.okLabel       = getResourceString("CLOSE");
+        this.doImportExport = doImportExport;
     }
 
     /* (non-Javadoc)
@@ -97,10 +100,10 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         CellConstraints cc = new CellConstraints();
         
         plList   = new JList();
-        edaPanel = configureList(plList, false);
+        edaPanel = configureList(plList, false, doImportExport);
         
         sysPLList   = new JList();
-        sysEDAPanel = configureList(sysPLList, true);
+        sysEDAPanel = configureList(sysPLList, true, false);
         
         int y = 1;
         pb.add(UIHelper.createI18NLabel("PL_PICKLISTS_SYS", SwingConstants.CENTER), cc.xy(1, y)); y+= 2;
@@ -124,7 +127,9 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
      * @param isSystemPL
      * @return
      */
-    protected EditDeleteAddPanel configureList(final JList list, final boolean isSystemPL)
+    protected EditDeleteAddPanel configureList(final JList   list, 
+                                               final boolean isSystemPL,
+                                               final boolean doImportExportArg)
     {
         
         ActionListener addAL = null;
@@ -132,23 +137,43 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
         
         if (!isSystemPL)
         {
-            addAL = new ActionListener()
+            if (doImportExportArg)
             {
-                public void actionPerformed(ActionEvent e)
+                /*addAL = new ActionListener()
                 {
-                    addPL(list);
-                }
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        importPL(list);
+                    }
+                    
+                };
                 
-            };
-            
-            delAL = new ActionListener() {
-                public void actionPerformed(ActionEvent e)
+                delAL = new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        exportPL(list);
+                    }
+                }; */
+            } else
+            {
+                addAL = new ActionListener()
                 {
-                    delPL(list);
-                }
-            };
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        addPL(list);
+                    }
+                    
+                };
+                
+                delAL = new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        delPL(list);
+                    }
+                };
+            }
         }
-            
+        
         ActionListener edtAL = new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -157,11 +182,17 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             }
         };
         
-        final EditDeleteAddPanel arePnl = new EditDeleteAddPanel(edtAL, delAL, addAL);
-        if (arePnl.getAddBtn() != null)
+        final EditDeleteAddPanel edaPnl = new EditDeleteAddPanel(edtAL, delAL, addAL);
+        if (edaPnl.getAddBtn() != null)
         {
-            arePnl.getAddBtn().setEnabled(true);
+            edaPnl.getAddBtn().setEnabled(true);
         }
+        
+        /*if (doImportExport && addAL != null && delAL != null)
+        {
+            edaPnl.getAddBtn().setIcon(IconManager.getIcon("Import16"));
+            edaPnl.getDelBtn().setIcon(IconManager.getIcon("Export16"));
+        }*/
         
         List<PickList> items = null;
         
@@ -240,16 +271,16 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    if (arePnl.getDelBtn() != null)
+                    if (edaPnl.getDelBtn() != null)
                     {
-                        arePnl.getDelBtn().setEnabled(list.getSelectedIndex() > -1);
+                        edaPnl.getDelBtn().setEnabled(list.getSelectedIndex() > -1);
                     }
-                    arePnl.getEditBtn().setEnabled(list.getSelectedIndex() > -1);
+                    edaPnl.getEditBtn().setEnabled(list.getSelectedIndex() > -1);
                 }
             }
         });
         
-        return arePnl;
+        return edaPnl;
     }
     
     /**
@@ -290,6 +321,22 @@ public class PickListEditorDlg extends CustomDialog implements BusinessRulesOkDe
                 pickListCache = null;
             }
         }
+    }
+    
+    /**
+     * @return
+     */
+    protected boolean importPL(final JList list)
+    {
+        return true;
+    }
+    
+    /**
+     * @return
+     */
+    protected boolean exportPL(final JList list)
+    {
+        return true;
     }
     
     /**

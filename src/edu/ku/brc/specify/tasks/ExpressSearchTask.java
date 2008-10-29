@@ -71,7 +71,7 @@ import edu.ku.brc.af.core.expresssearch.SearchConfigService;
 import edu.ku.brc.af.core.expresssearch.SearchTableConfig;
 import edu.ku.brc.af.core.expresssearch.SearchTermField;
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.tasks.BaseTask;
+
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.ui.SearchBox;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;

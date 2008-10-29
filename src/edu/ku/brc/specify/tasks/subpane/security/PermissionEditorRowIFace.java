@@ -12,7 +12,7 @@ import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 
 import edu.ku.brc.af.auth.PermissionEditorIFace;
-import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 
 /**
@@ -57,12 +57,12 @@ public interface PermissionEditorRowIFace extends Comparable<PermissionEditorRow
 	/**
 	 * @return
 	 */
-	public abstract List<PermissionSettings> getPermissions();
+	public abstract List<PermissionIFace> getPermissions();
 	
 	/**
 	 * @param permSettings
 	 */
-	public abstract void setPermissions(List<PermissionSettings> permSettings);
+	public abstract void setPermissions(List<PermissionIFace> permSettings);
 	
 	/**
 	 * @param session

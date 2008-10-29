@@ -99,12 +99,22 @@ public class PermissionPanelEditor extends JPanel
      * @param principalArg
      * @param overrulingPrincipal
      */
-    public void updateTable(final SpPrincipal principalArg, final SpPrincipal overrulingPrincipal)
+    public void updateData(final SpPrincipal principalArg, 
+                           final SpPrincipal overrulingPrincipal, 
+                           final boolean     doAddDefaultPermissions)
     {
         for (PermissionPanelContainerIFace panel : panels)
         {
-            panel.updateData(principalArg, overrulingPrincipal);
+            panel.updateData(principalArg, overrulingPrincipal, doAddDefaultPermissions);
         }
+    }
+
+    /**
+     * @return the panels
+     */
+    public Vector<PermissionPanelContainerIFace> getPanels()
+    {
+        return panels;
     }
 
     

@@ -50,7 +50,7 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.tasks.BaseTask;
+
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -126,9 +126,9 @@ public class ReportsBaseTask extends BaseTask
     /**
      * Constructor.
      */
-    public ReportsBaseTask()
+    public ReportsBaseTask(final String name, final String title)
     {
-        super();
+        super(name, title);
         
         //iReportMainFrame = null;
         isShowDefault = true;

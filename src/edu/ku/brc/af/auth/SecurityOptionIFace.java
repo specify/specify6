@@ -69,5 +69,11 @@ public interface SecurityOptionIFace
      * @return a list of addition Security options. These can be thought as 'sub-options'.
      */
     public abstract List<SecurityOptionIFace> getAdditionalSecurityOptions(); 
+    
+    /**
+     * @param userType the type of use, this value is implementation dependent, it can be null
+     * @return the default permissions for a user type
+     */
+    public PermissionIFace getDefaultPermissions(String userType);
      
 }

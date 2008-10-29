@@ -32,7 +32,7 @@ import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
-import edu.ku.brc.af.tasks.BaseTask;
+
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
@@ -50,6 +50,7 @@ import edu.ku.brc.util.Pair;
 @SuppressWarnings("serial")
 public class LabelsTask extends ReportsBaseTask
 {
+    protected static final String LABELS = "Labels";
     protected static final String PRINT_TABLE = "PrintTable";
     
     /**
@@ -57,11 +58,10 @@ public class LabelsTask extends ReportsBaseTask
      */
     public LabelsTask()
     {
-        name          = "Labels";
+        super(LABELS, getResourceString(LABELS));
         iconName      = name;
-        title         = getResourceString(name);
         defaultFlavor = new DataFlavor(ReportsBaseTask.class, name);
-        navMimeDefs     = new ArrayList<Pair<String,String>>(2);
+        navMimeDefs   = new ArrayList<Pair<String,String>>(2);
         navMimeDefs.add(new Pair<String,String>("Labels", LABELS_MIME));
         reportHintKey = "LABEL_TT";
     }

@@ -14,6 +14,7 @@ import javax.swing.table.DefaultTableModel;
 
 import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 
 
@@ -122,9 +123,9 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
      * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#getPermissions()
      */
     @Override
-    public List<PermissionSettings> getPermissions()
+    public List<PermissionIFace> getPermissions()
     {
-        ArrayList<PermissionSettings> list = new ArrayList<PermissionSettings>(1);
+        ArrayList<PermissionIFace> list = new ArrayList<PermissionIFace>(1);
         
         int options = PermissionSettings.NO_PERM;
         options |= permission.canModify() ? PermissionSettings.CAN_MODIFY : 0;
@@ -137,12 +138,12 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#setPermissions(edu.ku.brc.af.auth.PermissionSettings)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#setPermissions(edu.ku.brc.af.auth.PermissionIFace)
      */
     @Override
-    public void setPermissions(final List<PermissionSettings> permissionSettings)
+    public void setPermissions(final List<PermissionIFace> permissionSettings)
     {
-        PermissionSettings permSettings = permissionSettings.get(0);
+        PermissionIFace permSettings = permissionSettings.get(0);
         permission.setActions(permSettings.canView(), permSettings.canAdd(), permSettings.canModify(), permSettings.canDelete());
     }
     

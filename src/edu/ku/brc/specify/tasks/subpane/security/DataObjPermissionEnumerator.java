@@ -78,7 +78,8 @@ public class DataObjPermissionEnumerator extends PermissionEnumerator
 	 */
 	public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
 			                                             final Hashtable<String, SpPermission> existingPerms,
-			                                             final Hashtable<String, SpPermission> overrulingPerms) 
+			                                             final Hashtable<String, SpPermission> overrulingPerms, 
+			                                             final boolean     doAddDefaultPermissions) 
 	{
 	    List<PermissionEditorRowIFace> perms = new ArrayList<PermissionEditorRowIFace>();
 

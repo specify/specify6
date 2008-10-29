@@ -11,11 +11,14 @@ import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.init.DataBuilder;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
@@ -23,7 +26,7 @@ import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroupScope;
-import edu.ku.brc.ui.UIRegistry;
+import static edu.ku.brc.ui.UIRegistry.*;
 
 /**
  * This class perform operations on the security administration navigation tree, such as 
@@ -72,27 +75,35 @@ public class NavigationTreeMgr
         }
         
         SpPrincipal group = (SpPrincipal) parentWrp.getDataObj();
-        SpecifyUser user = new SpecifyUser();
-        user.initialize();
+        SpecifyUser spUser = new SpecifyUser();
+        spUser.initialize();
         
-        ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getMostRecentWindow(),
+        ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)getMostRecentWindow(),
                                                                 null,
                                                                 "User",
                                                                 null,
-                                                                "New User",
+                                                                DBTableIdMgr.getInstance().getTitleForId(SpecifyUser.getClassTableId()),
                                                                 null,
-                                                                user.getClass().getName(),
+                                                                spUser.getClass().getName(),
                                                                 "specifyUserId",
                                                                 true,
-                                                               MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE);
-        dlg.setData(user);
+                                                                MultiView.HIDE_SAVE_BTN | 
+                                                                   MultiView.DONT_ADD_ALL_ALTVIEWS | 
+                                                                   MultiView.USE_ONLY_CREATION_MODE);
+        dlg.setOkLabel(getResourceString("SAVE"));
+        dlg.setData(spUser);
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
-            user.setUserType(group.getGroupType());
-            addGroupToUser(group, user);
+            spUser.setUserType(group.getGroupType());
+            addGroupToUser(group, spUser);
             
-            DataModelObjBaseWrapper userWrp  = new DataModelObjBaseWrapper(user);
+            ValComboBoxFromQuery cbx = (ValComboBoxFromQuery)dlg.getMultiView().getCurrentViewAsFormViewObj().getControlByName("agent");
+            Agent userAgent = (Agent)cbx.getValue();
+            spUser.getAgents().add(userAgent);
+            userAgent.setSpecifyUser(spUser);
+            
+            DataModelObjBaseWrapper userWrp  = new DataModelObjBaseWrapper(spUser);
             DefaultMutableTreeNode  userNode = new DefaultMutableTreeNode(userWrp);
             
             DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
@@ -129,6 +140,11 @@ public class NavigationTreeMgr
         tree.setSelectionPath(new TreePath(lastUserNode.getPath()));
     }
     
+    /**
+     * @param grpNode
+     * @param userArray
+     * @return
+     */
     private DefaultMutableTreeNode addUsersToTree(final  DefaultMutableTreeNode grpNode, 
                                                   final SpecifyUser[] userArray)
     {
@@ -320,7 +336,8 @@ public class NavigationTreeMgr
      * @param group
      * @param users
      */
-    private final void addGroupToUser(final SpPrincipal group, final SpecifyUser[] users)
+    private final void addGroupToUser(final SpPrincipal   group, 
+                                      final SpecifyUser[] users)
     {
         DataProviderSessionIFace session = null;
         try
@@ -346,6 +363,10 @@ public class NavigationTreeMgr
                 user.getSpPrincipals().add(group);
                 group.getSpecifyUsers().add(user);
                 
+                for (Agent agent : user.getAgents())
+                {
+                    session.saveOrUpdate(agent);
+                }
                 session.saveOrUpdate(user);
                 session.saveOrUpdate(userPrincipal);
                 session.saveOrUpdate(group);

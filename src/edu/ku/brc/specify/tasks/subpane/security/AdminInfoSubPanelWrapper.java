@@ -41,27 +41,47 @@ public class AdminInfoSubPanelWrapper
 		permissionEditors = new ArrayList<PermissionPanelEditor>();
 	}
 
+	/**
+	 * 
+	 */
 	public void clearPermissionEditors()
 	{
 		permissionEditors.clear();
 	}
 	
+	/**
+	 * @param permissionEditor
+	 */
 	public void addPermissionEditor(PermissionPanelEditor permissionEditor)
 	{
 		permissionEditors.add(permissionEditor);
 	}
 	
+	/**
+	 * @param permissionEditor
+	 */
 	public void removePermissionEditor(PermissionPanelEditor permissionEditor)
 	{
 		permissionEditors.remove(permissionEditor);
 	}
 	
+	/**
+	 * @return
+	 */
 	public JPanel getDisplayPanel()
 	{
 		return displayPanel;
 	}
 	
 	/**
+     * @return the permissionEditors
+     */
+    public List<PermissionPanelEditor> getPermissionEditors()
+    {
+        return permissionEditors;
+    }
+
+    /**
 	 * @param session
 	 */
 	public void savePermissionData(final DataProviderSessionIFace session) throws Exception
@@ -86,14 +106,18 @@ public class AdminInfoSubPanelWrapper
 		if (displayPanel instanceof ViewBasedDisplayPanel)
 		{
 			ViewBasedDisplayPanel panel = (ViewBasedDisplayPanel) displayPanel;
-			panel.setData(dataObj);
+            panel.setData(null);
+            panel.setData(dataObj);
 			
+            SpecifyUser user = null;
+            
 			// set permissions table if appropriate according to principal (user or usergroup)
 			SpPrincipal principal = null;
 			if (dataObj instanceof SpecifyUser)
 			{
 				// get user principal
-				SpecifyUser user = (SpecifyUser) dataObj;
+			
+			    user = (SpecifyUser) dataObj;
 				principal = UserPrincipalHibernateService.getUserPrincipalBySpecifyUser(user);
 			}
 			else if (dataObj instanceof SpPrincipal)
@@ -105,7 +129,7 @@ public class AdminInfoSubPanelWrapper
 			SpPrincipal secondPrincipal = null;
 			if (secondObject instanceof SpecifyUser)
 			{
-				SpecifyUser user = (SpecifyUser) secondObject;
+				user = (SpecifyUser) secondObject;
 				secondPrincipal = UserPrincipalHibernateService.getUserPrincipalBySpecifyUser(user);
 			}
 
@@ -113,7 +137,19 @@ public class AdminInfoSubPanelWrapper
 			{
 				for (PermissionPanelEditor editor : permissionEditors)
 				{
-					editor.updateTable(principal, secondPrincipal);
+				    System.err.println("AdminInfoSubPane "+ principal.getPermissions().size());
+				    boolean doAddDefaultPerms = principal.getPermissions().size() == 0;
+				    
+				    /*for (PermissionPanelContainerIFace permPanel : editor.getPanels())
+				    {
+				        List<PermissionEditorRowIFace> perms = permPanel.getPermissionEnumerator().getPermissions(principal, secondPrincipal);
+				        for (PermissionEditorRowIFace item : perms)
+				        {
+				            System.err.println(item);
+				        }
+				    }*/
+				    
+					editor.updateData(principal, secondPrincipal, doAddDefaultPerms);
 				}
 			}
 		}

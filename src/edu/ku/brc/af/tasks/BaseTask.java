@@ -1464,6 +1464,15 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     {
         return null;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityOptionIFace#getDefaultPermissions(java.lang.String)
+     */
+    @Override
+    public PermissionIFace getDefaultPermissions(String userType)
+    {
+        return null;
+    }
     
     //--------------------------------------------------------------
     // Inner Classes

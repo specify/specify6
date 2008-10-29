@@ -203,7 +203,9 @@ public class SecurityAdminPane extends BaseSubPane
      */
     private JPanel createAddDeleteNavToolbarPanel()
     {
-        final PanelBuilder toolbarPB = new PanelBuilder(new FormLayout(UIHelper.createDuplicateJGoodiesDef("p", "2px", 5), "p"));
+        final int numBtns = 3;
+        
+        final PanelBuilder toolbarPB = new PanelBuilder(new FormLayout(UIHelper.createDuplicateJGoodiesDef("p", "2px", numBtns), "p"));
         final CellConstraints cc = new CellConstraints();
         
         ActionListener btnAL = new ActionListener()
@@ -224,12 +226,15 @@ public class SecurityAdminPane extends BaseSubPane
         addCollBtn = UIHelper.createButton(IconManager.getIcon("add-collection", sz));
         addDiscBtn = UIHelper.createButton(IconManager.getIcon("add-discipline", sz));
         
-        navToolbarBtns = new JButton[5];
+        navToolbarBtns = new JButton[numBtns];
         navToolbarBtns[0] = delBtn;
         navToolbarBtns[1] = addUserBtn;
         navToolbarBtns[2] = addGrpBtn;
-        navToolbarBtns[3] = addCollBtn;
-        navToolbarBtns[4] = addDiscBtn;
+        if (numBtns == 5)
+        {
+            navToolbarBtns[3] = addCollBtn;
+            navToolbarBtns[4] = addDiscBtn;
+        }
         
         int x = 1;
         for (JButton btn : navToolbarBtns)
@@ -320,6 +325,20 @@ public class SecurityAdminPane extends BaseSubPane
         tree.setRootVisible(false);
         tree.setCellRenderer(new MyTreeCellRenderer());
         tree.addTreeSelectionListener(tsl);
+
+        // Expand the tree
+        for (int i = 0; i < tree.getRowCount(); i++) 
+        {
+            tree.expandRow(i);
+        }
+        
+        for (int i = tree.getRowCount() - 1; i >= 1; i--)
+        {
+            if (tree.getPathForRow(i).getPathCount() > 3)
+            {
+                tree.collapseRow(i);       
+            }
+        }
         
         navTreeMgr = new NavigationTreeMgr(tree);
         
@@ -411,7 +430,7 @@ public class SecurityAdminPane extends BaseSubPane
      * @param instNode
      * @param institution
      */
-    private void addDivisionsRecursively(DataProviderSessionIFace session, DefaultMutableTreeNode instNode, Institution institution)
+    private void addDivisionsRecursively(final DataProviderSessionIFace session, final DefaultMutableTreeNode instNode, final Institution institution)
     {
         // sort divisions
         TreeSet<Division> divisions = new TreeSet<Division>(institution.getDivisions()); 
@@ -440,7 +459,7 @@ public class SecurityAdminPane extends BaseSubPane
      * @param division
      */
     @SuppressWarnings("unused")  // will be used eventually when divisions can have more than one discipline 
-    private void addDisciplinesRecursively(DataProviderSessionIFace session, DefaultMutableTreeNode divNode, Division division)
+    private void addDisciplinesRecursively(final DataProviderSessionIFace session, final DefaultMutableTreeNode divNode, final Division division)
     {
         // sort disciplines
         TreeSet<Discipline> disciplines = new TreeSet<Discipline>(division.getDisciplines()); 
@@ -458,7 +477,7 @@ public class SecurityAdminPane extends BaseSubPane
      * @param discNode
      * @param discipline
      */
-    private void addCollectionsRecursively(DataProviderSessionIFace session, DefaultMutableTreeNode discNode, Discipline discipline)
+    private void addCollectionsRecursively(final DataProviderSessionIFace session, final DefaultMutableTreeNode discNode, final Discipline discipline)
     {
         // sort collections
         TreeSet<Collection> collections = new TreeSet<Collection>(discipline.getCollections()); 
@@ -476,8 +495,8 @@ public class SecurityAdminPane extends BaseSubPane
      * @param scope
      */
     private void addGroup(@SuppressWarnings("unused")DataProviderSessionIFace session, 
-                            DefaultMutableTreeNode node, 
-                            UserGroupScope scope)
+                          final DefaultMutableTreeNode node, 
+                          final UserGroupScope scope)
     {
         // sort groups
         TreeSet<SpPrincipal> groups = new TreeSet<SpPrincipal>(scope.getUserGroups()); 
@@ -490,6 +509,7 @@ public class SecurityAdminPane extends BaseSubPane
             TreeSet<SpecifyUser> users = new TreeSet<SpecifyUser>(group.getSpecifyUsers());
             for (SpecifyUser user : users) 
             {
+                user.getSpPrincipals().size();
                 DefaultMutableTreeNode userNode = new DefaultMutableTreeNode(new DataModelObjBaseWrapper(user));
                 groupNode.add(userNode);
             }
@@ -514,12 +534,15 @@ public class SecurityAdminPane extends BaseSubPane
         
         // adding the tree as f:p:g makes it grow too large
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout("min(210px;p):g", 
-                "min(500px;p),p,15px,p,p,p")/*, new FormDebugPanel()*/);
+                                                                    "min(500px;p),p,15px,p,p,p")/*, new FormDebugPanel()*/);
         final CellConstraints cc = new CellConstraints();
+
+        final PanelBuilder tbRightPB = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
+        tbRightPB.add(addDeleteNavToolbarPanel, cc.xy(2, 1));
         
         JScrollPane sp = new JScrollPane(tree, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         mainPB.add(sp,                        cc.xy(1, 1));
-        mainPB.add(addDeleteNavToolbarPanel,  cc.xy(1, 2));
+        mainPB.add(tbRightPB.getPanel(),      cc.xy(1, 2));
 //        mainPB.addSeparator("Users",          cc.xy(1, 4)); // I18N
 //        
 //        sp = new JScrollPane(userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);

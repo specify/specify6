@@ -27,10 +27,11 @@ public class SecurityOption implements SecurityOptionIFace
     protected String                name;
     protected String                title;
     protected String                prefix;
-    protected String                shortDesc   = "";
-    protected ImageIcon             icon        = null;
+    protected String                shortDesc    = "";
+    protected ImageIcon             icon         = null;
     protected PermissionEditorIFace editor;
-    protected PermissionIFace       permissions = null;
+    protected PermissionIFace       permissions  = null;
+    protected PermissionIFace       defaultPerms = null;
     
     
     /**
@@ -178,6 +179,25 @@ public class SecurityOption implements SecurityOptionIFace
     public ImageIcon getIcon(int size)
     {
         return icon;
+    }
+
+
+    /**
+     * @param defaultPerms the defaultPerms to set
+     */
+    public void setDefaultPerms(final PermissionIFace defaultPerms)
+    {
+        this.defaultPerms = defaultPerms;
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityOptionIFace#getDefaultPermissions(java.lang.String)
+     */
+    @Override
+    public PermissionIFace getDefaultPermissions(final String userType)
+    {
+        return defaultPerms;
     }
 
 }

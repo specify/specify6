@@ -27,12 +27,13 @@ public class CompositePermissionEnumerator extends PermissionEnumerator {
     //@Override
     public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
                                                          final Hashtable<String, SpPermission> existingUserPerms,
-                                                         final Hashtable<String, SpPermission> existingGroupPerms) 
+                                                         final Hashtable<String, SpPermission> existingGroupPerms, 
+                                                         final boolean     doAddDefaultPermissions) 
     {
         List<PermissionEditorRowIFace> allPerms = new ArrayList<PermissionEditorRowIFace>();
         for (PermissionEnumerator currEnumerator : enumerators)
         {
-            allPerms.addAll(currEnumerator.getPermissions(principal, existingUserPerms, existingGroupPerms));
+            allPerms.addAll(currEnumerator.getPermissions(principal, existingUserPerms, existingGroupPerms, doAddDefaultPermissions));
         }
         return allPerms;
     }

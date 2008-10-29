@@ -167,7 +167,7 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#format(java.lang.Object)
      */
-    public String format(Object dataValue)
+    public String format(final Object dataValue)
     {
         if (dataValue == null)
         {
@@ -179,17 +179,20 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
             throw new RuntimeException("The data value set into LocalityLatLonFormatter is not a Locality ["+dataValue.getClass().getSimpleName()+"]");
         }
         
-        Locality locality = (Locality)dataValue;
+        Locality   locality = (Locality)dataValue;
         BigDecimal value;
+        int decimalFmtLen;
         if (which == 1)
         {
             value = latLonType == LatLonConverter.LATLON.Latitude ? locality.getLatitude1() : locality.getLongitude1();
+            decimalFmtLen = LatLonConverter.getDecimalLength(latLonType == LatLonConverter.LATLON.Latitude ? locality.getLat1text() : locality.getLong1text());
         } else
         {
             value = latLonType == LatLonConverter.LATLON.Latitude ? locality.getLatitude2() : locality.getLongitude2();
+            decimalFmtLen = LatLonConverter.getDecimalLength(latLonType == LatLonConverter.LATLON.Latitude ? locality.getLat2text() : locality.getLong2text());
         }
         
-        return LatLonConverter.format(value, latLonType, format, degreesFMT);
+        return LatLonConverter.format(value, latLonType, format, degreesFMT, decimalFmtLen);
     }
 
     /* (non-Javadoc)

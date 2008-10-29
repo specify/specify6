@@ -44,6 +44,17 @@ public class PermissionSettings implements PermissionIFace
         this.permissions = permissions;
     }
     
+    public PermissionSettings(final boolean canView, 
+                              final boolean canModify, 
+                              final boolean canDel, 
+                              final boolean canAdd)
+    {
+        setCanView(canView);
+        setCanModify(canModify);
+        setCanDelete(canDel);
+        setCanAdd(canAdd);
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.PermissionIFace#canModify()
      */

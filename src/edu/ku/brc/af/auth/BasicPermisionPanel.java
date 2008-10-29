@@ -24,6 +24,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -37,7 +38,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class BasicPermisionPanel extends JPanel implements PermissionEditorIFace
 {
-    protected PermissionSettings permissions = null;
+    protected PermissionIFace permissions = null;
     protected JCheckBox viewChk;
     protected JCheckBox addChk;
     protected JCheckBox modifyChk;
@@ -188,9 +189,9 @@ public class BasicPermisionPanel extends JPanel implements PermissionEditorIFace
      * @see edu.ku.brc.af.auth.PermissionEditorIFace#getPermissions()
      */
     @Override
-    public List<PermissionSettings> getPermissions()
+    public List<PermissionIFace> getPermissions()
     {
-        ArrayList<PermissionSettings> list = new ArrayList<PermissionSettings>(1);
+        ArrayList<PermissionIFace> list = new ArrayList<PermissionIFace>(1);
         permissions.clear();
         
         if (addChk != null) permissions.setCanAdd(addChk.isSelected());
@@ -206,7 +207,7 @@ public class BasicPermisionPanel extends JPanel implements PermissionEditorIFace
      * @see edu.ku.brc.af.auth.PermissionEditorIFace#setPermissions(edu.ku.brc.af.auth.PermissionSettings)
      */
     @Override
-    public void setPermissions(final List<PermissionSettings> permissionsArg)
+    public void setPermissions(final List<PermissionIFace> permissionsArg)
     {
         this.permissions = permissionsArg.get(0);
         

@@ -141,10 +141,21 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
         return panelName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.PermissionPanelContainerIFace#getPermissionEnumerator()
+     */
+    @Override
+    public PermissionEnumerator getPermissionEnumerator()
+    {
+        return enumerator;
+    }
+    
     /**
 	 * Updates the table that will be used to display and edit the permissions 
 	 */
-	public void updateData(final SpPrincipal principalArg, final SpPrincipal overrulingPrincipal)
+	public void updateData(final SpPrincipal principalArg, 
+	                       final SpPrincipal overrulingPrincipal, 
+                           final boolean     doAddDefaultPermissions)
 	{
 		// save principal used when saving permissions later
 		this.principal = principalArg;
@@ -177,7 +188,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 		
 		rowDataList.clear();
 		
-		List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, overrulingPrincipal);
+		List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, overrulingPrincipal, doAddDefaultPermissions);
 		Collections.sort(perms, new ComparatorByStringRepresentation<PermissionEditorRowIFace>(true));
         for (PermissionEditorRowIFace permWrapper : perms) 
         {
@@ -196,6 +207,12 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
         
         for (PermissionEditorRowIFace permWrapper : rowDataList) 
         {
+            if (doAddDefaultPermissions)
+            {
+                //permWrapper.setPermissions(null)
+                
+                //permWrapper.getEditorPanel().setPermissions(permissions)
+            }
             permWrapper.addTableRow(model, icon);
         }
         
@@ -209,10 +226,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 	        height += table.getRowHeight(row);
 	    }
 	 
-	    table.setPreferredScrollableViewportSize(new Dimension( 
-	            table.getPreferredScrollableViewportSize().width, 
-	            height 
-	    )); 
+	    table.setPreferredScrollableViewportSize(new Dimension(table.getPreferredScrollableViewportSize().width, height)); 
 
 		TableColumn column = table.getColumnModel().getColumn(0);
 		int cellWidth = iconSize.size()+4;

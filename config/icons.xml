@@ -13,7 +13,7 @@
     <icon name="SpecifySplashCache" file="SpecifyBigSplash.png" sizes="NonStd"/>
     
     <icon name="Save"             file="Save32x32.png" sizes="all"/>
-    <icon name="Import"           file="ImportData16x16.png" sizes="16"/>
+    <icon name="Import16"         file="ImportData16x16.png" sizes="16"/>
     <icon name="ImportImages"     file="ImportImages16x16.png" sizes="16"/>
     <icon name="Export16"         file="ExportDataSet16x16.png" sizes="16"/>
     <icon name="ExportExcel16"    file="ExportExcelTemplate16x16.png" sizes="16"/>

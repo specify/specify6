@@ -52,7 +52,7 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.af.tasks.BaseTask;
+
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
@@ -173,7 +173,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             sysNavBox.add(NavBox.createBtnWithTT(getResourceString("PICKLIST_EDITOR"), "PickList", "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    PickListEditorDlg dlg = new PickListEditorDlg(null);
+                    PickListEditorDlg dlg = new PickListEditorDlg(null, true);
                     dlg.createUI();
                     dlg.setSize(400,500);
                     dlg.setVisible(true);

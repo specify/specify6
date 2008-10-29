@@ -15,6 +15,7 @@ import javax.swing.table.DefaultTableModel;
 
 import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
@@ -123,7 +124,7 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
      * @param permission
      * @return
      */
-    private PermissionSettings createPermissionSettings(final SpPermission permission)
+    private PermissionIFace createPermissionSettings(final SpPermission permission)
     {
         int options = PermissionSettings.NO_PERM;
         options |= permission.canModify() ? PermissionSettings.CAN_MODIFY : 0;
@@ -137,9 +138,9 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
      * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#getPermissions()
      */
     @Override
-    public List<PermissionSettings> getPermissions()
+    public List<PermissionIFace> getPermissions()
     {
-        ArrayList<PermissionSettings> list = new ArrayList<PermissionSettings>(1);
+        ArrayList<PermissionIFace> list = new ArrayList<PermissionIFace>(1);
         
         list.add(createPermissionSettings(ownerPermission));
         list.add(createPermissionSettings(groupPermission));
@@ -148,7 +149,7 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
         return list;
     }
     
-    private void setPermSettings(final PermissionSettings permSettings, 
+    private void setPermSettings(final PermissionIFace permSettings, 
                                  final SpPermission permission)
     {
         permission.setActions(permSettings.canView(), permSettings.canAdd(), permSettings.canModify(), permSettings.canDelete());
@@ -158,7 +159,7 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
      * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#setPermissions(edu.ku.brc.af.auth.PermissionSettings)
      */
     @Override
-    public void setPermissions(final List<PermissionSettings> permSettings)
+    public void setPermissions(final List<PermissionIFace> permSettings)
     {
         setPermSettings(permSettings.get(0), ownerPermission);
         setPermSettings(permSettings.get(1), groupPermission);

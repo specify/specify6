@@ -29,7 +29,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
-import edu.ku.brc.af.tasks.BaseTask;
+
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.ui.CommandAction;
@@ -56,11 +56,9 @@ public class ReportsTask extends ReportsBaseTask
      */
     public ReportsTask()
     {
-        super();
+        super(REPORTS, getResourceString(REPORTS));
         
-        name          = REPORTS;
         iconName      = name;
-        title         = getResourceString(name);
         defaultFlavor = new DataFlavor(ReportsBaseTask.class, name);
         navMimeDefs     = new ArrayList<Pair<String,String>>(2);
         navMimeDefs.add(new Pair<String,String>(name, REPORTS_MIME));
