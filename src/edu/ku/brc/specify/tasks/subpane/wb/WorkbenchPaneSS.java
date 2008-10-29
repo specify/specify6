@@ -1574,11 +1574,14 @@ public class WorkbenchPaneSS extends BaseSubPane
         final int locTabId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
         final int latColIndex = workbench.getColumnIndex(locTabId,"latitude1");
         final int lonColIndex = workbench.getColumnIndex(locTabId, "longitude1");
-        
+        final int lat2ColIndex = workbench.getColumnIndex(locTabId,"latitude2");
+        final int lon2ColIndex = workbench.getColumnIndex(locTabId, "longitude2");
         // it's fine if these come back as -1
         // that results in no backups of the original values
         final int lat1TextColIndex = workbench.getColumnIndex(locTabId, "Lat1Text");
         final int long1TextColIndex = workbench.getColumnIndex(locTabId, "Long1Text");
+        final int lat2TextColIndex = workbench.getColumnIndex(locTabId, "Lat2Text");
+        final int long2TextColIndex = workbench.getColumnIndex(locTabId, "Long2Text");
 
         JFrame mainFrame = (JFrame)UIRegistry.getTopWindow();
         
@@ -1632,18 +1635,24 @@ public class WorkbenchPaneSS extends BaseSubPane
                     {
                         convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(), lat1TextColIndex);
                         convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(), long1TextColIndex);
+                        convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(), lat2TextColIndex);
+                        convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(), long2TextColIndex);
                         break;
                     }
                     case 1:
                     {
                         convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(), lat1TextColIndex);
                         convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(), long1TextColIndex);
+                        convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(), lat2TextColIndex);
+                        convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(), long2TextColIndex);
                         break;
                     }
                     case 2:
                     {
                         convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(), lat1TextColIndex);
                         convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(), long1TextColIndex);
+                        convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(), lat2TextColIndex);
+                        convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(), long2TextColIndex);
                         break;
                     }
                 }
@@ -1822,12 +1831,27 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void convertColumnContents(int columnIndex, int[] rows, StringConverter converter, String outputFormat, int backupColIndex)
     {
+        if (columnIndex == -1)
+        {
+            return;           
+        }
+        
         final int[] selectedRows = spreadSheet.getSelectedRows();
         final int[] selectedCols = spreadSheet.getSelectedColumns();
         for (int index = 0; index < rows.length; ++index)
         {
             int rowIndex = rows[index];
-            String currentValue = (String)model.getValueAt(rowIndex, columnIndex);
+            String currentValue = null; 
+            //check backup col for original value before any conversions...
+            if (backupColIndex != -1)
+            {
+                currentValue = (String )model.getValueAt(rowIndex, backupColIndex);
+            }
+            if (StringUtils.isBlank(currentValue))
+            {
+                currentValue = (String)model.getValueAt(rowIndex, columnIndex);
+            }
+            
             if (StringUtils.isBlank(currentValue))
             {
                 continue;
