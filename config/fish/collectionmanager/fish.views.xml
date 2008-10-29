@@ -53,7 +53,7 @@
             <enableRules/>
             
             <columnDef>100px,2px,p,2px,p,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
-            <columnDef os="mac">120px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
+            <columnDef os="mac">120px,2px,p,2px,p,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>

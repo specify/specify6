@@ -120,7 +120,7 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
             
-            <columnDef>100px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
+            <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
@@ -274,7 +274,7 @@
             gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             <desc><![CDATA[Form For CollectionObjectCitation]]></desc>
-            <columnDef>100px,2px,p,2px,100px,2px,p,2px,p:g</columnDef>
+            <columnDef>p,2px,p,2px,100px,2px,p,2px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
 

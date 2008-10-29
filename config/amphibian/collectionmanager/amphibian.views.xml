@@ -74,7 +74,7 @@
             settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Form For OtherIdentifier]]></desc>
-            <columnDef>75px,2px,150px,2px,p,2px,150px,2px,100px,2px,150px,p:g</columnDef>
+            <columnDef>75px,2px,150px,2px,p,2px,150px,2px,p,2px,150px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
@@ -110,7 +110,7 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
             
-            <columnDef>100px,2px,p,2px,100px,2px,p,2px,75px,2px,p,p:g,p,p</columnDef>
+            <columnDef>100px,2px,p,2px,p,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
