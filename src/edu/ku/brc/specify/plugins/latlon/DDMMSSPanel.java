@@ -38,7 +38,7 @@ public class DDMMSSPanel extends DDMMMMPanel
      */
     public DDMMSSPanel()
     {
-        // nothing to do
+        decimalFmtLen = 3;
     }
     
     /* (non-Javadoc)
@@ -73,7 +73,7 @@ public class DDMMSSPanel extends DDMMMMPanel
         if (latitude != null)
         {
             latitudeDir.setSelectedIndex(latitude.doubleValue() >= 0 ? 0 : 1);
-            String[] parts = StringUtils.split(LatLonConverter.convertToDDMMSS(latitude));
+            String[] parts = StringUtils.split(LatLonConverter.convertToDDMMSS(latitude, decimalFmtLen));
             latitudeDD.setText(stripZeroes(parts[0]));
             latitudeMM.setText(stripZeroes(parts[1]));
             latitudeSS.setText(stripZeroes(parts[2]));
@@ -95,7 +95,7 @@ public class DDMMSSPanel extends DDMMMMPanel
         
         if (longitude != null)
         {
-            String[] parts = StringUtils.split(LatLonConverter.convertToDDMMSS(longitude));
+            String[] parts = StringUtils.split(LatLonConverter.convertToDDMMSS(longitude, decimalFmtLen));
             longitudeDir.setSelectedIndex(longitude.doubleValue() >= 0 ? 0 : 1);
             longitudeDD.setText(stripZeroes(parts[0]));
             longitudeMM.setText(stripZeroes(parts[1]));  

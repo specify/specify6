@@ -133,7 +133,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected String               prevEnteredText     = null;
     protected String               searchedForText     = null;
     
-    protected QueryWhereClauseProvider queryWhereClauseProvider = null;
+    protected QueryWhereClauseProviderIFace queryWhereClauseProvider = null;
     
     /**
      * Constructor.
@@ -390,7 +390,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     /**
      * @param queryWhereClauseProvider
      */
-    public void setQueryWhereClauseProvider(QueryWhereClauseProvider queryWhereClauseProvider)
+    public void setQueryWhereClauseProvider(QueryWhereClauseProviderIFace queryWhereClauseProvider)
     {
         this.queryWhereClauseProvider = queryWhereClauseProvider;
     }
@@ -1211,13 +1211,13 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         return textField;
     }
     
-    public interface QueryWhereClauseProvider
+    public interface QueryWhereClauseProviderIFace
     {
-        public String getExtraWehereCaluse();
+        public String getExtraWhereClause();
     }
     
     //--------------------------------------------------------------------------
-    // Special class for the right visual appearence on the Mac.
+    // Special class for the right visual appearance on the Mac.
     //--------------------------------------------------------------------------
     class MacGradiantBtn extends JButton
     {

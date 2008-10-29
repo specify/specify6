@@ -66,7 +66,7 @@ import edu.ku.brc.af.ui.db.TextFieldWithQuery;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
-import edu.ku.brc.af.ui.db.TextFieldWithQuery.QueryWhereClauseProvider;
+import edu.ku.brc.af.ui.db.TextFieldWithQuery.QueryWhereClauseProviderIFace;
 import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.DataObjectSettable;
 import edu.ku.brc.af.ui.forms.DataObjectSettableFactory;
@@ -157,7 +157,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected ActionListener defaultNewAction;
     
     protected ViewBasedSearchQueryBuilderIFace builder = null;
-    protected QueryWhereClauseProvider queryWhereClauseProvider = null;
+    protected QueryWhereClauseProviderIFace queryWhereClauseProvider = null;
     
     /**
      *  Constructor.
@@ -261,9 +261,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     /**
      * @param queryWhereClauseProvider
      */
-    public void setQueryWhereClauseProvider(QueryWhereClauseProvider queryWhereClauseProvider)
+    public void setQueryWhereClauseProvider(QueryWhereClauseProviderIFace queryWhereClauseProvider)
     {
         this.queryWhereClauseProvider = queryWhereClauseProvider;
+        textWithQuery.setQueryWhereClauseProvider(queryWhereClauseProvider);
     }
     
     /**

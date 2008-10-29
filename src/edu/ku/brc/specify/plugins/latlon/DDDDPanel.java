@@ -61,6 +61,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     protected static String[] eastWest    = null;
           
     protected BigDecimal     minusOne      = new BigDecimal("-1.0");
+    protected int            decimalFmtLen = 7;
 
     protected boolean        isViewMode = false;
     protected ValFormattedTextFieldSingle latitudeDD; 
@@ -246,7 +247,34 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
                 longitudeDirTxt.setText("");
             }    
         }
- 
+    }
+    
+    protected void set(final ValFormattedTextFieldSingle txtFld, 
+                       final JComboBox cbx,
+                       final String    val, 
+                       final String    dir,
+                       final boolean   isLat)
+    {
+        if (StringUtils.isNotEmpty(val) && StringUtils.isNotEmpty(dir))
+        {
+            //if ()
+        }
+    }
+    
+    public void set(final String lat1DDDDDD, final String lat1Dir,
+                    final String lon1DDDDDD, final String lon1Dir,
+                    final String lat2DDDDDD, final String lat2Dir,
+                    final String lon2DDDDDD, final String lon2Dir)
+    {
+        if (StringUtils.isNotEmpty(lat1DDDDDD))
+        latitudeDD.setText(lat1DDDDDD);
+        latitudeDD.setText(lon1DDDDDD);
+        
+        if (lat1Dir.equals(NORTH_SOUTH[0]))
+        {
+            latitudeDD.setText(lat1DDDDDD);
+            latitudeDD.setText(lon1DDDDDD);
+        }
     }
     
     /**

@@ -43,7 +43,7 @@ public class DDMMMMPanel extends DDDDPanel
      */
     public DDMMMMPanel()
     {
-        // nothing
+        decimalFmtLen = 5;
     }
     
     /* (non-Javadoc)
@@ -55,13 +55,19 @@ public class DDMMMMPanel extends DDDDPanel
         createUI("p, p, p, p, p, 2px, p", 3, 3, 7, true, false);
     }
     
-    /* (non-Javadoc)
-     * @see DDDDPanel#createUI(java.lang.String, int, int, int)
+    /**
+     * @param colDef
+     * @param latCols
+     * @param lonCols
+     * @param cbxIndex
+     * @param asDDIntegers
+     * @param asMMIntegers
+     * @return
      */
-    protected PanelBuilder createUI(final String colDef, 
-                                    final int latCols,
-                                    final int lonCols,
-                                    final int cbxIndex,
+    protected PanelBuilder createUI(final String  colDef, 
+                                    final int     latCols,
+                                    final int     lonCols,
+                                    final int     cbxIndex,
                                     final boolean asDDIntegers,
                                     final boolean asMMIntegers)
     {
@@ -90,7 +96,7 @@ public class DDMMMMPanel extends DDDDPanel
         {
             //System.out.println("BD:["+latitude.abs()+"] text["+LatLonConverter.convertToDDMMMM(latitude.abs())+"]");
             latitudeDir.setSelectedIndex(latitude.doubleValue() >= 0 ? 0 : 1);
-            String[] parts = StringUtils.split(LatLonConverter.convertToDDMMMM(latitude.abs()));
+            String[] parts = StringUtils.split(LatLonConverter.convertToDDMMMM(latitude.abs(), decimalFmtLen));
             latitudeDD.setText(stripZeroes(parts[0]));
             latitudeMM.setText(stripZeroes(parts[1]));
             
@@ -113,7 +119,7 @@ public class DDMMMMPanel extends DDDDPanel
         {
             //System.out.println("BD:["+longitude+"] text["+LatLonConverter.convertToDDMMMM(longitude.abs())+"]");
             longitudeDir.setSelectedIndex(longitude.doubleValue() >= 0 ? 0 : 1);
-            String[] parts = StringUtils.split(LatLonConverter.convertToDDMMMM(longitude.abs()));
+            String[] parts = StringUtils.split(LatLonConverter.convertToDDMMMM(longitude.abs(), decimalFmtLen));
             longitudeDD.setText(stripZeroes(parts[0]));
             longitudeMM.setText(stripZeroes(parts[1]));
             

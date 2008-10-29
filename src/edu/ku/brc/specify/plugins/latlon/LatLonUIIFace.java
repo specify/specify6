@@ -42,7 +42,8 @@ public interface LatLonUIIFace
      * @param latitude the lat
      * @param longitude the lon
      */
-    public abstract void set(final BigDecimal latitude, final BigDecimal longitude);
+    public abstract void set(final BigDecimal latitude, 
+                             final BigDecimal longitude);
     
     /**
      * Gets the data from the controls. 

@@ -52,6 +52,7 @@ import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.plugins.UIPluginBase;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Pair;
 
 
@@ -449,7 +450,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
      * @see edu.ku.brc.specify.plugins.UIPluginBase#setValue(java.lang.Object, java.lang.String)
      */
     @Override
-    public void setValue(Object value, String defaultValue)
+    public void setValue(final Object value, final String defaultValue)
     {
         super.setValue(value, defaultValue);
         
@@ -463,11 +464,15 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         Integer currFormatterIndex = null;
         if (locality != null)
         {
-            currFormatterIndex  = locality.getOriginalLatLongUnit();
-            currentType = convertLatLongType(locality.getLatLongType());
+            currFormatterIndex = locality.getOriginalLatLongUnit();
+            currentType        = convertLatLongType(locality.getLatLongType());
             
-            setLatLon(locality.getLatitude1(), locality.getLongitude1(), 
-                      locality.getLatitude2(), locality.getLongitude2());
+            //LatLonConverter.convertDDDDToDDDD(str)
+            
+            setLatLon(locality.getLatitude1(), 
+                      locality.getLongitude1(), 
+                      locality.getLatitude2(), 
+                      locality.getLongitude2());
         } else
         {
             currentType = LatLonUIIFace.LatLonType.LLPoint;
