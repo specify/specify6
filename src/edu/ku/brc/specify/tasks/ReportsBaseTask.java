@@ -15,7 +15,6 @@
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
-import it.businesslogic.ireport.gui.MainFrame;
 
 import java.awt.FileDialog;
 import java.awt.Frame;
@@ -29,7 +28,6 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import net.sf.jasperreports.engine.JRDataSource;
 
@@ -46,7 +44,6 @@ import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
@@ -62,7 +59,6 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpReport;
-import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify;
@@ -124,7 +120,8 @@ public class ReportsBaseTask extends BaseTask
     protected NavBoxItemIFace         oneNbi           = null;
 
     //iReport MainFrame
-    protected static MainFrameSpecify iReportMainFrame   = null;
+    //protected static MainFrameSpecify iReportMainFrame   = null;
+    //protected static MainFrame iReportMainFrame   = null;
     
     /**
      * Constructor.
@@ -133,7 +130,7 @@ public class ReportsBaseTask extends BaseTask
     {
         super();
         
-        iReportMainFrame = null;
+        //iReportMainFrame = null;
         isShowDefault = true;
     }
 
@@ -396,21 +393,12 @@ public class ReportsBaseTask extends BaseTask
                          final Taskable            originatingTask,
                          final ImageIcon           paneIcon)
     {
-        int startPaneIndex = starterPane != null ? SubPaneMgr.getInstance().indexOfComponent(starterPane.getUIComponent()) : -1;
-        
         LabelsPane labelsPane;
-        if (startPaneIndex == -1)
-        {
-            labelsPane = new LabelsPane(labelTitle, originatingTask != null ? originatingTask : this, params);
-            labelsPane.setIcon(paneIcon);
-            addSubPaneToMgr(labelsPane);
-            
-        } else
-        {
-            labelsPane  = (LabelsPane)starterPane;
-            SubPaneMgr.getInstance().renamePane(labelsPane, labelTitle);
-            SubPaneMgr.getInstance().showPane(labelsPane);
-        }
+        labelsPane = new LabelsPane(labelTitle, originatingTask != null ? originatingTask : this,
+                params);
+        labelsPane.setIcon(paneIcon);
+        addSubPaneToMgr(labelsPane);
+
         labelsPane.createReport(labelName, data, params);
         starterPane = null;
     }
@@ -784,10 +772,10 @@ public class ReportsBaseTask extends BaseTask
             {
                 runReport(cmdAction);
             }
-            if (cmdAction.getData() instanceof CommandAction && ((CommandAction)cmdAction.getData()).isAction(OPEN_EDITOR))
-            {
-                openIReportEditor(cmdAction);
-            }
+//            if (cmdAction.getData() instanceof CommandAction && ((CommandAction)cmdAction.getData()).isAction(OPEN_EDITOR))
+//            {
+//                openIReportEditor(cmdAction);
+//            }
             if (cmdAction.getData() instanceof RecordSetIFace)
             {
                 RecordSetIFace rs = (RecordSetIFace)cmdAction.getData();
@@ -805,10 +793,10 @@ public class ReportsBaseTask extends BaseTask
                 printReport(cmdAction);
             }
         }
-        else if (cmdAction.isAction(OPEN_EDITOR))
-        {
-            openIReportEditor(cmdAction);
-        }
+//        else if (cmdAction.isAction(OPEN_EDITOR))
+//        {
+//            openIReportEditor(cmdAction);
+//        }
         else if (cmdAction.isAction(RUN_REPORT))
         {
             runReport(cmdAction);
@@ -1017,106 +1005,108 @@ public class ReportsBaseTask extends BaseTask
 //            }
 //        }
     }
-    /**
-     * Open the IReport editor.
-     * @param cmdAction the command to be processed
-     */
-    protected void openIReportEditor(final CommandAction cmdAction) 
-    {
-        CommandAction repAction = null;
-        final AppResourceIFace repRes;
-        final boolean doNewWiz = cmdAction.getProperty("newwizard") != null ? true : false;
-        if (cmdAction.isAction(OPEN_EDITOR)) //EditReport was clicked or dropped on
-        {
-            Object data = cmdAction.getData();
-            if (data instanceof CommandAction && ((CommandAction)data).isAction(PRINT_REPORT))
-            {
-                repAction = (CommandAction)data;
-            }
-            
-        }
-        else if (cmdAction.isAction(PRINT_REPORT))//Report was dropped upon
-        {
-            repAction = cmdAction;
-        }
-        
-        if (repAction != null)
-        {
-            JasperReportsCache.refreshCacheFromDatabase();
-            repRes = AppContextMgr.getInstance().getResource((String)repAction.getProperty("name")); 
-        }
-        else
-        {
-            repRes = null;
-        }
-        
-        
-        Thread appThread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    SwingUtilities.invokeAndWait(new Runnable()
-                    {
-                        public void run()
-                        {
-                            //UIRegistry.getStatusBar().setVisible(true);
-                            UIRegistry.getStatusBar().setText(
-                                getResourceString("REP_INITIALIZING_DESIGNER"));
-                            UIRegistry.getStatusBar().getProgressBar().setIndeterminate(true);
-                            //UIRegistry.getStatusBar().getProgressBar().setValue(100);
-                            UIRegistry.getStatusBar().setVisible(true);
-                            UIRegistry.forceTopFrameRepaint();
-                        }
-                    });
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        appThread.start();
-        
-        
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                try
-                {
-                    if (iReportMainFrame == null)
-                    {
-                        MainFrame.reportClassLoader.rescanLibDirectory();
-                        Thread.currentThread().setContextClassLoader(MainFrame.reportClassLoader);
-                        updateIReportConfig();
-                        iReportMainFrame = new MainFrameSpecify(MainFrameSpecify.getDefaultArgs(), true, true);
-                    }
-                    iReportMainFrame.refreshSpQBConnections();
-                    if (repRes != null)
-                    {
-                        iReportMainFrame.openReportFromResource(repRes);
-                    }
-                    iReportMainFrame.setVisible(true);    
-                    if (doNewWiz)
-                    {
-                        iReportMainFrame.newWizard();
-                    }
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                    throw new RuntimeException(e);
-                }
-                finally
-                {
-                    UIRegistry.getStatusBar().setText("");
-                    //UIRegistry.getStatusBar().setVisible(false);
-                    UIRegistry.getStatusBar().setProgressDone(REPORTS);
-                    UIRegistry.forceTopFrameRepaint();
-                }
-            }
-        });
-    }
-        
+//    /**
+//     * Open the IReport editor.
+//     * @param cmdAction the command to be processed
+//     */
+//    protected void openIReportEditor(final CommandAction cmdAction) 
+//    {
+//        CommandAction repAction = null;
+//        final AppResourceIFace repRes;
+//        final boolean doNewWiz = cmdAction.getProperty("newwizard") != null ? true : false;
+//        if (cmdAction.isAction(OPEN_EDITOR)) //EditReport was clicked or dropped on
+//        {
+//            Object data = cmdAction.getData();
+//            if (data instanceof CommandAction && ((CommandAction)data).isAction(PRINT_REPORT))
+//            {
+//                repAction = (CommandAction)data;
+//            }
+//            
+//        }
+//        else if (cmdAction.isAction(PRINT_REPORT))//Report was dropped upon
+//        {
+//            repAction = cmdAction;
+//        }
+//        
+//        if (repAction != null)
+//        {
+//            JasperReportsCache.refreshCacheFromDatabase();
+//            repRes = AppContextMgr.getInstance().getResource((String)repAction.getProperty("name")); 
+//        }
+//        else
+//        {
+//            repRes = null;
+//        }
+//        
+//        
+//        Thread appThread = new Thread() {
+//            @Override
+//            public void run() {
+//                try {
+//                    SwingUtilities.invokeAndWait(new Runnable()
+//                    {
+//                        public void run()
+//                        {
+//                            //UIRegistry.getStatusBar().setVisible(true);
+//                            UIRegistry.getStatusBar().setText(
+//                                getResourceString("REP_INITIALIZING_DESIGNER"));
+//                            UIRegistry.getStatusBar().getProgressBar().setIndeterminate(true);
+//                            //UIRegistry.getStatusBar().getProgressBar().setValue(100);
+//                            UIRegistry.getStatusBar().setVisible(true);
+//                            UIRegistry.forceTopFrameRepaint();
+//                        }
+//                    });
+//                }
+//                catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        };
+//        appThread.start();
+//        
+//        
+//        SwingUtilities.invokeLater(new Runnable()
+//        {
+//            public void run()
+//            {
+//                try
+//                {
+//                    if (iReportMainFrame == null)
+//                    {
+//                        
+//                        MainFrame.reportClassLoader.rescanLibDirectory();
+//                        Thread.currentThread().setContextClassLoader(MainFrame.reportClassLoader);
+//                        updateIReportConfig();
+//                        //iReportMainFrame = new MainFrameSpecify(MainFrameSpecify.getDefaultArgs(), true, true);
+//                        iReportMainFrame = new MainFrame(MainFrameSpecify.getDefaultArgs());
+//                    }
+//                    //iReportMainFrame.refreshSpQBConnections();
+//                    if (repRes != null)
+//                    {
+//                      //  iReportMainFrame.openReportFromResource(repRes);
+//                    }
+//                    //iReportMainFrame.setVisible(true);    
+//                    if (doNewWiz)
+//                    {
+//                        //iReportMainFrame.newWizard();
+//                    }
+//                }
+//                catch (Exception e)
+//                {
+//                    e.printStackTrace();
+//                    throw new RuntimeException(e);
+//                }
+//                finally
+//                {
+//                    UIRegistry.getStatusBar().setText("");
+//                    //UIRegistry.getStatusBar().setVisible(false);
+//                    UIRegistry.getStatusBar().setProgressDone(REPORTS);
+//                    UIRegistry.forceTopFrameRepaint();
+//                }
+//            }
+//        });
+//    }
+//        
     /**
      * @param cmd
      * @return a fully-loaded SpReport
