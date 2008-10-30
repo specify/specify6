@@ -71,9 +71,9 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
                                          final SpPrincipal                     principal, 
                                          final Hashtable<String, SpPermission> existingPerms,
                                          final Hashtable<String, SpPermission> overrulingPerms,
-                                         final boolean                         doAddDefaultPerms)
+                                         final String                          userType)
     {
-     // first check if there is a permission with this name
+        // first check if there is a permission with this name
         String       taskName = permissionBaseName + "." + securityOption.getPermissionName();
         SpPermission perm     = existingPerms.get(taskName);
         SpPermission oPerm    = (overrulingPerms != null)? overrulingPerms.get(taskName) : null;
@@ -85,9 +85,9 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
             perm.setActions("");
             perm.setPermissionClass(BasicSpPermission.class.getCanonicalName());
             
-            if (doAddDefaultPerms)
+            if (userType != null)
             {
-                PermissionIFace defPerms = securityOption.getDefaultPermissions("CollectionManager");
+                PermissionIFace defPerms = securityOption.getDefaultPermissions(userType);
                 if (defPerms != null)
                 {
                     perm.setActions(defPerms.canView(), defPerms.canAdd(), defPerms.canModify(), defPerms.canDelete());
@@ -112,7 +112,7 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
 	public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal                     principal, 
 			                                             final Hashtable<String, SpPermission> existingPerms,
 			                                             final Hashtable<String, SpPermission> overrulingPerms,
-			                                             final boolean                         doAddDefaultPerms) 
+			                                             final String                          userType) 
 	{
 		// iterate through all possible tasks
 		Collection<Taskable>           tasks = TaskMgr.getInstance().getAllTasks();
@@ -134,7 +134,7 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
 		    {
 		        ImageIcon taskIcon = task.getIcon(Taskable.StdIcon20);
 		        
-		        checkAndAddPermission(perms, task, taskIcon, principal, existingPerms, overrulingPerms, doAddDefaultPerms);
+		        checkAndAddPermission(perms, task, taskIcon, principal, existingPerms, overrulingPerms, userType);
 		        
 		        List<SecurityOptionIFace> additionalOptions = task.getAdditionalSecurityOptions();
 		        if (additionalOptions != null)
@@ -146,7 +146,7 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
 		                {
 		                    icon = taskIcon;
 		                }
-		                checkAndAddPermission(perms, sOpt, icon, principal, existingPerms, overrulingPerms, doAddDefaultPerms);
+		                checkAndAddPermission(perms, sOpt, icon, principal, existingPerms, overrulingPerms, userType);
 		            }
 		        }
 		    }

@@ -31,7 +31,7 @@ public abstract class PermissionEnumerator
      */
     public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
                                                          final SpPrincipal overrulingPrincipal,
-                                                         final boolean doAddDefaultPerms)
+                                                         final String      userType)
     {
         Hashtable<String, SpPermission> existingPerms   = PermissionService.getExistingPermissions(principal.getId());
         
@@ -40,7 +40,7 @@ public abstract class PermissionEnumerator
         {
             overrulingPerms = PermissionService.getExistingPermissions(overrulingPrincipal.getId());
         }
-        return getPermissions(principal, existingPerms, overrulingPerms, doAddDefaultPerms);
+        return getPermissions(principal, existingPerms, overrulingPerms, userType);
     }
 
     /**
@@ -80,5 +80,5 @@ public abstract class PermissionEnumerator
     public abstract List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
                                                                   final Hashtable<String, SpPermission> existingPerms,
                                                                   final Hashtable<String, SpPermission> overrulingPerms,
-                                                                  final boolean doAddDefaultPerms);
+                                                                  final String                          userType);
 }

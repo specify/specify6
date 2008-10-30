@@ -101,11 +101,11 @@ public class PermissionPanelEditor extends JPanel
      */
     public void updateData(final SpPrincipal principalArg, 
                            final SpPrincipal overrulingPrincipal, 
-                           final boolean     doAddDefaultPermissions)
+                           final String      userType)
     {
         for (PermissionPanelContainerIFace panel : panels)
         {
-            panel.updateData(principalArg, overrulingPrincipal, doAddDefaultPermissions);
+            panel.updateData(principalArg, overrulingPrincipal, userType);
         }
     }
 

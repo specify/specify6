@@ -9,9 +9,9 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import org.apache.commons.lang.StringUtils;
-
-import edu.ku.brc.af.core.PermissionIFace;
+import edu.ku.brc.af.auth.PermissionEditorIFace;
+import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -21,34 +21,44 @@ import edu.ku.brc.af.core.PermissionIFace;
  * Oct 29, 2008
  *
  */
-public class BackupTask extends edu.ku.brc.af.tasks.BackupTask
+public class BackupTask extends BaseTask
 {
-
+    protected edu.ku.brc.af.tasks.BackupTask baseBackupTask;
+    
+    /**
+     * 
+     */
     public BackupTask()
     {
-        super();
+        super("BackupTask", UIRegistry.getResourceString("BackupTask.TITLE"));
+        this.iconName = "Backup";
+        
+        baseBackupTask = new edu.ku.brc.af.tasks.BackupTask();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.BaseTask#getStarterPane()
+     */
+    @Override
+    public SubPaneIFace getStarterPane()
+    {
+        return getSplashPane();
+    }
+
+    /**
+     * @return
+     */
+    public SubPaneIFace getSplashPane()
+    {
+        return baseBackupTask.getSplashPane();
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.BaseTask#getDefaultPermissions(java.lang.String)
+     * @see edu.ku.brc.af.tasks.BaseTask#getPermEditorPanel()
      */
     @Override
-    public PermissionIFace getDefaultPermissions(final String userType)
+    public PermissionEditorIFace getPermEditorPanel()
     {
-        if (StringUtils.isNotEmpty(userType))
-        {
-            if (userType.equals("CollectionManager"))
-            {
-                
-            } else if (userType.equals("Guest"))
-            {
-                
-            } else if (userType.equals("DataEntry"))
-            {
-                
-            }
-        }
-        return null;
+        return baseBackupTask.getPermEditorPanel();
     }
-    
 }

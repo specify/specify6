@@ -35,11 +35,11 @@ public interface PermissionPanelContainerIFace
     /**
      * @param principalArg
      * @param overrulingPrincipal
-     * @param doAddDefaultPermissions
+     * @param userType
      */
     public abstract void updateData(SpPrincipal principalArg, 
                                     SpPrincipal overrulingPrincipal, 
-                                    boolean     doAddDefaultPermissions);
+                                    String     userType);
     
     /**
      * 

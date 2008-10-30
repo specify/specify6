@@ -261,14 +261,14 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
     @Override
     public void updateData(final SpPrincipal principalArg, 
                            final SpPrincipal overrulingPrincipal, 
-                           final boolean     doAddDefaultPermissions)
+                           final String     userType)
     {
         // save principal used when saving permissions later
         this.principal = principalArg;
         
         rowDataList.clear();
         
-        List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, overrulingPrincipal, doAddDefaultPermissions);
+        List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, overrulingPrincipal, userType);
         Collections.sort(perms, new ComparatorByStringRepresentation<PermissionEditorRowIFace>(true));
         for (PermissionEditorRowIFace permWrapper : perms) 
         {

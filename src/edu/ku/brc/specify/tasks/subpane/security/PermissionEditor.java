@@ -155,7 +155,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 	 */
 	public void updateData(final SpPrincipal principalArg, 
 	                       final SpPrincipal overrulingPrincipal, 
-                           final boolean     doAddDefaultPermissions)
+                           final String     userType)
 	{
 		// save principal used when saving permissions later
 		this.principal = principalArg;
@@ -188,7 +188,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 		
 		rowDataList.clear();
 		
-		List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, overrulingPrincipal, doAddDefaultPermissions);
+		List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, overrulingPrincipal, userType);
 		Collections.sort(perms, new ComparatorByStringRepresentation<PermissionEditorRowIFace>(true));
         for (PermissionEditorRowIFace permWrapper : perms) 
         {
@@ -207,12 +207,6 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
         
         for (PermissionEditorRowIFace permWrapper : rowDataList) 
         {
-            if (doAddDefaultPermissions)
-            {
-                //permWrapper.setPermissions(null)
-                
-                //permWrapper.getEditorPanel().setPermissions(permissions)
-            }
             permWrapper.addTableRow(model, icon);
         }
         

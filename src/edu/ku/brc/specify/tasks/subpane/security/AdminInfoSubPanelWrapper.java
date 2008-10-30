@@ -137,8 +137,8 @@ public class AdminInfoSubPanelWrapper
 			{
 				for (PermissionPanelEditor editor : permissionEditors)
 				{
-				    System.err.println("AdminInfoSubPane "+ principal.getPermissions().size());
-				    boolean doAddDefaultPerms = principal.getPermissions().size() == 0;
+				    //System.err.println("AdminInfoSubPane "+ principal.getPermissions().size());
+				    String userType = principal.getPermissions().size() == 0 ? user.getUserType() : null;
 				    
 				    /*for (PermissionPanelContainerIFace permPanel : editor.getPanels())
 				    {
@@ -149,7 +149,7 @@ public class AdminInfoSubPanelWrapper
 				        }
 				    }*/
 				    
-					editor.updateData(principal, secondPrincipal, doAddDefaultPerms);
+					editor.updateData(principal, secondPrincipal, userType);
 				}
 			}
 		}

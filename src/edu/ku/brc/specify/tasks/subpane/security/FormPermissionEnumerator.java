@@ -27,12 +27,13 @@ public class FormPermissionEnumerator extends PermissionEnumerator
 	protected final String permissionBaseName = "Form";
 
 	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEnumerator#getPermissions(edu.ku.brc.specify.datamodel.SpPrincipal, java.util.Hashtable, java.util.Hashtable)
+	 * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEnumerator#getPermissions(edu.ku.brc.specify.datamodel.SpPrincipal, java.util.Hashtable, java.util.Hashtable, java.lang.String)
 	 */
+	@Override
 	public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
                                             			 final Hashtable<String, SpPermission> existingPerms,
-                                            			 final Hashtable<String, SpPermission> overrulingPerms, 
-                                                         final boolean     doAddDefaultPermissions) 
+                                            			 final Hashtable<String, SpPermission> overrulingPerms,
+                                                         final String                          userType) 
 	{
 		List<PermissionEditorRowIFace> perms = new ArrayList<PermissionEditorRowIFace>();
 

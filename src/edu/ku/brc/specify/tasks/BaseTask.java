@@ -82,10 +82,10 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
             if (xmlStr != null)
             {
                 list = (Vector<TaskPermPersist>)xstream.fromXML(xmlStr);
-                for (TaskPermPersist tp : list)
+                /*for (TaskPermPersist tp : list)
                 {
                     System.err.println("TP: "+tp.getTaskName()+"  "+tp.getUserType()+"  "+tp.isCanAdd());
-                }
+                }*/
                 taskPermsListWR = new WeakReference<Vector<TaskPermPersist>>(list);
             }
         }
@@ -141,6 +141,8 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
         {
             readAndSetDefPerms();
         }
+        
+        //System.err.println(name+"  "+userType+"  "+(defaultPermissionsHash != null ? defaultPermissionsHash.get(userType) : null));
         
         return defaultPermissionsHash != null ? defaultPermissionsHash.get(userType) : null;
     }

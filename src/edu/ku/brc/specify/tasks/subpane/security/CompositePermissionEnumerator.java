@@ -24,16 +24,19 @@ public class CompositePermissionEnumerator extends PermissionEnumerator {
 
     protected List<PermissionEnumerator> enumerators = new ArrayList<PermissionEnumerator>();
     
-    //@Override
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEnumerator#getPermissions(edu.ku.brc.specify.datamodel.SpPrincipal, java.util.Hashtable, java.util.Hashtable, java.lang.String)
+     */
+    @Override
     public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
                                                          final Hashtable<String, SpPermission> existingUserPerms,
-                                                         final Hashtable<String, SpPermission> existingGroupPerms, 
-                                                         final boolean     doAddDefaultPermissions) 
+                                                         final Hashtable<String, SpPermission> existingGroupPerms,
+                                                         final String                          userType) 
     {
         List<PermissionEditorRowIFace> allPerms = new ArrayList<PermissionEditorRowIFace>();
         for (PermissionEnumerator currEnumerator : enumerators)
         {
-            allPerms.addAll(currEnumerator.getPermissions(principal, existingUserPerms, existingGroupPerms, doAddDefaultPermissions));
+            allPerms.addAll(currEnumerator.getPermissions(principal, existingUserPerms, existingGroupPerms, userType));
         }
         return allPerms;
     }
