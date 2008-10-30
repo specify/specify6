@@ -136,7 +136,7 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
     @Override
     public PermissionIFace getDefaultPermissions(String userType)
     {
-        defaultPermissionsHash = null;
+        // defaultPermissionsHash = null; // for debug
         if (defaultPermissionsHash == null)
         {
             readAndSetDefPerms();
