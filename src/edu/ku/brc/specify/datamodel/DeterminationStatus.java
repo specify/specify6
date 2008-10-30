@@ -256,9 +256,9 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         List<PickListDBAdapterIFace> result = new Vector<PickListDBAdapterIFace>(1);
         Vector<PickListItemIFace> stats = new Vector<PickListItemIFace>(4);
         stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("DeterminationStatus_CURRENT"), DeterminationStatus.CURRENT));
+        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("DeterminationStatus_CURRENTTOACCEPTED"), DeterminationStatus.CURRENTTOACCEPTED));
         stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("DeterminationStatus_OLDDETERMINATION"), DeterminationStatus.OLDDETERMINATION));
         stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("DeterminationStatus_NOTCURRENT"), DeterminationStatus.NOTCURRENT));
-        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("DeterminationStatus_CURRENTTOACCEPTED"), DeterminationStatus.CURRENTTOACCEPTED));
         //XXX UserDefined???
         stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("DeterminationStatus_USERDEFINED"), DeterminationStatus.USERDEFINED));
         result.add(new RecordTypeCode(stats, "type"));
