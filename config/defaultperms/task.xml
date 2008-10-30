@@ -1,0 +1,19 @@
+<hashtable>
+  <entry>
+    <string>BackupTask</string>
+    <hashtable>
+      <entry>
+        <string>Guest</string>
+        <tp name="BackupTask" type="Guest" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>DataEntry</string>
+        <tp name="BackupTask" type="DataEntry" view="true" modify="true" del="true" add="true"/>
+      </entry>
+      <entry>
+        <string>CollectionManager</string>
+        <tp name="BackupTask" type="CollectionManager" view="true" modify="true" del="true" add="true"/>
+      </entry>
+    </hashtable>
+  </entry>
+</hashtable>

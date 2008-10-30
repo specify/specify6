@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 
@@ -20,15 +21,25 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
  * @author Ricardo
  *
  */
-public class CompositePermissionEnumerator extends PermissionEnumerator {
+public class CompositePermissionEnumerator extends PermissionEnumerator 
+{
 
     protected List<PermissionEnumerator> enumerators = new ArrayList<PermissionEnumerator>();
     
+    /**
+     * @param permBaseName
+     * @param descKey
+     */
+    public CompositePermissionEnumerator()
+    {
+        super("Composite", "");
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEnumerator#getPermissions(edu.ku.brc.specify.datamodel.SpPrincipal, java.util.Hashtable, java.util.Hashtable, java.lang.String)
      */
     @Override
-    public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
+    public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal                     principal, 
                                                          final Hashtable<String, SpPermission> existingUserPerms,
                                                          final Hashtable<String, SpPermission> existingGroupPerms,
                                                          final String                          userType) 
@@ -49,5 +60,17 @@ public class CompositePermissionEnumerator extends PermissionEnumerator {
     public void addEnumerator(PermissionEnumerator enumerator)
     {
         enumerators.add(enumerator);
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEnumerator#getSecurityOptions()
+     */
+    @Override
+    protected List<SecurityOptionIFace> getSecurityOptions()
+    {
+        // This is called from within PermissionEnumerator's getPermissions. We are overriding that method
+        // in this class so it doesn't need to return anything.
+        return null;
     }
 }

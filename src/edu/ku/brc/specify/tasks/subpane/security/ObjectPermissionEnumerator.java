@@ -12,15 +12,21 @@ import java.util.Hashtable;
 import java.util.List;
 
 import edu.ku.brc.af.auth.PermissionEditorIFace;
+import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipalSQLService;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
+import edu.ku.brc.specify.datamodel.SpQuery;
+import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author Ricardo
@@ -32,6 +38,16 @@ import edu.ku.brc.specify.datamodel.Workbench;
  */
 public class ObjectPermissionEnumerator extends PermissionEnumerator 
 {
+    protected static final String prefPrefix = "DO";
+    
+    /**
+     * @param permBaseName
+     * @param descKey
+     */
+    public ObjectPermissionEnumerator()
+    {
+        super(prefPrefix, "");
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEnumerator#getPermissions(edu.ku.brc.specify.datamodel.SpPrincipal, java.util.Hashtable, java.util.Hashtable, java.lang.String)
@@ -54,21 +70,20 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator
             
             ObjectPermissionPanel panel = new ObjectPermissionPanel();
             
-            addPermissions(Workbench.class, session, user, existingPerms, perms, 
-                    Workbench.class.getMethod("getId"), Workbench.class.getMethod("getName"),
-                    "DO", "Workbench", "Permission to view, add, modify, or delete data in the workbench ",
-                    panel);
+            Class<?>[] classes = new Class<?>[] {Workbench.class, RecordSet.class, SpQuery.class, SpReport.class};
             
-            addPermissions(RecordSet.class, session, user, existingPerms, perms, 
-                    RecordSet.class.getMethod("getId"), RecordSet.class.getMethod("getName"),
-                    "DO", "RecordSet", "Permission to view, add, modify, or delete record set ",
-                    panel);
-            
-/*            XXX problem: loans are not linked to specify user directly
-             addPermissions(Loan.class, session, user, existingPerms, perms, 
-                    Loan.class.getMethod("getId"), Loan.class.getMethod("getId"),
-                    "Loan", "Permission to view, add, modify, or delete data in loan ");
-*/
+            for (Class<?> cls : classes)
+            {
+                DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(cls.getName());
+                
+                addPermissions(cls, session, user, existingPerms, perms, 
+                                cls.getMethod("getId"), 
+                                cls.getMethod("getName"),
+                                prefPrefix, 
+                                tblInfo.getTitle(), 
+                                UIRegistry.getLocalizedMessage("descKey", tblInfo.getTitle()),
+                                panel);
+            }
         } 
         catch (Exception e)
         {
@@ -179,4 +194,17 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator
             perms.add(wrapper);
         }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEnumerator#getSecurityOptions()
+     */
+    @Override
+    protected List<SecurityOptionIFace> getSecurityOptions()
+    {
+        // This is called from within PermissionEnumerator's getPermissions. We are overriding that method
+        // in this class so it doesn't need to return anything.
+        return null;
+    }
+    
+    
 }

@@ -19,7 +19,7 @@ import edu.ku.brc.af.core.PermissionIFace;
  * Oct 29, 2008
  *
  */
-public class TaskPermPersist
+public class PermissionOptionPersist
 {
     protected String  taskName;
     protected String  userType;
@@ -28,7 +28,7 @@ public class TaskPermPersist
     protected boolean canDel;
     protected boolean canAdd;
     
-    public TaskPermPersist()
+    public PermissionOptionPersist()
     {
         super();
     }
@@ -40,12 +40,12 @@ public class TaskPermPersist
      * @param canDel
      * @param canAdd
      */
-    public TaskPermPersist(String taskName, 
-                            String userType,
-                            boolean canView, 
-                            boolean canModify, 
-                            boolean canDel,
-                            boolean canAdd)
+    public PermissionOptionPersist(String taskName, 
+                                   String userType,
+                                   boolean canView, 
+                                   boolean canModify, 
+                                   boolean canDel,
+                                   boolean canAdd)
     {
         super();
         this.taskName = taskName;
@@ -128,12 +128,12 @@ public class TaskPermPersist
     public static void config(final XStream xstream)
     {
      // Aliases
-        xstream.alias("tp", TaskPermPersist.class); //$NON-NLS-1$
-        xstream.aliasAttribute(TaskPermPersist.class, "taskName",  "name"); //$NON-NLS-1$ //$NON-NLS-2$
-        xstream.aliasAttribute(TaskPermPersist.class, "userType",  "type"); //$NON-NLS-1$ //$NON-NLS-2$
-        xstream.aliasAttribute(TaskPermPersist.class, "canView",   "view"); //$NON-NLS-1$ //$NON-NLS-2$
-        xstream.aliasAttribute(TaskPermPersist.class, "canModify", "modify"); //$NON-NLS-1$ //$NON-NLS-2$
-        xstream.aliasAttribute(TaskPermPersist.class, "canDel",    "del"); //$NON-NLS-1$ //$NON-NLS-2$
-        xstream.aliasAttribute(TaskPermPersist.class, "canAdd",    "add"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.alias("tp", PermissionOptionPersist.class); //$NON-NLS-1$
+        xstream.aliasAttribute(PermissionOptionPersist.class, "taskName",  "name"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(PermissionOptionPersist.class, "userType",  "type"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(PermissionOptionPersist.class, "canView",   "view"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(PermissionOptionPersist.class, "canModify", "modify"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(PermissionOptionPersist.class, "canDel",    "del"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(PermissionOptionPersist.class, "canAdd",    "add"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

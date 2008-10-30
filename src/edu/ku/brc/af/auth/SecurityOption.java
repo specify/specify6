@@ -6,11 +6,13 @@
  */
 package edu.ku.brc.af.auth;
 
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 
 import edu.ku.brc.af.core.PermissionIFace;
+import edu.ku.brc.ui.IconManager;
 
 /**
  * Helper class for Security Options. This is used mainly for additional options.
@@ -29,11 +31,12 @@ public class SecurityOption implements SecurityOptionIFace
     protected String                prefix;
     protected String                shortDesc    = "";
     protected ImageIcon             icon         = null;
+    protected String                iconName     = null;
     protected PermissionEditorIFace editor;
     protected PermissionIFace       permissions  = null;
-    protected PermissionIFace       defaultPerms = null;
     
-    
+    protected Hashtable<String, PermissionIFace> defaultPermissionsHash = new Hashtable<String, PermissionIFace>();
+
     /**
      * @param name   // the unique name of the Security Option
      * @param title  // already localized
@@ -43,7 +46,7 @@ public class SecurityOption implements SecurityOptionIFace
                           final String title, 
                           final String prefix)
     {
-        this(name, title, prefix, null);
+        this(name, title, prefix, (PermissionEditorIFace)null);
     }
 
 
@@ -63,6 +66,26 @@ public class SecurityOption implements SecurityOptionIFace
         this.title  = title;
         this.prefix = prefix;
         this.editor = editor;
+    }
+
+    /**
+     * @param name   // the unique name of the Security Option
+     * @param title  // alrady localized
+     * @param prefix // prefix (not including '.')
+     * @param editor // the editor for the Security Panel editor
+     */
+    public SecurityOption(final String name, 
+                          final String title, 
+                          final String prefix, 
+                          final String iconName)
+    {
+        super();
+        this.name     = name;
+        this.title    = title;
+        this.prefix   = prefix;
+        this.iconName = iconName;
+        this.editor   = null;
+
     }
 
     /**
@@ -178,18 +201,45 @@ public class SecurityOption implements SecurityOptionIFace
     @Override
     public ImageIcon getIcon(int size)
     {
+        if (iconName != null)
+        {
+            for (IconManager.IconSize iconSize : IconManager.IconSize.values())
+            {
+                if (iconSize.size() == size)
+                {
+                    return IconManager.getIcon(iconName, iconSize);
+                }
+            }
+        }
         return icon;
+    }
+
+    /**
+     * @return the iconName
+     */
+    public String getIconName()
+    {
+        return iconName;
     }
 
 
     /**
-     * @param defaultPerms the defaultPerms to set
+     * @param iconName the iconName to set
      */
-    public void setDefaultPerms(final PermissionIFace defaultPerms)
+    public void setIconName(String iconName)
     {
-        this.defaultPerms = defaultPerms;
+        this.iconName = iconName;
     }
 
+
+    /**
+     * @param userType
+     * @param defaultPerms
+     */
+    public void addDefaultPerm(final String userType, final PermissionIFace defaultPerms)
+    {
+        defaultPermissionsHash.put(userType, defaultPerms);
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.auth.SecurityOptionIFace#getDefaultPermissions(java.lang.String)
@@ -197,7 +247,7 @@ public class SecurityOption implements SecurityOptionIFace
     @Override
     public PermissionIFace getDefaultPermissions(final String userType)
     {
-        return defaultPerms;
+        return defaultPermissionsHash.get(userType);
     }
 
 }

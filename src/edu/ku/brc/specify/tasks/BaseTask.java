@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
 
@@ -37,89 +36,97 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
     protected static final String GUEST              = "Guest";
     protected static final String DataENTRY          = "DataEntry";
     
-    protected static WeakReference<Vector<TaskPermPersist>> taskPermsListWR       = null;
+    protected static WeakReference<Hashtable<String, PermissionOptionPersist>> taskPermsListWR       = null;
     
-    // Data Members
-    protected Hashtable<String, PermissionIFace> defaultPermissionsHash = null;
-    
+    /**
+     * @param name
+     * @param title
+     */
     public BaseTask(final String name, final String title)
     {
         super(name, title);
     }
 
+    
+    /**
+     * @param fileName
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static Hashtable<String, Hashtable<String, PermissionOptionPersist>> readDefaultPrefsFromXML(final String fileName)
+    {
+        Hashtable<String, Hashtable<String, PermissionOptionPersist>> hash = new Hashtable<String, Hashtable<String, PermissionOptionPersist>>();
+        
+        XStream xstream = new XStream();
+        PermissionOptionPersist.config(xstream);
+        
+        String xmlStr = null;
+        try
+        {
+            File permFile = new File(XMLHelper.getConfigDirPath("defaultperms" + File.separator + fileName)); //$NON-NLS-1$
+            if (permFile.exists())
+            {
+                xmlStr = FileUtils.readFileToString(permFile);
+            }
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        if (xmlStr != null)
+        {
+            hash = (Hashtable<String, Hashtable<String, PermissionOptionPersist>>)xstream.fromXML(xmlStr);
+            /*for (TaskPermPersist tp : list)
+            {
+                System.err.println("TP: "+tp.getTaskName()+"  "+tp.getUserType()+"  "+tp.isCanAdd());
+            }*/
+        }
+        return hash;
+    }
+    
     /**
      * 
      */
-    @SuppressWarnings("unchecked")
-    protected void readAndSetDefPerms()
+    protected Hashtable<String, PermissionOptionPersist> getAndSetDefPerms()
     {
         if (taskPermsListWR == null)
         {
-            taskPermsListWR = new WeakReference<Vector<TaskPermPersist>>(null);
+            taskPermsListWR = new WeakReference<Hashtable<String, PermissionOptionPersist>>(null);
         }
         
-        Vector<TaskPermPersist> list = taskPermsListWR.get();
+        Hashtable<String, PermissionOptionPersist> hash = taskPermsListWR.get();
         
-        if (list == null)
+        if (hash == null)
         {
-            XStream xstream = new XStream();
-            TaskPermPersist.config(xstream);
-            
-            String xmlStr = null;
-            try
+            Hashtable<String, Hashtable<String, PermissionOptionPersist>> taskHash = readDefaultPrefsFromXML("task.xml");
+            if (taskHash != null)
             {
-                File permFile = new File(XMLHelper.getConfigDirPath("taskperms.xml")); //$NON-NLS-1$
-                if (permFile.exists())
+                hash = taskHash.get(name);
+                if (hash != null)
                 {
-                    xmlStr = FileUtils.readFileToString(permFile);
-                }
-                
-            } catch (IOException ex)
-            {
-                ex.printStackTrace();
-            }
-            
-            if (xmlStr != null)
-            {
-                list = (Vector<TaskPermPersist>)xstream.fromXML(xmlStr);
-                /*for (TaskPermPersist tp : list)
-                {
-                    System.err.println("TP: "+tp.getTaskName()+"  "+tp.getUserType()+"  "+tp.isCanAdd());
-                }*/
-                taskPermsListWR = new WeakReference<Vector<TaskPermPersist>>(list);
-            }
-        }
-        
-        if (list != null)
-        {
-            defaultPermissionsHash = new Hashtable<String, PermissionIFace>();
-            for (TaskPermPersist tp : list)
-            {
-                System.out.println(name+"  "+tp.getTaskName());
-                if (tp.getTaskName().equals(name))
-                {
-                    PermissionIFace defPerm = tp.getDefaultPerms();
-                    defaultPermissionsHash.put(tp.getUserType(), defPerm);
-                    
-                    break;
+                    taskPermsListWR = new WeakReference<Hashtable<String, PermissionOptionPersist>>(hash);
                 }
             }
         }
-
+        
         if (false)
         {
             XStream xstream = new XStream();
-            TaskPermPersist.config(xstream);
+            PermissionOptionPersist.config(xstream);
             
             try
             {
-                Vector<TaskPermPersist> permList = new Vector<TaskPermPersist>();
-                permList.add(new TaskPermPersist(name, "CollectionManager", true, true, true,true));
-                permList.add(new TaskPermPersist(name, "Guest", true, true, true,true));
-                permList.add(new TaskPermPersist(name+"XX", "CollectionManager", true, true, true,true));
+                Hashtable<String, PermissionOptionPersist> hashItem = new Hashtable<String, PermissionOptionPersist>();
+                hashItem.put("CollectionManager", new PermissionOptionPersist(name, "CollectionManager", true, true, true,true));
+                hashItem.put("Guest",             new PermissionOptionPersist(name, "Guest", true, true, true,true));
+                hashItem.put("DataEntry",        new PermissionOptionPersist(name, "DataEntry", true, true, true,true));
                 
+                Hashtable<String, Hashtable<String, PermissionOptionPersist>> mainHash = new Hashtable<String, Hashtable<String, PermissionOptionPersist>>();
+                mainHash.put(name, hashItem);
+
                 System.out.println("***** : "+name);
-                FileUtils.writeStringToFile(new File("taskperms.xml"), xstream.toXML(permList)); //$NON-NLS-1$
+                FileUtils.writeStringToFile(new File("taskperms.xml"), xstream.toXML(mainHash)); //$NON-NLS-1$
                 //System.out.println(xstream.toXML(config));
                 
             } catch (IOException ex)
@@ -127,6 +134,7 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
                 ex.printStackTrace();
             }
         }
+        return hash;
     }
 
 
@@ -136,15 +144,11 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
     @Override
     public PermissionIFace getDefaultPermissions(String userType)
     {
-        // defaultPermissionsHash = null; // for debug
-        if (defaultPermissionsHash == null)
-        {
-            readAndSetDefPerms();
-        }
+        Hashtable<String, PermissionOptionPersist> hash = getAndSetDefPerms();
         
         //System.err.println(name+"  "+userType+"  "+(defaultPermissionsHash != null ? defaultPermissionsHash.get(userType) : null));
         
-        return defaultPermissionsHash != null ? defaultPermissionsHash.get(userType) : null;
+        return hash != null ? hash.get(userType).getDefaultPerms() : null;
     }
 
     /* (non-Javadoc)
@@ -152,14 +156,4 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
      */
     @Override
     public abstract SubPaneIFace getStarterPane();
-    
-    
-
-    
-    //---------------------------------------------------------------
-    //--
-    //---------------------------------------------------------------
-    
-
-
 }
