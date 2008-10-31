@@ -28,6 +28,7 @@ import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -65,6 +66,8 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
     @SuppressWarnings("unchecked")
     public String buildSQL(String searchText, boolean isForCount)
     {
+        //XXX use SQL instead of HQL, for portability.
+        
         String queryStr = "";
         if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(searchText))
         {
@@ -87,8 +90,8 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             {
                 queryFormatStr = "SELECT n.fullName, n.id ";
             }
-            queryFormatStr += "from %s n INNER JOIN n.definition d WHERE lower(n.fullName) LIKE \'%s\' AND d.id = %d";
-            queryStr = String.format(queryFormatStr, tableInfo.getShortClassName(), searchText.toLowerCase() + "%", treeDefId);
+            queryFormatStr += "from %s n INNER JOIN n.definition d WHERE lower(n.name) LIKE \'%s\' AND d.id = %d";
+            queryStr = String.format(queryFormatStr, tableInfo.getShortClassName(), "%" + searchText.toLowerCase() + "%", treeDefId);
             
             Integer nodeId = nodeInForm == null ? null : nodeInForm.getTreeId();
             Integer nodeNumber = nodeInForm == null ? null : nodeInForm.getNodeNumber();
@@ -115,7 +118,7 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             
             if (accepted)
             {
-                queryStr += " and n.accepted = true";
+                queryStr += " and n." + getAcceptedBooleanFldName() + " = true";
             }
             queryStr += " ORDER BY n.fullName asc";
 
@@ -124,23 +127,29 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
         return queryStr;
     }
 
+    protected String getAcceptedBooleanFldName()
+    {
+        return "isAccepted";
+    }
+    
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace#buildSQL(java.util.Map, java.util.List)
+     * @see edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace#buildSQL(java.util.Map, java.util.List)
      */
+    @SuppressWarnings("unchecked")
     public String buildSQL(final Map<String, Object> dataMap, final List<String> fieldNames)
     {
-        int disciplineId = AppContextMgr.getInstance().getClassObject(Discipline.class).getId();
-
-        // get node table and primary key column names
+     //XXX use SQL instead of HQL, for portability.
+        String queryStr = "";
+        TreeDefIface<?, ?, ?> treeDef = ((SpecifyAppContextMgr )AppContextMgr.getInstance()).getTreeDefForClass((Class<? extends Treeable<?,?,?>> )nodeInForm.getClass());
+        Integer treeDefId = treeDef.getTreeDefId();
+        
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());
         String tableName = tableInfo.getName();
-        String idColName = tableInfo.getIdColumnName();
         
         // get definition table and primary key column names
         DBTableInfo defTableInfo = DBTableIdMgr.getInstance().getByClassName(tableInfo.getRelationshipByName("definition").getClassName());
-        String defTableName = defTableInfo.getName();
-        String defIdColName = defTableInfo.getIdColumnName();
-        
+        String defMemberName = defTableInfo.getShortClassName();
+        defMemberName = defMemberName.substring(0, 1).toLowerCase().concat(defMemberName.substring(1));
         cols.clear();
         
         StringBuilder colNames = new StringBuilder();
@@ -150,11 +159,20 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             if (dspCnt > 0) colNames.append(',');
             
             String columnName = colName;
+            String fieldName;
+            
             if (!colName.startsWith(tableName+"."))
             {
                 columnName = tableName + "." + colName;
+                fieldName = "n." + columnName.substring(0, 1).toLowerCase().concat(columnName.substring(1));
             }
-            colNames.append(columnName);
+            else
+            {
+                String fld = StringUtils.substringAfter(colName, ".");
+                fieldName = "n." + fld.substring(0, 1).toLowerCase().concat(fld.substring(1));
+            }
+            
+            colNames.append(fieldName);
 
             String baseName = StringUtils.substringAfter(colName, ".");
             if (StringUtils.isEmpty(baseName))
@@ -176,8 +194,7 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             cols.add(col);
             dspCnt++;
         }
-        
-        
+ 
         StringBuilder orderBy  = new StringBuilder();
         StringBuilder criteria = new StringBuilder();
         int criCnt = 0;
@@ -190,47 +207,180 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
                 {
                     List<SearchTermField> fields     = ESTermParser.getFields();
                     SearchTermField       firstTerm  = fields.get(0);
-                    String                columnName = colName;
+                    String                fieldName = colName;
                     
                     if (!colName.startsWith(tableName+"."))
                     {
-                        columnName = tableName + "." + colName;
+                         fieldName = "n." + colName.substring(0, 1).toLowerCase().concat(defMemberName.substring(1));
+                    }
+                    else
+                    {
+                        String fld = StringUtils.substringAfter(colName, ".");
+                        fieldName = "n." + fld.substring(0, 1).toLowerCase().concat(fld.substring(1));
                     }
     
                     if (criCnt > 0) criteria.append(" OR ");
                     
-                    String clause = ESTermParser.createWhereClause(firstTerm, null, columnName);
+                    String clause = ESTermParser.createWhereClause(firstTerm, null, fieldName);
                     criteria.append(clause);
                     
                     if (criCnt > 0) orderBy.append(',');
                     
-                    orderBy.append(columnName);
+                    orderBy.append(fieldName);
                     
                     criCnt++;
                 }
             }
         }
+
         
-        String queryStr;
-        if (tableInfo.getTableId() == Storage.getClassTableId())
+        queryStr = "SELECT n.id, " + colNames;
+        queryStr += " from " + tableInfo.getShortClassName()+ " n INNER JOIN n.definition d WHERE " + criteria.toString() + " AND d.id = " + treeDefId;
+        
+        Integer nodeId = nodeInForm == null ? null : nodeInForm.getTreeId();
+        Integer nodeNumber = nodeInForm == null ? null : nodeInForm.getNodeNumber();
+        Integer highestChildNodeNumber = nodeInForm == null ? null : nodeInForm.getHighestChildNodeNumber();
+        
+        if (nodeId != null)
         {
-            String queryFormatStr = "SELECT %s.%s, %s from %s INNER JOIN %s d ON %s.%s = d.%s WHERE (%s) ORDER BY %s";
-            queryStr = String.format(queryFormatStr, tableName, idColName, colNames.toString(), tableName, defTableName, tableName, defIdColName, defIdColName, criteria.toString(), orderBy.toString());
-        } else
-        {
-            String queryFormatStr = "SELECT %s.%s, %s from %s INNER JOIN %s d ON %s.%s = d.%s INNER JOIN discipline dsp ON d.%s = dsp.%s WHERE (%s) AND dsp.DisciplineID = %d ORDER BY %s";
-            queryStr = String.format(queryFormatStr, tableName, idColName, colNames.toString(), tableName, defTableName, tableName, defIdColName, defIdColName, 
-                    defIdColName, defIdColName, criteria.toString(), disciplineId, orderBy.toString());
+            queryStr += " and n.id != " + nodeId;
         }
-        //System.out.println(queryStr);
+        
+        if (rankCombo != null)
+        {
+            Object rank = rankCombo.getValue();
+            if (rank != null)
+            {
+                queryStr += " and n.rankId < " + rank;
+            }
+        }
+        else if (nodeNumber != null && highestChildNodeNumber != null)
+        {
+            //don't allow children to be used as (for example). hybrid parents
+            queryStr += " and (n.nodeNumber not between " + nodeNumber + " and " + highestChildNodeNumber + ")";
+        }
+        
+        if (accepted)
+        {
+            queryStr += " and n." + getAcceptedBooleanFldName() + " = true";
+        }
+        if (!StringUtils.isBlank(orderBy.toString()))
+        {
+            queryStr += " ORDER BY " + orderBy.toString();
+        }
+        //log.debug(queryStr);
         return queryStr;
+        
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace#buildSQL(java.util.Map, java.util.List)
+     */
+//    public String buildSQL(final Map<String, Object> dataMap, final List<String> fieldNames)
+//    {
+//        int disciplineId = AppContextMgr.getInstance().getClassObject(Discipline.class).getId();
+//
+//        // get node table and primary key column names
+//        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());
+//        String tableName = tableInfo.getName();
+//        String idColName = tableInfo.getIdColumnName();
+//        
+//        // get definition table and primary key column names
+//        DBTableInfo defTableInfo = DBTableIdMgr.getInstance().getByClassName(tableInfo.getRelationshipByName("definition").getClassName());
+//        String defTableName = defTableInfo.getName();
+//        String defIdColName = defTableInfo.getIdColumnName();
+//        
+//        cols.clear();
+//        
+//        StringBuilder colNames = new StringBuilder();
+//        int dspCnt = 0;
+//        for (String colName : fieldNames)
+//        {
+//            if (dspCnt > 0) colNames.append(',');
+//            
+//            String columnName = colName;
+//            if (!colName.startsWith(tableName+"."))
+//            {
+//                columnName = tableName + "." + colName;
+//            }
+//            colNames.append(columnName);
+//
+//            String baseName = StringUtils.substringAfter(colName, ".");
+//            if (StringUtils.isEmpty(baseName))
+//            {
+//                baseName = colName;
+//            }
+//            
+//            String colTitle;
+//            DBFieldInfo fi = tableInfo.getFieldByColumnName(baseName);
+//            if (fi != null)
+//            {
+//                colTitle = fi.getTitle();
+//            } else
+//            {
+//                colTitle = baseName;
+//            }
+//            
+//            ERTICaptionInfo col = new ERTICaptionInfo(columnName, colTitle, true, null, dspCnt+1);
+//            cols.add(col);
+//            dspCnt++;
+//        }
+//        
+//        
+//        StringBuilder orderBy  = new StringBuilder();
+//        StringBuilder criteria = new StringBuilder();
+//        int criCnt = 0;
+//        for (String colName : dataMap.keySet())
+//        {
+//            String data = (String)dataMap.get(colName);
+//            if (ESTermParser.parse(data.toLowerCase(), true))
+//            {
+//                if (StringUtils.isNotEmpty(data))
+//                {
+//                    List<SearchTermField> fields     = ESTermParser.getFields();
+//                    SearchTermField       firstTerm  = fields.get(0);
+//                    String                columnName = colName;
+//                    
+//                    if (!colName.startsWith(tableName+"."))
+//                    {
+//                        columnName = tableName + "." + colName;
+//                    }
+//    
+//                    if (criCnt > 0) criteria.append(" OR ");
+//                    
+//                    String clause = ESTermParser.createWhereClause(firstTerm, null, columnName);
+//                    criteria.append(clause);
+//                    
+//                    if (criCnt > 0) orderBy.append(',');
+//                    
+//                    orderBy.append(columnName);
+//                    
+//                    criCnt++;
+//                }
+//            }
+//        }
+//        
+//        String queryStr;
+//        if (tableInfo.getTableId() == Storage.getClassTableId())
+//        {
+//            String queryFormatStr = "SELECT %s.%s, %s from %s INNER JOIN %s d ON %s.%s = d.%s WHERE (%s) ORDER BY %s";
+//            queryStr = String.format(queryFormatStr, tableName, idColName, colNames.toString(), tableName, defTableName, tableName, defIdColName, defIdColName, criteria.toString(), orderBy.toString());
+//        } else
+//        {
+//            String queryFormatStr = "SELECT %s.%s, %s from %s INNER JOIN %s d ON %s.%s = d.%s INNER JOIN discipline dsp ON d.%s = dsp.%s WHERE (%s) AND dsp.DisciplineID = %d ORDER BY %s";
+//            queryStr = String.format(queryFormatStr, tableName, idColName, colNames.toString(), tableName, defTableName, tableName, defIdColName, defIdColName, 
+//                    defIdColName, defIdColName, criteria.toString(), disciplineId, orderBy.toString());
+//        }
+//        //System.out.println(queryStr);
+//        return queryStr;
+//    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace#createQueryForIdResults()
      */
     public QueryForIdResultsIFace createQueryForIdResults()
     {
-        return new TableSearchResults(DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName()), cols);
+      //XXX use SQL instead of HQL, for portability.
+      return new TableSearchResults(DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName()), cols, true); //true => is HQL
     }
 }

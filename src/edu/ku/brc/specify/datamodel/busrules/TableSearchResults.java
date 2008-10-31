@@ -33,6 +33,7 @@ public class TableSearchResults implements QueryForIdResultsIFace
     protected String                sql;
     protected DBTableInfo           tableInfo;
     protected boolean               isMultipleSelection = false;
+    protected boolean               hql = false;
 
     /**
      * @param tableId
@@ -44,6 +45,15 @@ public class TableSearchResults implements QueryForIdResultsIFace
         this.cols      = cols;
     }
 
+    public TableSearchResults(final DBTableInfo tableInfo,
+                              final List<ERTICaptionInfo> cols,
+                              final boolean hql)
+    {
+        this.tableInfo = tableInfo;
+        this.cols      = cols;
+        this.hql = hql;
+    }
+                             
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#cleanUp()
      */
@@ -145,7 +155,7 @@ public class TableSearchResults implements QueryForIdResultsIFace
      */
     public boolean isHQL()
     {
-        return false;
+        return hql;
     }
 
     /* (non-Javadoc)
