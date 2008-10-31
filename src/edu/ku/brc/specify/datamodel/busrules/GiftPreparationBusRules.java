@@ -117,8 +117,10 @@ public class GiftPreparationBusRules extends BaseBusRules implements CommandList
             
             // TODO I think this would be better if the Max Range 
             // was set to the available number of items.
-            
-            quantity.setRange(0, giftPrep.getQuantity(), giftPrep.getQuantity());
+            if (quantity != null)
+            {
+                quantity.setRange(0, giftPrep.getQuantity(), giftPrep.getQuantity());
+            }
             
             //quantityReturned.setEnabled(!isNewObj);
             //int max = Math.max(loanPrep.getQuantity(), loanPrep.getQuantityReturned());
