@@ -2,17 +2,30 @@ package edu.ku.brc.specify.tasks.subpane.security;
 
 import java.awt.Frame;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.core.expresssearch.ESTermParser;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.core.expresssearch.SearchTermField;
+import edu.ku.brc.af.ui.db.ERTICaptionInfo;
+import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.af.ui.db.TextFieldWithQuery;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -93,13 +106,56 @@ public class NavigationTreeMgr
                                                                    MultiView.USE_ONLY_CREATION_MODE |
                                                                    MultiView.IS_NEW_OBJECT);
         dlg.setOkLabel(getResourceString("SAVE"));
+        dlg.createUI();
+        ValComboBoxFromQuery cbx = (ValComboBoxFromQuery)dlg.getMultiView().getCurrentViewAsFormViewObj().getControlByName("agent");
+        if (cbx != null && false)
+        {
+            cbx.setExternalQueryProvider(new TextFieldWithQuery.ExternalQueryProviderIFace() {
+                @Override
+                public String getExtraWhereClause()
+                {
+                    return null;
+                }
+                @Override
+                public String getFullSQL(String newEntryStrArg, boolean isForCount)
+                {
+                    String newEntryStr = newEntryStrArg + '%';
+                    String sqlTemplate = "SELECT %s1 FROM Agent a LEFT JOIN a.specifyUser s WHERE s = null AND LOWER(a.lastName) LIKE '%s2' ORDER BY a.lastName";
+                    String sql = StringUtils.replace(sqlTemplate, "%s1", isForCount ? "count(*)" : "a.lastName, a.firstName, a.agentId"); //$NON-NLS-1$
+                    sql = StringUtils.replace(sql, "%s2", newEntryStr); //$NON-NLS-1$
+                    log.debug(sql);
+                    return sql;
+                }
+            });
+        }
+        
+        cbx.registerQueryBuilder(new ViewBasedSearchQueryBuilderIFace() {
+            @Override
+            public String buildSQL(Map<String, Object> dataMap, List<String> fieldNames)
+            {
+                return buildSearchString(dataMap, fieldNames);
+            }
+
+            @Override
+            public String buildSQL(String searchText, boolean isForCount)
+            {
+                return null;
+            }
+
+            @Override
+            public QueryForIdResultsIFace createQueryForIdResults()
+            {
+                return null;
+            }
+            
+        });
+        
         dlg.setData(spUser);
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
             addGroupToUser(group, spUser);
             
-            ValComboBoxFromQuery cbx = (ValComboBoxFromQuery)dlg.getMultiView().getCurrentViewAsFormViewObj().getControlByName("agent");
             Agent userAgent = (Agent)cbx.getValue();
             spUser.getAgents().add(userAgent);
             userAgent.setSpecifyUser(spUser);
@@ -112,6 +168,77 @@ public class NavigationTreeMgr
             
             tree.setSelectionPath(new TreePath(userNode.getPath()));
         }
+    }
+    
+    protected String buildSearchString(Map<String, Object> dataMap, List<String> fieldNames)
+    {
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(Agent.getClassTableId());
+        
+        Vector<ERTICaptionInfo> cols = new Vector<ERTICaptionInfo>();
+        
+        StringBuilder colNames = new StringBuilder();
+        int           dspCnt   = 0;
+        for (String colName : fieldNames)
+        {
+            if (dspCnt > 0) colNames.append(',');
+            
+            colNames.append(colName);
+            
+            String colTitle;
+            DBFieldInfo fi = tableInfo.getFieldByColumnName(colName);
+            if (fi != null)
+            {
+                colTitle = fi.getTitle();
+            } else
+            {
+                colTitle = colName;
+            }
+
+            ERTICaptionInfo col = new ERTICaptionInfo(colName, colTitle, true, null, dspCnt+1);
+            cols.add(col);
+            dspCnt++;
+        }
+        
+        StringBuilder orderBy  = new StringBuilder();
+        StringBuilder criteria = new StringBuilder();
+        int criCnt = 0;
+        for (String colName : dataMap.keySet())
+        {
+            String data = (String)dataMap.get(colName);
+            if (ESTermParser.parse(data.toLowerCase(), true))
+            {
+                if (StringUtils.isNotEmpty(data))
+                {
+                    List<SearchTermField> fields     = ESTermParser.getFields();
+                    SearchTermField       firstTerm  = fields.get(0);
+                    
+                    if (criCnt > 0) criteria.append(" OR ");
+                    
+                    String clause = ESTermParser.createWhereClause(firstTerm, null, colName);
+                    criteria.append(clause);
+                    
+                    if (criCnt > 0) orderBy.append(',');
+                    
+                    orderBy.append(colName);
+                    
+                    criCnt++;
+                }
+            }
+        }
+
+        
+        StringBuffer sb = new StringBuffer();
+        sb.append("SELECT ");
+        sb.append(colNames);
+        sb.append(" FROM agent WHERE SpecifyID <> NULL AND ");
+        sb.append(criteria);
+        sb.append(" ORDER BY ");
+        sb.append(orderBy);
+        
+        log.debug(sb.toString());
+        
+        return sb.toString();
+
     }
     
     /**

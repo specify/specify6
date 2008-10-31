@@ -66,7 +66,7 @@ import edu.ku.brc.af.ui.db.TextFieldWithQuery;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
-import edu.ku.brc.af.ui.db.TextFieldWithQuery.QueryWhereClauseProviderIFace;
+import edu.ku.brc.af.ui.db.TextFieldWithQuery.ExternalQueryProviderIFace;
 import edu.ku.brc.af.ui.forms.DataGetterForObj;
 import edu.ku.brc.af.ui.forms.DataObjectSettable;
 import edu.ku.brc.af.ui.forms.DataObjectSettableFactory;
@@ -125,7 +125,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected boolean            isChanged  = false;
     protected boolean            isNew      = false;
     protected boolean            hasBeenVisited = false;
-    protected Color              bgColor    = null;
+    protected Color              bgColor        = null;
+    protected boolean            doAdjustQuery  = true;
 
     protected TextFieldWithQuery textWithQuery;
     protected JButton            searchBtn  = null;
@@ -157,7 +158,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected ActionListener defaultNewAction;
     
     protected ViewBasedSearchQueryBuilderIFace builder = null;
-    protected QueryWhereClauseProviderIFace queryWhereClauseProvider = null;
     
     /**
      *  Constructor.
@@ -249,7 +249,15 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         
         setOpaque(false);
     }
-
+    /**
+     * @param doAdjustQuery
+     */
+    public void setDoAdjustQuery(boolean doAdjustQuery)
+    {
+        this.doAdjustQuery = doAdjustQuery;
+        textWithQuery.setDoAdjustQuery(doAdjustQuery);
+    }
+    
     /**
      * @param sqlTemplate the sqlTemplate to set
      */
@@ -259,12 +267,11 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
     
     /**
-     * @param queryWhereClauseProvider
+     * @param externalQueryProvider
      */
-    public void setQueryWhereClauseProvider(QueryWhereClauseProviderIFace queryWhereClauseProvider)
+    public void setExternalQueryProvider(ExternalQueryProviderIFace externalQueryProvider)
     {
-        this.queryWhereClauseProvider = queryWhereClauseProvider;
-        textWithQuery.setQueryWhereClauseProvider(queryWhereClauseProvider);
+        textWithQuery.setExternalQueryProvider(externalQueryProvider);
     }
     
     /**
@@ -483,7 +490,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     {
         String dlgName = StringUtils.isNotEmpty(searchDlgName) ? searchDlgName : tableInfo.getSearchDialog();
         
-        ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getWindow(searchBtn), dlgName);
+        ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getWindow(searchBtn), 
+                                                                                             dlgName);
         dlg.setMultipleSelection(false);
         if (builder != null)
         {

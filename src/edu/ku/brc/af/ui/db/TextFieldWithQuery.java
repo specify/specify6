@@ -89,22 +89,23 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
 {
     protected static final Logger log = Logger.getLogger(TextFieldWithQuery.class);
     
-    protected int                  popupDlgThreshold = 15;
+    protected int                              popupDlgThreshold = 15;
             
-    protected JTextField           textField;
-    protected Object               dataObj        = null;
-    protected Vector<Integer>      idList         = new Vector<Integer>();
-    protected Vector<String>       list           = new Vector<String>();
-    protected JPopupMenu           popupMenu      = null;
-    protected JButton              dbBtn;
-    protected boolean              isPopupShowing = false;
-    protected AtomicBoolean        isDoingQuery   = new AtomicBoolean(false);
+    protected JTextField                       textField;
+    protected Object                           dataObj        = null;
+    protected Vector<Integer>                  idList         = new Vector<Integer>();
+    protected Vector<String>                   list           = new Vector<String>();
+    protected JPopupMenu                       popupMenu      = null;
+    protected JButton                          dbBtn;
+    protected boolean                          isPopupShowing = false;
+    protected AtomicBoolean                    isDoingQuery   = new AtomicBoolean(false);
     
-    protected boolean              popupFromBtn   = false;
-    protected boolean              ignoreFocusLost = false;
-    protected boolean              tabOutSearch   = false;
+    protected boolean                          popupFromBtn   = false;
+    protected boolean                          ignoreFocusLost = false;
+    protected boolean                          tabOutSearch   = false;
+    protected boolean                          doAdjustQuery  = true;
     
-    protected boolean              doAddAddItem   = false;
+    protected boolean                          doAddAddItem   = false;
     
     protected DBTableInfo                      tableInfo;
     protected DBFieldInfo                      fieldInfo;
@@ -120,20 +121,20 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected Object[]                         values;
     protected Hashtable<Integer, Object[]>     duplicatehash            = new Hashtable<Integer, Object[]>();
     
-    protected List<ListSelectionListener> listSelectionListeners = new ArrayList<ListSelectionListener>();
-    protected PopupMenuListener    popupMenuListener   = null;
-    protected Integer              selectedId          = null;
-    protected String               currentText         = ""; //$NON-NLS-1$
-    protected boolean              hasNewText          = false;
-    protected boolean              wasCleared          = false;
-    protected boolean              ignoreDocChange     = false;
+    protected List<ListSelectionListener>      listSelectionListeners = new ArrayList<ListSelectionListener>();
+    protected PopupMenuListener                popupMenuListener   = null;
+    protected Integer                          selectedId          = null;
+    protected String                           currentText         = ""; //$NON-NLS-1$
+    protected boolean                          hasNewText          = false;
+    protected boolean                          wasCleared          = false;
+    protected boolean                          ignoreDocChange     = false;
     
-    protected AtomicBoolean        isDoingCount        = new AtomicBoolean(false);
-    protected Integer              returnCount         = null;
-    protected String               prevEnteredText     = null;
-    protected String               searchedForText     = null;
+    protected AtomicBoolean                    isDoingCount        = new AtomicBoolean(false);
+    protected Integer                          returnCount         = null;
+    protected String                           prevEnteredText     = null;
+    protected String                           searchedForText     = null;
     
-    protected QueryWhereClauseProviderIFace queryWhereClauseProvider = null;
+    protected ExternalQueryProviderIFace      externalQueryProvider = null;
     
     /**
      * Constructor.
@@ -388,11 +389,11 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     }
 
     /**
-     * @param queryWhereClauseProvider
+     * @param externalQueryProvider
      */
-    public void setQueryWhereClauseProvider(QueryWhereClauseProviderIFace queryWhereClauseProvider)
+    public void setExternalQueryProvider(ExternalQueryProviderIFace externalQueryProvider)
     {
-        this.queryWhereClauseProvider = queryWhereClauseProvider;
+        this.externalQueryProvider = externalQueryProvider;
     }
 
     /**
@@ -692,6 +693,14 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     }
     
     /**
+     * @param doAdjustQuery
+     */
+    public void setDoAdjustQuery(boolean doAdjustQuery)
+    {
+        this.doAdjustQuery = doAdjustQuery;
+    }
+
+    /**
      * Builds the SQL to be used to do the search.
      * @param newEntryStr the string value to be searched
      * @param isForCount do query for count of returns
@@ -699,6 +708,15 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      */
     protected String buildSQL(final String newEntryStr, final boolean isForCount)
     {
+        if (externalQueryProvider != null)
+        {
+            String fullSQLStr = externalQueryProvider.getFullSQL(newEntryStr, isForCount);
+            if (StringUtils.isNotEmpty(fullSQLStr))
+            {
+                return fullSQLStr;
+            }
+        }
+        
         StringBuilder whereSB = new StringBuilder();
         if (keyColumns.length > 1)
         {
@@ -724,6 +742,16 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         if (keyColumns.length > 1)
         {
             whereSB.append(")"); //$NON-NLS-1$
+        }
+        
+        if (externalQueryProvider != null)
+        {
+            String extraWhereClause = externalQueryProvider.getExtraWhereClause();
+            if (StringUtils.isNotEmpty(extraWhereClause))
+            {
+                whereSB.append(' ');
+                whereSB.append(extraWhereClause);
+            }
         }
 
         if (StringUtils.isNotEmpty(sqlTemplate))
@@ -757,9 +785,12 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             
             sql = StringUtils.replace(sqlTemplate, "%s1", selectSB.toString()); //$NON-NLS-1$
             sql = StringUtils.replace(sql, "%s2", whereSB.toString()); //$NON-NLS-1$
-            sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+            if (doAdjustQuery)
+            {
+                sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+            }
             
-            //System.err.println(sql);
+            log.debug(sql);
             
             return sql;
         }
@@ -788,7 +819,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 sb.append(" as "); //$NON-NLS-1$
                 sb.append(tableInfo.getAbbrev());
                 
-                String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true, null, false); //arg 2: false means SQL
+                String joinSnipet = doAdjustQuery ? QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true, null, false) : null; //arg 2: false means SQL
                 if (joinSnipet != null)
                 {
                     sb.append(' ');
@@ -800,12 +831,22 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 
                 //System.err.println(sb.toString());
                 
-                String specialCols = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);//, false, isForCount ? null : tableInfo.getAbbrev());
+                String specialCols = doAdjustQuery ? QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true) : null;//, false, isForCount ? null : tableInfo.getAbbrev());
                 if (StringUtils.isNotEmpty(specialCols))
                 {
                     if (whereSB.length() > 0) whereSB.append(" AND "); //$NON-NLS-1$
                     whereSB.append(specialCols);
                     //System.err.println(whereSB.toString());
+                }
+                
+                if (externalQueryProvider != null)
+                {
+                    String extraWhereClause = externalQueryProvider.getExtraWhereClause();
+                    if (StringUtils.isNotEmpty(extraWhereClause))
+                    {
+                        whereSB.append(' ');
+                        whereSB.append(extraWhereClause);
+                    }
                 }
                 
                 whereSB.append(" ORDER BY "); //$NON-NLS-1$
@@ -821,7 +862,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 sb.append(whereSB.toString());
                 
             }
-            //System.err.println(sb.toString());
+            log.debug("* "+sql);
             return sb.toString();
         }
         return sql;
@@ -1086,7 +1127,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQueryIFace)
      */
-    //@Override
+    @Override
     public void exectionDone(final CustomQueryIFace customQuery)
     {
         if (isDoingCount.get())
@@ -1117,7 +1158,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#executionError(edu.ku.brc.dbsupport.CustomQueryIFace)
      */
-    //@Override
+    @Override
     public void executionError(final CustomQueryIFace customQuery)
     {
         isDoingQuery.set(false);
@@ -1211,9 +1252,17 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         return textField;
     }
     
-    public interface QueryWhereClauseProviderIFace
+    public interface ExternalQueryProviderIFace
     {
+        /**
+         * @return just the additional where clause must start with "AND/OR".
+         */
         public String getExtraWhereClause();
+        
+        /**
+         * @return the full SQL to be used.
+         */
+        public String getFullSQL(final String newEntryStr, final boolean isForCount);
     }
     
     //--------------------------------------------------------------------------

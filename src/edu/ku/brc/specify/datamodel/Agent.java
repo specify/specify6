@@ -132,7 +132,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected Set<AgentVariant>             variants;
     
     protected Set<Discipline>               disciplines;
-    //protected SpecifyUser                   specifyUser;
 
     
     /*

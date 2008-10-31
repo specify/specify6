@@ -480,7 +480,7 @@ public class ListSlider extends JPanel
         int [] indices = new int [indicesToMove.size()];
         for(int i = 0; i< indicesToMove.size(); i ++)
         {
-            indices[i] = (Integer)indicesToMove.get(i).intValue();    
+            indices[i] = indicesToMove.get(i).intValue();    
             log.debug("selecting: " +  (Integer)indicesToMove.get(i).intValue() );
         }
         sourceList.setSelectedIndices(indices);

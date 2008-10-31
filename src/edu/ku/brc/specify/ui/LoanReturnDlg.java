@@ -308,7 +308,7 @@ public class LoanReturnDlg extends JDialog
                                                1, 1, 1, 1, "Changed", null, false);
         fcf.addProperty("name", "Agent");
         fcf.addProperty("title", getResourceString("LOANRET_AGENT_DO_RET_TITLE"));
-        return ViewFactory.createQueryComboBox(validator, fcf, true);
+        return ViewFactory.createQueryComboBox(validator, fcf, true, true);
     }
     
     

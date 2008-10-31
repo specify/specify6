@@ -9,7 +9,6 @@ package edu.ku.brc.specify.datamodel.busrules;
 import java.awt.Component;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.ui.db.TextFieldWithQuery.QueryWhereClauseProviderIFace;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
@@ -26,7 +25,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
  * Oct 28, 2008
  *
  */
-public class SpecifyUserBusRules extends BaseBusRules implements QueryWhereClauseProviderIFace
+public class SpecifyUserBusRules extends BaseBusRules
 {
 
     /**
@@ -69,7 +68,6 @@ public class SpecifyUserBusRules extends BaseBusRules implements QueryWhereClaus
             ValComboBoxFromQuery cbx = getAgentCBX();
             if (cbx != null)
             {
-                cbx.setQueryWhereClauseProvider(this);
                 for (Agent agent : spUser.getAgents())
                 {
                     System.err.println(spUser.getName() + "  "+agent.toString());
@@ -151,14 +149,4 @@ public class SpecifyUserBusRules extends BaseBusRules implements QueryWhereClaus
             }
         }
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.db.TextFieldWithQuery.QueryWhereClauseProviderIFace#getExtraWhereClause()
-     */
-    @Override
-    public String getExtraWhereClause()
-    {
-        return "";
-    }
-
 }

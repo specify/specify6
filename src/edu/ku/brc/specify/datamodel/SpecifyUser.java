@@ -532,18 +532,6 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     }
     
     /**
-     * @param agent - 
-     * void
-     */
-    public void addAgent(final Agent agent)
-    { 
-        this.agents.add(agent);
-        agent.setSpecifyUser(this);
-        //agent.
-        //agent.getSpecifyUsers().add(this);
-    }
-    
-    /**
      * @return the spQuerys
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")

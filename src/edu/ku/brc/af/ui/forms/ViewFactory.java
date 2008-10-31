@@ -511,7 +511,8 @@ public class ViewFactory
      */
     public static ValComboBoxFromQuery createQueryComboBox(final FormValidator validator,
                                                            final FormCellField cellField,
-                                                           final boolean       isRequired)
+                                                           final boolean       isRequired,
+                                                           final boolean       doAdjustQuery)
     {
         //String cbxName = cellField.getInitialize();
         String cbxName = cellField.getProperty("name");
@@ -538,6 +539,7 @@ public class ViewFactory
                 //}
             }
             cbx.setCellName(cellField.getName());
+            cbx.setDoAdjustQuery(doAdjustQuery);
             
             return cbx;
 
@@ -554,9 +556,9 @@ public class ViewFactory
      * @return ValComboBox
      */
     public static ValComboBox createValComboBox(final FormValidator validator,
-                                                final FormCellField cellField,
+                                                final FormCellField          cellField,
                                                 final PickListDBAdapterIFace adapter,
-                                                final boolean isRequired)
+                                                final boolean                isRequired)
     {
         boolean                makeEditable = cellField.getPropertyAsBoolean("editable", false);
         ValComboBox            cbx          = null;
@@ -1319,7 +1321,7 @@ public class ViewFactory
                     
                 case querycbx:
                 {
-                    ValComboBoxFromQuery cbx = createQueryComboBox(validator, cellField, isReq);
+                    ValComboBoxFromQuery cbx = createQueryComboBox(validator, cellField, isReq, cellField.getPropertyAsBoolean("adjustquery", true));
                     cbx.setMultiView(parent);
                     cbx.setFrameTitle(cellField.getProperty("title"));
                     
