@@ -9,8 +9,8 @@ package edu.ku.brc.specify.tasks.subpane.security;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.DefaultListCellRenderer;
@@ -23,8 +23,6 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -52,7 +50,7 @@ import edu.ku.brc.util.ComparatorByStringRepresentation;
  */
 public class IndvPanelPermEditor extends JPanel implements PermissionPanelContainerIFace
 {
-    private static final Logger log = Logger.getLogger(IndvPanelPermEditor.class);
+    //private static final Logger log = Logger.getLogger(IndvPanelPermEditor.class);
     
     protected String                panelName;
     protected PermissionEnumerator  enumerator;
@@ -122,6 +120,8 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
             {
                 if (!e.getValueIsAdjusting())
                 {
+                    editor.removeChangeListener(listener);
+                    
                     if (editor != null)
                     {
                         mainPanel.remove(editor.getUIComponent());
@@ -131,7 +131,6 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                     {
                         prevRowData.setPermissions(editor.getPermissions());
                         editor.setChanged(false);
-                        editor.removeChangeListener(listener);
                     }
                     
                     PermissionEditorRowIFace rowData = (PermissionEditorRowIFace)list.getSelectedValue();
@@ -143,7 +142,6 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                             editor = basicEditor;
                         }
                         
-                        editor.addChangeListener(listener);
                         editor.setPermissions(rowData.getPermissions());
                         mainPanel.add(editor.getUIComponent(), BorderLayout.CENTER);
                         mainPanel.invalidate();
@@ -151,6 +149,8 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                         mainPanel.repaint();
                     }
                     prevRowData = rowData;
+                    
+                    editor.addChangeListener(listener);
                 }
             }
         });
@@ -204,8 +204,6 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
             editor.removeChangeListener(listener);
         }
         
-        principal = session.merge(principal);
-
         for (PermissionEditorRowIFace rowData : rowDataList)
         {
             for (SpPermission perm : rowData.getPermissionList())
@@ -215,41 +213,21 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                     // no flag is set, so delete the permission
                     if (perm.getId() != null)
                     {
-                        // if id is not null, it means the permission is from DB
-                        // so we must delete permission
-                        Set<SpPermission> perms = principal.getPermissions();
-                        for (SpPermission currPerm : perms)
-                        {
-                            if (currPerm.getId().equals(perm.getId()))
-                            {
-                                session.evict(perm);
-                                perms.remove(currPerm);
-                                
-                                log.debug("Saving Principal: "+principal.getId());
-                                session.saveOrUpdate(principal);
-                                session.delete(currPerm);
-                                break;
-                            }
-                        }
+                        perm.setActions("");
+                        session.saveOrUpdate(session.merge(perm));
                     }
                 }
                 else if (perm.hasSameFlags(perm.canView(), perm.canAdd(), perm.canModify(), perm.canDelete()))
                 {
-                    // set new flags
-                    //perm.setActions(canView, canAdd, canMod, canDel);
-
                     // permission has changed: save it
                     if (perm.getId() == null)
                     {
                         // permission doesn't yet exist in database: attach it to its principal
                         principal.getPermissions().add(perm);
-                    } else
-                    {
-                        perm = session.merge(perm);
+                        perm.getPrincipals().add(principal);
                     }
                     
-                    session.saveOrUpdate(perm);
-                    session.saveOrUpdate(principal);
+                    session.saveOrUpdate(session.merge(perm));
                 }
             }
         }
@@ -259,20 +237,22 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
      * @see edu.ku.brc.af.auth.PermissionPanelContainerIFace#updateData(edu.ku.brc.specify.datamodel.SpPrincipal, edu.ku.brc.specify.datamodel.SpPrincipal, boolean)
      */
     @Override
-    public void updateData(final SpPrincipal principalArg, 
-                           final SpPrincipal overrulingPrincipal, 
-                           final String     userType)
+    public void updateData(final SpPrincipal                     principalArg, 
+                           final SpPrincipal                     overrulingPrincipal, 
+                           final Hashtable<String, SpPermission> existingPerms,
+                           final Hashtable<String, SpPermission> overrulingPerms,
+                           final String                          userType)
     {
         // save principal used when saving permissions later
         this.principal = principalArg;
         
         rowDataList.clear();
         
-        List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, overrulingPrincipal, userType);
+        List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, existingPerms, overrulingPerms, userType);
         Collections.sort(perms, new ComparatorByStringRepresentation<PermissionEditorRowIFace>(true));
-        for (PermissionEditorRowIFace permWrapper : perms) 
+        for (PermissionEditorRowIFace perm : perms) 
         {
-            rowDataList.add(permWrapper);
+            rowDataList.add(perm);
         }
         
         if (model == null) 
@@ -316,13 +296,15 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
             PermissionEditorRowIFace rowData = (PermissionEditorRowIFace)value;
             setIcon(rowData.getIcon() != null ? rowData.getIcon() : blankIcon);
             
-            if (iss) {
+            if (iss) 
+            {
                 setOpaque(true);
                 setBackground(list.getSelectionBackground());
                 setForeground(list.getSelectionForeground());
                 list.setSelectedIndex(index);
 
-            } else {
+            } else 
+            {
                 this.setOpaque(false);
                 setBackground(list.getBackground());
                 setForeground(list.getForeground());

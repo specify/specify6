@@ -10,8 +10,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -150,11 +150,13 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
         return enumerator;
     }
     
-    /**
-	 * Updates the table that will be used to display and edit the permissions 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.auth.PermissionPanelContainerIFace#updateData(edu.ku.brc.specify.datamodel.SpPrincipal, edu.ku.brc.specify.datamodel.SpPrincipal, java.util.Hashtable, java.util.Hashtable, java.lang.String)
 	 */
 	public void updateData(final SpPrincipal principalArg, 
-	                       final SpPrincipal overrulingPrincipal, 
+                           final SpPrincipal overrulingPrincipalArg, 
+                           final Hashtable<String, SpPermission> existingPerms,
+                           final Hashtable<String, SpPermission> overrulingPerms,
                            final String     userType)
 	{
 		// save principal used when saving permissions later
@@ -188,7 +190,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 		
 		rowDataList.clear();
 		
-		List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, overrulingPrincipal, userType);
+		List<PermissionEditorRowIFace> perms = enumerator.getPermissions(principalArg, existingPerms, overrulingPerms, userType);
 		Collections.sort(perms, new ComparatorByStringRepresentation<PermissionEditorRowIFace>(true));
         for (PermissionEditorRowIFace permWrapper : perms) 
         {
@@ -261,7 +263,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 	}
 	
 	/**
-	 * @param modelArg
+	 * @param modelArg the model
 	 */
 	protected void addColumnHeaders(final DefaultTableModel modelArg)
 	{
@@ -285,10 +287,8 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 			return;
 		}
 		
-        log.debug("Saving Principal: "+principal.getId());
+        log.debug("Saving Principal: "+principal.getId()+"  hashCode: "+principal.hashCode());
         
-        principal = session.merge(principal);
-
 		int numRows = model.getRowCount();
 		int taskCol = nameColTitle != null ? table.getColumn(nameColTitle).getModelIndex() : -1;
 		int viewCol = viewColTitle != null ? table.getColumn(viewColTitle).getModelIndex() : -1;
@@ -300,7 +300,6 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 		{
 		    PermissionEditorRowIFace wrapper = (PermissionEditorRowIFace) model.getValueAt(row, taskCol);
 			SpPermission perm = wrapper.getPermissionList().get(0); // Only has one
-            //log.debug("Checking Perm: "+perm.getName());
 		    
 			Boolean canView = viewCol > -1 ? (Boolean) model.getValueAt(row, viewCol) : false;
 			Boolean canAdd  = addCol > -1 ? (Boolean) model.getValueAt(row, addCol) : false;
@@ -312,27 +311,12 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 				// no flag is set, so delete the permission
 				if (perm.getId() != null)
 				{
-					// if id is not null, it means the permission is from DB
-					// so we must delete permission
-	    			Set<SpPermission> perms = principal.getPermissions();
-	    			for (SpPermission currPerm : perms)
-	    			{
-	    				if (currPerm.getId().equals(perm.getId()))
-	    				{
-	    				    //log.debug("Removing Perm: "+perm.getName());
-	    					session.evict(perm);
-	    					perms.remove(currPerm);
-	    					
-	        				session.saveOrUpdate(principal);
-	    					session.delete(currPerm);
-	    					//break;
-	    				}
-	    			}
+				    perm.setActions("");
+                    session.saveOrUpdate(session.merge(perm));
 				}
 			}
 			else if (!perm.hasSameFlags(canView, canAdd, canMod, canDel))
 			{
-			    //log.debug("Saving Perm: "+perm.getName());
 				// set new flags
 				perm.setActions(canView, canAdd, canMod, canDel);
 
@@ -341,13 +325,9 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 				{
 					// permission doesn't yet exist in database: attach it to its principal
 					principal.getPermissions().add(perm);
-				} else
-				{
-				    perm = session.merge(perm);
+					perm.getPrincipals().add(principal);
 				}
-				
-				session.saveOrUpdate(perm);
-				session.saveOrUpdate(principal);
+				session.saveOrUpdate(session.merge(perm));
 			}
 		}
 	}

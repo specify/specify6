@@ -168,6 +168,22 @@ public class GeneralPermissionEditorRow implements PermissionEditorRowIFace
 	}
 	
 	/* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#updatePerm(edu.ku.brc.specify.datamodel.SpPermission, edu.ku.brc.specify.datamodel.SpPermission)
+     */
+    @Override
+    public void updatePerm(SpPermission oldPerm, SpPermission newPerm)
+    {
+        if (oldPerm == permission)
+        {
+            permission = newPerm;
+            
+        } else if (overrulingPermission == permission)
+        {
+            overrulingPermission = newPerm;
+        }
+    }
+
+    /* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
     @Override

@@ -42,7 +42,7 @@ public class PrefsPermissionEnumerator extends PermissionEnumerator
 	 */
 	public PrefsPermissionEnumerator()
 	{
-	    super("Prefs", "descKey");
+	    super("Prefs", "ADMININFO_DESC");
     }
     
     /**

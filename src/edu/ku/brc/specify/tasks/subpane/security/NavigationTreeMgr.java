@@ -77,6 +77,7 @@ public class NavigationTreeMgr
         SpPrincipal group = (SpPrincipal) parentWrp.getDataObj();
         SpecifyUser spUser = new SpecifyUser();
         spUser.initialize();
+        spUser.setUserType(group.getGroupType());
         
         ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)getMostRecentWindow(),
                                                                 null,
@@ -89,13 +90,13 @@ public class NavigationTreeMgr
                                                                 true,
                                                                 MultiView.HIDE_SAVE_BTN | 
                                                                    MultiView.DONT_ADD_ALL_ALTVIEWS | 
-                                                                   MultiView.USE_ONLY_CREATION_MODE);
+                                                                   MultiView.USE_ONLY_CREATION_MODE |
+                                                                   MultiView.IS_NEW_OBJECT);
         dlg.setOkLabel(getResourceString("SAVE"));
         dlg.setData(spUser);
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
-            spUser.setUserType(group.getGroupType());
             addGroupToUser(group, spUser);
             
             ValComboBoxFromQuery cbx = (ValComboBoxFromQuery)dlg.getMultiView().getCurrentViewAsFormViewObj().getControlByName("agent");

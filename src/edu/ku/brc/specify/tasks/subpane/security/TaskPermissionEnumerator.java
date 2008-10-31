@@ -31,7 +31,7 @@ public class TaskPermissionEnumerator extends PermissionEnumerator
 	 */
 	public TaskPermissionEnumerator()
 	{
-	   super("Task", "descKey");
+	   super("Task", "ADMININFO_DESC");
 	}
 	
     /* (non-Javadoc)

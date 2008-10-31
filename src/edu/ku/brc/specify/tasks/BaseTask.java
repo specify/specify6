@@ -25,7 +25,7 @@ import edu.ku.brc.helpers.XMLHelper;
 /**
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Oct 29, 2008
  *
@@ -36,7 +36,7 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
     protected static final String GUEST              = "Guest";
     protected static final String DataENTRY          = "DataEntry";
     
-    protected static WeakReference<Hashtable<String, PermissionOptionPersist>> taskPermsListWR       = null;
+    protected static WeakReference<Hashtable<String, PermissionOptionPersist>> taskPermsListWR = null;
     
     /**
      * @param name
@@ -49,8 +49,8 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
 
     
     /**
-     * @param fileName
-     * @return
+     * @param fileName xml file to be read in
+     * @return a double hashtable first hashed by Permissions name and then hased by User Type
      */
     @SuppressWarnings("unchecked")
     public static Hashtable<String, Hashtable<String, PermissionOptionPersist>> readDefaultPrefsFromXML(final String fileName)
@@ -86,7 +86,7 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
     }
     
     /**
-     * 
+     * @return the Hashtable from the WeakReference
      */
     protected Hashtable<String, PermissionOptionPersist> getAndSetDefPerms()
     {

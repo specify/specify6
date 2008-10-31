@@ -12,6 +12,7 @@ package edu.ku.brc.specify.tasks.subpane.security;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -25,6 +26,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.PermissionPanelContainerIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 
 /**
@@ -39,7 +41,6 @@ import edu.ku.brc.specify.datamodel.SpPrincipal;
  */
 public class PermissionPanelEditor extends JPanel
 {
-
     protected JPanel     cardPanel    = new JPanel();
     protected CardLayout cardLayout   = new CardLayout();
     protected JComboBox  switcherCBX;
@@ -53,7 +54,7 @@ public class PermissionPanelEditor extends JPanel
     {
         super();
         
-        cardPanel = new JPanel(cardLayout);
+        cardPanel   = new JPanel(cardLayout);
         switcherCBX = new JComboBox(new DefaultComboBoxModel());
         
         CellConstraints cc = new CellConstraints();
@@ -85,7 +86,8 @@ public class PermissionPanelEditor extends JPanel
     }
     
     /**
-     * 
+     * @param session
+     * @throws Exception
      */
     public void savePermissions(final DataProviderSessionIFace session) throws Exception
     {
@@ -96,16 +98,18 @@ public class PermissionPanelEditor extends JPanel
     }
     
     /**
-     * @param principalArg
+     * @param principal
      * @param overrulingPrincipal
      */
-    public void updateData(final SpPrincipal principalArg, 
-                           final SpPrincipal overrulingPrincipal, 
-                           final String      userType)
+    public void updateData(final SpPrincipal                     principal, 
+                           final SpPrincipal                     overrulingPrincipal, 
+                           final Hashtable<String, SpPermission> existingPerms,
+                           final Hashtable<String, SpPermission> overrulingPerms,
+                           final String                          userType)
     {
         for (PermissionPanelContainerIFace panel : panels)
         {
-            panel.updateData(principalArg, overrulingPrincipal, userType);
+            panel.updateData(principal, overrulingPrincipal, existingPerms, overrulingPerms, userType);
         }
     }
 

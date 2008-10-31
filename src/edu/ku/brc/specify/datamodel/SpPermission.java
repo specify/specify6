@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -7,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -58,10 +61,11 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	public void initialize()
 	{
 		//super.init();
-		permissionId = null;
+		permissionId    = null;
 		permissionClass = null;
-		name = null;
-		actions = null;
+		name            = null;
+		actions         = null;
+		principals      = new HashSet<SpPrincipal>();
 	}
 
 	/* (non-Javadoc)
@@ -71,7 +75,6 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	//@Override
 	public Class<?> getDataClass()
 	{
-		// TODO Auto-generated method stub
 		return SpPermission.class;
 	}
 
@@ -188,8 +191,16 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	/**
 	 *
 	 */
-	@ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "permissions")
-	public Set<SpPrincipal> getPrincipals()
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(name = "spprincipal_sppermission", 
+            joinColumns = 
+            { 
+            @JoinColumn(name = "SpPermissionID", unique = false, nullable = false, insertable = true, updatable = false) 
+            }, 
+            inverseJoinColumns = 
+            { @JoinColumn(name = "SpPrincipalID", unique = false, nullable = false, insertable = true, updatable = false) 
+            }
+    )	public Set<SpPrincipal> getPrincipals()
 	{
 		return this.principals;
 	}

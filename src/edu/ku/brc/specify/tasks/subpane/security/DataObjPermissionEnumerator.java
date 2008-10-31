@@ -43,7 +43,7 @@ public class DataObjPermissionEnumerator extends PermissionEnumerator
      */
     public DataObjPermissionEnumerator()
     {
-        super("DO", "descKey");
+        super("DO", "ADMININFO_DESC");
     }
     
     /**

@@ -68,4 +68,10 @@ public interface PermissionEditorRowIFace extends Comparable<PermissionEditorRow
 	 * @param session
 	 */
 	public abstract List<SpPermission> getPermissionList();
+	
+	/**
+	 * @param oldPerm
+	 * @param newPerm
+	 */
+	public abstract void updatePerm(SpPermission oldPerm, SpPermission newPerm);
 }

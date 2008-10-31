@@ -60,7 +60,7 @@ public class PermissionService
      * @param ids
      * @throws SQLException
      */
-    static public void removePrincipalPermissions(Set<?> ids)
+    static public void removePrincipalPermissions(final Set<?> ids)
     {
         Connection conn = null;
         PreparedStatement tiePstmt = null;
@@ -105,7 +105,7 @@ public class PermissionService
      * @return
      * @throws SQLException
      */
-    static public List<Permission> findPrincipalPermissions(Set<Integer> principalIds) 
+    static public List<Permission> findPrincipalPermissions(final Set<Integer> principalIds) 
     {
         if(debug)log.debug("findPrincipalPermissions"); //$NON-NLS-1$
         List<Permission> permissions = new ArrayList<Permission>();
@@ -122,20 +122,18 @@ public class PermissionService
      * @param principalId
      * @return
      */
-    static public Hashtable<String, SpPermission> getExistingPermissions(Integer principalId)
+    static public Hashtable<String, SpPermission> getExistingPermissions(final Integer principalId)
     {
-    	Hashtable<String, SpPermission> hash = new Hashtable<String, SpPermission>();
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+    	Hashtable<String, SpPermission> hash    = new Hashtable<String, SpPermission>();
+        DataProviderSessionIFace        session = DataProviderFactory.getInstance().createSession();
         try
         {
-        	List<?> perms = session.getDataList("FROM SpPermission as pm " +
-        			"INNER JOIN pm.principals as pc " + 
-        			"WHERE pc.id = " + principalId);
+        	List<?> perms = session.getDataList("SELECT pm FROM SpPermission as pm INNER JOIN pm.principals as pc WHERE pc.id = " + principalId);
         	for (Object permObj : perms)
         	{
-        		Object[] permObjArr = (Object[]) permObj;
-        		SpPermission perm = (SpPermission) permObjArr[0];
+        		SpPermission perm = (SpPermission)permObj;
         		hash.put(perm.getName(), perm);
+        		log.debug(perm.getName()+"  "+perm.getActions());
         	}
         }
         catch (Exception e)
@@ -212,6 +210,7 @@ public class PermissionService
             {
                 if (conn != null)  conn.close();
                 if (pstmt != null)  pstmt.close(); 
+                
             } catch (SQLException e)
             {
                 log.error("Exception caught: " + e.toString()); //$NON-NLS-1$

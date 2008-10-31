@@ -7,8 +7,10 @@
 package edu.ku.brc.af.auth;
 
 import java.awt.Component;
+import java.util.Hashtable;
 
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.tasks.subpane.security.PermissionEnumerator;
 
@@ -39,6 +41,8 @@ public interface PermissionPanelContainerIFace
      */
     public abstract void updateData(SpPrincipal principalArg, 
                                     SpPrincipal overrulingPrincipal, 
+                                    Hashtable<String, SpPermission> existingPerms,
+                                    Hashtable<String, SpPermission> overrulingPerms,
                                     String     userType);
     
     /**

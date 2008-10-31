@@ -320,7 +320,7 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
     				{
     					session.evict(perm);
     					perms.remove(currPerm);
-        				session.saveOrUpdate(principal);
+        				//session.saveOrUpdate(principal);
     					session.delete(currPerm);
     					break;
     				}
@@ -337,13 +337,34 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 			{
 				// permission doesn't yet exist in database: attach it to its principal
 				principal.getPermissions().add(perm);
+				perm.getPrincipals().add(principal);
 			}
 			
-			session.saveOrUpdate(perm);
-			session.saveOrUpdate(principal);
+			//session.saveOrUpdate(perm);
+			//session.saveOrUpdate(principal);
 		}
 	}
-
+	
+	/* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.security.PermissionEditorRowIFace#updatePerm(edu.ku.brc.specify.datamodel.SpPermission, edu.ku.brc.specify.datamodel.SpPermission)
+     */
+    @Override
+    public void updatePerm(SpPermission oldPerm, SpPermission newPerm)
+    {
+        if (oldPerm == ownerPermission)
+        {
+            ownerPermission = newPerm;
+            
+        } else if (oldPerm == groupPermission)
+        {
+            groupPermission = newPerm;
+            
+        } else if (oldPerm == otherPermission)
+        {
+            otherPermission = newPerm;
+        }
+    }
+    
     @Override
     public int compareTo(PermissionEditorRowIFace o)
     {

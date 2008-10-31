@@ -38,7 +38,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -47,6 +46,7 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
 
@@ -60,13 +60,13 @@ public class SpPrincipal extends DataModelObjBase implements java.io.Serializabl
 {
 	// Fields
 
-	protected Integer spUserGroupId;
-	protected String name;
-    protected String groupType;
-	protected String remarks;
-	protected String groupSubClass;
-	protected UserGroupScope scope;
-    protected Set<SpecifyUser> specifyUsers;
+	protected Integer           spUserGroupId;
+	protected String            name;
+    protected String            groupType;
+	protected String            remarks;
+	protected String            groupSubClass;
+	protected UserGroupScope    scope;
+    protected Set<SpecifyUser>  specifyUsers;
     protected Set<SpPermission> permissions;
 
 	// Constructors
@@ -83,16 +83,17 @@ public class SpPrincipal extends DataModelObjBase implements java.io.Serializabl
 	}
 
 	// Initializer
-	//@Override
+	@Override
 	public void initialize()
 	{
 		super.init();
 		spUserGroupId = null;
-		name = null;
-		remarks = null;
+		name          = null;
+		remarks       = null;
 		groupSubClass = null;
-		scope = null;
-		specifyUsers = new HashSet<SpecifyUser>();
+		scope         = null;
+		specifyUsers  = new HashSet<SpecifyUser>();
+		permissions   = new HashSet<SpPermission>();
 	}
 
 	// End Initializer
@@ -269,18 +270,8 @@ public class SpPrincipal extends DataModelObjBase implements java.io.Serializabl
 
 	/**
 	 */
-	@ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-	@JoinTable(name = "spprincipal_sppermission", 
-            joinColumns = 
-            { 
-            @JoinColumn(name = "SpPrincipalID", unique = false, nullable = false, insertable = true, updatable = false) 
-            }, 
-            inverseJoinColumns = 
-            { @JoinColumn(name = "SpPermissionID", unique = false, nullable = false, insertable = true, updatable = false) 
-            }
-    
-    )
-	@Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE })
+    @ManyToMany(mappedBy="principals")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
 	public Set<SpPermission> getPermissions()
 	{
 		return this.permissions;

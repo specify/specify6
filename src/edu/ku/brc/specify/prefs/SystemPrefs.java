@@ -294,7 +294,7 @@ public class SystemPrefs extends GenericPrefsPanel
                 if (browse != null)
                 {
                     String newSplashPath = browse.getValue().toString();
-                    if (newSplashPath != null && oldSplashPath != null && !oldSplashPath.equals(newSplashPath))
+                    if (newSplashPath != null && (oldSplashPath == null || !oldSplashPath.equals(newSplashPath)))
                     {
                         if (newSplashPath.isEmpty())
                         {

@@ -81,7 +81,7 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator
                                 cls.getMethod("getName"),
                                 prefPrefix, 
                                 tblInfo.getTitle(), 
-                                UIRegistry.getLocalizedMessage("descKey", tblInfo.getTitle()),
+                                UIRegistry.getLocalizedMessage("ADMININFO_DESC", tblInfo.getTitle()),
                                 panel);
             }
         } 
@@ -116,6 +116,7 @@ public class ObjectPermissionEnumerator extends PermissionEnumerator
         {
             // no permission with this name, create new one
             perm = new SpPermission();
+            perm.initialize();
             perm.setName(taskName + "." + subType);
             perm.setActions("");
             perm.setTargetId(targetId);

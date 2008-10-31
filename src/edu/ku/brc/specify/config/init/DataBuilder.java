@@ -2371,6 +2371,7 @@ public class DataBuilder
     											final Set<SpPrincipal> groupSet)
     {
     	SpPermission perm = new SpPermission();
+        perm.initialize();
     	perm.setName(name);
     	perm.setActions(actions);
     	perm.setPermissionClass(permClass);

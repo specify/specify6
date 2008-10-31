@@ -15,7 +15,6 @@ import javax.swing.ImageIcon;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
-import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.specify.datamodel.SpPermission;
@@ -51,7 +50,7 @@ public abstract class PermissionEnumerator
      * @param overrulingPrincipal
      * @return
      */
-    public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
+    /*public List<PermissionEditorRowIFace> getPermissions(final SpPrincipal principal, 
                                                          final SpPrincipal overrulingPrincipal,
                                                          final String      userType)
     {
@@ -63,7 +62,7 @@ public abstract class PermissionEnumerator
             overrulingPerms = PermissionService.getExistingPermissions(overrulingPrincipal.getId());
         }
         return getPermissions(principal, existingPerms, overrulingPerms, userType);
-    }
+    }*/
 
     /**
      * Returns a special permission that allows user to see all tasks
@@ -84,6 +83,7 @@ public abstract class PermissionEnumerator
         {
             // no permission with this name, create new one
             perm = new SpPermission();
+            perm.initialize();
             perm.setName(permName);
             perm.setActions("");
             perm.setPermissionClass(BasicSpPermission.class.getCanonicalName());
@@ -115,6 +115,7 @@ public abstract class PermissionEnumerator
         if (perm == null)
         {
             perm = new SpPermission();
+            perm.initialize();
             perm.setName(secName);
             perm.setActions("");
             perm.setPermissionClass(BasicSpPermission.class.getCanonicalName());
@@ -129,7 +130,6 @@ public abstract class PermissionEnumerator
             }
         }
         
-        //String desc = "Permissions to view, add, modify and delete data in task " + securityOption.getShortDesc();
         String desc = UIRegistry.getLocalizedMessage(descKey, securityOption.getShortDesc());
 
         PermissionEditorIFace editPanel = null;

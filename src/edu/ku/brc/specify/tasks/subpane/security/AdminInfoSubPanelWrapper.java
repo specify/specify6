@@ -6,23 +6,34 @@
  */
 package edu.ku.brc.specify.tasks.subpane.security;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.apache.commons.lang.StringUtils;
+
+import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipalHibernateService;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Wraps a JPanel with a permission editor (if panel for group or user) 
  * for use with card panel layout in SecurityAdminPane  
  * 
  * @author Ricardo
+ * @author rods
  *
  */
 public class AdminInfoSubPanelWrapper
@@ -30,6 +41,9 @@ public class AdminInfoSubPanelWrapper
 	private JPanel                      displayPanel;
 	private List<PermissionPanelEditor> permissionEditors; 
 	
+	private SpPrincipal                 principal           = null;
+	private SpPrincipal                 overrulingPrincipal = null;
+
 	/**
 	 * Constructor taking only a JPanel as parameter
 	 * 
@@ -80,29 +94,18 @@ public class AdminInfoSubPanelWrapper
     {
         return permissionEditors;
     }
-
-    /**
-	 * @param session
-	 */
-	public void savePermissionData(final DataProviderSessionIFace session) throws Exception
-	{
-        MultiView   mv  = getMultiView();
-        mv.getDataFromUI();
-        
-		for (PermissionPanelEditor editor : permissionEditors)
-		{
-			editor.savePermissions(session);			
-		}
-	}
 	
 	/**
 	 * Set form data based on a given persistent object
 	 * If first object is a SpecifyUser, secondObject is the group (GroupPrincipal) a user belongs to
 	 * @param dataObj
 	 * @param secondObject
+	 * @return whether new data was set (usually from setting defaults)
 	 */
-	public void setData(final Object dataObj, final Object secondObject)
+	public boolean setData(final Object dataObj, 
+	                       final Object secondObject)
 	{
+	    boolean hasChanged = false;
 		if (displayPanel instanceof ViewBasedDisplayPanel)
 		{
 			ViewBasedDisplayPanel panel = (ViewBasedDisplayPanel) displayPanel;
@@ -112,53 +115,123 @@ public class AdminInfoSubPanelWrapper
             SpecifyUser user = null;
             
 			// set permissions table if appropriate according to principal (user or usergroup)
-			SpPrincipal principal = null;
+			SpPrincipal firstPrincipal = null;
 			if (dataObj instanceof SpecifyUser)
 			{
-				// get user principal
-			
-			    user = (SpecifyUser) dataObj;
-				principal = UserPrincipalHibernateService.getUserPrincipalBySpecifyUser(user);
-			}
-			else if (dataObj instanceof SpPrincipal)
+			    user      = (SpecifyUser) dataObj;
+				firstPrincipal = UserPrincipalHibernateService.getUserPrincipalBySpecifyUser(user);
+				
+			} else if (dataObj instanceof SpPrincipal)
 			{
-				principal = (SpPrincipal) dataObj;
+				firstPrincipal = (SpPrincipal) dataObj;
 			}
 
 			// get user principal
 			SpPrincipal secondPrincipal = null;
 			if (secondObject instanceof SpecifyUser)
 			{
-				user = (SpecifyUser) secondObject;
+				user            = (SpecifyUser) secondObject;
 				secondPrincipal = UserPrincipalHibernateService.getUserPrincipalBySpecifyUser(user);
 			}
 
-			if (principal != null && permissionEditors.size() > 0)
+			if (firstPrincipal != null && permissionEditors.size() > 0)
 			{
+			    String userType = null;
+			    DataProviderSessionIFace session = null;
+		        try
+		        {
+		            session  = DataProviderFactory.getInstance().createSession();
+		            session.attach(firstPrincipal);
+		            userType = firstPrincipal.getPermissions().size() == 0 ? (user != null ? user.getUserType() : null) : null;
+		            
+		        } catch (Exception ex)
+		        {
+		            ex.printStackTrace();
+		            session.rollback();
+		            
+		        } finally
+		        {
+		            if (session != null)
+		            {
+		                session.close();
+		            }
+		        }
+                
+                if (userType != null)
+                {
+                    Object[] options = { 
+                            getResourceString("ADMININFO_SET_DEF"), 
+                            getResourceString("NO")
+                          };
+                    int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                                 getResourceString("ADMININFO_SUBPNL"), 
+                                                                 getResourceString("ADMININFO_SUBPNL_TITLE"), 
+                                                                 JOptionPane.YES_NO_OPTION,
+                                                                 JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                    if (userChoice != JOptionPane.YES_OPTION)
+                    {
+                        userType = null;
+                    } else
+                    {
+                        hasChanged = true;
+                    }
+                }
+                
+                Hashtable<String, SpPermission> existingPerms = PermissionService.getExistingPermissions(firstPrincipal.getId());
+                Hashtable<String, SpPermission> overrulingPerms = null;
+                if (secondPrincipal != null)
+                {
+                    overrulingPerms = PermissionService.getExistingPermissions(secondPrincipal.getId());
+                }
+                
+                principal           = firstPrincipal;
+                overrulingPrincipal = secondPrincipal;
+
 				for (PermissionPanelEditor editor : permissionEditors)
 				{
-				    //System.err.println("AdminInfoSubPane "+ principal.getPermissions().size());
-				    String userType = principal.getPermissions().size() == 0 ? user.getUserType() : null;
-				    
-				    /*for (PermissionPanelContainerIFace permPanel : editor.getPanels())
-				    {
-				        List<PermissionEditorRowIFace> perms = permPanel.getPermissionEnumerator().getPermissions(principal, secondPrincipal);
-				        for (PermissionEditorRowIFace item : perms)
-				        {
-				            System.err.println(item);
-				        }
-				    }*/
-				    
-					editor.updateData(principal, secondPrincipal, userType);
+					editor.updateData(firstPrincipal, secondPrincipal, existingPerms, overrulingPerms, userType);
 				}
 			}
 		}
+		return hasChanged;
 	}
+
+    /**
+     * @param session the current session
+     */
+    public void savePermissionData(final DataProviderSessionIFace session) throws Exception
+    {
+        MultiView   mv  = getMultiView();
+        mv.getDataFromUI();
+        
+        principal = session.merge(principal);
+        
+        if (overrulingPrincipal != null)
+        {
+            overrulingPrincipal = session.merge(overrulingPrincipal);
+        }
+
+        for (PermissionPanelEditor editor : permissionEditors)
+        {
+            editor.savePermissions(session);            
+        }
+        
+        for (SpPermission perm : new ArrayList<SpPermission>(principal.getPermissions()))
+        {
+            if (StringUtils.isEmpty(perm.getActions()))
+            {
+                principal.getPermissions().remove(perm);
+                perm.getPrincipals().remove(principal);
+                session.delete(perm);
+            }
+        }
+        session.saveOrUpdate(principal);
+    }
 	
 	/**
 	 * Returns the MultiView associated with a ViewBasedDisplayPanel, or just return null if
 	 * wrapped panel is just a regular JPanel
-	 * @return
+	 * @return the forms MultiView
 	 */
 	public MultiView getMultiView()
 	{

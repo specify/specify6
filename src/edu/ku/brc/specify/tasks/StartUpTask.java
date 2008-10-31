@@ -74,7 +74,18 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
     @Override
     public JPanel createSplashPanel()
     {
-        Image img = GraphicsUtils.getScaledImage(IconManager.getIcon("SpecifySplash"), 300, 500, true);
+        int width  = 300;
+        int height = 500;
+        
+        Image img = null;
+        ImageIcon bgImg = IconManager.getIcon("SpecifySplash");
+        if (bgImg.getIconWidth() > width || bgImg.getIconHeight() > height)
+        {
+            img = GraphicsUtils.getScaledImage(IconManager.getIcon("SpecifySplash"), width, height, true);
+        } else
+        {
+            img = bgImg.getImage();
+        }
         JPanel splashPanel = new JPanel(new BorderLayout());
         splashPanel.setBackground(Color.WHITE);
         splashPanel.setOpaque(true);

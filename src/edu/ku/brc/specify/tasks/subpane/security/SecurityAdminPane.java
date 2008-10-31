@@ -717,6 +717,9 @@ public class SecurityAdminPane extends BaseSubPane
         }
     }
     
+    /**
+     * @return
+     */
     private JPanel createInformationPanel()
     {
         JPanel infoPanel = new JPanel();
@@ -780,7 +783,11 @@ public class SecurityAdminPane extends BaseSubPane
         if (panelWrapper != null)
         {
             currentDisplayPanel = panelWrapper;
-            currentDisplayPanel.setData(objWrapperArg.getDataObj(), secondObjWrapperArg != null ? secondObjWrapperArg.getDataObj() : null);
+            if (currentDisplayPanel.setData(objWrapperArg.getDataObj(), secondObjWrapperArg != null ? secondObjWrapperArg.getDataObj() : null) && 
+                currentEditorPanel != null)
+            {
+                currentEditorPanel.setHasChanged(true);
+            }
             cardLayout.show(infoCards, className);
         }
         
@@ -991,7 +998,12 @@ public class SecurityAdminPane extends BaseSubPane
                 }
             }
             
-            currentDisplayPanel.setData(objWrapper.getDataObj(), secondObjWrapper != null ? secondObjWrapper.getDataObj() : null);
+            if (currentDisplayPanel.setData(objWrapper.getDataObj(), 
+                                        secondObjWrapper != null ? secondObjWrapper.getDataObj() : null) && 
+                currentEditorPanel != null)
+            {
+                currentEditorPanel.setHasChanged(true);
+            }
         } 
         finally
         {
@@ -1000,6 +1012,7 @@ public class SecurityAdminPane extends BaseSubPane
     }
     
     /**
+     * @param edtPanel
      * @return
      */
     protected static ViewBasedDisplayPanel createViewBasedDisplayPanelForUser(final EditorPanel edtPanel)
@@ -1017,6 +1030,7 @@ public class SecurityAdminPane extends BaseSubPane
     }
     
     /**
+     * @param edtPanel
      * @return
      */
     protected static ViewBasedDisplayPanel createViewBasedDisplayPanelForGroup(final EditorPanel edtPanel)
@@ -1037,7 +1051,7 @@ public class SecurityAdminPane extends BaseSubPane
     /**
      * @param objWrapperArg
      */
-    private void updateUIEnabled(DataModelObjBaseWrapper objWrapperArg)
+    private void updateUIEnabled(final DataModelObjBaseWrapper objWrapperArg)
     {
         boolean isInstitution = (objWrapperArg != null)? objWrapperArg.isInstitution() : false;
         boolean isDiscipline  = (objWrapperArg != null)? objWrapperArg.isDiscipline()  : false;
@@ -1074,7 +1088,7 @@ public class SecurityAdminPane extends BaseSubPane
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#aboutToShutdown()
      */
-    //@Override
+    @Override
     public boolean aboutToShutdown()
     {
         boolean result = true;
