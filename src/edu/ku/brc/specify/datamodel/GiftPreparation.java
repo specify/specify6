@@ -137,11 +137,13 @@ public class GiftPreparation extends CollectionMember implements java.io.Seriali
      * The total number of specimens  gifted (necessary for lots)
      */
     @Column(name = "Quantity", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getQuantity() {
-        return this.quantity;
+    public Integer getQuantity() 
+    {
+        return this.quantity == null ? 0 : this.quantity;
     }
     
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(Integer quantity) 
+    {
         this.quantity = quantity;
     }
 
