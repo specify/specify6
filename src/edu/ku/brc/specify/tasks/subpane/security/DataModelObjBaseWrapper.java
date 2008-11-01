@@ -50,12 +50,16 @@ public class DataModelObjBaseWrapper
 
 		if (dataObj instanceof SpPrincipal)
 		{
-			icon = IconManager.getIcon("group", iconSize);
+			icon = IconManager.getIcon("AdminGroup", iconSize);
 		}
-		else if (dataObj instanceof SpecifyUser)
-		{
-			icon = IconManager.getIcon("person", iconSize);
-		}
+        else if (dataObj instanceof SpecifyUser)
+        {
+            icon = IconManager.getIcon("person", iconSize);
+        }
+        else if (dataObj instanceof Institution)
+        {
+            icon = IconManager.getIcon("AdminInst", iconSize);
+        }
 		else if (dataObj instanceof Discipline)
 		{
 			// try and get the discipline icon
