@@ -21,8 +21,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Image;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -41,10 +41,30 @@ import edu.ku.brc.af.core.Taskable;
 public class SimpleDescPane extends BaseSubPane
 {
     //private static final Logger log = Logger.getLogger(SimpleDescPane.class);
-    protected Image splashImage = null;
+    protected ImageIcon splashImage = null;
 
     /**
-     * Constructor with string to be cetnered.
+     * Constructor with string to be centered.
+     * @param name name of pane
+     * @param task the task
+     * @param splashImage  image for background
+     */
+    public SimpleDescPane(final String name,
+                          final Taskable task,
+                          final ImageIcon splashImage)
+    {
+        super(name, task);
+        
+        setLayout(null);
+        removeAll();
+
+        setBackground(Color.WHITE);
+        this.splashImage = splashImage;
+    }
+
+
+    /**
+     * Constructor with string to be centered.
      * @param name name of pane
      * @param task the task
      * @param desc  a description that displays in the center
@@ -79,22 +99,21 @@ public class SimpleDescPane extends BaseSubPane
 
     }
 
-
-
     /* (non-Javadoc)
-     * @see java.awt.Component#paintAll(java.awt.Graphics)
+     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
-    @Override
-    public void paintAll(Graphics g)
+    public void paintComponent(Graphics g)
     {
-        super.paintAll(g);
-
+        super.paintComponent(g);
+        
         if (splashImage != null)
         {
-            Dimension dim = getSize();
-            int w = splashImage.getWidth(null);
-            int h = splashImage.getHeight(null);
-            g.drawImage(splashImage, (dim.width - w) / 2, (dim.height - h) / 2, w, h, null);
+            Dimension size = getSize();
+            int imgW = Math.min(size.width, splashImage.getIconWidth());
+            int imgH = Math.min(size.height, splashImage.getIconHeight());
+            int x = (size.width - imgW) / 2;
+            int y = (size.height - imgH) / 2;
+            g.drawImage(splashImage.getImage(), x, y, imgW, imgH, null);
         }
     }
 
@@ -102,7 +121,7 @@ public class SimpleDescPane extends BaseSubPane
      * Returns the splash image.
      * @return the splash image
      */
-    public Image getSplashImage()
+    public ImageIcon getSplashImage()
     {
         return splashImage;
     }
@@ -110,7 +129,7 @@ public class SimpleDescPane extends BaseSubPane
     /**
      * @param splashImage
      */
-    public void setSplashImage(Image splashImage)
+    public void setSplashImage(ImageIcon splashImage)
     {
         this.splashImage = splashImage;
     }

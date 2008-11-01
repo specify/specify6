@@ -120,17 +120,17 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    editor.removeChangeListener(listener);
                     
                     if (editor != null)
                     {
+                        editor.removeChangeListener(listener);
                         mainPanel.remove(editor.getUIComponent());
-                    }
                     
-                    if (editor != null && editor.hasChanged() && prevRowData != null)
-                    {
-                        prevRowData.setPermissions(editor.getPermissions());
-                        editor.setChanged(false);
+                        if (editor.hasChanged() && prevRowData != null)
+                        {
+                            prevRowData.setPermissions(editor.getPermissions());
+                            editor.setChanged(false);
+                        }
                     }
                     
                     PermissionEditorRowIFace rowData = (PermissionEditorRowIFace)list.getSelectedValue();
