@@ -409,19 +409,16 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     protected void setText(final String text, final boolean notify)
     {
-        if (defaultValue == null)
+        document.setIgnoreNotify(!notify);
+        if (StringUtils.isEmpty(text))
         {
-            document.setIgnoreNotify(!notify);
-            if (StringUtils.isEmpty(text))
-            {
-                bgStr = formatter.toPattern();
-            }
-            doSetText = true;
-            super.setText(text);
-            doSetText = false;
-            document.setIgnoreNotify(notify);
-            repaint();
+            bgStr = formatter.toPattern();
         }
+        doSetText = true;
+        super.setText(text);
+        doSetText = false;
+        document.setIgnoreNotify(notify);
+        repaint();
     }
 
     /* (non-Javadoc)
