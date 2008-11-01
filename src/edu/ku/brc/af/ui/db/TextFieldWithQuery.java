@@ -1141,8 +1141,17 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             list.clear();
             idList.clear();
             
-            String sqlStr = builder == null ? buildSQL(((JPAQuery)customQuery).getData().toString(), false)
-                    : builder.buildSQL(((JPAQuery)customQuery).getData().toString(), false);
+            String sqlStr = null;
+            if (builder != null)
+            {
+                sqlStr = builder.buildSQL(((JPAQuery)customQuery).getData().toString(), false);
+            }
+            
+            if (sqlStr == null)
+            {
+                sqlStr = buildSQL(((JPAQuery)customQuery).getData().toString(), false);
+            }
+            
             //log.debug(sqlStr);
             JPAQuery jpaQuery = new JPAQuery(sqlStr, this);
             isDoingCount.set(false);
@@ -1183,8 +1192,18 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 idList.clear();
                 
                 returnCount  = null;
+                
+                String newSql = null;
+                if (builder != null)
+                {
+                    newSql = builder.buildSQL(newEntryStr, true);
+                }
+                
+                if (newSql == null)
+                {
+                    newSql = buildSQL(newEntryStr, true);
+                }
                            
-                String newSql = builder == null ? buildSQL(newEntryStr, true) : builder.buildSQL(newEntryStr, true); 
                 JPAQuery jpaQuery = new JPAQuery(newSql, this);
                 jpaQuery.setUnique(true);
                 jpaQuery.setData(newEntryStr);

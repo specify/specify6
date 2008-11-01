@@ -69,4 +69,10 @@ public interface ViewBasedDialogFactoryIFace
                                                         int         options,
                                                         FRAME_TYPE  type);
 
+    /**
+     * Returns the name of the search that the search dialog will use.
+     * @param searchDlgName returns the name of the search that this named search dialog will use.
+     * @return the name of the search (that defines the XML for the Query)
+     */
+    public abstract String getSearchName(String searchDlgName);
 }

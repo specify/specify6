@@ -264,6 +264,16 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
         // else
         throw new RuntimeException("Couldn't create ViewBasedDisplayFrame by name["+name+"] (Check the List of dialog in dailog_defs.xml)");
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace#getSearchName(java.lang.String)
+     */
+    @Override
+    public String getSearchName(String searchDlgName)
+    {
+        DialogInfo info = instance.searchDialogs.get(searchDlgName);
+        return info != null ? info.getSearchName() : null;
+    }
 
     //-----------------------------------------------------
     //-- Inner Classes
@@ -323,4 +333,5 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             return helpContext;
         }
     }
+
 }

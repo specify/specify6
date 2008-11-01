@@ -30,7 +30,7 @@ import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
-
+import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.specify.tasks.subpane.security.SecurityAdminPane;
 import edu.ku.brc.specify.tasks.subpane.security.SecuritySummaryDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -130,9 +130,27 @@ public class SecurityAdminTask extends BaseTask
         }
         
         return menuItems;
-
-    }  
+    }
     
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getToolBarItems()
+     */
+    @Override
+    public List<ToolBarItemDesc> getToolBarItems()
+    {
+        // XXX RELEASE
+        String user = System.getProperty("user.name");
+        if (user.startsWith("rod"))
+        {
+            toolbarItems = new Vector<ToolBarItemDesc>();
+            toolbarItems.add(new ToolBarItemDesc(createToolbarButton("Security", iconName, "")));
+        }
+
+        return toolbarItems;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */

@@ -121,6 +121,15 @@ public class DBObjSearchDialog extends CustomDialog implements ViewBasedSearchDi
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace#getSearchName()
+     */
+    public String getSearchName()
+    {
+        return panel.getSearchName();
+    }
+     
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createMainPanel()
      */
     @Override

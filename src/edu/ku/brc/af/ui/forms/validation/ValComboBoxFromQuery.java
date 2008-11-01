@@ -329,6 +329,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
 
     /**
+     * @return the searchDlgName
+     */
+    public String getSearchDlgName()
+    {
+        return searchDlgName;
+    }
+    /**
      * @param displayDlgName the displayDlgName to set
      */
     public void setDisplayDlgName(String displayDlgName)
@@ -481,6 +488,14 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             };
             createBtn.addActionListener(defaultNewAction);
         }
+    }
+    
+    /**
+     * @return the name of the search that used by the search dialog.
+     */
+    public String getSearchName()
+    {
+        return UIRegistry.getViewbasedFactory().getSearchName(StringUtils.isNotEmpty(searchDlgName) ? searchDlgName : tableInfo.getSearchDialog());
     }
     
     /**

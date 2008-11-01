@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
@@ -33,25 +30,30 @@ public class TableSearchResults implements QueryForIdResultsIFace
     protected String                sql;
     protected DBTableInfo           tableInfo;
     protected boolean               isMultipleSelection = false;
-    protected boolean               hql = false;
+    protected boolean               hql;
 
     /**
-     * @param tableId
+     * @param tableInfo
+     * @param cols
      */
     public TableSearchResults(final DBTableInfo tableInfo, 
                               final List<ERTICaptionInfo> cols)
     {
-        this.tableInfo = tableInfo;
-        this.cols      = cols;
+        this(tableInfo, cols, false);
     }
 
+    /**
+     * @param tableInfo
+     * @param cols
+     * @param hql
+     */
     public TableSearchResults(final DBTableInfo tableInfo,
                               final List<ERTICaptionInfo> cols,
                               final boolean hql)
     {
         this.tableInfo = tableInfo;
         this.cols      = cols;
-        this.hql = hql;
+        this.hql       = hql;
     }
                              
     /* (non-Javadoc)

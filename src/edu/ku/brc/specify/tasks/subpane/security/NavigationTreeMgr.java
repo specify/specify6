@@ -1,10 +1,12 @@
 package edu.ku.brc.specify.tasks.subpane.security;
 
+import static edu.ku.brc.ui.UIRegistry.getMostRecentWindow;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.Frame;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -15,15 +17,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
-import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.ESTermParser;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
+import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
 import edu.ku.brc.af.core.expresssearch.SearchTermField;
-import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
-import edu.ku.brc.af.ui.db.TextFieldWithQuery;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -39,7 +38,7 @@ import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroupScope;
-import static edu.ku.brc.ui.UIRegistry.*;
+import edu.ku.brc.specify.datamodel.busrules.TableSearchResults;
 
 /**
  * This class perform operations on the security administration navigation tree, such as 
@@ -107,45 +106,40 @@ public class NavigationTreeMgr
                                                                    MultiView.IS_NEW_OBJECT);
         dlg.setOkLabel(getResourceString("SAVE"));
         dlg.createUI();
-        ValComboBoxFromQuery cbx = (ValComboBoxFromQuery)dlg.getMultiView().getCurrentViewAsFormViewObj().getControlByName("agent");
-        if (cbx != null && false)
-        {
-            cbx.setExternalQueryProvider(new TextFieldWithQuery.ExternalQueryProviderIFace() {
-                @Override
-                public String getExtraWhereClause()
-                {
-                    return null;
-                }
-                @Override
-                public String getFullSQL(String newEntryStrArg, boolean isForCount)
-                {
-                    String newEntryStr = newEntryStrArg + '%';
-                    String sqlTemplate = "SELECT %s1 FROM Agent a LEFT JOIN a.specifyUser s WHERE s = null AND LOWER(a.lastName) LIKE '%s2' ORDER BY a.lastName";
-                    String sql = StringUtils.replace(sqlTemplate, "%s1", isForCount ? "count(*)" : "a.lastName, a.firstName, a.agentId"); //$NON-NLS-1$
-                    sql = StringUtils.replace(sql, "%s2", newEntryStr); //$NON-NLS-1$
-                    log.debug(sql);
-                    return sql;
-                }
-            });
-        }
+        final ValComboBoxFromQuery cbx = (ValComboBoxFromQuery)dlg.getMultiView().getCurrentViewAsFormViewObj().getControlByName("agent");
         
         cbx.registerQueryBuilder(new ViewBasedSearchQueryBuilderIFace() {
+            protected ExpressResultsTableInfo esTblInfo = null;
+            
             @Override
-            public String buildSQL(Map<String, Object> dataMap, List<String> fieldNames)
+            public String buildSQL(final Map<String, Object> dataMap, final List<String> fieldNames)
             {
-                return buildSearchString(dataMap, fieldNames);
+                String searchName = cbx.getSearchName();
+                if (searchName != null)
+                {
+                    esTblInfo = ExpressSearchConfigCache.getTableInfoByName(searchName);
+                    if (esTblInfo != null)
+                    {
+                       String sqlStr = esTblInfo.getViewSql();
+                       return buildSearchString(dataMap, fieldNames, StringUtils.replace(sqlStr, "agent_discipline.DisciplineID = DSPLNID AND", ""));
+                    }
+                }
+                return null;
             }
-
             @Override
             public String buildSQL(String searchText, boolean isForCount)
             {
-                return null;
+                String newEntryStr = searchText + '%';
+                String sqlTemplate = "SELECT %s1 FROM Agent a LEFT JOIN a.specifyUser s WHERE s = null AND LOWER(a.lastName) LIKE '%s2' ORDER BY a.lastName";
+                String sql = StringUtils.replace(sqlTemplate, "%s1", isForCount ? "count(*)" : "a.lastName, a.firstName, a.agentId"); //$NON-NLS-1$
+                sql = StringUtils.replace(sql, "%s2", newEntryStr); //$NON-NLS-1$
+                log.debug(sql);
+                return sql;
             }
-
             @Override
             public QueryForIdResultsIFace createQueryForIdResults()
             {
-                return null;
+                return new TableSearchResults(DBTableIdMgr.getInstance().getInfoById(Agent.getClassTableId()), esTblInfo.getCaptionInfo()); //true => is HQL
             }
             
         });
@@ -170,35 +164,16 @@ public class NavigationTreeMgr
         }
     }
     
-    protected String buildSearchString(Map<String, Object> dataMap, List<String> fieldNames)
+    /**
+     * @param dataMap
+     * @param fieldNames
+     * @param sqlTemplate
+     * @return
+     */
+    protected String buildSearchString(final Map<String, Object> dataMap, 
+                                       final List<String>        fieldNames,
+                                       final String              sqlTemplate)
     {
-        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(Agent.getClassTableId());
-        
-        Vector<ERTICaptionInfo> cols = new Vector<ERTICaptionInfo>();
-        
-        StringBuilder colNames = new StringBuilder();
-        int           dspCnt   = 0;
-        for (String colName : fieldNames)
-        {
-            if (dspCnt > 0) colNames.append(',');
-            
-            colNames.append(colName);
-            
-            String colTitle;
-            DBFieldInfo fi = tableInfo.getFieldByColumnName(colName);
-            if (fi != null)
-            {
-                colTitle = fi.getTitle();
-            } else
-            {
-                colTitle = colName;
-            }
-
-            ERTICaptionInfo col = new ERTICaptionInfo(colName, colTitle, true, null, dspCnt+1);
-            cols.add(col);
-            dspCnt++;
-        }
-        
         StringBuilder orderBy  = new StringBuilder();
         StringBuilder criteria = new StringBuilder();
         int criCnt = 0;
@@ -225,20 +200,17 @@ public class NavigationTreeMgr
                 }
             }
         }
-
         
         StringBuffer sb = new StringBuffer();
-        sb.append("SELECT ");
-        sb.append(colNames);
-        sb.append(" FROM agent WHERE SpecifyID <> NULL AND ");
         sb.append(criteria);
         sb.append(" ORDER BY ");
         sb.append(orderBy);
         
-        log.debug(sb.toString());
+        String sqlStr = StringUtils.replace(sqlTemplate, "(%s)", sb.toString());
         
-        return sb.toString();
-
+        log.debug(sqlStr);
+        
+        return sqlStr;
     }
     
     /**

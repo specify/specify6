@@ -27,9 +27,6 @@ import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Geography;
-import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 
@@ -355,7 +352,7 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
 //                    
 //                    orderBy.append(columnName);
 //                    
-//                    criCnt++;
+//                    criCnt++;s
 //                }
 //            }
 //        }

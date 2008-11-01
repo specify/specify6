@@ -256,6 +256,14 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     }
     
     /**
+     * @return the searchName
+     */
+    public String getSearchName()
+    {
+        return searchName;
+    }
+
+    /**
      * Gets the data from the UI whether it is using a form or a single field. 
      */
     protected void getDataFromUI()

@@ -75,4 +75,9 @@ public interface ViewBasedSearchDialogIFace
      * @param isMulti
      */
     public abstract void setMultipleSelection(boolean isMulti);
+    
+    /**
+     * @return the name of the Search it is suppose to use.
+     */
+    public abstract String getSearchName();
 }
