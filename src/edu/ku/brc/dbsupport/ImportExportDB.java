@@ -26,15 +26,14 @@ import org.dom4j.io.XMLWriter;
 import org.hibernate.EntityMode;
 import org.hibernate.Session;
 
-import edu.ku.brc.af.auth.SecurityMgr;
-import edu.ku.brc.af.auth.specify.SpecifySecurityMgr;
+import edu.ku.brc.af.auth.MasterPasswordMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /*
  * @code_status ?
@@ -50,10 +49,11 @@ public class ImportExportDB
 
     public static void main(String[] args)
     {
+        Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
         UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", //$NON-NLS-1$ //$NON-NLS-2$
                 "testfish", "jdbc:mysql://localhost/testfish", //$NON-NLS-1$ //$NON-NLS-2$
-                SecurityMgr.getInstance().getEmbeddedUserName(), 
-                SecurityMgr.getInstance().getEmbeddedPwd()); 
+                usernamePassword.first, 
+                usernamePassword.second); 
 
         Session testSession = HibernateUtil.getCurrentSession();
         String workingFolder = "Specify6ImportExport"; //$NON-NLS-1$

@@ -85,6 +85,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
+import edu.ku.brc.af.auth.MasterPasswordMgr;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.FrameworkAppIFace;
@@ -181,6 +182,7 @@ import edu.ku.brc.util.CacheManager;
 import edu.ku.brc.util.FileCache;
 import edu.ku.brc.util.FileStoreAttachmentManager;
 import edu.ku.brc.util.MemoryWarningSystem;
+import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 /**
  * Specify Main Application Class
@@ -502,8 +504,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         CommandDispatcher.register(BaseTask.APP_CMD_TYPE, this);
         
-        dbLoginPanel = UIHelper.doLogin(SecurityMgr.getInstance().getEmbeddedUserName(), 
-                                        SecurityMgr.getInstance().getEmbeddedPwd(), 
+        Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
+        
+        dbLoginPanel = UIHelper.doLogin(usernamePassword.first, 
+                                        usernamePassword.second, 
                                         true, false, false, this, "SpecifyLargeIcon", getTitle(), null); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
@@ -531,6 +535,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         System.setProperty(RecordSetFactory.factoryName,                "edu.ku.brc.specify.config.SpecifyRecordSetFactory");          // Needed for Searching //$NON-NLS-1$
         System.setProperty(DBTableIdMgr.factoryName,                    "edu.ku.brc.specify.config.SpecifyDBTableIdMgr");              // Needed for Tree Field Names //$NON-NLS-1$
         System.setProperty(SecurityMgr.factoryName,                     "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");              // Needed for Tree Field Names //$NON-NLS-1$
+        //System.setProperty(MasterPasswordMgr.factoryName,               "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");              // Needed for Tree Field Names //$NON-NLS-1$
         System.setProperty(BackupServiceFactory.factoryName,            "edu.ku.brc.af.core.db.MySQLBackupService");                   // Needed for Backup and Restore //$NON-NLS-1$
     }
 

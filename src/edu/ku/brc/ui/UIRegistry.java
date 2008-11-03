@@ -979,9 +979,9 @@ public class UIRegistry
      * Display an Error dialog that gets its string from the resource bundle.
      * @param msg the message to be displayed
      */
-    public static void displayErrorDlgLocalized(final String key)
+    public static void displayErrorDlgLocalized(final String key, Object... args)
     {
-         JOptionPane.showMessageDialog(getMostRecentWindow(), getResourceString(key), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+         JOptionPane.showMessageDialog(getMostRecentWindow(), String.format(getResourceString(key), args), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
     }
 
     /**

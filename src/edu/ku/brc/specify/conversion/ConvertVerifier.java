@@ -36,7 +36,7 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
-import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.MasterPasswordMgr;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -44,6 +44,7 @@ import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 public class ConvertVerifier
 {
@@ -178,6 +179,7 @@ public class ConvertVerifier
             log.error("Error setting ServerType for destination database for conversion.  Could affect the"
                     + " way that SQL string are generated and executed on differetn DB egnines");
         }
+        Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
         String destConnectionString = driverInfoDest.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostDest, "", userNameDest, passwordDest, driverNameDest);
         log.debug("attempting login to destination: " + destConnectionString);
         // This will log us in and return true/false
@@ -186,8 +188,8 @@ public class ConvertVerifier
                 driverInfoDest.getDialectClassName(), 
                 databaseNameDest, 
                 destConnectionString,
-                SecurityMgr.getInstance().getEmbeddedUserName(), 
-                SecurityMgr.getInstance().getEmbeddedPwd()))
+                usernamePassword.first, 
+                usernamePassword.second))
         {
             log.error("Failed connection string: "  +driverInfoSource.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostDest, databaseNameDest, userNameDest, passwordDest, driverNameDest) );
             throw new RuntimeException("Couldn't login into ["+databaseNameDest+"] "+DBConnection.getInstance().getErrorMsg());
@@ -205,8 +207,8 @@ public class ConvertVerifier
                 driverInfoDest.getDialectClassName(), 
                 databaseNameDest, 
                 driverInfoDest.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostDest, databaseNameDest, userNameDest, passwordDest, driverNameDest),                 
-                SecurityMgr.getInstance().getEmbeddedUserName(), 
-                SecurityMgr.getInstance().getEmbeddedPwd()))
+                usernamePassword.first, 
+                usernamePassword.second))
         {
             throw new RuntimeException("Couldn't login into ["+databaseNameDest+"] "+DBConnection.getInstance().getErrorMsg());
         }

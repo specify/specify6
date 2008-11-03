@@ -111,6 +111,7 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.auth.MasterPasswordMgr;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -6821,14 +6822,15 @@ public class BuildSampleDatabase
         System.setProperty("edu.ku.brc.dbsupport.DataProvider", "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
         System.setProperty(SecurityMgr.factoryName,             "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");       // Needed for Tree Field Names //$NON-NLS-1$
 
-        embeddedSpecifyAppRootUser = SecurityMgr.getInstance().getEmbeddedUserName();
-        embeddedSpecifyAppRootPwd  = SecurityMgr.getInstance().getEmbeddedPwd();
-        
         AppPrefsCache.setUseLocalOnly(true);
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
         localPrefs.load();
-
+        
+        Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
+        embeddedSpecifyAppRootUser = usernamePassword.first;
+        embeddedSpecifyAppRootPwd  = usernamePassword.second;
+        
         backstopPrefs = getInitializePrefs(null);
         
         String driverName   = backstopPrefs.getProperty("initializer.drivername",   "MySQL");

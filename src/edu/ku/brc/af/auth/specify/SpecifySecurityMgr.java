@@ -32,11 +32,13 @@ import javax.security.auth.login.LoginException;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.JaasContext;
+import edu.ku.brc.af.auth.MasterPasswordMgr;
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
+import edu.ku.brc.util.Pair;
 
 /**
  * 
@@ -54,10 +56,6 @@ public class SpecifySecurityMgr extends SecurityMgr
     protected boolean        domFound       = false;
     protected String         localFileName  = null;
     protected static boolean doingLocal     = false;
-    
-    // XXX TODO SECURITY- make secure Specify Admin user and pwd
-    public static final String embeddedSpecifyAppRootUser = "Specify"; //$NON-NLS-1$
-    public static final String embeddedSpecifyAppRootPwd  = "Specify"; //$NON-NLS-1$
     
     /**
      * 
@@ -91,22 +89,6 @@ public class SpecifySecurityMgr extends SecurityMgr
         doingLocal = doLocal;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.auth.SecurityMgr#getEmbeddedUserName()
-     */
-    public String getEmbeddedUserName()
-    {
-        return embeddedSpecifyAppRootUser;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.auth.SecurityMgr#getEmbeddedPwd()
-     */
-    public String getEmbeddedPwd()
-    {
-        return embeddedSpecifyAppRootPwd;
-    }
-
     /** 
      * 
      * Validates the given user and password against the JDBC datasource (using JDBC directly, not hibernate).
@@ -129,7 +111,8 @@ public class SpecifySecurityMgr extends SecurityMgr
         {
             Class.forName(driverClass);
             
-            conn = DriverManager.getConnection(url, embeddedSpecifyAppRootUser, embeddedSpecifyAppRootPwd);
+            Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
+            conn = DriverManager.getConnection(url, usernamePassword.first, usernamePassword.second);
             
             String query = "SELECT * FROM specifyuser where name='" + user + "'"; //$NON-NLS-1$ //$NON-NLS-2$
             stmt = conn.createStatement();

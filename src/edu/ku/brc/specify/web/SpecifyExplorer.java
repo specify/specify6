@@ -56,7 +56,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.MasterPasswordMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -112,6 +112,7 @@ import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -484,14 +485,15 @@ public class SpecifyExplorer extends HttpServlet
             String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName);
         //}
             
-            log.info(connStr);  
+        log.info(connStr);  
         
+        Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
         if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                 driverInfo.getDialectClassName(), 
                 dbName, 
                 connStr, 
-                SecurityMgr.getInstance().getEmbeddedUserName(), 
-                SecurityMgr.getInstance().getEmbeddedPwd()))
+                usernamePassword.first, 
+                usernamePassword.second))
         {
             log.info("Login Failed!");
             return false;

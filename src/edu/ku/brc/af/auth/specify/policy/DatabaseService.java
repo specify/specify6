@@ -9,7 +9,8 @@ import java.text.SimpleDateFormat;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.JaasContext;
-import edu.ku.brc.af.auth.specify.SpecifySecurityMgr;
+import edu.ku.brc.af.auth.MasterPasswordMgr;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author michaelcote
@@ -51,7 +52,8 @@ public class DatabaseService
         {
             if(debug)log.debug("getAdminLevelConnection - Trying to connect to: " + url); //$NON-NLS-1$
             if(debug)log.error("getAdminLevelConnection - Trying to connect with BUILT IN ADMIN LEVER USER ACCOUNT - need to address"); //$NON-NLS-1$
-            con = DriverManager.getConnection(url, SpecifySecurityMgr.embeddedSpecifyAppRootUser, SpecifySecurityMgr.embeddedSpecifyAppRootPwd);
+            Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
+            con = DriverManager.getConnection(url, usernamePassword.first, usernamePassword.second);
             if(debug)log.debug("getAdminLevelConnection - connected!"); //$NON-NLS-1$
             return con;
         } catch (Exception ex)
@@ -79,10 +81,12 @@ public class DatabaseService
             // throw new LoginException("Database driver class not found: " + driverClass);
         }
         
+        Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
+
         if(debug)log.debug("getConnection -  url:" + JaasContext.url); //$NON-NLS-1$
-        if(debug)log.debug("getConnection -  embeddedSpecifyAppRootUser:" + SpecifySecurityMgr.embeddedSpecifyAppRootUser); //$NON-NLS-1$
-        if(debug)log.debug("getConnection -  embeddedSpecifyAppRootPwd:" + SpecifySecurityMgr.embeddedSpecifyAppRootPwd); //$NON-NLS-1$
-        Connection connection = DriverManager.getConnection(JaasContext.url, SpecifySecurityMgr.embeddedSpecifyAppRootUser, SpecifySecurityMgr.embeddedSpecifyAppRootPwd);
+        if(debug)log.debug("getConnection -  embeddedSpecifyAppRootUser:" + usernamePassword.first); //$NON-NLS-1$
+        if(debug)log.debug("getConnection -  embeddedSpecifyAppRootPwd:" + usernamePassword.second); //$NON-NLS-1$
+        Connection connection = DriverManager.getConnection(JaasContext.url, usernamePassword.first, usernamePassword.second);
         return connection;
     }
 

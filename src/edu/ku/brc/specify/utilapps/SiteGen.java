@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.hibernate.Session;
 
-import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.MasterPasswordMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
@@ -65,6 +65,7 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
+import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
@@ -171,12 +172,13 @@ public class SiteGen
             connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName);
         }
         
+        Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
         if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                 driverInfo.getDialectClassName(), 
                 dbName, 
                 connStr, 
-                SecurityMgr.getInstance().getEmbeddedUserName(), 
-                SecurityMgr.getInstance().getEmbeddedPwd()))
+                usernamePassword.first, 
+                usernamePassword.second))
         {
             log.info("Login Failed!");
             return false;

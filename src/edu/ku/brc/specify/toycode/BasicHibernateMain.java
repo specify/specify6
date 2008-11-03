@@ -12,7 +12,7 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
-import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.MasterPasswordMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
@@ -22,6 +22,7 @@ import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  *
@@ -84,7 +85,8 @@ public class BasicHibernateMain implements DatabaseLoginListener
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
         localPrefs.load();
 
+        Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
         BasicHibernateMain tester = new BasicHibernateMain();
-		UIHelper.doLogin(SecurityMgr.getInstance().getEmbeddedUserName(), SecurityMgr.getInstance().getEmbeddedPwd(), false, true, false, tester, null);
+		UIHelper.doLogin(usernamePassword.first, usernamePassword.second, false, true, false, tester, null);
 	}
 }

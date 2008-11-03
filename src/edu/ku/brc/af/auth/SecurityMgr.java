@@ -44,22 +44,6 @@ public class SecurityMgr
     }
 
     /**
-     * @return the embeddedSpecifyAppRootUser
-     */
-    public String getEmbeddedUserName()
-    {
-        return null;
-    }
-
-    /**
-     * @return the embeddedSpecifyAppRootPwd
-     */
-    public String getEmbeddedPwd()
-    {
-        return null;
-    }
-    
-    /**
      * Returns the instance to the singleton
      * @return  the instance to the singleton
      */

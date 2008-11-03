@@ -10,7 +10,7 @@ import junit.framework.TestCase;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.auth.SecurityMgr;
+import edu.ku.brc.af.auth.MasterPasswordMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -18,6 +18,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * Tests the AppPreferences and AppPreferences cache
@@ -57,14 +58,15 @@ public class PreferenceTest extends TestCase
             localPrefs.setDirPath(UIRegistry.getAppDataDir());
             localPrefs.load();
             
+            Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
             String hostName = "localhost";
             // This will log us in and return true/false
             if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", 
                                    "org.hibernate.dialect.MySQLDialect", 
                                    databaseName, 
                                    "jdbc:mysql://"+hostName+"/"+databaseName, 
-                                   SecurityMgr.getInstance().getEmbeddedUserName(), 
-                                   SecurityMgr.getInstance().getEmbeddedPwd()))
+                                   usernamePassword.first, 
+                                   usernamePassword.second))
             {
                 throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
             }

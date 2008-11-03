@@ -120,7 +120,6 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    
                     if (editor != null)
                     {
                         editor.removeChangeListener(listener);
