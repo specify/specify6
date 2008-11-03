@@ -8,6 +8,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -23,8 +24,11 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipalHibernateService;
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayPanel;
+import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CustomDialog;
@@ -63,45 +67,23 @@ public class SecuritySummaryDlg extends CustomDialog
         final EditorPanel infoPanel = new EditorPanel(null);
         final CellConstraints cc = new CellConstraints();
 
-        JComboBox genTypeSwitcher = UIHelper.createComboBox(new DefaultComboBoxModel());
-        JTable generalPermissionsTable = new JTable();
-        JPanel generalPermissionsPanel = GeneralPermissionEditor.createGeneralPermissionsPanel(
-        		                             generalPermissionsTable, genTypeSwitcher, infoPanel);
-        final PermissionEditor generalPermissionsEditor = GeneralPermissionEditor.createGeneralPermissionsEditor(generalPermissionsTable, 
-                                                                                                                 genTypeSwitcher, 
-                                                                                                                 infoPanel,
-                                                                                                                 true);
-        
-        genTypeSwitcher.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                //generalPermissionsEditor.fillWithType();
-            }
-        });
-        
-    	JComboBox    objTypeSwitcher = UIHelper.createComboBox(new DefaultComboBoxModel());
-    	JTable objectPermissionsTable = new JTable();
-        JPanel objectPermissionsPanel  = ObjectPermissionEditor.createObjectPermissionsPanel(
-        		                             objectPermissionsTable, objTypeSwitcher, infoPanel);
-        
-        final PermissionEditor objectPermissionsEditor = ObjectPermissionEditor.createObjectPermissionsEditor(objectPermissionsTable, 
-                                                                                                              objTypeSwitcher, 
-                                                                                                              infoPanel, 
-                                                                                                              true);
-    
-        objTypeSwitcher.addActionListener(new ActionListener() {
-        	@Override
-        	public void actionPerformed(ActionEvent e)
-        	{
-        		//objectPermissionsEditor.fillWithType();
-        	}
-        });
-        // create tabbed panel for different kinds of permission editing tables
+        PermissionEditor prefsEdt = new PermissionEditor("Preferences",  new PrefsPermissionEnumerator(), infoPanel,
+                true, "SEC_NAME_TITLE", "SEC_ENABLE_PREF", null, null, null);
+
+        PermissionPanelEditor generalEditor = new PermissionPanelEditor();
+        generalEditor.addPanel(new PermissionEditor("Data Objects", new DataObjPermissionEnumerator(), infoPanel, true));
+        generalEditor.addPanel(new IndvPanelPermEditor("Tasks",     new TaskPermissionEnumerator(),    infoPanel, true));
+        generalEditor.addPanel(prefsEdt);
+
+        PermissionPanelEditor objEditor = new PermissionPanelEditor();
+        objEditor.addPanel(new IndvPanelPermEditor("Data Objects", new ObjectPermissionEnumerator(), infoPanel));
+
+
+        //      create tabbed panel for different kinds of permission editing tables
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("General", generalPermissionsPanel); // I18N
-        tabbedPane.addTab("Objects", objectPermissionsPanel);  // I18N
-        
+        tabbedPane.addTab("General", generalEditor); // I18N
+        tabbedPane.addTab("Objects", objEditor);  // I18N
+
         final PanelBuilder mainPB = new PanelBuilder(
         		new FormLayout("f:p:g", "p,5px,min(325px;p),2dlu,p"), infoPanel);
         
@@ -115,60 +97,11 @@ public class SecuritySummaryDlg extends CustomDialog
         // updates panels with permission data from the user who's currently logged on
 		SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
 		SpPrincipal principal = UserPrincipalHibernateService.getUserPrincipalBySpecifyUser(user);
-        
-        generalPermissionsEditor.updateData(principal, null, null, null, null);
-        objectPermissionsEditor.updateData(principal, null, null, null, null);
-        
-        YesNoCellRenderer yesNoRenderer = new YesNoCellRenderer();
-        TableColumnModel tblModel = generalPermissionsTable.getColumnModel();
-        for (int i=2;i<tblModel.getColumnCount();i++)
-        {
-            tblModel.getColumn(i).setCellRenderer(yesNoRenderer);
-        }
+        Hashtable<String, SpPermission> existingPerms = PermissionService.getExistingPermissions(principal.getId());
+
+		generalEditor.updateData(principal, null, existingPerms, null, null);
         
         pack();
-    }
-    
-    class YesNoCellRenderer extends DefaultTableCellRenderer
-    {
-        public final String YES = getResourceString("YES");
-        public final String NO  = getResourceString("NO");
-        
-        public Font boldFont  = null;
-        public Font normalFont = null;
-        
-        /**
-         * 
-         */
-        public YesNoCellRenderer()
-        {
-            super();
-            setHorizontalAlignment(SwingConstants.CENTER);
-            
-            normalFont = getFont();
-            boldFont   = normalFont.deriveFont(Font.BOLD);
-        }
-
-
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table,
-                                                       Object value,
-                                                       boolean isSelected,
-                                                       boolean hasFocus,
-                                                       int row,
-                                                       int column)
-        {
-            JLabel label = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            if (value instanceof Boolean)
-            {
-                label.setForeground(((Boolean)value) ? Color.BLACK : Color.LIGHT_GRAY);
-                label.setFont(((Boolean)value) ? boldFont : normalFont);
-                label.setText(((Boolean)value) ? YES : NO);
-            }
-            return label;
-        }
-        
     }
 }
 

@@ -26,6 +26,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import org.apache.log4j.Logger;
 
@@ -72,18 +73,32 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
     
     protected Vector<PermissionEditorRowIFace> rowDataList = new Vector<PermissionEditorRowIFace>();
 	
-	/**
-	 * @param panelName
-	 * @param enumerator
-	 * @param listener
-	 */
-	public PermissionEditor(final String panelName,
-	                        final PermissionEnumerator enumerator,
-	                        final ChangeListener       listener)
-	{
+    /**
+     * @param panelName
+     * @param enumerator
+     * @param listener
+     */
+    public PermissionEditor(final String panelName,
+                            final PermissionEnumerator enumerator,
+                            final ChangeListener       listener)
+    {
         this(panelName, enumerator, listener, false, 
              "SEC_NAME_TITLE", "SEC_VIEW_TITLE", "SEC_ADD_TITLE", "SEC_MOD_TITLE", "SEC_DEL_TITLE");
-	}
+    }
+
+    /**
+     * @param panelName
+     * @param enumerator
+     * @param listener
+     */
+    public PermissionEditor(final String panelName,
+                            final PermissionEnumerator enumerator,
+                            final ChangeListener       listener,
+                            final boolean              readOnly)
+    {
+        this(panelName, enumerator, listener, readOnly, 
+             "SEC_NAME_TITLE", "SEC_VIEW_TITLE", "SEC_ADD_TITLE", "SEC_MOD_TITLE", "SEC_DEL_TITLE");
+    }
 
 	/**
 	 * @param panelName
@@ -119,8 +134,22 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 		
 		UIHelper.makeTableHeadersCentered(table, false);
 		
+		setCellRenderer();
+		
 		JScrollPane sp = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		add(sp, BorderLayout.CENTER);
+	}
+
+	private void setCellRenderer() {
+	    
+	    if (readOnly) {
+	        YesNoCellRenderer yesNoRenderer = new YesNoCellRenderer();
+	        TableColumnModel tblModel = table.getColumnModel();
+	        for (int i=2;i<tblModel.getColumnCount();i++)
+	        {
+	            tblModel.getColumn(i).setCellRenderer(yesNoRenderer);
+	        }
+	    }
 	}
 	
 	/* (non-Javadoc)
