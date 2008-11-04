@@ -134,8 +134,6 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 		
 		UIHelper.makeTableHeadersCentered(table, false);
 		
-		setCellRenderer();
-		
 		JScrollPane sp = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		add(sp, BorderLayout.CENTER);
 	}
@@ -278,17 +276,8 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
                 }
             }
         });
-        
-		/*		
-		TristateRenderer renderer = new TristateRenderer();
-		TristateEditor editor = new TristateEditor();
-		for (int i = 2; i <= 5; ++i)
-		{
-			column = permissionTable.getColumnModel().getColumn(i);
-			column.setCellRenderer(renderer);
-			column.setCellEditor(editor);
-		}
-		*/
+
+        setCellRenderer();
 	}
 	
 	/**
