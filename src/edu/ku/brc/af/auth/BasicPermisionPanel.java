@@ -235,4 +235,13 @@ public class BasicPermisionPanel extends JPanel implements PermissionEditorIFace
         hasChanged = changed;
     }
     
+    @Override
+    public void setReadOnly(boolean readOnly)
+    {
+        if (viewChk != null) viewChk.setEnabled(!readOnly);
+        if (addChk != null) addChk.setEnabled(!readOnly);
+        if (modifyChk != null) modifyChk.setEnabled(!readOnly);
+        if (delChk != null) delChk.setEnabled(!readOnly);
+    }
+    
 }

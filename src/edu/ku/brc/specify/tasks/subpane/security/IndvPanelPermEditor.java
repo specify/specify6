@@ -141,6 +141,7 @@ public class IndvPanelPermEditor extends JPanel implements PermissionPanelContai
                             editor = basicEditor;
                         }
                         
+                        editor.setReadOnly(readOnly);
                         editor.setPermissions(rowData.getPermissions());
                         mainPanel.add(editor.getUIComponent(), BorderLayout.CENTER);
                         mainPanel.invalidate();

@@ -166,4 +166,10 @@ public class ObjectPermissionPanel extends JPanel implements PermissionEditorIFa
             }
         }
     }
+    
+    @Override
+    public void setReadOnly(boolean readOnly)
+    {
+        // TODO Auto-generated method stub
+    }
 }
