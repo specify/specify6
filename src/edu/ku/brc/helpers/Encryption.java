@@ -63,6 +63,23 @@ public class Encryption
      */
     static final String EXTRA_PROVIDER  = null;
 
+    
+    /**
+     * @return the encryptDecryptPassword
+     */
+    public static String getEncryptDecryptPassword()
+    {
+        return encryptDecryptPassword;
+    }
+
+    /**
+     * @param encryptDecryptPassword the encryptDecryptPassword to set
+     */
+    public static void setEncryptDecryptPassword(String encryptDecryptPassword)
+    {
+        Encryption.encryptDecryptPassword = encryptDecryptPassword;
+    }
+
     /**
      * Encrypts the string from its array of bytes
      * @param input the actual string (in bytes) that is to be encrypted

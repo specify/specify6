@@ -42,6 +42,7 @@ public class DatabaseService
         {
             if(debug)log.debug("getAdminLevelConnection - trying to connect with driver: " + driverClass); //$NON-NLS-1$
             Class.forName(driverClass);
+            
         } catch (java.lang.ClassNotFoundException e)
         {
             log.error("getAdminLevelConnection - Could not connect to database, driverclass - ClassNotFoundException: "); //$NON-NLS-1$

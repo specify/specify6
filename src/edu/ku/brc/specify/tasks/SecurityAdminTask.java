@@ -26,6 +26,7 @@ import javax.swing.JMenuItem;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.MasterPasswordMgr;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.MenuItemDesc;
@@ -128,6 +129,21 @@ public class SecurityAdminTask extends BaseTask
             menuItems.add(mid);
             menuItems.add(showSummaryMenuDesc);
         }
+        
+        menuTitle = "SecurityAdminTask.MASTER_PWD_MENU"; //$NON-NLS-1$
+        mneu      = "SecurityAdminTask.MASTER_PWD_MNEU"; //$NON-NLS-1$
+        desc      = "SecurityAdminTask.MASTER_PWD_DESC"; //$NON-NLS-1$
+        mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null); // I18N
+        mi.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                MasterPasswordMgr.getInstance().editMasterInfo();
+            }
+        });
+        
+        MenuItemDesc mid = new MenuItemDesc(mi, "HELP");
+        menuItems.add(mid);
         
         return menuItems;
     }

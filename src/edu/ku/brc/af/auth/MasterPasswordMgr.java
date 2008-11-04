@@ -64,12 +64,18 @@ public class MasterPasswordMgr
 {
     public static final String factoryName = "edu.ku.brc.af.auth.MasterPasswordMgr"; //$NON-NLS-1$
     
+    private static final String MASTER_LOCAL = "master.islocal";
+    private static final String MASTER_PATH  = "master.path";
+    
     //private static final Logger log = Logger.getLogger(SecurityMgr.class);
     
     protected static MasterPasswordMgr instance = null;
     
     protected String  extraEncryptionKey = "Specify";
     protected boolean errCreatingFile    = false;
+    
+    private Pair<String, String> usernamePassword = null;
+
     
     /**
      * Protected Constructor
@@ -96,19 +102,42 @@ public class MasterPasswordMgr
     {
         return Encryption.encrypt(str);
     }
-
+    
     /**
-     * @return Username and Password as a pair
+     * 
+     */
+    public void editMasterInfo()
+    {
+        Boolean isLocal   = AppPreferences.getLocalPrefs().getBoolean(MASTER_LOCAL, null);
+        String  masterKey = AppPreferences.getLocalPrefs().get(MASTER_PATH, null); 
+        askForInfo(isLocal, masterKey);
+    }
+
+    
+    /**
+     * @return
      */
     public Pair<String, String> getUserNamePassword()
     {
-        Boolean isLocal   = AppPreferences.getLocalPrefs().getBoolean("master.islocal", null);
-        String  masterKey = AppPreferences.getLocalPrefs().get("master.path", null);
+        if (usernamePassword == null)
+        {
+            usernamePassword = getUserNamePasswordInternal();
+        }
+        return usernamePassword;
+    }
+    
+    /**
+     * @return Username and Password as a pair
+     */
+    protected Pair<String, String> getUserNamePasswordInternal()
+    {
+        Boolean isLocal   = AppPreferences.getLocalPrefs().getBoolean(MASTER_LOCAL, null);
+        String  masterKey = AppPreferences.getLocalPrefs().get(MASTER_PATH, null);
         
         if (isLocal == null ||
             StringUtils.isEmpty(masterKey))
         {
-            if (!askForInfo())
+            if (!askForInfo(null, null))
             {
                 return getUserNamePassword();
             }
@@ -150,9 +179,12 @@ public class MasterPasswordMgr
     }
     
     /**
+     * @param isNetworkBased
+     * @param masterPath
      * @return
      */
-    protected boolean askForInfo()
+    protected boolean askForInfo(final Boolean isLocal, 
+                                 final String masterPath)
     {
         loadAndPushResourceBundle("masterusrpwd");
         
@@ -163,7 +195,7 @@ public class MasterPasswordMgr
         JPanel panel = new JPanel(layout);
         panel.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
         
-        ButtonGroup group = new ButtonGroup();
+        ButtonGroup        group         = new ButtonGroup();
         final JRadioButton isNetworkRB   = new JRadioButton(getResourceString("IS_NET_BASED"));
         final JRadioButton isPrefBasedRB = new JRadioButton(getResourceString("IS_ENCRYPTED_KEY"));
         isPrefBasedRB.setSelected(true);
@@ -181,16 +213,32 @@ public class MasterPasswordMgr
         panel.add(isPrefBasedRB, cc.xy(3, 1)); 
         panel.add(isNetworkRB,   cc.xy(5, 1)); 
         
-        panel.add(keyLbl,       cc.xy (1, 3)); 
-        panel.add(keyTxt,       cc.xyw (3, 3, 4)); 
-        panel.add(createBtn,    cc.xy (7, 3)); 
-        panel.add(urlLbl,       cc.xy (1, 5)); 
-        panel.add(urlTxt,       cc.xyw (3, 5, 4)); 
-        panel.add(fileBtn,      cc.xy (7, 5)); 
+        panel.add(keyLbl,    cc.xy (1, 3)); 
+        panel.add(keyTxt,    cc.xyw (3, 3, 4)); 
+        panel.add(createBtn, cc.xy (7, 3)); 
+        panel.add(urlLbl,    cc.xy (1, 5)); 
+        panel.add(urlTxt,    cc.xyw (3, 5, 4)); 
+        panel.add(fileBtn,   cc.xy (7, 5)); 
+        
+        boolean isEditMode = isLocal != null && StringUtils.isNotEmpty(masterPath);
+        if (isEditMode)
+        {
+            isPrefBasedRB.setSelected(isLocal);
+            if (isLocal)
+            {
+                keyTxt.setText(masterPath);
+            } else
+            {
+                urlTxt.setText(masterPath);
+            }
+        }
         
         final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString("MASTER_TITLE"), true, CustomDialog.OKCANCELHELP, panel);
-        dlg.setOkLabel(getResourceString("CONT"));
-        dlg.setCancelLabel(getResourceString("EXIT"));
+        if (!isEditMode)
+        {
+            dlg.setOkLabel(getResourceString("CONT"));
+            dlg.setCancelLabel(getResourceString("EXIT"));
+        }
         dlg.createUI();
         dlg.getOkBtn().setEnabled(false);
         urlLbl.setEnabled(false);  
@@ -273,10 +321,10 @@ public class MasterPasswordMgr
             {
                 value = keyTxt.getText();
             }
-            AppPreferences.getLocalPrefs().putBoolean("master.islocal", !isNetworkRB.isSelected());
-            AppPreferences.getLocalPrefs().put("master.path", value);
+            AppPreferences.getLocalPrefs().putBoolean(MASTER_LOCAL, !isNetworkRB.isSelected());
+            AppPreferences.getLocalPrefs().put(MASTER_PATH, value);
             
-        } else
+        } else if (!isEditMode)
         {
             System.exit(0);
         }
@@ -308,12 +356,12 @@ public class MasterPasswordMgr
         
         CellConstraints cc = new CellConstraints(); 
         
-        panel.add(usrLbl,       cc.xy (1, 1)); 
-        panel.add(usrTxt,       cc.xy (3, 1)); 
-        panel.add(pwdLbl,       cc.xy (1, 3)); 
-        panel.add(pwdTxt,       cc.xy (3, 3)); 
-        panel.add(keyLbl,       cc.xy (1, 5)); 
-        panel.add(keyTxt,       cc.xy (3, 5)); 
+        panel.add(usrLbl, cc.xy (1, 1)); 
+        panel.add(usrTxt, cc.xy (3, 1)); 
+        panel.add(pwdLbl, cc.xy (1, 3)); 
+        panel.add(pwdTxt, cc.xy (3, 3)); 
+        panel.add(keyLbl, cc.xy (1, 5)); 
+        panel.add(keyTxt, cc.xy (3, 5)); 
         
         final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString("MASTER_INFO_TITLE"), true, CustomDialog.OKCANCELHELP, panel);
         dlg.setOkLabel(getResourceString("DONE"));
@@ -332,20 +380,11 @@ public class MasterPasswordMgr
                 dlg.getOkBtn().setEnabled(enable);
             }
             @Override
-            public void changedUpdate(DocumentEvent e)
-            {
-                check();
-            }
+            public void changedUpdate(DocumentEvent e) { check(); }
             @Override
-            public void insertUpdate(DocumentEvent e)
-            {
-                check();
-            }
+            public void insertUpdate(DocumentEvent e) { check(); }
             @Override
-            public void removeUpdate(DocumentEvent e)
-            {
-                check();
-            }
+            public void removeUpdate(DocumentEvent e) { check(); }
         };
         
         usrTxt.getDocument().addDocumentListener(docListener);
@@ -364,6 +403,7 @@ public class MasterPasswordMgr
      * @param urlLoc
      * @return
      */
+    @SuppressWarnings("deprecation")
     protected String getKeyFromURL(final String urlLoc)
     {
         DataInputStream dis = null;
@@ -380,7 +420,7 @@ public class MasterPasswordMgr
           
             StringBuilder sb = new StringBuilder();
             String s;
-            while ((s = dis.readUTF()) != null) 
+            while ((s = dis.readLine()) != null) 
             { 
                 sb.append(s); 
             } 
