@@ -35,7 +35,6 @@ import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
-import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
@@ -161,7 +160,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     @Override
     public STATUS processBusinessRules(final Object dataObj)
     {
-        reasonList.clear();
         STATUS status =  super.processBusinessRules(dataObj);
         
         CollectionObject colObj = (CollectionObject)dataObj;
@@ -174,38 +172,12 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             {
                 status = processBusinessRules(null, dataObj, true);
             }
-
-        }
-        if (status == STATUS.OK)
-        {
-            // check that a current determination exists
-            if (((CollectionObject) dataObj).getDeterminations().size() > 0)
-            {
-                boolean ok = false;
-                for (Determination det : ((CollectionObject) dataObj).getDeterminations())
-                {
-                    if (det.isCurrent())
-                    {
-                        ok = true;
-                        break;
-                    }
-                }
-                if (!ok)
-                {
-                    status = STATUS.Error;
-                    reasonList.add(UIRegistry
-                            .getResourceString("CollectionObjectBusRules.CURRENT_DET_REQUIRED"));
-                }
-            }
         }
         return status;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeMerge(java.lang.Object,
-     *      edu.ku.brc.dbsupport.DataProviderSessionIFace)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
     public void beforeMerge(final Object dataObj, 
@@ -373,29 +345,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         
         return duplicateNumberStatus;
     }
-
-    
-//    /* (non-Javadoc)
-//     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-//     */
-//    @Override
-//    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session)
-//            throws Exception
-//    {
-//        if (!super.beforeSaveCommit(dataObj, session))
-//        {
-//            return false;
-//        }
-//        
-//        for (Determination det : ((CollectionObject )dataObj).getDeterminations())
-//        {
-//            if (det.isCurrent())
-//            {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#isOkToAssociateSearchObject(java.lang.Object, java.lang.Object)
