@@ -985,9 +985,10 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         protected UIFieldFormatterIFace   docFormatter;
         protected UIFieldFormatterField[] docFields;
         protected boolean                 ignoreLenForValidation = false;
+        protected boolean                 isReplacingSameSize            = false;
 
         /**
-         * CReate a special formatted document
+         * Create a special formatted document
          * @param textField the textfield the document is associated with
          * @param formatter the formatter
          * @param limit the length of the format
@@ -1087,6 +1088,16 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         }
 
         /* (non-Javadoc)
+         * @see javax.swing.text.AbstractDocument#replace(int, int, java.lang.String, javax.swing.text.AttributeSet)
+         */
+        @Override
+        public void replace(int offset, int length, String text, AttributeSet attrs) throws BadLocationException
+        {
+            isReplacingSameSize = text.length() == length;
+            super.replace(offset, length, text, attrs);
+        }
+
+        /* (non-Javadoc)
          * @see javax.swing.text.Document#remove(int, int)
          */
         @Override
@@ -1104,7 +1115,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             
             try
             {
-                int l = this.getLength()-offset;
+                int l = formatter.isNumeric() || formatter.isDate() || isReplacingSameSize ? len : this.getLength()-offset;
                 super.remove(offset, l);
                     
                 validateState();
