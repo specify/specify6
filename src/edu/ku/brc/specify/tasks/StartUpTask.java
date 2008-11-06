@@ -153,6 +153,14 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
                     toolBar.validate();
                     toolBar.repaint();
                 }
+                
+                ImageIcon icon = null;
+                String imgBufStr = AppPreferences.getRemote().get("ui.formatting.user_icon_image", null);
+                if (imgBufStr != null)
+                {
+                    icon = GraphicsUtils.uudecodeImage(null, imgBufStr);
+                }
+                welcomeBtn.setIcon(icon != null ? icon : IconManager.getIcon("AppIcon"));
             }
         }
     }

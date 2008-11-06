@@ -418,6 +418,13 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         return mainBtn.getText();
     }
 
+    /**
+     * @param icon
+     */
+    public void setIcon(final ImageIcon icon)
+    {
+        mainBtn.setIcon(icon);
+    }
 
     /*------------------------------[ PropertyChangeListener ]---------------------------------------------------*/
 
