@@ -16,6 +16,8 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Component;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -28,6 +30,7 @@ import javax.swing.SwingUtilities;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.db.TextFieldFromPickListTable;
@@ -37,6 +40,7 @@ import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -89,7 +93,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     public void initialize(Viewable viewableArg)
     {
         super.initialize(viewableArg);
-        /*
+        
         if (formViewObj != null)
         {
             typeComp       = formViewObj.getCompById("0");
@@ -118,7 +122,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                     }
                 }
             }
-        }*/
+        }
     }
 
     /* (non-Javadoc)
@@ -217,7 +221,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
      */
     protected void fixUpFormForAgentType(final Agent   agent,
                                          final boolean doSetOtherValues)
-    {/*
+    {
         boolean isPerson = agent.getAgentType() == null || agent.getAgentType() == Agent.PERSON;
         if (!isPerson)
         {
@@ -252,9 +256,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         if (groupPersonSubForm != null)
         {
             groupPersonSubForm.setVisible(agent.getAgentType() == Agent.GROUP);
-        }*/
-
-
+        }
     }
     
     /**
@@ -311,7 +313,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
      */
     @Override
     public void afterFillForm(final Object dataObjArg)
-    {/*
+    {
         Object dataObj = dataObjArg;
         if (!(viewable instanceof FormViewObj) || !(dataObj instanceof Agent))
         {
@@ -377,7 +379,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                 }
             });
         }
-        addrSubView.setVisible(shouldBeVisible);*/
+        addrSubView.setVisible(shouldBeVisible);
     }
 
     /* (non-Javadoc)
