@@ -1805,18 +1805,11 @@ public class Uploader implements ActionListener, KeyListener
             {
                 if (uploadData.getMapping(m).getTable().equalsIgnoreCase("determination")
                         && uploadData.getMapping(m).getField().equalsIgnoreCase(
-                                "determinationstatusid"))
+                                "iscurrent"))
                 {
-                    UploadMappingDefRel rMap = (UploadMappingDefRel) uploadData.getMapping(m);
-                    for (ImportMappingRelFld fld : rMap.getRelatedFields())
-                    {
-                        if (fld.getFieldName().equalsIgnoreCase("iscurrent"))
-                        {
                             isCurrentCount++;
-                            isCurrentPresent[rMap.getSequence()] = true;
-                            isCurrentCaptionSample = rMap.getWbFldName();
-                        }
-                    }
+                            isCurrentPresent[((UploadMappingDefRel) uploadData.getMapping(m)).getSequence()] = true;
+                            isCurrentCaptionSample = uploadData.getMapping(m).getWbFldName();
                 }
             }
             if (isCurrentCount != 0 && isCurrentCount != maxTaxSeqLevel.size())

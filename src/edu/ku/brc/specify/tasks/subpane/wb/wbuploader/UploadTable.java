@@ -51,7 +51,6 @@ import edu.ku.brc.specify.datamodel.CollectionObjectAttribute;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
@@ -892,11 +891,11 @@ public class UploadTable implements Comparable<UploadTable>
         {
             Object arg[] = new Object[1];
             Class<?> fldClass;
-            if (tblClass.equals(DeterminationStatus.class) && ufld.getField().getName().equalsIgnoreCase("type"))
-            {
-                fldClass = Boolean.class;
-            }
-            else
+//            if (tblClass.equals(DeterminationStatus.class) && ufld.getField().getName().equalsIgnoreCase("type"))
+//            {
+//                fldClass = Boolean.class;
+//            }
+//            else
             {
                 fldClass = ufld.getSetter().getParameterTypes()[0];
             }
@@ -965,22 +964,22 @@ public class UploadTable implements Comparable<UploadTable>
                 //grotesquery
                 //sorry, too much extra processing involved with maintaining one and only one current determination
                 //to mess around with the isCurrent workbench mapping. An uploaded co is current or not current.
-                if (tblClass.equals(DeterminationStatus.class)
-                        && ufld.getField().getName().equalsIgnoreCase("type"))
-                {
-                    if (arg[0] == null) { throw new UploaderException(
-                            getResourceString("WB_INVALID_BOOL_CELL_VALUE"),
-                            UploaderException.INVALID_DATA); }
-                    Boolean c = (Boolean) arg[0];
-                    if (c)
-                    {
-                        arg[0] = DeterminationStatus.CURRENT;
-                    }
-                    else
-                    {
-                        arg[0] = DeterminationStatus.NOTCURRENT;
-                    }
-                }
+//                if (tblClass.equals(DeterminationStatus.class)
+//                        && ufld.getField().getName().equalsIgnoreCase("type"))
+//                {
+//                    if (arg[0] == null) { throw new UploaderException(
+//                            getResourceString("WB_INVALID_BOOL_CELL_VALUE"),
+//                            UploaderException.INVALID_DATA); }
+//                    Boolean c = (Boolean) arg[0];
+//                    if (c)
+//                    {
+//                        arg[0] = DeterminationStatus.CURRENT;
+//                    }
+//                    else
+//                    {
+//                        arg[0] = DeterminationStatus.NOTCURRENT;
+//                    }
+//                }
             }
             else if (fldClass != String.class)
             {       
@@ -1529,12 +1528,12 @@ public class UploadTable implements Comparable<UploadTable>
             else if (matches.size() > 1)
             {
                 // don't bother anybody with DeterminationStatus, for now.
-                if (tblClass.equals(DeterminationStatus.class))
-                {
-                    match = matches.get(0);
-                }
-                else
-                {
+//                if (tblClass.equals(DeterminationStatus.class))
+//                {
+//                    match = matches.get(0);
+//                }
+//                else
+//                {
                     match = dealWithMultipleMatches(matches, restrictedVals, recNum);
                     if (match != null)
                     {
@@ -1542,7 +1541,7 @@ public class UploadTable implements Comparable<UploadTable>
                                 uploader.getRow(), match.getId(), matchSetting
                                         .getMode()));
                     }
-                }
+//                }
             }
         }
         finally
@@ -1788,7 +1787,7 @@ public class UploadTable implements Comparable<UploadTable>
         {
             validateRowValues(row, uploadData, result);
         }
-        if (tblClass.equals(DeterminationStatus.class))
+        if (tblClass.equals(Determination.class))
         {
             // check that isCurrent is ok. 1 and only one true.
             boolean isCurrentPresent = false;

@@ -46,7 +46,7 @@
             </altviews>
         </view>
         
-        <view name="DeterminationStatus"
+        <!-- <view name="DeterminationStatus"
             class="edu.ku.brc.specify.datamodel.DeterminationStatus"
             busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationStatusBusRules"
             resourcelabels="false">
@@ -55,7 +55,7 @@
                 <altview name="DeterminationStatus Edit View" viewdef="DeterminationStatus" mode="view" validated="false"/>
                 <altview name="DeterminationStatus Edit" viewdef="DeterminationStatus" mode="edit" validated="true" default="true"/>
             </altviews>
-        </view>
+        </view>-->
         
         <view name="DataType"
             class="edu.ku.brc.specify.datamodel.DataType"
@@ -373,7 +373,7 @@
             </rows>
         </viewdef>
         
-        <viewdef
+        <!-- <viewdef
             type="form"
             name="DeterminationStatus"
             class="edu.ku.brc.specify.datamodel.DeterminationStatus"
@@ -405,7 +405,7 @@
                     <cell type="field" id="3" name="remarks" uitype="textarea" cols="50" colspan="3"/>
                 </row>
             </rows>
-        </viewdef>
+        </viewdef>-->
         
         <viewdef
             type="form"

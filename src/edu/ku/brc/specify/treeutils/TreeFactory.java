@@ -305,7 +305,7 @@ public class TreeFactory
         if (clazz.equals(Taxon.class))
         {
             sb.append("SELECT count(*) ");
-            sb.append("FROM taxon AS TX INNER JOIN determination as DET ON TX.TaxonID = DET.TaxonID INNER JOIN determinationstatus ON DET.DeterminationStatusID = determinationstatus.DeterminationStatusID ");
+            sb.append("FROM taxon AS TX INNER JOIN determination as DET ON TX.TaxonID = DET.TaxonID ");
             sb.append("INNER JOIN collectionobject ON DET.CollectionObjectID = collectionobject.CollectionObjectID ");
         }
         
@@ -330,7 +330,7 @@ public class TreeFactory
         
         if (clazz.equals(Taxon.class))
         {
-            sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND Type in (1,2) AND IsAccepted = 1 AND TX.TaxonID = %d");
+            sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND IsCurrent = 1 AND IsAccepted = 1 AND TX.TaxonID = %d");
             
         } else if (clazz.equals(Geography.class))
         {
@@ -372,7 +372,7 @@ public class TreeFactory
         
         if (clazz.equals(Taxon.class))
         {
-            sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND Type = 1 AND IsAccepted = 1 AND NodeNumber > %d AND HighestChildNodeNumber <= %d");
+            sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND IsCurrent = 1 AND IsAccepted = 1 AND NodeNumber > %d AND HighestChildNodeNumber <= %d");
             
         } else if (clazz.equals(Geography.class))
         {

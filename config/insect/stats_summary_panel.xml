@@ -22,7 +22,7 @@
             <sql>
                 <tables><id>4</id></tables>            
                 <statement row="1" col="1">
-                    <![CDATA[SELECT count(*) FROM (SELECT DISTINCT tx.TaxonID FROM (SELECT DISTINCT tax.TaxonID,tax.nodenumber FROM (SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND DeterminationStatusID = 1) as Families1,taxon as tax WHERE tax.isaccepted <> 0 and tax.TaxonID = Families1.TaxonID) as Families2, taxon as tx WHERE tx.rankid = 140 and Families2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber) as Familes3]]>
+                    <![CDATA[SELECT count(*) FROM (SELECT DISTINCT tx.TaxonID FROM (SELECT DISTINCT tax.TaxonID,tax.nodenumber FROM (SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND determination.IsCurrent = true1) as Families1,taxon as tax WHERE tax.isaccepted <> 0 and tax.TaxonID = Families1.TaxonID) as Families2, taxon as tx WHERE tx.rankid = 140 and Families2.nodenumber between tx.nodenumber and tx.HighestChildNodeNumber) as Familes3]]>
                 </statement>
             </sql>
         </item>
@@ -30,7 +30,7 @@
             <sql>
                 <tables><id>4</id></tables>            
                 <statement>
-                  <![CDATA[create temporary table Genera1 SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND DeterminationStatusID = 1]]>
+                  <![CDATA[create temporary table Genera1 SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND determination.IsCurrent = true]]>
                 </statement>
                 <statement>
                   <![CDATA[create temporary table Genera2 SELECT DISTINCT tax.TaxonID,tax.nodenumber FROM Genera1,taxon as tax WHERE tax.isaccepted <> 0 and tax.TaxonID = Genera1.TaxonID]]>
@@ -56,7 +56,7 @@
             <sql>
                 <tables><id>4</id></tables>            
                 <statement>
-                  <![CDATA[create temporary table Species1 SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND DeterminationStatusID = 1]]>
+                  <![CDATA[create temporary table Species1 SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND determination.IsCurrent = true]]>
                 </statement>
                 <statement>
                   <![CDATA[create temporary table Species2 SELECT DISTINCT tax.TaxonID,tax.nodenumber FROM Species1,taxon as tax WHERE tax.isaccepted <> 0 and tax.TaxonID = Species1.TaxonID]]>
@@ -81,7 +81,7 @@
         <item title="Taxa in Collection" useprogress="true">
             <sql>
                 <tables><id>4</id><id>9</id></tables>            
-                <statement><![CDATA[SELECT count(TaxonID) AS TaxaInCollectionCount FROM taxon WHERE TaxonID in (SELECT TaxonId FROM determination WHERE CollectionMemberID = COLMEMID AND DeterminationStatusID = 1)]]></statement>
+                <statement><![CDATA[SELECT count(TaxonID) AS TaxaInCollectionCount FROM taxon WHERE TaxonID in (SELECT TaxonId FROM determination WHERE CollectionMemberID = COLMEMID AND determination.IsCurrent = true)]]></statement>
             </sql>
         </item>
       </box>

@@ -82,7 +82,6 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -92,6 +91,7 @@ import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.QueryTask;
@@ -1056,7 +1056,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     sqlStr.append(' ');
                     sqlStr.append(alias);
                     sqlStr.append(' ');
-                    
+                    if (((TableQRI )qri).getTableInfo().getClassObj().equals(Taxon.class))
+                    {
+                        //check to see if Name is inUse and if so, add joins for accepted taxa
+                        TableQRI tqri = (TableQRI )qri;
+                        boolean addSynJoin = false;
+                        for (int t = 0; t < tqri.getFields(); t++)
+                        {
+                            if (tqri.getField(t).getFieldName().equalsIgnoreCase("name") && tqri.getField(t).isInUse())
+                            {
+                                addSynJoin = true;
+                                break;
+                            }
+                        }
+                        if (addSynJoin)
+                        {
+                            sqlStr.append("left join ");
+                            sqlStr.append(alias + ".acceptedChildren " + alias + "acceptedChildren ");
+                        }
+                    }
                 }
                 //XXX - should only use left joins when necessary (see 4th param below)
                 String extraJoin = QueryAdjusterForDomain.getInstance().getJoinClause(tt.getTableInfo(), true, alias, true);

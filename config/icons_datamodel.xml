@@ -36,7 +36,7 @@
     <icon name="conservevent"         file="conserv_event.png" sizes="all"/>
     <icon name="datatype"             file="data_type.png" sizes="all"/>
     <icon name="determination"        file="determination.png" sizes="all"/>
-    <icon name="determinationstatus"  file="determination_status.png" sizes="all"/>
+    <!-- <icon name="determinationstatus"  file="determination_status.png" sizes="all"/>-->
     <icon name="discipline"           file="discipline.png" sizes="all"/>
     <icon name="division"             file="division.png" sizes="all"/>
     <icon name="dnasequence"          file="dna.png" sizes="all"/>
@@ -222,7 +222,7 @@
     <icon name="ConservEvent"           alias="conservevent"/>
     <icon name="DataType"               alias="datatype"/>
     <icon name="Determination"          alias="determination"/>
-    <icon name="DeterminationStatus"    alias="determinationstatus"/>
+    <!-- <icon name="DeterminationStatus"    alias="determinationstatus"/>-->
     <icon name="Division"               alias="division"/>
     <icon name="Discipline"             alias="discipline"/>
     <icon name="DNASequence"            alias="dnasequence"/>

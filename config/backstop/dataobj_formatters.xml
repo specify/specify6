@@ -221,7 +221,7 @@
         </switch>
     </format>
     
-    <format
+ <!--    <format
         name="DeterminationStatus"
         class="edu.ku.brc.specify.datamodel.DeterminationStatus"
         default="true"
@@ -231,7 +231,7 @@
                 <field>name</field>
             </fields>
         </switch>
-    </format>
+    </format>-->
     
     <format
         name="DataType"
@@ -304,7 +304,7 @@
         <switch single="true">
             <fields>
                 <field>taxon.fullName</field>
-                <field sep=" - ">status.name</field>
+                <field sep=" - ">current</field>
             </fields>
         </switch>
     </format>

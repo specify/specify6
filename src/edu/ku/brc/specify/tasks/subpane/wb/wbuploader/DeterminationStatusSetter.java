@@ -10,15 +10,8 @@
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
-import edu.ku.brc.specify.datamodel.Discipline;
 
 /**
  * @author timbo
@@ -115,34 +108,39 @@ class DeterminationStatusSetter extends RelatedClassSetter
         return false;
     }
 
+    /**
+     * @param current
+     * @return
+     */
     protected DataModelObjBase retrieveDefault(boolean current)
     {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            String hql = "from DeterminationStatus where type = ";
-            if (current)
-            {
-                hql += String.valueOf(DeterminationStatus.CURRENT);
-            }
-            else
-            {
-                hql += String.valueOf(DeterminationStatus.NOTCURRENT);
-            }
-            hql += " and disciplineID = " + AppContextMgr.getInstance().getClassObject(Discipline.class).getId();
-            QueryIFace q = session.createQuery(hql, false);
-            List<?> result = q.list();
-            if (result.size() == 0)
-            {
-                return null;
-            }
-            //But what if there is more than one current or noncurrent??
-            return (DataModelObjBase)result.get(0);
-        }
-        finally
-        {
-            session.close();
-        }
+        throw new RuntimeException("DeterminationStatusSetter? Why is this class being used?");
+//        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+//        try
+//        {
+//            String hql = "from DeterminationStatus where type = ";
+//            if (current)
+//            {
+//                hql += String.valueOf(DeterminationStatus.CURRENT);
+//            }
+//            else
+//            {
+//                hql += String.valueOf(DeterminationStatus.NOTCURRENT);
+//            }
+//            hql += " and disciplineID = " + AppContextMgr.getInstance().getClassObject(Discipline.class).getId();
+//            QueryIFace q = session.createQuery(hql, false);
+//            List<?> result = q.list();
+//            if (result.size() == 0)
+//            {
+//                return null;
+//            }
+//            //But what if there is more than one current or noncurrent??
+//            return (DataModelObjBase)result.get(0);
+//        }
+//        finally
+//        {
+//            session.close();
+//        }
     }
 
     /* (non-Javadoc)

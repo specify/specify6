@@ -165,7 +165,7 @@
     <field table="Determination" name="determinedDate1" actualname="determinedDate" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="determinerLastName1" onetomanysequence="0" relationshipname="determiner" relatedfieldname="lastName"/>
     <field table="Determination" name="determinerFirstName1" onetomanysequence="0" relationshipname="determiner" relatedfieldname="firstName"/>
-    <field table="Determination" name="isCurrent1" onetomanysequence="0" relationshipname="status" relatedfieldname="type"/>
+    <field table="Determination" name="isCurrent1" actualname="isCurrent" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="genus1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="180"/>
     <field table="Determination" name="species1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="220"/>
     <field table="Determination" name="subspecies1" onetomanysequence="0" treename="taxon" maptofield="name" rankid="230"/>
@@ -179,7 +179,7 @@
     <field table="Determination" name="determinedDate2" actualname="determinedDate" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="determinerLastName2" onetomanysequence="1" relationshipname="determiner" relatedfieldname="lastName"/>
     <field table="Determination" name="determinerFirstName2" onetomanysequence="1" relationshipname="determiner" relatedfieldname="firstName"/>
-    <field table="Determination" name="isCurrent2" onetomanysequence="1" relationshipname="status" relatedfieldname="type"/>
+    <field table="Determination" name="isCurrent2" actualname="isCurrent" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Determination" name="genus2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="180"/>
     <field table="Determination" name="species2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="220"/>
     <field table="Determination" name="subspecies2" onetomanysequence="1" treename="taxon" maptofield="name" rankid="230"/>

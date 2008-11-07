@@ -223,8 +223,7 @@ public class ERDVisualizer extends JFrame
                 tblTracker.addNodeInfo("Collection",             false, false, true,  false, null);
                 tblTracker.addNodeInfo("Taxon",                  false, false, true,  false, null);
                 tblTracker.addNodeInfo("TaxonCitation",          false, false, true,  false, null);
-                tblTracker.addNodeInfo("DeterminationStatus",    false, false, true,  false, null);
-                tblTracker.addNodeInfo("DeterminationCitation",  false, false, true,  false, null);
+//                tblTracker.addNodeInfo("DeterminationCitation",  false, false, true,  false, null);
                 tblTracker.addNodeInfo("ReferenceWork",          false, false, true,  false, null);
                 tblTracker.addNodeInfo("Journal",                false, false, true,  false, null);
                 tblTracker.addNodeInfo("CollectingEvent",        false, false, true,  false, null);
@@ -252,7 +251,7 @@ public class ERDVisualizer extends JFrame
                 
                 NodeInfo det = tblTracker.getNodeInfo("Determination");
                 det.addKid(tblTracker.getTable("Taxon"));
-                det.addKid(tblTracker.getTable("DeterminationStatus"));
+//                det.addKid(tblTracker.getTable("DeterminationStatus"));
                 
                 NodeInfo ni = tblTracker.getNodeInfo("Taxon");
                 ni.addKid(tblTracker.getTable("TaxonCitation"));
@@ -385,7 +384,7 @@ public class ERDVisualizer extends JFrame
                 {
                     NodeInfo det = tblTracker.getNodeInfo("Determination");
                     det.addKid(tblTracker.getTable("Taxon"));
-                    det.addKid(tblTracker.getTable("DeterminationStatus"));
+//                    det.addKid(tblTracker.getTable("DeterminationStatus"));
                     
                     ni = tblTracker.getNodeInfo("Taxon");
                     ni.addKid(tblTracker.getTable("TaxonCitation"));

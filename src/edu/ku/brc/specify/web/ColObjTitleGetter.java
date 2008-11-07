@@ -16,7 +16,6 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
 
 /**
  * @author rod
@@ -50,7 +49,7 @@ public class ColObjTitleGetter implements TitleGetterIFace
                 //System.out.print("Det: "+colObj.getDeterminations());
                 for (Determination det : colObj.getDeterminations())
                 {
-                    if (DeterminationStatus.isCurrentType(det.getStatus().getType()))
+                    if (det.isCurrentDet())
                     {
                         UIFieldFormatterIFace fmt = field.getFormatter();
                         return fmt.formatToUI(colObj.getCatalogNumber()) + " - " + det.getTaxon().getFullName();

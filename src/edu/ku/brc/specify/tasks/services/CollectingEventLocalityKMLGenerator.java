@@ -328,7 +328,7 @@ public class CollectingEventLocalityKMLGenerator
 			String species = null;
 			for( Determination d: co.getDeterminations() )
 			{
-				if( d.isCurrent() )
+				if( d.isCurrentDet() )
 				{
 					Taxon t = d.getTaxon();
 					species = t.getName();

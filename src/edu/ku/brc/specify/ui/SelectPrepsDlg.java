@@ -68,7 +68,6 @@ import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.Preparation;
@@ -240,7 +239,7 @@ public class SelectPrepsDlg extends CustomDialog
     {
         for (Determination d : colObj.getDeterminations())
         {
-            if (DeterminationStatus.isCurrentType(d.getStatus().getType()))
+            if (d.isCurrentDet())
             {
                 return d;
             }
@@ -335,7 +334,7 @@ public class SelectPrepsDlg extends CustomDialog
             String taxonName = null;
             for (Determination deter : colObj.getDeterminations())
             {
-                if (deter.getStatus() != null && DeterminationStatus.isCurrentType(deter.getStatus().getType()))
+                if (deter.isCurrentDet())
                 {
                     taxonName = getTaxonName(deter);
                     break;

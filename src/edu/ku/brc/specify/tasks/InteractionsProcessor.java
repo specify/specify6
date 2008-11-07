@@ -35,7 +35,6 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationsProviderIFace;
@@ -419,9 +418,7 @@ public class InteractionsProcessor<T extends PreparationsProviderIFace>
                         boolean hasCurrDet = false;
                         for (Determination det : co.getDeterminations())
                         {
-                            if (det.getStatus() != null && 
-                                det.getStatus().getType() != null &&
-                                DeterminationStatus.isCurrentType(det.getStatus().getType()))
+                            if (det.isCurrentDet())
                             {
                                 hasCurrDet = true;
                                 availColObjList.add(co);

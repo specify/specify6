@@ -9,20 +9,15 @@
  */
 package edu.ku.brc.specify.treeutils;
 
-import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.SpSynonymyDetermination;
 import edu.ku.brc.specify.datamodel.SpTaxonSynonymy;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -78,14 +73,14 @@ public class TreeAdditionalProcFactory
         }
         
         
-        @SuppressWarnings("unchecked")
-        private DeterminationStatus getDeterminationStatus(final Session session, final Byte type)
-        {
-            Criteria criteria = session.createCriteria(DeterminationStatus.class);
-            criteria.add(Restrictions.eq("type", type));
-            List<DeterminationStatus> list = criteria.list();
-            return list == null || list.size() == 0 ? null : list.get(0);
-        }
+//        @SuppressWarnings("unchecked")
+//        private DeterminationStatus getDeterminationStatus(final Session session, final Byte type)
+//        {
+//            Criteria criteria = session.createCriteria(DeterminationStatus.class);
+//            criteria.add(Restrictions.eq("type", type));
+//            List<DeterminationStatus> list = criteria.list();
+//            return list == null || list.size() == 0 ? null : list.get(0);
+//        }
 
 
         /* (non-Javadoc)
@@ -131,9 +126,6 @@ public class TreeAdditionalProcFactory
             syn.setSynonymizer(Agent.getUserAgent());
             session.saveOrUpdate(syn); //assuming at this point that caller has opened a transaction on session???
             
-            DeterminationStatus detStatusOld = getDeterminationStatus(session, DeterminationStatus.OLDDETERMINATION);
-            DeterminationStatus detStatusCurAcc = getDeterminationStatus(session, DeterminationStatus.CURRENTTOACCEPTED);
-            
             try
             {
                 log.debug("Source:");
@@ -145,7 +137,7 @@ public class TreeAdditionalProcFactory
                 log.debug("Source:");
                 for (Determination det : new Vector<Determination>(srcTaxon.getDeterminations()))
                 {
-                    if (det.getStatus().getType().equals(DeterminationStatus.CURRENT))
+                    if (det.isCurrentDet())
                     {
                         log.debug(det.getIdentityTitle()+"  "+det.getCollectionObject().getIdentityTitle());
                         
@@ -153,10 +145,10 @@ public class TreeAdditionalProcFactory
                         // and add it to the Source Taxon
                         Determination newDet = (Determination)det.clone();
                         newDet.setTaxon(dstTaxon);
-                        newDet.setStatus(detStatusCurAcc);
+                        newDet.setIsCurrent(true);
 
                         // Set DeterminationStatus from Current to Old
-                        det.setStatus(detStatusOld);
+                        det.setIsCurrent(false);
                         
                         log.debug(newDet.getCollectionObject().getIdentityTitle()+" has new  "+newDet.getIdentityTitle()+ "  "+newDet.getTaxon().getIdentityTitle());
                         log.debug(det.getCollectionObject().getIdentityTitle()+" has OLD  "+det.getIdentityTitle()+ "  "+det.getTaxon().getIdentityTitle());
@@ -175,26 +167,26 @@ public class TreeAdditionalProcFactory
                         session.saveOrUpdate(synDet);
                         session.saveOrUpdate(syn); //hibernate requires this here and for dstTaxon and srcTaxon???
                     }
-                    else if (det.getStatus().getType().equals(DeterminationStatus.CURRENTTOACCEPTED))
-                    {
-                        //srcTaxon has synonyms. Don't create a 'chain':                        
-                        //Just replace references to srcTaxon with references to dstTaxon.
-                        
-                        det.setTaxon(dstTaxon);
-                        session.saveOrUpdate(det);
-                        
-                        Set<SpSynonymyDetermination> newDets = det.getNewSynonymyDeterminations();
-                        if (newDets != null && newDets.size() == 1)
-                        {
-                            SpSynonymyDetermination synDet = newDets.iterator().next();
-                            synDet.getTaxonSynonymy().setAccepted(dstTaxon);
-                            session.saveOrUpdate(synDet);
-                        }
-                        else
-                        {
-                            log.error("'Current Accepted' determination for " +det.getCollectionObject().getIdentityTitle() + " has invalid newSynonymyDeterminations." );
-                        }
-                    }
+//                    else if (det.getStatus().getType().equals(DeterminationStatus.CURRENTTOACCEPTED))
+//                    {
+//                        //srcTaxon has synonyms. Don't create a 'chain':                        
+//                        //Just replace references to srcTaxon with references to dstTaxon.
+//                        
+//                        det.setTaxon(dstTaxon);
+//                        session.saveOrUpdate(det);
+//                        
+//                        Set<SpSynonymyDetermination> newDets = det.getNewSynonymyDeterminations();
+//                        if (newDets != null && newDets.size() == 1)
+//                        {
+//                            SpSynonymyDetermination synDet = newDets.iterator().next();
+//                            synDet.getTaxonSynonymy().setAccepted(dstTaxon);
+//                            session.saveOrUpdate(synDet);
+//                        }
+//                        else
+//                        {
+//                            log.error("'Current Accepted' determination for " +det.getCollectionObject().getIdentityTitle() + " has invalid newSynonymyDeterminations." );
+//                        }
+//                    }
                 }
                 
                 return true;
@@ -241,9 +233,6 @@ public class TreeAdditionalProcFactory
             
             if (synRec != null)
             {
-                DeterminationStatus detStatusOld = getDeterminationStatus(session, DeterminationStatus.OLDDETERMINATION);
-                DeterminationStatus detStatusCur = getDeterminationStatus(session, DeterminationStatus.CURRENT);
-                
                 for (SpSynonymyDetermination synDet : new Vector<SpSynonymyDetermination>(synRec.getDeterminations()))
                 {
                     log.debug(synDet.getNewDetermination() + " <- " + synDet.getOldDetermination());
@@ -258,12 +247,12 @@ public class TreeAdditionalProcFactory
                     //XXX check for existence??? What happens if user deletes a determination? Should/Is that prevented?
                     //(Currently deletes are prevented)
                     
-                    if (newDet != null && newDet.getStatus().getType().equals(DeterminationStatus.CURRENTTOACCEPTED)
-                            && oldDet != null && oldDet.getStatus().getId().equals(detStatusOld.getId()))
+                    if (newDet != null && newDet.isCurrentDet()
+                            && oldDet != null && !oldDet.isCurrentDet())
                     {
                         synRec.removeDetermination(synDet);
                         session.delete(synDet);
-                        oldDet.setStatus(detStatusCur);
+                        oldDet.setIsCurrent(true);
                         session.delete(newDet);
                         session.saveOrUpdate(oldDet);
                     }

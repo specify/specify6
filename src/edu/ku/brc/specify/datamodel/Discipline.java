@@ -80,7 +80,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     protected Set<Agent>                agents;
     protected Division                  division;
     
-    protected Set<DeterminationStatus>  determinationStatuss;
+    //protected Set<DeterminationStatus>  determinationStatuss;
     
     protected Set<SpLocaleContainer>    spLocaleContainers;
     protected Set<SpExportSchema>       spExportSchemas;  // Zero or One
@@ -131,7 +131,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
         geologicTimePeriodTreeDef = null;
         taxonTreeDef          = null;
         lithoStratTreeDef     = null;
-        determinationStatuss  = new HashSet<DeterminationStatus>();
+        //determinationStatuss  = new HashSet<DeterminationStatus>();
         //localities            = new HashSet<Locality>();
         //spAppResourceDirs     = new HashSet<SpAppResourceDir>();
         spLocaleContainers    = new HashSet<SpLocaleContainer>();
@@ -311,23 +311,23 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     } 
     */
     
-    /**
-     * @return the determinationStatuss
-     */
-    @OneToMany(mappedBy="discipline")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-    public Set<DeterminationStatus> getDeterminationStatuss()
-    {
-        return determinationStatuss;
-    }
+//    /**
+//     * @return the determinationStatuss
+//     */
+//    @OneToMany(mappedBy="discipline")
+//    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+//    public Set<DeterminationStatus> getDeterminationStatuss()
+//    {
+//        return determinationStatuss;
+//    }
 
     /**
      * @param determinationStatuss the determinationStatuss to set
      */
-    public void setDeterminationStatuss(Set<DeterminationStatus> determinationStatuss)
-    {
-        this.determinationStatuss = determinationStatuss;
-    }
+//    public void setDeterminationStatuss(Set<DeterminationStatus> determinationStatuss)
+//    {
+//        this.determinationStatuss = determinationStatuss;
+//    }
     
     /*@OneToMany(mappedBy="discipline")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
@@ -450,9 +450,10 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     /**
      * Asks the Object to force load and child object. This must be done within a Session. 
      */
+    @Override
     public void forceLoad()
     {
-        getDeterminationStatuss().size(); // make sure they are loaded
+        //getDeterminationStatuss().size(); // make sure they are loaded
         
         for (AutoNumberingScheme ans : numberingSchemes) // Force Load of Numbering Schemes
         {

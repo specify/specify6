@@ -20,7 +20,6 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 
@@ -339,10 +338,10 @@ public class RelatedClassSetter
     public static RelatedClassSetter createRelatedClassSetter(final UploadTable uploadTbl, Class<?> relatedClass, String fieldName, Object defaultId,
             Object defaultObj, Method setter, int count)
     {
-        if (relatedClass.equals(DeterminationStatus.class))
-        {
-            return new DeterminationStatusSetter(uploadTbl, relatedClass, fieldName, defaultObj, defaultId, setter, count);
-        }
+//        if (relatedClass.equals(DeterminationStatus.class))
+//        {
+//            return new DeterminationStatusSetter(uploadTbl, relatedClass, fieldName, defaultObj, defaultId, setter, count);
+//        }
         return new RelatedClassSetter(uploadTbl, relatedClass, fieldName, defaultObj, defaultId, setter);
     }
 }

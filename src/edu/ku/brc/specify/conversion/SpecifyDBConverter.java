@@ -804,7 +804,7 @@ public class SpecifyDBConverter
                 boolean doDeterminations = false;
                 if (doDeterminations || doAll)
                 {
-                    conversion.createDefaultDeterminationStatusRecords();
+                    //conversion.createDefaultDeterminationStatusRecords();
                     frame.incOverall();
 
                     conversion.convertDeterminationRecords();

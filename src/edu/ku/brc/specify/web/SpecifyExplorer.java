@@ -88,7 +88,6 @@ import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -588,7 +587,7 @@ public class SpecifyExplorer extends HttpServlet
                 
         
                 Discipline discipline = session.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ;
-                discipline.getDeterminationStatuss().size(); // make sure they are loaded
+                //discipline.getDeterminationStatuss().size(); // make sure they are loaded
                 AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
                 AppContextMgr.getInstance().setClassObject(Division.class, discipline.getDivision());
                 
@@ -1137,7 +1136,7 @@ public class SpecifyExplorer extends HttpServlet
                                         Collections.sort(dets, new Comparator<Determination>() {
                                             public int compare(Determination d1, Determination d2)
                                             {
-                                                return d1.getStatus().compareTo(d2.getStatus());
+                                                return d1.compareTo(d2);
                                             }
                                             
                                         });
@@ -1302,7 +1301,7 @@ public class SpecifyExplorer extends HttpServlet
         {
             for (Determination det : ((Taxon)dataObj).getDeterminations())
             {
-                if (DeterminationStatus.isCurrentType(det.getStatus().getType()))
+                if (det.isCurrentDet())
                 {
                     list.add(det.getCollectionObject());
                 }
@@ -1661,7 +1660,7 @@ public class SpecifyExplorer extends HttpServlet
                 Taxon txn = (Taxon)obj;
                 for (Determination det : txn.getDeterminations())
                 {
-                    if (det.isCurrent())
+                    if (det.isCurrentDet())
                     {
                         Locality locality = null;
                         CollectionObject co = det.getCollectionObject();
@@ -2885,7 +2884,7 @@ public class SpecifyExplorer extends HttpServlet
                                 }
                                 for (Determination det : co.getDeterminations())
                                 {
-                                    if (det.isCurrent())
+                                    if (det.isCurrentDet())
                                     {
                                         Taxon txn = det.getTaxon();
                                         if (txn != null)
@@ -3371,7 +3370,7 @@ public class SpecifyExplorer extends HttpServlet
     {
         for (Determination det : co.getDeterminations())
         {
-            if (DeterminationStatus.isCurrentType(det.getStatus().getType()))
+            if (det.isCurrentDet())
             {
                 return det.getTaxon();
             }
@@ -4105,9 +4104,9 @@ public class SpecifyExplorer extends HttpServlet
             if (className.equals("Taxon"))
             {
                 String sql = "SELECT DISTINCT taxon.TaxonID, taxon.FullName  "+
-                             " FROM determination INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID " +
+                             " FROM determination " +
                              " INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID " +
-                             " WHERE determinationstatus.Type = 1 AND taxon.TaxonTreeDefID = TAXTREEDEFID ORDER BY taxon.FullName ASC";
+                             " WHERE determination.IsCurrent = true AND taxon.TaxonTreeDefID = TAXTREEDEFID ORDER BY taxon.FullName ASC";
                 sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
                 
                 doAlphaIndexPageSQL(out, className, letter, 1, null, sql);

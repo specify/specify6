@@ -2,9 +2,9 @@
   <picklist name="Division" issystem="true" type="1" tablename="division" formatter="Division" readonly="true" sizelimit="-1">
     <items/>
   </picklist>
-  <picklist name="DeterminationStatus" issystem="true" type="1" tablename="determinationstatus" formatter="DeterminationStatus" readonly="true" sizelimit="-1">
+  <!-- <picklist name="DeterminationStatus" issystem="true" type="1" tablename="determinationstatus" formatter="DeterminationStatus" readonly="true" sizelimit="-1">
     <items/>
-  </picklist>
+  </picklist>-->
   <picklist name="Department" issystem="true" type="2" tablename="accession" fieldname="text1" readonly="true" sizelimit="-1">
     <items/>
   </picklist>
@@ -110,6 +110,12 @@
       <picklistitem title="Mrs." value="mrs"/>
       <picklistitem title="Ms." value="ms"/>
       <picklistitem title="Dr." value="dr"/>
+    </items>
+   </picklist>
+   <picklist name="AlternateTaxonNameUsages" issystem="true" type="0" readonly="true" sizelimit="100">
+    <items>
+      <picklistitem title="Shelved By" value="shelved by"/>
+      <picklistitem title="Flora of Kansas" value="flora of kansas"/>
     </items>
    </picklist>
     <picklist name="TreatmentType" issystem="true" type="0" readonly="true" sizelimit="10">

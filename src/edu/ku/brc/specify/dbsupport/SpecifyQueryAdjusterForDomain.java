@@ -19,7 +19,6 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -115,11 +114,11 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                     criterion = DSPLNID;
                 }
                 
-            } else if (tableInfo.getTableId() == DeterminationStatus.getClassTableId())
-            {
-                fld = isHQL ? "disciplineId" : "DisciplineID";
-                criterion = DSPLNID;
-                
+//            } else if (tableInfo.getTableId() == DeterminationStatus.getClassTableId())
+//            {
+//                fld = isHQL ? "disciplineId" : "DisciplineID";
+//                criterion = DSPLNID;
+//                
             } else if (tableInfo.getTableId() == Geography.getClassTableId())
             {
                 fld = isHQL ? "definition" : "GeographyTreeDefID";

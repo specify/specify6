@@ -86,7 +86,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
@@ -403,7 +402,7 @@ public class LoanReturnDlg extends JDialog
             String taxonName = "";
             for (Determination deter : colObj.getDeterminations())
             {
-                if (DeterminationStatus.isCurrentType(deter.getStatus().getType()))
+                if (deter.isCurrentDet())
                 {
                     if (deter.getTaxon().getFullName() == null)
                     {

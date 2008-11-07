@@ -4,7 +4,7 @@
 
     Last used ID is 133 or 528
     
-    105 is available
+    88, 105 are available
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -125,10 +125,6 @@
             <display view="Determination" dataobjformatter="Determination"  searchdlg="DeterminationSearch" newobjdlg="DeterminationDisplay"/>            
         </table>
         <table name="edu.ku.brc.specify.datamodel.DeterminationCitation" abbrev="detc" id="38" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.DeterminationStatus" abbrev="dets" id="88">
-            <display view="DeterminationStatus" searchdlg="" newobjdlg=""/>
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.DeterminationStatusBusRules</businessrule>          
-        </table>
         <table name="edu.ku.brc.specify.datamodel.Discipline" abbrev="dsp" id="26">
             <display view="Discipline" dataobjformatter="Discipline" uiformatter="" searchdlg="DisciplineSearch" newobjdlg="Discipline"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules</businessrule>                    

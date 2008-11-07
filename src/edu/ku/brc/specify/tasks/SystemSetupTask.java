@@ -52,7 +52,6 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
@@ -68,7 +67,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.PickList;
@@ -168,7 +166,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             createSysNavBtn(sysNavBox, edu.ku.brc.specify.datamodel.Collection.getClassTableId(), false);
             
             createSysNavBtn(sysNavBox, PrepType.getClassTableId(), true);
-            createSysNavBtn(sysNavBox, DeterminationStatus.getClassTableId(), true);
+            //createSysNavBtn(sysNavBox, DeterminationStatus.getClassTableId(), true);
             
             sysNavBox.add(NavBox.createBtnWithTT(getResourceString("PICKLIST_EDITOR"), "PickList", "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)

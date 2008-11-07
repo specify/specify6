@@ -10,7 +10,7 @@
                 <join tableid="5" primary="true">agent.AgentID</join>
                 <join tableid="1">collectionobject.CollectionObjectID</join>
                 <join tableid="9">determination.DeterminerID</join>
-                <join tableid="9">determination.DeterminationStatusID</join>
+                <!--<join tableid="9">determination.DeterminationStatusID</join>-->
                 <join tableid="4">taxon.TaxonID</join>
             </joins>
             <detailView icon="Agent">
@@ -28,8 +28,7 @@
  INNER JOIN determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
  INNER JOIN agent ON determination.DeterminerID = agent.AgentID
  INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
- INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID
- WHERE determination.CollectionMemberID = COLMEMID AND determinationstatus.Type IN(1,2) AND %s]]>
+ WHERE determination.CollectionMemberID = COLMEMID AND determination.IsCurrent = true AND %s]]>
                 </sql>
                 <captions>
                     <caption tableid="4" col="taxon.TaxonID" visible="false"/>
@@ -109,7 +108,7 @@
                 <join tableid="4" primary="true">taxon.TaxonID</join>
                 <join tableid="2">locality.LocalityID</join>
                 <join tableid="1">collectionobject.CollectionObjectID</join>
-                <join tableid="88">determinationstatus.DeterminationStatusID</join>
+                <!-- <join tableid="88">determinationstatus.DeterminationStatusID</join>-->
                 <join tableid="3">geography.GeographyID</join>
             </joins>
             <detailView icon="Taxon">
@@ -128,8 +127,7 @@
  INNER JOIN collectionobject ON collectingevent.CollectingEventID = collectionobject.CollectingEventID
  INNER JOIN determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID
  INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
- INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID
- WHERE collectionobject.CollectionMemberID = COLMEMID AND determinationstatus.Type IN(1,2) AND %s]]>
+ WHERE collectionobject.CollectionMemberID = COLMEMID AND determination.IsCurrent = true AND %s]]>
                 </sql>
                 <captions>
                     <caption tableid="4" col="taxon.TaxonID"         visible="false"/>
@@ -300,11 +298,11 @@
  %s 
  From collectionobject 
  Inner Join determination AS DT ON DT.CollectionObjectID = collectionobject.CollectionObjectID
- Inner Join determinationstatus ON DT.DeterminationStatusID = determinationstatus.DeterminationStatusID AND determinationstatus.Type IN(1,2)
- Inner Join taxon ON taxon.TaxonID = DT.TaxonID 
+  Inner Join taxon ON taxon.TaxonID = DT.TaxonID 
  WHERE DT.CollectionMemberID = COLMEMID AND 
  collectionobject.CollectionMemberID = COLMEMID AND 
  taxon.TaxonTreeDefID = TAXTREEDEFID AND 
+ determination.IsCurrent = true AND
  %s order by CatalogNumber asc]]>
                 </sql>
                 <captions>

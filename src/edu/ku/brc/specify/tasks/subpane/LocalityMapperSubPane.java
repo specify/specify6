@@ -232,7 +232,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         	{
         		for (Determination d : co.getDeterminations())
         		{
-        			if (d.isCurrent())
+        			if (d.isCurrentDet())
         			{
         				//System.out.println(d.getTaxon().getName() + "("+co.getCountAmt()+")");
         				Taxon taxon = d.getTaxon();

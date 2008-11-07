@@ -70,7 +70,7 @@
             </altviews>
         </view>
         
-        <view name="DeterminationStatus"
+        <!--<view name="DeterminationStatus"
             class="edu.ku.brc.specify.datamodel.DeterminationStatus"
             busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationStatusBusRules"
             resourcelabels="false">
@@ -79,7 +79,7 @@
                 <altview name="DeterminationStatus View" viewdef="DeterminationStatus" mode="view" validated="false" default="true"/>                
                 <altview name="DeterminationStatus Edit" viewdef="DeterminationStatus" mode="edit" validated="true"/>                
             </altviews>
-        </view>
+        </view>-->
         
         <view name="Authors"
             class="edu.ku.brc.specify.datamodel.Author"
@@ -809,7 +809,7 @@
             </rows>
         </viewdef>
         
-        <viewdef
+        <!-- <viewdef
             type="form"
             name="DeterminationStatus"
             class="edu.ku.brc.specify.datamodel.DeterminationStatus"
@@ -828,7 +828,7 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea" colspan="5" cols="40"/>
                 </row>
             </rows>
-        </viewdef>
+        </viewdef>-->
         
         <viewdef
             type="formtable"

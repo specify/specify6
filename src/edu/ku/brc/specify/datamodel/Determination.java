@@ -49,12 +49,16 @@ public class Determination extends CollectionMember implements java.io.Serializa
 {
      // Fields    
      protected Integer             determinationId;
-     protected DeterminationStatus status;
+     //protected DeterminationStatus status;
+     protected Boolean             isCurrent;
      protected String              typeStatusName;
      protected Calendar            determinedDate;
      protected String              qualifier;
+     protected String              addendum;
      protected String              confidence;
      protected String              method;
+     protected String              alternateTaxonName;
+     protected String              alternateTaxonNameUsage; 
      protected String              featureOrBasis;
      protected String              remarks;
      protected String              text1;
@@ -100,11 +104,14 @@ public class Determination extends CollectionMember implements java.io.Serializa
     {
         super.init();
         determinationId = null;
-        status = null;
+        isCurrent = null;
         typeStatusName = null;
         determinedDate = null;
         confidence = null;
         qualifier  = null;
+        addendum = null;
+        alternateTaxonName = null;
+        alternateTaxonNameUsage = null;
         method = null;
         featureOrBasis = null;
         remarks = null;
@@ -163,29 +170,27 @@ public class Determination extends CollectionMember implements java.io.Serializa
     }
 
     /**
-     * 
+     * @return current
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "DeterminationStatusID", unique = false, nullable = false, insertable = true, updatable = true)
-    public DeterminationStatus getStatus() 
+    @Column(name="IsCurrent",unique=false,nullable=false,updatable=true,insertable=true)
+    public Boolean getIsCurrent() 
     {
-        return this.status;
+        return this.isCurrent;
     }
     
-    public void setStatus(DeterminationStatus status) 
+    /**
+     * @param isCurrent the isCurrent to set
+     */
+    public void setIsCurrent(Boolean isCurrent) 
     {
-        this.status = status;
+        this.isCurrent = isCurrent;
     }
+
     
     @Transient
-    public boolean isCurrent()
+    public boolean isCurrentDet()
     {
-        if (status != null)
-        {
-            return DeterminationStatus.isCurrentType(status.getType());
-        }
-        
-        return false;
+        return this.isCurrent == null ? false : this.isCurrent;
     }
 
     /**
@@ -249,6 +254,57 @@ public class Determination extends CollectionMember implements java.io.Serializa
     }
 
     /**
+     * @return the addendum
+     */
+    @Column(name = "Addendum", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
+    public String getAddendum()
+    {
+        return addendum;
+    }
+
+    /**
+     * @param addendum the addendum to set
+     */
+    public void setAddendum(String addendum)
+    {
+        this.addendum = addendum;
+    }
+
+    /**
+     * @return the alternateTaxonName
+     */
+    @Column(name = "AlternateTaxonName", unique = false, nullable = true, insertable = true, updatable = true, length = 100)
+    public String getAlternateTaxonName()
+    {
+        return alternateTaxonName;
+    }
+
+    /**
+     * @param alternateTaxonName the alternateTaxonName to set
+     */
+    public void setAlternateTaxonName(String alternateTaxonName)
+    {
+        this.alternateTaxonName = alternateTaxonName;
+    }
+
+    /**
+     * @return the alternateTaxonNameUsage
+     */
+    @Column(name = "AlternateTaxonNameUsage", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getAlternateTaxonNameUsage()
+    {
+        return alternateTaxonNameUsage;
+    }
+
+    /**
+     * @param alternateTaxonName the alternateTaxonName to set
+     */
+    public void setAlternateTaxonNameUsage(String alternateTaxonNameUsage)
+    {
+        this.alternateTaxonNameUsage = alternateTaxonNameUsage;
+    }
+
+    /**
      *      * Method of determination (value from PickList)
      */
     @Column(name = "Method", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
@@ -256,6 +312,8 @@ public class Determination extends CollectionMember implements java.io.Serializa
     {
         return this.method;
     }
+    
+    
     
     public void setMethod(String method) 
     {
@@ -408,7 +466,16 @@ public class Determination extends CollectionMember implements java.io.Serializa
     }
 
     /**
-     * @return oldSynonymyDeterminations
+     * @return true if the Determination was created by the Specify application
+     */
+    @Transient
+    public Boolean isSystem()
+    {
+        return oldSynonymyDeterminations.size() > 0 || newSynonymyDeterminations.size() > 0;
+    }
+    
+    /**
+     * @return newSynonymyDeterminations
      */
     @OneToMany(mappedBy = "newDetermination")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
@@ -497,11 +564,11 @@ public class Determination extends CollectionMember implements java.io.Serializa
     @Override
     public void forceLoad()
     {
-        DeterminationStatus ds = getStatus();
-        if (ds != null)
-        {
-            ds.getId(); // make sure it is loaded;
-        }
+//        DeterminationStatus ds = getStatus();
+//        if (ds != null)
+//        {
+//            ds.getId(); // make sure it is loaded;
+//        }
     }
 
     /* (non-Javadoc)
@@ -534,7 +601,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
         obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
         obj.timestampModified    = timestampCreated;
         
-        obj.status = status;
+        //obj.status = status;
         obj.typeStatusName = typeStatusName;
         obj.determinedDate = determinedDate;
         obj.confidence = confidence;
@@ -570,21 +637,18 @@ public class Determination extends CollectionMember implements java.io.Serializa
      */
     public int compareTo(Determination obj)
     {
-        DeterminationStatus detStatus = obj.getStatus();
-        if (status != null && detStatus != null)
+        int result = isCurrentDet() == obj.isCurrentDet() ? 0 : 1;
+        if (result == 1)
         {
-            if (detStatus.getType().byteValue() != status.getType().byteValue())
-            {
-                return status.compareTo(detStatus);
-            }
+            return isCurrentDet() ? -1 : 1;
         }
-        
+        //else
         if (determinedDate != null && obj != null && obj.determinedDate != null)
         {
-            return determinedDate.compareTo(obj.determinedDate);
+            return obj.determinedDate.compareTo(determinedDate); //reverse order- recent first
         }
         // else
-        return timestampCreated.compareTo(obj.timestampCreated);
+        return obj.timestampCreated.compareTo(timestampCreated); //reverse order- recent first
     }
 
 

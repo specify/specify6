@@ -28,7 +28,6 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createCollectionRelType
 import static edu.ku.brc.specify.config.init.DataBuilder.createCollector;
 import static edu.ku.brc.specify.config.init.DataBuilder.createDataType;
 import static edu.ku.brc.specify.config.init.DataBuilder.createDetermination;
-import static edu.ku.brc.specify.config.init.DataBuilder.createDeterminationStatus;
 import static edu.ku.brc.specify.config.init.DataBuilder.createDiscipline;
 import static edu.ku.brc.specify.config.init.DataBuilder.createDivision;
 import static edu.ku.brc.specify.config.init.DataBuilder.createGeography;
@@ -157,7 +156,6 @@ import edu.ku.brc.specify.datamodel.ConservEvent;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -260,11 +258,6 @@ public class BuildSampleDatabase
     
     protected Vector<Locality>    globalLocalities = new Vector<Locality>();
     protected Vector<Agent>       globalAgents = new Vector<Agent>();
-    protected DeterminationStatus current                   = null;
-    protected DeterminationStatus notCurrent                = null;
-    protected DeterminationStatus incorrect                 = null;
-    protected DeterminationStatus oldDet                    = null;
-    protected DeterminationStatus currentAccepted           = null;
     
     protected int                 stationFieldNumberCounter = 100;
     protected String              STATION_FIELD_FORMAT = "RS%03d";
@@ -699,26 +692,7 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         
         dataObjects .clear();
-        
-        ////////////////////////////////
-        // Determination Status (Must be done here)
-        ////////////////////////////////
-        log.info("Creating determinations status");
-        current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
-        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
-        notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
-        incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
-        oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
-        
-        frame.setDesc("Commiting...");
-        //startTx();
-        persist(current);
-        persist(currentAccepted);
-        persist(notCurrent);
-        persist(incorrect);
-        persist(oldDet);
-        commitTx();
-        
+                
         frame.setProcess(++createStep);
         
         buildDarwinCoreSchema(discipline);
@@ -1395,23 +1369,6 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         
         ////////////////////////////////
-        // Determination Status (Must be done here)
-        ////////////////////////////////
-        log.info("Creating determinations status");
-        current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
-        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
-        notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
-        incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
-        oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
-
-        
-        persist(current);
-        persist(currentAccepted);
-        persist(notCurrent);
-        persist(incorrect);
-        persist(oldDet);
-        
-        ////////////////////////////////
         // collection objects
         ////////////////////////////////
         log.info("Creating collection objects");
@@ -1465,22 +1422,22 @@ public class BuildSampleDatabase
         Calendar whileBack = Calendar.getInstance(); 
         whileBack.set(2000, 7, 4, 9, 33, 12);
         
-        determs.add(createDetermination(collObjs.get(0), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(1), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(2), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(3), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(5), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(6), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(7), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
+        determs.add(createDetermination(collObjs.get(0), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(1), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(2), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(3), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(5), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(6), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(7), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
         
-        determs.add(createDetermination(collObjs.get(0), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, longAgo));
-        determs.add(createDetermination(collObjs.get(1), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(2), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(3), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), incorrect, longAgo));
-        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), incorrect, longAgo));
+        determs.add(createDetermination(collObjs.get(0), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, longAgo));
+        determs.add(createDetermination(collObjs.get(1), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, whileBack));
+        determs.add(createDetermination(collObjs.get(2), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, whileBack));
+        determs.add(createDetermination(collObjs.get(3), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, whileBack));
+        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, whileBack));
+        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, longAgo));
+        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, longAgo));
         determs.get(13).setRemarks("This determination is totally wrong.  What a foolish determination.");
         
         persist(determs);
@@ -2094,18 +2051,18 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Determination Status (Must be done here)
         ////////////////////////////////
-        log.info("Creating determinations status");
-        current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
-        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
-        notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
-        incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
-        oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
+//        log.info("Creating determinations status");
+//        current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
+//        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
+//        notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
+//        incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
+//        oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
         
-        persist(current);
-        persist(currentAccepted);
-        persist(notCurrent);
-        persist(incorrect);
-        persist(oldDet);
+//        persist(current);
+//        persist(currentAccepted);
+//        persist(notCurrent);
+//        persist(incorrect);
+//        persist(oldDet);
         
         persist(dataObjects);
         dataObjects.clear();
@@ -2170,7 +2127,7 @@ public class BuildSampleDatabase
             
             CollectingEvent  ce = createFakeCollectingEvent(agents, localities.get(inx), "cut");
             CollectionObject co = createCollectionObject(catNumStr, "RSC"+Integer.toString(catNo), agents.get(agentInx), collection,  1, ce, catDates[calInx], "BuildSampleDatabase");
-            Determination    dt = createDetermination(co, getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent);
+            Determination    dt = createDetermination(co, getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent);
             
             Calendar prepDate = Calendar.getInstance();
             Preparation prep = createPreparation(pressed, agents.get(agentInx2), co, (Storage)locs.get(7), rand.nextInt(20)+1, prepDate);
@@ -2684,26 +2641,6 @@ public class BuildSampleDatabase
         startTx();
         frame.setProcess(++createStep);
         
-        ////////////////////////////////
-        // Determination Status (Must be done here)
-        ////////////////////////////////
-        log.info("Creating determinations status");
-        current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
-        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
-        notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
-        incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
-        oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
-
-        
-        persist(current);
-        persist(currentAccepted);
-        persist(notCurrent);
-        persist(incorrect);
-        persist(oldDet);
-        
-        ////////////////////////////////
-        // collection objects
-        ////////////////////////////////
         log.info("Creating collection objects");
 
         List<CollectionObject> collObjs = new Vector<CollectionObject>();
@@ -2754,22 +2691,22 @@ public class BuildSampleDatabase
         Calendar whileBack = Calendar.getInstance(); 
         whileBack.set(2000, 7, 4, 9, 33, 12);
         
-        determs.add(createDetermination(collObjs.get(0), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(1), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(2), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(3), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(5), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(6), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(7), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
+        determs.add(createDetermination(collObjs.get(0), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(1), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(2), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(3), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(5), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(6), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(7), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
         
-        determs.add(createDetermination(collObjs.get(0), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, longAgo));
-        determs.add(createDetermination(collObjs.get(1), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(2), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(3), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), incorrect, longAgo));
-        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), incorrect, longAgo));
+        determs.add(createDetermination(collObjs.get(0), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, longAgo));
+        determs.add(createDetermination(collObjs.get(1), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, whileBack));
+        determs.add(createDetermination(collObjs.get(2), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, whileBack));
+        determs.add(createDetermination(collObjs.get(3), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, whileBack));
+        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, whileBack));
+        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, longAgo));
+        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, longAgo));
         determs.get(13).setRemarks("This determination is totally wrong.  What a foolish determination.");
         
         persist(determs);
@@ -3790,25 +3727,6 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         
         ////////////////////////////////
-        // Determination Status (Must be done here)
-        ////////////////////////////////
-        log.info("Creating determinations status");
-        frame.setDesc("Creating determinations status...");
-
-        current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
-        currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
-        notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
-        incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
-        oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
-
-        
-        persist(current);
-        persist(currentAccepted);
-        persist(notCurrent);
-        persist(incorrect);
-        persist(oldDet);
-        
-        ////////////////////////////////
         // collection objects
         ////////////////////////////////
         log.info("Creating collection objects");
@@ -3863,22 +3781,22 @@ public class BuildSampleDatabase
         Calendar whileBack = Calendar.getInstance(); 
         whileBack.set(2000, 7, 4, 9, 33, 12);
         
-        determs.add(createDetermination(collObjs.get(0), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(1), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(2), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(3), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(5), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(6), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
-        determs.add(createDetermination(collObjs.get(7), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent));
+        determs.add(createDetermination(collObjs.get(0), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(1), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(2), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(3), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(5), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(6), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
+        determs.add(createDetermination(collObjs.get(7), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), true, recent));
         
-        determs.add(createDetermination(collObjs.get(0), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, longAgo));
-        determs.add(createDetermination(collObjs.get(1), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(2), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(3), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), incorrect, longAgo));
-        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), incorrect, longAgo));
+        determs.add(createDetermination(collObjs.get(0), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, longAgo));
+        determs.add(createDetermination(collObjs.get(1), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, whileBack));
+        determs.add(createDetermination(collObjs.get(2), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, whileBack));
+        determs.add(createDetermination(collObjs.get(3), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, whileBack));
+        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, whileBack));
+        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, longAgo));
+        determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), false, longAgo));
         determs.get(13).setRemarks("This determination is totally wrong.  What a foolish determination.");
         
         persist(determs);
@@ -5130,26 +5048,6 @@ public class BuildSampleDatabase
 
         
         ////////////////////////////////
-        // Determination Status (Must be done here)
-        ////////////////////////////////
-        log.info("Creating determinations status");
-        
-        if (isVoucherCol)
-        {
-            current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
-            currentAccepted    = createDeterminationStatus(discipline, "Current Accepted",    "", DeterminationStatus.CURRENTTOACCEPTED);
-            notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
-            incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
-            oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
-
-            persist(current);
-            persist(currentAccepted);
-            persist(notCurrent);
-            persist(incorrect);
-            persist(oldDet);
-        }
-
-        ////////////////////////////////
         // collection objects
         ////////////////////////////////
         log.info("Creating collection objects");
@@ -5205,22 +5103,22 @@ public class BuildSampleDatabase
         whileBack.set(2002, 7, 4, 9, 33, 12);
         
         int baseInx = 41 - (doShallowTaxonTree ? 30 : 0);
-        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(baseInx+1), current, recent));
-        determs.add(createDetermination(collObjs.get(1), agents.get(0), (Taxon)taxa.get(baseInx+2), current, recent));
-        determs.add(createDetermination(collObjs.get(2), agents.get(0), (Taxon)taxa.get(baseInx+3), current, recent));
-        determs.add(createDetermination(collObjs.get(3), agents.get(0), (Taxon)taxa.get(baseInx+4), current, recent));
-        determs.add(createDetermination(collObjs.get(4), agents.get(0), (Taxon)taxa.get(baseInx+5), current, recent));
-        determs.add(createDetermination(collObjs.get(5), agents.get(0), (Taxon)taxa.get(baseInx+6), current, recent));
-        determs.add(createDetermination(collObjs.get(6), agents.get(3), (Taxon)taxa.get(baseInx+7), current, recent));
-        determs.add(createDetermination(collObjs.get(7), agents.get(4), (Taxon)taxa.get(baseInx+8), current, recent));
+        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(baseInx+1), true, recent));
+        determs.add(createDetermination(collObjs.get(1), agents.get(0), (Taxon)taxa.get(baseInx+2), true, recent));
+        determs.add(createDetermination(collObjs.get(2), agents.get(0), (Taxon)taxa.get(baseInx+3), true, recent));
+        determs.add(createDetermination(collObjs.get(3), agents.get(0), (Taxon)taxa.get(baseInx+4), true, recent));
+        determs.add(createDetermination(collObjs.get(4), agents.get(0), (Taxon)taxa.get(baseInx+5), true, recent));
+        determs.add(createDetermination(collObjs.get(5), agents.get(0), (Taxon)taxa.get(baseInx+6), true, recent));
+        determs.add(createDetermination(collObjs.get(6), agents.get(3), (Taxon)taxa.get(baseInx+7), true, recent));
+        determs.add(createDetermination(collObjs.get(7), agents.get(4), (Taxon)taxa.get(baseInx+8), true, recent));
         
-        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(baseInx), notCurrent, longAgo));
-        determs.add(createDetermination(collObjs.get(1), agents.get(1), (Taxon)taxa.get(baseInx+7), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(2), agents.get(1), (Taxon)taxa.get(baseInx+9), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(3), agents.get(2), (Taxon)taxa.get(baseInx+10), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(4), agents.get(2), (Taxon)taxa.get(baseInx+10), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(4), agents.get(3), (Taxon)taxa.get(baseInx+13), incorrect, longAgo));
-        determs.add(createDetermination(collObjs.get(4), agents.get(4), (Taxon)taxa.get(baseInx+12), incorrect, longAgo));
+        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(baseInx), false, longAgo));
+        determs.add(createDetermination(collObjs.get(1), agents.get(1), (Taxon)taxa.get(baseInx+7), false, whileBack));
+        determs.add(createDetermination(collObjs.get(2), agents.get(1), (Taxon)taxa.get(baseInx+9), false, whileBack));
+        determs.add(createDetermination(collObjs.get(3), agents.get(2), (Taxon)taxa.get(baseInx+10), false, whileBack));
+        determs.add(createDetermination(collObjs.get(4), agents.get(2), (Taxon)taxa.get(baseInx+10), false, whileBack));
+        determs.add(createDetermination(collObjs.get(4), agents.get(3), (Taxon)taxa.get(baseInx+13), false, longAgo));
+        determs.add(createDetermination(collObjs.get(4), agents.get(4), (Taxon)taxa.get(baseInx+12), false, longAgo));
         determs.get(13).setRemarks("This determination is totally wrong.  What a foolish determination.");
         
         //startTx();

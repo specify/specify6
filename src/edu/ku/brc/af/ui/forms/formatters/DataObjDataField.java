@@ -223,7 +223,7 @@ public class DataObjDataField implements Cloneable
 			// split name into relation.fieldName
 			setRelInfo(tableInfo.getRelationshipByName(parts[0]));
 			DBTableInfo otherTable = DBTableIdMgr.getInstance().getByClassName(relInfo.getClassName());
-			setFieldInfo(otherTable.getFieldByName(parts[1]));
+	        setFieldInfo(otherTable.getFieldByName(parts[1]));
 			return;
 		}
 

@@ -72,7 +72,6 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.DataType;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -1363,7 +1362,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 
             } else if (fromTableName.equals("determination"))
             {
-                String[] ignoredFields = { "DeterminationStatusID", "Version", "CreatedByAgentID",  "ModifiedByAgentID", "CollectionMemberID" };
+                String[] ignoredFields = { "Version", "CreatedByAgentID",  "ModifiedByAgentID", "CollectionMemberID" };
                 BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
                 
             } else if (fromTableName.equals("habitat"))
@@ -1714,94 +1713,94 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * @param dsType
      * @return
      */
-    protected String createDetStatausInsert(final String dsName,
-                                            final int    dsType)
-    {
-        /*
-        +-----------------------+-------------+------+-----+---------+----------------+
-        | Field                 | Type        | Null | Key | Default | Extra          |
-        +-----------------------+-------------+------+-----+---------+----------------+
-        | DeterminationStatusID | int(11)     | NO   | PRI | NULL    | auto_increment | 
-        | Name                  | varchar(64) | YES  | MUL | NULL    |                | 
-        | Type                  | tinyint(4)  | YES  |     | NULL    |                | 
-        | TimestampCreated      | datetime    | NO   |     |         |                | 
-        | TimestampModified     | datetime    | YES  |     | NULL    |                | 
-        | Version               | int(11)     | YES  |     | NULL    |                | 
-        | Remarks               | text        | YES  |     | NULL    |                | 
-        | ModifiedByAgentID     | int(11)     | YES  | MUL | NULL    |                | 
-        | DisciplineID          | int(11)     | NO   | MUL |         |                | 
-        | CreatedByAgentID      | int(11)     | YES  | MUL | NULL    |                | 
-        +-----------------------+-------------+------+-----+---------+----------------+
-
-     */
-        StringBuilder insert = new StringBuilder();
-        insert.append("INSERT INTO determinationstatus ");
-        insert.append("(Name, Type, Remarks, TimestampCreated, TimestampModified, CreatedByAgentID, ModifiedByAgentID, DisciplineID, Version) ");
-        insert.append("VALUES ");
-        insert.append("('");
-        insert.append(dsName + "',");
-        insert.append(dsType + ",");
-        insert.append("NULL,");              // Remarks
-        insert.append("'" + nowStr + "', "); // TimestampCreated
-        insert.append("NULL, ");             // TimestampModified
-        insert.append(getCreatorAgentId(null) + ",");
-        insert.append(getModifiedByAgentId(null) + ",");
-        insert.append(getDisciplineId() + ",");
-        insert.append(getVersionValueMapper().mapValue(null)); // version
-        insert.append(")");
-        
-        return insert.toString();
-    }
+//    protected String createDetStatausInsert(final String dsName,
+//                                            final int    dsType)
+//    {
+//        /*
+//        +-----------------------+-------------+------+-----+---------+----------------+
+//        | Field                 | Type        | Null | Key | Default | Extra          |
+//        +-----------------------+-------------+------+-----+---------+----------------+
+//        | DeterminationStatusID | int(11)     | NO   | PRI | NULL    | auto_increment | 
+//        | Name                  | varchar(64) | YES  | MUL | NULL    |                | 
+//        | Type                  | tinyint(4)  | YES  |     | NULL    |                | 
+//        | TimestampCreated      | datetime    | NO   |     |         |                | 
+//        | TimestampModified     | datetime    | YES  |     | NULL    |                | 
+//        | Version               | int(11)     | YES  |     | NULL    |                | 
+//        | Remarks               | text        | YES  |     | NULL    |                | 
+//        | ModifiedByAgentID     | int(11)     | YES  | MUL | NULL    |                | 
+//        | DisciplineID          | int(11)     | NO   | MUL |         |                | 
+//        | CreatedByAgentID      | int(11)     | YES  | MUL | NULL    |                | 
+//        +-----------------------+-------------+------+-----+---------+----------------+
+//
+//     */
+//        StringBuilder insert = new StringBuilder();
+//        insert.append("INSERT INTO determinationstatus ");
+//        insert.append("(Name, Type, Remarks, TimestampCreated, TimestampModified, CreatedByAgentID, ModifiedByAgentID, DisciplineID, Version) ");
+//        insert.append("VALUES ");
+//        insert.append("('");
+//        insert.append(dsName + "',");
+//        insert.append(dsType + ",");
+//        insert.append("NULL,");              // Remarks
+//        insert.append("'" + nowStr + "', "); // TimestampCreated
+//        insert.append("NULL, ");             // TimestampModified
+//        insert.append(getCreatorAgentId(null) + ",");
+//        insert.append(getModifiedByAgentId(null) + ",");
+//        insert.append(getDisciplineId() + ",");
+//        insert.append(getVersionValueMapper().mapValue(null)); // version
+//        insert.append(")");
+//        
+//        return insert.toString();
+//    }
 
     /**
      * Create the two default records that should be in the new 'determinationstatus' table. The
      * first record is an 'current' record. The second record is a 'unknown' record which
      * corresponds to the old isCurrent=true records.
      */
-    public void createDefaultDeterminationStatusRecords()
-    {
-        BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "determinationstatus", BasicSQLUtils.myDestinationServerType);
-
-        String insertStr = "";
-        try
-        {
-            BasicSQLUtils.deleteAllRecordsFromTable("determinationstatus", BasicSQLUtils.myDestinationServerType);
-
-            Statement stmt = newDBConn.createStatement();
-            
-            insertStr = createDetStatausInsert("Current", DeterminationStatus.CURRENT);
-            log.debug(insertStr);
-            stmt.executeUpdate(insertStr);
-            detStatusCurrentID = BasicSQLUtils.getInsertedId(stmt);
-            
-            insertStr = createDetStatausInsert("Current Accepted", DeterminationStatus.CURRENTTOACCEPTED);
-            log.debug(insertStr);
-            stmt.executeUpdate(insertStr);
-            detStatusCurrAccID  = BasicSQLUtils.getInsertedId(stmt);
-
-            insertStr = createDetStatausInsert("Not Current", DeterminationStatus.NOTCURRENT);
-            log.debug(insertStr);
-            stmt.executeUpdate(insertStr);
-            detStatusNotCurrID = BasicSQLUtils.getInsertedId(stmt);
-            
-            insertStr = createDetStatausInsert("Old Determination", DeterminationStatus.OLDDETERMINATION);
-            log.debug(insertStr);
-            stmt.executeUpdate(insertStr);
-            detStatusOldDetID  = BasicSQLUtils.getInsertedId(stmt);
-            
-
-            stmt.close();
-
-        } catch (SQLException e)
-        {
-            log.error(insertStr);
-            e.printStackTrace();
-            log.error(e);
-            throw new RuntimeException(e);
-        }
-        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "determinationstatus", BasicSQLUtils.myDestinationServerType);
-
-    }
+//    public void createDefaultDeterminationStatusRecords()
+//    {
+//        BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "determinationstatus", BasicSQLUtils.myDestinationServerType);
+//
+//        String insertStr = "";
+//        try
+//        {
+//            BasicSQLUtils.deleteAllRecordsFromTable("determinationstatus", BasicSQLUtils.myDestinationServerType);
+//
+//            Statement stmt = newDBConn.createStatement();
+//            
+//            insertStr = createDetStatausInsert("Current", DeterminationStatus.CURRENT);
+//            log.debug(insertStr);
+//            stmt.executeUpdate(insertStr);
+//            detStatusCurrentID = BasicSQLUtils.getInsertedId(stmt);
+//            
+//            insertStr = createDetStatausInsert("Current Accepted", DeterminationStatus.CURRENTTOACCEPTED);
+//            log.debug(insertStr);
+//            stmt.executeUpdate(insertStr);
+//            detStatusCurrAccID  = BasicSQLUtils.getInsertedId(stmt);
+//
+//            insertStr = createDetStatausInsert("Not Current", DeterminationStatus.NOTCURRENT);
+//            log.debug(insertStr);
+//            stmt.executeUpdate(insertStr);
+//            detStatusNotCurrID = BasicSQLUtils.getInsertedId(stmt);
+//            
+//            insertStr = createDetStatausInsert("Old Determination", DeterminationStatus.OLDDETERMINATION);
+//            log.debug(insertStr);
+//            stmt.executeUpdate(insertStr);
+//            detStatusOldDetID  = BasicSQLUtils.getInsertedId(stmt);
+//            
+//
+//            stmt.close();
+//
+//        } catch (SQLException e)
+//        {
+//            log.error(insertStr);
+//            e.printStackTrace();
+//            log.error(e);
+//            throw new RuntimeException(e);
+//        }
+//        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "determinationstatus", BasicSQLUtils.myDestinationServerType);
+//
+//    }
 
     /**
      * Create a data type.
@@ -3958,10 +3957,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         Integer recId = count + 1;
                         str.append(getStrValue(recId));
 
-                    } else if (newFieldName.equals("DeterminationStatusID"))
-                    {
-                        str.append(Integer.toString(rs.getShort(isCurrentInx) != 0 ? detStatusCurrentID : detStatusNotCurrID));
-
+//                    } else if (newFieldName.equals("DeterminationStatusID"))
+//                    {
+//                        str.append(Integer.toString(rs.getShort(isCurrentInx) != 0 ? detStatusCurrentID : detStatusNotCurrID));
+//
                     } else if (newFieldName.equals("Version")) // User/Security changes
                     {
                         str.append("0");

@@ -63,7 +63,6 @@ import edu.ku.brc.specify.datamodel.DeaccessionAgent;
 import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationCitation;
-import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -636,34 +635,17 @@ public class DataBuilder
         return colObj;
     }
 
-    public static DeterminationStatus createDeterminationStatus(final Discipline disciplinee,
-                                                                final String name, 
-                                                                final String remarks, 
-                                                                final byte type)
-    {
-        DeterminationStatus status = new DeterminationStatus();
-        status.initialize();
-        status.setName(name);
-        status.setType(type);
-        status.setRemarks(remarks);
-        
-        disciplinee.addReference(status, "determinationStatuss");
-
-        persist(status);
-        return status;
-    }
-
     public static Determination createDetermination(final CollectionObject collectionObject,
                                                     final Agent determiner,
                                                     final Taxon taxon,
-                                                    final DeterminationStatus status,
+                                                    final boolean isCurrent,
                                                     final Calendar calendar)
     {
         // Create Determination
         Determination determination = new Determination();
         determination.initialize();
 
-        determination.setStatus(status);
+        determination.setIsCurrent(isCurrent);
         determination.setCollectionObject(collectionObject);
         determination.setDeterminedDate(calendar);
         determination.setDeterminer(determiner);
@@ -675,7 +657,6 @@ public class DataBuilder
 
         persist(collectionObject);
         persist(determination);
-        persist(status);
         persist(taxon);
         return determination;
 
@@ -1705,7 +1686,7 @@ public class DataBuilder
         return deaccessionpreparation;
     }
 
-    public static Determination createDetermination(final DeterminationStatus status,
+    public static Determination createDetermination(final boolean isCurrent,
                                                     final String typeStatusName,
                                                     final Calendar determinedDate,
                                                     final String confidence,
@@ -1718,7 +1699,7 @@ public class DataBuilder
         Determination determination = new Determination();
         determination.initialize();
         determination.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        determination.setStatus(status);
+        determination.setIsCurrent(isCurrent);
         determination.setCollectionObject(collectionObject);
         determination.setTypeStatusName(typeStatusName);
         determination.setDeterminedDate(determinedDate);

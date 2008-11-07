@@ -242,24 +242,46 @@
             <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
             <enableRules/>
             
-            <columnDef>90px,2px,210px,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
+            <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
             <!-- <rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>  -->
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
+            	<row>
+                    <cell type="label" labelfor="4"/>
+                    
+                    <cell type="field" id="4" name="newSynonymyDeterminations.newDetermination" uitype="text"/>
+                    <cell type="field" id="3" name="isCurrent" uitype="checkbox" isrequired="true"/>
+             	</row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=true"/>
-
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
+                    <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon"/>
                     
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="status" uitype="combobox" picklist="DeterminationStatus" isrequired="true"/>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="qualifier" uitype="text"/>
+                    
+                    <cell type="label" labelfor="9"/>
+                    <cell type="field" id="9" name="addendum" uitype="text"/>
                 </row>
-                
+ 				<row>
+                    <cell type="label" labelfor="11"/>
+                    <cell type="field" id="11" name="alternateTaxonNameUsage" uitype="combobox" picklist="AlternateTaxonNameUsages"/>
+                    
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="alternateTaxonName" uitype="text"/>
+                </row>
                 <row>
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="remarks" uitype="textarea" colspan="14" cols="50"/>
+                    <cell type="field" id="6" name="typeStatusName" uitype="combobox" picklist="TypeStatus"/>
+                    
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="determiner" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="12"/>
+                    <cell type="field" id="12" name="remarks" uitype="textarea" colspan="14" cols="50"/>
                 </row>
             </rows>
         </viewdef>
