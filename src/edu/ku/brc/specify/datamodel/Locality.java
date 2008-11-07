@@ -351,12 +351,12 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     }
 
     /**
-     * * i.e. Decimal, Deg/Min/Sec, ...
+     * * i.e. Decimal, Deg/Decimal Min, Deg/Min/Decimal Sec, ...
      */
     @Column(name = "OriginalLatLongUnit", unique = false, nullable = true, insertable = true, updatable = true)
     public Integer getOriginalLatLongUnit()
     {
-        return this.originalLatLongUnit;
+        return this.originalLatLongUnit == null ? 0 : this.originalLatLongUnit;
     }
 
     public void setOriginalLatLongUnit(Integer originalLatLongUnit)

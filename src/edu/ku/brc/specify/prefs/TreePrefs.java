@@ -173,7 +173,7 @@ public class TreePrefs extends GenericPrefsPanel
             this.id    = fillerId;
             this.clazz = fillerClass;
             
-            ValComboBox cbx = (ValComboBox)form.getCompById(fillerId);
+            ValComboBox cbx = form.getCompById(fillerId);
             if (tdi == null)
             {
                 cbx.setEnabled(false);
@@ -217,7 +217,7 @@ public class TreePrefs extends GenericPrefsPanel
         @SuppressWarnings("unchecked")
         public void setValueIntoPref()
         {
-            ValComboBox taxonCBX = (ValComboBox)form.getCompById(id);
+            ValComboBox taxonCBX = form.getCompById(id);
             
             TreeDefItemIface<T,D,I> tdi = (TreeDefItemIface<T,D,I>)taxonCBX.getComboBox().getSelectedItem();
             if (tdi != null)

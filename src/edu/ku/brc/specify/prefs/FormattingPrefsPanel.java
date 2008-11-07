@@ -168,19 +168,19 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         UIValidator.setIgnoreAllValidation(this, true);
         
         JLabel      fontNamesLabel = form.getLabelFor("fontNames"); //$NON-NLS-1$
-        ValComboBox fontNamesVCB   = (ValComboBox)form.getCompById("fontNames"); //$NON-NLS-1$
+        ValComboBox fontNamesVCB   = form.getCompById("fontNames"); //$NON-NLS-1$
         
         JLabel      fontSizesLabel = form.getLabelFor("fontSizes"); //$NON-NLS-1$
-        ValComboBox fontSizesVCB   = (ValComboBox)form.getCompById("fontSizes"); //$NON-NLS-1$
+        ValComboBox fontSizesVCB   = form.getCompById("fontSizes"); //$NON-NLS-1$
         
         JLabel      controlSizesLabel = form.getLabelFor("controlSizes"); //$NON-NLS-1$
-        ValComboBox controlSizesVCB   = (ValComboBox)form.getCompById("controlSizes"); //$NON-NLS-1$
+        ValComboBox controlSizesVCB   = form.getCompById("controlSizes"); //$NON-NLS-1$
         
         fontNames    = fontNamesVCB.getComboBox();
         fontSizes    = fontSizesVCB.getComboBox();
         controlSizes = controlSizesVCB.getComboBox();
         
-        testField = (JTextField)form.getCompById("fontTest"); //$NON-NLS-1$
+        testField = form.getCompById("fontTest"); //$NON-NLS-1$
         if (testField != null)
         {
             testField.setText(UIRegistry.getResourceString("FormattingPrefsPanel.THIS_TEST")); //$NON-NLS-1$
@@ -280,7 +280,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         
         disciplineCBX = (ValComboBox)form.getCompById("disciplineIconCBX"); //$NON-NLS-1$
         
-        final JLabel dispLabel = (JLabel)form.getCompById("disciplineIcon"); //$NON-NLS-1$
+        final JLabel dispLabel = form.getCompById("disciplineIcon"); //$NON-NLS-1$
         JComboBox    comboBox  = disciplineCBX.getComboBox();
         comboBox.setRenderer(new DefaultListCellRenderer()
         {
@@ -334,16 +334,16 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         //-----------------------------------
         // Date Field
         //-----------------------------------
-        dateFieldCBX = (ValComboBox)form.getCompById("scrdateformat"); //$NON-NLS-1$
+        dateFieldCBX = form.getCompById("scrdateformat"); //$NON-NLS-1$
         fillDateFormat();
         
         //-----------------------------------
         // Do App Icon
         //-----------------------------------
         
-        final JButton getIconBtn    = (JButton)form.getCompById("GetIconImage"); //$NON-NLS-1$
-        final JButton clearIconBtn  = (JButton)form.getCompById("ClearIconImage"); //$NON-NLS-1$
-        final JLabel  appLabel      = (JLabel)form.getCompById("appIcon"); //$NON-NLS-1$
+        final JButton getIconBtn    = form.getCompById("GetIconImage"); //$NON-NLS-1$
+        final JButton clearIconBtn  = form.getCompById("ClearIconImage"); //$NON-NLS-1$
+        final JLabel  appLabel      = form.getCompById("appIcon"); //$NON-NLS-1$
         
         String    imgEncoded = AppPreferences.getRemote().get(iconImagePrefName, ""); //$NON-NLS-1$
         ImageIcon appImgIcon = null;

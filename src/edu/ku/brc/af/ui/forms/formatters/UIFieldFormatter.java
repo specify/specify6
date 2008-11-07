@@ -740,7 +740,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
         {
             String val    = text.substring(monthInx, monthInx+month.getSize());
             int    monVal = Integer.parseInt(val);
-            if (monVal < 1 || monVal > 31)
+            if (monVal < 1 || monVal > 12)
             {
                 return false;
             }

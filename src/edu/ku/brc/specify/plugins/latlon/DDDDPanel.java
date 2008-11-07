@@ -11,6 +11,10 @@ import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.util.LatLonConverter.convert;
+import static edu.ku.brc.util.LatLonConverter.convertDDDDToDDDD;
+import static edu.ku.brc.util.LatLonConverter.getFormat;
+import static edu.ku.brc.util.LatLonConverter.parseLatLonStr;
 
 import java.awt.Component;
 import java.awt.event.ItemEvent;
@@ -41,6 +45,9 @@ import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable.ErrorType;
 import edu.ku.brc.util.LatLonConverter;
+import edu.ku.brc.util.LatLonConverter.FORMAT;
+import edu.ku.brc.util.LatLonConverter.Part;
+
 
 /**
  * 
@@ -70,6 +77,10 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     protected BigDecimal     latitude;
     protected BigDecimal     longitude;
     
+    protected String         latitudeStr;
+    protected String         longitudeStr;
+    protected FORMAT         defaultFormat;
+    
     protected JComboBox      latitudeDir;
     protected JComboBox      longitudeDir;
     protected JTextField     latitudeDirTxt;
@@ -77,12 +88,17 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     protected JLabel         latLabel;
     protected JLabel         lonLabel;
     
+    protected JTextField     latitudeTF;
+    protected JTextField     longitudeTF;
+    
     protected boolean        hasChanged = false;
     protected boolean        isRequired = false;
     protected ChangeListener changeListener = null;
     protected String         reason         = null;
     
-    protected Vector<ValFormattedTextFieldSingle> textFields  = new Vector<ValFormattedTextFieldSingle>();
+    protected Vector<ValFormattedTextFieldSingle> textFields = new Vector<ValFormattedTextFieldSingle>();
+    protected Vector<ValFormattedTextFieldSingle> latTFs      = new Vector<ValFormattedTextFieldSingle>();
+    protected Vector<ValFormattedTextFieldSingle> lonTFs      = new Vector<ValFormattedTextFieldSingle>();
     protected Vector<DataChangeNotifier>          dcNotifiers = new Vector<DataChangeNotifier>();
 
     // For helper methods
@@ -94,6 +110,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      */
     public DDDDPanel()
     {
+        this.defaultFormat = FORMAT.DDDDDD;
+        
         if (northSouth == null)
         {
             northSouth = new String[] {getResourceString(NORTH_SOUTH[0]), getResourceString(NORTH_SOUTH[1])};
@@ -148,16 +166,18 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      * @param cbxIndex the column index of the combobox
      * @return return the builder
      */
-    protected PanelBuilder createUI(final String colDef, 
-                                    final int latCols,
-                                    final int lonCols,
-                                    final int cbxIndex,
+    protected PanelBuilder createUI(final String  colDef, 
+                                    final int     latCols,
+                                    final int     lonCols,
+                                    final int     cbxIndex,
                                     final boolean asDDIntegers)
     {
-        latitudeDD    = asDDIntegers ? createTextField(Integer.class, latCols, 0, 90) : createTextField(Double.class, latCols, 0.0, 90.0);
-        longitudeDD   = asDDIntegers? createTextField(Integer.class, lonCols, 0, 180) : createTextField(Double.class, lonCols, 0.0, 180.0);
-
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout(colDef, "p, 1px, p, c:p:g"), this);
+        latitudeDD    = asDDIntegers ? createTextField(Integer.class, latCols, 0, 90, latTFs) : createTextField(Double.class, latCols, 0.0, 90.0, latTFs);
+        longitudeDD   = asDDIntegers? createTextField(Integer.class, lonCols, 0, 180, lonTFs) : createTextField(Double.class, lonCols, 0.0, 180.0, lonTFs);
+        textFields.addAll(latTFs);
+        textFields.addAll(lonTFs);
+        
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout(colDef, "p, 1px, p, c:p:g"));
         CellConstraints cc         = new CellConstraints();
         
         latitudeDir  = createDirComboxbox(true);
@@ -191,7 +211,30 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         builder.add(lonLabel = createI18NFormLabel("Longitude", SwingConstants.RIGHT), cc.xy(1, 3));
         builder.add(longitudeDD, cc.xy(3, 3));
         builder.add(lonDir, cc.xy(cbxIndex, 3));
+        
+        PanelBuilder pb = new PanelBuilder(new FormLayout(colDef, "p, 1px, p, p"), this);
+
+        PanelBuilder txtPanelPB = new PanelBuilder(new FormLayout("p", "p, 4px, p"));
+        
+        latitudeTF  = new JTextField(15);
+        longitudeTF = new JTextField(15);
+        //final JLabel     lat1Lbl     = createI18NFormLabel("LAT1", SwingConstants.RIGHT);
+        //final JLabel     lon1Lbl     = createI18NFormLabel("LON1", SwingConstants.RIGHT);
+        
+        //txtPanelPB.add(lat1Lbl, cc.xy (1, 1)); 
+        txtPanelPB.add(latitudeTF,  cc.xy (1, 1)); 
+        //txtPanelPB.add(lon1Lbl, cc.xy (1, 3)); 
+        txtPanelPB.add(longitudeTF,  cc.xy (1, 3));
+        
+        latitudeTF.setEditable(false);
+        longitudeTF.setEditable(false);
+        
+        pb.add(builder.getPanel(), cc.xy(1, 1));
+        pb.add(txtPanelPB.getPanel(),  cc.xy(3, 1));
      
+        textFields.addAll(latTFs);
+        textFields.addAll(lonTFs);
+        
         return builder;
     }
     
@@ -212,16 +255,18 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      */
     protected void setDataIntoUI()
     {
-
         if (latitude != null)
         {
+            Part[] parts = parseLatLonStr(latitudeStr);
             latitudeDir.setSelectedIndex(latitude.doubleValue() >= 0 ? 0 : 1);
-            latitudeDD.setText(LatLonConverter.format(latitude.abs()));
+            latitudeDD.setText(parts[0].getPart());
             
             if (latitudeDirTxt != null)
             {
                 latitudeDirTxt.setText(latitudeDir.getSelectedItem().toString());
             }
+            latitudeTF.setText(latitudeStr);
+            
         } else
         {
             latitudeDD.setText("");
@@ -229,16 +274,19 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             {
                 latitudeDirTxt.setText("");
             }
+            latitudeTF.setText("");
         }
         
         if (longitude != null)
         {
+            Part[] parts = parseLatLonStr(longitudeStr);
             longitudeDir.setSelectedIndex(longitude.doubleValue() >= 0 ? 0 : 1);
-            longitudeDD.setText(LatLonConverter.format(longitude.abs()));
+            longitudeDD.setText(parts[0].getPart());
             if (longitudeDirTxt != null)
             {
                 longitudeDirTxt.setText(longitudeDir.getSelectedItem().toString());
             }
+            longitudeTF.setText(longitudeStr);
         } else
         {
             longitudeDD.setText("");
@@ -246,9 +294,17 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             {
                 longitudeDirTxt.setText("");
             }    
+            longitudeTF.setText("");
         }
     }
     
+    /**
+     * @param txtFld
+     * @param cbx
+     * @param val
+     * @param dir
+     * @param isLat
+     */
     protected void set(final ValFormattedTextFieldSingle txtFld, 
                        final JComboBox cbx,
                        final String    val, 
@@ -261,6 +317,16 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         }
     }
     
+    /**
+     * @param lat1DDDDDD
+     * @param lat1Dir
+     * @param lon1DDDDDD
+     * @param lon1Dir
+     * @param lat2DDDDDD
+     * @param lat2Dir
+     * @param lon2DDDDDD
+     * @param lon2Dir
+     */
     public void set(final String lat1DDDDDD, final String lat1Dir,
                     final String lon1DDDDDD, final String lon1Dir,
                     final String lat2DDDDDD, final String lat2Dir,
@@ -311,7 +377,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             double val = Double.parseDouble(str);
             if (doDisplay && cnt > 0 && val < 10.0)
             {
-                sb.append('0');
+                //sb.append('0');
             }
             sb.append(str);
             if (doDisplay)
@@ -386,20 +452,28 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             String str = latitudeDD.getText();
             if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
             {
-                latitude = LatLonConverter.convertDDDDToDDDD(str, NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
+                latitude = convertDDDDToDDDD(str, NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
+                latitudeStr = latitudeTF.getText();
+                
             } else
             {
-                latitude = null;
+                latitude    = null;
+                latitudeStr = null;
             }
+            
+            
         } else
         {
             String str = longitudeDD.getText();
             if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
             {
-                longitude = LatLonConverter.convertDDDDToDDDD(str, EAST_WEST[longitudeDir.getSelectedIndex()]);
+                longitude = convertDDDDToDDDD(str, EAST_WEST[longitudeDir.getSelectedIndex()]);
+                longitudeStr = latitudeTF.getText();
+                
             } else
             {
-                longitude = null;
+                longitude    = null;
+                longitudeStr = null;
             }
         }
     }
@@ -428,7 +502,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     protected ValFormattedTextFieldSingle createTextField(final Class<?> dataCls,
                                                           final int      columns,
                                                           final Number   minValue,
-                                                          final Number   maxValue)
+                                                          final Number   maxValue,
+                                                          final Vector<ValFormattedTextFieldSingle> txtList)
     {
         NumberMinMaxFormatter       fmt       = new NumberMinMaxFormatter(dataCls, columns, minValue, maxValue);
         ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(fmt, false, false, false);
@@ -466,7 +541,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             textField.getDocument().addDocumentListener(dcn);
         }
         
-        textFields.add(textField);
+        txtList.add(textField);
 
         return textField;
     }
@@ -477,7 +552,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     protected void doDataChangeNotify()
     {
         SwingUtilities.invokeLater(new Runnable() {
-            //@Override
+            @Override
             public void run()
             {
                 hasChanged = true;
@@ -515,13 +590,18 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     }
     
     /* (non-Javadoc)
-     * @see LatLonUIIFace#set(java.math.BigDecimal, java.math.BigDecimal, java.math.BigDecimal, java.math.BigDecimal)
+     * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#set(java.math.BigDecimal, java.math.BigDecimal, java.lang.String, java.lang.String)
      */
-    public void set(final BigDecimal latitude1, 
-                    final BigDecimal longitude1)
+    public void set(final BigDecimal latitudeArg, 
+                    final BigDecimal longitudeArg,
+                    final String     latitudeStrArg, 
+                    final String     longitudeStrArg)
     {
-        this.latitude  = latitude1;
-        this.longitude = longitude1;
+        this.latitude     = latitudeArg;
+        this.longitude    = longitudeArg;
+        
+        this.latitudeStr  = convert(latitudeStrArg, getFormat(latitudeStrArg, defaultFormat), defaultFormat, LatLonConverter.LATLON.Latitude);
+        this.longitudeStr = convert(longitudeStrArg, getFormat(latitudeStrArg, defaultFormat), defaultFormat, LatLonConverter.LATLON.Longitude);
         
         setDataIntoUI();
     }
@@ -611,24 +691,39 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         this.changeListener = changeListener;
     }
     
+    protected ErrorType validateState(final boolean                             includeEmptyCheck,
+                                      final Vector<ValFormattedTextFieldSingle> txtList,
+                                      final JTextField                          textTF,
+                                      final String                              formattedStr)
+    {
+        ErrorType state = validateStateTexFields(includeEmptyCheck, txtList);
+        textTF.setText(state == ErrorType.Valid || state == ErrorType.Incomplete ? formattedStr : "");
+        return state;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#validateState(boolean)
      */
     public ErrorType validateState(final boolean includeEmptyCheck)
     {
         reason = null;
-        return validateStateTexFields(includeEmptyCheck);
+        
+        ErrorType latState = validateState(includeEmptyCheck, latTFs, latitudeTF, getLatitudeStr());
+        ErrorType lonState = validateState(includeEmptyCheck, lonTFs, longitudeTF, getLongitudeStr());
+        
+        return latState.ordinal() > lonState.ordinal() ? latState : lonState;
     }
     
     /**
      * @param includeEmptyCheck indicates that empty is invalid
      * @return whether the field is valid
      */
-    protected ErrorType validateStateTexFields(final boolean includeEmptyCheck)
+    protected ErrorType validateStateTexFields(final boolean includeEmptyCheck,
+                                               final Vector<ValFormattedTextFieldSingle> txtList)
     {
         int completeCnt = 0;
         UIValidatable.ErrorType valState = UIValidatable.ErrorType.Valid;
-        for (ValFormattedTextFieldSingle vtf : textFields)
+        for (ValFormattedTextFieldSingle vtf : txtList)
         {
             if (vtf.getText().length() == 0)
             {
@@ -652,7 +747,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
                 }
             }
         }
-        if (completeCnt > 0 && textFields.size() != completeCnt)
+        if (completeCnt > 0 && txtList.size() != completeCnt)
         {
             return UIValidatable.ErrorType.Incomplete;
         }
@@ -688,7 +783,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.forms.validation.DataChangeNotifier)
      */
-    public void dataChanged(String name, Component comp, DataChangeNotifier dcn)
+    public void dataChanged(final String name, final Component comp, final DataChangeNotifier dcn)
     {
         doDataChanged();
 
@@ -705,4 +800,5 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     {
         doDataChanged();
     }
+    
 }

@@ -106,7 +106,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
             Geography geo = locality.getGeography();
             if (geo == null)
             {
-                ValComboBoxFromQuery cbx = (ValComboBoxFromQuery)parent.getCompById(geoId);
+                ValComboBoxFromQuery cbx = parent.getCompById(geoId);
                 if (cbx != null)
                 {
                     geo = (Geography)cbx.getValue();
@@ -124,7 +124,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                 String locName = locality.getLocalityName();
                 if (StringUtils.isEmpty(locName))
                 {
-                    ValTextField txt = (ValTextField)parent.getCompById(locId);
+                    ValTextField txt = parent.getCompById(locId);
                     if (txt != null)
                     {
                         locName = (String)txt.getValue();
@@ -296,10 +296,10 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
            BigDecimal lat1 = new BigDecimal(Double.parseDouble(gcData.getLatitude()));
            BigDecimal lon1 = new BigDecimal(Double.parseDouble(gcData.getLongitude()));
            
-           LatLonUI latLonUI = (LatLonUI)parent.getCompById(llId);
+           LatLonUI latLonUI = parent.getCompById(llId);
            if (latLonUI != null)
            {
-               latLonUI.setLatLon(lat1, lon1, null, null);
+               latLonUI.setLatLon(lat1, lon1, gcData.getLatitude(), gcData.getLongitude(), null, null, null, null);
            }
        }
     }

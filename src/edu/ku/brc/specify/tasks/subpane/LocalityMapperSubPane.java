@@ -308,10 +308,10 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         multiView.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(138,128,128)),
                             BorderFactory.createEmptyBorder(4, 4, 4, 4)));
 
-        formViewObj = (FormViewObj)multiView.getCurrentView();
+        formViewObj = multiView.getCurrentViewAsFormViewObj();
         formViewObj.getUIComponent().setBackground(Color.WHITE);
 
-        imageJList = (JList)formViewObj.getCompById("taxonItems");
+        imageJList = formViewObj.getCompById("taxonItems");
         imageJList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e)
             {
@@ -333,7 +333,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
                     if (StringUtils.isNotEmpty(nameStr))
                     {
                         img = imageMap.get(nameStr); // might return null
-                        ImageDisplay imgDisplay = (ImageDisplay)formViewObj.getCompById("image");
+                        ImageDisplay imgDisplay = formViewObj.getCompById("image");
                         if (img != null)
                         {
                             imgDisplay.setImage(new ImageIcon(img));

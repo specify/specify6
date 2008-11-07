@@ -6838,15 +6838,25 @@ public class BuildSampleDatabase
                 {
                     String sqlStr = "SELECT user, host, db, select_priv, insert_priv, grant_priv FROM mysql.db WHERE db = '"+databaseName+"' AND user = '"+saUserName+"'";
                     ResultSet rs = stmt.executeQuery(sqlStr);
-                    if (!rs.next())
+                    if (rs.next())
                     {
-                        String createUserStr = "DROP USER "+saUserName;
-                        stmt.executeUpdate(createUserStr);
+                        try
+                        {
+                            String dropSQl = "DROP USER "+saUserName;
+                            log.debug(dropSQl);
+                            stmt.executeUpdate(dropSQl);
+                            
+                        } catch (Exception ex)
+                        {
+                            
+                        }
                     }
                     rs.close();
                     
                     String createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE ON "+databaseName+".* TO '"+saUserName+"'@'%' IDENTIFIED BY '"+saPassword+"'";
                     int rv = stmt.executeUpdate(createUserStr);
+                    createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE ON "+databaseName+".* TO '"+saUserName+"'@'localhost' IDENTIFIED BY '"+saPassword+"'";
+                    rv = stmt.executeUpdate(createUserStr);
                     return rv == 1;
                 }
             } catch (SQLException ex)

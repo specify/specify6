@@ -526,12 +526,12 @@ class SetUpBuildDlg extends CustomDialog
                 try
                 {
                     dbUser.first  = dbUsernameTxtFld.getText();
-                    dbUser.second  = new String(dbPasswdTxtFld.getPassword());
+                    dbUser.second = new String(dbPasswdTxtFld.getPassword());
                     
-                    saUser.first = usrUsernameTxtFld.getText();
-                    saUser.second = new String(usrPasswdTxtFld.getPassword());
+                    saUser.first  = saUsernameTxtFld.getText();
+                    saUser.second = new String(saPasswdTxtFld.getPassword());
                     
-                    cmUser.first = usrUsernameTxtFld.getText();
+                    cmUser.first  = usrUsernameTxtFld.getText();
                     cmUser.second = new String(usrPasswdTxtFld.getPassword());
                     
                     bldSampleDatabase.startBuild(databaseName, 

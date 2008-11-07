@@ -41,9 +41,13 @@ public interface LatLonUIIFace
      * Sest the Latitude and Longitude.
      * @param latitude the lat
      * @param longitude the lon
+     * @param latitudeStr the string representation of the latitude value
+     * @param longitudeStr the string representation of the longitude value
      */
-    public abstract void set(final BigDecimal latitude, 
-                             final BigDecimal longitude);
+    public abstract void set(BigDecimal latitude, 
+                             BigDecimal longitude,
+                             String     latitudeStr, 
+                             String     longitudeStr);
     
     /**
      * Gets the data from the controls. 
@@ -124,7 +128,7 @@ public interface LatLonUIIFace
     public abstract void clear();
     
     /**
-     * 
+     * Clean up any internal unneeded data structures.
      */
     public abstract void cleanUp();
     

@@ -3290,12 +3290,13 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getCompById(java.lang.String)
      */
-    public Component getCompById(final String id)
+    @SuppressWarnings("unchecked")
+    public <T> T getCompById(final String id)
     {
         FVOFieldInfo fi = controlsById.get(id);
         if (fi != null)
         {
-            return fi.getComp();
+            return (T)fi.getComp();
         }
         // else
         //throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");

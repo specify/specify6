@@ -98,7 +98,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         {
             typeComp       = formViewObj.getCompById("0");
             lastLabel      = formViewObj.getLabelFor("3");
-            lastNameText   = (JTextField)formViewObj.getCompById("3");
+            lastNameText   = formViewObj.getCompById("3");
             
             if (typeComp instanceof ValComboBox)
             {

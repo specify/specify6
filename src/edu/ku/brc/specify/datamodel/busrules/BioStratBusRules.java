@@ -88,7 +88,7 @@ public class BioStratBusRules extends GeologicTimePeriodBusRules
             gtp.setIsBioStrat(true);
         }
         
-        final ValCheckBox chkbx = (ValCheckBox)formViewObj.getCompById("isBioStrat");
+        final ValCheckBox chkbx = formViewObj.getCompById("isBioStrat");
         if (chkbx != null)
         {
             chkbx.setSelected(true);

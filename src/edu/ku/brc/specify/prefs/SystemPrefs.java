@@ -73,7 +73,7 @@ public class SystemPrefs extends GenericPrefsPanel
     {
         createForm("Preferences", "System");
         
-        JButton clearCache = (JButton)form.getCompById("clearcache");
+        JButton clearCache = form.getCompById("clearcache");
         
         clearCache.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -92,14 +92,14 @@ public class SystemPrefs extends GenericPrefsPanel
         });
         
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        ValBrowseBtnPanel browse = (ValBrowseBtnPanel)form.getCompById("7");
+        ValBrowseBtnPanel browse = form.getCompById("7");
         if (browse != null)
         {
             oldSplashPath = localPrefs.get(SPECIFY_BG_IMG_PATH, null);
             browse.setValue(oldSplashPath, null);
         }
         
-        browse = (ValBrowseBtnPanel)form.getCompById("8");
+        browse = form.getCompById("8");
         if (browse != null)
         {
             oldAttachmentPath = localPrefs.get(ATTCH_PATH, null);
@@ -115,7 +115,7 @@ public class SystemPrefs extends GenericPrefsPanel
             });
         }
         
-        final ValComboBox localeCBX = (ValComboBox)form.getCompById("5");
+        final ValComboBox localeCBX = form.getCompById("5");
         localeCBX.getComboBox().setRenderer(new LocaleRenderer());
         localeCBX.setEnabled(false);
         
@@ -176,7 +176,7 @@ public class SystemPrefs extends GenericPrefsPanel
                 UIValidator.setIgnoreAllValidation("SystemPrefs", true);
                 localeCBX.setEnabled(true);
                 localeCBX.getComboBox().setSelectedIndex(inx);
-                JTextField loadingLabel = (JTextField)form.getCompById("6");
+                JTextField loadingLabel = form.getCompById("6");
                 if (loadingLabel != null)
                 {
                     loadingLabel.setText(UIRegistry.getResourceString("LOCALE_RESTART_REQUIRED"));
@@ -188,7 +188,7 @@ public class SystemPrefs extends GenericPrefsPanel
         // start the background task
         workerThread.start();
         
-        ValCheckBox chk = (ValCheckBox)form.getCompById("2");
+        ValCheckBox chk = form.getCompById("2");
         chk.setValue(localPrefs.getBoolean(VERSION_CHECK, true), "true");
     }
 
@@ -208,7 +208,7 @@ public class SystemPrefs extends GenericPrefsPanel
     {
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         
-        ValBrowseBtnPanel browse = (ValBrowseBtnPanel)form.getCompById("8");
+        ValBrowseBtnPanel browse = form.getCompById("8");
         if (browse != null)
         {
             String newAttachmentPath = browse.getValue().toString();
@@ -247,10 +247,10 @@ public class SystemPrefs extends GenericPrefsPanel
             
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();
             
-            ValCheckBox chk = (ValCheckBox)form.getCompById("2");
+            ValCheckBox chk = form.getCompById("2");
             localPrefs.putBoolean(VERSION_CHECK, (Boolean)chk.getValue());
             
-            ValComboBox localeCBX = (ValComboBox)form.getCompById("5");
+            ValComboBox localeCBX = form.getCompById("5");
             Locale item = (Locale)localeCBX.getComboBox().getSelectedItem();
             if (item != null)
             {
@@ -290,7 +290,7 @@ public class SystemPrefs extends GenericPrefsPanel
                     }
                 }
                 
-                ValBrowseBtnPanel browse = (ValBrowseBtnPanel)form.getCompById("7");
+                ValBrowseBtnPanel browse = form.getCompById("7");
                 if (browse != null)
                 {
                     String newSplashPath = browse.getValue().toString();

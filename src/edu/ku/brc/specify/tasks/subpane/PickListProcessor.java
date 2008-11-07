@@ -57,7 +57,7 @@ public class PickListProcessor implements FormProcessor
 {
 
     protected FormPane     formPane = null;
-    protected Viewable Viewable;
+    protected Viewable     viewable;
 
     // UI
     protected JButton    addBtn     = null;
@@ -112,27 +112,27 @@ public class PickListProcessor implements FormProcessor
 
         if (formPane != null)
         {
-            Viewable = formPane.getViewable();
-            pickList     = (PickList)Viewable.getDataObj();
+            viewable = formPane.getViewable();
+            pickList     = (PickList)viewable.getDataObj();
 
-            name  = (JTextField)Viewable.getCompById("name");
-            list  = (JList)Viewable.getCompById("items");
-            title = (JTextField)Viewable.getCompById("title");
-            value = (JTextField)Viewable.getCompById("value");
+            name  = viewable.getCompById("name");
+            list  = viewable.getCompById("items");
+            title = viewable.getCompById("title");
+            value = viewable.getCompById("value");
 
             list.setModel(new AbstractListModel() {
                 public int getSize() { return usedInList.size(); }
                 public Object getElementAt(int index) { return usedInList.get(index); }
             });
 
-            JButton saveBtn = (JButton) Viewable.getCompById("savePL");
-            Viewable.getValidator().addEnableItem(saveBtn, FormValidator.EnableType.ValidAndChangedItems);
+            JButton saveBtn = viewable.getCompById("savePL");
+            viewable.getValidator().addEnableItem(saveBtn, FormValidator.EnableType.ValidAndChangedItems);
 
             //Viewable.getValidator().addRuleObjectMapping("titleVal", new TitleValidator(name, titlesList));
-            Viewable.getValidator().addRuleObjectMapping("processor", this);
+            viewable.getValidator().addRuleObjectMapping("processor", this);
 
-            addBtn    = (JButton) Viewable.getCompById("AddItem");
-            removeBtn = (JButton) Viewable.getCompById("RemoveItem");
+            addBtn    = viewable.getCompById("AddItem");
+            removeBtn = viewable.getCompById("RemoveItem");
 
 
             addBtn.addActionListener(new ActionListener()
@@ -155,7 +155,7 @@ public class PickListProcessor implements FormProcessor
                                 throw new RuntimeException("Unknown model type for JList["+lm+"]");
                             }
                             list.setSelectedIndex(-1);
-                            Viewable.getValidator().validateForm();
+                            viewable.getValidator().validateForm();
                         }
                     });
 
@@ -177,16 +177,16 @@ public class PickListProcessor implements FormProcessor
                                 }
                             }
                             list.setSelectedIndex(-1);
-                            Viewable.getValidator().validateForm();
+                            viewable.getValidator().validateForm();
                         }
                     });
 
-            JButton deleteBtn = (JButton) Viewable.getCompById("deletePL");
+            JButton deleteBtn = viewable.getCompById("deletePL");
             deleteBtn.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
-                            CommandDispatcher.dispatch(new CommandAction(SystemSetupTask.SYSTEMSETUPTASK, "DeletePickList", Viewable.getDataObj()));
+                            CommandDispatcher.dispatch(new CommandAction(SystemSetupTask.SYSTEMSETUPTASK, "DeletePickList", viewable.getDataObj()));
 
                         }
                     });
@@ -195,24 +195,24 @@ public class PickListProcessor implements FormProcessor
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
-                            pickList.setName(((JTextField)Viewable.getCompById("name")).getText());
+                            pickList.setName(((JTextField)viewable.getCompById("name")).getText());
 
-                            String sizeStr = ((JTextField)Viewable.getCompById("sizeLimit")).getText().trim();
+                            String sizeStr = ((JTextField)viewable.getCompById("sizeLimit")).getText().trim();
                             pickList.setSizeLimit(isNotEmpty(sizeStr) ? Integer.parseInt(sizeStr) : 0);
 
-                            pickList.setReadOnly(((JCheckBox)Viewable.getCompById("readOnly")).isSelected());
+                            pickList.setReadOnly(((JCheckBox)viewable.getCompById("readOnly")).isSelected());
 
-                            CommandDispatcher.dispatch(new CommandAction(SystemSetupTask.SYSTEMSETUPTASK, "SavePickList", Viewable.getDataObj()));
+                            CommandDispatcher.dispatch(new CommandAction(SystemSetupTask.SYSTEMSETUPTASK, "SavePickList", viewable.getDataObj()));
 
                         }
                     });
 
-            Viewable.getValidator().validateForm();
+            viewable.getValidator().validateForm();
 
         } else
         {
             // do cleanup
-            Viewable = null;
+            viewable = null;
             pickList     = null;
         }
     }

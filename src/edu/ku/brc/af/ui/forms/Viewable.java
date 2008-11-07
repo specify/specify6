@@ -70,7 +70,7 @@ public interface Viewable
      * @param id the id of the component
      * @return the component
      */
-    public abstract Component getCompById(final String id);
+    public abstract <T> T getCompById(final String id);
 
     /**
      * Returns a label by id.

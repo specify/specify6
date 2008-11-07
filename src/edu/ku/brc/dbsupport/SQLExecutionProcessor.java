@@ -247,8 +247,6 @@ public class SQLExecutionProcessor
                     listener.exectionDone(this, null);
                 }
                 
-                
-
                 if (isAutoCloseConnection)
                 {
                     close();

@@ -59,13 +59,13 @@ public class LoginPrefs extends GenericPrefsPanel
 
         if (formView != null & form != null && form.getUIComponent() != null)
         {
-            JCheckBox chkbx = (JCheckBox)form.getCompById("autologin");
+            JCheckBox chkbx = form.getCompById("autologin");
             if (chkbx != null)
             {
                 chkbx.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.autologin", false));
             }
             
-            JButton btn = (JButton)form.getCompById("usernames");
+            JButton btn = form.getCompById("usernames");
             if (btn != null)
             {
                 btn.addActionListener(new ActionListener() {
@@ -76,7 +76,7 @@ public class LoginPrefs extends GenericPrefsPanel
                 }
                });
             }
-            btn = (JButton)form.getCompById("databases");
+            btn = form.getCompById("databases");
             if (btn != null)
             {
                 btn.addActionListener(new ActionListener() {
@@ -88,7 +88,7 @@ public class LoginPrefs extends GenericPrefsPanel
                 }
                });
             }
-            btn = (JButton)form.getCompById("servers");
+            btn = form.getCompById("servers");
             if (btn != null)
             {
                 btn.addActionListener(new ActionListener() {
@@ -121,7 +121,7 @@ public class LoginPrefs extends GenericPrefsPanel
         
         if (formView != null & form != null && form.getUIComponent() != null)
         {
-            JCheckBox chkbx = (JCheckBox)form.getCompById("autologin");
+            JCheckBox chkbx = form.getCompById("autologin");
             if (chkbx != null)
             {
                 AppPreferences.getLocalPrefs().putBoolean("login.autologin", chkbx.isSelected());

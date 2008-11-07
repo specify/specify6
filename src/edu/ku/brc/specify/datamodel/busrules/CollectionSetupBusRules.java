@@ -118,7 +118,7 @@ public class CollectionSetupBusRules extends BaseBusRules
     {
         super.initialize(viewableArg);
         
-        JButton btn = (JButton)formViewObj.getCompById("newNumSchemeBTN");
+        JButton btn = formViewObj.getCompById("newNumSchemeBTN");
         if (btn != null)
         {
             btn.addActionListener(new ActionListener() {
@@ -128,7 +128,7 @@ public class CollectionSetupBusRules extends BaseBusRules
                     createNewNumScheme();
                 }
             });
-            btn = (JButton)formViewObj.getCompById("chooseNumSchemeBTN");
+            btn = formViewObj.getCompById("chooseNumSchemeBTN");
             btn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e)
@@ -158,7 +158,7 @@ public class CollectionSetupBusRules extends BaseBusRules
         UIHelper.centerAndShow(dlg);
         if (!dlg.isCancelled())
         {
-            ValTextField numSchemTxt = (ValTextField)formViewObj.getCompById("numScheme");
+            ValTextField numSchemTxt = formViewObj.getCompById("numScheme");
             numSchemTxt.setText(scheme.getIdentityTitle());
             
             if (collection != null)

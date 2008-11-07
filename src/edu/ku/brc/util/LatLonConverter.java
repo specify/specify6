@@ -11,6 +11,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -27,21 +28,28 @@ import org.apache.commons.lang.StringUtils;
  */
 public class LatLonConverter
 {
+    protected final static int DDDDDD_LEN = 7;
+    protected final static int DDMMMM_LEN = 5;
+    protected final static int DDMMSS_LEN = 3;
+    
+    protected static int[] DECIMAL_SIZES = {7, 5, 3};
+    
     public enum LATLON          {Latitude, Longitude}
     public enum FORMAT          {DDDDDD, DDMMMM, DDMMSS}
     public enum DEGREES_FORMAT  {None, Symbol, String}
     public enum DIRECTION       {None, NorthSouth, EastWest}
     
-    private static boolean useDB = false;
+    private static LatLonConverter latLonConverter = new LatLonConverter();
+    private static boolean         useDB           = false;
     
-    public static DecimalFormat decFormatter = new DecimalFormat("#0.0000000#");
-    protected static StringBuffer zeroes = new StringBuffer(64);
+    public static DecimalFormat    decFormatter    = new DecimalFormat("#0.0000000#");
+    protected static StringBuffer  zeroes          = new StringBuffer(64);
     
     
-    protected static BigDecimal    minusOne       = new BigDecimal("-1.0");
-    protected static DecimalFormat decFormatter2  = new DecimalFormat("#0");
-    protected static BigDecimal    one            = new BigDecimal("1.0");
-    protected static BigDecimal    sixty          = new BigDecimal("60.0");
+    protected static BigDecimal    minusOne        = new BigDecimal("-1.0");
+    protected static DecimalFormat decFormatter2   = new DecimalFormat("#0");
+    protected static BigDecimal    one             = new BigDecimal("1.0");
+    protected static BigDecimal    sixty           = new BigDecimal("60.0");
     
     public static String[] NORTH_SOUTH;
     public static String[] EAST_WEST;
@@ -61,6 +69,209 @@ public class LatLonConverter
         {
             zeroes.append("00000000");
         }
+    }
+    
+    /**
+     * @param str
+     * @return
+     */
+    public static Part[] parseLatLonStr(final String str)
+    {
+        String seps = "\u00b0" + "'\" ";
+        if (StringUtils.isNotEmpty(str))
+        {
+            ArrayList<Part> parts = new ArrayList<Part>(10);
+            String[] tokens = StringUtils.split(str, seps);
+            for (String token : tokens)
+            {
+                int inx = token.indexOf(".");
+                int len = -1;
+                if (inx > -1)
+                {
+                    len = token.length() - inx - 1;
+                }
+                parts.add(latLonConverter.new Part(token, len));
+            }
+            return parts.toArray(new Part[parts.size()]);
+        }
+        return new Part[] {};
+    }
+    
+    /**
+     * @param formatInt
+     * @return
+     */
+    public static FORMAT convertIntToFORMAT(final int formatInt)
+    {
+        switch (formatInt)
+        {
+            case 0 : return FORMAT.DDDDDD;
+            case 1 : return FORMAT.DDMMMM;
+            case 2 : return FORMAT.DDMMSS;
+            default : return FORMAT.DDDDDD;
+        }
+    }
+    
+    /**
+     * @param bd
+     * @param llStr
+     * @param type
+     * @return
+     */
+    public static String getFormattedLatLon(final BigDecimal bd, final String llStr, final FORMAT type)
+    {
+        if (StringUtils.isEmpty(llStr))
+        {
+            if (bd == null)
+            {
+                return null;
+            }
+            
+            switch (type)
+            {
+                case DDDDDD :
+                    return convertToSignedDDDDDD(bd, DDDDDD_LEN);
+                    
+                case DDMMMM :
+                    return convertToSignedDDDDDD(bd, DDMMMM_LEN);
+                    
+                case DDMMSS :
+                    return convertToSignedDDDDDD(bd, DDMMSS_LEN);
+            }
+            
+        } else
+        {
+            return llStr;
+        }
+        return null;
+    }
+    
+    /**
+     * @param str
+     * @param defaultFormat
+     * @return
+     */
+    public static FORMAT getFormat(final String str, final FORMAT defaultFormat)
+    {
+        String seps = "\u00b0" + "'\" ";
+        if (StringUtils.isNotEmpty(str))
+        {
+            String[] tokens = StringUtils.split(str, seps);
+            switch (tokens.length)
+            {
+                case 0:
+                    break;
+                    
+                case 1:
+                    return FORMAT.DDDDDD;
+                    
+                case 2:
+                    return FORMAT.DDMMMM;
+                    
+                case 3:
+                    return FORMAT.DDMMSS;
+                    
+                default:
+                    break;
+                
+            }
+        }
+        return defaultFormat;
+    }
+    
+    /**
+     * @param str
+     * @param fromFmt
+     * @param toFmt
+     * @param latOrLon
+     * @return
+     */
+    public static String convert(final String str, 
+                                 final FORMAT fromFmt, 
+                                 final FORMAT toFmt, 
+                                 final LATLON latOrLon)
+    {
+        if (StringUtils.isNotEmpty(str))
+        {
+            BigDecimal bd = null;
+            switch (fromFmt)
+            {
+                case DDDDDD:
+                    /*switch (toFmt)
+                    {
+                        case DDMMMM :
+                            bd = convertDDDDTo(str)
+                            
+                    }*/
+                    bd = convertDDDDToDDDD(str);
+                    break;
+    
+                case DDMMMM:
+                    bd = convertDDMMMMToDDDD(str);
+                    break;
+    
+                case DDMMSS:
+                    bd = convertDDMMSSToDDDD(str);
+                    break;
+            }
+            
+            String outStr = format(bd, latOrLon, toFmt, DEGREES_FORMAT.Symbol, DECIMAL_SIZES[toFmt.ordinal()]);
+            
+            /*switch (toFmt)
+            {
+                case DDDDDD:
+                    outStr = format(bd, latOrLon, FORMAT.DDDDDD, DEGREES_FORMAT.Symbol
+                            final FORMAT         format,
+                            final DEGREES_FORMAT degreesFMT,
+                            final int            decimalLen
+                    break;
+    
+                case DDMMMM:
+                    outStr = convertToDDMMMM(bd, 5);
+                    break;
+    
+                case DDMMSS:
+                    outStr = cconvertTo
+                    break;
+            }*/
+            return outStr;
+        }
+        return null;
+    }
+    
+    public static String formatValueFromStrings(final String... strArgs)
+    {
+        String degrees = "\u00b0";
+        
+        StringBuilder sb = new StringBuilder();
+        
+        int cnt = 0;
+        for (String strArg : strArgs)
+        {
+            String str = StringUtils.deleteWhitespace(strArg);
+            if (StringUtils.isEmpty(str))
+            {
+                str = "0";
+            }
+            
+            if (cnt > 0) sb.append(' ');
+            
+            sb.append(str);
+            if (cnt == 0)
+            {
+                sb.append(degrees);
+                
+            } else if (strArgs.length == 2)
+            {
+                sb.append("'");
+                
+            } else if (strArgs.length == 3)
+            {
+                sb.append(cnt == 1 ? "'" : "\"");
+            }
+            cnt++;
+        }
+        return sb.toString();
     }
 
     /**
@@ -595,5 +806,52 @@ public class LatLonConverter
         }
 
         return val;
+    }
+    
+    //--------------------------------------------------------
+    // Inner Class
+    //--------------------------------------------------------
+    public class Part 
+    {
+        protected String part;
+        protected int    decimalLen;
+        
+        /**
+         * @param part
+         * @param decimalLen
+         */
+        public Part(String part)
+        {
+            this(part, -1);
+        }
+
+        /**
+         * @param part
+         * @param decimalLen
+         */
+        public Part(String part, int decimalLen)
+        {
+            super();
+            this.part       = part;
+            this.decimalLen = decimalLen;
+            
+            System.err.println(part+"  "+decimalLen);
+        }
+
+        /**
+         * @return the part
+         */
+        public String getPart()
+        {
+            return part;
+        }
+
+        /**
+         * @return the decimalLen
+         */
+        public int getDecimalLen()
+        {
+            return decimalLen;
+        }
     }
 }

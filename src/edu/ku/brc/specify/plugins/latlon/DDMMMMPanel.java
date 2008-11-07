@@ -8,17 +8,17 @@
 package edu.ku.brc.specify.plugins.latlon;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.util.LatLonConverter.stripZeroes;
+import static edu.ku.brc.util.LatLonConverter.parseLatLonStr;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
-import edu.ku.brc.af.ui.forms.validation.UIValidatable.ErrorType;
 import edu.ku.brc.util.LatLonConverter;
+import edu.ku.brc.util.LatLonConverter.FORMAT;
+import edu.ku.brc.util.LatLonConverter.Part;
 
 /**
  * Used for entering lat/lon data in the Degrees and Decimal Minutes.
@@ -43,7 +43,9 @@ public class DDMMMMPanel extends DDDDPanel
      */
     public DDMMMMPanel()
     {
-        decimalFmtLen = 5;
+        super();
+        this.defaultFormat = FORMAT.DDMMMM;
+        this.decimalFmtLen = 5;
     }
     
     /* (non-Javadoc)
@@ -74,8 +76,8 @@ public class DDMMMMPanel extends DDDDPanel
         PanelBuilder    builder = super.createUI(colDef, latCols, lonCols, cbxIndex, asDDIntegers);
         CellConstraints cc      = new CellConstraints();
 
-        latitudeMM   = asMMIntegers ? createTextField(Integer.class, 8, 0, 59) : createTextField(Double.class, 8, 0.0, 59.99999999);
-        longitudeMM  = asMMIntegers ? createTextField(Integer.class, 8, 0, 59) : createTextField(Double.class, 8, 0.0, 59.99999999);
+        latitudeMM   = asMMIntegers ? createTextField(Integer.class, 8, 0, 59, latTFs) : createTextField(Double.class, 8, 0.0, 59.99999999, latTFs);
+        longitudeMM  = asMMIntegers ? createTextField(Integer.class, 8, 0, 59, lonTFs) : createTextField(Double.class, 8, 0.0, 59.99999999, lonTFs);
 
         builder.add(createLabel(" "), cc.xy(4,1));
         builder.add(latitudeMM, cc.xy(5,1));
@@ -83,9 +85,13 @@ public class DDMMMMPanel extends DDDDPanel
         builder.add(createLabel(" "), cc.xy(4,3));
         builder.add(longitudeMM, cc.xy(5,3));
 
+        textFields.clear();
+        textFields.addAll(latTFs);
+        textFields.addAll(lonTFs);
+        
         return builder;
     }
-    
+
     /* (non-Javadoc)
      * @see DDDDPanel#setDataIntoUI()
      */
@@ -95,16 +101,17 @@ public class DDMMMMPanel extends DDDDPanel
         if (latitude != null)
         {
             //System.out.println("BD:["+latitude.abs()+"] text["+LatLonConverter.convertToDDMMMM(latitude.abs())+"]");
+            Part[] parts = parseLatLonStr(latitudeStr);
             latitudeDir.setSelectedIndex(latitude.doubleValue() >= 0 ? 0 : 1);
-            String[] parts = StringUtils.split(LatLonConverter.convertToDDMMMM(latitude.abs(), decimalFmtLen));
-            latitudeDD.setText(stripZeroes(parts[0]));
-            latitudeMM.setText(stripZeroes(parts[1]));
+            latitudeDD.setText(parts[0].getPart());
+            latitudeMM.setText(parts[1].getPart());
             
             if (latitudeDirTxt != null)
             {
                 latitudeDirTxt.setText(latitudeDir.getSelectedItem().toString());
             }
-
+            latitudeTF.setText(latitudeStr);
+            
         } else
         {
             latitudeDD.setText("");
@@ -113,20 +120,23 @@ public class DDMMMMPanel extends DDDDPanel
             {
                 latitudeDirTxt.setText("");
             }
+            latitudeTF.setText("");
         }
         
         if (longitude != null)
         {
             //System.out.println("BD:["+longitude+"] text["+LatLonConverter.convertToDDMMMM(longitude.abs())+"]");
+            Part[] parts = parseLatLonStr(longitudeStr);
             longitudeDir.setSelectedIndex(longitude.doubleValue() >= 0 ? 0 : 1);
-            String[] parts = StringUtils.split(LatLonConverter.convertToDDMMMM(longitude.abs(), decimalFmtLen));
-            longitudeDD.setText(stripZeroes(parts[0]));
-            longitudeMM.setText(stripZeroes(parts[1]));
+            longitudeDD.setText(parts[0].getPart());
+            longitudeMM.setText(parts[1].getPart());
             
             if (longitudeDirTxt != null)
             {
                 longitudeDirTxt.setText(longitudeDir.getSelectedItem().toString());
             }
+            longitudeTF.setText(longitudeStr);
+            
         } else
         {
             longitudeDD.setText("");
@@ -134,7 +144,8 @@ public class DDMMMMPanel extends DDDDPanel
             if (latitudeDirTxt != null)
             {
                 longitudeDirTxt.setText("");
-            }    
+            }
+            longitudeTF.setText("");
         }
     }
     
@@ -195,7 +206,7 @@ public class DDMMMMPanel extends DDDDPanel
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.latlon.DDDDPanel#validateState(boolean)
      */
-    public ErrorType validateState(final boolean includeEmptyCheck)
+    /*public ErrorType validateState(final boolean includeEmptyCheck)
     {
         ErrorType state = validateStateTexFields(includeEmptyCheck);
         if (state == ErrorType.Valid)
@@ -203,9 +214,16 @@ public class DDMMMMPanel extends DDDDPanel
             ValState valStateLat = evalState(latitudeDD, latitudeMM);
             ValState valStateLon = evalState(longitudeDD, longitudeMM);
             state = valStateLat != ValState.Error && valStateLon != ValState.Error ? ErrorType.Valid : ErrorType.Error;
+            
+            if (state == ErrorType.Valid || state == ErrorType.Incomplete)
+            {
+                latitudeTF.setText(getLatitudeStr());
+                longitudeTF.setText(getLongitudeStr());
+                
+            }
         }
         return state;
-    }
+    }*/
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.latlon.DDDDPanel#clear()
