@@ -72,17 +72,6 @@ public class TreeAdditionalProcFactory
             //empty block
         }
         
-        
-//        @SuppressWarnings("unchecked")
-//        private DeterminationStatus getDeterminationStatus(final Session session, final Byte type)
-//        {
-//            Criteria criteria = session.createCriteria(DeterminationStatus.class);
-//            criteria.add(Restrictions.eq("type", type));
-//            List<DeterminationStatus> list = criteria.list();
-//            return list == null || list.size() == 0 ? null : list.get(0);
-//        }
-
-
         /* (non-Javadoc)
          * @see edu.ku.brc.specify.treeutils.TreeAdditionalProcFactory.TreeAdditionalProcessing#process(org.hibernate.Session, java.lang.Object, java.lang.Object)
          */
@@ -144,6 +133,7 @@ public class TreeAdditionalProcFactory
                         // Create a new 'current' determination
                         // and add it to the Source Taxon
                         Determination newDet = (Determination)det.clone();
+                        newDet.setCollectionMemberId(det.getCollectionMemberId());
                         newDet.setTaxon(dstTaxon);
                         newDet.setIsCurrent(true);
 
