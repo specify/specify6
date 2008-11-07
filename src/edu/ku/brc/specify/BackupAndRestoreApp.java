@@ -609,7 +609,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         
         Specify.adjustLocaleFromPrefs();
         
-        dbLoginPanel = UIHelper.doLogin(null, true, false, false, this, "SpecifyLargeIcon", getTitle(), null); // true means do auto login if it can, second bool means use dialog instead of frame
+        dbLoginPanel = UIHelper.doLogin(null, false, false, this, "SpecifyLargeIcon", getTitle(), null); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
     /**

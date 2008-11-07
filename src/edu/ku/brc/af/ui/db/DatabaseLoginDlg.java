@@ -36,10 +36,9 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
 {
-     private static final Logger          log            = Logger.getLogger(DatabaseLoginDlg.class);
+     private static final Logger     log            = Logger.getLogger(DatabaseLoginDlg.class);
      protected DatabaseLoginPanel    dbPanel;
      protected DatabaseLoginListener listener;
-     protected boolean               doAutoLogin = false;
      protected boolean               doAutoClose = true;
      protected JPanel                glassPane   = new JPanel();
 
@@ -119,15 +118,6 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
     }
 
     /**
-     * Sets to auto login
-     * @param doAutoLogin true - do auto login
-     */
-    public void setDoAutoLogin(final boolean doAutoLogin)
-    {
-        this.doAutoLogin = doAutoLogin;
-    }
-
-    /**
      * Sets whether the dialog should automatically close when it logs in successfully.
      * @param doAutoClose the value
      */
@@ -155,7 +145,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
     @Override
     public void setVisible(final boolean show)
     {
-        if (show && doAutoLogin)
+        if (show)
         {
             dbPanel.doLogin();
         }
