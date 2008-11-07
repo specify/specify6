@@ -29,9 +29,11 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.auth.MasterPasswordMgr;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.security.SecurityAdminPane;
 import edu.ku.brc.specify.tasks.subpane.security.SecuritySummaryDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -138,11 +140,12 @@ public class SecurityAdminTask extends BaseTask
         {
             public void actionPerformed(ActionEvent ae)
             {
-                MasterPasswordMgr.getInstance().editMasterInfo();
+                SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                MasterPasswordMgr.getInstance().editMasterInfo(spUser.getName());
             }
         });
         
-        MenuItemDesc mid = new MenuItemDesc(mi, "HELP");
+        MenuItemDesc mid = new MenuItemDesc(mi, UIHelper.isMacOS() ? "HELP" : "HELP/ABOUT", MenuItemDesc.Position.Before);
         menuItems.add(mid);
         
         return menuItems;

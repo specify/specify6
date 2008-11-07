@@ -71,10 +71,12 @@ public class MasterPasswordMgr
     
     protected static MasterPasswordMgr instance = null;
     
-    protected String  extraEncryptionKey = "Specify";
     protected boolean errCreatingFile    = false;
     
-    private Pair<String, String> usernamePassword = null;
+    private Pair<String, String> dbUsernameAndPassword = null;
+    
+    private String               usersUserName       = null;
+    private String               usersPassword       = null;
 
     
     /**
@@ -86,44 +88,59 @@ public class MasterPasswordMgr
     }
     
     /**
-     * @param str
-     * @return
-     */
-    protected String decrypt(final String str)
-    {
-        return Encryption.decrypt(str);
-    }
-
-    /**
-     * @param str
-     * @return
-     */
-    protected String encrypt(final String str)
-    {
-        return Encryption.encrypt(str);
-    }
-    
-    /**
      * 
      */
-    public void editMasterInfo()
+    public boolean editMasterInfo(final String username)
     {
-        Boolean isLocal   = AppPreferences.getLocalPrefs().getBoolean(MASTER_LOCAL, null);
-        String  masterKey = AppPreferences.getLocalPrefs().get(MASTER_PATH, null); 
-        askForInfo(isLocal, masterKey);
+        String uNameCached = username != null ? username: usersUserName;
+        usersUserName = username;
+        
+        Boolean isLocal   = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, null);
+        String  masterKey = AppPreferences.getLocalPrefs().get(usersUserName+"_"+MASTER_PATH, null); 
+        
+        boolean isOK = askForInfo(isLocal, masterKey);
+        
+        usersUserName = uNameCached;
+        
+        return isOK;
     }
 
+    /**
+     * @param usersPassword
+     */
+    public void setUsersPassword(String usersPassword)
+    {
+        this.usersPassword = usersPassword;
+        clear();
+    }
+
+    /**
+     * @param usersUserName
+     */
+    public void setUsersUserName(String usersUserName)
+    {
+        this.usersUserName = usersUserName;
+        clear();
+    }
+
+    /**
+     * Clears db Username and Password
+     */
+    public void clear()
+    {
+        dbUsernameAndPassword = null;
+    }
     
     /**
      * @return
      */
     public Pair<String, String> getUserNamePassword()
     {
-        if (usernamePassword == null)
+        if (dbUsernameAndPassword == null && usersPassword != null)
         {
-            usernamePassword = getUserNamePasswordInternal();
+            dbUsernameAndPassword = getUserNamePasswordInternal();
         }
-        return usernamePassword;
+        return dbUsernameAndPassword;
     }
     
     /**
@@ -131,8 +148,8 @@ public class MasterPasswordMgr
      */
     protected Pair<String, String> getUserNamePasswordInternal()
     {
-        Boolean isLocal   = AppPreferences.getLocalPrefs().getBoolean(MASTER_LOCAL, null);
-        String  masterKey = AppPreferences.getLocalPrefs().get(MASTER_PATH, null);
+        Boolean isLocal   = AppPreferences.getLocalPrefs().getBoolean(usersUserName+"_"+MASTER_LOCAL, null);
+        String  masterKey = AppPreferences.getLocalPrefs().get(usersUserName+"_"+MASTER_PATH, null);
         
         if (isLocal == null ||
             StringUtils.isEmpty(masterKey))
@@ -150,14 +167,14 @@ public class MasterPasswordMgr
             String keyStr = null;
             if (isLocal)
             {
-                keyStr = decrypt(masterKey);
+                keyStr = Encryption.decrypt(masterKey, usersPassword);
                 
             } else
             {
                 keyStr = getKeyFromURL(masterKey);
                 if (StringUtils.isNotEmpty(keyStr))
                 {
-                    keyStr = decrypt(keyStr);
+                    keyStr = Encryption.decrypt(keyStr, usersPassword);
                     
                 } else
                 {
@@ -166,9 +183,8 @@ public class MasterPasswordMgr
             }
             
             String[] tokens = StringUtils.split(keyStr, ",");
-            if (tokens.length == 3)
+            if (tokens.length == 2)
             {
-                extraEncryptionKey = tokens[2];
                 return new Pair<String, String>(tokens[0], tokens[1]);
             }
             return noUP;
@@ -267,11 +283,14 @@ public class MasterPasswordMgr
             public void actionPerformed(ActionEvent e)
             {
                 String[] keys = getUserNamePasswordKey();
-                String encryptedStr = encrypt(keys[0], keys[1], keys[2]);
-                if (encryptedStr != null)
+                if (keys != null && keys.length == 4)
                 {
-                    keyTxt.setText(encryptedStr);
-                    dlg.getOkBtn().setEnabled(true);
+                    String encryptedStr = encrypt(keys[0], keys[1], keys[3]);
+                    if (encryptedStr != null)
+                    {
+                        keyTxt.setText(encryptedStr);
+                        dlg.getOkBtn().setEnabled(true);
+                    }
                 }
             }
         });
@@ -321,8 +340,9 @@ public class MasterPasswordMgr
             {
                 value = keyTxt.getText();
             }
-            AppPreferences.getLocalPrefs().putBoolean(MASTER_LOCAL, !isNetworkRB.isSelected());
-            AppPreferences.getLocalPrefs().put(MASTER_PATH, value);
+            AppPreferences.getLocalPrefs().putBoolean(usersUserName+"_"+MASTER_LOCAL, !isNetworkRB.isSelected());
+            AppPreferences.getLocalPrefs().put(usersUserName+"_"+MASTER_PATH, value);
+            return true;
             
         } else if (!isEditMode)
         {
@@ -340,28 +360,33 @@ public class MasterPasswordMgr
         loadAndPushResourceBundle("masterusrpwd");
         
         FormLayout layout = new FormLayout("p, 4dlu, p", 
-                                           "p, 2dlu, p, 2dlu, p");
+                                           "p, 2dlu, p, 2dlu, p, 2dlu, p");
                  
         layout.setRowGroups(new int[][] { { 1, 3, 5 } });
 
         JPanel panel = new JPanel(layout);
         panel.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
         
-        final JTextField usrTxt      = new JTextField(30);
-        final JTextField pwdTxt      = new JTextField(30);
-        final JTextField keyTxt      = new JTextField(30);
+        final JTextField dbUsrTxt    = new JTextField(30);
+        final JTextField dbPwdTxt    = new JTextField(30);
+        final JTextField usrText     = new JTextField(30);
+        final JTextField pwdText     = new JTextField(30);
+        
+        final JLabel     dbUsrLbl    = createI18NFormLabel("DBUSERNAME", SwingConstants.RIGHT);
+        final JLabel     dbPwdLbl    = createI18NFormLabel("DBPASSWORD", SwingConstants.RIGHT);
         final JLabel     usrLbl      = createI18NFormLabel("USERNAME", SwingConstants.RIGHT);
         final JLabel     pwdLbl      = createI18NFormLabel("PASSWORD", SwingConstants.RIGHT);
-        final JLabel     keyLbl      = createI18NFormLabel("ENCRYPTION_KEY", SwingConstants.RIGHT);
         
         CellConstraints cc = new CellConstraints(); 
         
-        panel.add(usrLbl, cc.xy (1, 1)); 
-        panel.add(usrTxt, cc.xy (3, 1)); 
-        panel.add(pwdLbl, cc.xy (1, 3)); 
-        panel.add(pwdTxt, cc.xy (3, 3)); 
-        panel.add(keyLbl, cc.xy (1, 5)); 
-        panel.add(keyTxt, cc.xy (3, 5)); 
+        panel.add(dbUsrLbl, cc.xy(1, 1)); 
+        panel.add(dbUsrTxt, cc.xy(3, 1)); 
+        panel.add(dbPwdLbl, cc.xy(1, 3)); 
+        panel.add(dbPwdTxt, cc.xy(3, 3)); 
+        panel.add(usrLbl,   cc.xy(1, 5)); 
+        panel.add(usrText,  cc.xy(3, 5)); 
+        panel.add(pwdLbl,   cc.xy(1, 7)); 
+        panel.add(pwdText,  cc.xy(3, 7)); 
         
         final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString("MASTER_INFO_TITLE"), true, CustomDialog.OKCANCELHELP, panel);
         dlg.setOkLabel(getResourceString("DONE"));
@@ -374,9 +399,10 @@ public class MasterPasswordMgr
             
             public void check()
             {
-                boolean enable = !usrTxt.getText().isEmpty() &&
-                                 !pwdTxt.getText().isEmpty() &&
-                                 !keyTxt.getText().isEmpty();
+                boolean enable = !dbUsrTxt.getText().isEmpty() &&
+                                 !dbPwdTxt.getText().isEmpty() &&
+                                 !usrText.getText().isEmpty() &&
+                                 !pwdText.getText().isEmpty();
                 dlg.getOkBtn().setEnabled(enable);
             }
             @Override
@@ -387,14 +413,15 @@ public class MasterPasswordMgr
             public void removeUpdate(DocumentEvent e) { check(); }
         };
         
-        usrTxt.getDocument().addDocumentListener(docListener);
-        pwdTxt.getDocument().addDocumentListener(docListener);
-        keyTxt.getDocument().addDocumentListener(docListener);
+        dbUsrTxt.getDocument().addDocumentListener(docListener);
+        dbPwdTxt.getDocument().addDocumentListener(docListener);
+        usrText.getDocument().addDocumentListener(docListener);
+        pwdText.getDocument().addDocumentListener(docListener);
         
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
-            return new String[] { usrTxt.getText(), pwdTxt.getText(), keyTxt.getText()};
+            return new String[] { dbUsrTxt.getText(), dbPwdTxt.getText(), usrText.getText(), pwdText.getText()};
         }
         return null;      
     }
@@ -454,24 +481,16 @@ public class MasterPasswordMgr
     }
 
     /**
-     * @return the encryption key used for other passwords
-     */
-    public String getEncryptionKey()
-    {
-        return extraEncryptionKey;
-    }
-    
-    /**
      * @param username
      * @param password
-     * @param extraEncyptionKey
+     * @param encyptionKey
      * @return
      */
     public String encrypt(final String username, 
                           final String password,
-                          final String extraEncyptionKey)
+                          final String encyptionKey)
     {
-        return encrypt(username+","+password+","+extraEncyptionKey);
+        return Encryption.encrypt(username+","+password, encyptionKey);
     }
     
     /**

@@ -72,6 +72,7 @@ public class PrefsToolbar extends JPanel
     protected PrefsPanelMgrIFace prefsPanelMgr;
     protected int                iconSize = 24;  // XXX PREF (Possible???)
     protected int                numPrefs = 0;
+    protected RolloverCommand    prevBtn  = null;
      /**
      * Constructor with the main panel so the icon know how to show their pane.
      *
@@ -104,7 +105,6 @@ public class PrefsToolbar extends JPanel
         
         Color     base = getBackground();
         Dimension size = getSize();
-        
         
         Color grad_top = base;
         Color grad_bot = UIHelper.makeDarker(base, UIHelper.isMacOS() ? 0.15 : 0.1);     
@@ -165,7 +165,8 @@ public class PrefsToolbar extends JPanel
      * @param sectionElement the section elemnent
      * @param title the localized title
      */
-    protected void loadSectionPrefs(final Element sectionElement, final ResourceBundle resBundle)
+    protected void loadSectionPrefs(final Element sectionElement, 
+                                    final ResourceBundle resBundle)
     {
         RolloverCommand.setVertGap(2);
         
@@ -279,7 +280,7 @@ public class PrefsToolbar extends JPanel
                         log.error(ex); // XXX FIXME
                         ex.printStackTrace();
                     }
-                    btn.addActionListener(new ShowAction(prefTitle));
+                    btn.addActionListener(new ShowAction(prefTitle, btn));
                 }
             }
             
@@ -328,14 +329,22 @@ public class PrefsToolbar extends JPanel
      */
     class ShowAction implements ActionListener
     {
-        private String panelName;
+        private String          panelName;
+        private RolloverCommand btn;
 
-        public ShowAction(final String panelName)
+        public ShowAction(final String panelName, final RolloverCommand btn)
         {
+            this.btn       = btn;
             this.panelName = panelName;
         }
         public void actionPerformed(ActionEvent e)
         {
+            if (prevBtn != null)
+            {
+                prevBtn.setActive(false);
+            }
+            btn.setActive(true);
+            prevBtn = btn;
             showPanel(panelName);
         }
     }

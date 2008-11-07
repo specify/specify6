@@ -75,24 +75,24 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
         return name;
     }
 
-    /**
-     * @param name the name to set
+    /* (non-Javadoc)
+     * @see java.awt.Component#setName(java.lang.String)
      */
     public void setName(String name)
     {
         this.name = name;
     }
 
-    /**
-     * @return the title
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#getTitle()
      */
     public String getTitle()
     {
         return title;
     }
 
-    /**
-     * @param title the title to set
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#setTitle(java.lang.String)
      */
     public void setTitle(String title)
     {

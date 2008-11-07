@@ -161,13 +161,16 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         boolean doTesting = true;
         if (doTesting)
         {
-            props.put("hostName", "localhost");
-            props.put("dbName", "testfish");
-            props.put("userName", "Specify");
-            props.put("password", "Specify");
+            props.put("hostName",   "localhost");
+            props.put("dbName",     "testfish");
+            props.put("dbUserName", "Specify");
+            props.put("dbPassword", "Specify");
+            
+            props.put("saUserName", "SPSAUser");
+            props.put("saPassword", "SPSAUser");
             
             props.put("firstName", "Test");
-            props.put("lastName", "Usewr");
+            props.put("lastName",  "Usewr");
             props.put("middleInitial", "a");
             props.put("usrUsername", "testuser");
             props.put("usrPassword", "testuser");
@@ -202,6 +205,12 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                
         UIFieldFormatterMgr.setDoingLocal(true);
         
+        panels.add(new GenericFormPanel("sa", 
+                "ENTER_SA_INFO", 
+                new String[] { "SA_USERNAME", "SA_PASSWORD"}, 
+                new String[] { "saUserName", "saPassword"}, 
+                nextBtn));
+
         //panels.add(locationPanel);
         panels.add(new GenericFormPanel("agent", 
                 "ENTER_COLMGR_INFO", 

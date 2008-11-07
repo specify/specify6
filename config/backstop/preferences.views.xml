@@ -634,9 +634,6 @@
                     <cell type="separator" label="LOGIN" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="field" id="autologin" name="autologin" uitype="checkbox" label="AUTO_LOGIN" ignore="true"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="usernames" label="CLEAR_USERNAMES"/>
                     <cell type="field" id="usernames" name="usernames" uitype="button" ignore="true" initialize="title=CLEAR;"/>
                 </row>

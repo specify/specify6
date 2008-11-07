@@ -88,11 +88,18 @@ public class SecurityMgr
      * @param pass - the password to be authenticated.
      * @param driverClass - the driver to be used during authentication.
      * @param url - the url of the jdbc datasource.
+     * @param dbUserName
+     * @param dbPwd
      * @exception Exception - if the validation fails.
      */
-    public boolean authenticateDB(String user, String pass, String driverClass, String url) throws Exception
+    public boolean authenticateDB(String user, 
+                                  String pass, 
+                                  String driverClass, 
+                                  String url,
+                                  String dbUserName,
+                                  String dbPwd) throws Exception
     {
-        return true;
+        return false;
     }
     
     

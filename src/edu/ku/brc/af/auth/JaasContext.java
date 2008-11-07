@@ -76,8 +76,15 @@ public class JaasContext
      * @param pass - the password credential supplied by the user
      * @param urlArg - the url of the database
      * @param driverArg -  the driver for the database
+     * @param dbUserName -  Database UserName
+     * @param dbPwd -  the Database password
      */
-    public boolean jaasLogin(String user, String pass, String urlArg, String driverArg)
+    public boolean jaasLogin(final String user, 
+                             final String pass, 
+                             final String urlArg, 
+                             final String driverArg, 
+                             final String dbUserName, 
+                             final String dbPwd)
     {
         globalSubject        = null;
         
@@ -88,11 +95,11 @@ public class JaasContext
         {
         	Configuration.setConfiguration(SpDBConfiguration.getInstance());
             createDatabaseBackedPolicyDefinition();
-            DbLoginCallbackHandler spcbh = new DbLoginCallbackHandler(user, pass, urlArg, driverArg);
-            LoginContext lc = new LoginContext("SpLogin", spcbh); //$NON-NLS-1$
-            lc.login();
+            DbLoginCallbackHandler spcbh        = new DbLoginCallbackHandler(user, pass, urlArg, driverArg, dbUserName, dbPwd);
+            LoginContext           loginContext = new LoginContext("SpLogin", spcbh); //$NON-NLS-1$
+            loginContext.login();
             loginSuccess  = true;
-            globalSubject = lc.getSubject();
+            globalSubject = loginContext.getSubject();
             
         } catch (LoginException lex)
         {

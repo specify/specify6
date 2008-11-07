@@ -49,8 +49,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
@@ -69,12 +67,12 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
-import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.util.Pair;
 
 /**
  * This panel enables the user to configure all the params necessary to log into a JDBC database.<BR>
@@ -107,8 +105,7 @@ public class DatabaseLoginPanel extends JPanel
     protected JEditComboBox              servers;
 
     protected JCheckBox                  rememberUsernameCBX;
-    protected JCheckBox                  rememberPasswordCBX;
-    protected JCheckBox                  autoLoginCBX;
+    protected JButton                    editKeyInfoBtn;
 
     protected JButton                    cancelBtn;
     protected JButton                    loginBtn;
@@ -143,8 +140,17 @@ public class DatabaseLoginPanel extends JPanel
     protected String                     title;
     protected String                     appName;
     
-    protected String                     ssUserName     = null;
-    protected String                     ssPassword     = null;
+    protected String                      ssUserName     = null;
+    protected String                      ssPassword     = null;
+    protected MasterPasswordProviderIFace usrPwdProvider = null;
+    
+    //--------------------------------------------------------------------
+    public interface MasterPasswordProviderIFace
+    {
+        public abstract Pair<String, String> getUserNamePassword(String username, String password);
+        
+        public abstract boolean editMasterInfo(String username);
+    }
     
     /**
      * Constructor that has the form created from the view system
@@ -154,11 +160,11 @@ public class DatabaseLoginPanel extends JPanel
      * @param isDlg whether the parent is a dialog (false mean JFrame)
      * @param iconName name of icon to use
      */
-    public DatabaseLoginPanel(final String userName,
-                              final String password,
+    public DatabaseLoginPanel(final String                userName,
+                              final String                password,
                               final DatabaseLoginListener dbListener,  
-                              final boolean isDlg,
-                              final String iconName)
+                              final boolean               isDlg,
+                              final String                iconName)
     {
         this(userName, password, dbListener, isDlg, null, null, iconName);
     }
@@ -181,8 +187,53 @@ public class DatabaseLoginPanel extends JPanel
                               final String appName,
                               final String iconName)
     {
+        this(userName, password, null, dbListener, isDlg, title, appName, iconName);
+    }
+
+    /**
+     * Constructor that has the form created from the view system
+     * @param userName single signon username (for application)
+     * @param password single signon password (for application)
+     * @param usrPwdProvider sprivdes app username and password
+     * @param dbListener listener to the panel (usually the frame or dialog)
+     * @param isDlg whether the parent is a dialog (false mean JFrame)
+     * @param title the title for the title bar
+     * @param appName the name of the app
+     * @param iconName name of icon to use
+     */
+    public DatabaseLoginPanel(final MasterPasswordProviderIFace usrPwdProvider,
+                              final DatabaseLoginListener dbListener,  
+                              final boolean isDlg, 
+                              final String title,
+                              final String appName,
+                              final String iconName)
+    {
+        this(null, null, usrPwdProvider, dbListener, isDlg, title, appName, iconName);
+    }
+
+    /**
+     * Constructor that has the form created from the view system
+     * @param userName single signon username (for application)
+     * @param password single signon password (for application)
+     * @param usrPwdProvider sprivdes app username and password
+     * @param dbListener listener to the panel (usually the frame or dialog)
+     * @param isDlg whether the parent is a dialog (false mean JFrame)
+     * @param title the title for the title bar
+     * @param appName the name of the app
+     * @param iconName name of icon to use
+     */
+    public DatabaseLoginPanel(final String userName,
+                              final String password,
+                              final MasterPasswordProviderIFace usrPwdProvider,
+                              final DatabaseLoginListener dbListener,  
+                              final boolean isDlg, 
+                              final String title,
+                              final String appName,
+                              final String iconName)
+    {
         this.ssUserName  = userName;
         this.ssPassword  = password;
+        this.usrPwdProvider = usrPwdProvider;
         this.dbListener  = dbListener;
         this.jaasContext = new JaasContext(); 
         this.title       = title;
@@ -290,13 +341,26 @@ public class DatabaseLoginPanel extends JPanel
         setControlSize(password);
         setControlSize(databases);
         setControlSize(servers);
+        
+        if (usrPwdProvider != null)
+        {
+            editKeyInfoBtn = UIHelper.createIconBtn("Key", IconManager.IconSize.Std16, null, new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    if (usrPwdProvider != null)
+                    {
+                        usrPwdProvider.editMasterInfo(username.getText());
+                    }
+                }
+            });
+            editKeyInfoBtn.setEnabled(true);
+        }
 
-        autoLoginCBX        = createCheckBox(getResourceString("autologin")); //$NON-NLS-1$
         rememberUsernameCBX = createCheckBox(getResourceString("rememberuser")); //$NON-NLS-1$
-        rememberPasswordCBX = createCheckBox(getResourceString("rememberpassword")); //$NON-NLS-1$
 
         statusBar = new JStatusBar();
-        statusBar.setErrorIcon(IconManager.getIcon("Error",IconManager.IconSize.Std16)); //$NON-NLS-1$
+        statusBar.setErrorIcon(IconManager.getIcon("Error", IconManager.IconSize.Std16)); //$NON-NLS-1$
 
         cancelBtn = createButton(getResourceString("CANCEL")); //$NON-NLS-1$
         loginBtn  = createButton(getResourceString("Login")); //$NON-NLS-1$
@@ -345,45 +409,19 @@ public class DatabaseLoginPanel extends JPanel
             addKeyListenerFor(loginBtn, true);
         }
 
-        autoLoginCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.autologin", false)); //$NON-NLS-1$
         rememberUsernameCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.rememberuser", false)); //$NON-NLS-1$
-        rememberPasswordCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.rememberpassword", false)); //$NON-NLS-1$
 
-        if (autoLoginCBX.isSelected())
+        if (rememberUsernameCBX.isSelected())
         {
             username.setText(AppPreferences.getLocalPrefs().get("login.username", "")); //$NON-NLS-1$ //$NON-NLS-2$
-            password.setText(Encryption.decrypt(AppPreferences.getLocalPrefs().get(
-                    "login.password", ""))); //$NON-NLS-1$ //$NON-NLS-2$
-            username.requestFocus();
-
-        } else
-        {
-            if (rememberUsernameCBX.isSelected())
+            SwingUtilities.invokeLater(new Runnable()
             {
-                username.setText(AppPreferences.getLocalPrefs().get("login.username", "")); //$NON-NLS-1$ //$NON-NLS-2$
-                SwingUtilities.invokeLater(new Runnable()
+                public void run()
                 {
-                    public void run()
-                    {
-                        password.requestFocus();
-                    }
-                });
+                    password.requestFocus();
+                }
+            });
 
-            }
-
-            if (rememberPasswordCBX.isSelected())
-            {
-                password.setText(Encryption.decrypt(AppPreferences.getLocalPrefs().get(
-                        "login.password", ""))); //$NON-NLS-1$ //$NON-NLS-2$
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    public void run()
-                    {
-                        loginBtn.requestFocus();
-                    }
-                });
-
-            }
         }
 
         cancelBtn.addActionListener(new ActionListener()
@@ -408,20 +446,6 @@ public class DatabaseLoginPanel extends JPanel
 
         //HelpManager.registerComponent(helpBtn, "login");
         HelpMgr.registerComponent(helpBtn, "login"); //$NON-NLS-1$
-
-        autoLoginCBX.addChangeListener(new ChangeListener()
-        {
-            public void stateChanged(ChangeEvent e)
-            {
-                if (autoLoginCBX.isSelected())
-                {
-                    rememberUsernameCBX.setSelected(true);
-                    rememberPasswordCBX.setSelected(true);
-                }
-                updateUIControls();
-            }
-
-        });
 
         moreBtn.addActionListener(new ActionListener()
         {
@@ -471,7 +495,7 @@ public class DatabaseLoginPanel extends JPanel
 
         // Layout the form
 
-        PanelBuilder formBuilder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p):g", UIHelper.createDuplicateJGoodiesDef("p", "2dlu", 11))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        PanelBuilder formBuilder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p):g", UIHelper.createDuplicateJGoodiesDef("p", "2dlu", 9))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         CellConstraints cc = new CellConstraints();
         formBuilder.addSeparator(getResourceString("LOGINLABEL"), cc.xywh(1, 1, 3, 1)); //$NON-NLS-1$
 
@@ -481,9 +505,14 @@ public class DatabaseLoginPanel extends JPanel
         y = addLine("databases", databases, formBuilder, cc, y); //$NON-NLS-1$
         y = addLine("servers", servers, formBuilder, cc, y); //$NON-NLS-1$
         y = addLine(null, rememberUsernameCBX, formBuilder, cc, y);
-        y = addLine(null, rememberPasswordCBX, formBuilder, cc, y);
-        y = addLine(null, autoLoginCBX, formBuilder, cc, y);
-
+        
+        if (editKeyInfoBtn != null)
+        {
+            PanelBuilder pb = new PanelBuilder(new FormLayout("p,f:p:g", "p"));
+            pb.add(editKeyInfoBtn, cc.xy(1, 1));
+            y = addLine(null, pb.getPanel(), formBuilder, cc, y);
+        }
+        
         PanelBuilder extraPanelBlder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p):g", "p,2dlu,p,2dlu,p")); //$NON-NLS-1$ //$NON-NLS-2$
         extraPanel = extraPanelBlder.getPanel();
         extraPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 4, 2));
@@ -627,9 +656,6 @@ public class DatabaseLoginPanel extends JPanel
 
         loginBtn.setEnabled(shouldEnable);
 
-        rememberUsernameCBX.setEnabled(!autoLoginCBX.isSelected());
-        rememberPasswordCBX.setEnabled(!autoLoginCBX.isSelected());
-
         if (shouldEnable)
         {
             setMessage("", false); //$NON-NLS-1$
@@ -664,34 +690,16 @@ public class DatabaseLoginPanel extends JPanel
         servers.getDBAdapter().save();
 
         AppPreferences.getLocalPrefs().putBoolean("login.rememberuser", rememberUsernameCBX.isSelected()); //$NON-NLS-1$
-        AppPreferences.getLocalPrefs().putBoolean("login.rememberpassword", rememberPasswordCBX.isSelected()); //$NON-NLS-1$
-        AppPreferences.getLocalPrefs().putBoolean("login.autologin", autoLoginCBX.isSelected()); //$NON-NLS-1$
 
-        if (autoLoginCBX.isSelected())
+        if (rememberUsernameCBX.isSelected())
         {
             AppPreferences.getLocalPrefs().put("login.username", username.getText()); //$NON-NLS-1$
-            AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(new String(password.getPassword()))); //$NON-NLS-1$
 
-        } else
+        } else if (AppPreferences.getLocalPrefs().exists("login.username")) //$NON-NLS-1$
         {
-            if (rememberUsernameCBX.isSelected())
-            {
-                AppPreferences.getLocalPrefs().put("login.username", username.getText()); //$NON-NLS-1$
-
-            } else if (AppPreferences.getLocalPrefs().exists("login.username")) //$NON-NLS-1$
-            {
-                AppPreferences.getLocalPrefs().remove("login.username"); //$NON-NLS-1$
-            }
-
-            if (rememberPasswordCBX.isSelected())
-            {
-                AppPreferences.getLocalPrefs().put("login.password",  Encryption.encrypt(new String(password.getPassword()))); //$NON-NLS-1$
-
-            } else if (AppPreferences.getLocalPrefs().exists("login.password")) //$NON-NLS-1$
-            {
-                AppPreferences.getLocalPrefs().remove("login.password"); //$NON-NLS-1$
-            }
+            AppPreferences.getLocalPrefs().remove("login.username"); //$NON-NLS-1$
         }
+
         AppPreferences.getLocalPrefs().put("login.dbdriver_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName()); //$NON-NLS-1$
 
     }
@@ -743,9 +751,33 @@ public class DatabaseLoginPanel extends JPanel
         databases.setEnabled(enable);
         servers.setEnabled(enable);
         rememberUsernameCBX.setEnabled(enable);
-        rememberPasswordCBX.setEnabled(enable);
-        autoLoginCBX.setEnabled(enable);
         moreBtn.setEnabled(enable);
+        
+        if (editKeyInfoBtn != null)
+        {
+            editKeyInfoBtn.setEnabled(enable);
+        }
+    }
+    
+    /**
+     * @return
+     */
+    private Pair<String, String> getUsrPwd()
+    {
+        String usr;
+        String pwd;
+        if (usrPwdProvider != null)
+        {
+            Pair<String, String> usrPwd = usrPwdProvider.getUserNamePassword(getUserName(), getPassword());
+            usr = usrPwd.first;
+            pwd = usrPwd.second;
+            
+        } else
+        {
+            usr = StringUtils.isNotEmpty(ssUserName) ? ssUserName : getUserName();
+            pwd = StringUtils.isNotEmpty(ssPassword) ? ssPassword : getPassword();
+        }
+        return new Pair<String, String>(usr, pwd); 
     }
 
     /**
@@ -754,6 +786,7 @@ public class DatabaseLoginPanel extends JPanel
     public void doLogin()
     {
         log.debug("doLogin()"); //$NON-NLS-1$
+        
         isLoggingIn = true;
         log.debug("preparing to save"); //$NON-NLS-1$
         save();
@@ -767,9 +800,8 @@ public class DatabaseLoginPanel extends JPanel
         String basePrefName = getDatabaseName() + "." + getUserName() + "."; //$NON-NLS-1$ //$NON-NLS-2$
 
         loginCount = AppPreferences.getLocalPrefs().getLong(basePrefName + "logincount", -1L); //$NON-NLS-1$
-        loginAccumTime = AppPreferences.getLocalPrefs().getLong(basePrefName + "loginaccumtime", //$NON-NLS-1$
-                -1L);
-
+        loginAccumTime = AppPreferences.getLocalPrefs().getLong(basePrefName + "loginaccumtime", -1L);//$NON-NLS-1$
+                
         if (loginCount != -1 && loginAccumTime != -1)
         {
             int timesPerSecond = 4;
@@ -792,13 +824,15 @@ public class DatabaseLoginPanel extends JPanel
             public Object construct()
             {
                 eTime = System.currentTimeMillis();
+                
+                Pair<String, String> usrPwd = getUsrPwd();
 
                 isLoggedIn = UIHelper.tryLogin(getDriverClassName(), 
                                                getDialectClassName(),
                                                getDatabaseName(), 
                                                getConnectionStr(), 
-                                               StringUtils.isNotEmpty(ssUserName) ? ssUserName : getUserName(), 
-                                               StringUtils.isNotEmpty(ssPassword) ? ssPassword : getPassword());
+                                               usrPwd.first, 
+                                               usrPwd.second);
                 
                 isLoggedIn &= jaasLogin();
 
@@ -926,10 +960,14 @@ public class DatabaseLoginPanel extends JPanel
     {
         if (jaasContext != null)
         {
+            Pair<String, String> usrPwd = getUsrPwd();
+            
             return jaasContext.jaasLogin(getUserName(),
             							 getPassword(),
             							 getConnectionStr(), 
-            							 getDriverClassName());
+            							 getDriverClassName(),
+            							 usrPwd.first,
+            							 usrPwd.second);
         }
 
         return false;

@@ -32,7 +32,8 @@ import edu.ku.brc.ui.ColorWrapper;
  */
 public class SpecifyAppPrefs
 {
-    private static boolean isInited = false;
+    private static boolean isInited        = false;
+    private static boolean skipRemotePrefs = false;
     
     /**
      * Singleton Constructor.
@@ -42,6 +43,14 @@ public class SpecifyAppPrefs
     }
     
     /**
+     * @param skipRemotePrefs the skipRemotePrefs to set
+     */
+    public static void setSkipRemotePrefs(boolean skipRemotePrefs)
+    {
+        SpecifyAppPrefs.skipRemotePrefs = skipRemotePrefs;
+    }
+
+    /**
      * Initialize the prefs.
      */
     public static void initialPrefs()
@@ -50,7 +59,10 @@ public class SpecifyAppPrefs
         {
             AppPrefsCache.reset();
             
-            AppPreferences.getRemote().load(); // Loads prefs from the database
+            if (!SpecifyAppPrefs.skipRemotePrefs)
+            {
+                AppPreferences.getRemote().load(); // Loads prefs from the database
+            }
             
             loadColorAndFormatPrefs();
             isInited = true;

@@ -32,13 +32,11 @@ import javax.security.auth.login.LoginException;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.JaasContext;
-import edu.ku.brc.af.auth.MasterPasswordMgr;
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
-import edu.ku.brc.util.Pair;
 
 /**
  * 
@@ -89,19 +87,16 @@ public class SpecifySecurityMgr extends SecurityMgr
         doingLocal = doLocal;
     }
 
-    /** 
-     * 
-     * Validates the given user and password against the JDBC datasource (using JDBC directly, not hibernate).
-     * 
-     * @see edu.ku.brc.af.auth.specify.SecurityMgr#authenticate()
-     * 
-     * @param user - the username to be authenticated.
-     * @param pass - the password to be authenticated.
-     * @param driverClass - the driver to be used during authentication.
-     * @param url - the url of the jdbc datasource.
-     * @exception Exception - if the validation fails.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.auth.SecurityMgr#authenticateDB(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
      */
-    public boolean authenticateDB(final String user, final String pass, final String driverClass, final String url) throws Exception
+    @Override
+    public boolean authenticateDB(final String user, 
+                                  final String pass, 
+                                  final String driverClass, 
+                                  final String url,
+                                  final String dbUserName,
+                                  final String dbPwd) throws Exception
     {
         Connection conn          = null;        
         Statement  stmt          = null;
@@ -111,8 +106,7 @@ public class SpecifySecurityMgr extends SecurityMgr
         {
             Class.forName(driverClass);
             
-            Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
-            conn = DriverManager.getConnection(url, usernamePassword.first, usernamePassword.second);
+            conn = DriverManager.getConnection(url, dbUserName, dbPwd);
             
             String query = "SELECT * FROM specifyuser where name='" + user + "'"; //$NON-NLS-1$ //$NON-NLS-2$
             stmt = conn.createStatement();

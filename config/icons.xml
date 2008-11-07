@@ -108,6 +108,8 @@
     <icon name="DeleteRecord"  alias="MinusSign"/>
     <icon name="Separator"     file="separator16.gif" sizes="16"/>
     
+    <icon name="Key"           file="key.png" sizes="all"/>
+    
     
     <icon name="CreateObj" alias="PlusSign"/>
     <icon name="RelatedTable" file="related_table.png"  sizes="32"/>

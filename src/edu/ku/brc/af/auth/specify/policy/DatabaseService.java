@@ -34,7 +34,8 @@ public class DatabaseService
      * @param driverClass
      * @return
      */
-    public static Connection getAdminLevelConnection(String url, String driverClass)
+    public static Connection getAdminLevelConnection(final String url, 
+                                                     final String driverClass)
     {
         Connection con = null;
         //Statement stmt;
@@ -75,6 +76,7 @@ public class DatabaseService
         try
         {
             Class.forName(JaasContext.driver);
+            
         } catch (java.lang.ClassNotFoundException e)
         {
             log.error("getConnection - Could not connect to database, driverclass - ClassNotFoundException: "); //$NON-NLS-1$

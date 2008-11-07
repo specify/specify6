@@ -25,6 +25,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -234,7 +235,17 @@ public class Encryption
      */
     public static String decrypt(final String str)
     {
-        if (str == null || str.length() == 0)
+        return decrypt(str, encryptDecryptPassword);
+    }
+
+    /**
+     * Helper to decrypt a string
+     * @param str the string to be decrypted
+     * @return the decrypted string
+     */
+    public static String decrypt(final String str, final String key)
+    {
+        if (StringUtils.isEmpty(str) || StringUtils.isEmpty(key))
         {
             return ""; //$NON-NLS-1$
         }
@@ -242,7 +253,7 @@ public class Encryption
         // decrypt the password
         try
         {
-            return new String(Encryption.decrypt(Encryption.reverseHEXStr(str), encryptDecryptPassword.toCharArray()));
+            return new String(Encryption.decrypt(Encryption.reverseHEXStr(str), key.toCharArray()));
 
         } catch (Exception ex)
         {
@@ -258,7 +269,17 @@ public class Encryption
      */
     public static String encrypt(final String str)
     {
-        if (str == null || str.length() == 0)
+        return encrypt(str, encryptDecryptPassword);
+    }
+
+    /**
+     * @param str
+     * @param key
+     * @return
+     */
+    public static String encrypt(final String str, final String key)
+    {
+        if (StringUtils.isEmpty(str) || StringUtils.isEmpty(key))
         {
             return ""; //$NON-NLS-1$
         }
@@ -266,7 +287,7 @@ public class Encryption
         // Encrypt the password before setting it into the pref
         try
         {
-            return Encryption.makeHEXStr(Encryption.encrypt(str.getBytes(), encryptDecryptPassword.toCharArray()));
+            return Encryption.makeHEXStr(Encryption.encrypt(str.getBytes(), key.toCharArray()));
 
         } catch (Exception ex)
         {

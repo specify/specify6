@@ -25,6 +25,7 @@ import edu.ku.brc.af.core.expresssearch.SearchTermField;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -38,6 +39,7 @@ import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroupScope;
+import edu.ku.brc.specify.datamodel.busrules.SpecifyUserBusRules;
 import edu.ku.brc.specify.datamodel.busrules.TableSearchResults;
 
 /**
@@ -80,6 +82,36 @@ public class NavigationTreeMgr
             return; // Nothing is selected or object type isn't relevant 
         }
         
+        DefaultMutableTreeNode parent = (DefaultMutableTreeNode)grpNode.getParent();
+        
+        Discipline disp = null;
+        
+        while (parent != null)
+        {
+            if (parent.getUserObject() instanceof DataModelObjBaseWrapper)
+            {
+                DataModelObjBaseWrapper wrp = (DataModelObjBaseWrapper)parent.getUserObject();
+                System.out.println(wrp.getDataObj()+"  "+wrp.getDataObj());
+                
+                FormDataObjIFace obj = wrp.getDataObj();
+                
+                if (obj instanceof Discipline)
+                {
+                    disp = (Discipline)obj;
+                }
+            }
+            parent = (DefaultMutableTreeNode)parent.getParent();
+        }
+        
+        if (disp == null)
+        {
+            // error
+            return;
+        }
+        
+        final Division   division   = disp.getDivision();
+        final Discipline discipline = disp;
+        
         DataModelObjBaseWrapper parentWrp  = (DataModelObjBaseWrapper) (grpNode.getUserObject());
         if (!parentWrp.isGroup())
         {
@@ -121,7 +153,7 @@ public class NavigationTreeMgr
                     if (esTblInfo != null)
                     {
                        String sqlStr = esTblInfo.getViewSql();
-                       return buildSearchString(dataMap, fieldNames, StringUtils.replace(sqlStr, "agent_discipline.DisciplineID = DSPLNID AND", ""));
+                       return buildSearchString(dataMap, fieldNames, StringUtils.replace(sqlStr, "DSPLNID", discipline.getId().toString()));
                     }
                 }
                 return null;
@@ -130,7 +162,7 @@ public class NavigationTreeMgr
             public String buildSQL(String searchText, boolean isForCount)
             {
                 String newEntryStr = searchText + '%';
-                String sqlTemplate = "SELECT %s1 FROM Agent a LEFT JOIN a.specifyUser s WHERE s = null AND LOWER(a.lastName) LIKE '%s2' ORDER BY a.lastName";
+                String sqlTemplate = "SELECT %s1 FROM Agent a LEFT JOIN a.specifyUser s INNER JOIN a.division d WHERE d.id = "+division.getId()+" AND s = null AND LOWER(a.lastName) LIKE '%s2' ORDER BY a.lastName";
                 String sql = StringUtils.replace(sqlTemplate, "%s1", isForCount ? "count(*)" : "a.lastName, a.firstName, a.agentId"); //$NON-NLS-1$
                 sql = StringUtils.replace(sql, "%s2", newEntryStr); //$NON-NLS-1$
                 log.debug(sql);
@@ -154,6 +186,38 @@ public class NavigationTreeMgr
             spUser.getAgents().add(userAgent);
             userAgent.setSpecifyUser(spUser);
             
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                
+                session.beginTransaction();
+                
+                SpecifyUserBusRules busRules = new SpecifyUserBusRules();
+                busRules.beforeMerge(spUser, session);
+                busRules.beforeSave(spUser, session);
+                
+                session.saveOrUpdate(spUser);
+                session.saveOrUpdate(userAgent);
+                
+                session.commit();
+                
+                spUser = session.get(SpecifyUser.class, spUser.getId());
+                
+            } catch (final Exception e1)
+            {
+                session.rollback();
+                
+                e1.printStackTrace();
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+            
             DataModelObjBaseWrapper userWrp  = new DataModelObjBaseWrapper(spUser);
             DefaultMutableTreeNode  userNode = new DefaultMutableTreeNode(userWrp);
             
@@ -175,7 +239,7 @@ public class NavigationTreeMgr
                                        final String              sqlTemplate)
     {
         StringBuilder orderBy  = new StringBuilder();
-        StringBuilder criteria = new StringBuilder();
+        StringBuilder criteria = new StringBuilder("agent.SpecifyUserID IS NULL AND (");
         int criCnt = 0;
         for (String colName : dataMap.keySet())
         {
@@ -200,6 +264,8 @@ public class NavigationTreeMgr
                 }
             }
         }
+        
+        criteria.append(")");
         
         StringBuffer sb = new StringBuffer();
         sb.append(criteria);
@@ -356,7 +422,7 @@ public class NavigationTreeMgr
         division.setName("Anonymous Division");
         discipline.setName("New Discipline");
         
-        save(new Object[] { division, discipline });
+        save(new Object[] { division, discipline }, false);
         
         // The commented lines below insert a division into the tree with the discipline
         // It's there for reference only
@@ -388,13 +454,13 @@ public class NavigationTreeMgr
      */
     private final void save(final Object object) 
     {
-        save(new Object[] {object});
+        save(new Object[] {object}, false);
     }
     
     /**
      * @param objectArray
      */
-    private final void save(final Object[] objectArray) 
+    private final void save(final Object[] objectArray, final boolean doMerge) 
     {
         DataProviderSessionIFace session = null;
         try
@@ -403,7 +469,13 @@ public class NavigationTreeMgr
             session.beginTransaction();
             for (Object object : objectArray)
             {
-                session.attach(object);
+                if (doMerge)
+                {
+                    object = session.merge(object);
+                } else
+                {
+                    session.attach(object);
+                }
                 session.saveOrUpdate(object);
             }
             session.commit();

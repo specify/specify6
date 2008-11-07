@@ -204,6 +204,11 @@ public class AdminInfoSubPanelWrapper
         MultiView   mv  = getMultiView();
         mv.getDataFromUI();
         
+        Object obj = mv.getData();
+        
+        obj = session.merge(obj);
+        obj = session.saveOrUpdate(obj);
+        
         principal = session.merge(principal);
         
         if (overrulingPrincipal != null)

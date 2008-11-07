@@ -123,6 +123,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
+import edu.ku.brc.af.ui.db.DatabaseLoginPanel.MasterPasswordProviderIFace;
 import edu.ku.brc.af.ui.forms.DataObjectGettable;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormHelper;
@@ -1511,6 +1512,30 @@ public final class UIHelper
     /**
      * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
      * and if the login fails then it will display the dialog
+     * @param usrPwdProvider provides db username and password
+     * @param doAutoLogin whether to try to automatically log the user in
+     * @param doAutoClose whether it should automatically close the window when it is logged in successfully
+     * @param useDialog use a Dialog or a Frame
+     * @param listener a listener for when it is logged in or fails
+     * @param iconName name of icon to use
+     * @param title name
+     * @param appName name
+     */
+    public static DatabaseLoginPanel doLogin(final MasterPasswordProviderIFace usrPwdProvider,
+                                             final boolean doAutoLogin,
+                                             final boolean doAutoClose,
+                                             final boolean useDialog,
+                                             final DatabaseLoginListener listener,
+                                             final String  iconName,
+                                             final String  title,
+                                             final String  appName)
+    {     
+        return doLogin(null, null, usrPwdProvider, doAutoLogin, doAutoClose, useDialog, listener, iconName, title, appName); 
+    }
+    
+    /**
+     * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
+     * and if the login fails then it will display the dialog
      * @param userName single signon username (for application)
      * @param password single signon password (for application)
      * @param doAutoLogin whether to try to automatically log the user in
@@ -1523,6 +1548,32 @@ public final class UIHelper
      */
     public static DatabaseLoginPanel doLogin(final String  userName,
                                              final String  password,
+                                             final boolean doAutoLogin,
+                                             final boolean doAutoClose,
+                                             final boolean useDialog,
+                                             final DatabaseLoginListener listener,
+                                             final String  iconName,
+                                             final String  title,
+                                             final String  appName)
+    {     
+        return doLogin(userName, password, null, doAutoLogin, doAutoClose, useDialog, listener, iconName, title, appName);
+    }
+    /**
+     * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
+     * and if the login fails then it will display the dialog
+     * @param userName single signon username (for application)
+     * @param password single signon password (for application)
+     * @param doAutoLogin whether to try to automatically log the user in
+     * @param doAutoClose whether it should automatically close the window when it is logged in successfully
+     * @param useDialog use a Dialog or a Frame
+     * @param listener a listener for when it is logged in or fails
+     * @param iconName name of icon to use
+     * @param title name
+     * @param appName name
+     */
+    public static DatabaseLoginPanel doLogin(final String  userName,
+                                             final String  password,
+                                             final MasterPasswordProviderIFace usrPwdProvider,
                                              final boolean doAutoLogin,
                                              final boolean doAutoClose,
                                              final boolean useDialog,
@@ -1585,11 +1636,11 @@ public final class UIHelper
         DatabaseLoginPanel panel;
         if (StringUtils.isNotEmpty(title))
         {
-            panel = new DatabaseLoginPanel(userName, password, new DBListener(frame, listener, doAutoClose), false, title, appName, iconName);
+            panel = new DatabaseLoginPanel(userName, password, usrPwdProvider, new DBListener(frame, listener, doAutoClose), false, title, appName, iconName);
         }
         else
         {
-            panel = new DatabaseLoginPanel(userName, password, new DBListener(frame, listener, doAutoClose), false, iconName);
+            panel = new DatabaseLoginPanel(userName, password, usrPwdProvider, new DBListener(frame, listener, doAutoClose), false, null, null, iconName);
         }
         
         panel.setAutoClose(doAutoClose);
@@ -2789,6 +2840,13 @@ public final class UIHelper
     public static JPasswordField createPasswordField(final String val)
     {
         JPasswordField tf = new JPasswordField(val);
+        setControlSize(tf);
+        return tf;
+    }
+
+    public static JPasswordField createPasswordField(final String val, final int size)
+    {
+        JPasswordField tf = new JPasswordField(val, size);
         setControlSize(tf);
         return tf;
     }

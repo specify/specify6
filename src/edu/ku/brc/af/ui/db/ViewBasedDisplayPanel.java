@@ -109,6 +109,13 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         this(parent, viewSetName, viewName, displayName, className, idFieldName, isEdit, true, null, null, options);
     }
 
+    /**
+     * @param viewSetName
+     * @param viewName
+     * @param className
+     * @param isEdit
+     * @param options
+     */
     public ViewBasedDisplayPanel(final String  viewSetName,
                                  final String  viewName,
                                  final String  className,

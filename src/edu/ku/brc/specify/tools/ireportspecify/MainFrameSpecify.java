@@ -56,6 +56,7 @@ import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
@@ -1340,11 +1341,27 @@ public class MainFrameSpecify extends MainFrame
                 {
                     log.error("Can't change L&F: ", e); //$NON-NLS-1$
                 }
-                Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
+                
+                DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()
+                {
+                    @Override
+                    public Pair<String, String> getUserNamePassword(final String username, final String password)
+                    {
+                        MasterPasswordMgr.getInstance().setUsersUserName(username);
+                        MasterPasswordMgr.getInstance().setUsersPassword(password);
+                        
+                        Pair<String, String> usrPwd = MasterPasswordMgr.getInstance().getUserNamePassword();
+                        
+                        return usrPwd;
+                    }
+                    @Override
+                    public boolean editMasterInfo(final String username)
+                    {
+                        return MasterPasswordMgr.getInstance().editMasterInfo(username);
+                    }
+                };
                 String nameAndTitle = "Specify iReport"; // I18N
-                UIHelper.doLogin(usernamePassword.first, 
-                                 usernamePassword.second, 
-                                 true, false, false, new IReportLauncher(), null, nameAndTitle, nameAndTitle); // true means do auto login if it can, second bool means use dialog instead of frame
+                UIHelper.doLogin(usrPwdProvider, true, false, false, new IReportLauncher(), null, nameAndTitle, nameAndTitle); // true means do auto login if it can, second bool means use dialog instead of frame
                 
                 localPrefs.load();
                 

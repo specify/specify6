@@ -141,11 +141,11 @@ public class DatabasePanel extends BaseSetupPanel
     @Override
     public void getValues(final Properties props)
     {
-        props.put("userName", usernameTxt.getText());
-        props.put("password", passwordTxt.getText());
-        props.put("dbName", dbNameTxt.getText());
-        props.put("hostName", hostNameTxt.getText());
-        props.put("driver", drivers.getSelectedItem().toString());
+        props.put("dbUserName", usernameTxt.getText());
+        props.put("dbPassword", passwordTxt.getText());
+        props.put("dbName",     dbNameTxt.getText());
+        props.put("hostName",   hostNameTxt.getText());
+        props.put("driver",     drivers.getSelectedItem().toString());
     }
 
     /* (non-Javadoc)

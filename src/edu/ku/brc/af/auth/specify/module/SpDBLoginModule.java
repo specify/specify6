@@ -62,6 +62,8 @@ public class SpDBLoginModule implements LoginModule
     private String                password;
     private String                url;
     private String                driverClass;
+    private String                dbUserName;
+    private String                dbPwd;
 
     // the authentication status
     boolean                       authenticated;
@@ -118,7 +120,9 @@ public class SpDBLoginModule implements LoginModule
                     new NameCallback("Username: "),
                     new PasswordCallback("Password: ", false),
                     new TextInputCallback("Url:"),
-                    new TextInputCallback("Driver:")
+                    new TextInputCallback("Driver:"),
+                    new TextInputCallback("DBUserName:"),
+                    new TextInputCallback("DBPwd:")
             };
             callbackHandler.handle(callbacks);
             
@@ -126,8 +130,10 @@ public class SpDBLoginModule implements LoginModule
             password    = new String(((PasswordCallback) callbacks[1]).getPassword());
             url         = new String (((TextInputCallback) callbacks[2]).getText());
             driverClass = new String (((TextInputCallback) callbacks[3]).getText());
+            dbUserName  = new String (((TextInputCallback) callbacks[4]).getText());
+            dbPwd       = new String (((TextInputCallback) callbacks[5]).getText());
 
-            authenticated = SecurityMgr.getInstance().authenticateDB(username, password, driverClass, url);
+            authenticated = SecurityMgr.getInstance().authenticateDB(username, password, driverClass, url, dbUserName, dbPwd);
             
             for (int i = 0; i < callbacks.length; i++)
             {

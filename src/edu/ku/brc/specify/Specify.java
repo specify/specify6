@@ -504,11 +504,27 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         CommandDispatcher.register(BaseTask.APP_CMD_TYPE, this);
         
-        Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
-        
-        dbLoginPanel = UIHelper.doLogin(usernamePassword.first, 
-                                        usernamePassword.second, 
-                                        true, false, false, this, "SpecifyLargeIcon", getTitle(), null); // true means do auto login if it can, second bool means use dialog instead of frame
+        DatabaseLoginPanel.MasterPasswordProviderIFace usrPwdProvider = new DatabaseLoginPanel.MasterPasswordProviderIFace()
+        {
+            @Override
+            public Pair<String, String> getUserNamePassword(final String username, final String password)
+            {
+                MasterPasswordMgr.getInstance().setUsersUserName(username);
+                MasterPasswordMgr.getInstance().setUsersPassword(password);
+                
+                Pair<String, String> usrPwd = MasterPasswordMgr.getInstance().getUserNamePassword();
+                
+                return usrPwd;
+            }
+
+            @Override
+            public boolean editMasterInfo(final String username)
+            {
+                return MasterPasswordMgr.getInstance().editMasterInfo(username);
+            }
+            
+        };
+        dbLoginPanel = UIHelper.doLogin(usrPwdProvider, true, false, false, this, "SpecifyLargeIcon", getTitle(), null); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
     
@@ -2187,7 +2203,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     /**
      * Reads Local Preferences for the Locale setting.
      */
-    protected void adjustLocaleFromPrefs()
+    public static void adjustLocaleFromPrefs()
     {
         String language = AppPreferences.getLocalPrefs().get("locale.lang", null); //$NON-NLS-1$
         if (language != null)

@@ -40,23 +40,32 @@ import org.apache.log4j.Logger;
  * 
  *
  */
-public class DbLoginCallbackHandler  implements CallbackHandler 
+public class DbLoginCallbackHandler implements CallbackHandler 
 {
     protected static final Logger log    = Logger.getLogger(DbLoginCallbackHandler.class);
     protected String              user   = ""; //$NON-NLS-1$
     protected String              pass   = ""; //$NON-NLS-1$
     protected String              url    = ""; //$NON-NLS-1$
     protected String              driver = ""; //$NON-NLS-1$
+    protected String              dbUserName = ""; //$NON-NLS-1$
+    protected String              dbPwd      = ""; //$NON-NLS-1$
     
     /**
      * Creates a callback handler for connection to a database
      */
-    public DbLoginCallbackHandler(String user, String pass, String url, String driver)
+    public DbLoginCallbackHandler(final String user, 
+                                  final String pass, 
+                                  final String url, 
+                                  final String driver,
+                                  final String dbUserName,
+                                  final String dbPwd)
     {
         this.user = user;
         this.pass = pass;
         this.url = url;
         this.driver = driver;
+        this.dbUserName = dbUserName;
+        this.dbPwd = dbPwd;
         log.debug("DbLoginCallbackHandler() created"); //$NON-NLS-1$
     }
     
@@ -103,12 +112,19 @@ public class DbLoginCallbackHandler  implements CallbackHandler
                     {
                         log.debug("handle - got driver:" + driver); //$NON-NLS-1$
                         ((TextInputCallback)callbacks[i]).setText(driver);
+                        
+                    } else if ((((TextInputCallback)callbacks[i]).getPrompt()).equals("DBUserName:")) //$NON-NLS-1$
+                    {
+                        ((TextInputCallback)callbacks[i]).setText(dbUserName);
+                        
+                    } else if ((((TextInputCallback)callbacks[i]).getPrompt()).equals("DBPwd:")) //$NON-NLS-1$
+                    {
+                        ((TextInputCallback)callbacks[i]).setText(dbPwd);
                     }
                 }
                 else
                 {
-                    throw (new UnsupportedCallbackException(callbacks[i],
-                            "Callback class not supported")); //$NON-NLS-1$
+                    throw (new UnsupportedCallbackException(callbacks[i], "Callback class not supported")); //$NON-NLS-1$
                 }
             }
         } catch (Exception e)

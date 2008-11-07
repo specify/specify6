@@ -65,6 +65,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -80,9 +81,17 @@ class SetUpBuildDlg extends CustomDialog
     protected DatabaseDriverInfo                       dbDriver;
     protected boolean                                  isCancelled = false;
     protected String                                   dbDriverName;
+    protected Pair<String, String>                     dbUser; 
+    protected Pair<String, String>                     saUser;  
+    protected Pair<String, String>                     cmUser;  
     
-    protected JTextField                               usernameTxtFld;
-    protected JPasswordField                           passwdTxtFld;
+    protected JTextField                               dbUsernameTxtFld;
+    protected JPasswordField                           dbPasswdTxtFld;
+    protected JTextField                               saUsernameTxtFld;
+    protected JPasswordField                           saPasswdTxtFld;
+    protected JTextField                               usrUsernameTxtFld;
+    protected JPasswordField                           usrPasswdTxtFld;
+    
     protected JTextField                               databaseNameTxt;
     protected JComboBox                                drivers;
     protected JCheckBox                                extraCollectionsChk;
@@ -111,15 +120,22 @@ class SetUpBuildDlg extends CustomDialog
      * @param databaseName 
      * @param dbDriverName
      */
-    public SetUpBuildDlg(final String              databaseName, 
-                         final String              dbDriverName,
-                         final BuildSampleDatabase bldSampleDatabase)
+    public SetUpBuildDlg(final String               databaseName, 
+                         final String               dbDriverName, 
+                         final Pair<String, String> dbUser, 
+                         final Pair<String, String> saUser, 
+                         final Pair<String, String> cmUser, 
+                         final BuildSampleDatabase  bldSampleDatabase)
     {
         super(null, "Setup Collection", true, null);
         
         this.bldSampleDatabase = bldSampleDatabase;
         this.databaseName      = databaseName;
         this.dbDriverName      = dbDriverName;
+        
+        this.dbUser      = dbUser;
+        this.saUser      = saUser;
+        this.cmUser      = cmUser;
         
     }
     
@@ -185,22 +201,43 @@ class SetUpBuildDlg extends CustomDialog
             accNumGrpList.add("Acc "+d.getTitle() + " Group");
         }
         
-        databaseNameTxt     = createTextField(databaseName);
-        usernameTxtFld      = createTextField("Specify");
-        passwdTxtFld        = createPasswordField("Specify");
+        databaseNameTxt     = createTextField(databaseName, 15);
+        dbUsernameTxtFld    = createTextField(dbUser.first, 15);
+        dbPasswdTxtFld      = createPasswordField(dbUser.second, 15);
+        
+        saUsernameTxtFld   = createTextField(saUser.first, 15);
+        saPasswdTxtFld     = createPasswordField(saUser.second, 15);
+        
+        usrUsernameTxtFld   = createTextField(cmUser.first, 15);
+        usrPasswdTxtFld     = createPasswordField(cmUser.second, 15);
+        
         extraCollectionsChk = createCheckBox("Create Extra Collections");
         extraCollectionsChk.setSelected(true);
         
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p,p:g", "p,4px,p,4px,p,4px,p,4px,p,4px,f:p:g,4px,p"));
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p,10px,p,2px,p,10px,p,2px,p,p:g", UIHelper.createDuplicateJGoodiesDef("P", "2px", 9)+",f:p:g,4px,p"));
         CellConstraints cc         = new CellConstraints();
-        builder.add(createLabel("Username:", SwingConstants.RIGHT),      cc.xy(1,1));
-        builder.add(usernameTxtFld,                                      cc.xy(3,1));
-        builder.add(createLabel("Password:", SwingConstants.RIGHT),      cc.xy(1,3));
-        builder.add(passwdTxtFld,                                        cc.xy(3,3));
-        builder.add(createLabel("Database Name:", SwingConstants.RIGHT), cc.xy(1,5));
-        builder.add(databaseNameTxt,                                     cc.xy(3,5));
-        builder.add(createLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,9));
-        builder.add(drivers,                                             cc.xy(3,9));
+        int y = 1;
+        builder.addSeparator("Username and Passwords",                      cc.xyw(1,y,12)); y += 2;
+        builder.add(createLabel("DB Username:", SwingConstants.RIGHT),      cc.xy(1,y));
+        builder.add(dbUsernameTxtFld,                                       cc.xy(3,y)); 
+        builder.add(createLabel("SP SAUsername:", SwingConstants.RIGHT),    cc.xy(5,y));
+        builder.add(saUsernameTxtFld,                                       cc.xy(7,y)); 
+        builder.add(createLabel("Col Mgr Username:", SwingConstants.RIGHT), cc.xy(9,y));
+        builder.add(usrUsernameTxtFld,                                      cc.xy(11,y));  y += 2;
+        
+        builder.add(createLabel("DB Password:", SwingConstants.RIGHT),      cc.xy(1,y));
+        builder.add(dbPasswdTxtFld,                                         cc.xy(3,y)); 
+        builder.add(createLabel("SP SA Password:", SwingConstants.RIGHT),   cc.xy(5,y));
+        builder.add(saPasswdTxtFld,                                         cc.xy(7,y)); 
+        builder.add(createLabel("Col Mgr Password:", SwingConstants.RIGHT), cc.xy(9,y)); 
+        builder.add(usrPasswdTxtFld,                                        cc.xy(11,y)); y += 2;
+        
+        builder.addSeparator("Database Info",                            cc.xyw(1,y,12)); y += 2;
+        builder.add(createLabel("Database Name:", SwingConstants.RIGHT), cc.xy(1,y));
+        builder.add(databaseNameTxt,                                     cc.xy(3,y)); y += 2;
+        builder.add(createLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,y));
+        builder.add(drivers,                                             cc.xy(3,y)); y += 2;
+        builder.addSeparator("Collection Options",                       cc.xyw(1,y,12)); y += 2;
         
         collChoiceList = loadPersistedChoices();
         
@@ -225,7 +262,7 @@ class SetUpBuildDlg extends CustomDialog
         
         UIHelper.makeTableHeadersCentered(choiceTable, false);
         calcColumnWidths(choiceTable);
-        builder.add(UIHelper.createScrollPane(choiceTable), cc.xywh(1,11,4,1));
+        builder.add(UIHelper.createScrollPane(choiceTable), cc.xywh(1,y,12,1)); y += 2;
         
         
         final JButton catGblBtn    = createButton("Global Cat Nums");
@@ -240,7 +277,7 @@ class SetUpBuildDlg extends CustomDialog
         btnBar.add(selectAllBtn, cc.xy(6,1));
         btnBar.add(deSelectAll, cc.xy(8,1));
         btnBar.add(defBtn, cc.xy(10,1));
-        builder.add(btnBar.getPanel(), cc.xywh(1,13,4,1));
+        builder.add(btnBar.getPanel(), cc.xywh(1,y,12,1));  y += 2;
         
         catGblBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
@@ -488,13 +525,20 @@ class SetUpBuildDlg extends CustomDialog
             {
                 try
                 {
-                    String username = usernameTxtFld.getText();
-                    String password = new String(passwdTxtFld.getPassword());
+                    dbUser.first  = dbUsernameTxtFld.getText();
+                    dbUser.second  = new String(dbPasswdTxtFld.getPassword());
+                    
+                    saUser.first = usrUsernameTxtFld.getText();
+                    saUser.second = new String(usrPasswdTxtFld.getPassword());
+                    
+                    cmUser.first = usrUsernameTxtFld.getText();
+                    cmUser.second = new String(usrPasswdTxtFld.getPassword());
                     
                     bldSampleDatabase.startBuild(databaseName, 
                                                  dbDriver.getName(), 
-                                                 username, 
-                                                 password,
+                                                 dbUser, 
+                                                 saUser, 
+                                                 cmUser, 
                                                  getSelectedColleectionChoices());
                     dispose();
                     

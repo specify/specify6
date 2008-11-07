@@ -72,7 +72,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -110,7 +113,6 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 import com.thoughtworks.xstream.XStream;
 
-import edu.ku.brc.af.auth.MasterPasswordMgr;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
@@ -121,6 +123,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
@@ -226,10 +229,6 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  */
 public class BuildSampleDatabase
 {
-    // XXX TODO SECURITY- make secure Specify Admin user and pwd
-    public String embeddedSpecifyAppRootUser;
-    public String embeddedSpecifyAppRootPwd;
-
     private static final Logger  log      = Logger.getLogger(BuildSampleDatabase.class);
     
     protected static boolean     debugOn  = false;
@@ -382,7 +381,7 @@ public class BuildSampleDatabase
      * @return the entire list of DB object to be persisted
      */
     public List<Object> createEmptyDiscipline(final Properties props, 
-                                              final CollectionChoice choice)
+                                              @SuppressWarnings("unused") final CollectionChoice choice)
     {
         AppContextMgr.getInstance().setHasContext(true);
         
@@ -5762,15 +5761,10 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // Create the really high-level stuff
         ////////////////////////////////
-        String           username         = initPrefs.getProperty("initializer.username", "testuser");
+        String           username         = initPrefs.getProperty("useragent.username", usernameArg);
         String           email            = initPrefs.getProperty("useragent.email", "ku@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
-        String           password         = initPrefs.getProperty("useragent.password", null);
-        
-        if (StringUtils.isEmpty(password))
-        {
-            password = initPrefs.getProperty("initializer.password", "testuser");
-        }
+        String           password         = initPrefs.getProperty("useragent.password", passwordArg);
         
         System.out.println("----- User Agent -----");
         System.out.println("Userame:   "+username);
@@ -6725,15 +6719,29 @@ public class BuildSampleDatabase
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
         localPrefs.load();
         
-        Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
-        embeddedSpecifyAppRootUser = usernamePassword.first;
-        embeddedSpecifyAppRootPwd  = usernamePassword.second;
-        
         backstopPrefs = getInitializePrefs(null);
         
         String driverName   = backstopPrefs.getProperty("initializer.drivername",   "MySQL");
-        String databaseName = backstopPrefs.getProperty("initializer.databasename", "testfish");    
-            
+        String databaseName = backstopPrefs.getProperty("initializer.databasename", "testfish"); 
+        
+        Properties props = getInitializePrefs(databaseName);
+        if (props.size() > 0)
+        {
+            initPrefs = props;
+        } else
+        {
+            initPrefs = backstopPrefs;
+        }
+        
+        Pair<String, String> dbUser = new Pair<String, String>(initPrefs.getProperty("initializer.dbUserName", "Specify"),
+                                                               initPrefs.getProperty("initializer.dbPassword", "Specify"));
+        
+        Pair<String, String> saUser = new Pair<String, String>(initPrefs.getProperty("initializer.saUserName", "SPSAUser"),
+                                                               initPrefs.getProperty("initializer.saPassword", "SPSAUser"));
+        
+        Pair<String, String> cmUser = new Pair<String, String>(initPrefs.getProperty("useragent.username", "testuser"),
+                                                               initPrefs.getProperty("useragent.password", "testuser"));
+        
         if (doEmptyBuild)
         {
             /*ensureDerbyDirectory(driverName);
@@ -6748,7 +6756,7 @@ public class BuildSampleDatabase
 
         } else
         {
-            setupDlg = new SetUpBuildDlg(databaseName, driverName, this);
+            setupDlg = new SetUpBuildDlg(databaseName, driverName, dbUser, saUser, cmUser, this);
             UIHelper.centerAndShow(setupDlg);
         }
     }
@@ -6761,8 +6769,9 @@ public class BuildSampleDatabase
      */
     protected void startBuild(final String     dbName, 
                               final String     driverName, 
-                              final String     username, 
-                              final String     password,
+                              final Pair<String, String> dbUser, 
+                              final Pair<String, String> saUser, 
+                              final Pair<String, String> cmUser,
                               final List<CollectionChoice> selectedChoicesArg)
     {
         AppContextMgr.getInstance().setHasContext(true); // Fake that there is a Context
@@ -6775,7 +6784,7 @@ public class BuildSampleDatabase
             {
                 try
                 {
-                    build(dbName, driverName, username, password);
+                    build(dbName, driverName, dbUser, saUser, cmUser);
                     
                 } catch (Exception ex)
                 {
@@ -6805,6 +6814,64 @@ public class BuildSampleDatabase
             }
         };
         worker.start();
+    }
+    
+    /**
+     * @param driverInfo
+     * @param saUserName
+     * @param saPassword
+     * @return
+     */
+    private boolean createSpecifySAUser(final DatabaseDriverInfo driverInfo,
+                                        final String saUserName,
+                                        final String saPassword,
+                                        final String databaseName)
+    {
+        Connection conn = DBConnection.getInstance().createConnection();
+        if (driverInfo.getName().equals("MySQL"))
+        {
+            Statement stmt = null;
+            try
+            {
+                stmt = conn.createStatement();
+                if (stmt != null)
+                {
+                    String sqlStr = "SELECT user, host, db, select_priv, insert_priv, grant_priv FROM mysql.db WHERE db = '"+databaseName+"' AND user = '"+saUserName+"'";
+                    ResultSet rs = stmt.executeQuery(sqlStr);
+                    if (!rs.next())
+                    {
+                        String createUserStr = "DROP USER "+saUserName;
+                        stmt.executeUpdate(createUserStr);
+                    }
+                    rs.close();
+                    
+                    String createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE ON "+databaseName+".* TO '"+saUserName+"'@'%' IDENTIFIED BY '"+saPassword+"'";
+                    int rv = stmt.executeUpdate(createUserStr);
+                    return rv == 1;
+                }
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+                
+            } finally
+            {
+                try
+                {
+                    if (stmt != null)
+                    {
+                        stmt.close();
+                    }
+                    if (conn != null)
+                    {
+                        conn.close();
+                    }
+                } catch (SQLException ex1)
+                {
+                    ex1.printStackTrace();
+                }
+            }
+        }
+        return false;
     }
     
     /** 
@@ -6837,7 +6904,7 @@ public class BuildSampleDatabase
             
         } else
         {
-            System.out.println("Building Specify Database Username["+props.getProperty("userName")+"]");
+            System.out.println("Building Specify Database Username["+props.getProperty("dbUserName")+"]");
         }
         
         frame.setProcessPercent(true);
@@ -6869,8 +6936,8 @@ public class BuildSampleDatabase
                 SpecifySchemaGenerator.generateSchema(driverInfo, 
                                                       props.getProperty("hostName"),
                                                       dbName, 
-                                                      props.getProperty("userName"), 
-                                                      props.getProperty("password"));
+                                                      props.getProperty("dbUserName"), 
+                                                      props.getProperty("dbPassword"));
             }
             
             SwingUtilities.invokeLater(new Runnable()
@@ -6891,19 +6958,37 @@ public class BuildSampleDatabase
             {
                 connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, props.getProperty("hostName"),  dbName);
             }
-            embeddedSpecifyAppRootUser = props.getProperty("userName");
-            embeddedSpecifyAppRootPwd  = props.getProperty("password");
+            
+            String embeddedSpecifyAppRootUser = props.getProperty("dbUserName");
+            String embeddedSpecifyAppRootPwd  = props.getProperty("dbPassword");
             
             if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
-                    driverInfo.getDialectClassName(), 
-                    dbName, 
-                    connStr, 
-                    embeddedSpecifyAppRootUser, 
-                    embeddedSpecifyAppRootPwd))
+                                    driverInfo.getDialectClassName(), 
+                                    dbName, 
+                                    connStr, 
+                                    embeddedSpecifyAppRootUser, 
+                                    embeddedSpecifyAppRootPwd))
             {
                 if (hideFrame) System.out.println("Login Failed!");
                 return false;
-            }         
+            }
+            
+            String saUserName = props.getProperty("saUserName");
+            String saPassword = props.getProperty("saPassword");
+            
+            createSpecifySAUser(driverInfo, saUserName, saPassword, dbName);
+
+            if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
+                                   driverInfo.getDialectClassName(), 
+                                   dbName, 
+                                   connStr, 
+                                   saUserName, 
+                                   saPassword))
+            {
+                if (hideFrame) System.out.println("Login Failed!");
+                return false;
+            }   
+            
             
             setSession(HibernateUtil.getCurrentSession());
             DataBuilder.setSession(session);
@@ -6934,7 +7019,7 @@ public class BuildSampleDatabase
             
             if (hideFrame) System.out.println("Creating Empty Database");
             
-            List<Object> dataObjects = createEmptyDiscipline(props, null);
+            createEmptyDiscipline(props, null);
             
 
             SwingUtilities.invokeLater(new Runnable()
@@ -6997,8 +7082,9 @@ public class BuildSampleDatabase
      */
     protected void build(final String     dbName, 
                          final String     driverName, 
-                         final String     username, 
-                         final String     passwordStr) throws SQLException
+                         final Pair<String, String> dbUser, 
+                         final Pair<String, String> saUser, 
+                         final Pair<String, String> cmUser) throws SQLException
     {
         boolean doingDerby = StringUtils.contains(driverName, "Derby");
         
@@ -7026,20 +7112,10 @@ public class BuildSampleDatabase
         frame.setOverall(0, 9+(doingDerby ? 1 : 0));
         frame.getCloseBtn().setVisible(false);
 
-        Properties props = getInitializePrefs(dbName);
-        if (props.size() > 0)
-        {
-            initPrefs = props;
-        } else
-        {
-            initPrefs = backstopPrefs;
-        }
         
-        String userName     = username;
-        String password     = passwordStr;
-        String databaseHost = initPrefs.getProperty("initializer.host",     "localhost");
+        String databaseHost = initPrefs.getProperty("initializer.host", "localhost");
         
-        frame.setTitle("Building -> Database: "+ dbName + " Driver: "+ driverName + " User: "+userName);
+        frame.setTitle("Building -> Database: "+ dbName + " Driver: "+ driverName + " User: "+cmUser.first);
 
         steps = 0;
         SwingUtilities.invokeLater(new Runnable()
@@ -7060,7 +7136,7 @@ public class BuildSampleDatabase
             UIRegistry.showError(msg);
             throw new RuntimeException(msg);
         }
-        SpecifySchemaGenerator.generateSchema(driverInfo, databaseHost, dbName, userName, password);
+        SpecifySchemaGenerator.generateSchema(driverInfo, databaseHost, dbName, dbUser.first, dbUser.second);
 
         SwingUtilities.invokeLater(new Runnable()
         {
@@ -7070,13 +7146,22 @@ public class BuildSampleDatabase
                 frame.setOverall(steps++);
             }
         });
+        
+        if (UIHelper.tryLogin(driverInfo.getDriverClassName(), 
+                driverInfo.getDialectClassName(), 
+                dbName, 
+                driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHost, dbName), 
+                dbUser.first, 
+                dbUser.second))
+            
+        createSpecifySAUser(driverInfo, saUser.first, saUser.second, dbName);
 
         if (UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                               driverInfo.getDialectClassName(), 
                               dbName, 
                               driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHost, dbName), 
-                              embeddedSpecifyAppRootUser, 
-                              embeddedSpecifyAppRootPwd))
+                              saUser.first, 
+                              saUser.second))
         {
             
             boolean single = true;
@@ -7121,7 +7206,7 @@ public class BuildSampleDatabase
                     // save it all to the DB
                     setSession(HibernateUtil.getCurrentSession());
 
-                    createDisciplines(username, password);
+                    createDisciplines(cmUser.first, cmUser.second);
 
                     attachMgr.cleanup();
                     
