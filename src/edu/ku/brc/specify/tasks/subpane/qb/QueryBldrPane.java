@@ -794,7 +794,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         StringBuilder fromStr = new StringBuilder();
         TableAbbreviator tableAbbreviator = new TableAbbreviator();
         List<Pair<DBTableInfo,String>> fromTbls = new LinkedList<Pair<DBTableInfo,String>>();
-        processTree(root, fromStr, fromTbls, 0, tableAbbreviator, tblTree);
+        processTree(root, fromStr, fromTbls, 0, tableAbbreviator, tblTree, qfps);
 
         StringBuilder sqlStr = new StringBuilder();
         sqlStr.append("select ");
@@ -1011,6 +1011,22 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         moveField(selectedQFP, queryFieldItems.get(queryFieldItems.indexOf(selectedQFP)+1));
     }
     
+    
+    /**
+     * @param fld
+     * @return true if criteria have been entered for fld.
+     */
+    protected static boolean fieldHasCriteria(final FieldQRI fld, List<QueryFieldPanel> fieldPanels)
+    {
+        for (QueryFieldPanel fldPanel : fieldPanels)
+        {
+            if (fldPanel.getFieldQRI() == fld)
+            {
+                return fldPanel.hasCriteria();
+            }
+        }
+        return false;
+    }
     /**
      * @param node
      * @return " left join " unless it can be determined that data returned on other side of the join
@@ -1028,7 +1044,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected static void processTree(final ProcessNode parent, final StringBuilder sqlStr, final List<Pair<DBTableInfo,String>> fromTbls,
                                final int level, 
-                               final TableAbbreviator tableAbbreviator, final TableTree tblTree)
+                               final TableAbbreviator tableAbbreviator, final TableTree tblTree,
+                               List<QueryFieldPanel> fieldPanels)
     {
         BaseQRI qri = parent.getQri();
         if (qri != null && qri.getTableTree() != tblTree)
@@ -1063,7 +1080,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         boolean addSynJoin = false;
                         for (int t = 0; t < tqri.getFields(); t++)
                         {
-                            if (tqri.getField(t).getFieldName().equalsIgnoreCase("name") && tqri.getField(t).isInUse())
+                            if (tqri.getField(t).getFieldName().equalsIgnoreCase("name") && tqri.getField(t).isInUse() 
+                                    && fieldHasCriteria(tqri.getField(t), fieldPanels))
                             {
                                 addSynJoin = true;
                                 break;
@@ -1087,7 +1105,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         for (ProcessNode kid : parent.getKids())
         {
-            processTree(kid, sqlStr, fromTbls, level + 1, tableAbbreviator, tblTree);
+            processTree(kid, sqlStr, fromTbls, level + 1, tableAbbreviator, tblTree, fieldPanels);
         }
     }
 
