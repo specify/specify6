@@ -603,7 +603,9 @@ public class UIRegistry
         UIHelper.OSTYPE osType = UIHelper.getOSType();
         if (osType == UIHelper.OSTYPE.Windows)
         {
-            return System.getenv("APPDATA");
+            String appDataLoc = System.getenv("LOCALAPPDATA");
+            
+            return StringUtils.isNotEmpty(appDataLoc) ? appDataLoc : System.getenv("APPDATA");
             
         } else if (osType == UIHelper.OSTYPE.MacOSX)
         {
@@ -611,10 +613,7 @@ public class UIRegistry
             if (new File(docPath).exists())
             {
                 return docPath;
-                
             }
-            // else
-            return homeDir;
         }
         // else
         return homeDir;
