@@ -8,6 +8,8 @@ package edu.ku.brc.af.auth;
 
 import static edu.ku.brc.ui.UIHelper.createI18NButton;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
+import static edu.ku.brc.ui.UIHelper.createPasswordField;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.displayErrorDlgLocalized;
 import static edu.ku.brc.ui.UIRegistry.displayInfoMsgDlgLocalized;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -32,6 +34,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -44,12 +47,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -69,14 +74,13 @@ public class MasterPasswordMgr
     
     //private static final Logger log = Logger.getLogger(SecurityMgr.class);
     
-    protected static MasterPasswordMgr instance = null;
+    private static MasterPasswordMgr instance = null;
     
-    protected boolean errCreatingFile    = false;
-    
+    private boolean              errCreatingFile       = false;
+    private char                 currEcho;
     private Pair<String, String> dbUsernameAndPassword = null;
-    
-    private String               usersUserName       = null;
-    private String               usersPassword       = null;
+    private String               usersUserName         = null;
+    private String               usersPassword         = null;
 
     
     /**
@@ -200,11 +204,11 @@ public class MasterPasswordMgr
      * @return
      */
     protected boolean askForInfo(final Boolean isLocal, 
-                                 final String masterPath)
+                                 final String  masterPath)
     {
         loadAndPushResourceBundle("masterusrpwd");
         
-        FormLayout layout = new FormLayout("p, 4dlu, p, 4dlu, p, 4dlu, p, 4dlu, p, 4dlu, p", "pref, 2dlu, pref, 2dlu, pref");
+        FormLayout layout = new FormLayout("p, 2px, p, 4px, p", "p,2dlu,p,2dlu,p,2dlu,p");
                  
         layout.setRowGroups(new int[][] { { 1, 3, 5 } });
 
@@ -218,23 +222,26 @@ public class MasterPasswordMgr
         group.add(isNetworkRB);
         group.add(isPrefBasedRB);
         
-        final JTextField keyTxt      = new JTextField(30);
-        final JTextField urlTxt      = new JTextField(30);
+        final JTextField keyTxt      = createTextField(50);
+        final JTextField urlTxt      = createTextField(50);
         final JLabel     keyLbl      = createI18NFormLabel("ENCRYPTED_USRPWD");
         final JLabel     urlLbl      = createI18NFormLabel("URL");
         final JButton    createBtn   = createI18NButton("CREATE_KEY");
         final JButton    fileBtn     = createI18NButton("CREATE_FILE");
         
         CellConstraints cc = new CellConstraints(); 
-        panel.add(isPrefBasedRB, cc.xy(3, 1)); 
-        panel.add(isNetworkRB,   cc.xy(5, 1)); 
         
-        panel.add(keyLbl,    cc.xy (1, 3)); 
-        panel.add(keyTxt,    cc.xyw (3, 3, 4)); 
-        panel.add(createBtn, cc.xy (7, 3)); 
-        panel.add(urlLbl,    cc.xy (1, 5)); 
-        panel.add(urlTxt,    cc.xyw (3, 5, 4)); 
-        panel.add(fileBtn,   cc.xy (7, 5)); 
+        int y = 1;
+        panel.add(isPrefBasedRB, cc.xy(3, y)); y += 2;
+        panel.add(isNetworkRB,   cc.xy(3, y)); y += 2;
+        
+        panel.add(keyLbl,    cc.xy(1, y)); 
+        panel.add(keyTxt,    cc.xy(3, y)); 
+        panel.add(createBtn, cc.xy(5, y));  y += 2;
+        
+        panel.add(urlLbl,    cc.xy(1, y)); 
+        panel.add(urlTxt,    cc.xy(3, y)); 
+        panel.add(fileBtn,   cc.xy(5, y));  y += 2;
         
         boolean isEditMode = isLocal != null && StringUtils.isNotEmpty(masterPath);
         if (isEditMode)
@@ -347,7 +354,7 @@ public class MasterPasswordMgr
 
         popResourceBundle();
         
-        errCreatingFile = false;
+        errCreatingFile = true;
         dlg.setVisible(true);
         
         if (!dlg.isCancelled())
@@ -362,14 +369,14 @@ public class MasterPasswordMgr
             }
             AppPreferences.getLocalPrefs().putBoolean(usersUserName+"_"+MASTER_LOCAL, !isNetworkRB.isSelected());
             AppPreferences.getLocalPrefs().put(usersUserName+"_"+MASTER_PATH, value);
-            return true;
+            errCreatingFile = false;
             
         } else if (!isEditMode)
         {
             System.exit(0);
         }
         
-        return false;
+        return errCreatingFile;
     }
     
     /**
@@ -379,37 +386,49 @@ public class MasterPasswordMgr
     {
         loadAndPushResourceBundle("masterusrpwd");
         
-        FormLayout layout = new FormLayout("p, 4dlu, p", 
-                                           "p, 2dlu, p, 2dlu, p, 2dlu, p");
-                 
+        FormLayout layout = new FormLayout("p, 4dlu, p, 8px, p", 
+                                           "p, 2dlu, p, 2dlu, p, 16px, p, 2dlu, p, 2dlu, p");
         layout.setRowGroups(new int[][] { { 1, 3, 5 } });
+        
+        PanelBuilder pb = new PanelBuilder(layout);
 
-        JPanel panel = new JPanel(layout);
-        panel.setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
+        final JTextField     dbUsrTxt    = createTextField(30);
+        final JPasswordField dbPwdTxt    = createPasswordField(30);
+        final JTextField     usrText     = createTextField(30);
+        final JPasswordField pwdText     = createPasswordField(30);
+        final char           echoChar    = pwdText.getEchoChar();
         
-        final JTextField dbUsrTxt    = new JTextField(30);
-        final JTextField dbPwdTxt    = new JTextField(30);
-        final JTextField usrText     = new JTextField(30);
-        final JTextField pwdText     = new JTextField(30);
-        
-        final JLabel     dbUsrLbl    = createI18NFormLabel("DBUSERNAME", SwingConstants.RIGHT);
-        final JLabel     dbPwdLbl    = createI18NFormLabel("DBPASSWORD", SwingConstants.RIGHT);
+        final JLabel     dbUsrLbl    = createI18NFormLabel("USERNAME", SwingConstants.RIGHT);
+        final JLabel     dbPwdLbl    = createI18NFormLabel("PASSWORD", SwingConstants.RIGHT);
         final JLabel     usrLbl      = createI18NFormLabel("USERNAME", SwingConstants.RIGHT);
         final JLabel     pwdLbl      = createI18NFormLabel("PASSWORD", SwingConstants.RIGHT);
         
         CellConstraints cc = new CellConstraints(); 
         
-        panel.add(dbUsrLbl, cc.xy(1, 1)); 
-        panel.add(dbUsrTxt, cc.xy(3, 1)); 
-        panel.add(dbPwdLbl, cc.xy(1, 3)); 
-        panel.add(dbPwdTxt, cc.xy(3, 3)); 
-        panel.add(usrLbl,   cc.xy(1, 5)); 
-        panel.add(usrText,  cc.xy(3, 5)); 
-        panel.add(pwdLbl,   cc.xy(1, 7)); 
-        panel.add(pwdText,  cc.xy(3, 7)); 
+        int y = 1;
+        pb.addSeparator(UIRegistry.getResourceString("MASTER_SEP"), cc.xyw(1, y, 5)); y += 2;
         
-        final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString("MASTER_INFO_TITLE"), true, CustomDialog.OKCANCELHELP, panel);
-        dlg.setOkLabel(getResourceString("DONE"));
+        pb.add(dbUsrLbl, cc.xy(1, y)); 
+        pb.add(dbUsrTxt, cc.xy(3, y)); y += 2;
+        
+        pb.add(dbPwdLbl, cc.xy(1, y)); 
+        pb.add(dbPwdTxt, cc.xy(3, y)); y += 2;
+        
+        pb.addSeparator(UIRegistry.getResourceString("USER_SEP"), cc.xyw(1, y, 5)); y += 2;
+        
+        pb.add(usrLbl,   cc.xy(1, y)); 
+        pb.add(usrText,  cc.xy(3, y)); y += 2;
+        
+        pb.add(pwdLbl,   cc.xy(1, y)); 
+        pb.add(pwdText,  cc.xy(3, y)); 
+        
+        pb.setDefaultDialogBorder();
+               
+        final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString("MASTER_INFO_TITLE"), 
+                                                  true, CustomDialog.OKCANCELAPPLYHELP, pb.getPanel());
+        dlg.setOkLabel(getResourceString("GENERATE_KEY"));
+        dlg.setApplyLabel(getResourceString("SHOW_PASSWORD"));
+
         dlg.createUI();
         dlg.getOkBtn().setEnabled(false);
         
@@ -420,9 +439,9 @@ public class MasterPasswordMgr
             public void check()
             {
                 boolean enable = !dbUsrTxt.getText().isEmpty() &&
-                                 !dbPwdTxt.getText().isEmpty() &&
+                                 !((JTextField)dbPwdTxt).getText().isEmpty() &&
                                  !usrText.getText().isEmpty() &&
-                                 !pwdText.getText().isEmpty();
+                                 !((JTextField)pwdText).getText().isEmpty();
                 dlg.getOkBtn().setEnabled(enable);
             }
             @Override
@@ -437,12 +456,24 @@ public class MasterPasswordMgr
         dbPwdTxt.getDocument().addDocumentListener(docListener);
         usrText.getDocument().addDocumentListener(docListener);
         pwdText.getDocument().addDocumentListener(docListener);
+
+        dlg.getApplyBtn().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                currEcho = currEcho == echoChar ? 0 : echoChar;
+                pwdText.setEchoChar(currEcho);
+                dbPwdTxt.setEchoChar(currEcho);
+                dlg.getApplyBtn().setText(UIRegistry.getResourceString(currEcho == echoChar ? "SHOW_PASSWORD" : "HIDE_PASSWORD"));
+            }
+        });
         
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
-            return new String[] { dbUsrTxt.getText(), dbPwdTxt.getText(), usrText.getText(), pwdText.getText()};
+            return new String[] { dbUsrTxt.getText(), ((JTextField)dbPwdTxt).getText(), usrText.getText(), ((JTextField)pwdText).getText()};
         }
+        
         return null;      
     }
     

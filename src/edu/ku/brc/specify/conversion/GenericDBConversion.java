@@ -183,11 +183,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected Integer                                       curAgentCreatorID      = 0;
     protected Integer                                       curAgentModifierID     = 0;
     
-    protected Integer                                       detStatusCurrentID     = 0;
-    protected Integer                                       detStatusNotCurrID     = 0;
-    protected Integer                                       detStatusOldDetID      = 0;
-    protected Integer                                       detStatusCurrAccID     = 0;
-    
     // edu.ku.brc.specify.datamodel.Collection
     // edu.ku.brc.specify.datamodel.Discipline
     // edu.ku.brc.specify.datamodel.Division
@@ -1036,7 +1031,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         return new BasicSQLUtilsMapValueIFace()
         {
-            // @Override
+            @Override
             public String mapValue(Object oldValue)
             {
                 return curCollectionID.toString();
@@ -1051,7 +1046,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         return new BasicSQLUtilsMapValueIFace()
         {
-            // @Override
+            @Override
             public String mapValue(Object oldValue)
             {
                 return curAgentCreatorID.toString();
@@ -1066,7 +1061,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         return new BasicSQLUtilsMapValueIFace()
         {
-            // @Override
+            @Override
             public String mapValue(Object oldValue)
             {
                 return curAgentModifierID.toString();
@@ -1081,7 +1076,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         return new BasicSQLUtilsMapValueIFace()
         {
-            // @Override
+            @Override
             public String mapValue(Object oldValue)
             {
                 return "0";
@@ -1096,7 +1091,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         return new BasicSQLUtilsMapValueIFace()
         {
-            // @Override
+            @Override
             public String mapValue(Object oldValue)
             {
                 return "1";
@@ -1111,7 +1106,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         return new BasicSQLUtilsMapValueIFace()
         {
-            // @Override
+            @Override
             public String mapValue(Object oldValue)
             {
                 return curDivisionID.toString();
@@ -1126,10 +1121,22 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     {
         return new BasicSQLUtilsMapValueIFace()
         {
-            // @Override
+            @Override
             public String mapValue(Object oldValue)
             {
                 return curDisciplineID.toString();
+            }
+        };
+    }
+
+    protected BasicSQLUtilsMapValueIFace getSrcLatLongUnitValueMapper()
+    {
+        return new BasicSQLUtilsMapValueIFace()
+        {
+            @Override
+            public String mapValue(Object oldValue)
+            {
+                return "0";
             }
         };
     }
@@ -1154,6 +1161,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         BasicSQLUtilsMapValueIFace divisionValueMapper     = getDivisionValueMapper();
         BasicSQLUtilsMapValueIFace disciplineValueMapper   = getDisciplineValueMapper();
         BasicSQLUtilsMapValueIFace isPrimaryValueMapper    = getIsPrimaryValueMapper();
+        BasicSQLUtilsMapValueIFace srcLatLongUnitValueMapper = getSrcLatLongUnitValueMapper();
 
         String[] tablesToMoveOver;
         if (!doBrief)
@@ -1257,6 +1265,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         BasicSQLUtils.addToValueMapper("DivisionID",         divisionValueMapper);
         BasicSQLUtils.addToValueMapper("DisciplineID",       disciplineValueMapper);
         BasicSQLUtils.addToValueMapper("IsPrimary",          isPrimaryValueMapper);
+        BasicSQLUtils.addToValueMapper("SrcLatLongUnit",     srcLatLongUnitValueMapper);
 
         for (String tableName : tablesToMoveOver)
         {

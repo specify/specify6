@@ -67,12 +67,12 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
+import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -422,8 +422,10 @@ public class DatabaseLoginPanel extends JPanel
                     password.requestFocus();
                 }
             });
-
         }
+        
+        // XXX RELEASE (MUST CHANGE)
+        password.setText(Encryption.decrypt(AppPreferences.getLocalPrefs().get("login.password", ""))); //$NON-NLS-1$ //$NON-NLS-2$
 
         cancelBtn.addActionListener(new ActionListener()
         {
@@ -702,6 +704,9 @@ public class DatabaseLoginPanel extends JPanel
         }
 
         AppPreferences.getLocalPrefs().put("login.dbdriver_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName()); //$NON-NLS-1$
+
+        // XXX RELEASE (MUST CHANGE)
+        AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(new String(password.getPassword()))); //$NON-NLS-1$
 
     }
 

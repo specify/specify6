@@ -22,13 +22,13 @@ import java.awt.Frame;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -72,6 +72,7 @@ public class MySQLBackupService extends BackupServiceFactory
     private final String MYSQLDUMP_LOC  = "mysqldump.location";
     private final String MYSQL_LOC      = "mysql.location";
     private final String MYSQLBCK_LOC   = "backup.location";
+    private final String MEGS           = "MEGS";             // Used in Backup PropretyNotifications
     
     private int    numTables;
     private String errorMsg      = null;
@@ -243,8 +244,7 @@ public class MySQLBackupService extends BackupServiceFactory
             @Override
             protected Integer doInBackground() throws Exception
             {
-                int count = 0;
-                BufferedWriter backupOut = null;
+                FileOutputStream backupOut = null;
                 try
                 {
                     Thread.sleep(100);
@@ -253,38 +253,49 @@ public class MySQLBackupService extends BackupServiceFactory
                     SimpleDateFormat sdf      = new SimpleDateFormat("yyyy_MM_dd_kk_mm_ss");
                     String           fileName = sdf.format(Calendar.getInstance().getTime()) + (isMonthly ? "_monthly" : "") + ".sql";
                     String           fullPath = backupLoc + File.separator + fileName;
-                    backupOut = new BufferedWriter(new FileWriter(fullPath));
+                    
+                    File file     = new File(fullPath);
+                    backupOut     = new FileOutputStream(file);
                     
                     writeStats(getCollectionStats(getTableNames()), getStatsName(fullPath));
                     
-                    String cmdLine = mysqldumpLoc + " -u Specify --password=Specify " + databaseName;// XXX RELEASE
-                    String[] args = StringUtils.split(cmdLine, ' ');
+                    String cmdLine  = mysqldumpLoc + " -u Specify --password=Specify " + databaseName;// XXX RELEASE
+                    String[] args   = StringUtils.split(cmdLine, ' ');
                     Process process = Runtime.getRuntime().exec(args);
                     
-                    String        line = null;
-                    StringBuilder sb   = new StringBuilder();
-
-                    BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                    line = null;
-                    while ((line = in.readLine()) != null)
+                    InputStream input = process.getInputStream();
+                    byte[] bytes = new byte[8192*2];
+                    
+                    double oneMeg     = (1024.0 * 1024.0);
+                    long   dspMegs    = 0;
+                    long   totalBytes = 0;
+                     
+                    do
                     {
-                    	//System.err.println(line);
-                        if (line != null)
+                        int numBytes = input.read(bytes, 0, bytes.length);
+                        totalBytes += numBytes;
+                        if (numBytes > 0)
                         {
-                            if (line.length() > 0 && line.charAt(0) == 'C' && line.startsWith("CREATE TABLE"))
+                            long megs = (long)(totalBytes / oneMeg);
+                            if (megs != dspMegs)
                             {
-                                count++;
-                                setProgress((int)(100.0 * count / numTables));
+                                dspMegs = megs;
+                                long megsWithTenths = (long)((totalBytes / oneMeg) * 10.0);
+                                firePropertyChange(MEGS, 0, megsWithTenths);
                             }
-                            backupOut.write(line);
-                            backupOut.write('\n');
+                            
+                            backupOut.write(bytes, 0, numBytes);
+                            
+                        } else
+                        {
+                            break;
                         }
-                    }
-                    setProgress(100);
+                        
+                    } while(true);
                     
-                    line = null;
-                    sb   = new StringBuilder();
+                    StringBuilder sb = new StringBuilder();
                     
+                    String line;
                     BufferedReader errIn = new BufferedReader(new InputStreamReader(process.getErrorStream()));
                     while ((line = errIn.readLine()) != null)
                     {
@@ -344,16 +355,18 @@ public class MySQLBackupService extends BackupServiceFactory
         };
         
         final JStatusBar statusBar = UIRegistry.getStatusBar();
-        statusBar.setProgressRange(STATUSBAR_NAME, 0, 100);
+        statusBar.setIndeterminate(STATUSBAR_NAME, true);
         
         UIRegistry.writeSimpleGlassPaneMsg(getLocalizedMessage("MySQLBackupService.BACKINGUP", databaseName), 24);
         
         backupWorker.addPropertyChangeListener(
                 new PropertyChangeListener() {
                     public  void propertyChange(final PropertyChangeEvent evt) {
-                        if ("progress".equals(evt.getPropertyName())) 
+                        if (MEGS.equals(evt.getPropertyName())) 
                         {
-                            statusBar.setValue(STATUSBAR_NAME, (Integer)evt.getNewValue());
+                            long value = (Long)evt.getNewValue();
+                            double val = value / 10.0;
+                            statusBar.setText(UIRegistry.getLocalizedMessage("MySQLBackupService.BACKUP_MEGS", val));
                         }
                     }
                 });
@@ -448,7 +461,6 @@ public class MySQLBackupService extends BackupServiceFactory
             return;
         }
         
-        
         errorMsg = null;
         
         final String path = dirStr + fileName;
@@ -475,45 +487,64 @@ public class MySQLBackupService extends BackupServiceFactory
         
         SwingWorker<Integer, Integer> backupWorker = new SwingWorker<Integer, Integer>()
         {
+            long totalBytes = 0;
+            long fileSize   = 0;
+            
             /* (non-Javadoc)
              * @see javax.swing.SwingWorker#doInBackground()
              */
             @Override
             protected Integer doInBackground() throws Exception
             {
-                BufferedReader input = null;
-                int count = 0;
+                FileInputStream input = null;
                 try
                 {
-                	String   cmdLine = mysqlLoc+" -u Specify --password=Specify " + databaseName; // XXX RELEASE
+                    String userName = DBConnection.getInstance().getUserName();
+                    String password = DBConnection.getInstance().getPassword();
+                	String   cmdLine = mysqlLoc+" -u "+userName+" --password="+password+" " + databaseName; // XXX RELEASE
                 	String[] args    = StringUtils.split(cmdLine, ' ');
                     Process  process = Runtime.getRuntime().exec(args); 
                     
                     Thread.sleep(100);
                     
-                    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
+                    OutputStream out = process.getOutputStream();
                     
                     // wait as long it takes till the other process has prompted.
                     try 
                     {
-                        input = new BufferedReader(new FileReader(restoreFilePath));
+                        File inFile    = new File(restoreFilePath);
+                        fileSize  = inFile.length();
+                        
+                        long step      = fileSize / 100L;
+                        long stepTotal = 0;
+                        input = new FileInputStream(inFile);
                         try 
                         {
-                            String line = null; //not declared within while loop
-                            while (( line = input.readLine()) != null)
+                            
+                            byte[] bytes = new byte[8192];
+                            do
                             {
-                            	if (line != null)
+                                int numBytes = input.read(bytes, 0, bytes.length);
+                            	if (numBytes > 0)
                             	{
-                            		out.write(line);
-                            		out.newLine();
+                            		out.write(bytes, 0, numBytes);
+                            		totalBytes += numBytes;
+                            		
+                            	} else
+                            	{
+                            	    break;
                             	}
                                 
-                                if (line.length() > 0 && line.charAt(0) == 'C' && line.startsWith("CREATE TABLE"))
-                                {
-                                    count++;
-                                    setProgress((int)(100.0 * count / numTables));
-                                }
-                            }
+                            	if (totalBytes > stepTotal)
+                            	{
+                            	    stepTotal = totalBytes + step;
+                            	    
+                            	    System.err.println(totalBytes+"  "+fileSize+"  "+(((int)( 100.0 * (totalBytes / fileSize)))));
+                                    setProgress((int)( 100.0 * (totalBytes / fileSize)));
+                            	    totalBytes = 0;
+                            	}
+                                
+                            } while (true);
                         }
                         finally 
                         {
@@ -524,8 +555,14 @@ public class MySQLBackupService extends BackupServiceFactory
                     {
                         ex.printStackTrace();
                         errorMsg = ex.toString();
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
                     }
-
+                    
+                    setProgress(100);
+                    
                     out.flush();
                     out.close();
                     
@@ -535,7 +572,7 @@ public class MySQLBackupService extends BackupServiceFactory
                     {
                         //System.err.println(line);
                     }
-                    setProgress(100);
+                    
                     
                     in = new BufferedReader(new InputStreamReader(process.getErrorStream()));
                     line = null;
@@ -550,20 +587,12 @@ public class MySQLBackupService extends BackupServiceFactory
                     }
                     errorMsg = sb.toString();
                     
-                    //System.out.println(process.exitValue());
-                    
                 } catch (Exception ex)
                 {
                     ex.printStackTrace();
                     errorMsg = ex.toString();
-                    
-                } finally
-                {
-                    if (input != null)
-                    {
-                        input.close();
-                    }
                 }
+                
                 return null;
             }
 
@@ -597,7 +626,14 @@ public class MySQLBackupService extends BackupServiceFactory
                     public  void propertyChange(final PropertyChangeEvent evt) {
                         if ("progress".equals(evt.getPropertyName())) 
                         {
-                            statusBar.setValue(STATUSBAR_NAME, (Integer)evt.getNewValue());
+                            int value = (Integer)evt.getNewValue();
+                            if (value < 100)
+                            {
+                                statusBar.setValue(STATUSBAR_NAME, (Integer)evt.getNewValue());
+                            } else
+                            {
+                                statusBar.setProgressDone(STATUSBAR_NAME);
+                            }
                         }
                     }
                 });

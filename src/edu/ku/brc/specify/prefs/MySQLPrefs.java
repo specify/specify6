@@ -37,6 +37,7 @@ import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.db.BackupServiceFactory;
 import edu.ku.brc.af.core.db.MySQLBackupService;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -197,7 +198,7 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (mgr.closePrefs())
+                if (mgr == null || mgr.closePrefs())
                 {
                     BackupServiceFactory.getInstance().doBackUp();
                 }
@@ -234,7 +235,7 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
      */
     protected void doRestore()
     {
-        if (mgr.closePrefs())
+        if (mgr == null || mgr.closePrefs())
         {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -242,9 +243,13 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
                 {
                     if (SubPaneMgr.getInstance().aboutToShutdown())
                     {
-                        SubPaneIFace splash = ((BackupTask)TaskMgr.getTask("BackupTask")).getSplashPane();
-                        SubPaneMgr.getInstance().addPane(splash);
-                        SubPaneMgr.getInstance().showPane(splash);
+                        Taskable task = TaskMgr.getTask("BackupTask");
+                        if (task != null)
+                        {
+                            SubPaneIFace splash = ((BackupTask)TaskMgr.getTask("BackupTask")).getSplashPane();
+                            SubPaneMgr.getInstance().addPane(splash);
+                            SubPaneMgr.getInstance().showPane(splash);
+                        }
                         BackupServiceFactory.getInstance().doRestore();
                     }
                 }

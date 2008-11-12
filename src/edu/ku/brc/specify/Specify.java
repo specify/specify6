@@ -713,23 +713,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     {
         PreferencesDlg dlg = new PreferencesDlg(false);
         dlg.setVisible(true);
-        
-        DataProviderSessionIFace session = null;
-        try
-        {
-            String sqlStr = "SELECT a.lastName,a.firstName FROM Agent a JOIN a.disciplines as d WHERE d.disciplineId = 1 AND  LOWER(lastName) LIKE 's%'  ORDER BY lastName ASC"; //$NON-NLS-1$
-            session = DataProviderFactory.getInstance().createSession();
-            Object  result     = session.getDataList(sqlStr);
-            //System.out.println(result);
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            
-        } finally
-        {
-            session.close();
-        }
     }
 
     /**
@@ -851,7 +834,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         //--------------------------------------------------------------------
         //-- Data Menu
         //--------------------------------------------------------------------
-        String title;
         JMenu dataMenu = UIHelper.createLocalizedMenu(mb, "Specify.DATA_MENU", "Specify.DATA_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
         ResultSetController.addMenuItems(dataMenu);
         dataMenu.addSeparator();

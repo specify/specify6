@@ -27,6 +27,7 @@ import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -94,7 +95,7 @@ public class SpecifyUserBusRules extends BaseBusRules
             {
                 currEcho = currEcho == echoChar ? 0 : echoChar;
                 pwdTxt.setEchoChar(currEcho);
-                showPwdBtn.setText(currEcho == echoChar ? "Show Password" : "Hide Password");
+                showPwdBtn.setText(UIRegistry.getResourceString(currEcho == echoChar ? "SHOW_PASSWORD" : "HIDE_PASSWORD"));
             }
         });
     }
@@ -219,22 +220,25 @@ public class SpecifyUserBusRules extends BaseBusRules
         
         beforeMerge(dataObj, session);
         
-        SpecifyUser spUser  = (SpecifyUser)formViewObj.getDataObj();
-        //Division    currDiv = AppContextMgr.getInstance().getClassObject(Division.class);
-        
-        for (Agent agent : spUser.getAgents())
+        if (formViewObj != null)
         {
-            //if (agent.getDivision().getId().equals(currDiv.getId()))
+            SpecifyUser spUser  = (SpecifyUser)formViewObj.getDataObj();
+            //Division    currDiv = AppContextMgr.getInstance().getClassObject(Division.class);
+            
+            for (Agent agent : spUser.getAgents())
             {
-                try
+                //if (agent.getDivision().getId().equals(currDiv.getId()))
                 {
-                    session.saveOrUpdate(agent);
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
+                    try
+                    {
+                        session.saveOrUpdate(agent);
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                    break;
                 }
-                break;
             }
         }
     }

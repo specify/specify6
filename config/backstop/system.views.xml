@@ -775,11 +775,11 @@
                     <cell type="field" id="2" name="email" uitype="text" cols="40" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Agent:"/>
+                    <cell type="label" labelfor="4" label="Agent"/>
                     <cell type="field" id="4" name="agent" uitype="querycbx" initialize="name=AgentSSPU;title=Agent;adjustquery=false" isrequired="true" ignore="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="key" label="Key:"/>
+                    <cell type="label" labelfor="key" label="Key"/>
                     <cell type="field" id="key" name="key" uitype="text" ignore="true" readonly="true"/> 
                     <cell type="command" id="GenerateKey" name="GenerateKey" label="Generate New Key" ignore="true"/>
                 </row>
