@@ -722,18 +722,12 @@ public class SecurityAdminPane extends BaseSubPane
      */
     private JPanel createInformationPanel()
     {
-        JPanel infoPanel = new JPanel();
-        //JPanel infoPanel = new FormDebugPanel();
-        final PanelBuilder mainPB = new PanelBuilder(new FormLayout(
-                "f:p:g", "p,3dlu,p,3dlu,t:p:g,3dlu,p,3dlu,p,3dlu,p"), infoPanel);
-        final CellConstraints cc = new CellConstraints();
-
         infoCards = new JPanel();
         infoCards.setLayout(new CardLayout());
-        createInitialInfoSubPanels();
-        mainPB.add(infoCards, cc.xy(1, 5));
         
-        return infoPanel;
+        createInitialInfoSubPanels();
+        
+        return infoCards;
     }
     
     /**

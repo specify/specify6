@@ -55,13 +55,14 @@ public class PermissionPanelEditor extends JPanel
         super();
         
         cardPanel   = new JPanel(cardLayout);
+        
         switcherCBX = new JComboBox(new DefaultComboBoxModel());
         
         CellConstraints cc = new CellConstraints();
         PanelBuilder topPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
         topPB.add(switcherCBX, cc.xy(2, 1));
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,10px,p"), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,10px,f:p:g"), this);
         pb.add(topPB.getPanel(), cc.xy(1, 1));
         pb.add(cardPanel,        cc.xy(1, 3));
         

@@ -242,14 +242,14 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 		table.setModel(model);
 		table.setRowHeight(label.getPreferredSize().height+3);
 		
-		int rows   = 15;
+		/*int rows   = 15;
 		int height = 0; 
 	    for(int row = 0; row < rows; row++) 
 	    {
 	        height += table.getRowHeight(row);
-	    }
+	    }*/
 	 
-	    table.setPreferredScrollableViewportSize(new Dimension(table.getPreferredScrollableViewportSize().width, height)); 
+	    table.setPreferredScrollableViewportSize(new Dimension(table.getPreferredScrollableViewportSize().width, 50)); 
 
 		TableColumn column = table.getColumnModel().getColumn(0);
 		int cellWidth = iconSize.size()+4;
