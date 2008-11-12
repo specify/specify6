@@ -194,6 +194,7 @@ public class NavigationTreeMgr
                 session.beginTransaction();
                 
                 SpecifyUserBusRules busRules = new SpecifyUserBusRules();
+                busRules.initialize(dlg.getMultiView().getCurrentView());
                 busRules.beforeMerge(spUser, session);
                 busRules.beforeSave(spUser, session);
                 
