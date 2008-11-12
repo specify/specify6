@@ -49,7 +49,6 @@ public class Determination extends CollectionMember implements java.io.Serializa
 {
      // Fields    
      protected Integer             determinationId;
-     //protected DeterminationStatus status;
      protected Boolean             isCurrent;
      protected String              typeStatusName;
      protected Calendar            determinedDate;
@@ -67,6 +66,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
      protected Float               number2;
      protected Boolean             yesNo1;
      protected Boolean             yesNo2;
+     protected Taxon               activeTaxon; //= taxon.acceptedTaxon or taxon
      protected Taxon               taxon;
      protected CollectionObject    collectionObject;
      protected Set<DeterminationCitation> determinationCitations;
@@ -121,6 +121,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
         number2 = null;
         yesNo1 = null;
         yesNo2 = null;
+        activeTaxon = null;
         taxon = null;
         collectionObject = null;
         determinationCitations = new HashSet<DeterminationCitation>();
@@ -434,7 +435,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
     }
 
     /**
-     * 
+     * @return the taxon.
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "TaxonID", unique = false, nullable = true, insertable = true, updatable = true)
@@ -443,9 +444,43 @@ public class Determination extends CollectionMember implements java.io.Serializa
         return this.taxon;
     }
     
+    /**
+     * @param taxon the taxon to set.
+     */
     public void setTaxon(Taxon taxon) 
     {
         this.taxon = taxon;
+        if (taxon == null || taxon.getIsAccepted())
+        {
+            activeTaxon = taxon;
+        }
+        else
+        {
+            activeTaxon = taxon.getAcceptedTaxon();
+        }        
+    }
+
+    /**
+     * @return the activeTaxon.
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ActiveTaxonID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Taxon getActiveTaxon() 
+    {
+        return this.activeTaxon;
+    }
+
+    /**
+     * @param activeTaxon the activeTaxon to set.
+     * 
+     * This method should only be called by the taxon synonymization code.
+     * 
+     * setTaxon() should be used instead.
+     */
+    @SuppressWarnings("unused")
+    public void setActiveTaxon(Taxon activeTaxon)
+    {
+        this.activeTaxon = activeTaxon;
     }
 
     /**

@@ -1019,7 +1019,16 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     @Transient
     public Integer getDeterminationCount(boolean current)
     {
-        String sql = "SELECT count(co.CollectionObjectID) FROM taxon as tx INNER JOIN determination as dt ON tx.TaxonID = dt.TaxonID ";
+        String sql = "SELECT count(co.CollectionObjectID) FROM taxon as tx INNER JOIN determination as dt ON tx.TaxonID = ";
+        //count all determinations 
+        if (isAccepted)
+        {
+            sql += "dt.ActiveTaxonID ";
+        }
+        else
+        {
+            sql += "dt.TaxonID ";
+        }
         sql +=  " INNER JOIN collectionobject as co ON dt.CollectionObjectID = co.CollectionObjectID " +
             "WHERE tx.TaxonID = " +getId() + " AND co.CollectionMemberID = COLMEMID";
         if (current)

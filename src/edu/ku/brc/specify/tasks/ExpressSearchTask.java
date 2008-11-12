@@ -1368,6 +1368,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     
                     else if (rowCount == 0)
                     {
+                        UIRegistry.displayInfoMsgDlgLocalized("QB_NO_RESULTS");
                         UIRegistry.displayLocalizedStatusBarText("QB_NO_RESULTS");
                     }
                     else

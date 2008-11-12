@@ -404,15 +404,15 @@ public class LoanReturnDlg extends JDialog
             {
                 if (deter.isCurrentDet())
                 {
-                    if (deter.getTaxon().getFullName() == null)
+                    if (deter.getActiveTaxon().getFullName() == null)
                     {
-                        Taxon parent = deter.getTaxon().getParent();
+                        Taxon parent = deter.getActiveTaxon().getParent();
                         String genus = parent.getFullName() == null ? parent.getName() : parent.getFullName();
-                        taxonName = genus + " " + deter.getTaxon().getName();
+                        taxonName = genus + " " + deter.getActiveTaxon().getName();
                         
                     } else
                     {
-                        taxonName = deter.getTaxon().getFullName();
+                        taxonName = deter.getActiveTaxon().getFullName();
                     }
 
                     break;

@@ -150,6 +150,7 @@
 	
     <table name="Determination" field="determinations" title="Determinations">
     	<alias name="Taxon"/>
+    	<alias name="Taxon" field="activeTaxon" />
         <table name="DeterminationCitation" field="determinationCitations">
         	<alias name="ReferenceWork"/>
         </table>

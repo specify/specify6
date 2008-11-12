@@ -26,6 +26,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.ui.treetables.TreeNode;
 
 /**
  * A factory class for creating instances of the {@link Treeable}, {@link TreeDefIface}, and
@@ -245,40 +246,40 @@ public class TreeFactory
         return null;
     }
     
-    /**
-     * @param clazz
-     * @param id
-     * @return
-     */
-    public static String getRelatedRecordCountQueryStringHQL(final Class<?> clazz, final int id)
-    {
-        if (clazz.equals(Taxon.class))
-        {
-            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.determinations AS d INNER JOIN d.status AS dts INNER JOIN d.taxon AS t WHERE dts.type = 1 AND t.id="+Integer.toString(id);
-        }
-        
-        if (clazz.equals(Geography.class))
-        {
-            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.collectingEvent AS ce INNER JOIN ce.locality AS l INNER JOIN l.geography AS g WHERE g.id="+Integer.toString(id);
-        }
-        
-        if (clazz.equals(GeologicTimePeriod.class))
-        {
-            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE gtp.id="+Integer.toString(id);
-        }
-        
-        if (clazz.equals(Storage.class))
-        {
-            return "SELECT count(DISTINCT co.id) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.storage as sto WHERE sto.id="+Integer.toString(id);
-        }
-        
-        if (clazz.equals(LithoStrat.class))
-        {
-            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE ls.id="+Integer.toString(id);
-        }
-        
-        return null;
-    }
+//    /**
+//     * @param clazz
+//     * @param id
+//     * @return
+//     */
+//    public static String getRelatedRecordCountQueryStringHQL(final Class<?> clazz, final int id)
+//    {
+//        if (clazz.equals(Taxon.class))
+//        {
+//            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.determinations AS d INNER JOIN d.taxon AS t WHERE d.isCurrent AND t.id="+Integer.toString(id);
+//        }
+//        
+//        if (clazz.equals(Geography.class))
+//        {
+//            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.collectingEvent AS ce INNER JOIN ce.locality AS l INNER JOIN l.geography AS g WHERE g.id="+Integer.toString(id);
+//        }
+//        
+//        if (clazz.equals(GeologicTimePeriod.class))
+//        {
+//            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE gtp.id="+Integer.toString(id);
+//        }
+//        
+//        if (clazz.equals(Storage.class))
+//        {
+//            return "SELECT count(DISTINCT co.id) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.storage as sto WHERE sto.id="+Integer.toString(id);
+//        }
+//        
+//        if (clazz.equals(LithoStrat.class))
+//        {
+//            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE ls.id="+Integer.toString(id);
+//        }
+//        
+//        return null;
+//    }
 
     /**
      * @param clazz
@@ -299,13 +300,21 @@ public class TreeFactory
      * @param id
      * @return
      */
-    public static StringBuilder getRelatedRecordCountSQLBase(final Class<?> clazz)
+    public static StringBuilder getRelatedRecordCountSQLBase(final Class<?> clazz, final TreeNode node)
     {
         StringBuilder sb = new StringBuilder();
         if (clazz.equals(Taxon.class))
         {
             sb.append("SELECT count(*) ");
-            sb.append("FROM taxon AS TX INNER JOIN determination as DET ON TX.TaxonID = DET.TaxonID ");
+            sb.append("FROM taxon AS TX INNER JOIN determination as DET ON TX.TaxonID = ");
+            if (node.getAcceptedParentId() == null)
+            {
+                sb.append("DET.ActiveTaxonID ");
+            }
+            else
+            {
+                sb.append("DET.TaxonID ");
+            }
             sb.append("INNER JOIN collectionobject ON DET.CollectionObjectID = collectionobject.CollectionObjectID ");
         }
         
@@ -324,13 +333,14 @@ public class TreeFactory
      * @param id
      * @return
      */
-    public static String getRelatedRecordCountSQLSingleNode(final Class<?> clazz)
+    public static String getRelatedRecordCountSQLSingleNode(final Class<?> clazz, final TreeNode node)
     {
-        StringBuilder sb = getRelatedRecordCountSQLBase(clazz);
+        StringBuilder sb = getRelatedRecordCountSQLBase(clazz, node);
         
         if (clazz.equals(Taxon.class))
         {
-            sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND IsCurrent = 1 AND IsAccepted = 1 AND TX.TaxonID = %d");
+            //sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND IsCurrent = 1 AND IsAccepted = 1 AND TX.TaxonID = %d");
+            sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND IsCurrent = 1 AND TX.TaxonID = %d");
             
         } else if (clazz.equals(Geography.class))
         {
@@ -366,13 +376,14 @@ public class TreeFactory
      * @param id
      * @return
      */
-    public static String getRelatedRecordCountSQLForRange(final Class<?> clazz)
+    public static String getRelatedRecordCountSQLForRange(final Class<?> clazz, final TreeNode node)
     {
-        StringBuilder sb = getRelatedRecordCountSQLBase(clazz);
+        StringBuilder sb = getRelatedRecordCountSQLBase(clazz, node);
         
         if (clazz.equals(Taxon.class))
         {
-            sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND IsCurrent = 1 AND IsAccepted = 1 AND NodeNumber > %d AND HighestChildNodeNumber <= %d");
+            //sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND IsCurrent = 1 AND IsAccepted = 1 AND NodeNumber > %d AND HighestChildNodeNumber <= %d");
+            sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND IsCurrent = 1 AND NodeNumber > %d AND HighestChildNodeNumber <= %d");
             
         } else if (clazz.equals(Geography.class))
         {

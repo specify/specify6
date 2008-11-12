@@ -156,6 +156,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected JButton                                        searchBtn;
     protected JCheckBox                                      distinctChk;
     protected JCheckBox                                      countOnlyChk;
+    protected static boolean                                 searchSynonymy     = true;
+    protected static boolean                                 hqlHasSynJoins;
+    
     /**
      * When countOnly is true, count of matching records is displayed, but the records are not displayed.
      */
@@ -794,11 +797,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         StringBuilder fromStr = new StringBuilder();
         TableAbbreviator tableAbbreviator = new TableAbbreviator();
         List<Pair<DBTableInfo,String>> fromTbls = new LinkedList<Pair<DBTableInfo,String>>();
+        hqlHasSynJoins = false;        
         processTree(root, fromStr, fromTbls, 0, tableAbbreviator, tblTree, qfps);
 
         StringBuilder sqlStr = new StringBuilder();
         sqlStr.append("select ");
-        if (distinct)
+        if (distinct || hqlHasSynJoins)
         {
             sqlStr.append(" distinct ");
         }
@@ -833,6 +837,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     if (!isDisplayOnly && criteriaStr.length() > 0)
                     {
                         criteriaStr.append(" AND ");
+                    }
+                    if (isSynSearchable(qfi.getFieldQRI()) && hqlHasSynJoins)
+                    {
+                        criteria = adjustForSynSearch(tableAbbreviator.getAbbreviation(qfi.getFieldQRI().getTable().getTableTree()), criteria);
                     }
                     criteriaStr.append(criteria);
                 }
@@ -939,6 +947,18 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return new HQLSpecs(result, paramsToSet, sortElements);
     }
     
+    protected static String adjustForSynSearch(final String tblAlias, final String criteria)
+    {
+        String result = "(" + criteria;
+        String chunk = criteria.replace(tblAlias + ".", getAcceptedChildrenAlias(tblAlias) + ".");
+        result += " OR " + chunk;
+        chunk = criteria.replace(tblAlias + ".", getAcceptedParentAlias(tblAlias) + ".");
+        result += " OR " + chunk;
+        chunk = criteria.replace(tblAlias + ".", getAcceptedParentChildrenAlias(tblAlias) + ".");
+        result += " OR " + chunk + ") ";
+        
+        return result;
+    }
     /**
      * Performs the Search by building the HQL String.
      */
@@ -1037,6 +1057,31 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         //XXX really should only use left join when necessary.
         return " left join ";
     }
+    
+    protected static String getAcceptedParentAlias(final String taxAlias)
+    {
+        return taxAlias + "accpar";
+    }
+    
+    protected static String getAcceptedParentChildrenAlias(final String taxAlias)
+    {
+        return taxAlias + "accparchi";
+    }
+    
+    protected static String getAcceptedChildrenAlias(final String taxAlias)
+    {
+        return  taxAlias + "accchi";
+    }
+    
+    protected static boolean isSynSearchable(final FieldQRI fld)
+    {
+        if (!fld.getTableInfo().getClassObj().equals(Taxon.class))
+        {
+            return false;
+        }
+        
+        return fld.getFieldName().equalsIgnoreCase("name") || fld.getFieldName().equalsIgnoreCase("fullname") || fld instanceof TreeLevelQRI;
+    }
     /**
      * @param parent
      * @param sqlStr
@@ -1073,15 +1118,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     sqlStr.append(' ');
                     sqlStr.append(alias);
                     sqlStr.append(' ');
-                    if (((TableQRI )qri).getTableInfo().getClassObj().equals(Taxon.class))
+                    if (searchSynonymy && ((TableQRI )qri).getTableInfo().getClassObj().equals(Taxon.class))
                     {
                         //check to see if Name is inUse and if so, add joins for accepted taxa
                         TableQRI tqri = (TableQRI )qri;
                         boolean addSynJoin = false;
                         for (int t = 0; t < tqri.getFields(); t++)
                         {
-                            if (tqri.getField(t).getFieldName().equalsIgnoreCase("name") && tqri.getField(t).isInUse() 
-                                    && fieldHasCriteria(tqri.getField(t), fieldPanels))
+                            if (isSynSearchable(tqri.getField(t)) && tqri.getField(t).isInUse() && fieldHasCriteria(tqri.getField(t), fieldPanels))
                             {
                                 addSynJoin = true;
                                 break;
@@ -1089,8 +1133,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         }
                         if (addSynJoin)
                         {
+                            hqlHasSynJoins = true;
                             sqlStr.append("left join ");
-                            sqlStr.append(alias + ".acceptedChildren " + alias + "acceptedChildren ");
+                            sqlStr.append(alias + ".acceptedChildren " + getAcceptedChildrenAlias(alias) + " ");
+                            sqlStr.append("left join ");
+                            sqlStr.append(alias + ".acceptedTaxon "  + getAcceptedParentAlias(alias) + " left join "
+                                    + getAcceptedParentAlias(alias) + ".acceptedChildren " + getAcceptedParentChildrenAlias(alias) + " ");
                         }
                     }
                 }
@@ -2510,14 +2558,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         Map<String, List<QueryFieldPanel>> map = new HashMap<String, List<QueryFieldPanel>>();
         for (QueryFieldPanel qfp : queryFieldItems)
         {
-            if (qfp.getFieldInfo() != null) //this means tree levels won't get qualified.
+            if (qfp.getFieldTitle() != null) //this means tree levels won't get qualified.
             {
-                if (!map.containsKey(qfp.getFieldInfo().getTitle()))
+                if (!map.containsKey(qfp.getFieldTitle()))
                 {
-                    map.put(qfp.getFieldInfo().getTitle(), new LinkedList<QueryFieldPanel>());
+                    map.put(qfp.getFieldTitle(), new LinkedList<QueryFieldPanel>());
                 }
-                map.get(qfp.getFieldInfo().getTitle()).add(qfp);
-                labels.add(qfp.getFieldInfo().getTitle());
+                map.get(qfp.getFieldTitle()).add(qfp);
+                labels.add(qfp.getFieldTitle());
             }
         }
         

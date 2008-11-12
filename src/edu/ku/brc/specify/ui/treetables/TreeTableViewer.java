@@ -2873,11 +2873,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         if (rankThreshold == -1 || dbRecord.getRankId() >= rankThreshold)
                         {
                             //System.out.println("Calc: "+node.getFullName()+" "+node.hashCode());
-                            new ChildNodeCounter(TreeTableViewer.this, 1, node,  TreeFactory.getRelatedRecordCountSQLSingleNode(dbRecClass), null, isHQL);
+                            new ChildNodeCounter(TreeTableViewer.this, 1, node,  TreeFactory.getRelatedRecordCountSQLSingleNode(dbRecClass, node), null, isHQL);
                             
                             new ChildNodeCounter(TreeTableViewer.this, 2, node, 
                                     TreeFactory.getNodeNumberQuery(dbRecClass), 
-                                    TreeFactory.getRelatedRecordCountSQLForRange(dbRecClass), isHQL);
+                                    TreeFactory.getRelatedRecordCountSQLForRange(dbRecClass, node), isHQL);
                         }
                     }
                     catch (Exception e)

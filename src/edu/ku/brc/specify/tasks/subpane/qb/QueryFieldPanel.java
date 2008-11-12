@@ -1175,6 +1175,11 @@ public class QueryFieldPanel extends JPanel
         return labelQualified;
     }
 
+    /**
+     * @param otherLabels
+     * @param unQualify if true then label is un-qualified.
+     * @return a label for the field that is 'qualified' to distinguish it from other labels with the same title.
+     */
     public String qualifyLabel(final List<String> otherLabels, final boolean unQualify)
     {
         boolean needToQualify;
@@ -1191,7 +1196,7 @@ public class QueryFieldPanel extends JPanel
                 if (this != p)
                 {
                     labels.add(p.getLabel());
-                    if (p.getFieldInfo().getTitle().equals(getFieldInfo().getTitle()))
+                    if (p.getFieldTitle().equals(getFieldTitle()))
                     {
                         needToQualify = true;
                     }
@@ -1206,7 +1211,7 @@ public class QueryFieldPanel extends JPanel
         
         if (needToQualify)
         {
-            String newLabel = getFieldInfo().getTitle();
+            String newLabel = getFieldTitle();
             TableTree parent = fieldQRI.getTableTree();
             int checkParent = 1;
             do
@@ -1221,11 +1226,30 @@ public class QueryFieldPanel extends JPanel
         else
         {
             labelQualified = false;
-            fieldLabel.setText(getFieldInfo().getTitle());
+            fieldLabel.setText(getFieldTitle());
         }
         return fieldLabel.getText();
     }
 
+    /**
+     * @return the title of the field.
+     */
+    protected String getFieldTitle()
+    {
+        if (fieldQRI != null)
+        {
+            return fieldQRI.getTitle();
+        }
+        return null;
+    }
+    
+    
+    
+    /**
+     * @param parent
+     * @param checkParent
+     * @return
+     */
     protected String getQualifiedLabel(final TableTree parent, final boolean checkParent)
     {
         TableTree reParent = parent;
@@ -1236,7 +1260,7 @@ public class QueryFieldPanel extends JPanel
         {
             reParent = reParent.getParent();
         }
-        return reParent.getTableQRI().getTitle() + "/" + getFieldInfo().getTitle();
+        return reParent.getTableQRI().getTitle() + "/" + getFieldTitle();
     }
     
     /* (non-Javadoc)

@@ -98,6 +98,21 @@ public class DeterminationBusRules extends BaseBusRules
                 }
             }
 
+            Component activeTax = formViewObj.getControlByName("activeTaxon");
+            if (activeTax != null)
+            {
+                activeTax.setFocusable(false);
+                if (determination != null && determination.getActiveTaxon() != null)
+                {
+                    ((JTextField )activeTax).setText(determination.getActiveTaxon().getFullName());
+                }
+                else
+                {
+                    ((JTextField )activeTax).setText("");
+                }
+            }
+
+            
             if (formViewObj.getAltView().getMode() != CreationMode.EDIT)
             {
                 // when we're not in edit mode, we don't need to setup any listeners since the user can't change anything

@@ -247,9 +247,9 @@
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
             	<row>
-                    <cell type="label" labelfor="4"/>
-                    
-                    <cell type="field" id="4" name="newSynonymyDeterminations.newDetermination" uitype="text"/>
+                    <cell type="label" labelfor="13"/>
+                    <cell type="field" id="13" name="activeTaxon" uitype="text"/>
+
                     <cell type="field" id="3" name="isCurrent" uitype="checkbox" isrequired="true"/>
              	</row>
                 <row>

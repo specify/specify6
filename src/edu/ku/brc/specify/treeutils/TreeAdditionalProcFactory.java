@@ -9,23 +9,13 @@
  */
 package edu.ku.brc.specify.treeutils;
 
-import java.util.GregorianCalendar;
-import java.util.Set;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
 import org.hibernate.Session;
 
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.SpSynonymyDetermination;
-import edu.ku.brc.specify.datamodel.SpTaxonSynonymy;
 import edu.ku.brc.specify.datamodel.Taxon;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -112,14 +102,14 @@ public class TreeAdditionalProcFactory
         protected boolean processTaxonSynonymy(Session session, final Taxon srcTaxon, final Taxon dstTaxon)
         {
             // Create and save Synonymy record
-            SpTaxonSynonymy syn = new SpTaxonSynonymy();
-            syn.initialize();
-            syn.setTaxonTreeDef(srcTaxon.getDefinition());
-            syn.setAccepted(dstTaxon);
-            syn.setNotAccepted(srcTaxon);
-            syn.setSynonymizer(Agent.getUserAgent());
-            session.saveOrUpdate(syn); // assuming at this point that caller has opened a
-                                        // transaction on session???
+//            SpTaxonSynonymy syn = new SpTaxonSynonymy();
+//            syn.initialize();
+//            syn.setTaxonTreeDef(srcTaxon.getDefinition());
+//            syn.setAccepted(dstTaxon);
+//            syn.setNotAccepted(srcTaxon);
+//            syn.setSynonymizer(Agent.getUserAgent());
+//            session.saveOrUpdate(syn); // assuming at this point that caller has opened a
+//                                        // transaction on session???
             
             log.debug("Source:");
             for (Determination det : new Vector<Determination>(srcTaxon.getDeterminations()))
@@ -130,95 +120,97 @@ public class TreeAdditionalProcFactory
             log.debug("Source:");
             for (Determination det : new Vector<Determination>(srcTaxon.getDeterminations()))
             {
-                if (det.isCurrentDet())
-                {
-                    if (det.isSystem())
-                    {
-                        {
-                            // srcTaxon has synonyms. Don't create a 'chain':
-                            // Just replace references to srcTaxon with references to dstTaxon.
-
-                            det.setTaxon(dstTaxon);
-                            det.setDeterminedDate(new GregorianCalendar());
-                            det.setDeterminer(AppContextMgr.getInstance() == null? null : (AppContextMgr.getInstance().hasContext() ? Agent.getUserAgent() : null));
-                            det.setModifiedByAgent(AppContextMgr.getInstance() == null? null : (AppContextMgr.getInstance().hasContext() ? Agent.getUserAgent() : null));
-                            String synRem = String.format(UIRegistry.getResourceString("TreeAdditionalProcFactory.SYNONYMIZATION_REMARK"), 
-                                    srcTaxon.getFullName(), 
-                                    dstTaxon.getFullName());
-                            String detRem = det.getRemarks();
-                            if (StringUtils.isBlank(detRem))
-                            {
-                                detRem = synRem;
-                            }
-                            else 
-                            {
-                                detRem = synRem + "\n" + detRem;
-                            }
-                            det.setRemarks(detRem);
-                            session.saveOrUpdate(det);
-
-                            Set<SpSynonymyDetermination> newDets = det
-                                    .getNewSynonymyDeterminations();
-                            if (newDets != null && newDets.size() == 1)
-                            {
-                                SpSynonymyDetermination synDet = newDets.iterator().next();
-                                synDet.getTaxonSynonymy().setAccepted(dstTaxon);
-                                session.saveOrUpdate(synDet);
-                            }
-                            else
-                            {
-                                log.error("'Current Accepted' determination for "
-                                        + det.getCollectionObject().getIdentityTitle()
-                                        + " has invalid newSynonymyDeterminations.");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        log.debug(det.getIdentityTitle() + "  "
-                                + det.getCollectionObject().getIdentityTitle());
-
-                        // Create a new 'current' determination
-                        // and add it to the Source Taxon
-                        Determination newDet = new Determination();
-                        newDet.initialize();
-                        newDet.setCollectionMemberId(det.getCollectionMemberId());
-                        newDet.setDeterminedDate(new GregorianCalendar());
-                        newDet.setDeterminer(AppContextMgr.getInstance() == null? null : (AppContextMgr.getInstance().hasContext() ? Agent.getUserAgent() : null));
-                        newDet.setCollectionObject(det.getCollectionObject());
-                        newDet.setTaxon(dstTaxon);
-                        newDet.setIsCurrent(true);
-                        newDet.setRemarks(String.format(UIRegistry.getResourceString("TreeAdditionalProcFactory.SYNONYMIZATION_REMARK"), 
-                                    srcTaxon.getFullName(), 
-                                    dstTaxon.getFullName()));
-
-                        // Set DeterminationStatus from Current to Old
-                        det.setIsCurrent(false);
-
-                        log.debug(newDet.getCollectionObject().getIdentityTitle() + " has new  "
-                                + newDet.getIdentityTitle() + "  "
-                                + newDet.getTaxon().getIdentityTitle());
-                        log
-                                .debug(det.getCollectionObject().getIdentityTitle() + " has OLD  "
-                                        + det.getIdentityTitle() + "  "
-                                        + det.getTaxon().getIdentityTitle());
-
-                        // create Record of Determination changes
-                        SpSynonymyDetermination synDet = new SpSynonymyDetermination();
-                        synDet.initialize();
-                        synDet.setTaxonSynonymy(syn);
-                        synDet.setNewDetermination(newDet);
-                        synDet.setOldDetermination(det);
-
-                        session.saveOrUpdate(newDet);
-                        session.saveOrUpdate(det);
-                        session.saveOrUpdate(dstTaxon);
-                        session.saveOrUpdate(srcTaxon);
-                        session.saveOrUpdate(synDet);
-                        session.saveOrUpdate(syn); // hibernate requires this here and for dstTaxon
-                        // and srcTaxon???
-                    }
-                }
+                det.setActiveTaxon(dstTaxon);
+                session.saveOrUpdate(det);
+//                if (det.isCurrentDet())
+//                {
+//                    if (det.isSystem())
+//                    {
+//                        {
+//                            // srcTaxon has synonyms. Don't create a 'chain':
+//                            // Just replace references to srcTaxon with references to dstTaxon.
+//
+//                            det.setTaxon(dstTaxon);
+//                            det.setDeterminedDate(new GregorianCalendar());
+//                            det.setDeterminer(AppContextMgr.getInstance() == null? null : (AppContextMgr.getInstance().hasContext() ? Agent.getUserAgent() : null));
+//                            det.setModifiedByAgent(AppContextMgr.getInstance() == null? null : (AppContextMgr.getInstance().hasContext() ? Agent.getUserAgent() : null));
+//                            String synRem = String.format(UIRegistry.getResourceString("TreeAdditionalProcFactory.SYNONYMIZATION_REMARK"), 
+//                                    srcTaxon.getFullName(), 
+//                                    dstTaxon.getFullName());
+//                            String detRem = det.getRemarks();
+//                            if (StringUtils.isBlank(detRem))
+//                            {
+//                                detRem = synRem;
+//                            }
+//                            else 
+//                            {
+//                                detRem = synRem + "\n" + detRem;
+//                            }
+//                            det.setRemarks(detRem);
+//                            session.saveOrUpdate(det);
+//
+//                            Set<SpSynonymyDetermination> newDets = det
+//                                    .getNewSynonymyDeterminations();
+//                            if (newDets != null && newDets.size() == 1)
+//                            {
+//                                SpSynonymyDetermination synDet = newDets.iterator().next();
+//                                synDet.getTaxonSynonymy().setAccepted(dstTaxon);
+//                                session.saveOrUpdate(synDet);
+//                            }
+//                            else
+//                            {
+//                                log.error("'Current Accepted' determination for "
+//                                        + det.getCollectionObject().getIdentityTitle()
+//                                        + " has invalid newSynonymyDeterminations.");
+//                            }
+//                        }
+//                    }
+//                    else
+//                    {
+//                        log.debug(det.getIdentityTitle() + "  "
+//                                + det.getCollectionObject().getIdentityTitle());
+//
+//                        // Create a new 'current' determination
+//                        // and add it to the Source Taxon
+//                        Determination newDet = new Determination();
+//                        newDet.initialize();
+//                        newDet.setCollectionMemberId(det.getCollectionMemberId());
+//                        newDet.setDeterminedDate(new GregorianCalendar());
+//                        newDet.setDeterminer(AppContextMgr.getInstance() == null? null : (AppContextMgr.getInstance().hasContext() ? Agent.getUserAgent() : null));
+//                        newDet.setCollectionObject(det.getCollectionObject());
+//                        newDet.setTaxon(dstTaxon);
+//                        newDet.setIsCurrent(true);
+//                        newDet.setRemarks(String.format(UIRegistry.getResourceString("TreeAdditionalProcFactory.SYNONYMIZATION_REMARK"), 
+//                                    srcTaxon.getFullName(), 
+//                                    dstTaxon.getFullName()));
+//
+//                        // Set DeterminationStatus from Current to Old
+//                        det.setIsCurrent(false);
+//
+//                        log.debug(newDet.getCollectionObject().getIdentityTitle() + " has new  "
+//                                + newDet.getIdentityTitle() + "  "
+//                                + newDet.getTaxon().getIdentityTitle());
+//                        log
+//                                .debug(det.getCollectionObject().getIdentityTitle() + " has OLD  "
+//                                        + det.getIdentityTitle() + "  "
+//                                        + det.getTaxon().getIdentityTitle());
+//
+//                        // create Record of Determination changes
+//                        SpSynonymyDetermination synDet = new SpSynonymyDetermination();
+//                        synDet.initialize();
+//                        synDet.setTaxonSynonymy(syn);
+//                        synDet.setNewDetermination(newDet);
+//                        synDet.setOldDetermination(det);
+//
+//                        session.saveOrUpdate(newDet);
+//                        session.saveOrUpdate(det);
+//                        session.saveOrUpdate(dstTaxon);
+//                        session.saveOrUpdate(srcTaxon);
+//                        session.saveOrUpdate(synDet);
+//                        session.saveOrUpdate(syn); // hibernate requires this here and for dstTaxon
+//                        // and srcTaxon???
+//                    }
+//                }
             }
             return true;
 
@@ -241,48 +233,51 @@ public class TreeAdditionalProcFactory
          */
         protected boolean processTaxonUnSynonymy(Session session, final Taxon srcTaxon)
         {
-            Query q = session.createQuery("from SpTaxonSynonymy where notAcceptedId = " + srcTaxon.getTaxonId());
-            SpTaxonSynonymy synRec = null;
-            try
-            {
-                //XXX update SpTaxonSynonymy so NotAccepted is unique.
-                synRec = (SpTaxonSynonymy )q.uniqueResult();
-            }
-            catch (HibernateException ex)
-            {
-                //either no record exists or something else is wrong. Either way there is nothing more to do.
-                log.error("error Un-synonymizing " + srcTaxon.getFullName() + ": " + ex);
-                return false; 
-            }
-            
-            if (synRec != null)
-            {
-                for (SpSynonymyDetermination synDet : new Vector<SpSynonymyDetermination>(synRec.getDeterminations()))
+//            Query q = session.createQuery("from SpTaxonSynonymy where notAcceptedId = " + srcTaxon.getTaxonId());
+//            SpTaxonSynonymy synRec = null;
+//            try
+//            {
+//                //XXX update SpTaxonSynonymy so NotAccepted is unique.
+//                synRec = (SpTaxonSynonymy )q.uniqueResult();
+//            }
+//            catch (HibernateException ex)
+//            {
+//                //either no record exists or something else is wrong. Either way there is nothing more to do.
+//                log.error("error Un-synonymizing " + srcTaxon.getFullName() + ": " + ex);
+//                return false; 
+//            }
+//            
+//            if (synRec != null)
+//            {
+//                for (SpSynonymyDetermination synDet : new Vector<SpSynonymyDetermination>(synRec.getDeterminations()))
+                for (Determination det : new Vector<Determination>(srcTaxon.getDeterminations()))
                 {
-                    log.debug(synDet.getNewDetermination() + " <- " + synDet.getOldDetermination());
-                    Determination newDet = synDet.getNewDetermination();
-                    Determination oldDet = synDet.getOldDetermination();
-                    
-                    //Easiest case: newDet exists and isCurrent and has not been  edited since creation
-                    //             and oldDet exists and isOld and has not been edited since creation.
-                    // (Currently, Status control (if a combobox) is disabled for 'synonymy' determinations)
-                    
-                    //XXX check for edits. Should edits be prevented???
-                    //XXX check for existence??? What happens if user deletes a determination? Should/Is that prevented?
-                    //(Currently deletes are prevented)
-                    
-                    if (newDet != null && newDet.isCurrentDet()
-                            && oldDet != null && !oldDet.isCurrentDet())
-                    {
-                        synRec.removeDetermination(synDet);
-                        session.delete(synDet);
-                        oldDet.setIsCurrent(true);
-                        session.delete(newDet);
-                        session.saveOrUpdate(oldDet);
-                    }
-                    
-                }
-                session.delete(synRec);
+                    det.setActiveTaxon(srcTaxon);
+                    session.saveOrUpdate(det);
+//                    log.debug(synDet.getNewDetermination() + " <- " + synDet.getOldDetermination());
+//                    Determination newDet = synDet.getNewDetermination();
+//                    Determination oldDet = synDet.getOldDetermination();
+//                    
+//                    //Easiest case: newDet exists and isCurrent and has not been  edited since creation
+//                    //             and oldDet exists and isOld and has not been edited since creation.
+//                    // (Currently, Status control (if a combobox) is disabled for 'synonymy' determinations)
+//                    
+//                    //XXX check for edits. Should edits be prevented???
+//                    //XXX check for existence??? What happens if user deletes a determination? Should/Is that prevented?
+//                    //(Currently deletes are prevented)
+//                    
+//                    if (newDet != null && newDet.isCurrentDet()
+//                            && oldDet != null && !oldDet.isCurrentDet())
+//                    {
+//                        synRec.removeDetermination(synDet);
+//                        session.delete(synDet);
+//                        oldDet.setIsCurrent(true);
+//                        session.delete(newDet);
+//                        session.saveOrUpdate(oldDet);
+//                    }
+//                    
+//                }
+//                session.delete(synRec);
                 return true;
             }
             return false;
