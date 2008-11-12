@@ -9,17 +9,21 @@ package edu.ku.brc.specify.plugins.latlon;
 
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
+import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.util.LatLonConverter.adjustLatLonStr;
 import static edu.ku.brc.util.LatLonConverter.convert;
-import static edu.ku.brc.util.LatLonConverter.*;
+import static edu.ku.brc.util.LatLonConverter.convertDDDDStrToDDDDBD;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.math.BigDecimal;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -43,6 +47,7 @@ import edu.ku.brc.af.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable.ErrorType;
+import edu.ku.brc.ui.VerticalSeparator;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.LatLonValueInfo;
 import edu.ku.brc.util.LatLonConverter.FORMAT;
@@ -219,15 +224,22 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         builder.add(longitudeDD, cc.xy(3, 3));
         builder.add(lonDir, cc.xy(cbxIndex, 3));
         
+        builder.setBorder(BorderFactory.createEmptyBorder(4, 2, 0, 2));
+        
         PanelBuilder pb = new PanelBuilder(new FormLayout(colDef, "p, 1px, p, p"), this);
 
-        PanelBuilder txtPanelPB = new PanelBuilder(new FormLayout("p", "p, 4px, p"));
+        PanelBuilder txtPanelPB = new PanelBuilder(new FormLayout("5px,p,5px,p,2px,p", "p, 4px, p"));
         
         latitudeTF  = new JTextField(15);
         longitudeTF = new JTextField(15);
         
-        txtPanelPB.add(latitudeTF,  cc.xy (1, 1)); 
-        txtPanelPB.add(longitudeTF,  cc.xy (1, 3));
+        Color bg = getBackground();
+        txtPanelPB.add(new VerticalSeparator(bg.darker(), bg.brighter()),  cc.xywh(1, 1, 1, 3));
+        txtPanelPB.add(latitudeTF,                  cc.xy (4, 1)); 
+        txtPanelPB.add(createI18NLabel("SOURCE"),   cc.xy (6, 1)); 
+        txtPanelPB.add(longitudeTF,                 cc.xy (4, 3));
+        txtPanelPB.add(createI18NLabel("SOURCE"),   cc.xy (6, 3)); 
+        txtPanelPB.setBorder(BorderFactory.createEmptyBorder(4, 2, 0, 2));
         
         latitudeTF.setEditable(false);
         longitudeTF.setEditable(false);

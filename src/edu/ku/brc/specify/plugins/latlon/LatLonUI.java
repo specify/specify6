@@ -219,7 +219,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
                 latLon1.init();
                 latLon1.setChangeListener(this);
                 
-                JPanel panel1 = (JPanel)latLon1;
+                JPanel panel1 = latLon1;
                 panel1.setBorder(panelBorder);
                 panels[paneInx++] = latLon1;
                 latLonPanes[i]    = panel1;
@@ -233,8 +233,8 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
                 panels[paneInx++] = latlon2;
                 
                 JTabbedPane tabbedPane = new JTabbedPane(UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX ? SwingConstants.BOTTOM :  SwingConstants.RIGHT);
-                tabbedPane.addTab(null, pointImages[0], (JComponent)panels[paneInx-2]);
-                tabbedPane.addTab(null, pointImages[0], (JComponent)panels[paneInx-1]);
+                tabbedPane.addTab(null, pointImages[0], panels[paneInx-2]);
+                tabbedPane.addTab(null, pointImages[0], panels[paneInx-1]);
                 latLonPanes[i] = tabbedPane;
 
                 Dimension size = tabbedPane.getPreferredSize();
@@ -427,7 +427,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             }
         }
         
-        JPanel panel = (JPanel)panels[(formInx*2)];
+        JPanel panel = panels[(formInx*2)];
         
         cardSubPanes[formInx].removeAll();
         
@@ -444,8 +444,8 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             
             int inx = type == LatLonUIIFace.LatLonType.LLLine ? 1 : 3;
            
-            tabbedPane.addTab(null, pointImages[inx++], (JComponent)panels[(formInx*2)]);
-            tabbedPane.addTab(null, pointImages[inx], (JComponent)panels[(formInx*2)+1]);
+            tabbedPane.addTab(null, pointImages[inx++], panels[(formInx*2)]);
+            tabbedPane.addTab(null, pointImages[inx], panels[(formInx*2)+1]);
         }
 
         cardPanel.validate();
