@@ -128,9 +128,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return addBtn;
     }
 
-    protected static final Logger                            log              = Logger
-                                                                                      .getLogger(QueryBldrPane.class);
-
+    protected static final Logger                            log            = Logger.getLogger(QueryBldrPane.class);
+    protected static final Color                             TITLEBAR_COLOR = new Color(82, 160, 52);
+    
     protected JList                                          tableList;
     protected Vector<QueryFieldPanel>                        queryFieldItems  = new Vector<QueryFieldPanel>();
     protected QueryFieldPanel                                selectedQFP = null; 
@@ -1544,7 +1544,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         String iconName = distinct ? "BlankIcon" : rootTable.getClassObj().getSimpleName();
         int tblId = distinct ? -1 : rootTable.getTableId();
-        final QBQueryForIdResultsHQL qri = new QBQueryForIdResultsHQL(new Color(144, 30, 255),
+        final QBQueryForIdResultsHQL qri = new QBQueryForIdResultsHQL(TITLEBAR_COLOR,
                 getResourceString("QB_SEARCH_RESULTS"),
                 iconName,
                 tblId,

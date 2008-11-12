@@ -299,7 +299,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
            LatLonUI latLonUI = parent.getCompById(llId);
            if (latLonUI != null)
            {
-               latLonUI.setLatLon(lat1, lon1, gcData.getLatitude(), gcData.getLongitude(), null, null, null, null);
+               latLonUI.setLatLon(null, lat1, lon1, gcData.getLatitude(), gcData.getLongitude(), null, null, null, null);
            }
        }
     }

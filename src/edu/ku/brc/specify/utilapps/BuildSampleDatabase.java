@@ -6822,10 +6822,10 @@ public class BuildSampleDatabase
      * @param saPassword
      * @return
      */
-    private boolean createSpecifySAUser(final DatabaseDriverInfo driverInfo,
-                                        final String saUserName,
-                                        final String saPassword,
-                                        final String databaseName)
+    public static boolean createSpecifySAUser(final DatabaseDriverInfo driverInfo,
+                                              final String saUserName,
+                                              final String saPassword,
+                                              final String databaseName)
     {
         Connection conn = DBConnection.getInstance().createConnection();
         if (driverInfo.getName().equals("MySQL"))

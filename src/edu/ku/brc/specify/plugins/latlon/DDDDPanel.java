@@ -12,9 +12,7 @@ import static edu.ku.brc.ui.UIHelper.createI18NFormLabel;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.util.LatLonConverter.convert;
-import static edu.ku.brc.util.LatLonConverter.convertDDDDToDDDD;
-import static edu.ku.brc.util.LatLonConverter.getFormat;
-import static edu.ku.brc.util.LatLonConverter.parseLatLonStr;
+import static edu.ku.brc.util.LatLonConverter.*;
 
 import java.awt.Component;
 import java.awt.event.ItemEvent;
@@ -32,6 +30,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -45,9 +44,8 @@ import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable.ErrorType;
 import edu.ku.brc.util.LatLonConverter;
+import edu.ku.brc.util.LatLonValueInfo;
 import edu.ku.brc.util.LatLonConverter.FORMAT;
-import edu.ku.brc.util.LatLonConverter.Part;
-
 
 /**
  * 
@@ -61,6 +59,8 @@ import edu.ku.brc.util.LatLonConverter.Part;
  */
 public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListener, ItemListener
 {
+    private static final Logger log = Logger.getLogger(DDDDPanel.class);
+            
     protected static final   String[] NORTH_SOUTH = {"N", "S"};
     protected static final   String[] EAST_WEST   = {"E", "W"};
     
@@ -73,6 +73,13 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     protected boolean        isViewMode = false;
     protected ValFormattedTextFieldSingle latitudeDD; 
     protected ValFormattedTextFieldSingle longitudeDD;
+    
+    protected LatLonValueInfo latInfoOrig = null;
+    protected LatLonValueInfo lonInfoOrig = null;
+
+    protected LatLonValueInfo latInfoCnvrt = null;
+    protected LatLonValueInfo lonInfoCnvrt = null;
+
     
     protected BigDecimal     latitude;
     protected BigDecimal     longitude;
@@ -218,12 +225,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         
         latitudeTF  = new JTextField(15);
         longitudeTF = new JTextField(15);
-        //final JLabel     lat1Lbl     = createI18NFormLabel("LAT1", SwingConstants.RIGHT);
-        //final JLabel     lon1Lbl     = createI18NFormLabel("LON1", SwingConstants.RIGHT);
         
-        //txtPanelPB.add(lat1Lbl, cc.xy (1, 1)); 
         txtPanelPB.add(latitudeTF,  cc.xy (1, 1)); 
-        //txtPanelPB.add(lon1Lbl, cc.xy (1, 3)); 
         txtPanelPB.add(longitudeTF,  cc.xy (1, 3));
         
         latitudeTF.setEditable(false);
@@ -245,7 +248,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      */
     public JComboBox createDirComboxbox(final boolean forNorthSouth)
     {
-        JComboBox cbx =  createComboBox(forNorthSouth ? northSouth : eastWest );
+        JComboBox cbx = createComboBox(forNorthSouth ? northSouth : eastWest );
         cbx.addItemListener(this);
         return cbx;
     }
@@ -255,17 +258,18 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      */
     protected void setDataIntoUI()
     {
-        if (latitude != null)
+        if (StringUtils.isNotEmpty(latitudeStr))
         {
-            Part[] parts = parseLatLonStr(latitudeStr);
-            latitudeDir.setSelectedIndex(latitude.doubleValue() >= 0 ? 0 : 1);
-            latitudeDD.setText(parts[0].getPart());
+            latitudeDir.removeItemListener(this);
+            latitudeDir.setSelectedIndex(latInfoCnvrt.isDirPositive() ? 0 : 1);
+            latitudeDir.addItemListener(this);
+            
+            latitudeDD.setText(latInfoCnvrt.getPart(0));
             
             if (latitudeDirTxt != null)
             {
-                latitudeDirTxt.setText(latitudeDir.getSelectedItem().toString());
+                latitudeDirTxt.setText(latInfoCnvrt.getDirStr());
             }
-            latitudeTF.setText(latitudeStr);
             
         } else
         {
@@ -277,16 +281,18 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             latitudeTF.setText("");
         }
         
-        if (longitude != null)
+        if (StringUtils.isNotEmpty(longitudeStr))
         {
-            Part[] parts = parseLatLonStr(longitudeStr);
-            longitudeDir.setSelectedIndex(longitude.doubleValue() >= 0 ? 0 : 1);
-            longitudeDD.setText(parts[0].getPart());
+            longitudeDir.removeItemListener(this);
+            longitudeDir.setSelectedIndex(lonInfoCnvrt.isDirPositive() ? 0 : 1);
+            longitudeDir.addItemListener(this);
+            
+            longitudeDD.setText(lonInfoCnvrt.getPart(0));
             if (longitudeDirTxt != null)
             {
-                longitudeDirTxt.setText(longitudeDir.getSelectedItem().toString());
+                longitudeDirTxt.setText(lonInfoCnvrt.getDirStr());
             }
-            longitudeTF.setText(longitudeStr);
+            
         } else
         {
             longitudeDD.setText("");
@@ -295,51 +301,6 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
                 longitudeDirTxt.setText("");
             }    
             longitudeTF.setText("");
-        }
-    }
-    
-    /**
-     * @param txtFld
-     * @param cbx
-     * @param val
-     * @param dir
-     * @param isLat
-     */
-    protected void set(final ValFormattedTextFieldSingle txtFld, 
-                       final JComboBox cbx,
-                       final String    val, 
-                       final String    dir,
-                       final boolean   isLat)
-    {
-        if (StringUtils.isNotEmpty(val) && StringUtils.isNotEmpty(dir))
-        {
-            //if ()
-        }
-    }
-    
-    /**
-     * @param lat1DDDDDD
-     * @param lat1Dir
-     * @param lon1DDDDDD
-     * @param lon1Dir
-     * @param lat2DDDDDD
-     * @param lat2Dir
-     * @param lon2DDDDDD
-     * @param lon2Dir
-     */
-    public void set(final String lat1DDDDDD, final String lat1Dir,
-                    final String lon1DDDDDD, final String lon1Dir,
-                    final String lat2DDDDDD, final String lat2Dir,
-                    final String lon2DDDDDD, final String lon2Dir)
-    {
-        if (StringUtils.isNotEmpty(lat1DDDDDD))
-        latitudeDD.setText(lat1DDDDDD);
-        latitudeDD.setText(lon1DDDDDD);
-        
-        if (lat1Dir.equals(NORTH_SOUTH[0]))
-        {
-            latitudeDD.setText(lat1DDDDDD);
-            latitudeDD.setText(lon1DDDDDD);
         }
     }
     
@@ -357,7 +318,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      * @param txtFields
      * @return
      */
-    protected String getStringFromFields(final boolean doDisplay, final ValFormattedTextFieldSingle... txtFields)
+    protected String getStringFromFields(final boolean doDisplay, 
+                                         final ValFormattedTextFieldSingle... txtFields)
     {
         String degrees = "\u00b0";
         
@@ -369,25 +331,23 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             String str = StringUtils.deleteWhitespace(tf.getText());
             if (StringUtils.isEmpty(str))
             {
-                str = "0";
+                str = "";
+                continue;
             }
             
             if (cnt > 0) sb.append(' ');
             
-            double val = Double.parseDouble(str);
-            if (doDisplay && cnt > 0 && val < 10.0)
-            {
-                //sb.append('0');
-            }
             sb.append(str);
             if (doDisplay)
             {
                 if (cnt == 0)
                 {
                     sb.append(degrees);
+                    
                 } else if (txtFields.length == 2)
                 {
                     sb.append("'");
+                    
                 } else if (txtFields.length == 3)
                 {
                     sb.append(cnt == 1 ? "'" : "\"");
@@ -409,6 +369,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             tf.setState(UIValidatable.ErrorType.Valid);
             tf.repaint();
         }
+        
         ValState                    state   = ValState.Empty;
         boolean                     isEmpty = false;
         ValFormattedTextFieldSingle prevTF  = null;
@@ -452,7 +413,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             String str = latitudeDD.getText();
             if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
             {
-                latitude = convertDDDDToDDDD(str, NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
+                latitude    = convertDDDDStrToDDDDBD(str, NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
                 latitudeStr = latitudeTF.getText();
                 
             } else
@@ -461,13 +422,12 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
                 latitudeStr = null;
             }
             
-            
         } else
         {
             String str = longitudeDD.getText();
             if (StringUtils.isNotEmpty(StringUtils.deleteWhitespace(str)))
             {
-                longitude = convertDDDDToDDDD(str, EAST_WEST[longitudeDir.getSelectedIndex()]);
+                longitude = convertDDDDStrToDDDDBD(str, EAST_WEST[longitudeDir.getSelectedIndex()]);
                 longitudeStr = latitudeTF.getText();
                 
             } else
@@ -589,6 +549,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         getDataFromUI(false);
     }
     
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#set(java.math.BigDecimal, java.math.BigDecimal, java.lang.String, java.lang.String)
      */
@@ -597,13 +558,38 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
                     final String     latitudeStrArg, 
                     final String     longitudeStrArg)
     {
-        this.latitude     = latitudeArg;
-        this.longitude    = longitudeArg;
+        throw new RuntimeException("Do Not call this");
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#set(java.math.BigDecimal, java.math.BigDecimal, java.lang.String, java.lang.String)
+     */
+    public void set(final FORMAT srcFormat,
+                    final String srcLatitudeStr, 
+                    final String srcLongitudeStr)
+    {
+        latInfoOrig = adjustLatLonStr(srcLatitudeStr, srcFormat, true);
+        lonInfoOrig = adjustLatLonStr(srcLongitudeStr, srcFormat, true);
+
+        if (srcFormat != defaultFormat)
+        {
+            this.latitudeStr  = convert(latInfoOrig.getStrVal(true), latInfoOrig.getFormat(), defaultFormat, LatLonConverter.LATLON.Latitude);
+            this.longitudeStr = convert(lonInfoOrig.getStrVal(true), lonInfoOrig.getFormat(), defaultFormat, LatLonConverter.LATLON.Longitude);
+        } else
+        {
+            this.latitudeStr  = srcLatitudeStr;
+            this.longitudeStr = srcLongitudeStr;
+        }
         
-        this.latitudeStr  = convert(latitudeStrArg, getFormat(latitudeStrArg, defaultFormat), defaultFormat, LatLonConverter.LATLON.Latitude);
-        this.longitudeStr = convert(longitudeStrArg, getFormat(latitudeStrArg, defaultFormat), defaultFormat, LatLonConverter.LATLON.Longitude);
+        latInfoCnvrt = adjustLatLonStr(this.latitudeStr, defaultFormat, false);
+        lonInfoCnvrt = adjustLatLonStr(this.longitudeStr, defaultFormat, false);
         
+        latitudeTF.setText(latitudeStr);
+        longitudeTF.setText(longitudeStr);
+
         setDataIntoUI();
+        hasChanged = false;
     }
     
     /* (non-Javadoc)
@@ -691,13 +677,78 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         this.changeListener = changeListener;
     }
     
+    /**
+     * @param includeEmptyCheck indicates that empty is invalid
+     * @return whether the field is valid
+     */
+    protected ErrorType validateStateTexFields(final boolean includeEmptyCheck,
+                                               final Vector<ValFormattedTextFieldSingle> txtList)
+    {
+        int completeCnt = 0;
+        int cnt         = 0;
+        UIValidatable.ErrorType valState = UIValidatable.ErrorType.Valid;
+        for (ValFormattedTextFieldSingle vtf : txtList)
+        {
+            if (vtf.getText().length() == 0)
+            {
+                if (includeEmptyCheck && cnt == completeCnt)
+                {
+                    if (valState != UIValidatable.ErrorType.Error)
+                    {
+                        valState = UIValidatable.ErrorType.Incomplete;
+                    }
+                } else
+                {
+                    completeCnt++;
+                }
+                
+            } else if (completeCnt != cnt && cnt > 0)
+            {
+                log.debug(" **** Returning* "+completeCnt+"  "+cnt+"  "+UIValidatable.ErrorType.Error);
+                return UIValidatable.ErrorType.Error;
+                
+            } else
+            {
+                UIValidatable.ErrorType errType = vtf.validateState();
+                if (errType == UIValidatable.ErrorType.Valid)
+                {
+                    completeCnt++;
+                    
+                } else if (errType.ordinal() > valState.ordinal())
+                {
+                    valState = errType;
+                }
+                
+            }
+            cnt++;
+            log.debug(completeCnt+"  "+cnt);
+        }
+        
+        /*if (completeCnt > 0 && txtList.size() != completeCnt)
+        {
+            log.debug(" **** Returning* "+completeCnt+"  "+cnt+"  "+UIValidatable.ErrorType.Incomplete);
+            return UIValidatable.ErrorType.Incomplete;
+        }*/
+        log.debug(" **** Returning  "+completeCnt+"  "+cnt+"  "+valState);
+        return valState;
+    }
+    /**
+     * @param includeEmptyCheck
+     * @param txtList
+     * @param textTF
+     * @param formattedStr
+     * @return
+     */
     protected ErrorType validateState(final boolean                             includeEmptyCheck,
                                       final Vector<ValFormattedTextFieldSingle> txtList,
                                       final JTextField                          textTF,
                                       final String                              formattedStr)
     {
         ErrorType state = validateStateTexFields(includeEmptyCheck, txtList);
-        textTF.setText(state == ErrorType.Valid || state == ErrorType.Incomplete ? formattedStr : "");
+        if (hasChanged)
+        {
+            textTF.setText(state == ErrorType.Valid || state == ErrorType.Incomplete ? formattedStr : "");
+        }
         return state;
     }
     
@@ -712,46 +763,6 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         ErrorType lonState = validateState(includeEmptyCheck, lonTFs, longitudeTF, getLongitudeStr());
         
         return latState.ordinal() > lonState.ordinal() ? latState : lonState;
-    }
-    
-    /**
-     * @param includeEmptyCheck indicates that empty is invalid
-     * @return whether the field is valid
-     */
-    protected ErrorType validateStateTexFields(final boolean includeEmptyCheck,
-                                               final Vector<ValFormattedTextFieldSingle> txtList)
-    {
-        int completeCnt = 0;
-        UIValidatable.ErrorType valState = UIValidatable.ErrorType.Valid;
-        for (ValFormattedTextFieldSingle vtf : txtList)
-        {
-            if (vtf.getText().length() == 0)
-            {
-                if (includeEmptyCheck)
-                {
-                    if (valState != UIValidatable.ErrorType.Error)
-                    {
-                        valState = UIValidatable.ErrorType.Incomplete;
-                    }
-                } else
-                {
-                    completeCnt++;
-                }
-                
-            } else
-            {
-                UIValidatable.ErrorType errType = vtf.validateState();
-                if (errType.ordinal() > valState.ordinal())
-                {
-                    valState = errType;
-                }
-            }
-        }
-        if (completeCnt > 0 && txtList.size() != completeCnt)
-        {
-            return UIValidatable.ErrorType.Incomplete;
-        }
-        return valState;
     }
     
     /* (non-Javadoc)

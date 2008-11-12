@@ -1043,7 +1043,10 @@ public class QueryTask extends BaseTask
             
         } else  
         {
-            SubPaneMgr.getInstance().showPane(starterPane);
+            if (SubPaneMgr.getInstance().indexOfComponent(starterPane.getUIComponent()) > -1)
+            {
+                SubPaneMgr.getInstance().showPane(starterPane);
+            }
         }
     }
     

@@ -11,7 +11,7 @@ public class GeoRefConverter implements StringConverter
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
             {
-                return LatLonConverter.convertDDMMSSToDDDD(orig);
+                return LatLonConverter.convertDDMMSSStrToDDDDBD(orig);
             }
         },
         DM_PLUS_MINUS  ("[\\+\\-]?\\d{1,3}[\\sd°]\\s?\\d{1,2}(\\.\\d{0,}\\s*)?'?")
@@ -19,7 +19,7 @@ public class GeoRefConverter implements StringConverter
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
             {
-                return LatLonConverter.convertDDMMMMToDDDD(orig);
+                return LatLonConverter.convertDDMMMMStrToDDDDBD(orig);
             }
         },
         D_PLUS_MINUS   ("[\\+\\-]?\\d{1,3}(\\.\\d{0,}\\s*)?[d°]?")
@@ -27,7 +27,7 @@ public class GeoRefConverter implements StringConverter
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
             {
-                return LatLonConverter.convertDDDDToDDDD(orig);
+                return LatLonConverter.convertDDDDStrToDDDDBD(orig);
             }
         },
         DMS_NSEW       ("\\d{1,3}[\\sd°]\\s?\\d{1,2}[\\s']\\s?\\d{1,2}(\\.\\d{0,})?\"?\\s?[NSEW]{1}.*")

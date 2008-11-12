@@ -261,6 +261,26 @@ public class MasterPasswordMgr
         urlTxt.setEnabled(false);
         fileBtn.setEnabled(false);
         
+        DocumentListener dl = new DocumentListener()
+        {
+            protected void enableOK()
+            {
+                if ((isPrefBasedRB.isSelected() && !keyTxt.getText().isEmpty()) || 
+                    (isNetworkRB.isSelected() && !urlTxt.getText().isEmpty()))
+                {
+                    dlg.getOkBtn().setEnabled(true);
+                }
+            }
+            @Override
+            public void changedUpdate(DocumentEvent e) { enableOK(); }
+            @Override
+            public void insertUpdate(DocumentEvent e) { enableOK(); }
+            @Override
+            public void removeUpdate(DocumentEvent e) { enableOK(); }
+        };
+        keyTxt.getDocument().addDocumentListener(dl);
+        urlTxt.getDocument().addDocumentListener(dl);
+        
         ChangeListener chgListener = new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e)

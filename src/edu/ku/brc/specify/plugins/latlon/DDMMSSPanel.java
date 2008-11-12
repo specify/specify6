@@ -7,7 +7,6 @@
 
 package edu.ku.brc.specify.plugins.latlon;
 import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.util.LatLonConverter.parseLatLonStr;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -15,7 +14,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.LatLonConverter.FORMAT;
-import edu.ku.brc.util.LatLonConverter.Part;
 
 /**
  * Used for entering lat/lon data in the Degrees, Minutes, and Decimal Seconds.
@@ -38,7 +36,7 @@ public class DDMMSSPanel extends DDMMMMPanel
     public DDMMSSPanel()
     {
         super();
-        this.defaultFormat = FORMAT.DDDDDD;
+        this.defaultFormat = FORMAT.DDMMSS;
         this.decimalFmtLen = 3;
     }
     
@@ -74,20 +72,21 @@ public class DDMMSSPanel extends DDMMMMPanel
     @Override
     protected void setDataIntoUI()
     {
-        if (latitude != null)
+        if (latitudeStr != null && latInfoCnvrt != null)
         {
-            latitudeDir.setSelectedIndex(latitude.doubleValue() >= 0 ? 0 : 1);
+            latitudeDir.removeItemListener(this);
+            latitudeDir.setSelectedIndex(latInfoCnvrt.isDirPositive() ? 0 : 1);
+            latitudeDir.addItemListener(this);
             
-            Part[] parts = parseLatLonStr(latitudeStr);
-            latitudeDD.setText(parts[0].getPart());
-            latitudeMM.setText(parts[1].getPart());
-            latitudeSS.setText(parts[2].getPart());
+            latitudeDD.setText(latInfoCnvrt.getPart(0));
+            latitudeMM.setText(latInfoCnvrt.getPart(1));
+            latitudeSS.setText(latInfoCnvrt.getPart(2));
             
             if (latitudeDirTxt != null)
             {
-                latitudeDirTxt.setText(latitudeDir.getSelectedItem().toString());
+                latitudeDirTxt.setText(latInfoCnvrt.getDirStr());
             }
-            latitudeTF.setText(latitudeStr);
+            
         } else
         {
             latitudeDD.setText("");
@@ -100,19 +99,21 @@ public class DDMMSSPanel extends DDMMMMPanel
             latitudeTF.setText("");
         }
         
-        if (longitude != null)
+        if (longitudeStr != null && lonInfoCnvrt != null)
         {
-            Part[] parts = parseLatLonStr(longitudeStr);
-            longitudeDir.setSelectedIndex(longitude.doubleValue() >= 0 ? 0 : 1);
-            longitudeDD.setText(parts[0].getPart());
-            longitudeMM.setText(parts[1].getPart());
-            longitudeSS.setText(parts[2].getPart());
+            longitudeDir.removeItemListener(this);
+            longitudeDir.setSelectedIndex(lonInfoCnvrt.isDirPositive() ? 0 : 1);
+            longitudeDir.addItemListener(this);
+            
+            longitudeDD.setText(lonInfoCnvrt.getPart(0));
+            longitudeMM.setText(lonInfoCnvrt.getPart(1));
+            longitudeSS.setText(lonInfoCnvrt.getPart(2));
             
             if (longitudeDirTxt != null)
             {
-                longitudeDirTxt.setText(longitudeDir.getSelectedItem().toString());
+                longitudeDirTxt.setText(lonInfoCnvrt.getDirStr());
             }
-            longitudeTF.setText(longitudeStr);
+            
         } else
         {
             longitudeDD.setText("");
@@ -124,7 +125,6 @@ public class DDMMSSPanel extends DDMMMMPanel
             }    
             longitudeTF.setText("");
         }
-            
     }
     
     /* (non-Javadoc)
@@ -137,7 +137,7 @@ public class DDMMSSPanel extends DDMMMMPanel
         {
             if (evalState(latitudeDD, latitudeMM, latitudeSS) == ValState.Valid)
             {
-                latitude =  LatLonConverter.convertDDMMSSToDDDD(getStringFromFields(latitudeDD, latitudeMM, latitudeSS), NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
+                latitude = LatLonConverter.convertDDMMSSStrToDDDDBD(getStringFromFields(latitudeDD, latitudeMM, latitudeSS), NORTH_SOUTH[latitudeDir.getSelectedIndex()]);
             } else
             {
                 latitude = null;
@@ -145,7 +145,7 @@ public class DDMMSSPanel extends DDMMMMPanel
 
         } else if (evalState(longitudeDD, longitudeMM, longitudeSS) == ValState.Valid)
         {
-            longitude = LatLonConverter.convertDDMMSSToDDDD(getStringFromFields(longitudeDD, longitudeMM, longitudeSS), EAST_WEST[longitudeDir.getSelectedIndex()]);
+            longitude = LatLonConverter.convertDDMMSSStrToDDDDBD(getStringFromFields(longitudeDD, longitudeMM, longitudeSS), EAST_WEST[longitudeDir.getSelectedIndex()]);
         } else
         {
             longitude = null;
@@ -168,27 +168,6 @@ public class DDMMSSPanel extends DDMMMMPanel
         return getStringFromFields(true, longitudeDD, longitudeMM, longitudeSS) + " " + EAST_WEST[longitudeDir.getSelectedIndex()];
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.latlon.DDMMMMPanel#validateState(boolean)
-     */
-    /*public ErrorType validateState(final boolean includeEmptyCheck)
-    {
-        ErrorType state = validateStateTexFields(includeEmptyCheck);
-        if (state == ErrorType.Valid)
-        {
-            ValState valStateLat = evalState(latitudeDD, latitudeMM, latitudeSS);
-            ValState valStateLon = evalState(longitudeDD, longitudeMM, longitudeSS);
-            state = valStateLat != ValState.Error && valStateLon != ValState.Error ? ErrorType.Valid : ErrorType.Error;
-            
-            if (state == ErrorType.Valid)
-            {
-                latitudeTF.setText(getLatitudeStr());
-                longitudeTF.setText(getLongitudeStr());
-            }
-        }
-        return state;
-    }*/
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.latlon.DDDDPanel#clear()
      */

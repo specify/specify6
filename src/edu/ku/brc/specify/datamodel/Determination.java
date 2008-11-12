@@ -273,7 +273,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
     /**
      * @return the alternateTaxonName
      */
-    @Column(name = "AlternateTaxonName", unique = false, nullable = true, insertable = true, updatable = true, length = 100)
+    @Column(name = "AlternateTaxonName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
     public String getAlternateTaxonName()
     {
         return alternateTaxonName;
@@ -290,7 +290,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
     /**
      * @return the alternateTaxonNameUsage
      */
-    @Column(name = "AlternateTaxonNameUsage", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "AlternateTaxonNameUsage", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getAlternateTaxonNameUsage()
     {
         return alternateTaxonNameUsage;

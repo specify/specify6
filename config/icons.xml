@@ -25,7 +25,6 @@
     <icon name="Pie_Chart"        file="PieChart32x32.png" sizes="all"/>
     <icon name="Bar_Chart"        file="BarGraph32x32.png" sizes="all"/>
     <icon name="Record_Set"       file="RecordSet32x32.png" sizes="all"/>
-    <icon name="Series"           file="series.gif" sizes="all"/>
     <icon name="Query"            file="Query32x32.png" sizes="all"/>
     <icon name="MoreTables"       file="more_tables.png" sizes="all"/>
     <icon name="MoreForms"        file="more_forms.png" sizes="all"/>

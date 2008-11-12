@@ -354,9 +354,6 @@ public class DataEntryTask extends BaseTask
 
                 } else
                 {
-
-                    //SubPaneMgr.getInstance().removePane(starterPane);
-                   //SubPaneMgr.getInstance().addPane(formPane);
                     SubPaneMgr.getInstance().replacePane(starterPane, formPane);
                     starterPane = null;
                 }
@@ -1067,6 +1064,11 @@ public class DataEntryTask extends BaseTask
                     iconForFormClass.put(iconClassLookUpName, iconImage);
                 }
             }
+            
+            if (starterPane != null && starterPane instanceof DroppableFormRecordSetAccepter)
+            {
+                ((DroppableFormRecordSetAccepter)starterPane).resetSplashIcon();
+            }
         }
     }
     
@@ -1382,6 +1384,15 @@ public class DataEntryTask extends BaseTask
         public void addDropFlavor(final DataFlavor df)
         {
             dropFlavors.add(df); 
+        }
+        
+        /**
+         * 
+         */
+        public void resetSplashIcon()
+        {
+            bgImg = IconManager.getIcon("SpecifySplash");
+            repaint();
         }
         
         /* (non-Javadoc)

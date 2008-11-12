@@ -72,6 +72,7 @@ import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -142,7 +143,7 @@ public class DatabaseLoginPanel extends JPanel
     
     protected String                      ssUserName     = null;
     protected String                      ssPassword     = null;
-    protected MasterPasswordProviderIFace usrPwdProvider = null;
+    protected MasterPasswordProviderIFace masterUsrPwdProvider = null;
     
     //--------------------------------------------------------------------
     public interface MasterPasswordProviderIFace
@@ -215,7 +216,7 @@ public class DatabaseLoginPanel extends JPanel
      * Constructor that has the form created from the view system
      * @param userName single signon username (for application)
      * @param password single signon password (for application)
-     * @param usrPwdProvider sprivdes app username and password
+     * @param masterUsrPwdProvider provides a hook to get the Master UserName and Password
      * @param dbListener listener to the panel (usually the frame or dialog)
      * @param isDlg whether the parent is a dialog (false mean JFrame)
      * @param title the title for the title bar
@@ -224,7 +225,7 @@ public class DatabaseLoginPanel extends JPanel
      */
     public DatabaseLoginPanel(final String userName,
                               final String password,
-                              final MasterPasswordProviderIFace usrPwdProvider,
+                              final MasterPasswordProviderIFace masterUsrPwdProvider,
                               final DatabaseLoginListener dbListener,  
                               final boolean isDlg, 
                               final String title,
@@ -233,7 +234,7 @@ public class DatabaseLoginPanel extends JPanel
     {
         this.ssUserName  = userName;
         this.ssPassword  = password;
-        this.usrPwdProvider = usrPwdProvider;
+        this.masterUsrPwdProvider = masterUsrPwdProvider;
         this.dbListener  = dbListener;
         this.jaasContext = new JaasContext(); 
         this.title       = title;
@@ -342,15 +343,15 @@ public class DatabaseLoginPanel extends JPanel
         setControlSize(databases);
         setControlSize(servers);
         
-        if (usrPwdProvider != null)
+        if (masterUsrPwdProvider != null)
         {
             editKeyInfoBtn = UIHelper.createIconBtn("Key", IconManager.IconSize.Std16, null, new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    if (usrPwdProvider != null)
+                    if (masterUsrPwdProvider != null)
                     {
-                        usrPwdProvider.editMasterInfo(username.getText());
+                        masterUsrPwdProvider.editMasterInfo(username.getText());
                     }
                 }
             });
@@ -762,15 +763,21 @@ public class DatabaseLoginPanel extends JPanel
     /**
      * @return
      */
-    private Pair<String, String> getUsrPwd()
+    private Pair<String, String> getMasterUsrPwd()
     {
-        String usr;
-        String pwd;
-        if (usrPwdProvider != null)
+        String usr = null;
+        String pwd = null;
+        
+        if (masterUsrPwdProvider != null)
         {
-            Pair<String, String> usrPwd = usrPwdProvider.getUserNamePassword(getUserName(), getPassword());
-            usr = usrPwd.first;
-            pwd = usrPwd.second;
+            Pair<String, String> masterUsrPwd = masterUsrPwdProvider.getUserNamePassword(getUserName(), getPassword());
+            if (StringUtils.isEmpty(masterUsrPwd.first) || StringUtils.isEmpty(masterUsrPwd.second))
+            {
+                setMessage("BAD_USRPWD", true);
+                return null;
+            }
+            usr = masterUsrPwd.first;
+            pwd = masterUsrPwd.second;
             
         } else
         {
@@ -825,16 +832,18 @@ public class DatabaseLoginPanel extends JPanel
             {
                 eTime = System.currentTimeMillis();
                 
-                Pair<String, String> usrPwd = getUsrPwd();
-
-                isLoggedIn = UIHelper.tryLogin(getDriverClassName(), 
-                                               getDialectClassName(),
-                                               getDatabaseName(), 
-                                               getConnectionStr(), 
-                                               usrPwd.first, 
-                                               usrPwd.second);
-                
-                isLoggedIn &= jaasLogin();
+                Pair<String, String> usrPwd = getMasterUsrPwd();
+                if (usrPwd != null)
+                {
+                    isLoggedIn = UIHelper.tryLogin(getDriverClassName(), 
+                                                   getDialectClassName(),
+                                                   getDatabaseName(), 
+                                                   getConnectionStr(), 
+                                                   usrPwd.first, 
+                                                   usrPwd.second);
+                    
+                    isLoggedIn &= jaasLogin();
+                }
 
                 if (isLoggedIn)
                 {                    
@@ -960,7 +969,7 @@ public class DatabaseLoginPanel extends JPanel
     {
         if (jaasContext != null)
         {
-            Pair<String, String> usrPwd = getUsrPwd();
+            Pair<String, String> usrPwd = getMasterUsrPwd();
             
             return jaasContext.jaasLogin(getUserName(),
             							 getPassword(),

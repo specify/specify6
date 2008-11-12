@@ -14,8 +14,7 @@ import static edu.ku.brc.ui.UIRegistry.loadAndPushResourceBundle;
 import static edu.ku.brc.ui.UIRegistry.popResourceBundle;
 import static edu.ku.brc.util.LatLonConverter.convert;
 import static edu.ku.brc.util.LatLonConverter.convertIntToFORMAT;
-import static edu.ku.brc.util.LatLonConverter.getFormat;
-import static edu.ku.brc.util.LatLonConverter.getFormattedLatLon;
+import static edu.ku.brc.util.LatLonConverter.ensureFormattedString;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -27,7 +26,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -77,6 +75,8 @@ import edu.ku.brc.util.LatLonConverter.LATLON;
  */
 public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListener
 {
+    //private static final Logger log = Logger.getLogger(UIPluginBase.class);
+    
     protected final static String[] formatClass             = new String[] {"DDDDPanel", "DDMMMMPanel", "DDMMSSPanel"};
     protected final static String[] formats                 = new String[] {"DDD.DDD", "DD:MM.MM", "DD MM SS"};
 
@@ -101,26 +101,28 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     
     protected Hashtable<BorderedRadioButton, LatLonUIIFace.LatLonType> selectedTypeHash = new Hashtable<BorderedRadioButton, LatLonUIIFace.LatLonType>();
     
-    protected ImageIcon[]        pointImages;
-    protected JComponent[]       latLonPanes;
-    protected CardLayout         cardLayout = new CardLayout();
-    protected JPanel[]           cardSubPanes;
-    protected JPanel             cardPanel;
-    protected JComponent         currentCardSubPane;
-    protected JPanel             botPanel;
-    protected JPanel             rightPanel;
-    protected Border             panelBorder = BorderFactory.createEtchedBorder();
-    protected JLabel             typeLabel   = null;
-    protected int                currentInx  = -1;
+    protected ImageIcon[]           pointImages;
+    protected JComponent[]          latLonPanes;
+    protected CardLayout            cardLayout = new CardLayout();
+    protected JPanel[]              cardSubPanes;
+    protected JPanel                cardPanel;
+    protected JComponent            currentCardSubPane;
+    protected JPanel                botPanel;
+    protected JPanel                rightPanel;
+    protected Border                panelBorder = BorderFactory.createEtchedBorder();
+    protected JLabel                typeLabel   = null;
+    protected int                   currentInx  = -1;
     protected BorderedRadioButton[] botBtns  = null;
     
-    protected Locality           locality;
-    protected LatLonUIIFace[]    panels;
-    protected String             latLonType;
+    protected Locality             locality;
+    protected DDDDPanel[]          panels;
+    protected String               latLonType;
     
-    protected boolean                         hasChanged = false; 
-    protected ArrayList<Pair<String, String>> srcLatLon = new ArrayList<Pair<String, String>>(2);
-    protected FORMAT                          srcFormat;
+    protected boolean              hasChanged = false; 
+    protected Pair<String, String> srcLatLon1 = new Pair<String, String>();
+    protected Pair<String, String> srcLatLon2 = new Pair<String, String>();
+    protected FORMAT               srcFormat;
+    protected FORMAT               choosenFormat;
     
     // UIValidatable && UIPluginable
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
@@ -137,9 +139,6 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     {
         loadAndPushResourceBundle("specify_plugins");
         
-        srcLatLon.add(new Pair<String, String>());
-        srcLatLon.add(new Pair<String, String>());
-
         typeNamesLabels = new String[typeNamesKeys.length];
         int i = 0;
         for (String key : typeNamesKeys)
@@ -205,8 +204,8 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         });
          
         Dimension preferredSize = new Dimension(0,0);
-        cardSubPanes =  new JPanel[formats.length * 2];
-        panels       = new LatLonUIIFace[formats.length * 2];
+        cardSubPanes = new JPanel[formats.length * 2];
+        panels       = new DDDDPanel[formats.length * 2];
         int paneInx  = 0;
         for (int i=0;i<formats.length;i++)
         {
@@ -214,7 +213,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             try
             {
                 String packageName = "edu.ku.brc.specify.plugins.latlon.";
-                LatLonUIIFace latLon1 = Class.forName(packageName+formatClass[i]).asSubclass(LatLonUIIFace.class).newInstance();
+                DDDDPanel latLon1 = Class.forName(packageName+formatClass[i]).asSubclass(DDDDPanel.class).newInstance();
                 latLon1.setIsRequired(isRequired);
                 latLon1.setViewMode(isViewMode);
                 latLon1.init();
@@ -225,7 +224,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
                 panels[paneInx++] = latLon1;
                 latLonPanes[i]    = panel1;
 
-                LatLonUIIFace latlon2 = Class.forName(packageName+formatClass[i]).asSubclass(LatLonUIIFace.class).newInstance();
+                DDDDPanel latlon2 = Class.forName(packageName+formatClass[i]).asSubclass(DDDDPanel.class).newInstance();
                 latlon2.setIsRequired(isRequired);
                 latlon2.setViewMode(isViewMode);
                 latlon2.init();
@@ -246,11 +245,11 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
                 cardSubPanes[i].add(panel1, BorderLayout.CENTER);
                 cardPanel.add(formats[i], cardSubPanes[i]);
                 
-                if (locality != null)
+                /*if (locality != null)
                 {
                     latLon1.set(locality.getLatitude1(), locality.getLongitude1(), locality.getLat1text(), locality.getLong1text());
                     latlon2.set(locality.getLatitude2(), locality.getLongitude2(), locality.getLat2text(), locality.getLong2text());
-                }
+                }*/
                 
             } catch (Exception e)
             {
@@ -354,20 +353,19 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             FORMAT fromFmt = srcFormat;
             FORMAT toFmt   = fmts[formInx];
             
-            LatLonUIIFace prevPanel1 = panels[(currentInx*2)];
-            LatLonUIIFace prevPanel2 = panels[(currentInx*2)+1];
+            DDDDPanel prevPanel1 = panels[(currentInx*2)];
             
-            LatLonUIIFace nextPanel1 = panels[(formInx*2)];
-            LatLonUIIFace nextPanel2 = panels[(formInx*2)+1];
+            DDDDPanel nextPanel1 = panels[(formInx*2)];
+            DDDDPanel nextPanel2 = panels[(formInx*2)+1];
             
             if (prevPanel1.hasChanged() && prevPanel1.validateState(false) == UIValidatable.ErrorType.Valid)
             {
-                srcLatLon.get(0).first  = convert(prevPanel1.getLatitudeStr(), fromFmt, toFmt, LATLON.Latitude);
-                srcLatLon.get(0).second = convert(prevPanel1.getLatitudeStr(), fromFmt, toFmt, LATLON.Longitude);
+                srcLatLon1.first  = convert(prevPanel1.getLatitudeStr(), fromFmt, toFmt, LATLON.Latitude);
+                srcLatLon1.second = convert(prevPanel1.getLongitudeStr(), fromFmt, toFmt, LATLON.Longitude);
                 
-                srcLatLon.get(1).first  = convert(prevPanel1.getLatitudeStr(), fromFmt, toFmt, LATLON.Latitude);
-                srcLatLon.get(1).second = convert(prevPanel1.getLatitudeStr(), fromFmt, toFmt, LATLON.Longitude);
-                srcFormat = convertIntToFORMAT(formInx);
+                srcLatLon2.first  = convert(prevPanel1.getLatitudeStr(), fromFmt, toFmt, LATLON.Latitude);
+                srcLatLon2.second = convert(prevPanel1.getLongitudeStr(), fromFmt, toFmt, LATLON.Longitude);
+                srcFormat         = convertIntToFORMAT(formInx);
                     
                 hasChanged = true;
                 stateChanged(null);
@@ -375,22 +373,48 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
                 
             }
             
-            nextPanel1.set(prevPanel1.getLatitude(), 
-                           prevPanel1.getLongitude(), 
-                           srcLatLon.get(0).first, 
-                           srcLatLon.get(0).second);
+            /*
+        // This converts a string with 'deg' to a string with a Degrees symbol
+        // and returns what the format is for the string
+        latInfoOrig = adjustLatLonStr(srcLatitudeStr, srcFmt, false);
+        lonInfoOrig = adjustLatLonStr(srcLongitudeStr, srcFmt, false);
+        
+        // The incoming string for the Lat or Lon may not be in the same format as this panel
+        // so if it is different than convert it
+        if (latInfoOrig != null && latInfoOrig.getFormat() != defaultFormat)
+        {
+            this.latitudeStr  = convert(latInfoOrig.getStrVal(true), latInfoOrig.getFormat(), defaultFormat, LatLonConverter.LATLON.Latitude);
+            this.longitudeStr = convert(lonInfoOrig.getStrVal(true), lonInfoOrig.getFormat(), defaultFormat, LatLonConverter.LATLON.Longitude);
+        }
+        
+        System.out.println(latInfoOrig != null ? latInfoOrig.getFormattedStrVal() : "");
+        latitudeTF.setText(latInfoOrig != null ? latInfoOrig.getFormattedStrVal() : "");
+        longitudeTF.setText(lonInfoOrig != null ? lonInfoOrig.getFormattedStrVal() : "");
+
+        latInfoCnvrt = adjustLatLonStr(this.latitudeStr, null, false);
+        lonInfoCnvrt = adjustLatLonStr(this.longitudeStr, null, false);
+        
+        this.latitudeStr  = latInfoCnvrt != null ? latInfoCnvrt.getStrVal(true) : "";
+        this.longitudeStr = lonInfoCnvrt != null ? lonInfoCnvrt.getStrVal(true) : "";
+             
+             */
+            
+            nextPanel1.set(srcFormat,
+                           srcLatLon1.first, 
+                           srcLatLon1.second);
             
             if (type == LatLonUIIFace.LatLonType.LLPoint)
             {
                 nextPanel2.clear();
                 
-            }
+            } else
             {
-                nextPanel2.set(prevPanel2.getLatitude(), 
-                               prevPanel2.getLongitude(), 
-                               srcLatLon.get(1).first, 
-                               srcLatLon.get(1).second);
+                nextPanel2.set(srcFormat, 
+                               srcLatLon2.first, 
+                               srcLatLon2.second);
             }
+            
+            choosenFormat = toFmt;
         }
         
         // Set the radio button accordingly
@@ -458,7 +482,8 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     // GetSetValueIFace Interface
     //--------------------------------------------------------
     
-    public void setLatLon(final BigDecimal lat1, 
+    public void setLatLon(final FORMAT     srcFormat,
+                          final BigDecimal lat1, 
                           final BigDecimal lon1,
                           final String     latStr1,
                           final String     lonStr1,
@@ -468,17 +493,16 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
                           final String     lonStr2)
     {
         // NOTE: Every other panel has point 1 or point 2
-        int cnt = 1;
-        for (LatLonUIIFace panel : panels)
+        if (currentInx > -1)
         {
-            if (cnt % 2 == 1)
-            {
-                panel.set(lat1, lon1, latStr1, lonStr1);
-            } else
-            {
-                panel.set(lat2, lon2, latStr2, lonStr2);               
-            }
-            cnt++;
+            srcLatLon1.first  = latStr1;
+            srcLatLon1.second = lonStr1;
+            
+            srcLatLon2.first  = latStr2;
+            srcLatLon2.second = lonStr2;
+
+            panels[currentInx].set(srcFormat, latStr1, lonStr1);
+            panels[currentInx+1].set(srcFormat, latStr2, lonStr2);
         }
     }
     
@@ -501,35 +525,38 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
         }
         
         locality = (Locality)value;
-        
-        // This figures out if there is a BD value and/or a text value
-        // and formats the String if there isn't one
-        FORMAT defaultFormat = convertIntToFORMAT(locality.getOriginalLatLongUnit());
-        srcLatLon.get(0).first  = getFormattedLatLon(locality.getLatitude1(),  locality.getLat1text(),  defaultFormat);
-        srcLatLon.get(0).second = getFormattedLatLon(locality.getLongitude1(), locality.getLong1text(), defaultFormat);
-        srcFormat = getFormat(srcLatLon.get(0).first, defaultFormat);
-        
-        srcLatLon.get(1).first  = getFormattedLatLon(locality.getLatitude2(),  locality.getLat2text(),  defaultFormat);
-        srcLatLon.get(1).second = getFormattedLatLon(locality.getLongitude2(), locality.getLong2text(), defaultFormat);
-        
         Integer currFormatterIndex = null;
         if (locality != null)
         {
-            currFormatterIndex = locality.getOriginalLatLongUnit();
-            currentType        = convertLatLongType(locality.getLatLongType());
+
+            // This figures out if there is a BD value and/or a text value
+            // and formats the String if there isn't one
+            FORMAT defaultFormat = convertIntToFORMAT(locality.getOriginalLatLongUnit());
+            choosenFormat        = defaultFormat;
             
-            setLatLon(locality.getLatitude1(), 
+            srcFormat         = convertIntToFORMAT(locality.getSrcLatLongUnit());
+            srcLatLon1.first  = ensureFormattedString(locality.getLatitude1(),  locality.getSrcLat1text(),  defaultFormat, true);
+            srcLatLon1.second = ensureFormattedString(locality.getLongitude1(), locality.getSrcLong1text(), defaultFormat, true);
+            
+            srcLatLon2.first  = ensureFormattedString(locality.getLatitude2(),  locality.getSrcLat2text(),  defaultFormat, false);
+            srcLatLon2.second = ensureFormattedString(locality.getLongitude2(), locality.getSrcLong2text(), defaultFormat, false);
+        
+            currentInx  = locality.getSrcLatLongUnit();
+            currentType = convertLatLongType(locality.getLatLongType()); // Point, Line or Rect
+            
+            setLatLon(srcFormat,
+                      locality.getLatitude1(), 
                       locality.getLongitude1(), 
-                      srcLatLon.get(0).first, 
-                      srcLatLon.get(0).second, 
+                      srcLatLon1.first, 
+                      srcLatLon1.second, 
                       locality.getLatitude2(), 
                       locality.getLongitude2(), 
-                      srcLatLon.get(1).first, 
-                      srcLatLon.get(1).second);
+                      srcLatLon2.first, 
+                      srcLatLon2.second);
         } else
         {
             currentType = LatLonUIIFace.LatLonType.LLPoint;
-            setLatLon(null, null, null, null, null, null, null, null);
+            setLatLon(null, null, null, null, null, null, null, null, null);
         }
         
         stateChangeOK = false;
@@ -574,7 +601,14 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             locality.setLongitude2(panels[curInx+1].getLongitude());
 
             locality.setLat2text(locality.getLat2() != null ? panels[curInx+1].getLatitudeStr() : null);
-            locality.setLong2text(locality.getLong2() != null ? panels[curInx+1].getLongitudeStr() : null);   
+            locality.setLong2text(locality.getLong2() != null ? panels[curInx+1].getLongitudeStr() : null);
+            
+            locality.setSrcLatLongUnit((byte)srcFormat.ordinal());
+            locality.setSrcLat1text(srcLatLon1.first);
+            locality.setSrcLong1text(srcLatLon1.second);
+            locality.setSrcLat2text(srcLatLon2.first);
+            locality.setSrcLong2text(srcLatLon2.second);
+            
         }
         return locality;
     }
@@ -687,7 +721,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
      */
     public void reset()
     {
-        setLatLon(null, null, null, null, null, null, null, null);
+        setLatLon(null, null, null, null, null, null, null, null, null);
         
         valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         isChanged = false;

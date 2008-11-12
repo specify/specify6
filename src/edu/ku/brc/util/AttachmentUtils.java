@@ -63,7 +63,7 @@ public class AttachmentUtils
                 }
                 
                 
-                Attachment attachment = (source instanceof Attachment) ? (Attachment)source : ((ObjectAttachmentIFace)source).getAttachment();
+                Attachment attachment = (source instanceof Attachment) ? (Attachment)source : ((ObjectAttachmentIFace<?>)source).getAttachment();
                 File original = null;
                 if (attachment.getId()!=null)
                 {

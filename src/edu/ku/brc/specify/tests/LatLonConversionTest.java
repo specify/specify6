@@ -14,9 +14,9 @@
  */
 package edu.ku.brc.specify.tests;
 
-import static edu.ku.brc.util.LatLonConverter.convertDDDDToDDDD;
-import static edu.ku.brc.util.LatLonConverter.convertDDMMMMToDDDD;
-import static edu.ku.brc.util.LatLonConverter.convertDDMMSSToDDDD;
+import static edu.ku.brc.util.LatLonConverter.convertDDDDStrToDDDDBD;
+import static edu.ku.brc.util.LatLonConverter.convertDDMMMMStrToDDDDBD;
+import static edu.ku.brc.util.LatLonConverter.convertDDMMSSStrToDDDDBD;
 import static edu.ku.brc.util.LatLonConverter.convertToDDDDDD;
 import static edu.ku.brc.util.LatLonConverter.convertToDDMMMM;
 import static edu.ku.brc.util.LatLonConverter.convertToDDMMSS;
@@ -56,7 +56,7 @@ public class LatLonConversionTest extends TestCase
     {
         BigDecimal before = new BigDecimal("38.95402");
         String     str    = convertToDDMMSS(before, decimalLen);
-        BigDecimal after  =  convertDDMMSSToDDDD(str, "N");
+        BigDecimal after  =  convertDDMMSSStrToDDDDBD(str, "N");
         
         assertEquals(str, "38 57 14.472");
         assertEquals(before.doubleValue(), after.doubleValue());
@@ -65,7 +65,7 @@ public class LatLonConversionTest extends TestCase
         
         before = new BigDecimal("-38.95402");
         str    = convertToDDMMSS(before, decimalLen);
-        after  =  convertDDMMSSToDDDD(str, "S");
+        after  =  convertDDMMSSStrToDDDDBD(str, "S");
         
         assertEquals(before.doubleValue(), after.doubleValue());
         assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDMMSS, DEGREES_FORMAT.String, decimalLen), "38 57 14.472 S");
@@ -73,13 +73,13 @@ public class LatLonConversionTest extends TestCase
        
         before = new BigDecimal("38.95402");
         str    = convertToDDMMSS(before, decimalLen);
-        after  =  convertDDMMSSToDDDD(str, "E");
+        after  =  convertDDMMSSStrToDDDDBD(str, "E");
         
         assertEquals(before.doubleValue(), after.doubleValue());
         
         before = new BigDecimal("-38.95402");
         str    = convertToDDMMSS(before, decimalLen);
-        after  =  convertDDMMSSToDDDD(str, "W");
+        after  =  convertDDMMSSStrToDDDDBD(str, "W");
         
         assertEquals(before.doubleValue(), after.doubleValue());
 
@@ -92,7 +92,7 @@ public class LatLonConversionTest extends TestCase
     {
         BigDecimal before = new BigDecimal("38.95402");
         String     str    = convertToDDMMMM(before, decimalLen);
-        BigDecimal after  =  convertDDMMMMToDDDD(str, "N");
+        BigDecimal after  =  convertDDMMMMStrToDDDDBD(str, "N");
         
         assertEquals(str, "38 57.2412");
         assertEquals(before.doubleValue(), after.doubleValue());
@@ -101,7 +101,7 @@ public class LatLonConversionTest extends TestCase
         
         before = new BigDecimal("-38.95402");
         str    = convertToDDMMMM(before, decimalLen);
-        after  =  convertDDMMMMToDDDD(str, "S");
+        after  =  convertDDMMMMStrToDDDDBD(str, "S");
         
         assertEquals(before.doubleValue(), after.doubleValue());
         assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDMMMM, DEGREES_FORMAT.String, decimalLen), "38 57.2412 S");
@@ -109,24 +109,24 @@ public class LatLonConversionTest extends TestCase
 
         before = new BigDecimal("38.95402");
         str    = convertToDDMMMM(before, decimalLen);
-        after  =  convertDDMMMMToDDDD(str, "E");
+        after  =  convertDDMMMMStrToDDDDBD(str, "E");
         
         assertEquals(before.doubleValue(), after.doubleValue());
         
         before = new BigDecimal("-38.95402");
         str    = convertToDDMMMM(before, decimalLen);
-        after  =  convertDDMMMMToDDDD(str, "W");
+        after  =  convertDDMMMMStrToDDDDBD(str, "W");
         
         assertEquals(before.doubleValue(), after.doubleValue());
         
     }
 
     /**
-     * Test method for {@link edu.ku.brc.util.LatLonConverter#convertDDDDToDDDD(java.lang.String)}.
+     * Test method for {@link edu.ku.brc.util.LatLonConverter#convertDDDDStrToDDDDBD(java.lang.String)}.
      */
     public void testOneMinute()
     {
-        BigDecimal latitude = LatLonConverter.convertDDMMMMToDDDD("1 1", "N");
+        BigDecimal latitude = LatLonConverter.convertDDMMMMStrToDDDDBD("1 1", "N");
         String     ddmmVal  = LatLonConverter.convertToDDMMMM(latitude, decimalLen);
         
         String s1 = String.format("%10.7f", latitude);
@@ -138,13 +138,13 @@ public class LatLonConversionTest extends TestCase
     }
 
     /**
-     * Test method for {@link edu.ku.brc.util.LatLonConverter#convertDDDDToDDDD(java.lang.String)}.
+     * Test method for {@link edu.ku.brc.util.LatLonConverter#convertDDDDStrToDDDDBD(java.lang.String)}.
      */
     public void testConvertDDDDToDDDDString()
     {
         BigDecimal before = new BigDecimal("38.95402");
         String     str    = convertToDDDDDD(before, decimalLen);
-        BigDecimal after  =  convertDDDDToDDDD(str, "N");
+        BigDecimal after  =  convertDDDDStrToDDDDBD(str, "N");
         
         assertEquals(str, "38.95402");
         assertEquals(before.doubleValue(), after.doubleValue());
@@ -153,7 +153,7 @@ public class LatLonConversionTest extends TestCase
         
         before = new BigDecimal("-38.95402");
         str    = convertToDDDDDD(before, decimalLen);
-        after  =  convertDDDDToDDDD(str, "S");
+        after  =  convertDDDDStrToDDDDBD(str, "S");
         
         assertEquals(before.doubleValue(), after.doubleValue());
         assertEquals(LatLonConverter.format(before, LATLON.Latitude, FORMAT.DDDDDD, DEGREES_FORMAT.String, decimalLen), "38.95402 S");
@@ -161,24 +161,24 @@ public class LatLonConversionTest extends TestCase
         
         before = new BigDecimal("38.95402");
         str    = convertToDDDDDD(before, decimalLen);
-        after  =  convertDDDDToDDDD(str, "E");
+        after  =  convertDDDDStrToDDDDBD(str, "E");
         
         assertEquals(before.doubleValue(), after.doubleValue());
         
         before = new BigDecimal("-38.95402");
         str    = convertToDDDDDD(before, decimalLen);
-        after  =  convertDDDDToDDDD(str, "W");
+        after  =  convertDDDDStrToDDDDBD(str, "W");
         
         before = new BigDecimal("0.0");
         str    = convertToDDDDDD(before, decimalLen);
-        after  =  convertDDDDToDDDD(str, "W");
+        after  =  convertDDDDStrToDDDDBD(str, "W");
         
         assertEquals(str, "0.0");
         assertEquals(before.doubleValue(), after.doubleValue());
 
         before = new BigDecimal("-0.0");
         str    = convertToDDDDDD(before, decimalLen);
-        after  =  convertDDDDToDDDD(str, "W");
+        after  =  convertDDDDStrToDDDDBD(str, "W");
         
         assertEquals(str, "0.0");
         assertEquals(before.doubleValue(), after.doubleValue());
@@ -186,7 +186,7 @@ public class LatLonConversionTest extends TestCase
     }
     
     /**
-     * Test method for {@link edu.ku.brc.util.LatLonConverter#convertDDDDToDDDD(java.lang.String)}.
+     * Test method for {@link edu.ku.brc.util.LatLonConverter#convertDDDDStrToDDDDBD(java.lang.String)}.
      */
     public void testDegreesSymbol()
     {
