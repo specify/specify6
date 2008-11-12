@@ -69,12 +69,16 @@ import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.prefs.MySQLPrefs;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
@@ -96,7 +100,7 @@ import edu.ku.brc.util.FileCache;
  * Created Date: Nov 6, 2008
  *
  */
-public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener, FrameworkAppIFace
+public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener, CommandListener, FrameworkAppIFace
 {
     private static final Logger  log                = Logger.getLogger(BackupAndRestoreApp.class);
             
@@ -444,7 +448,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         */
         
         Rectangle r = f.getBounds();
-        r.setBounds(1, 1, 600, 200);
+        r.setBounds(1, 1, 600, 275);
         f.setBounds(r);
         UIHelper.centerWindow(f);
         f.setVisible(true);
@@ -609,6 +613,8 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         
         Specify.adjustLocaleFromPrefs();
         
+        CommandDispatcher.register(BaseTask.APP_CMD_TYPE, this);
+        
         dbLoginPanel = UIHelper.doLogin(null, false, false, this, "SpecifyLargeIcon", getTitle(), null); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
@@ -654,6 +660,18 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         {
             dbLoginPanel.getWindow().setVisible(false);
             dbLoginPanel = null;
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(final CommandAction cmdAction)
+    {
+        if (cmdAction.isType(BaseTask.APP_CMD_TYPE) && cmdAction.isAction(BaseTask.APP_REQ_EXIT))
+        {
+            doExit(true);
         }
     }
 

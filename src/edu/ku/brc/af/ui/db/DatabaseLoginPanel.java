@@ -846,8 +846,10 @@ public class DatabaseLoginPanel extends JPanel
                                                    getConnectionStr(), 
                                                    usrPwd.first, 
                                                    usrPwd.second);
-                    
-                    isLoggedIn &= jaasLogin();
+                    if (masterUsrPwdProvider != null)
+                    {
+                        isLoggedIn &= jaasLogin();
+                    }
                 }
 
                 if (isLoggedIn)
@@ -970,6 +972,9 @@ public class DatabaseLoginPanel extends JPanel
         worker.start();
     }
 
+    /**
+     * @return
+     */
     public boolean jaasLogin()
     {
         if (jaasContext != null)

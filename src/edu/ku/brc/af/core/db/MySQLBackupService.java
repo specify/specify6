@@ -280,7 +280,7 @@ public class MySQLBackupService extends BackupServiceFactory
                             if (megs != dspMegs)
                             {
                                 dspMegs = megs;
-                                long megsWithTenths = (long)((totalBytes / oneMeg) * 10.0);
+                                long megsWithTenths = (long)((totalBytes * 10.0) / oneMeg);
                                 firePropertyChange(MEGS, 0, megsWithTenths);
                             }
                             
@@ -487,7 +487,6 @@ public class MySQLBackupService extends BackupServiceFactory
         
         SwingWorker<Integer, Integer> backupWorker = new SwingWorker<Integer, Integer>()
         {
-            long totalBytes = 0;
             long fileSize   = 0;
             
             /* (non-Javadoc)
@@ -514,36 +513,37 @@ public class MySQLBackupService extends BackupServiceFactory
                     {
                         File inFile    = new File(restoreFilePath);
                         fileSize  = inFile.length();
+                        System.out.println(fileSize);
                         
-                        long step      = fileSize / 100L;
-                        long stepTotal = 0;
+                        double oneMeg     = (1024.0 * 1024.0);
+                        long   dspMegs    = 0;
+                        long   totalBytes = 0;
+
                         input = new FileInputStream(inFile);
                         try 
                         {
                             
-                            byte[] bytes = new byte[8192];
+                            byte[] bytes = new byte[8192*4];
                             do
                             {
                                 int numBytes = input.read(bytes, 0, bytes.length);
-                            	if (numBytes > 0)
-                            	{
-                            		out.write(bytes, 0, numBytes);
-                            		totalBytes += numBytes;
+                                
+                                totalBytes += numBytes;
+                                if (numBytes > 0)
+                                {
+                                    out.write(bytes, 0, numBytes);
+                                 
+                                    long megs = (long)(totalBytes / oneMeg);
+                                    if (megs != dspMegs)
+                                    {
+                                        dspMegs = megs;
+                                        firePropertyChange(MEGS, dspMegs, (int)( (100.0 * totalBytes) / fileSize));
+                                    }
                             		
                             	} else
                             	{
                             	    break;
                             	}
-                                
-                            	if (totalBytes > stepTotal)
-                            	{
-                            	    stepTotal = totalBytes + step;
-                            	    
-                            	    System.err.println(totalBytes+"  "+fileSize+"  "+(((int)( 100.0 * (totalBytes / fileSize)))));
-                                    setProgress((int)( 100.0 * (totalBytes / fileSize)));
-                            	    totalBytes = 0;
-                            	}
-                                
                             } while (true);
                         }
                         finally 
@@ -572,7 +572,6 @@ public class MySQLBackupService extends BackupServiceFactory
                     {
                         //System.err.println(line);
                     }
-                    
                     
                     in = new BufferedReader(new InputStreamReader(process.getErrorStream()));
                     line = null;
@@ -610,9 +609,10 @@ public class MySQLBackupService extends BackupServiceFactory
                     UIRegistry.showError(errorMsg);
                 }
                 
-                UIRegistry.showLocalizedMsg("MySQLBackupService.ABT_EXIT_TITLE", "MySQLBackupService.ABT_EXIT");
-                
-                CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit"));
+                // We don't have to shutdown the App when it is stand alone
+                // really need to send the notificaiton no matter what and have the App display the Exit dialog if it wants to.
+                //UIRegistry.showLocalizedMsg("MySQLBackupService.ABT_EXIT_TITLE", "MySQLBackupService.ABT_EXIT");
+                //CommandDispatcher.dispatch(new CommandAction("App", "AppReqExit"));
             }
         };
         
@@ -624,7 +624,7 @@ public class MySQLBackupService extends BackupServiceFactory
         backupWorker.addPropertyChangeListener(
                 new PropertyChangeListener() {
                     public  void propertyChange(final PropertyChangeEvent evt) {
-                        if ("progress".equals(evt.getPropertyName())) 
+                        if (MEGS.equals(evt.getPropertyName())) 
                         {
                             int value = (Integer)evt.getNewValue();
                             if (value < 100)
@@ -634,6 +634,8 @@ public class MySQLBackupService extends BackupServiceFactory
                             {
                                 statusBar.setProgressDone(STATUSBAR_NAME);
                             }
+                            long dspMegs = (Long)evt.getOldValue();
+                            statusBar.setText(UIRegistry.getLocalizedMessage("MySQLBackupService.RESTORE_MEGS", dspMegs));
                         }
                     }
                 });
