@@ -430,6 +430,15 @@ public class MissingDataResolver implements ActionListener
                 return true;
             }
         }
+        if (dfe.getUploadTbl().getTblClass() == edu.ku.brc.specify.datamodel.Locality.class)
+        {
+            if (dfe.getFldName().equalsIgnoreCase("SrcLatLongUnit"))
+            {
+                log.debug("setting SrcLatLongUnit to 0");
+                dfe.setDefaultValue(new Byte("0"));
+                return true;
+            }
+        }
         if (CollectionMember.class.isAssignableFrom(dfe.getUploadTbl().getTblClass()))
         {
             if (AppContextMgr.getInstance().getClassObject(Collection.class) != null)
