@@ -45,6 +45,7 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.LatLonConverter;
 
 /**
  * @author rod
@@ -299,7 +300,9 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
            LatLonUI latLonUI = parent.getCompById(llId);
            if (latLonUI != null)
            {
-               latLonUI.setLatLon(null, lat1, lon1, gcData.getLatitude(), gcData.getLongitude(), null, null, null, null);
+               String latStr = LatLonConverter.ensureFormattedString(lat1, null, LatLonConverter.FORMAT.DDDDDD, LatLonConverter.LATLON.Latitude);
+               String lonStr = LatLonConverter.ensureFormattedString(lon1, null, LatLonConverter.FORMAT.DDDDDD, LatLonConverter.LATLON.Longitude);
+               latLonUI.setLatLon(LatLonConverter.FORMAT.DDDDDD, latStr, lonStr, null, null);
            }
        }
     }

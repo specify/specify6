@@ -35,10 +35,10 @@ public class LatLonConverter
     protected final static int DDMMMM_LEN = 5;
     protected final static int DDMMSS_LEN = 3;
     
-    protected static int[] DECIMAL_SIZES = {7, 5, 3};
+    protected static int[] DECIMAL_SIZES = {0, 7, 5, 3};
     
     public enum LATLON          {Latitude, Longitude}
-    public enum FORMAT          {None, DDDDDD, DDMMMM, DDMMSS}
+    public enum FORMAT          {DDDDDD, DDMMMM, DDMMSS, None} // None must be at the end so the values match Specify 5
     public enum DEGREES_FORMAT  {None, Symbol, String}
     public enum DIRECTION       {None, NorthSouth, EastWest}
     
@@ -124,50 +124,33 @@ public class LatLonConverter
     
     /**
      * @param bd
-     * @param llStr
+     * @param latLonStr
      * @param type
      * @return
      */
     public static String ensureFormattedString(final BigDecimal bd, 
-                                               final String llStr, 
-                                               final FORMAT type,
-                                               final Boolean isNorthSouth)
+                                               final String     latLonStr, 
+                                               final FORMAT     type,
+                                               final LATLON     latOrLon)
     {
-        if (StringUtils.isEmpty(llStr))
+        if (StringUtils.isEmpty(latLonStr))
         {
             if (bd == null)
             {
                 return null;
             }
             
-            String str = null;
-            switch (type)
+            String outStr = format(bd, latOrLon, type, DEGREES_FORMAT.Symbol, DECIMAL_SIZES[type.ordinal()]);
+            if (latOrLon == LATLON.Latitude)
             {
-                case DDDDDD :
-                    str = convertToSignedDDDDDD(bd.abs(), DDDDDD_LEN);
-                    break;
-                    
-                case DDMMMM :
-                    str = convertToSignedDDDDDD(bd.abs(), DDMMMM_LEN);
-                    break;
-                    
-                case DDMMSS :
-                    str = convertToSignedDDDDDD(bd.abs(), DDMMSS_LEN);
-                    break;
-            }
-            
-            if (isNorthSouth != null)
+                outStr += " " + northSouth[bd.doubleValue() < 0.0 ? 1 : 0];
+            } else
             {
-                if (isNorthSouth)
-                {
-                    return str + " " + northSouth[bd.doubleValue() < 0.0 ? 1 : 0];
-                }
-                return str + " " +  eastWest[bd.doubleValue() < 0.0 ? 1 : 0];
+                outStr += " " +  eastWest[bd.doubleValue() < 0.0 ? 1 : 0];
             }
-            return str;
-            
+            return outStr;
         }
-        return llStr;
+        return latLonStr;
     }
     
     /**
@@ -350,22 +333,7 @@ public class LatLonConverter
      
         LatLonValueInfo latLonVal = adjustLatLonStr(strArg, fromFmt, false);
         
-        System.out.println(latLonVal.getFormattedStrVal());
-        
-        //return latLonVal.getFormattedStrVal();
-        
-        
         String str = latLonVal.getStrVal(false);
-        System.out.println(str);
-        
-        /*
-        String dirStr = "";
-        int len = str.length();
-        if (!StringUtils.isNumeric(str.substring(str.length()-1, str.length())))
-        {
-            dirStr = str.substring(str.length()-1, str.length());
-            str    = str.substring(0, len-2);
-        }*/
         
         if (StringUtils.isNotEmpty(str))
         {

@@ -482,15 +482,18 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
     // GetSetValueIFace Interface
     //--------------------------------------------------------
     
-    public void setLatLon(final FORMAT     srcFormat,
-                          final BigDecimal lat1, 
-                          final BigDecimal lon1,
-                          final String     latStr1,
-                          final String     lonStr1,
-                          final BigDecimal lat2, 
-                          final BigDecimal lon2,
-                          final String     latStr2,
-                          final String     lonStr2)
+    /**
+     * @param srcFormat
+     * @param latStr1
+     * @param lonStr1
+     * @param latStr2
+     * @param lonStr2
+     */
+    public void setLatLon(final FORMAT srcFormat,
+                          final String latStr1,
+                          final String lonStr1,
+                          final String latStr2,
+                          final String lonStr2)
     {
         // NOTE: Every other panel has point 1 or point 2
         if (currentInx > -1)
@@ -535,28 +538,24 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             choosenFormat        = defaultFormat;
             
             srcFormat         = convertIntToFORMAT(locality.getSrcLatLongUnit());
-            srcLatLon1.first  = ensureFormattedString(locality.getLatitude1(),  locality.getSrcLat1text(),  defaultFormat, true);
-            srcLatLon1.second = ensureFormattedString(locality.getLongitude1(), locality.getSrcLong1text(), defaultFormat, true);
+            srcLatLon1.first  = ensureFormattedString(locality.getLatitude1(),  locality.getSrcLat1text(),  defaultFormat, LATLON.Latitude);
+            srcLatLon1.second = ensureFormattedString(locality.getLongitude1(), locality.getSrcLong1text(), defaultFormat, LATLON.Longitude);
             
-            srcLatLon2.first  = ensureFormattedString(locality.getLatitude2(),  locality.getSrcLat2text(),  defaultFormat, false);
-            srcLatLon2.second = ensureFormattedString(locality.getLongitude2(), locality.getSrcLong2text(), defaultFormat, false);
+            srcLatLon2.first  = ensureFormattedString(locality.getLatitude2(),  locality.getSrcLat2text(),  defaultFormat, LATLON.Latitude);
+            srcLatLon2.second = ensureFormattedString(locality.getLongitude2(), locality.getSrcLong2text(), defaultFormat, LATLON.Longitude);
         
             currentInx  = locality.getSrcLatLongUnit();
             currentType = convertLatLongType(locality.getLatLongType()); // Point, Line or Rect
             
             setLatLon(srcFormat,
-                      locality.getLatitude1(), 
-                      locality.getLongitude1(), 
                       srcLatLon1.first, 
                       srcLatLon1.second, 
-                      locality.getLatitude2(), 
-                      locality.getLongitude2(), 
                       srcLatLon2.first, 
                       srcLatLon2.second);
         } else
         {
             currentType = LatLonUIIFace.LatLonType.LLPoint;
-            setLatLon(null, null, null, null, null, null, null, null, null);
+            setLatLon(null, null, null, null, null);
         }
         
         stateChangeOK = false;
@@ -721,7 +720,7 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
      */
     public void reset()
     {
-        setLatLon(null, null, null, null, null, null, null, null, null);
+        setLatLon(null, null, null, null, null);
         
         valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         isChanged = false;

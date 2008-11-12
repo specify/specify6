@@ -7505,11 +7505,13 @@ public class BuildSampleDatabase
             if (isColObj && item.getName().equals("catalogNumber") && catFmtName != null)
             {
                 newItem.setFormat(catFmtName);
+                newItem.setIsUIFormatter(true);
             }
             
             if (isAccession && item.getName().equals("accessionNumber") && accFmtName != null)
             {
                 newItem.setFormat(accFmtName);
+                newItem.setIsUIFormatter(true);
             }
             
         }
@@ -7519,12 +7521,14 @@ public class BuildSampleDatabase
      * @param discipline
      * @param schemaType
      * @param tableMgr
+     * @param catFmtName
+     * @param accFmtName
      */
-    public static void loadSchemaLocalization(final Discipline discipline, 
-                                              final Byte schemaType, 
+    public static void loadSchemaLocalization(final Discipline   discipline, 
+                                              final Byte         schemaType, 
                                               final DBTableIdMgr tableMgr,
-                                              final String catFmtName,
-                                              final String accFmtName)
+                                              final String       catFmtName,
+                                              final String       accFmtName)
     {
         
         HiddenTableMgr hiddenTableMgr = new HiddenTableMgr();

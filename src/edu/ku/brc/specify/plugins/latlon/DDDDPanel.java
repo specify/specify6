@@ -585,8 +585,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         latInfoCnvrt = adjustLatLonStr(this.latitudeStr, defaultFormat, false);
         lonInfoCnvrt = adjustLatLonStr(this.longitudeStr, defaultFormat, false);
         
-        latitudeTF.setText(latitudeStr);
-        longitudeTF.setText(longitudeStr);
+        latitudeTF.setText(srcLatitudeStr);
+        longitudeTF.setText(srcLongitudeStr);
 
         setDataIntoUI();
         hasChanged = false;

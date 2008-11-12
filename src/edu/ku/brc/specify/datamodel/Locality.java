@@ -168,7 +168,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         guid       = null;
         
         // Source Data for Formatting
-        srcLatLongUnit = 0;
+        srcLatLongUnit = 0;          // matches LATLON.DDDDDD (also matches Specify 5)
         srcLat1text    = null;
         srcLat2text    = null;
         srcLong1text   = null;

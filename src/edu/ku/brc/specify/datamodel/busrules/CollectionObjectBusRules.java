@@ -170,7 +170,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             DBTableInfo tblInfo   = DBTableIdMgr.getInstance().getInfoById(1); // don't need to check for null
             DBFieldInfo fieldInfo = tblInfo.getFieldByName("catalogNumber");
             UIFieldFormatterIFace fmt = fieldInfo.getFormatter();
-            if (fmt.getAutoNumber() == null || !formViewObj.isAutoNumberOn())
+            if ((fmt != null && fmt.getAutoNumber() == null) || !formViewObj.isAutoNumberOn())
             {
                 status = processBusinessRules(null, dataObj, true);
             }
