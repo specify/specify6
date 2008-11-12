@@ -173,18 +173,6 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                     fieldInfo.setPickListName(p.get(4));
                     fieldInfo.setWebLinkName(p.get(7));
                     
-                    System.out.println(fieldInfo.getName());
-                    if (fieldInfo.getName().equals("catalogNumber"))
-                    {
-                        System.err.println(p);
-                        int x = 0;
-                        for (String str : p)
-                        {
-                            System.err.println(x+"  "+str);
-                            x++;
-                        }
-                        
-                    }
                     if (!fieldInfo.isRequired() && isRequired)
                     {
                         fieldInfo.setRequired(isRequired);
