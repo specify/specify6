@@ -78,6 +78,8 @@ public class MasterPasswordMgr
     
     private boolean              errCreatingFile       = false;
     private char                 currEcho;
+    private String               showPwdLabel;
+    private String               hidePwdLabel;
     private Pair<String, String> dbUsernameAndPassword = null;
     private String               usersUserName         = null;
     private String               usersPassword         = null;
@@ -88,7 +90,8 @@ public class MasterPasswordMgr
      */
     protected MasterPasswordMgr()
     {
-        
+        showPwdLabel = getResourceString("SHOW_PASSWORD");
+        hidePwdLabel = getResourceString("HIDE_PASSWORD");
     }
     
     /**
@@ -427,7 +430,7 @@ public class MasterPasswordMgr
         final CustomDialog dlg = new CustomDialog((Frame)null, getResourceString("MASTER_INFO_TITLE"), 
                                                   true, CustomDialog.OKCANCELAPPLYHELP, pb.getPanel());
         dlg.setOkLabel(getResourceString("GENERATE_KEY"));
-        dlg.setApplyLabel(getResourceString("SHOW_PASSWORD"));
+        dlg.setApplyLabel(showPwdLabel);
 
         dlg.createUI();
         dlg.getOkBtn().setEnabled(false);
@@ -457,14 +460,16 @@ public class MasterPasswordMgr
         usrText.getDocument().addDocumentListener(docListener);
         pwdText.getDocument().addDocumentListener(docListener);
 
+        currEcho = echoChar;
+        
         dlg.getApplyBtn().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                dlg.getApplyBtn().setText(currEcho == echoChar ? hidePwdLabel : showPwdLabel);
                 currEcho = currEcho == echoChar ? 0 : echoChar;
                 pwdText.setEchoChar(currEcho);
                 dbPwdTxt.setEchoChar(currEcho);
-                dlg.getApplyBtn().setText(UIRegistry.getResourceString(currEcho == echoChar ? "SHOW_PASSWORD" : "HIDE_PASSWORD"));
             }
         });
         
