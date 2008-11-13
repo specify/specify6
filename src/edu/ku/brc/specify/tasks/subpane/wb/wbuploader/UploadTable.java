@@ -233,7 +233,7 @@ public class UploadTable implements Comparable<UploadTable>
      * annotation on the MANY side of the relationship between
      * this table and it's many-side 'child'.
      */
-    protected boolean isOneToOneChild()
+    public boolean isOneToOneChild()
     {
         return tblClass.equals(CollectionObjectAttribute.class)
             || tblClass.equals(PreparationAttribute.class)
@@ -2563,5 +2563,9 @@ public class UploadTable implements Comparable<UploadTable>
             log.debug(toLog);
         }
     }
-
+    
+    public boolean getHasChildren()
+    {
+        return hasChildren;
+    }
 }

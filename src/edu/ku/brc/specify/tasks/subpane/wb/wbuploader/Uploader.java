@@ -1454,7 +1454,7 @@ public class Uploader implements ActionListener, KeyListener
         {
             result.addAll(connectUploadGraph(depth++));
         }
-        
+                
         if (result.size() == 0)
         {
             result.add(null);
@@ -1463,6 +1463,8 @@ public class Uploader implements ActionListener, KeyListener
         //It would make more sense to fix connectUploadGraph to not generate duplicate solutions,
         //but that would be hard.
         return removeDuplicateSolutions(result);
+        
+        
     }
 
     /**
@@ -1515,10 +1517,31 @@ public class Uploader implements ActionListener, KeyListener
         Vector<UploadMessage> errors = new Vector<UploadMessage>();
         try
         {
+            Vector<Vector<Table>> missingTbls = new Vector<Vector<Table>>();
+            
+            //check that parents exist for one-to-one children (which are required to be defined as many-to-one parents 
+            //in hibernate)
+            for (UploadTable t : uploadTables)
+            {
+                if (t.isOneToOneChild() && !t.getHasChildren())
+                {
+                    Vector<Vertex<Table>> vs = db.getGraph().getAdjacentVertices(new Vertex<Table>(t.getTable().getName(), t.getTable()));
+                    Vector<Table> tbls = new Vector<Table>();
+                    for (Vertex<Table> vertex : vs)
+                    {
+                        tbls.add(vertex.getData());
+                    }
+                    missingTbls.add(tbls);
+                }
+            }
             if (!uploadGraph.isConnected())
-            {                
+            {     
+               missingTbls.addAll(getMissingTbls());   
+            }
+            if (missingTbls.size() > 0)
+            {
                 boolean first = true;
-                for (Vector<Table> tbls : getMissingTbls())
+                for (Vector<Table> tbls : missingTbls)
                 {
                     String msg = "";
                     if (first)
@@ -1566,9 +1589,10 @@ public class Uploader implements ActionListener, KeyListener
         {
             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
         }
-
+        
         errors.addAll(validateConsistency());
 
+        
         // now find out what data is not available in the dataset and not available in the database
         // Considering such issues 'structural' for now.
         missingRequiredClasses.clear();
