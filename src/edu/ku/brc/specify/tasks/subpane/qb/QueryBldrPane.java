@@ -156,6 +156,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected JButton                                        searchBtn;
     protected JCheckBox                                      distinctChk;
     protected JCheckBox                                      countOnlyChk;
+    protected JCheckBox                                      searchSynonymyChk;
     protected static boolean                                 searchSynonymy     = true;
     protected static boolean                                 hqlHasSynJoins;
     
@@ -423,13 +424,35 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }.start();
             }
         });
-        
-        PanelBuilder outer = new PanelBuilder(new FormLayout("p, 2dlu, p, 2dlu, p, 6dlu, p", "p"));
+
+        searchSynonymyChk = createCheckBox(UIRegistry.getResourceString("QB_SRCH_SYNONYMS"));
+        searchSynonymyChk.setSelected(searchSynonymy);
+        searchSynonymyChk.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                new SwingWorker() {
+
+                    /* (non-Javadoc)
+                     * @see edu.ku.brc.helpers.SwingWorker#construct()
+                     */
+                    @Override
+                    public Object construct()
+                    {
+                        searchSynonymy = !searchSynonymy;
+                        return null;
+                    }
+                }.start();
+            }
+        });
+
+        PanelBuilder outer = new PanelBuilder(new FormLayout("p, 2dlu, p, 2dlu, p, 2dlu, p, 6dlu, p", "p"));
         CellConstraints cc = new CellConstraints();
-        outer.add(distinctChk, cc.xy(1, 1));
-        outer.add(countOnlyChk, cc.xy(3, 1));
-        outer.add(searchBtn, cc.xy(5, 1));
-        outer.add(saveBtn, cc.xy(7, 1));
+        outer.add(searchSynonymyChk, cc.xy(1, 1));
+        outer.add(distinctChk, cc.xy(3, 1));
+        outer.add(countOnlyChk, cc.xy(5, 1));
+        outer.add(searchBtn, cc.xy(7, 1));
+        outer.add(saveBtn, cc.xy(9, 1));
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(outer.getPanel(), BorderLayout.EAST);
         JButton helpBtn = createButton(UIRegistry.getResourceString("HELP"));
@@ -1058,30 +1081,48 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return " left join ";
     }
     
+    /**
+     * @param taxAlias
+     * @return an alias for the acceptedParent joined table for table with alias taxAlias.
+    */
     protected static String getAcceptedParentAlias(final String taxAlias)
     {
         return taxAlias + "accpar";
     }
     
+    /**
+     * @param taxAlias
+     * @return an alias for the acceptedParentChildren joined table for table with alias taxAlias.
+    */
     protected static String getAcceptedParentChildrenAlias(final String taxAlias)
     {
         return taxAlias + "accparchi";
     }
     
+    /**
+     * @param taxAlias
+     * @return an alias for the acceptedChildren joined table for table with alias taxAlias.
+    */
     protected static String getAcceptedChildrenAlias(final String taxAlias)
     {
         return  taxAlias + "accchi";
     }
     
+    /**
+     * @param fld
+     * @return true if the the field is a name field for a treeable table.
+    */
     protected static boolean isSynSearchable(final FieldQRI fld)
     {
-        if (!fld.getTableInfo().getClassObj().equals(Taxon.class))
+        //XXX It would be good to have a way of knowing if synonymy is actually supported for a tree or treeable class.    
+        if (!Treeable.class.isAssignableFrom(fld.getTableInfo().getClassObj()))
         {
             return false;
         }
         
         return fld.getFieldName().equalsIgnoreCase("name") || fld.getFieldName().equalsIgnoreCase("fullname") || fld instanceof TreeLevelQRI;
     }
+    
     /**
      * @param parent
      * @param sqlStr
@@ -1118,7 +1159,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     sqlStr.append(' ');
                     sqlStr.append(alias);
                     sqlStr.append(' ');
-                    if (searchSynonymy && ((TableQRI )qri).getTableInfo().getClassObj().equals(Taxon.class))
+                    //XXX It would be good to have a way of knowing if synonymy is actually supported for a tree or treeable class.
+                    if (searchSynonymy && Treeable.class.isAssignableFrom(((TableQRI )qri).getTableInfo().getClassObj()))
                     {
                         //check to see if Name is inUse and if so, add joins for accepted taxa
                         TableQRI tqri = (TableQRI )qri;
@@ -1137,7 +1179,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                             sqlStr.append("left join ");
                             sqlStr.append(alias + ".acceptedChildren " + getAcceptedChildrenAlias(alias) + " ");
                             sqlStr.append("left join ");
-                            sqlStr.append(alias + ".acceptedTaxon "  + getAcceptedParentAlias(alias) + " left join "
+                            sqlStr.append(alias + ".accepted" + tqri.getTableInfo().getShortClassName() + " " 
+                                    + getAcceptedParentAlias(alias) + " left join "
                                     + getAcceptedParentAlias(alias) + ".acceptedChildren " + getAcceptedParentChildrenAlias(alias) + " ");
                         }
                     }
