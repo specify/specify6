@@ -32,8 +32,10 @@ import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.tasks.DataEntryTask.DroppableFormRecordSetAccepter;
 import edu.ku.brc.specify.tasks.subpane.security.SecurityAdminPane;
 import edu.ku.brc.specify.tasks.subpane.security.SecuritySummaryDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -74,9 +76,23 @@ public class SecurityAdminTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-    	SecurityAdminPane userGroupAdminPane = new SecurityAdminPane(name, this);
-    	userGroupAdminPane.createMainControlUI();
-        starterPane = userGroupAdminPane;
+        for (SubPaneIFace sb : SubPaneMgr.getInstance().getSubPanes())
+        {
+            if (sb.getTask() == this)
+            {
+                if (sb instanceof DroppableFormRecordSetAccepter)
+                {
+                    return sb;
+                }
+            }
+        }
+        
+        if (starterPane == null)
+        {
+        	SecurityAdminPane userGroupAdminPane = new SecurityAdminPane(name, this);
+        	userGroupAdminPane.createMainControlUI();
+            starterPane = userGroupAdminPane;
+        }
         return starterPane;
     }
     
