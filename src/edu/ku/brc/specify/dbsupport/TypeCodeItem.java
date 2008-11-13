@@ -22,12 +22,12 @@ import edu.ku.brc.util.Pair;
  *
  * Class representing elements in lists for predefined system coded fields like Agent.agentType, DeterminationStatus.type
  */
-public class RecordTypeCodeItem extends Pair<String, Number> implements PickListItemIFace
+public class TypeCodeItem extends Pair<String, Object> implements PickListItemIFace
 {
     /**
      * Default constructor.
      */
-    public RecordTypeCodeItem()
+    public TypeCodeItem()
     {
         super(null, null);
     }
@@ -36,7 +36,7 @@ public class RecordTypeCodeItem extends Pair<String, Number> implements PickList
      * @param title
      * @param value
      */
-    public RecordTypeCodeItem(final String title, final Number value)
+    public TypeCodeItem(final String title, final Object value)
     {
         super(title, value);
     }
@@ -154,6 +154,7 @@ public class RecordTypeCodeItem extends Pair<String, Number> implements PickList
     @Override
     public void setOrdinal(Integer ordinal)
     {
+        //nuthin
     }
 
     /* (non-Javadoc)
@@ -162,6 +163,7 @@ public class RecordTypeCodeItem extends Pair<String, Number> implements PickList
     @Override
     public void SetPickList(PickListIFace pickList)
     {
+        //nothing to do
     }
 
     /* (non-Javadoc)

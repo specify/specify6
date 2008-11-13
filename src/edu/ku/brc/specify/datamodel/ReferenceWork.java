@@ -51,8 +51,8 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
-import edu.ku.brc.specify.dbsupport.RecordTypeCode;
-import edu.ku.brc.specify.dbsupport.RecordTypeCodeItem;
+import edu.ku.brc.specify.dbsupport.TypeCode;
+import edu.ku.brc.specify.dbsupport.TypeCodeItem;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -645,13 +645,13 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     {
         List<PickListDBAdapterIFace> result = new Vector<PickListDBAdapterIFace>(1);
         Vector<PickListItemIFace> stats = new Vector<PickListItemIFace>(4);
-        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("ReferenceWork_BOOK"), ReferenceWork.BOOK));
-        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("ReferenceWork_ELECTRONIC_MEDIA"), ReferenceWork.ELECTRONIC_MEDIA));
-        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("ReferenceWork_PAPER"), ReferenceWork.PAPER));
-        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("ReferenceWork_TECHNICAL_REPORT"), ReferenceWork.TECHNICAL_REPORT));
-        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("ReferenceWork_THESIS"), ReferenceWork.THESIS));
-        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("ReferenceWorks_SECTION_IN_BOOK"), ReferenceWork.SECTION_IN_BOOK));
-        result.add(new RecordTypeCode(stats, "referenceWorkType"));
+        stats.add(new TypeCodeItem(UIRegistry.getResourceString("ReferenceWork_BOOK"), ReferenceWork.BOOK));
+        stats.add(new TypeCodeItem(UIRegistry.getResourceString("ReferenceWork_ELECTRONIC_MEDIA"), ReferenceWork.ELECTRONIC_MEDIA));
+        stats.add(new TypeCodeItem(UIRegistry.getResourceString("ReferenceWork_PAPER"), ReferenceWork.PAPER));
+        stats.add(new TypeCodeItem(UIRegistry.getResourceString("ReferenceWork_TECHNICAL_REPORT"), ReferenceWork.TECHNICAL_REPORT));
+        stats.add(new TypeCodeItem(UIRegistry.getResourceString("ReferenceWork_THESIS"), ReferenceWork.THESIS));
+        stats.add(new TypeCodeItem(UIRegistry.getResourceString("ReferenceWorks_SECTION_IN_BOOK"), ReferenceWork.SECTION_IN_BOOK));
+        result.add(new TypeCode(stats, "referenceWorkType"));
         return result;
     }
 

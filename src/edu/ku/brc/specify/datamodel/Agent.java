@@ -61,8 +61,8 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
-import edu.ku.brc.specify.dbsupport.RecordTypeCode;
-import edu.ku.brc.specify.dbsupport.RecordTypeCodeItem;
+import edu.ku.brc.specify.dbsupport.TypeCode;
+import edu.ku.brc.specify.dbsupport.TypeCodeItem;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -1088,12 +1088,12 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     {
         List<PickListDBAdapterIFace> result = new Vector<PickListDBAdapterIFace>(1);
         Vector<PickListItemIFace> stats = new Vector<PickListItemIFace>(4);
-        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("Agent_ORG"), Agent.ORG));
-        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("Agent_PERSON"),
+        stats.add(new TypeCodeItem(UIRegistry.getResourceString("Agent_ORG"), Agent.ORG));
+        stats.add(new TypeCodeItem(UIRegistry.getResourceString("Agent_PERSON"),
                         Agent.PERSON));
-        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("Agent_OTHER"), Agent.OTHER));
-        stats.add(new RecordTypeCodeItem(UIRegistry.getResourceString("Agent_GROUP"), Agent.GROUP));
-        result.add(new RecordTypeCode(stats, "agentType"));
+        stats.add(new TypeCodeItem(UIRegistry.getResourceString("Agent_OTHER"), Agent.OTHER));
+        stats.add(new TypeCodeItem(UIRegistry.getResourceString("Agent_GROUP"), Agent.GROUP));
+        result.add(new TypeCode(stats, "agentType"));
         return result;
     }
 

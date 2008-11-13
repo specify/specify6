@@ -13,7 +13,7 @@ import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.specify.dbsupport.RecordTypeCode;
+import edu.ku.brc.specify.dbsupport.TypeCode;
 
 /**
  * @author timbo
@@ -65,9 +65,9 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
     @Override
     public Object processValue(Object value)
     {
-        if (value != null && pickList instanceof RecordTypeCode)
+        if (value != null && pickList instanceof TypeCode)
         {
-            PickListItemIFace item = ((RecordTypeCode )pickList).getItemByValue(value);
+            PickListItemIFace item = ((TypeCode )pickList).getItemByValue(value);
             if (item != null)
             {
                 return item.getTitle();
@@ -83,7 +83,7 @@ public class ERTICaptionInfoQB extends ERTICaptionInfo
     @Override
     public Class<?> getColClass()
     {
-        if (pickList instanceof RecordTypeCode)
+        if (pickList instanceof TypeCode)
         {
             return String.class;
         }

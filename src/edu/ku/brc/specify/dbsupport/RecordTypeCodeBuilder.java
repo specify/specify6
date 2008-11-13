@@ -97,7 +97,7 @@ public class RecordTypeCodeBuilder
             {
                 for (int p = 0; p < picks.size(); p++)
                 {
-                    if (((RecordTypeCode) picks.get(p)).getFldName().equalsIgnoreCase(fi.getName()))
+                    if (((TypeCode) picks.get(p)).getFldName().equalsIgnoreCase(fi.getName()))
                     {
                         return picks.get(p);
                     }

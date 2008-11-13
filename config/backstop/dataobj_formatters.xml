@@ -303,7 +303,7 @@
         >
         <switch single="true">
             <fields>
-                <field>taxon.fullName</field>
+                <field>activeTaxon.fullName</field>
                 <field sep=" - ">current</field>
             </fields>
         </switch>

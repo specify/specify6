@@ -26,7 +26,7 @@ import edu.ku.brc.af.ui.db.PickListItemIFace;
  * A list of valid values for predefined system coded fields like Agent.agentType, DeterminationStatus.type
  *
  */
-public class RecordTypeCode implements PickListDBAdapterIFace, ComboBoxModel
+public class TypeCode implements PickListDBAdapterIFace, ComboBoxModel
 {
     protected final Vector<PickListItemIFace> items;
     protected final String                   fldName;
@@ -36,7 +36,7 @@ public class RecordTypeCode implements PickListDBAdapterIFace, ComboBoxModel
     /**
      * Default constructor for a dead RecordTypeCode.
      */
-    public RecordTypeCode()
+    public TypeCode()
     {
         items = null;
         fldName = null;
@@ -47,7 +47,7 @@ public class RecordTypeCode implements PickListDBAdapterIFace, ComboBoxModel
      * @param fldInfo
      * @param tblInfo
      */
-    public RecordTypeCode(final Vector<PickListItemIFace> items, final String fldName)
+    public TypeCode(final Vector<PickListItemIFace> items, final String fldName)
     {
         this.items = items;
         this.fldName = fldName;
@@ -74,7 +74,12 @@ public class RecordTypeCode implements PickListDBAdapterIFace, ComboBoxModel
     {
         for (PickListItemIFace item : items)
         {
-            if (item.getValueObject().equals(value))
+            Object itemValue = item.getValueObject();
+            if (itemValue == null && value == null)
+            {
+                return item;
+            }
+            if (itemValue != null && itemValue.equals(value))
             {
                 return item;
             }
