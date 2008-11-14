@@ -14,6 +14,7 @@ import java.awt.event.ItemListener;
 import javax.swing.JCheckBox;
 
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -241,6 +242,13 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     public void afterFillForm(Object dataObj)
     {
         super.afterFillForm(dataObj);
+        
+        
+        if (formViewObj.getAltView().getMode() != CreationMode.EDIT)
+        {
+            return;
+        }
+        
         // TODO: the form system MUST require the hybridParent1 and hybridParent2 widgets to be present if the isHybrid checkbox is present
         final JCheckBox        hybridCheckBox = (JCheckBox)formViewObj.getControlByName("isHybrid");
         final ValComboBoxFromQuery hybrid1Widget  = (ValComboBoxFromQuery)formViewObj.getControlByName("hybridParent1");
