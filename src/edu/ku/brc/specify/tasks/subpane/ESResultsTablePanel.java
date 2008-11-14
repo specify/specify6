@@ -139,6 +139,23 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
                                final boolean                   installServices,
                                final boolean                   isExpandedAtStartUp)
     {
+        this(esrPane, results, installServices, isExpandedAtStartUp, true);
+    }
+    
+    /**
+     * Constructor of a results "table" which is really a panel
+     * @param esrPane the parent
+     * @param erTableInfo the info describing the results
+     * @param installServices indicates whether services should be installed
+     * @param isExpandedAtStartUp enough said
+     * @param inclCloseBtn whether to include the close button on the bar
+     */
+    public ESResultsTablePanel(final ExpressSearchResultsPaneIFace esrPane,
+                               final QueryForIdResultsIFace    results,
+                               final boolean                   installServices,
+                               final boolean                   isExpandedAtStartUp,
+                               final boolean                   inclCloseBtn)
+    {
         super(new BorderLayout());
 
         this.esrPane       = esrPane;
@@ -194,8 +211,9 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         List<ServiceInfo> services = installServices ? getServices() : null;
 
         //System.out.println("["+tableInfo.getTableId()+"]["+services.size()+"]");
-        StringBuffer colDef = new StringBuffer("p,0px,p:g,0px,p,0px,p,0px,");
-        colDef.append(UIHelper.createDuplicateJGoodiesDef("p", "0px", installServices ? services.size() : 0)); // add additional col defs for services
+        StringBuffer colDef  = new StringBuffer("p,0px,p:g,0px,p,0px,");
+        int          numCols = (installServices ? services.size() : 0) + (inclCloseBtn ? 1 : 0);
+        colDef.append(UIHelper.createDuplicateJGoodiesDef("p", "0px", numCols)); // add additional col defs for services
         
         FormLayout      formLayout = new FormLayout(colDef.toString(), "f:p:g");
         PanelBuilder    builder    = new PanelBuilder(formLayout);
@@ -228,12 +246,16 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             }
         }
 
-        CloseButton closeBtn = new CloseButton();
-        closeBtn.setToolTipText(getResourceString("ESCloseTable"));
-        closeBtn.setForeground(bannerColor);
-        closeBtn.setCloseColor(new Color(255,255,255, 90));
-        builder.add(closeBtn, cc.xy(col,1));
-        col += 2;
+        CloseButton closeBtn = null;
+        if (inclCloseBtn)
+        {
+            closeBtn = new CloseButton();
+            closeBtn.setToolTipText(getResourceString("ESCloseTable"));
+            closeBtn.setForeground(bannerColor);
+            closeBtn.setCloseColor(new Color(255,255,255, 90));
+            builder.add(closeBtn, cc.xy(col,1));
+            col += 2;
+        }
 
         add(builder.getPanel(), BorderLayout.NORTH);
 
@@ -298,17 +320,20 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             }
         });
 
-        closeBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        removeMe();
-                    }
-                  });
-
-            }
-        });
+        if (closeBtn != null)
+        {
+            closeBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            removeMe();
+                        }
+                      });
+    
+                }
+            });
+        }
         
         ResultSetTableModel rsm = createModel();
         rsm.setPropertyListener(this);
