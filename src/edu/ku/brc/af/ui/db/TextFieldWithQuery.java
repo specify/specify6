@@ -1209,7 +1209,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 jpaQuery.setData(newEntryStr);
                 jpaQuery.start();
                 
-            } else if (returnCount > popupDlgThreshold)
+            } else if (returnCount != null && returnCount > popupDlgThreshold)
             {
                 showDialog();
                 
