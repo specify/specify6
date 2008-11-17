@@ -16,6 +16,7 @@ import javax.swing.JCheckBox;
 
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.DisciplineType;
@@ -36,6 +37,8 @@ import edu.ku.brc.ui.GetSetValueIFace;
  */
 public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTreeDefItem>
 {
+    protected static final String PARENT = "parent";
+    protected static final String RANK = "definitionItem";
     protected static final String HYBRIDPARENT1 = "hybridParent1";
     protected static final String HYBRIDPARENT2 = "hybridParent2";
     protected static final String IS_HYBRID     = "isHybrid";
@@ -265,6 +268,21 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         
         if (formViewObj.getAltView().getMode() == CreationMode.EDIT)
         {
+            Taxon nodeInForm = (Taxon )formViewObj.getDataObj();
+            
+            Component parentComp = formViewObj.getControlByName(PARENT);
+            Component rankComp = formViewObj.getControlByName(RANK);
+            if (parentComp instanceof ValComboBoxFromQuery)
+            {
+                ValComboBoxFromQuery parentWidget  = (ValComboBoxFromQuery )parentComp;
+                ValComboBox rankWidget = rankComp instanceof ValComboBox ? (ValComboBox )rankComp : null;
+                if (nodeInForm != null)
+                {
+                    parentWidget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, rankWidget, false));
+                }
+                
+                
+            }
             // TODO: the form system MUST require the hybridParent1 and hybridParent2 widgets to be present if the isHybrid checkbox is present
             JCheckBox hybridCheckBox = (JCheckBox)formViewObj.getControlByName(IS_HYBRID);
             
@@ -274,15 +292,11 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
                 ValComboBoxFromQuery hybrid1Widget  = (ValComboBoxFromQuery)hybridParent1Comp;
                 ValComboBoxFromQuery hybrid2Widget  = (ValComboBoxFromQuery)formViewObj.getControlByName(HYBRIDPARENT2);
                 
-                if (hybridCheckBox != null)
+                if (hybridCheckBox != null && nodeInForm != null)
                 {
                     //XXX TaxonSearchBuilder will still allow both hybrid parents to be the same.
-                    Taxon nodeInForm = (Taxon )formViewObj.getDataObj();
-                    if (nodeInForm != null)
-                    {
-                        hybrid1Widget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, false));
-                        hybrid2Widget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, false));
-                    }
+                    hybrid1Widget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, false));
+                    hybrid2Widget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, false));
                 }
             }
         }

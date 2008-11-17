@@ -28,6 +28,7 @@ import edu.ku.brc.af.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 
 /**
@@ -45,6 +46,7 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
     protected Treeable<?, ?, ?>     nodeInForm;
     protected ValComboBox           rankCombo;
     protected boolean               accepted;
+    protected boolean               parentSearch;
     protected List<ERTICaptionInfo> cols = new Vector<ERTICaptionInfo>();
     
     /**
@@ -54,6 +56,7 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
     {
         this.nodeInForm = nodeInForm;
         this.rankCombo = rankCombo;
+        this.parentSearch = rankCombo != null;
         this.accepted = accepted;
     }
     
@@ -105,6 +108,18 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
                 if (rank != null)
                 {
                     queryStr += " and n.rankId < " + rank;
+                }
+                else
+                {
+                    int maxRank = 0;
+                    for (TreeDefItemIface defItem : treeDef.getTreeDefItems())
+                    {
+                        if (defItem.getRankId() > maxRank)
+                        {
+                            maxRank = defItem.getRankId();
+                        }
+                    }
+                    queryStr += " and n.rankId < " + maxRank;
                 }
             }
             else if (nodeNumber != null && highestChildNodeNumber != null)
