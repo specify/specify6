@@ -22,6 +22,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
@@ -404,9 +405,25 @@ public class TaskSemaphoreMgr
     }
     
     /**
+     * @param name
+     * @param scope
+     * @return
+     */
+    public static boolean doesOwnSemaphore(final String name, 
+                                           final SCOPE  scope)
+    {
+        SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+        String sqlStr = String.format("SELECT count(*) FROM sptasksemaphore WHERE TaskName = '%s' AND Scope = %d AND OwnerID = %d AND IsLocked <> 0", 
+                                      name, scope.ordinal(), user.getId());
+        //System.err.println(sqlStr+"  ["+BasicSQLUtils.getCount(sqlStr)+"]");
+        return BasicSQLUtils.getCount(sqlStr) > 0;
+    }
+    
+    /**
      * Gets the semaphore and set the lock to true.
      * @param session
      * @param name the unique name
+     * @param context 
      * @param scope the scope of the lock
      * @param doLock
      * @param doOverride
@@ -427,7 +444,7 @@ public class TaskSemaphoreMgr
         Collection collection = scope == SCOPE.Collection ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
         
         // Get our own copies of the Global Objects.
-        user       = user != null ? session.getData(SpecifyUser.class, "id", user.getId(), DataProviderSessionIFace.CompareType.Equals) : null;
+        user       = user       != null ? session.getData(SpecifyUser.class, "id", user.getId(), DataProviderSessionIFace.CompareType.Equals) : null;
         discipline = discipline != null ? session.getData(Discipline.class, "id", discipline.getId(), DataProviderSessionIFace.CompareType.Equals) : null;
         collection = collection != null ? session.getData(Collection.class, "id", collection.getId(), DataProviderSessionIFace.CompareType.Equals) : null;
 
@@ -476,6 +493,7 @@ public class TaskSemaphoreMgr
         semaphore.setTimestampModified(now);
         semaphore.setDiscipline(discipline);
         semaphore.setCollection(collection);
+        semaphore.setOwner(user);
         
         session.beginTransaction();
         session.saveOrUpdate(semaphore);

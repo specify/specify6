@@ -50,6 +50,8 @@ import org.dom4j.Element;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -91,7 +93,9 @@ import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
+import edu.ku.brc.specify.tasks.BaseTreeTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -2447,6 +2451,92 @@ public class SpecifyAppContextMgr extends AppContextMgr
         }
        return null; 
     }
+    
+    
+    /**
+     * Returns the TreeDefClass object for the View if the View is for editing a Tree Object
+     * or it returns false.
+     * @param view the view that is being opened
+     * @return TreeDefClass object or null
+     */
+    public Class<?> getTreeDefClass(final ViewIFace view)
+    {
+        if (view != null)
+        {
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+            if (tableInfo != null)
+            {
+                if (Treeable.class.isAssignableFrom(tableInfo.getClassObj()))
+                {
+                    for (Taskable tsk : TaskMgr.getInstance().getAllTasks())
+                    {
+                        if (tsk.getName().equals(tableInfo.getClassObj().getSimpleName()+"Tree"))
+                        {
+                            return ((BaseTreeTask<?, ?, ?>)tsk).getTreeDefClass();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * @param view
+     * @param isNewForm
+     * @return
+     */
+    protected boolean isLockOK(final String    lockTitle, 
+                               final ViewIFace view, 
+                               final boolean   isNewForm)
+    {
+        Class<?> treeDefClass = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getTreeDefClass(view);
+        if (treeDefClass != null)
+        {
+            if (TaskSemaphoreMgr.isLocked(lockTitle, treeDefClass.getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline))
+            {
+                if (isNewForm)
+                {
+                    UIRegistry.showError("The tree is locked!");
+                    return false;
+                    
+                } else
+                {
+                    return false;
+                }
+                
+            } else
+            {
+                boolean gotLock = TaskSemaphoreMgr.lock(lockTitle, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
+                if (gotLock)
+                {
+                    
+                } else   
+                {
+                    UIRegistry.showError("Unable to Lock the tree!");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks to see if the view can be opened.
+     * @param view the view to be opened
+     * @return true/false
+     */
+    protected boolean isViewOKToOpen(final ViewIFace view)
+    {
+        Class<?> treeDefClass = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getTreeDefClass(view);
+        if (treeDefClass != null)
+        {
+            
+        }
+        return true;
+    }
+    
+    
     
     /**
      * Returns a list of pre-formatted Agent names of those that are logged in.

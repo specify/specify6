@@ -370,6 +370,7 @@ public class FormPane extends DroppableTaskPane
                             busRule.addChildrenToNewDataObjects(newDataObj);
                         }
                     }
+                    
                     if (data instanceof RecordSetIFace)
                     {
                         setRecordSet((RecordSetIFace)data);
@@ -379,7 +380,7 @@ public class FormPane extends DroppableTaskPane
                     }
                 }
 
-                // Tells it is is a new form and all the validator painting should be supressed
+                // Tells it is is a new form and all the validator painting should be suppressed
                 // on required fields until the user inputs something
                 if (isNewObj)
                 {

@@ -383,9 +383,12 @@ public class IconViewObj implements Viewable
         else
         {
             ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(altView, mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
-            dialog.setData(selection);
-            dialog.showDisplay(true);
-            dialog.dispose();
+            if (dialog != null)
+            {
+                dialog.setData(selection);
+                dialog.showDisplay(true);
+                dialog.dispose();
+            }
         }
     }
     
@@ -421,16 +424,19 @@ public class IconViewObj implements Viewable
                 }
                 
                 ViewBasedDisplayIFace dialog = FormHelper.createDataObjectDialog(altView, mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
-                dialog.setData(selection);
-                dialog.showDisplay(true);
-                if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+                if (dialog != null)
                 {
-                    dialog.getMultiView().getDataFromUI();
-                    rootHasChanged();
-                    iconTray.validate();
-                    iconTray.repaint();
+                    dialog.setData(selection);
+                    dialog.showDisplay(true);
+                    if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+                    {
+                        dialog.getMultiView().getDataFromUI();
+                        rootHasChanged();
+                        iconTray.validate();
+                        iconTray.repaint();
+                    }
+                    dialog.dispose();
                 }
-                dialog.dispose();
             }
         });
     }

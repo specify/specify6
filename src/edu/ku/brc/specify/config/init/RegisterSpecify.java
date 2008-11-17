@@ -177,16 +177,16 @@ public class RegisterSpecify
 
         
         Institution inst = AppContextMgr.getInstance().getClassObject(Institution.class);
-        postParams.add(new NameValuePair("Institution_name",fixParam(inst.getName()))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("Institution_title",fixParam(inst.getTitle()))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("Institution_name", fixParam(inst.getName()))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("Institution_title", fixParam(inst.getTitle()))); //$NON-NLS-1$
         
         Division div = AppContextMgr.getInstance().getClassObject(Division.class);
-        postParams.add(new NameValuePair("Division_name",fixParam(div.getName()))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("Division_title",fixParam(div.getTitle()))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("Division_name", fixParam(div.getName()))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("Division_title", fixParam(div.getTitle()))); //$NON-NLS-1$
         
         SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-        postParams.add(new NameValuePair("User_name",fixParam(user.getName()))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("User_email",fixParam(user.getEmail()))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("User_name", fixParam(user.getName()))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("User_email", fixParam(user.getEmail()))); //$NON-NLS-1$
         
         Address addr = inst.getAddress();
         if (addr != null)

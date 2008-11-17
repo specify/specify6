@@ -1135,7 +1135,7 @@ public class ViewFactory
             {
                 if (UIHelper.isSecurityOn())
                 {
-                    DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(childInfo.getDataClass().getSimpleName());
+                    DBTableInfo tblInfo = childInfo != null ? DBTableIdMgr.getInstance().getByShortClassName(childInfo.getDataClass().getSimpleName()) : null;
                     if (tblInfo != null)
                     {
                         PermissionSettings perm = tblInfo.getPermissions();

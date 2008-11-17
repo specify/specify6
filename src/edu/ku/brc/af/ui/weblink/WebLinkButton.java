@@ -148,7 +148,7 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
 
         pb.add(launchBtn, cc.xy(1,1));
         
-        if (!isTableSpecific)
+        if (!isTableSpecific && !usingThisData)
         {
             textField = new ValTextField(10);
             pb.add(textField, cc.xy(3,1));

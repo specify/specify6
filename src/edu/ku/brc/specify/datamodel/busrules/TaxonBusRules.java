@@ -8,6 +8,7 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
+import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -17,6 +18,8 @@ import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
@@ -33,7 +36,11 @@ import edu.ku.brc.ui.GetSetValueIFace;
  */
 public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTreeDefItem>
 {
-    AttachmentOwnerBaseBusRules attachOwnerRules;
+    protected static final String HYBRIDPARENT1 = "hybridParent1";
+    protected static final String HYBRIDPARENT2 = "hybridParent2";
+    protected static final String IS_HYBRID     = "isHybrid";
+    
+    protected AttachmentOwnerBaseBusRules attachOwnerRules;
     
     /**
      * Constructor.
@@ -60,12 +67,16 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     {
         super.initialize(viewableArg);
         
-        //System.out.println(formViewObj.hashCode()+"  "+viewableArg.hashCode());
+        Component fishBaseWL = formViewObj.getControlById("WebLink");
+        if (fishBaseWL != null && !Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.fish))
+        {
+            fishBaseWL.setVisible(false);
+        }
         
         // TODO: the form system MUST require the hybridParent1 and hybridParent2 widgets to be present if the isHybrid checkbox is present
-        final JCheckBox        hybridCheckBox = (JCheckBox)formViewObj.getControlByName("isHybrid");
-        final GetSetValueIFace hybrid1Widget  = (GetSetValueIFace)formViewObj.getControlByName("hybridParent1");
-        final GetSetValueIFace hybrid2Widget  = (GetSetValueIFace)formViewObj.getControlByName("hybridParent2");
+        final JCheckBox        hybridCheckBox = (JCheckBox)formViewObj.getControlByName(IS_HYBRID);
+        final GetSetValueIFace hybrid1Widget  = (GetSetValueIFace)formViewObj.getControlByName(HYBRIDPARENT1);
+        final GetSetValueIFace hybrid2Widget  = (GetSetValueIFace)formViewObj.getControlByName(HYBRIDPARENT2);
         
         if (hybridCheckBox != null)
         {
@@ -136,6 +147,9 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         return true;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#getRelatedTableAndColumnNames()
+     */
     @Override
     public String[] getRelatedTableAndColumnNames()
     {
@@ -198,6 +212,9 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDeleteCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
     @Override
     public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
@@ -212,6 +229,9 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         return retVal;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
     @Override
     public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
@@ -243,30 +263,28 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     {
         super.afterFillForm(dataObj);
         
-        
-        if (formViewObj.getAltView().getMode() != CreationMode.EDIT)
+        if (formViewObj.getAltView().getMode() == CreationMode.EDIT)
         {
-            return;
-        }
-        
-        // TODO: the form system MUST require the hybridParent1 and hybridParent2 widgets to be present if the isHybrid checkbox is present
-        final JCheckBox        hybridCheckBox = (JCheckBox)formViewObj.getControlByName("isHybrid");
-        final ValComboBoxFromQuery hybrid1Widget  = (ValComboBoxFromQuery)formViewObj.getControlByName("hybridParent1");
-        final ValComboBoxFromQuery hybrid2Widget  = (ValComboBoxFromQuery)formViewObj.getControlByName("hybridParent2");
-        
-        
-        if (hybridCheckBox != null)
-        {
-            //XXX TaxonSearchBuilder will still allow both hybrid parents to be the same.
-            Taxon nodeInForm = (Taxon )formViewObj.getDataObj();
-            if (nodeInForm != null)
+            // TODO: the form system MUST require the hybridParent1 and hybridParent2 widgets to be present if the isHybrid checkbox is present
+            JCheckBox hybridCheckBox = (JCheckBox)formViewObj.getControlByName(IS_HYBRID);
+            
+            Component hybridParent1Comp = formViewObj.getControlByName(HYBRIDPARENT1);
+            if (hybridParent1Comp instanceof ValComboBoxFromQuery)
             {
-                hybrid1Widget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, false));
-                hybrid2Widget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, false));
+                ValComboBoxFromQuery hybrid1Widget  = (ValComboBoxFromQuery)hybridParent1Comp;
+                ValComboBoxFromQuery hybrid2Widget  = (ValComboBoxFromQuery)formViewObj.getControlByName(HYBRIDPARENT2);
+                
+                if (hybridCheckBox != null)
+                {
+                    //XXX TaxonSearchBuilder will still allow both hybrid parents to be the same.
+                    Taxon nodeInForm = (Taxon )formViewObj.getDataObj();
+                    if (nodeInForm != null)
+                    {
+                        hybrid1Widget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, false));
+                        hybrid2Widget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, false));
+                    }
+                }
             }
         }
-        
     }
-    
-    
 }

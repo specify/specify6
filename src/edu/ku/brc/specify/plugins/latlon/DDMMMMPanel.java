@@ -175,20 +175,22 @@ public class DDMMMMPanel extends DDDDPanel
         }
     }
     
-    /**
-     * @return
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.latlon.DDDDPanel#getLatitudeStr(boolean)
      */
-    public String getLatitudeStr()
+    @Override
+    public String getLatitudeStr(final boolean inclZeroes)
     {
-        return getStringFromFields(true, latitudeDD, latitudeMM) + " " + NORTH_SOUTH[latitudeDir.getSelectedIndex()];
+        return getStringFromFields(true, true, latitudeDD, latitudeMM) + " " + NORTH_SOUTH[latitudeDir.getSelectedIndex()];
     }
     
-    /**
-     * @return
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#getLongitudeStr()
      */
-    public String getLongitudeStr()
+    @Override
+    public String getLongitudeStr(final boolean inclZeroes)
     {
-        return getStringFromFields(true, longitudeDD, longitudeMM) + " " + EAST_WEST[longitudeDir.getSelectedIndex()];
+        return getStringFromFields(true, inclZeroes, longitudeDD, longitudeMM) + " " + EAST_WEST[longitudeDir.getSelectedIndex()];
     }
 
     /* (non-Javadoc)

@@ -364,9 +364,20 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent arg0)
             {
-                if (TaskSemaphoreMgr.isLocked(tabtitle, treeDefClass.getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline))
+                String lockName     = treeDefClass.getSimpleName();
+                String formLockName = lockName + "Form";
+                if (TaskSemaphoreMgr.isLocked(tabtitle, formLockName, TaskSemaphoreMgr.SCOPE.Discipline))
                 {
-                    TaskSemaphoreMgr.unlock(tabtitle, treeDefClass.getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline);
+                    TaskSemaphoreMgr.unlock(tabtitle, formLockName, TaskSemaphoreMgr.SCOPE.Discipline);
+                } else
+                {
+                    // Show Dialog ?? or Taskbar message ??
+                    log.warn(tabtitle + " form was not locked.");
+                }
+                
+                if (TaskSemaphoreMgr.isLocked(tabtitle, lockName, TaskSemaphoreMgr.SCOPE.Discipline))
+                {
+                    TaskSemaphoreMgr.unlock(tabtitle, lockName, TaskSemaphoreMgr.SCOPE.Discipline);
                 } else
                 {
                     // Show Dialog ?? or Taskbar message ??

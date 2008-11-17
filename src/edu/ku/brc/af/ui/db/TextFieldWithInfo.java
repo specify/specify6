@@ -181,7 +181,10 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
                                                                false,  // false means View mode
                                                                MultiView.NO_OPTIONS | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE,
                                                                ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME);
-        
+        if (frame == null)
+        {
+            return;
+        }
         //frame.getOkBtn().setEnabled(true);
 
         if (multiView != null)

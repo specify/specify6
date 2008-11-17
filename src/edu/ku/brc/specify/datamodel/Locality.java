@@ -110,10 +110,6 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     // XXX XX.XXXXXX N   Degree Decimal Minutes
     // XXX XX XX.XXXX N  Degrees Minutes Decimal Seconds
     protected Byte                  srcLatLongUnit;
-    protected String                srcLat1text;   // The source value
-    protected String                srcLat2text;   // The source value
-    protected String                srcLong1text;  // The source value
-    protected String                srcLong2text;  // The source value
     
     protected Geography               geography;
     protected Set<LocalityCitation>   localityCitations;
@@ -174,11 +170,7 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
         guid       = null;
         
         // Source Data for Formatting
-        srcLatLongUnit = 0;          // matches LATLON.DDDDDD (also matches Specify 5)
-        srcLat1text    = null;
-        srcLat2text    = null;
-        srcLong1text   = null;
-        srcLong2text   = null;
+        srcLatLongUnit = 0;          // matches LATLON.DDDDDD
         
         //discipline          = AppContextMgr.getInstance().getClassObject(Discipline.class);
         geography           = null;
@@ -628,74 +620,6 @@ public class Locality extends DisciplineMember implements AttachmentOwnerIFace<L
     public void setSrcLatLongUnit(Byte srcLatLongUnit)
     {
         this.srcLatLongUnit = srcLatLongUnit;
-    }
-
-    /**
-     * @return the srcLat1text
-     */
-    @Column(name = "SrcLat1text", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-    public String getSrcLat1text()
-    {
-        return srcLat1text;
-    }
-
-    /**
-     * @param srcLat1text the srcLat1text to set
-     */
-    public void setSrcLat1text(String srcLat1text)
-    {
-        this.srcLat1text = srcLat1text;
-    }
-
-    /**
-     * @return the srcLat2text
-     */
-    @Column(name = "SrcLat2text", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-    public String getSrcLat2text()
-    {
-        return srcLat2text;
-    }
-
-    /**
-     * @param srcLat2text the srcLat2text to set
-     */
-    public void setSrcLat2text(String srcLat2text)
-    {
-        this.srcLat2text = srcLat2text;
-    }
-
-    /**
-     * @return the srcLong1text
-     */
-    @Column(name = "SrcLong1text", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-    public String getSrcLong1text()
-    {
-        return srcLong1text;
-    }
-
-    /**
-     * @param srcLong1text the srcLong1text to set
-     */
-    public void setSrcLong1text(String srcLong1text)
-    {
-        this.srcLong1text = srcLong1text;
-    }
-
-    /**
-     * @return the srcLong2text
-     */
-    @Column(name = "SrcLong2text", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-    public String getSrcLong2text()
-    {
-        return srcLong2text;
-    }
-
-    /**
-     * @param srcLong2text the srcLong2text to set
-     */
-    public void setSrcLong2text(String srcLong2text)
-    {
-        this.srcLong2text = srcLong2text;
     }
 
     /**

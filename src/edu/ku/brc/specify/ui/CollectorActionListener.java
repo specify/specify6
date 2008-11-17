@@ -95,11 +95,14 @@ public class CollectorActionListener implements ActionListener
                                                                     isEditting,
                                                                     options,
                                                                     FRAME_TYPE.DIALOG);
-        dialog.setData(agent);
-        dialog.createUI();
-        dialog.getOkBtn().setEnabled(!isEditting);
-        dialog.showDisplay(true);
-        dialog.dispose();
+        if (dialog != null)
+        {
+            dialog.setData(agent);
+            dialog.createUI();
+            dialog.getOkBtn().setEnabled(!isEditting);
+            dialog.showDisplay(true);
+            dialog.dispose();
+        }
     }
 
 }

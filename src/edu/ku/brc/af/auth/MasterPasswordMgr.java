@@ -21,9 +21,10 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -58,21 +59,24 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
+ * This class is used to get the Master Username and Password so the application can log in.
+ * 
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Jul 31, 2008
  *
  */
 public class MasterPasswordMgr
 {
+    //private static final Logger log = Logger.getLogger(SecurityMgr.class);
+    
     public static final String factoryName = "edu.ku.brc.af.auth.MasterPasswordMgr"; //$NON-NLS-1$
     
     private static final String MASTER_LOCAL = "master.islocal";
     private static final String MASTER_PATH  = "master.path";
     
-    //private static final Logger log = Logger.getLogger(SecurityMgr.class);
     
     private static MasterPasswordMgr instance = null;
     
@@ -178,7 +182,7 @@ public class MasterPasswordMgr
                 
             } else
             {
-                keyStr = getKeyFromURL(masterKey);
+                keyStr = getKeyFromURL(masterKey, usersUserName, usersPassword);
                 if (StringUtils.isNotEmpty(keyStr))
                 {
                     keyStr = Encryption.decrypt(keyStr, usersPassword);
@@ -202,9 +206,9 @@ public class MasterPasswordMgr
     }
     
     /**
-     * @param isNetworkBased
-     * @param masterPath
-     * @return
+     * @param isLocal whether u/p is stored locally or not
+     * @param masterPath the path to the password
+     * @return whether to ask for the information because it wasn't found
      */
     protected boolean askForInfo(final Boolean isLocal, 
                                  final String  masterPath)
@@ -483,30 +487,43 @@ public class MasterPasswordMgr
     }
     
     /**
-     * @param urlLoc
-     * @return
+     * Calls the URL by adding the username and password to the URL in the form of
+     * "u=<username>&p=<password" both are encrypted so they are not password as clear text.
+     * @param urlLoc the URL called to retrive the SPSAUser's username,password
+     * @param username the encrypted user's username
+     * @param password the encrypted user's password
+     * @return a single string containing the SPSAUser username and password that can be decypted with
+     * the user's password.
      */
-    @SuppressWarnings("deprecation")
-    protected String getKeyFromURL(final String urlLoc)
+    protected String getKeyFromURL(final String urlLoc,
+                                   final String username,
+                                   final String password)
     {
-        DataInputStream dis = null;
+        // Note: This encryption isn't meant to be unbreakable,
+        // it is meant only so that the u/p isn't passed as clear text.
+        String encrytpedUsr = Encryption.encrypt(username, "Specify");
+        String encrytpedPwd = Encryption.encrypt(password, username);
         
+        String fullURL = urlLoc + "?u=" + encrytpedUsr + "&p=" + encrytpedPwd;
+        
+        BufferedReader bufRdr = null;
         try 
         {
-            URL url = new URL(urlLoc);
+            URL url = new URL(fullURL);
 
             URLConnection urlConn = url.openConnection(); 
             urlConn.setDoInput(true); 
             urlConn.setUseCaches(false);
 
-            dis = new DataInputStream(urlConn.getInputStream()); 
-          
             StringBuilder sb = new StringBuilder();
             String s;
-            while ((s = dis.readLine()) != null) 
+            bufRdr = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
+            while ((s = bufRdr.readLine()) != null) 
             { 
                 sb.append(s); 
-            } 
+            }
+            bufRdr.close();
+            
             return sb.toString();
             
         } 
@@ -526,7 +543,7 @@ public class MasterPasswordMgr
         {
             try
             {
-                if (dis != null) dis.close();
+                if (bufRdr != null) bufRdr.close();
                 
             } catch (IOException ioe) 
             {

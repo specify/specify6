@@ -255,6 +255,13 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         return btn;
     }
     
+    /**
+     * @param label
+     * @param iconNameArg
+     * @param hint
+     * @param menus
+     * @return
+     */
     protected MemoryDropDownButton createMemoryToolbarButton(final String label,
                                                              final String iconNameArg,
                                                              final String hint,
@@ -880,14 +887,15 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#preInitialize()
      */
+    @Override
     public void preInitialize()
     {
         // this is a the stub so all tasks do not have to implement it
         // or call it.
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.Taskable#initialize()
+    /**
+     * 
      */
     public void initialize()
     {
@@ -908,6 +916,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      *  (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getNavBoxes()
      */
+    @Override
     public java.util.List<NavBoxIFace> getNavBoxes()
     {
         initialize();
@@ -918,6 +927,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getIcon(int)
      */
+    @Override
     public ImageIcon getIcon(int size)
     {
         switch (size)
@@ -933,6 +943,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#requestContext()
      */
+    @Override
     public void requestContext()
     {
         if (canRequestContext())
@@ -1050,6 +1061,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.CommandListener#doCommand(edu.ku.brc.af.ui.CommandAction)
      */
+    @Override
     public void doCommand(final CommandAction cmdActionArg)
     {
         CommandAction cmdAction = cmdActionArg;
@@ -1100,6 +1112,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.SubPaneMgrListener#subPaneAdded(edu.ku.brc.af.ui.SubPaneIFace)
      */
+    @Override
     public void subPaneAdded(SubPaneIFace subPane)
     {
         if (!taskCentricPanesOnly || subPane.getTask() == this)
@@ -1111,6 +1124,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.SubPaneMgrListener#subPaneRemoved(edu.ku.brc.af.ui.SubPaneIFace)
      */
+    @Override
     public void subPaneRemoved(final SubPaneIFace subPane)
     {
         //if (starterPane == null && subPane.getTask() == this && !closeOnLastPane && subPanes.size() == 1)
@@ -1125,6 +1139,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.SubPaneMgrListener#subPaneShown(edu.ku.brc.af.ui.SubPaneIFace)
      */
+    @Override
     public void subPaneShown(SubPaneIFace subPane)
     {
         // do nothing
@@ -1133,6 +1148,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#isSingletonPane()
      */
+    @Override
     public boolean isSingletonPane()
     {
         return false;
@@ -1141,6 +1157,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#isConfigurable()
      */
+    @Override
     public boolean isConfigurable()
     {
         return false;
@@ -1149,6 +1166,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#doConfigure()
      */
+    @Override
     public void doConfigure()
     {
         //Documented Empty Block
@@ -1157,6 +1175,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getPopupMenu()
      */
+    @Override
     public JPopupMenu getPopupMenu()
     {
         JPopupMenu popupMenu = new JPopupMenu();

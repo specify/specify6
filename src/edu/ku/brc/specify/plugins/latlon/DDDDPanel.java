@@ -233,13 +233,16 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         latitudeTF  = new JTextField(15);
         longitudeTF = new JTextField(15);
         
-        Color bg = getBackground();
-        txtPanelPB.add(new VerticalSeparator(bg.darker(), bg.brighter()),  cc.xywh(1, 1, 1, 3));
-        txtPanelPB.add(latitudeTF,                  cc.xy (4, 1)); 
-        txtPanelPB.add(createI18NLabel("SOURCE"),   cc.xy (6, 1)); 
-        txtPanelPB.add(longitudeTF,                 cc.xy (4, 3));
-        txtPanelPB.add(createI18NLabel("SOURCE"),   cc.xy (6, 3)); 
-        txtPanelPB.setBorder(BorderFactory.createEmptyBorder(4, 2, 0, 2));
+        if (!isViewMode)
+        {
+            Color bg = getBackground();
+            txtPanelPB.add(new VerticalSeparator(bg.darker(), bg.brighter()),  cc.xywh(1, 1, 1, 3));
+            txtPanelPB.add(latitudeTF,                  cc.xy (4, 1)); 
+            txtPanelPB.add(createI18NLabel("SOURCE"),   cc.xy (6, 1)); 
+            txtPanelPB.add(longitudeTF,                 cc.xy (4, 3));
+            txtPanelPB.add(createI18NLabel("SOURCE"),   cc.xy (6, 3)); 
+            txtPanelPB.setBorder(BorderFactory.createEmptyBorder(4, 2, 0, 2));
+        }
         
         latitudeTF.setEditable(false);
         longitudeTF.setEditable(false);
@@ -322,15 +325,24 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      */
     protected String getStringFromFields(final ValFormattedTextFieldSingle... txtFields)
     {
-        return getStringFromFields(false, txtFields);
+        return getStringFromFields(false, true, txtFields);
     }
     
+    /**
+     * @return the defaultFormat
+     */
+    public FORMAT getDefaultFormat()
+    {
+        return defaultFormat;
+    }
+
     /**
      * @param doDisplay
      * @param txtFields
      * @return
      */
-    protected String getStringFromFields(final boolean doDisplay, 
+    protected String getStringFromFields(final boolean doDisplay,
+                                         final boolean inclZeroes,
                                          final ValFormattedTextFieldSingle... txtFields)
     {
         String degrees = "\u00b0";
@@ -343,8 +355,14 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             String str = StringUtils.deleteWhitespace(tf.getText());
             if (StringUtils.isEmpty(str))
             {
-                str = "";
-                continue;
+                if (inclZeroes)
+                {
+                    str = "0";
+                } else
+                {
+                    str = "";
+                    continue;
+                }
             }
             
             if (cnt > 0) sb.append(' ');
@@ -367,6 +385,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             }
             cnt++;
         }
+        log.debug("["+sb.toString()+"]");
         return sb.toString();
     }
 
@@ -450,10 +469,26 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#getLatitudeStr()
+     */
+    public String getLatitudeStr()
+    {
+        return getLatitudeStr(true);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.latlon.LatLonUIIFace#getLongitudeStr()
+     */
+    public String getLongitudeStr()
+    {
+        return getLongitudeStr(true);
+    }
+    
     /**
      * @return
      */
-    public String getLatitudeStr()
+    public String getLatitudeStr(final boolean inclZeroes)
     {
         return latitudeDD.getText() + " " + NORTH_SOUTH[latitudeDir.getSelectedIndex()];
     }
@@ -461,7 +496,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     /**
      * @return
      */
-    public String getLongitudeStr()
+    public String getLongitudeStr(final boolean inclZeroes)
     {
         return longitudeDD.getText() + " " + EAST_WEST[longitudeDir.getSelectedIndex()];
     }
@@ -581,25 +616,27 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
                     final String srcLatitudeStr, 
                     final String srcLongitudeStr)
     {
-        latInfoOrig = adjustLatLonStr(srcLatitudeStr, srcFormat, true);
-        lonInfoOrig = adjustLatLonStr(srcLongitudeStr, srcFormat, true);
-
-        if (srcFormat != defaultFormat)
+        if (srcLatitudeStr != null && srcLongitudeStr != null)
         {
-            this.latitudeStr  = convert(latInfoOrig.getStrVal(true), latInfoOrig.getFormat(), defaultFormat, LatLonConverter.LATLON.Latitude);
-            this.longitudeStr = convert(lonInfoOrig.getStrVal(true), lonInfoOrig.getFormat(), defaultFormat, LatLonConverter.LATLON.Longitude);
-        } else
-        {
-            this.latitudeStr  = srcLatitudeStr;
-            this.longitudeStr = srcLongitudeStr;
+            latInfoOrig = adjustLatLonStr(srcLatitudeStr, srcFormat, true, true);
+            lonInfoOrig = adjustLatLonStr(srcLongitudeStr, srcFormat, true, true);
+    
+            if (srcFormat != defaultFormat)
+            {
+                this.latitudeStr  = convert(latInfoOrig.getStrVal(true), latInfoOrig.getFormat(), defaultFormat, LatLonConverter.LATLON.Latitude);
+                this.longitudeStr = convert(lonInfoOrig.getStrVal(true), lonInfoOrig.getFormat(), defaultFormat, LatLonConverter.LATLON.Longitude);
+            } else
+            {
+                this.latitudeStr  = srcLatitudeStr;
+                this.longitudeStr = srcLongitudeStr;
+            }
+            
+            latInfoCnvrt = adjustLatLonStr(this.latitudeStr, defaultFormat, false, false);
+            lonInfoCnvrt = adjustLatLonStr(this.longitudeStr, defaultFormat, false, false);
+            
+            latitudeTF.setText(srcLatitudeStr);
+            longitudeTF.setText(srcLongitudeStr);
         }
-        
-        latInfoCnvrt = adjustLatLonStr(this.latitudeStr, defaultFormat, false);
-        lonInfoCnvrt = adjustLatLonStr(this.longitudeStr, defaultFormat, false);
-        
-        latitudeTF.setText(srcLatitudeStr);
-        longitudeTF.setText(srcLongitudeStr);
-
         setDataIntoUI();
         hasChanged = false;
     }
@@ -771,10 +808,26 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     {
         reason = null;
         
-        ErrorType latState = validateState(includeEmptyCheck, latTFs, latitudeTF, getLatitudeStr());
-        ErrorType lonState = validateState(includeEmptyCheck, lonTFs, longitudeTF, getLongitudeStr());
+        ErrorType latState = validateState(includeEmptyCheck, latTFs, latitudeTF,  getLatitudeStr(false));
+        ErrorType lonState = validateState(includeEmptyCheck, lonTFs, longitudeTF, getLongitudeStr(false));
         
         return latState.ordinal() > lonState.ordinal() ? latState : lonState;
+    }
+    
+    /**
+     * @return
+     */
+    public String getSrcLatitudeStr()
+    {
+        return latitudeTF.getText();
+    }
+    
+    /**
+     * @return
+     */
+    public String getSrcLongitudeStr()
+    {
+        return longitudeTF.getText();
     }
     
     /* (non-Javadoc)

@@ -1292,11 +1292,17 @@ public class MultiView extends JPanel
      */
     public void registerDisplayFrame(final ViewBasedDisplayIFace frame)
     {
-        if (displayFrames == null)
+        if (frame != null)
         {
-            displayFrames  = new ArrayList<ViewBasedDisplayIFace>();
+            if (displayFrames == null)
+            {
+                displayFrames  = new ArrayList<ViewBasedDisplayIFace>();
+            }
+            displayFrames.add(frame);
+        } else
+        {
+            log.error("Registering a null frame!");
         }
-        displayFrames.add(frame);
     }
 
     /**
@@ -1588,8 +1594,15 @@ public class MultiView extends JPanel
         {
             for (ViewBasedDisplayIFace vbd : displayFrames)
             {
-                vbd.shutdown();
-                vbd.dispose();
+                if (vbd != null)
+                {
+                    vbd.shutdown();
+                    vbd.dispose();
+                } else
+                {
+                    log.debug("Display frame was null!");
+                }
+                    
             }
             displayFrames.clear();
         }

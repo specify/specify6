@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.specify.ui.DBObjDialogFactory.isLockOK;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
@@ -70,8 +71,10 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.specify.prefs.FormattingPrefsPanel;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
+import edu.ku.brc.specify.ui.DBObjDialogFactory.FormLockStatus;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
@@ -249,10 +252,12 @@ public class DataEntryTask extends BaseTask
     public void openView(final Taskable         task, 
                          final String           viewSetName, 
                          final String           viewName, 
-                         final String           mode, 
+                         final String           modeArg, 
                          final FormDataObjIFace data,
                          final boolean          isNewForm)
     {
+        String mode = modeArg;
+        
         Vector<Object> dataObjList = new Vector<Object>();
         
         ViewIFace view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName) : 
@@ -261,6 +266,19 @@ public class DataEntryTask extends BaseTask
         {
             UIRegistry.showError("Couldn't find default form for ["+viewName+"]");
             return;
+        }
+        
+        FormLockStatus lockStatus = isLockOK("LockTitle", view, isNewForm, mode == null || mode.equals("edit"));
+        if (lockStatus != FormLockStatus.OK)
+        {
+            if (lockStatus == FormLockStatus.ViewOnly)
+            {
+                mode = "view";
+                
+            } else if (lockStatus == FormLockStatus.Skip)
+            {
+                return;
+            }
         }
         
         Object           dataObj     = data;
@@ -322,8 +340,8 @@ public class DataEntryTask extends BaseTask
         FormPane tmpFP;
         if (view != null)
         {
-            tmpFP = new FormPane(view.getName(), task, view.getViewSetName(), viewName, mode, dataObj, 
-                                 isNewForm ? (MultiView.IS_NEW_OBJECT | MultiView.RESULTSET_CONTROLLER): 0);
+            tmpFP = new FormPane(view.getName(), task, view, mode, dataObj, 
+                                 isNewForm ? (MultiView.IS_NEW_OBJECT | MultiView.RESULTSET_CONTROLLER) : 0);
         } else
         {
             UIRegistry.showError("Couldn't find default form for ["+viewName+"]");
@@ -363,8 +381,73 @@ public class DataEntryTask extends BaseTask
                 formPane.focusFirstFormControl();
             }
         });
-
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#subPaneRemoved(edu.ku.brc.af.core.SubPaneIFace)
+     */
+    @Override
+    public void subPaneRemoved(final SubPaneIFace subPane)
+    {
+        super.subPaneRemoved(subPane);
+        
+        if (subPane instanceof FormPane)
+        {
+            FormPane  formPane  = (FormPane)subPane;
+            MultiView multiView = formPane.getMultiView();
+            if (multiView != null && multiView.isEditable())
+            {
+                ViewIFace view = multiView.getView();
+                
+                Class<?> treeDefClass = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getTreeDefClass(view);
+                if (treeDefClass != null)
+                {
+                    boolean hasDataOfTreeClass = false;
+                    for (SubPaneIFace sp : SubPaneMgr.getInstance().getSubPanes())
+                    {
+                        if (sp instanceof FormPane)
+                        {
+                            FormPane fp = (FormPane)sp;
+                            if (fp != formPane)
+                            {
+                                ViewIFace fpView = fp.getViewable().getView();
+                                if (view != fpView && fpView.getClassName().equals(view.getClassName()))
+                                {
+                                    hasDataOfTreeClass = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (!hasDataOfTreeClass)
+                    {
+                        TaskSemaphoreMgr.unlock("tabtitle", treeDefClass.getSimpleName()+"Form", TaskSemaphoreMgr.SCOPE.Discipline);
+                        TaskSemaphoreMgr.unlock("tabtitle", treeDefClass.getSimpleName(), TaskSemaphoreMgr.SCOPE.Discipline);
+                    }
+                }
+            }
+        }
+    }
+    
+    /*protected boolean isSameFormPane(final FormPane fp1, final FormPane fp2)
+    {
+        if (fp1 == fp2)
+        {
+            return true;
+            
+        }
+        Hashtable<Viewable, Boolean> hash = new Hashtable<Viewable, Boolean>();
+        for (Viewable viewable : fp1.getMultiView().getViewables())
+        {
+            hash.put(viewable, true);
+        }
+        for (Viewable viewable : fp1.getMultiView().getViewables())
+        {
+            hash.put(viewable, true);
+        }
+        return false;
+    }*/
 
     /**
      * Opens a View and fills it with a single data object
@@ -460,8 +543,10 @@ public class DataEntryTask extends BaseTask
                                             final String         viewSetName,
                                             final String         viewName,
                                             final RecordSetIFace recordSet,
-                                            final boolean readOnly)
+                                            final boolean        readOnlyArg)
     {
+        boolean readOnly = readOnlyArg;
+        
         if (UIHelper.isSecurityOn())
         {
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
@@ -500,6 +585,22 @@ public class DataEntryTask extends BaseTask
             if (view != null)
             {
                 int options = MultiView.RESULTSET_CONTROLLER;
+                
+                String mode = null;
+                FormLockStatus lockStatus = isLockOK("LockTitle", view, false, !readOnlyArg);
+                if (lockStatus != FormLockStatus.OK)
+                {
+                    if (lockStatus == FormLockStatus.ViewOnly)
+                    {
+                        mode = "view";
+                        readOnly = true;
+                        
+                    } else if (lockStatus == FormLockStatus.Skip)
+                    {
+                        return null;
+                    }
+                }
+                
                 if (readOnly)
                 {
                     options |= MultiView.HIDE_SAVE_BTN; 
@@ -508,7 +609,7 @@ public class DataEntryTask extends BaseTask
                 {
                     options |= MultiView.VIEW_SWITCHER;
                 }
-                formPane = new FormPane(name, task, view, null, null, options);
+                formPane = new FormPane(name, task, view, mode, null, options);
                 formPane.setIcon(getIconForView(view));
                 formPane.setRecordSet(recordSet);
                 
@@ -1141,9 +1242,9 @@ public class DataEntryTask extends BaseTask
      * @param viewName the optional view name (can be null)
      */
     protected void editData(final Taskable task,
-                            final Object data, 
-                            final String viewName,
-                            final boolean readOnly)
+                            final Object   data, 
+                            final String   viewName,
+                            final boolean  readOnly)
     {
         if (data instanceof RecordSetIFace)
         {

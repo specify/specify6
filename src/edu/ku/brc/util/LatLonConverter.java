@@ -11,7 +11,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -35,14 +34,13 @@ public class LatLonConverter
     protected final static int DDMMMM_LEN = 5;
     protected final static int DDMMSS_LEN = 3;
     
-    protected static int[] DECIMAL_SIZES = {0, 7, 5, 3};
+    protected static int[] DECIMAL_SIZES = {7, 5, 3, 0};
     
     public enum LATLON          {Latitude, Longitude}
     public enum FORMAT          {DDDDDD, DDMMMM, DDMMSS, None} // None must be at the end so the values match Specify 5
     public enum DEGREES_FORMAT  {None, Symbol, String}
     public enum DIRECTION       {None, NorthSouth, EastWest}
     
-    private static LatLonConverter latLonConverter = new LatLonConverter();
     private static boolean         useDB           = false;
     
     public static DecimalFormat    decFormatter    = new DecimalFormat("#0.0000000#");
@@ -82,31 +80,6 @@ public class LatLonConverter
         super();
     }
 
-    /**
-     * @param str
-     * @return
-     */
-    public static Part[] parseLatLonStr(final String str)
-    {
-        if (StringUtils.isNotEmpty(str))
-        {
-            ArrayList<Part> parts  = new ArrayList<Part>(10);
-            String[]        tokens = breakStringAPart(str);
-            for (String token : tokens)
-            {
-                int inx = token.indexOf(".");
-                int len = -1;
-                if (inx > -1)
-                {
-                    len = token.length() - inx - 1;
-                }
-                parts.add(latLonConverter.new Part(token, len));
-            }
-            return parts.toArray(new Part[parts.size()]);
-        }
-        return new Part[] {};
-    }
-    
     /**
      * @param formatInt
      * @return
@@ -155,42 +128,23 @@ public class LatLonConverter
     
     /**
      * @param str
-     * @param defaultFormat
-     * @return
-     */
-    public static FORMAT getFormat(final String str, final FORMAT defaultFormat)
-    {
-        if (StringUtils.isNotEmpty(str))
-        {
-            String[] tokens = breakStringAPart(str);
-            
-            switch (tokens.length)
-            {
-                case 2 : return FORMAT.DDDDDD;
-                case 3 : return tokens[1].equals("deg") ? FORMAT.DDDDDD : FORMAT.DDMMMM;
-                case 4 : return tokens[2].equals("deg") ? FORMAT.DDMMMM : FORMAT.DDMMSS;
-                case 5 : return FORMAT.DDMMSS;
-                default:
-                    break;
-            }
-        }
-        return defaultFormat;
-    }
-
-    /**
-     * @param str
+     * @param actualFmt
+     * @param addSymbols
+     * @param inclZeroes
      * @return
      */
     public static LatLonValueInfo adjustLatLonStr(final String  str,
                                                   final FORMAT  actualFmt, 
-                                                  final boolean addSymbols)
+                                                  final boolean addSymbols,
+                                                  final boolean inclZeroes)
     {
         if (StringUtils.isNotEmpty(str))
         {
             String[] tokens = breakStringAPart(str);
             if (tokens.length > 1)
             {
-                System.err.println("tokens[1] ["+tokens[1]+"]["+str+"]");
+                String zero = inclZeroes ? "0" : "";
+                //System.err.println("tokens[1] ["+tokens[1]+"]["+str+"]");
                 boolean hasDegreesTxt = tokens[1].length() == 3 && tokens[1].equals("deg");
                 
                 LatLonValueInfo latLonInfo = new LatLonValueInfo(hasDegreesTxt);
@@ -215,7 +169,7 @@ public class LatLonConverter
                                 dirStr = tokens[2];
                             } else
                             {
-                                latLonInfo.addPart("0");
+                                latLonInfo.addPart(zero);
                                 dirStr = tokens[1];
                             }
                             
@@ -231,13 +185,13 @@ public class LatLonConverter
                             } else if (tokens.length == 3)
                             {
                                 latLonInfo.addPart(tokens[1]);
-                                latLonInfo.addPart("0");
+                                latLonInfo.addPart(zero);
                                 dirStr = tokens[2];
                                 
                             } else if (tokens.length == 2)
                             {
-                                latLonInfo.addPart("0");
-                                latLonInfo.addPart("0");
+                                latLonInfo.addPart(zero);
+                                latLonInfo.addPart(zero);
                                 dirStr = tokens[1];
                             }
                             break;
@@ -331,7 +285,7 @@ public class LatLonConverter
             return strArg;
         }
      
-        LatLonValueInfo latLonVal = adjustLatLonStr(strArg, fromFmt, false);
+        LatLonValueInfo latLonVal = adjustLatLonStr(strArg, fromFmt, false, true);
         
         String str = latLonVal.getStrVal(false);
         
@@ -636,7 +590,6 @@ public class LatLonConverter
         
         StringBuilder sb = new StringBuilder();
         
-        //sb.append(format(bd.abs()));
         sb.append(String.format("%"+decimalLen+"."+decimalLen+"f", bd.abs()));
         
         if (degreesFMT == DEGREES_FORMAT.Symbol)
@@ -651,8 +604,6 @@ public class LatLonConverter
         }
         //return format(bd.abs()) + (degreesFMT == DEGREES_FORMAT.Symbol ? "\u00B0" : "");
         return sb.toString();
-
-        
     }
     
     /**
@@ -914,51 +865,4 @@ public class LatLonConverter
         return val;
     }
     
-    //--------------------------------------------------------
-    // Inner Class
-    //--------------------------------------------------------
-    
-    public class Part 
-    {
-        protected String part;
-        protected int    decimalLen;
-        
-        /**
-         * @param part
-         * @param decimalLen
-         */
-        public Part(String part)
-        {
-            this(part, -1);
-        }
-
-        /**
-         * @param part
-         * @param decimalLen
-         */
-        public Part(String part, int decimalLen)
-        {
-            super();
-            this.part       = part;
-            this.decimalLen = decimalLen;
-            
-            System.err.println(part+"  "+decimalLen);
-        }
-
-        /**
-         * @return the part
-         */
-        public String getPart()
-        {
-            return part;
-        }
-
-        /**
-         * @return the decimalLen
-         */
-        public int getDecimalLen()
-        {
-            return decimalLen;
-        }
-    }
 }

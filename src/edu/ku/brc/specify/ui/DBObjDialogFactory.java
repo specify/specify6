@@ -33,9 +33,11 @@ import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayFrame;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.af.ui.db.ViewBasedSearchDialogIFace;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -48,13 +50,18 @@ import edu.ku.brc.ui.UIRegistry;
  * or to pop up a search dialog for locating (more precisely the object they desire.
  *
  * @code_status Beta
+ * 
  * @author rods
  *
  */
 public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
 {
-    private static final Logger  log             = Logger.getLogger(DBObjDialogFactory.class);
-
+    private static final Logger  log         = Logger.getLogger(DBObjDialogFactory.class);
+    
+    public static final String   factoryName = "edu.ku.brc.specify.ui.DBObjDialogFactory"; //$NON-NLS-1$
+    
+    public enum FormLockStatus {Skip, OK, ViewOnly}
+    
     protected static DBObjDialogFactory instance = null;
 
     protected Hashtable<String, DialogInfo> searchDialogs = new Hashtable<String, DialogInfo>();
@@ -64,7 +71,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
      * Constructor - enables it to be constructed from its class name, it can only be constructed
      * one time from the default constructor otherwise it throws a RuntimeException.
      */
-    public  DBObjDialogFactory()
+    public DBObjDialogFactory()
     {
         if (DBObjDialogFactory.instance == null)
         {
@@ -78,8 +85,8 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
     }
 
     /**
-     * Returns the singleton instance
-     * @return the singleton instance
+     * Returns the instance of the DBObjDialogFactory.
+     * @return the instance of the DBObjDialogFactory.
      */
     public static DBObjDialogFactory getInstance()
     {
@@ -154,25 +161,23 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             if (parent instanceof Frame)
             {
                 return new DBObjSearchDialog((Frame)parent,
-                        info.getViewSetName(),
-                        info.getViewName(),
-                        info.getSearchName(),
-                        title,
-                        info.getClassName(),
-                        info.getIdFieldName(),
-                        info.getHelpContext()
-                        );
+                                                info.getViewSetName(),
+                                                info.getViewName(),
+                                                info.getSearchName(),
+                                                title,
+                                                info.getClassName(),
+                                                info.getIdFieldName(),
+                                                info.getHelpContext());
             }
             // else
             return new DBObjSearchDialog((Dialog)parent,
-                    info.getViewSetName(),
-                    info.getViewName(),
-                    info.getSearchName(),
-                    title,
-                    info.getClassName(),
-                    info.getIdFieldName(),
-                    info.getHelpContext()
-                    );                
+                                            info.getViewSetName(),
+                                            info.getViewName(),
+                                            info.getSearchName(),
+                                            title,
+                                            info.getClassName(),
+                                            info.getIdFieldName(),
+                                            info.getHelpContext());                
         }
         // else
         throw new RuntimeException("Couldn't create object implementing ViewBasedSearchDialogIFace by name["+name+"]");
@@ -184,11 +189,15 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
     public ViewBasedDisplayIFace createDisplay(final Window     parent, 
                                                final String     name,
                                                final String     frameTitle,
-                                               final String     closeBtnTitle,
-                                               final boolean    isEdit,
-                                               final int        options,
+                                               final String     closeBtnTitleArg,
+                                               final boolean    isEditArg,
+                                               final int        optionsArg,
                                                final FRAME_TYPE type)
     {
+        boolean isEdit        = isEditArg;
+        int     options       = optionsArg;
+        String  closeBtnTitle = closeBtnTitleArg;
+        
         // Override when trying to parent a Frame to a Dialog, because
         // the Frame will be placed behind the Dialog
         
@@ -207,6 +216,22 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             } else
             {
                 throw new RuntimeException("Couldn't find view ["+viewName+"]");
+            }
+            
+            FormLockStatus lockStatus = isLockOK("LockTitle", view, MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT), isEdit);
+            if (lockStatus != FormLockStatus.OK)
+            {
+                if (lockStatus == FormLockStatus.ViewOnly)
+                {
+                    isEdit = false;
+                    options &= ~MultiView.IS_EDITTING; // Clear Bit first
+                    options |= MultiView.HIDE_SAVE_BTN;
+                    closeBtnTitle = UIRegistry.getResourceString("CLOSE");
+                    
+                } else if (lockStatus == FormLockStatus.Skip)
+                {
+                    return null;
+                }
             }
             
             if (type == ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME)
@@ -263,6 +288,73 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
         }
         // else
         throw new RuntimeException("Couldn't create ViewBasedDisplayFrame by name["+name+"] (Check the List of dialog in dailog_defs.xml)");
+    }
+    
+    /**
+     * Checks the tree to see if it is locked so a form for the tree can be opened. Note: this method
+     * will display a localized error before it returns.
+     * 
+     * @param lockTitle Title (not important)
+     * @param view the view that needs to be opened
+     * @param isNewForm whether the form is for a new object
+     * @param isEdit whether the form is to edit an object
+     * @return FormLockStatus for what happened
+     */
+    public static FormLockStatus isLockOK(final String    lockTitle, 
+                                          final ViewIFace view, 
+                                          final boolean   isNewForm, 
+                                          final boolean   isEdit)
+    {
+        Class<?> treeDefClass = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getTreeDefClass(view);
+        if (treeDefClass != null)
+        {
+            String treeSemaphoreName     = treeDefClass.getSimpleName();
+            String treeFormSemaphoreName = treeDefClass.getSimpleName() + "Form";
+            
+            // If this user owns the Tree Form Lock then they can open the View
+            if (TaskSemaphoreMgr.doesOwnSemaphore(treeFormSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline))
+            {
+                return FormLockStatus.OK;
+            }
+            
+            // Check to see if the Tree Lock is locked
+            if (TaskSemaphoreMgr.isLocked(lockTitle, treeSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline))
+            {
+                if (isNewForm)
+                {
+                    UIRegistry.showLocalizedError("TREE_LOCKED_NEW_OBJ");
+                    return FormLockStatus.Skip;
+                }
+                
+                if (isEdit)
+                {
+                    UIRegistry.showLocalizedError("TREE_LOCKED_EDT_OBJ");
+                }
+                
+                return FormLockStatus.ViewOnly;
+            }
+            
+            // First try to grab the tree Lock
+            boolean gotLock = TaskSemaphoreMgr.lock(lockTitle, treeSemaphoreName, "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
+            if (gotLock)
+            {
+                // Now grab the Tree Form Lock
+                gotLock = TaskSemaphoreMgr.lock(lockTitle, treeFormSemaphoreName, "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
+                if (!gotLock)
+                {
+                    // Since for some bizarre reason we didn't get the treeForm Lock release the tree lock.
+                    TaskSemaphoreMgr.unlock(lockTitle, treeSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline);
+                    
+                    UIRegistry.showLocalizedError("TREE_LOCKED_ERR_FRM");
+                    return FormLockStatus.Skip;
+                }
+            } else
+            {
+                UIRegistry.showLocalizedError("TREE_LOCKED_ERR");
+                return FormLockStatus.Skip;
+            }
+        }
+        return FormLockStatus.OK;
     }
     
     /* (non-Javadoc)

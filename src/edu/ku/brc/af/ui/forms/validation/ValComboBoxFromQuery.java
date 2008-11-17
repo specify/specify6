@@ -645,6 +645,11 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                                                    canModify,   // false means View Mode
                                                                    options,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
+        if (frame == null)
+        {
+            return;
+        }
+        
         if (isNewObject)
         {
             newDataObj = FormHelper.createAndNewDataObj(tableInfo.getClassObj());
