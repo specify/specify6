@@ -741,19 +741,40 @@ public class Uploader implements ActionListener, KeyListener
                     public int compare(Pair<UploadTable, UploadTable> p1,
                                        Pair<UploadTable, UploadTable> p2)
                     {
-                        if (isAncestorOf(p1.getSecond(), p2.getSecond())) { return -1; }
-                        if (isAncestorOf(p2.getSecond(), p1.getSecond())) { return 1; }
+                        if (p1.getFirst() == p2.getFirst() && p1.getSecond() == p2.getSecond())
+                        {
+                            return 0;
+                        }
+                        if (isAncestorOf(p1.getSecond(), p2.getSecond())) 
+                        { 
+                            return -1; 
+                        }
+                        if (isAncestorOf(p2.getSecond(), p1.getSecond())) 
+                        { 
+                            return 1; 
+                        }
                         return 0;
                     }
                 });
-        for (UploadTable ut : uploadTables)
+        if (debugging)
         {
+            logDebug("reOrderUploadTables(): initial order:");
+            for (UploadTable ut : uploadTables)
+            {
+                logDebug("   " + ut.getTable().getName());
+            }
+        }
+        for (UploadTable ut : uploadTables)
+        {            
+            logDebug("Table: " + ut.getTable().getName());
             for (UploadTable mc : ut.getMatchChildren())
             {
+                logDebug("  Child: " + mc.getTable().getName());
                 for (ParentTableEntry pte : mc.getAncestors())
                 {
                     if (uploadTables.indexOf(ut) < uploadTables.indexOf(pte.getImportTable()))
                     {
+                        logDebug("reordering: " + pte.getImportTable().getTable().getName() + " must precede " + ut.getTable().getName());
                         moves.add(new Pair<UploadTable, UploadTable>(ut, pte.getImportTable()));
                     }
 
@@ -764,6 +785,7 @@ public class Uploader implements ActionListener, KeyListener
         {
             int fromIdx = uploadTables.indexOf(move.getSecond());
             int toIdx = uploadTables.indexOf(move.getFirst());
+            this.logDebug("reording: " + move.getSecond().getTable().getName() + "(" + fromIdx + ") -> " + move.getFirst().getTable().getName() + "(" + toIdx + ")");
             if (toIdx > fromIdx)
             {
                 log.error("Can't meet ordering constraints: "
