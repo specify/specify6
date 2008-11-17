@@ -302,7 +302,7 @@
  WHERE DT.CollectionMemberID = COLMEMID AND 
  collectionobject.CollectionMemberID = COLMEMID AND 
  taxon.TaxonTreeDefID = TAXTREEDEFID AND 
- determination.IsCurrent = true AND
+ DT.IsCurrent = true AND
  %s order by CatalogNumber asc]]>
                 </sql>
                 <captions>
