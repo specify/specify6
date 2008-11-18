@@ -267,7 +267,7 @@ public class MasterPasswordMgr
         if (!isEditMode)
         {
             dlg.setOkLabel(getResourceString("CONT"));
-            dlg.setCancelLabel(getResourceString("EXIT"));
+            dlg.setCancelLabel(getResourceString("BACK"));
         }
         dlg.createUI();
         dlg.getOkBtn().setEnabled(false);
@@ -377,10 +377,6 @@ public class MasterPasswordMgr
             AppPreferences.getLocalPrefs().putBoolean(usersUserName+"_"+MASTER_LOCAL, !isNetworkRB.isSelected());
             AppPreferences.getLocalPrefs().put(usersUserName+"_"+MASTER_PATH, value);
             errCreatingFile = false;
-            
-        } else if (!isEditMode)
-        {
-            System.exit(0);
         }
         
         return errCreatingFile;
