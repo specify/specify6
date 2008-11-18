@@ -76,7 +76,7 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 public class UploadTable implements Comparable<UploadTable>
 {
     private static boolean                          debugging               = false;
-    //if true then 'Undos' are accomplished with delete statements. This is safe
+    //if true then 'Undos' are accomplished with sql delete statements. This is safe
     //if modification to the database is prevented while uploading.
     private static boolean                          doRawDeletes            = true;
     
