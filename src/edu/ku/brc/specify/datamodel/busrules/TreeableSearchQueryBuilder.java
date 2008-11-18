@@ -265,6 +265,18 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             {
                 queryStr += " and n.rankId < " + rank;
             }
+            else
+            {
+                int maxRank = 0;
+                for (TreeDefItemIface defItem : treeDef.getTreeDefItems())
+                {
+                    if (defItem.getRankId() > maxRank)
+                    {
+                        maxRank = defItem.getRankId();
+                    }
+                }
+                queryStr += " and n.rankId < " + maxRank;
+            }
         }
         else if (nodeNumber != null && highestChildNodeNumber != null)
         {
