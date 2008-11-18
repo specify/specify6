@@ -755,6 +755,35 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     }
     
     /**
+     * @param cls
+     * @param id
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getDataObj(final Class<?> cls, final int id)
+    {
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            
+            return (T)session.get(cls, id);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+        return null;
+    }
+    
+    /**
      * Saves the data object.
      * @return true is ok, false if not
      */

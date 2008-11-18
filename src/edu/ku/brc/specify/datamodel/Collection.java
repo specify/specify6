@@ -54,6 +54,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     protected String                     collectionName;
     protected String                     collectionPrefix; // Collection Acronym
     protected Boolean                    isEmbeddedCollectingEvent;
+    protected String                     regNumber;
     protected String                     description;
     protected String                     remarks;
     
@@ -106,6 +107,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         collectionName         = null;
         collectionPrefix       = null;
         isEmbeddedCollectingEvent = true;
+        regNumber              = null;
         description            = null;
         remarks                = null;
         discipline             = AppContextMgr.getInstance().getClassObject(Discipline.class);
@@ -227,6 +229,23 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     public void setIsEmbeddedCollectingEvent(Boolean isEmbeddedCollectingEvent)
     {
         this.isEmbeddedCollectingEvent = isEmbeddedCollectingEvent;
+    }
+    
+    /**
+     * @return the isRegistered
+     */
+    @Column(name = "RegNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    public String getRegNumber()
+    {
+        return regNumber;
+    }
+
+    /**
+     * @param isRegistered the isRegistered to set
+     */
+    public void setRegNumber(String regNumber)
+    {
+        this.regNumber = regNumber;
     }
 
     /**

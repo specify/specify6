@@ -62,8 +62,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      protected String        description;
      protected String        license;
      protected Boolean       isServerBased;
-     protected Boolean       isAR;
-     protected Boolean       isMR;
+     protected String        regNumber;
      
      protected Address       address;
      protected Set<Agent>    technicalContacts;
@@ -104,8 +103,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         license           = null;
         address           = null;
         isServerBased     = false;
-        isAR              = false;
-        isMR              = false;
+        regNumber         = null;
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
         divisions         = new HashSet<Division>();
@@ -294,21 +292,12 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
-     * @return the isAR
+     * @return the isRegistered
      */
-    @Column(name = "IsAR", unique = false, nullable = false, insertable = true, updatable = true)
-    public Boolean getIsAR()
+    @Column(name = "RegNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    public String getRegNumber()
     {
-        return isAR;
-    }
-
-    /**
-     * @return the isMR
-     */
-    @Column(name = "IsMR", unique = false, nullable = false, insertable = true, updatable = true)
-    public Boolean getIsMR()
-    {
-        return isMR;
+        return regNumber;
     }
 
     /**
@@ -424,19 +413,11 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
-     * @param isAR the isAR to set
+     * @param isRegistered the isRegistered to set
      */
-    public void setIsAR(Boolean isAR)
+    public void setRegNumber(String regNumber)
     {
-        this.isAR = isAR;
-    }
-
-    /**
-     * @param isMR the isMR to set
-     */
-    public void setIsMR(Boolean isMR)
-    {
-        this.isMR = isMR;
+        this.regNumber = regNumber;
     }
 
     /**

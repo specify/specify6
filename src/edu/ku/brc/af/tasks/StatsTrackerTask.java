@@ -58,7 +58,7 @@ public class StatsTrackerTask extends BaseTask
         super.initialize();
         
         // setup a background task to check for udpates at startup and/or send usage stats at startup
-        Timer timer = new Timer("VersionCheckingThread", true); //$NON-NLS-1$
+        Timer timer = new Timer("StatTrackerThread", true); //$NON-NLS-1$
         TimerTask task = new TimerTask()
         {
             @Override
@@ -204,7 +204,7 @@ public class StatsTrackerTask extends BaseTask
      */
     protected String getVersionCheckURL()
     {
-        String baseURL = getResourceString("VersionCheckerTask.VERSION_CHECK_URL"); //$NON-NLS-1$
+        String baseURL = getResourceString("StatsTrackerTask.URL"); //$NON-NLS-1$
         return baseURL;
     }
     
@@ -223,12 +223,11 @@ public class StatsTrackerTask extends BaseTask
         postParams.add(new NameValuePair("id",installID)); //$NON-NLS-1$
 
         // get the OS name and version
-        // get the OS name and version
-        postParams.add(new NameValuePair("os_name", System.getProperty("os.name"))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("os_version",System.getProperty("os.version"))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("java_version",System.getProperty("java.version"))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("java_vendor",System.getProperty("java.vendor"))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("user_name",System.getProperty("user.name"))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("user_name",    System.getProperty("user.name"))); //$NON-NLS-1$
 
         if (sendUsageStats)
         {

@@ -69,7 +69,6 @@ import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.datamodel.SpecifyUser;

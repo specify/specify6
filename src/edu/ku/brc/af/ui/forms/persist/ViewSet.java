@@ -444,7 +444,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
                             av.setViewDef(referredToViewDef);
                         } else
                         {
-                            String msg = "ViewSet["+name+"] View["+view+"] AltView ["+av.getName()+"] refers to a non-existent view with name["+av.getViewDefName()+"]";
+                            String msg = "ViewSet["+name+"] View["+view+"] AltView ["+av.getName()+"] refers to a non-existent ViewDef with name["+av.getViewDefName()+"]";
                             log.error(msg);
                             throw new RuntimeException(msg);
                         }

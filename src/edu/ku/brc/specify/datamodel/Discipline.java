@@ -68,6 +68,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     protected String                    name;
     protected String                    title;
     protected DataType                  dataType;
+    protected String                    regNumber;
     protected Set<Collection>           collections;
     protected Set<AttributeDef>         attributeDefs;
     protected GeographyTreeDef          geographyTreeDef;
@@ -124,6 +125,8 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
         name                  = null;
         title                 = null;
         dataType              = null;
+        regNumber             = null;
+        
         //userPermissions       = null;
         collections           = new HashSet<Collection>();
         attributeDefs         = new HashSet<AttributeDef>();
@@ -212,6 +215,23 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
 
     public void setDataType(DataType dataType) {
         this.dataType = dataType;
+    }
+    
+    /**
+     * @return the isRegistered
+     */
+    @Column(name = "RegNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    public String getRegNumber()
+    {
+        return regNumber;
+    }
+
+    /**
+     * @param isRegistered the isRegistered to set
+     */
+    public void setRegNumber(String regNumber)
+    {
+        this.regNumber = regNumber;
     }
 
     /**

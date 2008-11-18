@@ -1269,15 +1269,28 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         mneu = "Specify.CHECK_UPDATE_MNEU";//$NON-NLS-1$ 
         desc = "Specify.CHECK_UPDATE_DESC";//$NON-NLS-1$      
         mi = UIHelper.createLocalizedMenuItem(helpMenu, ttle , mneu, desc,  true, null);
-        helpMenu.addSeparator();
         mi.addActionListener(new ActionListener()
         {
-            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
+            @Override
             public void actionPerformed(ActionEvent ae)
             {
                 checkForUpdates();
             }
         });
+        
+        ttle = "Specify.AUTO_REG";//$NON-NLS-1$ 
+        mneu = "Specify.AUTO_REG_MNEU";//$NON-NLS-1$ 
+        desc = "Specify.AUTO_REG_DESC";//$NON-NLS-1$      
+        mi = UIHelper.createLocalizedMenuItem(helpMenu, ttle , mneu, desc,  true, null);
+        mi.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent ae)
+            {
+                RegisterSpecify.register(true);
+            }
+        });
+        helpMenu.addSeparator();
         
         JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("Security Activated"); //$NON-NLS-1$
         menu.add(cbMenuItem);
@@ -1974,11 +1987,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             //    setupUIControlSize(AppPreferences.getRemote());
             //}
             
-            if (!RegisterSpecify.hasAutoRegistered())
-            {
-                RegisterSpecify reg = new RegisterSpecify();
-                reg.doRegister();
-            }
+            RegisterSpecify.register(false);
             
             String key = "ui.formatting.controlSizes"; //$NON-NLS-1$
             String  fontName = AppPreferences.getRemote().get(key+".FN", null);
