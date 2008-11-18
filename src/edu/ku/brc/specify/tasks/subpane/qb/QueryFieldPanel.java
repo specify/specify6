@@ -1316,6 +1316,14 @@ public class QueryFieldPanel extends JPanel
      */
     public boolean isEnforced()
     {
+        if (isEnforcedCkbx != null)
+        {
+            return isEnforcedCkbx.isSelected();
+        }
+        if (queryField != null)
+        {
+            return queryField.getAlwaysFilter();
+        }
         return false;
     }
     
