@@ -12,11 +12,16 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -209,6 +214,15 @@ public class StatsTrackerTask extends BaseTask
     }
     
     /**
+     * @param value
+     * @return
+     */
+    private String fixParam(final String value)
+    {
+        return value == null ? "" : value;
+    }
+    
+    /**
      * Creates an array of POST method parameters to send with the version checking / usage tracking connection.
      * 
      * @param sendUsageStats if true, the POST parameters include usage stats
@@ -227,7 +241,18 @@ public class StatsTrackerTask extends BaseTask
         postParams.add(new NameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$
         postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$
         postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("user_name",    System.getProperty("user.name"))); //$NON-NLS-1$
+        
+        AppContextMgr acMgr      = AppContextMgr.getInstance();
+        //Institution   inst       = acMgr.getClassObject(Institution.class);
+        //Division      division   = acMgr.getClassObject(Division.class);
+        //Discipline    discipline = acMgr.getClassObject(Discipline.class);
+        Collection    collection = acMgr.getClassObject(Collection.class);
+        
+        //postParams.add(new NameValuePair("Institution_number", fixParam(inst.getRegNumber()))); //$NON-NLS-1$
+        //postParams.add(new NameValuePair("Division_number",    fixParam(division.getRegNumber()))); //$NON-NLS-1$
+        //postParams.add(new NameValuePair("Discipline_number",  fixParam(discipline.getRegNumber()))); //$NON-NLS-1$
+        postParams.add(new NameValuePair("Collection_number",    fixParam(collection.getRegNumber()))); //$NON-NLS-1$
+
 
         if (sendUsageStats)
         {

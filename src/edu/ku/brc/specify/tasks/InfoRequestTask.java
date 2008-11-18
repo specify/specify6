@@ -21,7 +21,6 @@ import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
 import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -40,9 +39,9 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
-
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.ui.db.CommandActionForDB;
@@ -149,7 +148,8 @@ public class InfoRequestTask extends BaseTask
      */
     protected void addInfoRequest(final InfoRequest infoRequest)
     {           
-        
+        UsageTracker.incrUsageCount("IA.IR.ADD");
+
         NavBoxItemIFace nbi = makeDnDNavBtn(navBox, 
                                             infoRequest.getIdentityTitle(), 
                                             infoReqIconName, 
@@ -479,16 +479,7 @@ public class InfoRequestTask extends BaseTask
             Object data = cmdAction.getData();
             if (data instanceof RecordSetIFace)
             {
-                // XXX DEMO Code RELEASE
                 InfoRequest infoRequest = new InfoRequest();
-                infoRequest.setEmail("rods@ku.edu");
-                infoRequest.setFirstName("Rod");
-                infoRequest.setLastName("Spears");
-                infoRequest.setInstitution("KU");
-                infoRequest.setRequestDate(Calendar.getInstance());
-                
-                // Get Info Request Information
-                
                 saveInfoRequest(infoRequest);
             }
         } else if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSetIFace)

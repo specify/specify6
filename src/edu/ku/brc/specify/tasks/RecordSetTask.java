@@ -53,6 +53,7 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
@@ -386,6 +387,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      */
     public void saveNewRecordSet(final RecordSet recordSet)
     {
+        UsageTracker.incrUsageCount("RS.SAVENEW");
          
         recordSet.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         recordSet.setOwner(AppContextMgr.getInstance().getClassObject(SpecifyUser.class));
@@ -424,6 +426,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      */
     protected void deleteRecordSet(final RecordSetIFace recordSet)
     {
+        UsageTracker.incrUsageCount("RS.DEL");
         // Deleting this manually because the RecordSet may not be loaded (with Hibernate)
         // and the items are loaded EAGER, and there is not reason to take all the time (and memory)
         // to load them all just to delete them.
@@ -715,6 +718,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      */
     protected void mergeRecordSets(final Object srcObj, final Object dstObj)
     {
+        UsageTracker.incrUsageCount("RS.MERGE");
         String MERGE_ERR = "RecordSetTask.MERGE_ERROR";
         
         if (srcObj != dstObj && 
@@ -1278,6 +1282,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     public static RecordSetIFace askForRecordSet(final int tableId, 
                                                  final Vector<RecordSetIFace> additionalRS)
     {
+        UsageTracker.incrUsageCount("RS.ASKRS");
         ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableId);
         if (additionalRS != null && additionalRS.size() > 0)
         {

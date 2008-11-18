@@ -58,6 +58,9 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     protected String                     description;
     protected String                     remarks;
     
+    protected String                     webPortalURI;
+    protected String                     webSiteURI;
+    
     // ABCD Schema
     protected String                     kingdomCoverage;
     protected String                     primaryFocus;
@@ -120,6 +123,8 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         institutionType        = null;
         scope                  = null;
         dbContentVersion       = null;
+        webPortalURI           = null;
+        webSiteURI             = null;
         
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
@@ -458,6 +463,40 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     public void setDbContentVersion(String dbContentVersion)
     {
         this.dbContentVersion = dbContentVersion;
+    }
+
+    /**
+     * @return the webPortalURI
+     */
+    @Column(name = "WebPortalURI", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+    public String getWebPortalURI()
+    {
+        return webPortalURI;
+    }
+
+    /**
+     * @param webPortalURI the webPortalURI to set
+     */
+    public void setWebPortalURI(String webPortalURI)
+    {
+        this.webPortalURI = webPortalURI;
+    }
+
+    /**
+     * @return the webSiteURI
+     */
+    @Column(name = "WebSiteURI", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+    public String getWebSiteURI()
+    {
+        return webSiteURI;
+    }
+
+    /**
+     * @param webSiteURI the webSiteURI to set
+     */
+    public void setWebSiteURI(String webSiteURI)
+    {
+        this.webSiteURI = webSiteURI;
     }
 
     /**

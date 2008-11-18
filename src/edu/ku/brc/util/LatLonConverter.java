@@ -430,7 +430,7 @@ public class LatLonConverter
         sb.append(whole);
         if (degreesFMT == DEGREES_FORMAT.Symbol)
         {
-            sb.append("\u00B0");
+            sb.append(DEGREES_SYMBOL);
         }        
         sb.append(' ');
         sb.append(minutesWhole);

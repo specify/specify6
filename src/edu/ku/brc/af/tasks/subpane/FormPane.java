@@ -10,6 +10,7 @@ import javax.swing.ImageIcon;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
@@ -132,6 +133,8 @@ public class FormPane extends DroppableTaskPane
         this.viewSetName = view.getViewSetName();
         this.viewName    = view.getName();
         this.data        = data;
+        
+        UsageTracker.incrUsageCount("DE.VIEW."+viewName);
 
         createForm(view, AltView.parseMode(mode, AltViewIFace.CreationMode.VIEW), data, options, null);
     }
@@ -220,6 +223,8 @@ public class FormPane extends DroppableTaskPane
     public void setRecordSet(RecordSetIFace recordSet)
     {
         this.recordSet = recordSet;
+        
+        UsageTracker.incrUsageCount("DE.VIEW."+viewName+".RS");
         
         multiView.getCurrentView().setRecordSet(recordSet);
     }

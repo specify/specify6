@@ -49,6 +49,7 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
@@ -217,6 +218,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     protected void editWebLinks()
     {
+        UsageTracker.incrUsageCount("SS.EDTWEBLNK");
         WebLinkConfigDlg dlg = WebLinkMgr.getInstance().editWebLinks(null, false);
         if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
         {
@@ -402,6 +404,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                                final String viewName, 
                                final boolean useJoinAndSpecCols)
     {
+        UsageTracker.incrUsageCount("SS.EDT."+viewName);
+        
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(clazz.getName());
         String      tiTitle   = tableInfo.getTitle();
         
@@ -624,6 +628,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     protected void doSchemaConfig(final Byte schemaType, final DBTableIdMgr tableMgr)
     {
+        UsageTracker.incrUsageCount("SS.SCHEMACFG");
+        
         UIRegistry.getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);
         UIRegistry.getStatusBar().setText(getResourceString(getI18NKey("LOADING_LOCALES"))); //$NON-NLS-1$
         UIRegistry.getStatusBar().repaint();

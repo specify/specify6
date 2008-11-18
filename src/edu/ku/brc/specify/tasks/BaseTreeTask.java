@@ -31,6 +31,7 @@ import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
@@ -176,6 +177,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	            @Override
 	            public Object construct()
 	            {
+	                UsageTracker.incrUsageCount("TREE.OPEN."+treeDefClass.getSimpleName());
+
 	                treeViewer = createTreeViewer(titleArg, isEditMode);
 	                if (!gotLock)
 	                {
@@ -265,6 +268,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                             @Override
                             public Object construct()
                             {
+                                UsageTracker.incrUsageCount("TREEDEF.OPEN."+treeDefClass.getSimpleName());
                                 defEditor = createDefEditor(titleArg);
                                 return defEditor;
                             }
@@ -366,6 +370,9 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             {
                 String lockName     = treeDefClass.getSimpleName();
                 String formLockName = lockName + "Form";
+                
+                UsageTracker.incrUsageCount("TREEDEF.UNLOCK."+treeDefClass.getSimpleName());
+
                 if (TaskSemaphoreMgr.isLocked(tabtitle, formLockName, TaskSemaphoreMgr.SCOPE.Discipline))
                 {
                     TaskSemaphoreMgr.unlock(tabtitle, formLockName, TaskSemaphoreMgr.SCOPE.Discipline);

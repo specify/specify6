@@ -63,6 +63,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      protected String        license;
      protected Boolean       isServerBased;
      protected String        regNumber;
+     protected String        saNumber;
      
      protected Address       address;
      protected Set<Agent>    technicalContacts;
@@ -104,6 +105,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         address           = null;
         isServerBased     = false;
         regNumber         = null;
+        saNumber          = null;
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
         divisions         = new HashSet<Division>();
@@ -136,7 +138,16 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     {
         return abbrev;
     }
-
+    
+    /**
+     * @return the saNumber
+     */
+    @Column(name = "SaNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    public String getSaNumber()
+    {
+        return saNumber;
+    }
+    
     /**
      * @return the contentContacts
      */
@@ -421,6 +432,13 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
+     * @param saNumber the saNumber to set
+     */
+    public void setSaNumber(String saNumber)
+    {
+        this.saNumber = saNumber;
+    }
+    /**
      * @return the address
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
@@ -456,7 +474,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     {
         this.divisions = divisions;
     }
-    
+
     /**
      * 
      */

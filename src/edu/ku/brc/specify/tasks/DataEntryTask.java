@@ -53,6 +53,7 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -915,6 +916,8 @@ public class DataEntryTask extends BaseTask
      */
     protected void showMiscViewsDlg()
     {
+        UsageTracker.incrUsageCount("DE.SHOW.MISC");
+
         DataEntryView deView = null;
         if (miscViews.size() == 1)
         {
@@ -1068,6 +1071,8 @@ public class DataEntryTask extends BaseTask
             }
         } catch (CloneNotSupportedException ex) {}
         
+        UsageTracker.incrUsageCount("DE.CONFIG");
+
         DataEntryConfigDlg dlg = new DataEntryConfigDlg(stdList, miscList, true,
                 "DataEntryConfigure",
                 "DET_CONFIGURE_VIEWS",

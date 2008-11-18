@@ -61,6 +61,7 @@ import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -224,6 +225,8 @@ public class QueryTask extends BaseTask
      */
     public void createAndExecute(final String sqlStr)
     {
+        UsageTracker.incrUsageCount("QB.EXE");
+
         SQLQueryPane sqlPane = new SQLQueryPane(name, this, false, false);//true, true);
         addSubPaneToMgr(sqlPane);
         sqlPane.setSQLStr(sqlStr);
@@ -594,6 +597,8 @@ public class QueryTask extends BaseTask
     @Override
     public void doConfigure()
     {
+        UsageTracker.incrUsageCount("QB.CONFIG");
+        
         String configCreators = UIRegistry.getResourceString("QY_CONFIGURE_CREATORS");
         String configQueries  = UIRegistry.getResourceString("QY_CONFIGURE_QUERIES");
         
@@ -1001,6 +1006,7 @@ public class QueryTask extends BaseTask
      */
     protected void editQuery(Integer queryId)
     {
+        UsageTracker.incrUsageCount("QB.EDT");
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
@@ -1168,7 +1174,8 @@ public class QueryTask extends BaseTask
      */
     protected boolean deleteQuery(final RecordSet rs)
     {
-        // delete from database
+        UsageTracker.incrUsageCount("QB.DEL");
+       // delete from database
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         boolean transOpen = false;
         SpQuery query = session.get(SpQuery.class, rs.getOnlyItem().getRecordId());
@@ -1593,6 +1600,7 @@ public class QueryTask extends BaseTask
      */
     protected void importQueries()
     {
+        UsageTracker.incrUsageCount("QB.IMPORT");
         String path = AppPreferences.getLocalPrefs().get(XML_PATH_PREF, null);
         
         FileDialog fDlg = new FileDialog(((Frame)UIRegistry.getTopWindow()), "Open", FileDialog.LOAD);
@@ -1688,6 +1696,7 @@ public class QueryTask extends BaseTask
      */
     protected void exportQueries()
     {
+        UsageTracker.incrUsageCount("QB.EXPORT");
         Vector<String> list = new Vector<String>();
         for (NavBoxItemIFace nbi : navBox.getItems())
         {
