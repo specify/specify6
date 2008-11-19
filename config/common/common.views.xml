@@ -220,6 +220,7 @@
             </altviews>
         </view>
         
+        <!--
         <view name="Deaccession Agent"
               objtitle="Deaccession Agent"
               class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
@@ -230,7 +231,8 @@
                 <altview name="DeaccessionAgent Edit" viewdef="DeaccessionAgent" mode="edit" default="true"/>
             </altviews>
         </view>
-
+    -->
+        
         <view name="Determination"
               class="edu.ku.brc.specify.datamodel.Determination"
               busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationBusRules" 
@@ -1351,6 +1353,7 @@
             </rows>
         </viewdef>
         
+        <!--
         <viewdef
             type="form"
             name="DeaccessionAgent"
@@ -1376,6 +1379,7 @@
                 </row>
             </rows>
         </viewdef>
+        -->
 
         <viewdef
             type="formtable"
