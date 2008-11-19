@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.expresssearch.ESTermParser;
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
@@ -176,8 +177,23 @@ public class NavigationTreeMgr
             
         });
         
-        dlg.setData(spUser);
-        dlg.setVisible(true);
+        Discipline currDiscipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
+        AppContextMgr.getInstance().setClassObject(Discipline.class, disp);
+        
+        // This is just an extra safety measure to make sure the current Disicpline gets set back
+        try
+        {
+            dlg.setData(spUser);
+            dlg.setVisible(true);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            AppContextMgr.getInstance().setClassObject(Discipline.class, currDiscipline);    
+        }
+        
         if (!dlg.isCancelled())
         {
             addGroupToUser(group, spUser);
