@@ -357,7 +357,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             {
                 // Now grab the Tree Form Lock
                 action = TaskSemaphoreMgr.lock(title, treeFormSemaphoreName, "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
-                if (action == TaskSemaphoreMgr.USER_ACTION.OK)
+                if (action != TaskSemaphoreMgr.USER_ACTION.OK)
                 {
                     // Since for some bizarre reason we didn't get the treeForm Lock release the tree lock.
                     TaskSemaphoreMgr.unlock(title, treeSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline);

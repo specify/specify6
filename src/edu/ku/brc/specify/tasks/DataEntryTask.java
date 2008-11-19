@@ -411,8 +411,8 @@ public class DataEntryTask extends BaseTask
                             FormPane fp = (FormPane)sp;
                             if (fp != formPane)
                             {
-                                ViewIFace fpView = fp.getViewable().getView();
-                                if (view != fpView && fpView.getClassName().equals(view.getClassName()))
+                                ViewIFace fpView = fp.getViewable() != null ? fp.getViewable().getView() : null;
+                                if (view != fpView && fpView != null && fpView.getClassName().equals(view.getClassName()))
                                 {
                                     hasDataOfTreeClass = true;
                                     break;
