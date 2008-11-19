@@ -75,12 +75,13 @@ public class TaskMgr implements CommandListener
     private static final String  APP_RESTART_ACT   = "AppRestart"; //$NON-NLS-1$
 
     // Data Members
-    protected Vector<Taskable>            toolbarTasks   = new Vector<Taskable>();
-    protected Element                     commandDOMRoot = null;
-    protected Taskable                    defaultTask    = null;
+    protected Vector<Taskable>               toolbarTasks   = new Vector<Taskable>();
+    protected Hashtable<String, MenuElement> menuHash       = new Hashtable<String, MenuElement>();
+    protected Element                        commandDOMRoot = null;
+    protected Taskable                       defaultTask    = null;
     
-    protected Hashtable<String, Taskable>   tasks          = new Hashtable<String, Taskable>();
-    protected Hashtable<String, Class<?>>   uiPluginHash   = new Hashtable<String,  Class<?>>();
+    protected Hashtable<String, Taskable>    tasks          = new Hashtable<String, Taskable>();
+    protected Hashtable<String, Class<?>>    uiPluginHash   = new Hashtable<String,  Class<?>>();
     //protected Hashtable<String, Taskable>   visTaskHash    = new Hashtable<String,  Taskable>();
 
     /**
@@ -277,6 +278,7 @@ public class TaskMgr implements CommandListener
             {
                 for (MenuItemDesc menuItem : menuItems)
                 {
+                    instance.menuHash.put(menuItem.getMenuPath(), menuItem.getMenuItem());
                     String[] menuPath = split(menuItem.getMenuPath(), "/"); //$NON-NLS-1$
                     buildMenuTree(menuBar, menuItem, menuPath, 0);
                 }
@@ -290,6 +292,15 @@ public class TaskMgr implements CommandListener
         {
             instance.toolbarTasks.add(plugin);
         }
+    }
+    
+    /**
+     * @param path
+     * @return
+     */
+    public static MenuElement getMenuElementByPath(final String path)
+    {
+        return getInstance().menuHash.get(path);
     }
     
     public static void addToolbarBtn(final Component toolBarComp, final int pos)

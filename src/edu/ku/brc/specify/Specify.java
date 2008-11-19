@@ -1290,6 +1290,18 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                 RegisterSpecify.register(true);
             }
         });
+        ttle = "Specify.SA_REG";//$NON-NLS-1$ 
+        mneu = "Specify.SA_REG_MNEU";//$NON-NLS-1$ 
+        desc = "Specify.SA_REG_DESC";//$NON-NLS-1$      
+        mi = UIHelper.createLocalizedMenuItem(helpMenu, ttle , mneu, desc,  true, null);
+        mi.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent ae)
+            {
+                RegisterSpecify.registerSA();
+            }
+        });
         helpMenu.addSeparator();
         
         JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("Security Activated"); //$NON-NLS-1$
@@ -1986,8 +1998,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             //{
             //    setupUIControlSize(AppPreferences.getRemote());
             //}
-            
-            RegisterSpecify.register(false);
             
             String key = "ui.formatting.controlSizes"; //$NON-NLS-1$
             String  fontName = AppPreferences.getRemote().get(key+".FN", null);

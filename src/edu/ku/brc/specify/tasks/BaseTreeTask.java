@@ -166,39 +166,42 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         
     	if (!isOpeningTree)
     	{
-            final boolean gotLock    = TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true);
-            final boolean isEditMode = !gotLock ? false : isEditModeArg;
+            final TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true);
+            final boolean isViewMode = action == TaskSemaphoreMgr.USER_ACTION.ViewMode;
             
-    		isOpeningTree = true;
-	        SwingWorker bgWorker = new SwingWorker()
-	        {
-	            private TreeTableViewer<T,D,I> treeViewer;
-	            
-	            @Override
-	            public Object construct()
-	            {
-	                UsageTracker.incrUsageCount("TREE.OPEN."+treeDefClass.getSimpleName());
-
-	                treeViewer = createTreeViewer(titleArg, isEditMode);
-	                if (!gotLock)
-	                {
-	                    treeViewer.setDoUnlock(false);
-	                }
-	                return treeViewer;
-	            }
-	
-	            @Override
-	            public void finished()
-	            {
-	                super.finished();
-	                ContextMgr.requestContext(BaseTreeTask.this);
-	                currentDefInUse = true;
-	                visibleSubPane = treeViewer;
-	                addSubPaneToMgr(treeViewer);
-	                isOpeningTree = false;
-	            }
-	        };
-	        bgWorker.start();
+            if (action == TaskSemaphoreMgr.USER_ACTION.ViewMode || action == TaskSemaphoreMgr.USER_ACTION.OK)
+            {
+        		isOpeningTree = true;
+    	        SwingWorker bgWorker = new SwingWorker()
+    	        {
+    	            private TreeTableViewer<T,D,I> treeViewer;
+    	            
+    	            @Override
+    	            public Object construct()
+    	            {
+    	                UsageTracker.incrUsageCount("TREE.OPEN."+treeDefClass.getSimpleName());
+    
+    	                treeViewer = createTreeViewer(titleArg, !isViewMode);
+    	                if (isViewMode)
+    	                {
+    	                    treeViewer.setDoUnlock(false);
+    	                }
+    	                return treeViewer;
+    	            }
+    	
+    	            @Override
+    	            public void finished()
+    	            {
+    	                super.finished();
+    	                ContextMgr.requestContext(BaseTreeTask.this);
+    	                currentDefInUse = true;
+    	                visibleSubPane = treeViewer;
+    	                addSubPaneToMgr(treeViewer);
+    	                isOpeningTree = false;
+    	            }
+    	        };
+    	        bgWorker.start();
+            }
     	}
     }
     
@@ -259,7 +262,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             {
                 if (!currentDefInUse)
                 {
-                    if (TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, true))
+                    TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(titleArg, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
+                    if (action == TaskSemaphoreMgr.USER_ACTION.OK)
                     {
                         SwingWorker bgWorker = new SwingWorker()
                         {

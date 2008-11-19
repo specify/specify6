@@ -63,7 +63,9 @@ public class Institution extends UserGroupScope implements java.io.Serializable
      protected String        license;
      protected Boolean       isServerBased;
      protected String        regNumber;
-     protected String        saNumber;
+     
+     protected Boolean       isAnonymous;
+     protected Boolean       hasBeenAsked;
      
      protected Address       address;
      protected Set<Agent>    technicalContacts;
@@ -104,8 +106,9 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         license           = null;
         address           = null;
         isServerBased     = false;
+        isAnonymous       = null;
+        hasBeenAsked      = null;
         regNumber         = null;
-        saNumber          = null;
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
         divisions         = new HashSet<Division>();
@@ -138,16 +141,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     {
         return abbrev;
     }
-    
-    /**
-     * @return the saNumber
-     */
-    @Column(name = "SaNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-    public String getSaNumber()
-    {
-        return saNumber;
-    }
-    
+
     /**
      * @return the contentContacts
      */
@@ -303,6 +297,24 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
+     * @return the isAnonymous
+     */
+    @Column(name = "IsAnonymous", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsAnonymous()
+    {
+        return isAnonymous;
+    }
+
+    /**
+     * @return the hasBeenAsked
+     */
+    @Column(name = "HasBeenAsked", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getHasBeenAsked()
+    {
+        return hasBeenAsked;
+    }
+
+    /**
      * @return the isRegistered
      */
     @Column(name = "RegNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
@@ -424,6 +436,22 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
+     * @param isAnonymous the isAnonymous to set
+     */
+    public void setIsAnonymous(Boolean isAnonymous)
+    {
+        this.isAnonymous = isAnonymous;
+    }
+
+    /**
+     * @param hasBeenAsked the hasBeenAsked to set
+     */
+    public void setHasBeenAsked(Boolean hasBeenAsked)
+    {
+        this.hasBeenAsked = hasBeenAsked;
+    }
+
+    /**
      * @param isRegistered the isRegistered to set
      */
     public void setRegNumber(String regNumber)
@@ -431,13 +459,6 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         this.regNumber = regNumber;
     }
 
-    /**
-     * @param saNumber the saNumber to set
-     */
-    public void setSaNumber(String saNumber)
-    {
-        this.saNumber = saNumber;
-    }
     /**
      * @return the address
      */

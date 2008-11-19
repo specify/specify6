@@ -44,7 +44,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class TaskSemaphoreMgr
 {
-    public enum SCOPE {Global, Discipline, Collection}
+    public enum SCOPE       {Global, Discipline, Collection}
+    public enum USER_ACTION {OK, Error, Cancel, ViewMode, Override}
     
     private static boolean previouslyLocked = false;
     private static String prevLockedBy = null;
@@ -192,14 +193,14 @@ public class TaskSemaphoreMgr
      * @param name the unique name
      * @param context
      * @param scope the scope of the lock
-     * @param allowOverride allows the user to override the lock
+     * @param allViewMode allows it to ask the user about 'View Only'
      * @return
      */
-    public static boolean lock(final String title, 
-                               final String name, 
-                               final String context,
-                               final SCOPE  scope,
-                               final boolean allowOverride)
+    public static USER_ACTION lock(final String title, 
+                                   final String name, 
+                                   final String context,
+                                   final SCOPE  scope,
+                                   final boolean allViewMode)
     {
         DataProviderSessionIFace session = null;
         try
@@ -225,16 +226,16 @@ public class TaskSemaphoreMgr
                     {
                         String msg = UIRegistry.getLocalizedMessage("SpTaskSemaphore.IN_USE", title);//$NON-NLS-1$
                         Object[] options = { getResourceString("SpTaskSemaphore.TRYAGAIN"),  //$NON-NLS-1$
-                                getResourceString("NO")  //$NON-NLS-1$
-                              };
+                                             getResourceString("CANCEL")  //$NON-NLS-1$
+                                           };
                         int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
                                                                      msg,
                                                                      getResourceString("SpTaskSemaphore.IN_USE_TITLE"),  //$NON-NLS-1$
-                                                                     JOptionPane.YES_NO_CANCEL_OPTION,
+                                                                     JOptionPane.YES_NO_OPTION,
                                                                      JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
                         if (userChoice == JOptionPane.NO_OPTION)
                         {
-                            return false;
+                            return USER_ACTION.Cancel;
                         }
                         
                     } else
@@ -243,19 +244,12 @@ public class TaskSemaphoreMgr
                         SpecifyUser user            = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
                         String      currMachineName = InetAddress.getLocalHost().toString();
                         String      dbMachineName   = semaphore.getMachineName();
+                        
                         if (StringUtils.isNotEmpty(dbMachineName) && StringUtils.isNotEmpty(currMachineName) && currMachineName.equals(dbMachineName) &&
                             semaphore.getOwner() != null && user != null && user.getId().equals(semaphore.getOwner().getId()))
                         {
-                            String msg = UIRegistry.getLocalizedMessage("SpTaskSemaphore.IN_USE_BY_YOU", title);//$NON-NLS-1$
-                            Object[] options = { getResourceString("SpTaskSemaphore.OVERRIDE"),  //$NON-NLS-1$
-                                                 getResourceString("NO")  //$NON-NLS-1$
-                                  };
-                            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                                         msg,
-                                                                         getResourceString("SpTaskSemaphore.IN_USE_TITLE"),  //$NON-NLS-1$
-                                                                         JOptionPane.YES_NO_CANCEL_OPTION,
-                                                                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                            return userChoice == JOptionPane.YES_OPTION;
+                            UIRegistry.showLocalizedError("SpTaskSemaphore.IN_USE_BY_YOU", title);
+                            return USER_ACTION.Cancel;
                             
                         }
                         
@@ -265,23 +259,24 @@ public class TaskSemaphoreMgr
                         int      options;
                         int      defBtn;
                         Object[] optionLabels;
-                        if (allowOverride)
+                        if (allViewMode)
                         {
                             defBtn = 2;
                             options = JOptionPane.YES_NO_CANCEL_OPTION;
-                            optionLabels = new String[] { getResourceString("SpTaskSemaphore.OVERRIDE"),  //$NON-NLS-1$
-                                    getResourceString("NO"),  //$NON-NLS-1$
-                                    getResourceString("SpTaskSemaphore.TRYAGAIN")//$NON-NLS-1$
-                                    };
+                            optionLabels = new String[] { getResourceString("SpTaskSemaphore.VIEWMODE"),  //$NON-NLS-1$
+                                                          getResourceString("SpTaskSemaphore.TRYAGAIN"),  //$NON-NLS-1$
+                                                          getResourceString("CANCEL")//$NON-NLS-1$
+                                                        };
                         } else
                         {
                             defBtn = 0;
                             options = JOptionPane.YES_NO_OPTION;
                             optionLabels = new String[] {
-                                    getResourceString("NO"),  //$NON-NLS-1$
                                     getResourceString("SpTaskSemaphore.TRYAGAIN"), //$NON-NLS-1$
+                                    getResourceString("CANCEL"),  //$NON-NLS-1$
                                     };   
                         }
+                        
                         int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
                                                                      msg,
                                                                      getResourceString("SpTaskSemaphore.IN_USE_TITLE"),  //$NON-NLS-1$
@@ -291,25 +286,26 @@ public class TaskSemaphoreMgr
                         {
                             if (options == JOptionPane.YES_NO_CANCEL_OPTION)
                             {
-                                try
-                                {
-                                    return setLock(session, name, context, scope, true, true) != null;
-                                
-                                } catch (StaleObjectException ex)
-                                {
-                                    return false;
-                                }
+                                return USER_ACTION.ViewMode; // CHECKED
                             }
-                            return false;
-                                
-                        } else if (userChoice == JOptionPane.NO_OPTION && options == JOptionPane.YES_NO_CANCEL_OPTION)
+                            // this means try again
+                            
+                        } else if (userChoice == JOptionPane.NO_OPTION)
                         {
-                            return false;
+                            if (options == JOptionPane.YES_NO_OPTION)
+                            {
+                                return USER_ACTION.Cancel;
+                            }
+                         // CHECKED
+                            
+                        } else if (userChoice == JOptionPane.CANCEL_OPTION)
+                        {
+                            return USER_ACTION.Cancel; // CHECKED
                         }
                     }
                 } else
                 {
-                    return true;
+                    return USER_ACTION.OK;
                 }
                 
                 count++;
@@ -328,7 +324,7 @@ public class TaskSemaphoreMgr
                  session.close();
              }
         }
-        return false;
+        return USER_ACTION.Error;
     }
     
     /**

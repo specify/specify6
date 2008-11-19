@@ -812,6 +812,20 @@ public class UIRegistry
     }
     
     /**
+     * Displays a dialog dialog with a non-localized error message.
+     * @param iconType the type of icon to use (Question, Error, etc)
+     * @param titleKey the title localize key
+     * @param msgKey the message localize key
+     * @param args any args
+     */
+    public static void showLocalizedMsg(final int iconType, final String titleKey, final String msgKey, final Object ... args)
+    {
+        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                String.format(getResourceString(msgKey), args), 
+                getResourceString(titleKey), iconType);
+    }
+
+    /**
      * Displays a Warning dialog with a non-localized error message.
      * @param titleKey the title localize key
      * @param msgKey the message localize key
@@ -819,9 +833,7 @@ public class UIRegistry
      */
     public static void showLocalizedMsg(final String titleKey, final String msgKey, final Object ... args)
     {
-        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
-                String.format(getResourceString(msgKey), args), 
-                getResourceString(titleKey), JOptionPane.WARNING_MESSAGE);
+        showLocalizedMsg(JOptionPane.WARNING_MESSAGE, titleKey, msgKey, args);
     }
 
     /**

@@ -72,6 +72,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.config.init.RegisterSpecify;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataType;
@@ -1144,6 +1145,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
             DataType dataType = discipline.getDataType();
             dataType.forceLoad();
             AppContextMgr.getInstance().setClassObject(DataType.class, dataType);
+            
+            RegisterSpecify.register(false);
             
             //--------------------------------------------------------------------------------
             //Check for locks set uploader, tree update, ...
@@ -2507,11 +2510,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } else
             {
-                boolean gotLock = TaskSemaphoreMgr.lock(lockTitle, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
-                if (gotLock)
-                {
-                    
-                } else   
+                TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(lockTitle, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
+                if (action != TaskSemaphoreMgr.USER_ACTION.OK)
                 {
                     UIRegistry.showError("Unable to Lock the tree!");
                     return false;

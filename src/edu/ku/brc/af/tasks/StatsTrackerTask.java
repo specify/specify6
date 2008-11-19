@@ -19,9 +19,6 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Division;
-import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.util.Pair;
 
 /**

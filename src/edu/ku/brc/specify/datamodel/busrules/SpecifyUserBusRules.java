@@ -179,42 +179,6 @@ public class SpecifyUserBusRules extends BaseBusRules
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
-     */
-    @Override
-    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
-    {
-        super.beforeMerge(dataObj, session);
-        
-        /*SpecifyUser spUser = (SpecifyUser)dataObj;
-        
-        ValComboBoxFromQuery cbx = getAgentCBX();
-        if (cbx != null)
-        {
-            Division currDiv   = AppContextMgr.getInstance().getClassObject(Division.class);
-            Agent    userAgent = (Agent)cbx.getValue();
-            if (!userAgent.getDivision().getId().equals(currDiv.getId()))
-            {
-                try
-                {
-                    userAgent = (Agent)spUser.getAgents().iterator().next().clone();
-                    userAgent.setSpecifyUser(spUser);
-                    spUser.getAgents().add(userAgent);
-                    
-                    try
-                    {
-                        session.save(userAgent);
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                    
-                } catch (CloneNotSupportedException ex) {}
-            }
-        }*/
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override

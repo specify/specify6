@@ -262,8 +262,9 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             boolean canSwitch;
             //seems like a lock is the best way to persist the out-of-date state
             if (!arg)
-            {            
-                canSwitch = TaskSemaphoreMgr.lock(getNodeNumberUptoDateLockTitle(), nodeNumbersInvalid, null, TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock());            
+            {
+                TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(getNodeNumberUptoDateLockTitle(), nodeNumbersInvalid, null, TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock());
+                canSwitch = action == TaskSemaphoreMgr.USER_ACTION.OK;        
             }
             else
             {
@@ -492,8 +493,9 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             boolean canSwitch;
             if (arg)
             {
-                canSwitch = TaskSemaphoreMgr.lock(getNodeNumberingLockTitle(), getNodeNumberingLockName(), null,
-                        TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock());
+                TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(getNodeNumberingLockTitle(), getNodeNumberingLockName(), null,
+                                                                            TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock());
+                canSwitch = TaskSemaphoreMgr.USER_ACTION.OK == action;
             }
             else
             {
@@ -644,8 +646,9 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         }
         else
         {
-            result = TaskSemaphoreMgr.lock(getNodeNumberingLockTitle(), getNodeNumberingLockName(), null,
-                TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock());
+            TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(getNodeNumberingLockTitle(), getNodeNumberingLockName(), null,
+                                                                        TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock());
+            result = action == TaskSemaphoreMgr.USER_ACTION.OK;
         }
         return result;
     }

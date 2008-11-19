@@ -769,7 +769,10 @@ public class DatamodelGenerator
                         }
                     } else
                     {
-                        log.warn("Not handled: "+type);
+                        if (!method.getName().equals("getDataObj") && !method.getName().equals("getTreeRootNode"))
+                        {
+                            log.warn("Not handled: "+type);
+                        }
                         typeClass = null;
                     }
                     

@@ -60,6 +60,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     
     protected String                     webPortalURI;
     protected String                     webSiteURI;
+    protected String                     saNumber;
     
     // ABCD Schema
     protected String                     kingdomCoverage;
@@ -125,6 +126,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         dbContentVersion       = null;
         webPortalURI           = null;
         webSiteURI             = null;
+        saNumber               = null;
         
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
@@ -499,6 +501,24 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         this.webSiteURI = webSiteURI;
     }
 
+    
+    /**
+     * @return the saNumber
+     */
+    @Column(name = "SaNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    public String getSaNumber()
+    {
+        return saNumber;
+    }
+
+    /**
+     * @param saNumber the saNumber to set
+     */
+    public void setSaNumber(String saNumber)
+    {
+        this.saNumber = saNumber;
+    }
+    
     /**
      *
      */

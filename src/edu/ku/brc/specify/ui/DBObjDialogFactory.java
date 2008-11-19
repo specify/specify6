@@ -311,39 +311,56 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             String treeSemaphoreName     = treeDefClass.getSimpleName();
             String treeFormSemaphoreName = treeDefClass.getSimpleName() + "Form";
             
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+            String       title    = tableInfo.getTitle() + " " + "Tree";
+            
             // If this user owns the Tree Form Lock then they can open the View
             if (TaskSemaphoreMgr.doesOwnSemaphore(treeFormSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline))
             {
                 return FormLockStatus.OK;
             }
             
-            // Check to see if the Tree Lock is locked
-            if (TaskSemaphoreMgr.isLocked(lockTitle, treeSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline))
+            TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.USER_ACTION.OK;
+            if (isEdit || isNewForm)
             {
-                if (isNewForm)
+                // Check to see if the Tree Lock is locked
+                //if (TaskSemaphoreMgr.isLocked(lockTitle, treeSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline))
+                action = TaskSemaphoreMgr.lock(title, treeSemaphoreName, "def", TaskSemaphoreMgr.SCOPE.Discipline, !isNewForm && isEdit);
+                if (action != TaskSemaphoreMgr.USER_ACTION.OK)
                 {
-                    UIRegistry.showLocalizedError("TREE_LOCKED_NEW_OBJ");
+                    if (action == TaskSemaphoreMgr.USER_ACTION.Cancel)
+                    {
+                        return FormLockStatus.Skip;
+                    }
+                    if (isNewForm)
+                    {
+                        //UIRegistry.showLocalizedError("TREE_LOCKED_NEW_OBJ");
+                        return FormLockStatus.Skip;
+                    }
+                    
+                    if (isEdit)
+                    {
+                        //UIRegistry.showLocalizedError("TREE_LOCKED_EDT_OBJ");
+                        return FormLockStatus.ViewOnly;
+                    }
+                    
                     return FormLockStatus.Skip;
                 }
-                
-                if (isEdit)
-                {
-                    UIRegistry.showLocalizedError("TREE_LOCKED_EDT_OBJ");
-                }
-                
+            } else
+            {
                 return FormLockStatus.ViewOnly;
             }
             
             // First try to grab the tree Lock
-            boolean gotLock = TaskSemaphoreMgr.lock(lockTitle, treeSemaphoreName, "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
-            if (gotLock)
+            //action = TaskSemaphoreMgr.lock(lockTitle, treeSemaphoreName, "def", TaskSemaphoreMgr.SCOPE.Discipline, false); 
+            if (action == TaskSemaphoreMgr.USER_ACTION.OK)
             {
                 // Now grab the Tree Form Lock
-                gotLock = TaskSemaphoreMgr.lock(lockTitle, treeFormSemaphoreName, "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
-                if (!gotLock)
+                action = TaskSemaphoreMgr.lock(title, treeFormSemaphoreName, "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
+                if (action == TaskSemaphoreMgr.USER_ACTION.OK)
                 {
                     // Since for some bizarre reason we didn't get the treeForm Lock release the tree lock.
-                    TaskSemaphoreMgr.unlock(lockTitle, treeSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline);
+                    TaskSemaphoreMgr.unlock(title, treeSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline);
                     
                     UIRegistry.showLocalizedError("TREE_LOCKED_ERR_FRM");
                     return FormLockStatus.Skip;
