@@ -17,7 +17,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import edu.ku.brc.af.auth.MasterPasswordMgr;
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
@@ -25,7 +24,6 @@ import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -124,23 +122,18 @@ public class SpecifyUserBusRules extends BaseBusRules
     {
         super.afterFillForm(dataObj);
         
+        
         if (formViewObj != null && formViewObj.getDataObj() instanceof SpecifyUser)
         {
             SpecifyUser spUser  = (SpecifyUser)formViewObj.getDataObj();
-            Division    currDiv = AppContextMgr.getInstance().getClassObject(Division.class);
-            
             ValComboBoxFromQuery cbx = getAgentCBX();
             if (cbx != null)
             {
                 for (Agent agent : spUser.getAgents())
                 {
-                    System.err.println(spUser.getName() + "  "+agent.toString());
-                    
-                    if (agent.getDivision().getId().equals(currDiv.getId()))
-                    {
-                        cbx.setValue(agent, null);
-                        break;
-                    }
+                    //System.err.println(spUser.getName() + "  "+agent.toString()+"  "+agent.getDivision().getName()+"="+currDiv.getName());
+                    cbx.setValue(agent, null);
+                    break;
                 }
             }
         }
@@ -193,21 +186,32 @@ public class SpecifyUserBusRules extends BaseBusRules
     {
         super.beforeMerge(dataObj, session);
         
-        SpecifyUser spUser = (SpecifyUser)dataObj;
+        /*SpecifyUser spUser = (SpecifyUser)dataObj;
         
         ValComboBoxFromQuery cbx = getAgentCBX();
         if (cbx != null)
         {
-            Agent userAgent = (Agent)cbx.getValue();
-            if (userAgent.getSpecifyUser() != null && 
-                userAgent.getSpecifyUser().getId() != null &&
-                spUser.getId() != null && 
-                !spUser.getId().equals(userAgent.getSpecifyUser().getId()))
+            Division currDiv   = AppContextMgr.getInstance().getClassObject(Division.class);
+            Agent    userAgent = (Agent)cbx.getValue();
+            if (!userAgent.getDivision().getId().equals(currDiv.getId()))
             {
-                spUser.getAgents().add(userAgent);
-                userAgent.setSpecifyUser(spUser);
+                try
+                {
+                    userAgent = (Agent)spUser.getAgents().iterator().next().clone();
+                    userAgent.setSpecifyUser(spUser);
+                    spUser.getAgents().add(userAgent);
+                    
+                    try
+                    {
+                        session.save(userAgent);
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                    
+                } catch (CloneNotSupportedException ex) {}
             }
-        }
+        }*/
     }
 
     /* (non-Javadoc)
