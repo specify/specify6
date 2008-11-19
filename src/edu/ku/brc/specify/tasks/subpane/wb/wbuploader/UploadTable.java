@@ -2476,7 +2476,7 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 sb.append(p.getFirst());
                 sb.append("=");
-                sb.append(p.getSecond());
+                sb.append("\"" + p.getSecond() + "\"");
             }
             this.matchVals = sb.toString();
             this.matchedText = matchedText;
@@ -2518,7 +2518,7 @@ public class UploadTable implements Comparable<UploadTable>
             result.append(" ");
             result.append(getResourceString("WB_UPLOAD_MATCHED"));
             result.append(" ");
-            result.append(matchedText);
+            result.append("\"" + matchedText + "\")");
             return result.toString();
         }
 
