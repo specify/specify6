@@ -60,7 +60,10 @@ public class GroupPersonBusRules extends BaseBusRules
             Agent       agent       = (Agent)parentDataObj;
             GroupPerson groupPerson = (GroupPerson)dataObj;
             
-            if (agent.getId().equals(groupPerson.getMember().getId()))
+            if (agent.getId() != null && 
+                groupPerson.getMember() != null && 
+                groupPerson.getMember().getId() != null &&
+                agent.getId().equals(groupPerson.getMember().getId()))
             {
                 reasonList.add(String.format(getResourceString("GP_SELF_GRPPER"), groupPerson.getIdentityTitle()));
                 return STATUS.Error;
