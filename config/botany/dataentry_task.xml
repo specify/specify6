@@ -10,7 +10,11 @@
 	    <view sidebar="true"  name="Geography"          view="Geography"          iconname="Geography"          tooltip=""/> 
 	    <view sidebar="true"  name="GeologicTimePeriod" view="GeologicTimePeriod" iconname="GeologicTimePeriod" tooltip=""/> 
 	    <view sidebar="false" name="Loan"               view="Loan"               iconname="Loan"               tooltip=""/>    
-	    <view sidebar="true"  name="Locality"           view="Locality"           iconname="Locality"           tooltip=""/> 
+		<view sidebar="false" name="Gift"               view="Gift"               iconname="Gift"               tooltip=""/> 
+		<view sidebar="false" name="Borrow"             view="Borrow"             iconname="Borrow"             tooltip=""/>    
+		<view sidebar="false" name="ExchangeIn"         view="ExchangeIn"         iconname="ExchangeIn"         tooltip=""/> 
+		<view sidebar="false" name="ExchangeOut"        view="ExchangeOut"        iconname="ExchangeOut"         tooltip=""/>    
+		<view sidebar="true"  name="Locality"           view="Locality"           iconname="Locality"           tooltip=""/> 
 		<view sidebar="false" name="ConservEvent"       view="ConservEvent"       iconname="ConservEvent"       tooltip=""/>
 		<view sidebar="false" name="FieldNotebookPage"  view="FieldNotebookPage"  iconname="FieldNotebookPage"  tooltip=""/>
 		<view sidebar="false" name="FieldNotebookPageSet" view="FieldNotebookPageSet" iconname="FieldNotebookPageSet" tooltip=""/>
