@@ -23,6 +23,7 @@ import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -32,6 +33,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.ui.db.TextFieldFromPickListTable;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
@@ -408,18 +410,18 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     @Override
     public void afterFillForm(final Object dataObj)
     {
-        if (formViewObj.getAltView().getMode() != CreationMode.EDIT)
-        {
-            // when we're not in edit mode, we don't need to setup any listeners since the user can't change anything
-            //log.debug("form is not in edit mode: no special listeners will be attached");
-            return;
-        }
-
         // This is a little weak and chessey, but it gets the job done.
         // Becase both the Tree and Definition want/need to share Business Rules.
         String viewName = formViewObj.getView().getName();
         if (StringUtils.contains(viewName, "TreeDef"))
         {
+            if (formViewObj.getAltView().getMode() != CreationMode.EDIT)
+            {
+                // when we're not in edit mode, we don't need to setup any listeners since the user can't change anything
+                //log.debug("form is not in edit mode: no special listeners will be attached");
+                return;
+            }
+
             if (!viewName.equals("TaxonTreeDefItem"))
             {
                 return;
@@ -455,10 +457,23 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             return;
         }
         
+        final T nodeInForm = (T) formViewObj.getDataObj();
         
-        if (formViewObj.getAltView().getMode() == CreationMode.EDIT)
+        if (formViewObj.getAltView().getMode() != CreationMode.EDIT) 
         {
-            final T nodeInForm = (T) formViewObj.getDataObj();
+            if (nodeInForm != null)
+            {
+                //XXX this MAY be required because of bug with TextFieldFromPickListTable??
+                // TextFieldFromPickListTable.setValue() does nothing because of a null adapter member.
+                Component comp = formViewObj.getControlByName("definitionItem");
+                if (comp instanceof JTextField)
+                {
+                    ((JTextField )comp).setText(nodeInForm.getDefinitionItem().getName());
+                }
+            }
+        }
+        else
+        {
             GetSetValueIFace parentField = (GetSetValueIFace) formViewObj
                     .getControlByName("parent");
             Component comp = formViewObj.getControlByName("definitionItem");
