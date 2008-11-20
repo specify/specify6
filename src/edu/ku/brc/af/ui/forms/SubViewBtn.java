@@ -42,6 +42,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.auth.PermissionSettings;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
@@ -226,23 +227,40 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             {
                 if (perm == null)
                 {
-                    Class<?> cls;
-                    if (dObj instanceof Set<?>)
+                    DBTableInfo subViewTI = null;
+                    DBTableInfo parentTI  = DBTableIdMgr.getInstance().getByClassName(mvParent.getView().getClassName());
+                    if (parentTI != null)
                     {
-                        Set<?> set = (Set<?>)dObj;
-                        if (set.size() == 0)
+                        DBRelationshipInfo ri = parentTI.getRelationshipByName(cellName);
+                        if (ri != null)
                         {
-                            return;
+                            subViewTI = DBTableIdMgr.getInstance().getByClassName(ri.getClassName());
                         }
-                        cls = set.iterator().next().getClass();
-                    } else
-                    {
-                        cls = dObj.getClass();
                     }
-                    DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(cls.getSimpleName());
-                    if (tblInfo != null)
+                    
+                    // It should never be null right here, 
+                    // but just in case we will leave the old code in.
+                    if (subViewTI == null)
                     {
-                        perm = tblInfo.getPermissions();
+                        Class<?> cls;
+                        if (dObj instanceof Set<?>)
+                        {
+                            Set<?> set = (Set<?>)dObj;
+                            if (set.size() == 0)
+                            {
+                                return;
+                            }
+                            cls = set.iterator().next().getClass();
+                        } else
+                        {
+                            cls = dObj.getClass();
+                        }
+                        subViewTI = DBTableIdMgr.getInstance().getByShortClassName(cls.getSimpleName());
+                    }
+                    
+                    if (subViewTI != null)
+                    {
+                        perm = subViewTI.getPermissions();
                     }
                 }
             }
@@ -505,6 +523,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             }
             
             label.setText(lblStr);
+            
         } else if (dataObj == null)
         {
             label.setText("  ");
@@ -552,7 +571,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                 sessionLocal.attach(parentObj);
             }
             
-            // Retrieve lazy object while in the context of a session (just like a subform would do
+            // Retrieve lazy object while in the context of a session (just like a subform would do)
             if (dataObj != null)
             {
                 setEnabledInternal(isEnabled());
