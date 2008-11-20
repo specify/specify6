@@ -56,8 +56,8 @@ public class Determination extends CollectionMember implements java.io.Serializa
      protected String              addendum;
      protected String              confidence;
      protected String              method;
-     protected String              alternateTaxonName;
-     protected String              alternateTaxonNameUsage; 
+     protected String              alternateName;
+     protected String              nameUsage; 
      protected String              featureOrBasis;
      protected String              remarks;
      protected String              text1;
@@ -71,13 +71,6 @@ public class Determination extends CollectionMember implements java.io.Serializa
      protected CollectionObject    collectionObject;
      protected Set<DeterminationCitation> determinationCitations;
      protected Agent               determiner;
-     //The SpSynonymyDetermination records (actually should only be one ot them) created when this
-     //determination's taxon was made un-accepted
-     protected Set<SpSynonymyDetermination> oldSynonymyDeterminations;
-     //The SpSynonymyDetermination records (actually should only be one ot them) created when this
-     //determination was created as result of the taxon for the previously current determination being made
-     //a synonym of this determination's taxon 
-     protected Set<SpSynonymyDetermination> newSynonymyDeterminations;
      
 
     // Constructors
@@ -110,8 +103,8 @@ public class Determination extends CollectionMember implements java.io.Serializa
         confidence = null;
         qualifier  = null;
         addendum = null;
-        alternateTaxonName = null;
-        alternateTaxonNameUsage = null;
+        alternateName = null;
+        nameUsage = null;
         method = null;
         featureOrBasis = null;
         remarks = null;
@@ -125,8 +118,6 @@ public class Determination extends CollectionMember implements java.io.Serializa
         taxon = null;
         collectionObject = null;
         determinationCitations = new HashSet<DeterminationCitation>();
-        oldSynonymyDeterminations = new HashSet<SpSynonymyDetermination>();
-        newSynonymyDeterminations = new HashSet<SpSynonymyDetermination>();
         determiner = null;
     }
     // End Initializer
@@ -272,37 +263,37 @@ public class Determination extends CollectionMember implements java.io.Serializa
     }
 
     /**
-     * @return the alternateTaxonName
+     * @return the alternateName
      */
-    @Column(name = "AlternateTaxonName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
-    public String getAlternateTaxonName()
+    @Column(name = "AlternateName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getAlternateName()
     {
-        return alternateTaxonName;
+        return alternateName;
     }
 
     /**
-     * @param alternateTaxonName the alternateTaxonName to set
+     * @param alternateName the alternateName to set
      */
-    public void setAlternateTaxonName(String alternateTaxonName)
+    public void setAlternateName(String alternateName)
     {
-        this.alternateTaxonName = alternateTaxonName;
+        this.alternateName = alternateName;
     }
 
     /**
-     * @return the alternateTaxonNameUsage
+     * @return the nameUsage
      */
-    @Column(name = "AlternateTaxonNameUsage", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
-    public String getAlternateTaxonNameUsage()
+    @Column(name = "NameUsage", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getNameUsage()
     {
-        return alternateTaxonNameUsage;
+        return nameUsage;
     }
 
     /**
-     * @param alternateTaxonName the alternateTaxonName to set
+     * @param nameUsage the nameUsage to set
      */
-    public void setAlternateTaxonNameUsage(String alternateTaxonNameUsage)
+    public void setNameUsage(String nameUsage)
     {
-        this.alternateTaxonNameUsage = alternateTaxonNameUsage;
+        this.nameUsage = nameUsage;
     }
 
     /**
@@ -483,48 +474,6 @@ public class Determination extends CollectionMember implements java.io.Serializa
         this.activeTaxon = activeTaxon;
     }
 
-    /**
-     * @return oldSynonymyDeterminations
-     */
-    @OneToMany(mappedBy = "oldDetermination")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<SpSynonymyDetermination> getOldSynonymyDeterminations() {
-        return this.oldSynonymyDeterminations;
-    }
-
-    /**
-     * @param arg
-     */
-    public void setOldSynonymyDeterminations(Set<SpSynonymyDetermination> arg)
-    {
-        oldSynonymyDeterminations = arg;
-    }
-
-    /**
-     * @return true if the Determination was created by the Specify application
-     */
-    @Transient
-    public Boolean isSystem()
-    {
-        return oldSynonymyDeterminations.size() > 0 || newSynonymyDeterminations.size() > 0;
-    }
-    
-    /**
-     * @return newSynonymyDeterminations
-     */
-    @OneToMany(mappedBy = "newDetermination")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<SpSynonymyDetermination> getNewSynonymyDeterminations() {
-        return this.newSynonymyDeterminations;
-    }
-
-    /**
-     * @param arg
-     */
-    public void setNewSynonymyDeterminations(Set<SpSynonymyDetermination> arg)
-    {
-        newSynonymyDeterminations = arg;
-    }
 
     /**
      * 

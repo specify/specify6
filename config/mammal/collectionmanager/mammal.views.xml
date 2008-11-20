@@ -254,10 +254,10 @@
                 </row>
  				<row>
                     <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="alternateTaxonNameUsage" uitype="combobox" picklist="AlternateTaxonNameUsages"/>
+                    <cell type="field" id="11" name="nameUsage" uitype="combobox" picklist="NameUsages"/>
                     
                     <cell type="label" labelfor="10"/>
-                    <cell type="field" id="10" name="alternateTaxonName" uitype="text"/>
+                    <cell type="field" id="10" name="alternateName" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6"/>

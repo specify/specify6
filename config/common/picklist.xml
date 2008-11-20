@@ -112,7 +112,7 @@
       <picklistitem title="Dr." value="dr"/>
     </items>
    </picklist>
-   <picklist name="AlternateTaxonNameUsages" issystem="true" type="0" readonly="true" sizelimit="100">
+   <picklist name="NameUsages" issystem="true" type="0" readonly="true" sizelimit="100">
     <items>
       <picklistitem title="Shelved By" value="shelved by"/>
       <picklistitem title="Flora of Kansas" value="flora of kansas"/>

@@ -30,7 +30,6 @@ import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
-import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
@@ -82,21 +81,6 @@ public class DeterminationBusRules extends BaseBusRules
         if (formViewObj.getDataObj() instanceof Determination)
         {
             determination = (Determination)formViewObj.getDataObj();
-            boolean isSynDet = isSynonymyDet(determination);
-            Component synFlag = formViewObj.getControlByName("newSynonymyDeterminations.newDetermination");
-            if (synFlag != null)
-            {
-                synFlag.setFocusable(false);
-                formViewObj.getLabelFor(synFlag).setText("Type:");
-                if (isSynDet)
-                {
-                    ((JTextField )synFlag).setText("System");
-                }
-                else
-                {
-                    ((JTextField )synFlag).setText("User");
-                }
-            }
 
             Component activeTax = formViewObj.getControlByName("activeTaxon");
             if (activeTax != null)
@@ -121,67 +105,17 @@ public class DeterminationBusRules extends BaseBusRules
             }
 
             
-            Component altTaxUsageComp     = formViewObj.getControlByName("alternateTaxonNameUsage");
+            Component altTaxUsageComp     = formViewObj.getControlByName("nameUsage");
             if (altTaxUsageComp instanceof ValComboBox)
             {
-                if (isSynDet)
+                if (!checkedBlankUsageItem)
                 {
-                    altTaxUsageComp.setEnabled(false);
-                }
-                else
-                {
-                    if (!checkedBlankUsageItem)
-                    {
-                        boolean fnd = false;
-                        PickListDBAdapterIFace items = (PickListDBAdapterIFace )((ValComboBox) altTaxUsageComp).getComboBox().getModel();
-                        for (PickListItemIFace item : items.getPickList().getItems())
-                        {
-                            if (StringUtils.isBlank(item.getValue()))
-                            {
-                                fnd = true;
-                                break;
-                            }
-                        }
-                        if (!fnd)
-                        {
-                            boolean readOnly = items.getPickList().getReadOnly();
-                            if (readOnly)
-                            {
-                                items.getPickList().setReadOnly(false);
-                            }
-                            items.addItem("", null);
-                            if (readOnly)
-                            {
-                                items.getPickList().setReadOnly(true);
-                            }
-                        }
-                        checkedBlankUsageItem = true;
-                    }
-                    altTaxUsageComp.setEnabled(true);
-                    if (altTaxUsageAL == null)
-                    {
-                        altTaxUsageAL = new ActionListener()
-                        {
-                            // @Override
-                            public void actionPerformed(final ActionEvent e)
-                            {
-                                SwingUtilities.invokeLater(new Runnable()
-                                {
-                                    // @Override
-                                    public void run()
-                                    {
-                                        altTaxUsageSelected(e);
-                                    }
-                                });
-                            }
-                        };
-                    }
-
-                    JComboBox cbx = ((ValComboBox) altTaxUsageComp).getComboBox();
                     boolean fnd = false;
-                    for (ActionListener al : cbx.getActionListeners())
+                    PickListDBAdapterIFace items = (PickListDBAdapterIFace) ((ValComboBox) altTaxUsageComp)
+                            .getComboBox().getModel();
+                    for (PickListItemIFace item : items.getPickList().getItems())
                     {
-                        if (al == altTaxUsageAL)
+                        if (StringUtils.isBlank(item.getValue()))
                         {
                             fnd = true;
                             break;
@@ -189,28 +123,68 @@ public class DeterminationBusRules extends BaseBusRules
                     }
                     if (!fnd)
                     {
-                        cbx.addActionListener(altTaxUsageAL);
+                        boolean readOnly = items.getPickList().getReadOnly();
+                        if (readOnly)
+                        {
+                            items.getPickList().setReadOnly(false);
+                        }
+                        items.addItem("", null);
+                        if (readOnly)
+                        {
+                            items.getPickList().setReadOnly(true);
+                        }
                     }
+                    checkedBlankUsageItem = true;
+                }
+                altTaxUsageComp.setEnabled(true);
+                if (altTaxUsageAL == null)
+                {
+                    altTaxUsageAL = new ActionListener()
+                    {
+                        // @Override
+                        public void actionPerformed(final ActionEvent e)
+                        {
+                            SwingUtilities.invokeLater(new Runnable()
+                            {
+                                // @Override
+                                public void run()
+                                {
+                                    altTaxUsageSelected(e);
+                                }
+                            });
+                        }
+                    };
+                }
+
+                JComboBox cbx = ((ValComboBox) altTaxUsageComp).getComboBox();
+                boolean fnd = false;
+                for (ActionListener al : cbx.getActionListeners())
+                {
+                    if (al == altTaxUsageAL)
+                    {
+                        fnd = true;
+                        break;
+                    }
+                }
+                if (!fnd)
+                {
+                    cbx.addActionListener(altTaxUsageAL);
                 }
             }
 
             Component taxComp = formViewObj.getControlByName("taxon");
-            Component altTaxComp = formViewObj.getControlByName("alternateTaxonName");
+            Component altTaxComp = formViewObj.getControlByName("alternateName");
             if (taxComp != null)
             {
-                // ((ValComboBoxFromQuery
-                // )taxComp).getTextWithQuery().getTextField().setEditable(!isSynDet);
-                taxComp.setEnabled(!isSynDet);
-                if (determination != null && !isSynDet)
+                if (determination != null)
                 {
                     ((ValComboBoxFromQuery) taxComp).getTextWithQuery().getTextField().setEditable(
-                            StringUtils.isBlank(determination.getAlternateTaxonNameUsage()));
+                            StringUtils.isBlank(determination.getNameUsage()));
                 }
             }
             if (altTaxComp != null)
             {
-                ((JTextField) altTaxComp).setEditable(!isSynDet);
-                if (determination != null && !isSynDet)
+                if (determination != null)
                 {
                     ((JTextField) altTaxComp).setEditable(determination.getTaxon() == null);
                 }
@@ -231,7 +205,7 @@ public class DeterminationBusRules extends BaseBusRules
             
             PickListItemIFace item = (PickListItemIFace)cbx.getSelectedItem();
             Component taxComp = formViewObj.getControlByName("taxon");
-            Component altTaxComp = formViewObj.getControlByName("alternateTaxonName");
+            Component altTaxComp = formViewObj.getControlByName("alternateName");
             if (item != null && !StringUtils.isBlank(item.getValue()))
             {
                 //clear and disable taxon component
@@ -346,67 +320,7 @@ public class DeterminationBusRules extends BaseBusRules
 
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.forms.BaseBusRules#okToEnableDelete(java.lang.Object)
-     */
-    @Override
-    public boolean okToEnableDelete(Object dataObj)
-    {
-        if (!super.okToEnableDelete(dataObj))
-        {
-            return false;
-        }
-        
-        return !((Determination )dataObj).isSystem();
-    }
-
-    /**
-     * @param det
-     * @return true if det was created or modified as a result of a synonymization.
-     * 
-     * It may be possible to just call det.isSystem(). However, this method may be still be 
-     * necessary due to lazy loading complications.
-     */
-    protected boolean isSynonymyDet(final Determination det)
-    {
-        if (det.getId() == null)
-        {
-            return false;
-        }
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            return session.createQuery("select id from SpSynonymyDetermination where oldDeterminationId = " 
-                    + det.getId() + " or newDeterminationId = " + det.getId(), false).list().size() > 0;
-        }
-        finally
-        {
-            session.close();
-        }
-    }
     
-//    /* (non-Javadoc)
-//     * @see edu.ku.brc.af.ui.forms.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace)
-//     */
-//    @Override
-//    public void okToDelete(Object dataObj,
-//                           DataProviderSessionIFace session,
-//                           BusinessRulesOkDeleteIFace deletable)
-//    {
-//        if (deletable != null)
-//        {
-//            Determination det = (Determination )dataObj;
-//            boolean doDelete = true;
-//            if (isSynonymyDet(det))
-//            {
-//                doDelete = UIRegistry.displayConfirmLocalized("DeterminationBusRule.SynDetDelTitle", "DeterminationBusRule.SynDetDelMsg", "YES", "CANCEL", JOptionPane.QUESTION_MESSAGE);
-//            }
-//            if (doDelete)
-//            {
-//                deletable.doDeleteDataObj(dataObj, session, true);
-//            }
-//        }
-//    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
@@ -419,17 +333,7 @@ public class DeterminationBusRules extends BaseBusRules
         {
             return false;
         }
-        
-//        if (dataObj == null)
-//        {
-//            return true;
-//        }
-//        
-//        if (isSynonymyDet((Determination )dataObj))
-//        {
-//            return UIRegistry.displayConfirmLocalized("DeterminationBusRule.SynDetDelTitle", "DeterminationBusRule.SynDetDelMsg", "YES", "CANCEL", JOptionPane.QUESTION_MESSAGE);
-//        }
-        
+                
         return true;
     }
 
