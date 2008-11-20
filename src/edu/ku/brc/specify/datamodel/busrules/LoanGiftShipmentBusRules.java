@@ -20,6 +20,8 @@ import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextField;
+import edu.ku.brc.specify.datamodel.Borrow;
+import edu.ku.brc.specify.datamodel.ExchangeOut;
 import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.Shipment;
@@ -50,10 +52,12 @@ public class LoanGiftShipmentBusRules extends BaseBusRules
                 MultiView multiView = formViewObj.getMVParent().getMultiViewParent();
                 if (multiView != null)
                 {
-                    FormViewObj fvo        = multiView.getCurrentViewAsFormViewObj();
-                    Shipment    shipment   = (Shipment)formViewObj.getDataObj();
-                    Loan        loan       = shipment.getLoan();
-                    Gift        gift       = shipment.getGift();
+                    FormViewObj fvo         = multiView.getCurrentViewAsFormViewObj();
+                    Shipment    shipment    = (Shipment)formViewObj.getDataObj();
+                    Loan        loan        = shipment.getLoan();
+                    Gift        gift        = shipment.getGift();
+                    ExchangeOut exchangeOut = shipment.getExchangeOut();
+                    Borrow      borrow      = shipment.getBorrow();
                     
                     String controlName = null;
                     if (loan != null)
@@ -71,29 +75,44 @@ public class LoanGiftShipmentBusRules extends BaseBusRules
                             shipment.setShipmentNumber(gift.getGiftNumber());
                         }
                         controlName = "giftNumber";
+                        
+                    } else if (exchangeOut != null)
+                    {
+                        controlName = null;
+                        
+                    } else if (borrow != null)
+                    {
+                        if (StringUtils.isEmpty(shipment.getShipmentNumber()))
+                        {
+                            shipment.setShipmentNumber(borrow.getInvoiceNumber());
+                        }
+                        controlName = "invoiceNumber";
                     }
                     
-                    Component comp = fvo.getControlByName(controlName);
-                    if (comp != null)
+                    if (controlName != null)
                     {
-                        String numberStr = comp instanceof ValFormattedTextField ? ((ValFormattedTextField)comp).getText() : ((JTextField)comp).getText();
-                        
-                        comp = formViewObj.getControlByName("shipmentNumber");
-                        if (comp instanceof JTextField)
+                        Component comp = fvo.getControlByName(controlName);
+                        if (comp != null)
                         {
-                            JTextField tf = (JTextField)comp;
-                            if (StringUtils.isEmpty(tf.getText()))
+                            String numberStr = comp instanceof ValFormattedTextField ? ((ValFormattedTextField)comp).getText() : ((JTextField)comp).getText();
+                            
+                            comp = formViewObj.getControlByName("shipmentNumber");
+                            if (comp instanceof JTextField)
                             {
-                                tf.setText(numberStr);
+                                JTextField tf = (JTextField)comp;
+                                if (StringUtils.isEmpty(tf.getText()))
+                                {
+                                    tf.setText(numberStr);
+                                }
+                            } else
+                            {
+                                log.error("Couldn't find UI control 'shipmentNumber' on the Loan Form");
                             }
+                            
                         } else
                         {
-                            log.error("Couldn't find UI control 'shipmentNumber' on the Loan Form");
+                            log.error("Couldn't find UI control 'loanNumber' on the Loan Form");
                         }
-                        
-                    } else
-                    {
-                        log.error("Couldn't find UI control 'loanNumber' on the Loan Form");
                     }
                 }
             }

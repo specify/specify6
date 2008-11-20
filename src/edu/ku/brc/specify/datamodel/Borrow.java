@@ -153,6 +153,17 @@ public class Borrow extends CollectionMember implements java.io.Serializable {
         return this.borrowId;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#forceLoad()
+     */
+    @Override
+    public void forceLoad()
+    {
+        super.forceLoad();
+        
+        borrowAgents.size();
+    }
+
     /*
      * (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
