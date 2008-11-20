@@ -848,6 +848,32 @@ public class DataEntryTask extends BaseTask
                 stdViews  = dataEntryXML.getStd();
                 miscViews = dataEntryXML.getMisc();
                 
+                // FOR DEBUGGING - Verify View Names
+                /*
+                List<ViewIFace> views = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getEntirelyAllViews();
+                Hashtable<String, Object> hash = new Hashtable<String, Object>();
+                for (ViewIFace view : views)
+                {
+                    log.error("Loading View Named["+view.getName()+"]");
+                    hash.put(view.getName(), "X");
+                }
+                
+                for (DataEntryView dev : stdViews)
+                {
+                    if (hash.get(dev.getView()) == null)
+                    {
+                        log.error("STD - For DEV Name["+dev.getName()+"] the view named ["+dev.getView()+"] doesn't exist!");
+                    }
+                }
+                
+                for (DataEntryView dev : miscViews)
+                {
+                    if (hash.get(dev.getView()) == null)
+                    {
+                        log.error("MSC - For DEV Name["+dev.getName()+"] the view named ["+dev.getView()+"] doesn't exist!");
+                    }
+                }
+                */
                 //initDataEntryViews(stdViews);
                 //initDataEntryViews(miscViews);
                 
@@ -1104,7 +1130,6 @@ public class DataEntryTask extends BaseTask
             
             for (DataEntryView dev : stdViews)
             {
-                System.out.println(dev.getTableInfo());
                 if (dev.getTableInfo() != null)
                 {
                     String srvName = ServiceInfo.getHashKey(dev.getName(), this, dev.getTableInfo().getTableId());

@@ -132,13 +132,13 @@ public class DataEntryConfigDlg extends TaskConfigureDlg
             {
                 ViewIFace     view = newAvailViews.get(name);
                 DBTableInfo   ti   = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-                DataEntryView dev  = new DataEntryView(view.getObjTitle(), 
+                DataEntryView dev  = new DataEntryView(view.getName(), 
                                                        view.getName(), 
                                                        ti != null ? ti.getName() : null, 
                                                        view.getObjTitle(), 
                                                        model.getSize(),
                                                        true);
-                
+                dev.setTableInfo(ti);
                 ((DefaultListModel)model).addElement(dev);
                 itemList.add(dev);
             }
