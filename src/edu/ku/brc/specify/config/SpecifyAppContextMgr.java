@@ -1013,6 +1013,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return setContext(databaseName, userName, startingOver, startingOver);
     }
 
+    /**
+     * @param databaseName
+     * @param userName
+     * @param startingOver
+     * @param promptForCollection
+     * @return
+     */
     public CONTEXT_STATUS setContext(final String  databaseName,
                                      final String  userName,
                                      final boolean startingOver,

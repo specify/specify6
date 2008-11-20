@@ -148,6 +148,8 @@ public class RegisterSpecify
         Object dataObj = dataObjArg;
         DataModelObjBase.save(dataObj);
         
+        ((DataModelObjBase)dataObj).forceLoad();
+        
         dataObj = DataModelObjBase.getDataObj(cls, ((DataModelObjBase)dataObj).getId());
         if (dataObj != null)
         {

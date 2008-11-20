@@ -767,7 +767,9 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
         {
             session = DataProviderFactory.getInstance().createSession();
             
-            return (T)session.get(cls, id);
+            DataModelObjBase dmObj = (DataModelObjBase)session.get(cls, id);
+            dmObj.forceLoad();
+            return (T)dmObj;
             
         } catch (Exception ex)
         {
