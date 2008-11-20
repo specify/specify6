@@ -2529,7 +2529,7 @@ public class UploadTable implements Comparable<UploadTable>
      * Currently only used as a way of testing Tree updates.
      */
     @SuppressWarnings("unused")
-    public void finishUpload() throws UploaderException
+    public void finishUpload(boolean cancelled) throws UploaderException
     {
         //nothing to do here.
     }

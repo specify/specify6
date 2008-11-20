@@ -612,10 +612,10 @@ public class UploadTableTree extends UploadTable
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#finishUpload()
      */
     @Override
-    public void finishUpload() throws UploaderException
+    public void finishUpload(boolean cancelled) throws UploaderException
     {
-        super.finishUpload();
-        if (this.parent == null  && !this.incrementalNodeNumberUpdates)
+        super.finishUpload(cancelled);
+        if (this.parent == null  && !this.incrementalNodeNumberUpdates && !cancelled)
         {
             //System.out.println("HEY! uncomment TreeDef upload sets.");
             try

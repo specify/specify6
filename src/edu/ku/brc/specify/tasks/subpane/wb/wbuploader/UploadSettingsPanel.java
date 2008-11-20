@@ -11,6 +11,10 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 public class UploadSettingsPanel extends JPanel
 {
     UploadMatchSettingsPanel matchPanel;
@@ -21,7 +25,9 @@ public class UploadSettingsPanel extends JPanel
     
     public UploadSettingsPanel(final Vector<UploadTable> tables)
     {
+        super();
         this.tables = tables;
+        setLayout(new BorderLayout());
     }
     
     
@@ -39,8 +45,12 @@ public class UploadSettingsPanel extends JPanel
         mainPane.addTab(getResourceString("WB_UPLOAD_MISSING_DATA"), resolver.getUI(readOnly));
         add(mainPane, BorderLayout.CENTER);
 */        
+        
         matchPanel = new UploadMatchSettingsPanel(tables, readOnly, false);
-        add(matchPanel, BorderLayout.CENTER);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
+        //add(matchPanel, BorderLayout.CENTER);
+        pb.add(matchPanel, new CellConstraints().xy(1,1));
+        add(pb.getPanel(), BorderLayout.CENTER);
     }
 
     /**

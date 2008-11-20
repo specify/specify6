@@ -15,6 +15,7 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Enumeration;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -28,9 +29,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 public class UploadMatchSettingsPanel extends JPanel implements ActionListener
 {
@@ -86,6 +92,9 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
     
     public UploadMatchSettingsPanel(final Vector<UploadTable> tables, boolean readOnly, boolean showApplyBtn)
     {
+        super();
+        
+        setLayout(new BorderLayout());
         //display tables alphabetically
         this.tables = new Vector<UploadTable>(new TreeSet<UploadTable>(tables));
         
@@ -154,24 +163,44 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
             };
         }
         tblTbl = new JTable(tblModel);
-        setLayout(new BorderLayout());
-        JScrollPane sp = new JScrollPane(tblTbl, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        add(sp, BorderLayout.CENTER);
+        Enumeration<TableColumn> cols = tblTbl.getColumnModel().getColumns();
+        while (cols.hasMoreElements())
+        {
+            TableColumn col = cols.nextElement();
+            col.setPreferredWidth(new JLabel((String )col.getHeaderValue()).getPreferredSize().width);
+        }
+        
+        PanelBuilder pb; 
+        if (showApplyBtn)
+        {
+            pb = new PanelBuilder(new FormLayout("2dlu, f:p:g, 2dlu", "2dlu, c:p, 2dlu, f:p:g, p, 2dlu"));
+        }
+        else
+        {
+            pb = new PanelBuilder(new FormLayout("2dlu, f:p:g, 2dlu", "2dlu, c:p, 2dlu, f:p:g, 2dlu"));
+        }
+        CellConstraints cc = new CellConstraints();        
         
         caption = createLabel(getResourceString("WB_UPLOAD_MATCH_SETTINGS") + ":");
         caption.setFont(caption.getFont().deriveFont(Font.BOLD));
-        add(caption, BorderLayout.NORTH);
-
+        //add(caption, BorderLayout.NORTH);
+        pb.add(caption, cc.xy(2, 2));
+        
+        JScrollPane sp = new JScrollPane(tblTbl, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        pb.add(sp, cc.xy(2, 4));
+                
         if (showApplyBtn)
         {
             applyBtn = createButton(getResourceString("APPLY"));
             applyBtn.setActionCommand("APPLY");
             applyBtn.addActionListener(this);
-            add(applyBtn, BorderLayout.SOUTH);
+            pb.add(applyBtn, cc.xy(2, 6));
         }
         else
         {
             applyBtn = null;
         }
+        
+        add(pb.getPanel(), BorderLayout.CENTER);
     }    
 }

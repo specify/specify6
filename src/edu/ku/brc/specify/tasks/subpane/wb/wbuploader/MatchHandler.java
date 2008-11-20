@@ -43,7 +43,14 @@ import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.af.core.db.DBTableIdMgr;
+import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
@@ -58,6 +65,7 @@ public class MatchHandler
     protected CustomDialog matchDlg;
     protected CustomDialog settingDlg;
     protected JList matchesList;
+    protected JButton viewBtn;
 
     public MatchHandler(final UploadTable uploadTable)
     {
@@ -199,7 +207,10 @@ public class MatchHandler
 
         Vector<Object> matchVec = new Vector<Object>();
 
-        matchVec.addAll(matches);
+        for (DataModelObjBase match : matches)
+        {
+            matchVec.add(new MatchedRecord(match));
+        }
         matchesList = new JList(matchVec);
         matchesList.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
         matchesList.addListSelectionListener(new ListSelectionListener()
@@ -217,7 +228,6 @@ public class MatchHandler
         pane.add(matchesPane, BorderLayout.CENTER);
         
         JButton settingsBtn = createButton(getResourceString("WB_UPLOAD_MATCH_SETTINGS_BTN"));
-        settingsBtn.setActionCommand("SETTINGS");
         settingsBtn.setToolTipText(getResourceString("WB_UPLOAD_MATCH_SETTINGS_BTN_HINT"));
         settingsBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -226,7 +236,20 @@ public class MatchHandler
             }
         });
         JPanel btnPane = new JPanel(new BorderLayout());
-        btnPane.add(settingsBtn, BorderLayout.EAST);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p, 1dlu, f:p", "f:p"));
+        viewBtn = createButton(getResourceString("WB_UPLOAD_VIEW_MATCH_BTN"));
+        viewBtn.setToolTipText(getResourceString("WB_UPLOAD_VIEW_MATCH_BTN_HINT"));
+        viewBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                viewSelectedMatch();
+            }
+        });
+        CellConstraints cc = new CellConstraints();
+        pb.add(viewBtn, cc.xy(1, 1));
+        pb.add(settingsBtn, cc.xy(3, 1));
+        
+        btnPane.add(pb.getPanel(), BorderLayout.EAST);
         
         pane.add(btnPane, BorderLayout.SOUTH);
         
@@ -255,7 +278,7 @@ public class MatchHandler
                     UploaderMatchSkipException.makeMsg(restrictedVals, uploadTable.getUploadFields().get(recNum).size(),
                             Uploader.getCurrentUpload().getRow()), matches, Uploader
                             .getCurrentUpload().getRow(), uploadTable); }
-            return (DataModelObjBase) matchesList.getSelectedValue(); 
+            return ((MatchedRecord )matchesList.getSelectedValue()).getDataObj(); 
         }
         finally
         {
@@ -264,11 +287,18 @@ public class MatchHandler
         }
     }
     
+    /**
+     * Uppdate UI to reflect selection changes.
+     */
     protected void updateMatchUIState()
     {
         matchDlg.getOkBtn().setEnabled(matchesList.getSelectedValue() != null);
+        viewBtn.setEnabled(matchesList.getSelectedValue() != null);
     }
 
+    /**
+     * Show match settings dialog.
+     */
     protected void showSettings()
     {
         UploadMatchSettingsBasicPanel umsbp = new UploadMatchSettingsBasicPanel();
@@ -309,12 +339,90 @@ public class MatchHandler
         }
     }
     
+    /**
+     * Apply settings for current table to all tables.
+     */
     protected void applyToAll()
     {
+        //XXX Implement This!
         if (settingDlg != null)
         {
             settingDlg.setVisible(false);
         }        
     }
+
+    /**
+     * Views the match currently selected in the match list in a data form.
+     * 
+     * @return true if the match is selected. (Currently not implemented. Always returns false).
+     */
+    protected boolean viewSelectedMatch()
+    {
+        MatchedRecord selection = (MatchedRecord )matchesList.getSelectedValue();
+        
+        System.out.println("Viewing " + matchesList.getSelectedValue());
+
+        String      viewName      = selection.getDataObj().getClass().getSimpleName();
+        Frame       parentFrame   = (Frame)UIRegistry.get(UIRegistry.FRAME);
+        String      displayName   = selection.getTblInfo().getTitle();
+        String      closeBtnText  = getResourceString("CLOSE");
+        String      className     = selection.getDataObj().getClass().getName();
+        String      idFieldName   = selection.getTblInfo().getIdFieldName();
+        int         options       = MultiView.HIDE_SAVE_BTN;
+        
+        // create the form dialog
+        ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, viewName, displayName, displayName, 
+                                                                   closeBtnText, className, idFieldName, false, options);
+        dialog.setModal(true);
+        dialog.setData(selection.getDataObj());
+
+        //dialog.getMultiView().getCurrentView().getValidator().validateForm();
+        
+        dialog.pack();
+        // show the dialog (which allows all user edits to happen)
+        dialog.setVisible(true);
+
+        return false;
+    }
     
+    private class MatchedRecord
+    {
+        protected final DataModelObjBase dataObj;
+        protected final DBTableInfo      tblInfo;
+        
+        public MatchedRecord(final DataModelObjBase matchedObj)
+        {
+            this.dataObj = matchedObj;
+            int tblId = DBTableIdMgr.getInstance().getIdByClassName(dataObj.getClass().getName());
+            tblInfo = DBTableIdMgr.getInstance().getInfoById(tblId);
+        }
+
+        /**
+         * @return the dataObj
+         */
+        public DataModelObjBase getDataObj()
+        {
+            return dataObj;
+        }
+
+        /**
+         * @return the tblInfo
+         */
+        public DBTableInfo getTblInfo()
+        {
+            return tblInfo;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return dataObj.toString();
+        }
+        
+        
+    }
 }
+
