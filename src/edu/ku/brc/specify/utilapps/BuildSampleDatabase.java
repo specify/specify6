@@ -5956,6 +5956,7 @@ public class BuildSampleDatabase
         earth.setDefinitionItem(planet);
         earth.setNodeNumber(1);
         earth.setHighestChildNodeNumber(1);
+        earth.setIsAccepted(true);
         
         newObjs.add(earth);
         

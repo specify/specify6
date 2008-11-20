@@ -455,72 +455,87 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             return;
         }
         
-        final T nodeInForm = (T)formViewObj.getDataObj();
         
-        GetSetValueIFace  parentField  = (GetSetValueIFace)formViewObj.getControlByName("parent");
-        Component comp = formViewObj.getControlByName("definitionItem");
-        if (comp instanceof ValComboBox)
+        if (formViewObj.getAltView().getMode() == CreationMode.EDIT)
         {
-            final ValComboBox rankComboBox = (ValComboBox)comp;
+            final T nodeInForm = (T) formViewObj.getDataObj();
+            GetSetValueIFace parentField = (GetSetValueIFace) formViewObj
+                    .getControlByName("parent");
+            Component comp = formViewObj.getControlByName("definitionItem");
+            if (comp instanceof ValComboBox)
+            {
+                final ValComboBox rankComboBox = (ValComboBox) comp;
 
-            if (parentField instanceof ValComboBoxFromQuery)
-            {
-                final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery)parentField;
-                if (parentCBX != null && rankComboBox != null)
+                if (parentField instanceof ValComboBoxFromQuery)
                 {
-                    parentCBX.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, rankComboBox, true));
-                }
-            }
-            
-            if (nodeInForm != null && nodeInForm.getDefinitionItem() != null)
-            {
-                //log.debug("node in form already has a set rank: forcing a call to adjustRankComboBoxModel()");
-                UIValidator.setIgnoreAllValidation(this, true);
-                adjustRankComboBoxModel(parentField, rankComboBox, nodeInForm);
-                UIValidator.setIgnoreAllValidation(this, false);
-            }
-            
-            // TODO: the form system MUST require the accepted parent widget to be present if the isAccepted checkbox is present
-            final JCheckBox            acceptedCheckBox     = (JCheckBox)formViewObj.getControlByName("isAccepted");
-            final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery)formViewObj.getControlByName("acceptedParent");
-            if (canAccessSynonymy(nodeInForm))
-            {
-                if (acceptedCheckBox != null && acceptedParentWidget != null)
-                {
-                    if (acceptedCheckBox.isSelected() && nodeInForm != null && nodeInForm.getDefinition() != null)
+                    final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery) parentField;
+                    if (parentCBX != null && rankComboBox != null)
                     {
-                        //disable if necessary
-                        boolean canSynonymize = nodeInForm.getDefinition().getSynonymizedLevel() <= nodeInForm.getRankId()
-                            && nodeInForm.getDescendantCount() == 0;
-                        acceptedCheckBox.setEnabled(canSynonymize);
-                    }
-                    acceptedParentWidget.setEnabled(!acceptedCheckBox.isSelected() && acceptedCheckBox.isEnabled());
-                    if (acceptedCheckBox.isSelected())
-                    {
-                        acceptedParentWidget.setValue(null, null);
-                    }
-                    
-                    if (acceptedParentWidget != null && rankComboBox != null)
-                    {
-                        acceptedParentWidget.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm, null, true));
+                        parentCBX.registerQueryBuilder(new TreeableSearchQueryBuilder(nodeInForm,
+                                rankComboBox, true));
                     }
                 }
-            }
-            else
-            {
-                if (acceptedCheckBox != null)
+
+                if (nodeInForm != null && nodeInForm.getDefinitionItem() != null)
                 {
-                    acceptedCheckBox.setEnabled(false);
+                    // log.debug("node in form already has a set rank: forcing a call to
+                    // adjustRankComboBoxModel()");
+                    UIValidator.setIgnoreAllValidation(this, true);
+                    adjustRankComboBoxModel(parentField, rankComboBox, nodeInForm);
+                    UIValidator.setIgnoreAllValidation(this, false);
                 }
-                if (acceptedParentWidget != null)
+
+                // TODO: the form system MUST require the accepted parent widget to be present if
+                // the
+                // isAccepted checkbox is present
+                final JCheckBox acceptedCheckBox = (JCheckBox) formViewObj
+                        .getControlByName("isAccepted");
+                final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery) formViewObj
+                        .getControlByName("acceptedParent");
+                if (canAccessSynonymy(nodeInForm))
                 {
-                    acceptedParentWidget.setEnabled(false);
+                    if (acceptedCheckBox != null && acceptedParentWidget != null)
+                    {
+                        if (acceptedCheckBox.isSelected() && nodeInForm != null
+                                && nodeInForm.getDefinition() != null)
+                        {
+                            // disable if necessary
+                            boolean canSynonymize = nodeInForm.getDefinition()
+                                    .getSynonymizedLevel() <= nodeInForm.getRankId()
+                                    && nodeInForm.getDescendantCount() == 0;
+                            acceptedCheckBox.setEnabled(canSynonymize);
+                        }
+                        acceptedParentWidget.setEnabled(!acceptedCheckBox.isSelected()
+                                && acceptedCheckBox.isEnabled());
+                        if (acceptedCheckBox.isSelected())
+                        {
+                            acceptedParentWidget.setValue(null, null);
+                        }
+
+                        if (acceptedParentWidget != null && rankComboBox != null)
+                        {
+                            acceptedParentWidget
+                                    .registerQueryBuilder(new TreeableSearchQueryBuilder(
+                                            nodeInForm, null, true));
+                        }
+                    }
                 }
-            }
-            
-            if (parentField instanceof ValComboBoxFromQuery)
-            {
-                parentChanged(formViewObj, (ValComboBoxFromQuery)parentField, rankComboBox);
+                else
+                {
+                    if (acceptedCheckBox != null)
+                    {
+                        acceptedCheckBox.setEnabled(false);
+                    }
+                    if (acceptedParentWidget != null)
+                    {
+                        acceptedParentWidget.setEnabled(false);
+                    }
+                }
+
+                if (parentField instanceof ValComboBoxFromQuery)
+                {
+                    parentChanged(formViewObj, (ValComboBoxFromQuery) parentField, rankComboBox);
+                }
             }
         }
     }

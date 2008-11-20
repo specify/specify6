@@ -21,6 +21,9 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
  */
 public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTreeDef, GeographyTreeDefItem>
 {
+    protected static final String PARENT = "parent";
+    protected static final String RANK = "definitionItem";
+    
     /**
      * Constructor.
      */
@@ -125,5 +128,6 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
     protected void beforeSaveGeography(@SuppressWarnings("unused") Geography geo)
     {
         // nothing specific to Geography
-    }
+    }    
+    
 }

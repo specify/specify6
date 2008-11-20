@@ -90,8 +90,8 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             {
                 queryFormatStr = "SELECT n.fullName, n.id ";
             }
-            queryFormatStr += "from %s n INNER JOIN n.definition d WHERE lower(n.name) LIKE \'%s\' AND d.id = %d";
-            queryStr = String.format(queryFormatStr, tableInfo.getShortClassName(), "%" + searchText.toLowerCase() + "%", treeDefId);
+            queryFormatStr += "from %s n INNER JOIN n.definition d WHERE lower(n.fullName) LIKE \'%s\' AND d.id = %d";
+            queryStr = String.format(queryFormatStr, tableInfo.getShortClassName(), searchText.toLowerCase() + "%", treeDefId);
             
             Integer nodeId = nodeInForm == null ? null : nodeInForm.getTreeId();
             Integer nodeNumber = nodeInForm == null ? null : nodeInForm.getNodeNumber();
@@ -102,7 +102,7 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
                 queryStr += " and n.id != " + nodeId;
             }
             
-            if (rankCombo != null)
+            if (rankCombo != null && rankCombo.getComboBox() != null)
             {
                 Object rank = rankCombo.getValue();
                 if (rank != null)
@@ -132,8 +132,10 @@ public class TreeableSearchQueryBuilder implements ViewBasedSearchQueryBuilderIF
             {
                 queryStr += " and n." + getAcceptedBooleanFldName() + " = true";
             }
-            queryStr += " ORDER BY n.fullName asc";
-
+            if (!isForCount)
+            {
+                queryStr += " ORDER BY n.fullName asc";
+            }
             //log.debug(queryStr);
         }
         return queryStr;

@@ -735,6 +735,8 @@ public class DataBuilder
         geography.setDefinition(gtd);
         geography.setName(name);
         geography.setParent(parent);
+        geography.setIsAccepted(true);
+        geography.setIsCurrent(true);
         if (parent!=null)
         {
             parent.getChildren().add(geography);
@@ -838,6 +840,7 @@ public class DataBuilder
         storage.setDefinition(ltd);
         storage.setName(name);
         storage.setParent(parent);
+        storage.setIsAccepted(true);
         if (parent!=null)
         {
             parent.getChildren().add(storage);
@@ -972,6 +975,7 @@ public class DataBuilder
         gtp.setDefinition(gtptd);
         gtp.setName(name);
         gtp.setParent(parent);
+        gtp.setIsAccepted(true);
         if (parent!=null)
         {
             parent.getChildren().add(gtp);
@@ -1141,6 +1145,7 @@ public class DataBuilder
         taxon.setName(name);
         taxon.setCommonName(commonName);
         taxon.setParent(parent);
+        taxon.setIsAccepted(true);
         if (parent != null)
         {
             parent.getChildren().add(taxon);
