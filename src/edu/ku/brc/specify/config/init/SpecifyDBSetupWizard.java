@@ -170,7 +170,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             props.put("saPassword", "SPSAUser");
             
             props.put("firstName", "Test");
-            props.put("lastName",  "Usewr");
+            props.put("lastName",  "User");
             props.put("middleInitial", "a");
             props.put("usrUsername", "testuser");
             props.put("usrPassword", "testuser");
@@ -220,7 +220,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
          
         panels.add(new GenericFormPanel("inst", 
                 "ENTER_INST_INFO",
-                new String[] { "NAME", "TITLE", "ABBREV"}, 
+                new String[] { "NAME",     "TITLE",     "ABBREV"}, 
                 new String[] { "instName", "instTitle", "instAbbrev"}, 
                 nextBtn));
         

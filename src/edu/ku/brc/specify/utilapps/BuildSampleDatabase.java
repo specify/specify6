@@ -415,6 +415,8 @@ public class BuildSampleDatabase
         
         institution = createInstitution(props.getProperty("instName"));
         institution.setTitle(props.getProperty("instTitle"));
+        institution.setAbbrev(props.getProperty("instAbbrev"));
+        
         Address instAddress = new Address();
         instAddress.initialize();
         instAddress.setAddress(props.getProperty("addr1"));
@@ -7061,6 +7063,9 @@ public class BuildSampleDatabase
         }
     }
     
+    /**
+     * @param dataObjects
+     */
     protected void persistDataObjects(final List<?> dataObjects)
     {
         log.info("Persisting in-memory objects to DB");
