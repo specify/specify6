@@ -822,7 +822,18 @@ public class UIRegistry
     {
         JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
                 String.format(getResourceString(msgKey), args), 
-                getResourceString(titleKey), iconType);
+                getResourceString(StringUtils.isNotEmpty(titleKey) ? titleKey : "WARNING"), iconType);
+    }
+
+    /**
+     * Displays a Warning dialog with a non-localized error message.
+     * @param titleKey the title localize key
+     * @param msgKey the message localize key
+     * @param args any args
+     */
+    public static void showLocalizedMsg(final String msgKey)
+    {
+        showLocalizedMsg(JOptionPane.WARNING_MESSAGE, "WARNING", msgKey);
     }
 
     /**

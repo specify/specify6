@@ -463,6 +463,16 @@ public class RegisterSpecify
      */
     public static void register(final boolean forceRegistration)
     {
+        SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+        if (forceRegistration && !spUser.getUserType().equals("CollectionManager"))
+        {
+            if (forceRegistration)
+            {
+                UIRegistry.showLocalizedMsg(null, "SpReg.MUSTBECM");
+            }
+            return;
+        }
+        
         Institution inst         = AppContextMgr.getInstance().getClassObject(Institution.class);
         Collection  collection   = AppContextMgr.getInstance().getClassObject(Collection.class);
         
@@ -643,6 +653,13 @@ public class RegisterSpecify
      */
     public static void registerSA()
     {
+        SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+        if (!spUser.getUserType().equals("CollectionManager"))
+        {
+            UIRegistry.showLocalizedMsg("", "SpReg.MUSTBECM");
+            return;
+        }
+        
         Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
         String     saNumber   = collection.getSaNumber();
         String     saTitle    = getResourceString("SpReg.SA_TITLE");

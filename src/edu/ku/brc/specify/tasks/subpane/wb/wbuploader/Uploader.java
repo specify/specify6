@@ -3176,7 +3176,7 @@ public class Uploader implements ActionListener, KeyListener
                             getResourceString("WB_UPLOAD_CLEANUP_FAILED"), new Object[] {
                                     getResourceString((isUserCmd ? "WB_UPLOAD_UNDO_BTN"
                                             : "WB_UPLOAD_CLEANUP")), wbSS.getWorkbench().getName(),
-                                    wbSS.getWorkbench().getName() }), getResourceString("Warning"),
+                                    wbSS.getWorkbench().getName() }), getResourceString("WARNING"),
                             JOptionPane.WARNING_MESSAGE);
 
                 }

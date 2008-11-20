@@ -2773,7 +2773,7 @@ public class FormViewObj implements Viewable,
                     } else
                     {
                         doClearObj = true;
-                        UIRegistry.showLocalizedMsg("Warning", "OBJ_ALREADY_DEL");
+                        UIRegistry.showLocalizedMsg("OBJ_ALREADY_DEL");
                     }
                     
                     updateAfterRemove(false);

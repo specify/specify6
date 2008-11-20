@@ -2760,7 +2760,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(), 
                         String.format(getResourceString("WB_WRONG_IMG_NO_IMAGES"), 
                                 new Object[] {badExtStrBuf.toString()}),
-                        UIRegistry.getResourceString("Warning"), 
+                        UIRegistry.getResourceString("WARNING"), 
                         JOptionPane.ERROR_MESSAGE);
                 return false;
                         
@@ -2820,7 +2820,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             {
                 JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(),
                                             String.format(getResourceString("WB_WRONG_IMAGE_TYPE_OR_CORRUPTED_IMAGE"), new Object[] {f.getAbsolutePath()}),
-                                            UIRegistry.getResourceString("Warning"), 
+                                            UIRegistry.getResourceString("WARNING"), 
                                             JOptionPane.ERROR_MESSAGE);
                 return;
             }
