@@ -61,9 +61,9 @@ public class FormatterPickerPanel extends BaseSetupPanel
             public void contentsChanged(ListDataEvent e)
             {
                 int index = formatterCBX.getSelectedIndex();
-                if (index > -1)
+                if (index > 0)
                 {
-                    UIFieldFormatterIFace fmt = fmtList.get(index);
+                    UIFieldFormatterIFace fmt = fmtList.get(index-1);
                     if (fmt != null)
                     {
                         isNumericLbl.setText(getResourceString(fmt.isNumeric() ? "Yes" : "No"));
