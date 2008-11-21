@@ -22,6 +22,7 @@ import java.awt.Window;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -188,7 +189,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
      */
     public ViewBasedDisplayIFace createDisplay(final Window     parent, 
                                                final String     name,
-                                               final String     frameTitle,
+                                               final String     frameTitleArg,
                                                final String     closeBtnTitleArg,
                                                final boolean    isEditArg,
                                                final int        optionsArg,
@@ -231,6 +232,16 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                 } else if (lockStatus == FormLockStatus.Skip)
                 {
                     return null;
+                }
+            }
+            
+            String frameTitle = frameTitleArg;
+            if (StringUtils.isEmpty(frameTitle))
+            {
+                DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                if (ti != null)
+                {
+                    frameTitle = ti.getTitle();
                 }
             }
             
