@@ -713,6 +713,9 @@ public class BaseBusRules implements BusinessRulesIFace
                         ex.printStackTrace();
                     }
                 }
+            } else
+            {
+                return STATUS.OK;
             }
         } else
         {

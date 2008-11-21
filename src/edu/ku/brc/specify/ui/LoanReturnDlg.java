@@ -207,7 +207,7 @@ public class LoanReturnDlg extends JDialog
             }
             
             JButton selectAllBtn = createButton(getResourceString("SELECTALL"));
-            okBtn = createButton(getResourceString("OK"));
+            okBtn = createButton(getResourceString("SAVE"));
             JButton cancel = createButton(getResourceString("CANCEL"));
             
             summaryLabel = createLabel("");
@@ -283,6 +283,9 @@ public class LoanReturnDlg extends JDialog
         return false;
     }
     
+    /**
+     * 
+     */
     protected void doEnableOKBtn()
     {
         int count = 0;
