@@ -16,10 +16,10 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Component;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -65,10 +65,9 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class DeterminationBusRules extends BaseBusRules
 {
-    
     protected Determination  determination         = null;
 
-    protected ActionListener altTaxUsageAL         = null;
+    protected KeyListener    nameChangeKL         = null;
     protected boolean        ignoreSelection       = false;
     protected boolean        checkedBlankUsageItem = false;
 
@@ -119,6 +118,7 @@ public class DeterminationBusRules extends BaseBusRules
             Component altTaxUsageComp     = formViewObj.getControlByName("nameUsage");
             if (altTaxUsageComp instanceof ValComboBox)
             {
+                //XXX this is probably not necessary anymore...
                 if (!checkedBlankUsageItem)
                 {
                     boolean fnd = false;
@@ -148,43 +148,11 @@ public class DeterminationBusRules extends BaseBusRules
                     checkedBlankUsageItem = true;
                 }
                 altTaxUsageComp.setEnabled(true);
-                if (altTaxUsageAL == null)
-                {
-                    altTaxUsageAL = new ActionListener()
-                    {
-                        // @Override
-                        public void actionPerformed(final ActionEvent e)
-                        {
-                            SwingUtilities.invokeLater(new Runnable()
-                            {
-                                // @Override
-                                public void run()
-                                {
-                                    altTaxUsageSelected(e);
-                                }
-                            });
-                        }
-                    };
-                }
-
-                JComboBox cbx = ((ValComboBox) altTaxUsageComp).getComboBox();
-                boolean fnd = false;
-                for (ActionListener al : cbx.getActionListeners())
-                {
-                    if (al == altTaxUsageAL)
-                    {
-                        fnd = true;
-                        break;
-                    }
-                }
-                if (!fnd)
-                {
-                    cbx.addActionListener(altTaxUsageAL);
-                }
             }
 
-            Component taxComp = formViewObj.getControlByName("taxon");
-            Component altTaxComp = formViewObj.getControlByName("alternateName");
+            final Component taxComp = formViewObj.getControlByName("taxon");
+            final Component altNameComp = formViewObj.getControlByName("alternateName");
+           
             if (taxComp != null)
             {
                 if (determination != null)
@@ -193,63 +161,59 @@ public class DeterminationBusRules extends BaseBusRules
                             StringUtils.isBlank(determination.getNameUsage()));
                 }
             }
-            if (altTaxComp != null)
+            if (altNameComp != null)
             {
                 if (determination != null)
                 {
-                    ((JTextField) altTaxComp).setEditable(determination.getTaxon() == null);
+                    ((JTextField) altNameComp).setEditable(determination.getTaxon() == null);
                 }
             }
         }
     }
-     
-    protected void altTaxUsageSelected(ActionEvent e)
+    
+    /**
+     * @param kl
+     * @param comp
+     * 
+     * Adds KeyListener to comp if it is not already a listener.
+     * (This method is overkill given the current way listeners are set up.)
+     */
+    protected void addListenerIfNecessary(final KeyListener kl, final Component comp)
     {
-        if (ignoreSelection)
+        boolean fnd = false;
+        for (KeyListener existingKl : comp.getKeyListeners())
         {
-            return;
+            if (existingKl == kl)
+            {
+                fnd = true;
+                break;
+            }
         }
-        
-        if (determination != null)
+        if (!fnd)
         {
-            final JComboBox cbx = (JComboBox)e.getSource();
-            
-            PickListItemIFace item = (PickListItemIFace)cbx.getSelectedItem();
-            Component taxComp = formViewObj.getControlByName("taxon");
-            Component altTaxComp = formViewObj.getControlByName("alternateName");
-            if (item != null && !StringUtils.isBlank(item.getValue()))
-            {
-                //clear and disable taxon component
-                if (taxComp != null)
-                {
-                    ((ValComboBoxFromQuery )taxComp).setValue(null, null);
-                    ((ValComboBoxFromQuery )taxComp).getTextWithQuery().getTextField().setEditable(false);
-                }
-                //enable alternateTaxon  component
-                if (altTaxComp != null)
-                {
-                    ((JTextField )altTaxComp).setEditable(true);
-                }
-            }
-            else
-            {
-                //clear and disable alternate component
-                if (altTaxComp != null)
-                {
-                    
-                    ((JTextField )altTaxComp).setEditable(false);
-                }
-                
-                //enable taxon component
-                if (taxComp != null)
-                {
-                    ((ValComboBoxFromQuery )taxComp).getTextWithQuery().getTextField().setEditable(true);                
-                }
-            }
-                
+            comp.addKeyListener(kl);
         }
     }
-
+    
+    /**
+     * @param e
+     * @param taxComp
+     * @param altNameComp
+     * 
+     * Disables the taxon field when the alternateName field is non-empty.
+     * Enables the taxon field when the alternateNameField is empty.
+     */
+    protected void nameChanged(KeyEvent e, final Component taxComp, final Component altNameComp)
+    {
+        if (e.getSource() != null)
+        {
+            if (e.getSource().equals(altNameComp))
+            {
+                taxComp.setEnabled(StringUtils.isBlank(((JTextField )altNameComp).getText()));
+            }
+        }        
+    }
+    
     
     /**
      * Checks to make sure there is a single 'current' determination.
@@ -354,33 +318,68 @@ public class DeterminationBusRules extends BaseBusRules
     @Override
     public void initialize(Viewable viewableArg)
     {
-        // TODO Auto-generated method stub
         super.initialize(viewableArg);
         
         if (formViewObj != null)
         {
-            GetSetValueIFace  taxonField  = (GetSetValueIFace)formViewObj.getControlByName("taxon");
+            GetSetValueIFace taxonField = (GetSetValueIFace) formViewObj.getControlByName("taxon");
             if (taxonField instanceof ValComboBoxFromQuery)
             {
-                final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery)taxonField;
+                final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery) taxonField;
+                final Component altNameComp = formViewObj.getControlByName("alternateName");
+
                 if (parentCBX != null)
                 {
-                    parentCBX.addListSelectionListener(new ListSelectionListener() {
+                    parentCBX.addListSelectionListener(new ListSelectionListener()
+                    {
                         public void valueChanged(ListSelectionEvent e)
                         {
                             if (e == null || !e.getValueIsAdjusting())
                             {
-                                    taxonChanged(parentCBX);
+                                taxonChanged(parentCBX, altNameComp);
                             }
+                        }
+                    });
+                }
+
+                if (altNameComp != null)
+                {
+                    if (nameChangeKL == null)
+                    {
+                        nameChangeKL = new KeyAdapter()
+                        {
+                            @Override
+                            public void keyTyped(final KeyEvent e)
+                            {
+                                SwingUtilities.invokeLater(new Runnable()
+                                {
+                                    // @Override
+                                    public void run()
+                                    {
+                                        nameChanged(e, parentCBX, altNameComp);
+                                    }
+                                });
                             }
-                        });
+                        };
+                    }
+                    addListenerIfNecessary(nameChangeKL, altNameComp);
                 }
             }
         }
     }
 
+    /**
+     * @param taxonComboBox 
+     * 
+     * Sets text for ActiveTaxon control to the selected taxon or it's accepted parent.
+     * 
+     * If the selected taxon is not accepted, then a dialog pops up to confirm the choice
+     * with an option to use the accepted parent instead.
+     * 
+     * Disables/Enables AlternateName field based on whether taxon is non-null/null.
+     */
     @SuppressWarnings("unchecked")
-    protected void taxonChanged(final ValComboBoxFromQuery taxonComboBox)
+    protected void taxonChanged(final ValComboBoxFromQuery taxonComboBox, final Component altTaxName)
     {
         Object objInForm = formViewObj.getDataObj();
         //log.debug("form data object = " + objInForm);
@@ -444,7 +443,11 @@ public class DeterminationBusRules extends BaseBusRules
                 ((JTextField )activeTax).setText(activeTaxName);
             }
         }
-
+        
+        if (altTaxName != null)
+        {
+            altTaxName.setEnabled(taxon == null);
+        }
     }
 
 }
