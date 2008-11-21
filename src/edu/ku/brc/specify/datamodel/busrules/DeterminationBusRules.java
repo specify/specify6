@@ -356,21 +356,25 @@ public class DeterminationBusRules extends BaseBusRules
     {
         // TODO Auto-generated method stub
         super.initialize(viewableArg);
-        GetSetValueIFace  taxonField  = (GetSetValueIFace)formViewObj.getControlByName("taxon");
-        if (taxonField instanceof ValComboBoxFromQuery)
+        
+        if (formViewObj != null)
         {
-            final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery)taxonField;
-            if (parentCBX != null)
+            GetSetValueIFace  taxonField  = (GetSetValueIFace)formViewObj.getControlByName("taxon");
+            if (taxonField instanceof ValComboBoxFromQuery)
             {
-                parentCBX.addListSelectionListener(new ListSelectionListener() {
-                    public void valueChanged(ListSelectionEvent e)
-                    {
-                        if (e == null || !e.getValueIsAdjusting())
+                final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery)taxonField;
+                if (parentCBX != null)
+                {
+                    parentCBX.addListSelectionListener(new ListSelectionListener() {
+                        public void valueChanged(ListSelectionEvent e)
                         {
-                                taxonChanged(parentCBX);
-                        }
-                        }
-                    });
+                            if (e == null || !e.getValueIsAdjusting())
+                            {
+                                    taxonChanged(parentCBX);
+                            }
+                            }
+                        });
+                }
             }
         }
     }
