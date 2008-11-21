@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -26,13 +27,13 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -644,57 +645,48 @@ public class BaseBusRules implements BusinessRulesIFace
     {
         String number = (String)FormHelper.getValue(dataObj, numFieldName);
         
-        // Let's check Appraisal for duplicates 
+        // Let's check for duplicates 
         if (StringUtils.isNotEmpty(number))
         {
-            // Start by checking to see if the Appraisal Number has changed
-            boolean checkNumberForDuplicates = true;
             Integer id = dataObj.getId();
             if (id != null)
             {
-                DataProviderSessionIFace session = null;
-                try
+                String colName = null;
+                DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
+                DBFieldInfo fi = ti.getFieldByName(primaryFieldName);
+                if (fi != null)
                 {
-                    session = DataProviderFactory.getInstance().createSession();
-                    List<?> dataObjs = session.getDataList(dataClass, primaryFieldName, id);
-                    if (dataObjs.size() == 1)
+                   colName = fi.getColumn(); 
+                } else
+                {
+                    if (ti.getIdFieldName().equals(primaryFieldName))
                     {
-                        FormDataObjIFace existingDataObj = (FormDataObjIFace)dataObjs.get(0);
-                        String           oldNumber       = (String)FormHelper.getValue(existingDataObj, numFieldName);
-                        
-                        if (oldNumber.equals(number))
-                        {
-                            checkNumberForDuplicates = false;
-                        }
-                    }
-                } catch (Exception ex)
-                {
-                    log.error(ex);
-                    
-                } finally
-                {
-                    if (session != null)
-                    {
-                        session.close();
+                        colName = ti.getIdColumnName();
                     }
                 }
-            }
-            
-            // If the Id is null then it is a new permit, if not then we are editing the appraisal
-            //
-            // If the appraisal has not changed then we shouldn't check for duplicates
-            if (checkNumberForDuplicates)
-            {
-                DataProviderSessionIFace session = null;
+                
+                fi = ti.getFieldByName(numFieldName);
+
+                
+                Connection conn = null;
+                Statement  stmt = null;
                 try
                 {
-                    session = DataProviderFactory.getInstance().createSession();
-                    List <?> appraisalNumbers = session.getDataList(dataClass, numFieldName, number);
-                    if (appraisalNumbers.size() > 0)
+                    conn = DBConnection.getInstance().createConnection();
+                    stmt = conn.createStatement();
+        
+                    String quote  = fi.getDataClass() == String.class || fi.getDataClass() == Date.class ? "'" : "";
+                    String sqlStr = "SELECT "+colName+","+fi.getColumn()+" FROM "+ti.getName()+" WHERE "+fi.getColumn() + " = " + quote + number + quote;
+                    ResultSet rs = stmt.executeQuery(sqlStr);
+                    int     cnt  = 0;
+                    Integer dbId = null;
+                    while (rs.next())
                     {
-                        reasonList.add(getErrorMsg("GENERIC_NUMBER_IN_USE", numFieldName, dataClass));
-                        
-                    } else
+                        dbId = rs.getInt(1);
+                        cnt++;
+                    }
+                    
+                    if (cnt == 0 || (cnt == 1 && dbId.equals(id)))
                     {
                         return STATUS.OK;
                     }
@@ -705,14 +697,22 @@ public class BaseBusRules implements BusinessRulesIFace
                     
                 } finally
                 {
-                    if (session != null)
+                    try 
                     {
-                        session.close();
+                        if (stmt != null)
+                        {
+                            stmt.close();
+                        }
+                        if (conn != null)
+                        {
+                            conn.close();
+                        }
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
                     }
                 }
-            } else
-            {
-                return STATUS.OK;
             }
         } else
         {

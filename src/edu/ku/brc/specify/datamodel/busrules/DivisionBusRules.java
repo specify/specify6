@@ -78,12 +78,12 @@ public class DivisionBusRules extends BaseBusRules
         STATUS nameStatus = isCheckDuplicateNumberOK("name", 
                                                       (FormDataObjIFace)dataObj, 
                                                       Division.class, 
-                                                      "divisionId");
+                                                      "userGroupScopeId");
         
         STATUS titleStatus = isCheckDuplicateNumberOK("title", 
                                                     (FormDataObjIFace)dataObj, 
                                                     Division.class, 
-                                                    "divisionId");
+                                                    "userGroupScopeId");
         
         return nameStatus != STATUS.OK || titleStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
     }

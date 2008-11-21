@@ -1,5 +1,9 @@
 package edu.ku.brc.specify.conversion;
 
+import static edu.ku.brc.specify.config.init.DataBuilder.createAdminPrincipal;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
+import static edu.ku.brc.specify.config.init.DataBuilder.createSpecifyUser;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -1059,24 +1063,62 @@ public class SpecifyDBConverter
                     try
                     {
                         List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
+                        
                         DataBuilder.createStandardGroups(groups, institution);
-                        //DataBuilder.createStandardGroups(groups, division);
                         DataBuilder.createStandardGroups(groups, dscp);
                         DataBuilder.createStandardGroups(groups, collection);
-                        
-                        SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(specifyUser);
-                        groups.add(userPrincipal);
-                        specifyUser.addUserToSpPrincipalGroup(userPrincipal);
                         
                         Transaction trans = localSession.beginTransaction();
                         for (Object obj : groups)
                         {
                             localSession.saveOrUpdate(obj);
                         }
+                        trans.commit();
+                        
+                        trans = localSession.beginTransaction();
+                        
+                        SpPrincipal userPrincipal  = DataBuilder.createUserPrincipal(specifyUser);
+                        groups.add(userPrincipal);
+                        
+                        SpPrincipal adminPrincipal = createAdminPrincipal("Administrator", institution);
+                        groups.add(adminPrincipal);
+
+                        SpPrincipal disciplineGroup = DataBuilder.findGroup(groups, dscp, "CollectionManager");
+
+                        specifyUser.addUserToSpPrincipalGroup(userPrincipal);
+                        specifyUser.addUserToSpPrincipalGroup(adminPrincipal);
+                        specifyUser.addUserToSpPrincipalGroup(disciplineGroup);
+                        
+                        // Tester
+                        SpPrincipal guestGroup  = DataBuilder.findGroup(groups, dscp, "Guest");
+                        
+                        Agent       testerAgent = createAgent("", "Joe", "", "Tester", "", "joetester@brc.ku.edu");
+                        testerAgent.setDivision(division);
+                        SpecifyUser testerUser          = createSpecifyUser("JoeTester", "joetester@brc.ku.edu", "JoeTester", disciplineGroup, guestGroup.getGroupType());
+                        
+                        SpPrincipal testerUserPrincipal = DataBuilder.createUserPrincipal(testerUser);
+                        groups.add(testerUserPrincipal);
+
+                        testerUser.addUserToSpPrincipalGroup(guestGroup);
+                        testerUser.addUserToSpPrincipalGroup(testerUserPrincipal);
+                        
+                        dscp.addReference(testerAgent, "agents");
+                        testerUser.addReference(testerAgent, "agents");
+                        
+                        
+                        for (Object obj : groups)
+                        {
+                            localSession.saveOrUpdate(obj);
+                        }
+                        
                         localSession.saveOrUpdate(institution);
-                        //localSession.saveOrUpdate(division);
                         localSession.saveOrUpdate(dscp);
                         localSession.saveOrUpdate(collection);
+                        
+                        localSession.saveOrUpdate(testerUser);
+                        localSession.saveOrUpdate(testerAgent);
+                        localSession.saveOrUpdate(specifyUser);
+                        
                         trans.commit();
                         localSession.flush();
                         

@@ -179,7 +179,7 @@ public class CollectionBusRules extends BaseBusRules
     {
         reasonList.clear();
         
-        if (!(dataObj instanceof Division))
+        if (!(dataObj instanceof Collection))
         {
             return STATUS.Error;
         }
@@ -187,12 +187,12 @@ public class CollectionBusRules extends BaseBusRules
         STATUS nameStatus = isCheckDuplicateNumberOK("collectionName", 
                                                       (FormDataObjIFace)dataObj, 
                                                       Collection.class, 
-                                                      "collectionId");
+                                                      "userGroupScopeId");
         
         STATUS titleStatus = isCheckDuplicateNumberOK("collectionPrefix", 
                                                     (FormDataObjIFace)dataObj, 
                                                     Collection.class, 
-                                                    "collectionId");
+                                                    "userGroupScopeId");
         
         return nameStatus != STATUS.OK || titleStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
     }

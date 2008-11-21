@@ -71,20 +71,21 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
     {
         reasonList.clear();
         
-        if (!(dataObj instanceof Division))
+        if (!(dataObj instanceof Discipline))
         {
+            reasonList.add("Object is of wrong type.");
             return STATUS.Error;
         }
         
         STATUS nameStatus = isCheckDuplicateNumberOK("name", 
                                                       (FormDataObjIFace)dataObj, 
                                                       Discipline.class, 
-                                                      "disciplineId");
+                                                      "userGroupScopeId");
         
         STATUS titleStatus = isCheckDuplicateNumberOK("title", 
                                                     (FormDataObjIFace)dataObj, 
                                                     Discipline.class, 
-                                                    "disciplineId");
+                                                    "userGroupScopeId");
         
         return nameStatus != STATUS.OK || titleStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
     }
