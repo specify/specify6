@@ -1477,7 +1477,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     Hashtable<String, ViewIFace> vsHash = vs.getViews();
                     for (ViewIFace view : vsHash.values())
                     {
-                        log.debug(view.isInternal()+"  "+view.getName());
+                        //log.debug(view.isInternal()+"  "+view.getName());
                         
                         if (!view.isInternal() && viewHash.get(view.getName()) == null)
                         {

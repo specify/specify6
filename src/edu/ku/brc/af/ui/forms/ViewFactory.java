@@ -56,6 +56,7 @@ import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
+import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -1069,10 +1070,19 @@ public class ViewFactory
             
             bi.isRequired = bi.isRequired || cellField.isRequired() || (childInfo != null && childInfo.isRequired());
             
-            DBFieldInfo fieldInfo = childInfo instanceof DBFieldInfo ? (DBFieldInfo)childInfo : null;
+            DBRelationshipInfo relInfo   = null;
+            DBFieldInfo        fieldInfo = childInfo instanceof DBFieldInfo ? (DBFieldInfo)childInfo : null;
             if (fieldInfo != null && fieldInfo.isHidden())
             {
                 UIRegistry.showLocalizedError("ViewFactory.FORM_FIELD_HIDDEN", cellField.getIdent(), cellField.getName(), formViewDef.getName());
+            } else
+            {
+                
+                relInfo = childInfo instanceof DBRelationshipInfo ? (DBRelationshipInfo)childInfo : null;
+                if (fieldInfo != null && fieldInfo.isHidden())
+                {
+                    UIRegistry.showLocalizedError("ViewFactory.FORM_REL_HIDDEN", cellField.getIdent(), cellField.getName(), formViewDef.getName());
+                }
             }
             
             FormCellField.FieldType uiType = cellField.getUiType();
@@ -1181,7 +1191,7 @@ public class ViewFactory
 
             // Create the UI Component
             
-            boolean isReq = (cellField != null && cellField.isRequired()) || (fieldInfo != null && fieldInfo.isRequired());
+            boolean isReq = (cellField != null && cellField.isRequired()) || (fieldInfo != null && fieldInfo.isRequired()) || (relInfo != null && relInfo.isRequired());
             switch (uiType)
             {
                 case text:
