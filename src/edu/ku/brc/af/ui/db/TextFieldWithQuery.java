@@ -496,7 +496,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     {
                         notifyListenersOfChange(TextFieldWithQuery.this);
                     }*/
-                    log.debug("setting hasNewText to true"); //$NON-NLS-1$
+                    //log.debug("setting hasNewText to true"); //$NON-NLS-1$
                     hasNewText  = true;
                 }
             } else
@@ -790,7 +790,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
             }
             
-            log.debug(sql);
+            //log.debug(sql);
             
             return sql;
         }
@@ -862,7 +862,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 sb.append(whereSB.toString());
                 
             }
-            log.debug("* "+sql);
+            //log.debug("* "+sql);
             return sb.toString();
         }
         return sql;

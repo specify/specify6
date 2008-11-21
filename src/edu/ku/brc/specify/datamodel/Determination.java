@@ -97,7 +97,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
     {
         super.init();
         determinationId = null;
-        isCurrent = null;
+        isCurrent = false;
         typeStatusName = null;
         determinedDate = null;
         confidence = null;
