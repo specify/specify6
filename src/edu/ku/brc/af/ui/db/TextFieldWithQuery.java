@@ -132,6 +132,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected AtomicBoolean                    isDoingCount        = new AtomicBoolean(false);
     protected Integer                          returnCount         = null;
     protected String                           prevEnteredText     = null;
+    protected String                           cachedPrevText      = null;
     protected String                           searchedForText     = null;
     
     protected ExternalQueryProviderIFace      externalQueryProvider = null;
@@ -204,13 +205,13 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 cbxKeyReleased(e);
                 super.keyReleased(e);
             }
-            
         });
         
         textField.getDocument().addDocumentListener(new DocumentListener() 
         {
             protected void check()
             {
+                prevEnteredText = textField.getText();
                 boolean oldWasCleared = wasCleared;
                 if (!ignoreDocChange)
                 {
@@ -228,19 +229,16 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             @Override
             public void changedUpdate(DocumentEvent e)
             {
-                prevEnteredText = textField.getText();
                 check();
             }
             @Override
             public void insertUpdate(DocumentEvent e)
             {
-                prevEnteredText = textField.getText();
                 check();
             }
             @Override
             public void removeUpdate(DocumentEvent e)
             {
-                prevEnteredText = textField.getText();
                 check();
             }
         });
@@ -361,7 +359,36 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      */
     public String getPrevEnteredText()
     {
+        if (StringUtils.isEmpty(prevEnteredText) && StringUtils.isNotEmpty(cachedPrevText))
+        {
+            return cachedPrevText;
+        }
         return prevEnteredText;
+    }
+
+    /**
+     * @param prevEnteredText the prevEnteredText to set
+     */
+    public void setPrevEnteredText(String prevEnteredText)
+    {
+        this.prevEnteredText = prevEnteredText;
+        this.cachedPrevText  = prevEnteredText;
+    }
+
+    /**
+     * @return the cachedPrevText
+     */
+    public String getCachedPrevText()
+    {
+        return cachedPrevText;
+    }
+
+    /**
+     * @param cachedPrevText the cachedPrevText to set
+     */
+    public void setCachedPrevText(String cachedPrevText)
+    {
+        this.cachedPrevText = cachedPrevText;
     }
 
     /**
@@ -605,6 +632,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     isPopupShowing  = false;
                     ignoreFocusLost = false;
                     
+                    cachedPrevText = null;
+                    
                     if (selectedId == null)
                     {
                         setText(""); //$NON-NLS-1$
@@ -616,6 +645,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     isPopupShowing  = false;
                     ignoreFocusLost = false;
                     
+                    cachedPrevText = prevEnteredText;
+                    
                     if (selectedId == null)
                     {
                         setText(""); //$NON-NLS-1$
@@ -625,6 +656,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
 
                 public void popupMenuWillBecomeVisible(PopupMenuEvent e)
                 {
+                    cachedPrevText = null;
                     isPopupShowing = true;
                 }
             });

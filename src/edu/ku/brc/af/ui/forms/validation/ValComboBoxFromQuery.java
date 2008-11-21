@@ -660,7 +660,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             DataObjectSettable ds = DataObjectSettableFactory.get(tableInfo.getClassObj().getName(), FormHelper.DATA_OBJ_SETTER);
             if (ds != null)
             {
-                log.error("ID: ["+textWithQuery.getSelectedId()+"]  PrevText["+textWithQuery.getPrevEnteredText()+"]");
+                log.error("ID: ["+textWithQuery.getSelectedId()+"]  PrevText["+textWithQuery.getPrevEnteredText()+"] Cached["+textWithQuery.getCachedPrevText()+"]");
                 String value = textWithQuery.getSelectedId() == null ? textWithQuery.getPrevEnteredText() : "";
                 ds.setFieldValue(newDataObj, fieldNames[0], value);
             }
@@ -740,6 +740,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         } else if (!textWithQuery.hasId())
         {
             textWithQuery.setText("");
+            textWithQuery.setPrevEnteredText("");
         }
         frame.dispose();
         frame = null;
