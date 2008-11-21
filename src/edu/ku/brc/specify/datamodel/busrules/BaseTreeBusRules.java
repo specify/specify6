@@ -33,7 +33,6 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.af.ui.db.TextFieldFromPickListTable;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
@@ -463,7 +462,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         {
             if (nodeInForm != null)
             {
-                //XXX this MAY be required because of bug with TextFieldFromPickListTable??
+                //XXX this MAY be necessary due to a bug with TextFieldFromPickListTable??
                 // TextFieldFromPickListTable.setValue() does nothing because of a null adapter member.
                 Component comp = formViewObj.getControlByName("definitionItem");
                 if (comp instanceof JTextField)

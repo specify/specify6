@@ -32,6 +32,7 @@ import javax.swing.JOptionPane;
 import net.sf.jasperreports.engine.JRDataSource;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -297,7 +298,7 @@ public class ReportsBaseTask extends BaseTask
             .createSession();
             try
             {
-                SpReport rep = (SpReport)session.getData("from SpReport where name = '" + spRepName + "'");
+                SpReport rep = (SpReport)session.getData("from SpReport where name = '" + StringEscapeUtils.escapeSql(spRepName) + "'");
                 if (rep != null)
                 {
                     rep.forceLoad();

@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.TreeMap;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -38,7 +36,7 @@ public class DBSchema
      * The underlying DBTableIdMgr instance.
      */
     protected final DBTableIdMgr     scheme;
-    private static final Logger      log = Logger.getLogger(DBSchema.class);
+    //private static final Logger      log = Logger.getLogger(DBSchema.class);
     /**
      * The DB object that owns this schema.
      */
@@ -69,7 +67,7 @@ public class DBSchema
             Class<?> tblClass = tbl.getTableInfo().getClassObj();
             if (Treeable.class.isAssignableFrom(tblClass))
             {
-                log.debug("adding foreign key: " + tbl.getName() + ".parentid");
+                //log.debug("adding foreign key: " + tbl.getName() + ".parentid");
                 tbl.addField(new Field("parentid", tbl.getTableInfo().getIdType(), true));
             }
             for (DBRelationshipInfo rel : tbl.getTableInfo().getRelationships())
@@ -82,7 +80,7 @@ public class DBSchema
                 Field fld2 = tbl.getField(fld2Name);
                 if (fld2 == null)
                 {
-                    log.debug("adding foreign key: " + tbl.getName() + "." + fld2Name);
+                    //log.debug("adding foreign key: " + tbl.getName() + "." + fld2Name);
                     tbl.addField(new Field(fld2Name, tbl.getTableInfo().getIdType(), rel.isRequired(), true));
                 }
             }

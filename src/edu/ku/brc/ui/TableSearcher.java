@@ -207,10 +207,17 @@ public class TableSearcher
         if (!(o instanceof String))
         {
             // TODO implement replace for booleans and integers.
-            log.info("replace () The value  value=[ " + o.toString() + "] ");
-            log.info("                        row=[" + row + "] ");
-            log.info("                        col=[" + col + "] ");
-            log.info("                        is not a String and cannot be replaced");
+            if (debugging) //excessive logging can really slow down find/replace
+            {
+                log.info("replace () The value  value=[ " + o.toString() + "] ");
+                log.info("                        row=[" + row + "] ");
+                log.info("                        col=[" + col + "] ");
+                log.info("                        is not a String and cannot be replaced");
+            }
+            else
+            {
+                log.info("replace () The value  value=[ " + o.toString() + "] is not a String and cannot be replaced");
+            }
             return;
         }
         
@@ -235,10 +242,13 @@ public class TableSearcher
                         .matcher(oldValue).replaceAll(replaceValue);
             }
             
-            log.info("replace() Old value=[" + oldValue + "] ");
-            log.info("          New value=[" + newValue + "] ");
-            log.info("                row=[" + row + "] ");
-            log.info("                col=[" + col + "] ");
+            if (debugging)
+            {
+                log.info("replace() Old value=[" + oldValue + "] ");
+                log.info("          New value=[" + newValue + "] ");
+                log.info("                row=[" + row + "] ");
+                log.info("                col=[" + col + "] ");
+            }
             table.setValueAt(newValue, row, col);
         } 
     }

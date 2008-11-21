@@ -15,24 +15,36 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Component;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -56,7 +68,6 @@ public class DeterminationBusRules extends BaseBusRules
     
     protected Determination  determination         = null;
 
-    protected ActionListener detAL                 = null;
     protected ActionListener altTaxUsageAL         = null;
     protected boolean        ignoreSelection       = false;
     protected boolean        checkedBlankUsageItem = false;
@@ -337,5 +348,99 @@ public class DeterminationBusRules extends BaseBusRules
         return true;
     }
 
-    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg)
+    {
+        // TODO Auto-generated method stub
+        super.initialize(viewableArg);
+        GetSetValueIFace  taxonField  = (GetSetValueIFace)formViewObj.getControlByName("taxon");
+        if (taxonField instanceof ValComboBoxFromQuery)
+        {
+            final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery)taxonField;
+            if (parentCBX != null)
+            {
+                parentCBX.addListSelectionListener(new ListSelectionListener() {
+                    public void valueChanged(ListSelectionEvent e)
+                    {
+                        if (e == null || !e.getValueIsAdjusting())
+                        {
+                                taxonChanged(parentCBX);
+                        }
+                        }
+                    });
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void taxonChanged(final ValComboBoxFromQuery taxonComboBox)
+    {
+        Object objInForm = formViewObj.getDataObj();
+        //log.debug("form data object = " + objInForm);
+        if (objInForm == null)
+        {
+            return;
+        }
+        
+        Taxon formNode = ((Determination )objInForm).getTaxon();
+
+        Taxon taxon = null;
+        if (taxonComboBox.getValue() instanceof String)
+        {
+            // the data is still in the VIEW mode for some reason
+            taxonComboBox.getValue();
+            taxon = formNode.getParent();
+        }
+        else
+        {
+            taxon = (Taxon )taxonComboBox.getValue();
+        }
+        
+        // set the tree def for the object being edited by using the parent node's tree def
+        if (taxon != null)
+        {
+            if (!taxon.getIsAccepted())
+            {
+                PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "7dlu, c:p, 2dlu, c:p, 10dlu"));
+                String msg1 = String.format(UIRegistry.getResourceString("DeterminationBusRule.SynChoiceMsg1"), 
+                        taxon.getFullName(), taxon.getAcceptedParent().getFullName());
+                String msg2 = String.format(UIRegistry.getResourceString("DeterminationBusRule.SynChoiceMsg2"),
+                        taxon.getAcceptedParent().getFullName());
+                CellConstraints cc = new CellConstraints();
+                pb.add(UIHelper.createLabel(msg1), cc.xy(2, 2));
+                pb.add(UIHelper.createLabel(msg2), cc.xy(2, 4));
+                String formTitle = UIRegistry.getResourceString("INFORMATION");
+                CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), formTitle, true, 
+                        CustomDialog.OKCANCELHELP, pb.getPanel());
+                cd.setModal(true);
+                cd.setOkLabel(UIRegistry.getResourceString("YES"));
+                cd.setCancelLabel(UIRegistry.getResourceString("NO"));
+                UIHelper.centerAndShow(cd);
+                if (cd.getBtnPressed() == CustomDialog.OK_BTN)
+                {
+                    taxon = taxon.getAcceptedParent();
+                    taxonComboBox.setValue(taxon, taxon.getFullName());
+                }
+            }
+            String activeTaxName;
+            if (taxon.getIsAccepted())
+            {
+                activeTaxName = taxon.getFullName();
+            }
+            else
+            {
+                activeTaxName = taxon.getAcceptedParent().getFullName();
+            }
+            Component activeTax = formViewObj.getControlByName("activeTaxon");
+            if (activeTax != null)
+            {
+                ((JTextField )activeTax).setText(activeTaxName);
+            }
+        }
+
+    }
+
 }
