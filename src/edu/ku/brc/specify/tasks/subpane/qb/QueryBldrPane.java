@@ -73,6 +73,7 @@ import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -412,6 +413,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         if (runningResults.get() == null)
                         {
                             countOnly = !countOnly;
+                            if (countOnly)
+                            {
+                                UsageTracker.incrUsageCount("QB.CountOnlyOn");
+                            }
+                            else
+                            {
+                                UsageTracker.incrUsageCount("QB.CountOnlyOff");
+                            }
                         }
                         else
                         {
@@ -439,6 +448,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     public Object construct()
                     {
                         searchSynonymy = !searchSynonymy;
+                        if (!searchSynonymy)
+                        {
+                            UsageTracker.incrUsageCount("QB.SearchSynonymyOff");
+                        }
+                        else
+                        {
+                            UsageTracker.incrUsageCount("QB.SearchSynonymyOn");
+                        }
                         return null;
                     }
                 }.start();
@@ -480,6 +497,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         if (canSearch())
         {
+            if (distinctChk.isSelected())
+            {
+                UsageTracker.incrUsageCount("QB.DoSearchDistinct." + query.getContextName());
+            }
+            else
+            {
+                UsageTracker.incrUsageCount("QB.DoSearch." + query.getContextName());
+            }
             doSearch((TableQRI)tableList.getSelectedValue(), distinctChk.isSelected());
         }
         else 
@@ -493,6 +518,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         if (runningResults.get() != null)
         {
             log.debug("cancelling search");
+            UsageTracker.incrUsageCount("QB.CancelSearch." + query.getContextName());
             runningResults.get().cancel();
         }
     }
@@ -1425,6 +1451,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     public static void runReport(final SpReport report, final String title, final RecordSetIFace rs)
     {
+        UsageTracker.incrUsageCount("QB.RunReport." + report.getQuery().getContextName());
         QueryTask qt = (QueryTask )ContextMgr.getTaskByClass(QueryTask.class);
         final TableTree tblTree;
         final Hashtable<String, TableTree> ttHash;
@@ -1736,6 +1763,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 return false;
             }
         }
+        
+        UsageTracker.incrUsageCount("QB.SaveQuery." + query.getContextName());
         
         TableQRI tableQRI = (TableQRI) tableList.getSelectedValue();
         if (tableQRI != null)
