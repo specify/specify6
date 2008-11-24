@@ -112,6 +112,10 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
         preparations = new HashSet<Preparation>();
         containers = new HashSet<Container>();
         children = new HashSet<Storage>();
+        
+        isAccepted       = true;
+        acceptedStorage  = null;
+        acceptedChildren = new HashSet<Storage>();
     }
 
     @Id

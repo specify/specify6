@@ -133,6 +133,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		rankId = null;
 		nodeNumber = null;
 		highestChildNodeNumber = null;
+		isAccepted = true;
 		abbrev = null;
 		text1 = null;
 		text2 = null;
@@ -146,6 +147,11 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		definitionItem = null;
 		parent = null;
 		children = new HashSet<Geography>();
+		
+        
+        isAccepted          = true;
+        acceptedGeography   = null;
+        acceptedChildren    = new HashSet<Geography>();
 	}
 
 	// End Initializer

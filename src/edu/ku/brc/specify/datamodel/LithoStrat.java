@@ -119,6 +119,10 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
         parent = null;
         children = new HashSet<LithoStrat>();
         paleoContexts = new HashSet<PaleoContext>();
+        
+        isAccepted          = true;
+        acceptedLithoStrat  = null;
+        acceptedChildren    = new HashSet<LithoStrat>();
     }
 
     // End Initializer

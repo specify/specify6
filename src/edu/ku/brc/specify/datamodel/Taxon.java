@@ -187,7 +187,6 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         labelFormat                   = null;
         nodeNumber                    = null;
         highestChildNodeNumber        = null;
-        isAccepted                    = true; // null for isAccepted means the same as true.  true is more clear.  So, I put true in here.
         rankId                        = null;
         groupNumber                   = null;
         visibility                    = null;
@@ -195,9 +194,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         hybridParent2                 = null;
         hybridChildren1               = new HashSet<Taxon>();
         hybridChildren2               = new HashSet<Taxon>();
-        acceptedChildren              = new HashSet<Taxon>();
         determinations                = new HashSet<Determination>();
-        acceptedTaxon                 = null;
         taxonCitations                = new HashSet<TaxonCitation>();
         commonNames                   = new HashSet<CommonNameTx>();
         definition                    = null;
@@ -206,6 +203,11 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         children                      = new HashSet<Taxon>();
         ancestors                     = null;
         taxonAttachments              = new HashSet<TaxonAttachment>();
+        
+        isAccepted                    = true; // null for isAccepted means the same as true.  true is more clear.  So, I put true in here.
+        acceptedTaxon                 = null;
+        acceptedChildren              = new HashSet<Taxon>();
+
 	}
 
     @Id
