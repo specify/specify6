@@ -244,9 +244,8 @@ public class DataBuilder
         Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
         if (discipline != null)
         {   
-            Discipline dsp = AppContextMgr.getInstance().getClassObject(Discipline.class);
-            agent.getDisciplines().add(dsp);
-            dsp.getAgents().add(agent);
+            agent.getDisciplines().add(discipline);
+            discipline.getAgents().add(agent);
             //persist(dsp);
             
         } else
@@ -2295,6 +2294,11 @@ public class DataBuilder
     {
     	for (SpPrincipal group : groups)
     	{
+    	    if (group.getScope().getId() != null && scope.getId() != null && scope.getId().equals(group.getScope().getId()))
+    	    {
+    	        return group;
+    	    }
+    	    
     		if (group.getScope() == scope && group.getGroupType().equals(groupType))
     		{
     			return group;

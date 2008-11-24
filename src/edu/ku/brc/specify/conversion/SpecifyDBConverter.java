@@ -60,6 +60,7 @@ import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -515,7 +516,6 @@ public class SpecifyDBConverter
             throw new RuntimeException("Couldn't login into ["+databaseNameDest+"] "+DBConnection.getInstance().getErrorMsg());
         }
         DataBuilder.setSession(HibernateUtil.getNewSession());
-        HibernateUtil.getCurrentSession(); 
         IdMapperMgr idMapperMgr = null;
         SpecifyUser specifyUser = null;
 
@@ -706,7 +706,7 @@ public class SpecifyDBConverter
                     String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");   
                     String           password         = initPrefs.getProperty("useragent.password", "testuser");
                     
-                    Agent       userAgent   = null;
+                    Agent userAgent   = null;
                     
                     if (startfromScratch)
                     {
@@ -1016,6 +1016,8 @@ public class SpecifyDBConverter
                 Collection  collection   = null;
                 Discipline  dscp         = null;
                 Session     localSession = HibernateUtil.getNewSession();
+                Session     cachedCurrentSession = DataBuilder.getSession();
+                DataBuilder.setSession(null);
                 try
                 {
                     if (conversion.getCurDisciplineID() == null)
@@ -1067,6 +1069,10 @@ public class SpecifyDBConverter
                         DataBuilder.createStandardGroups(groups, institution);
                         DataBuilder.createStandardGroups(groups, dscp);
                         DataBuilder.createStandardGroups(groups, collection);
+                        for (SpPrincipal prin : groups)
+                        {
+                            log.debug("Principal Name:["+prin.getName()+"]  Group["+prin.getGroupType()+"]");
+                        }
                         
                         Transaction trans = localSession.beginTransaction();
                         for (Object obj : groups)
@@ -1074,6 +1080,23 @@ public class SpecifyDBConverter
                             localSession.saveOrUpdate(obj);
                         }
                         trans.commit();
+                        
+                        localSession.close();
+                        
+                        localSession = HibernateUtil.getNewSession();
+                        
+                        specifyUser = (SpecifyUser)localSession.merge(specifyUser);
+                        division    = (Division)localSession.merge(division);
+                        institution = (Institution)localSession.merge(institution);
+                        collection  = (Collection)localSession.merge(collection);
+                        
+                        AppContextMgr.getInstance().setClassObject(Collection.class, collection);
+                        AppContextMgr.getInstance().setClassObject(Division.class,   division);
+                        AppContextMgr.getInstance().setClassObject(Institution.class, institution);
+                        
+                        dscp = (Discipline)localSession.merge(dscp);
+                        dscp.getAgents();
+                        AppContextMgr.getInstance().setClassObject(Discipline.class, dscp);
                         
                         trans = localSession.beginTransaction();
                         
@@ -1092,6 +1115,7 @@ public class SpecifyDBConverter
                         // Tester
                         SpPrincipal guestGroup  = DataBuilder.findGroup(groups, dscp, "Guest");
                         
+                        //Discipline disciplineCache = AppContextMgr.getInstance().getClassObject(Discipline.class);
                         Agent       testerAgent = createAgent("", "Joe", "", "Tester", "", "joetester@brc.ku.edu");
                         testerAgent.setDivision(division);
                         SpecifyUser testerUser          = createSpecifyUser("JoeTester", "joetester@brc.ku.edu", "JoeTester", disciplineGroup, guestGroup.getGroupType());
@@ -1133,6 +1157,8 @@ public class SpecifyDBConverter
                 {
                     ex.printStackTrace();
                 }
+                
+                DataBuilder.setSession(cachedCurrentSession);
                 
                 frame.setDesc("Converting USYS Tables.");
                 log.info("Converting USYS Tables.");
