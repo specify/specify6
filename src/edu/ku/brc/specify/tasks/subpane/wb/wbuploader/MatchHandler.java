@@ -236,7 +236,7 @@ public class MatchHandler
             }
         });
         JPanel btnPane = new JPanel(new BorderLayout());
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p, 1dlu, f:p", "f:p"));
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p, 1dlu, f:min", "f:p"));
         viewBtn = createButton(getResourceString("WB_UPLOAD_VIEW_MATCH_BTN"));
         viewBtn.setToolTipText(getResourceString("WB_UPLOAD_VIEW_MATCH_BTN_HINT"));
         viewBtn.addActionListener(new ActionListener() {

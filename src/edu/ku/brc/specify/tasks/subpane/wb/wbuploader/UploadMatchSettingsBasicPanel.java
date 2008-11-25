@@ -14,12 +14,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 
@@ -42,18 +45,25 @@ public class UploadMatchSettingsBasicPanel extends JPanel implements ActionListe
 
     public UploadMatchSettingsBasicPanel()
     {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        PanelBuilder pb = new PanelBuilder(new FormLayout("2dlu, f:p:g, 5dlu", "2dlu, f:p:g, 8dlu, c:p, 2dlu, c:p, 3dlu"));
+        CellConstraints cc = new CellConstraints();
+        
         modePanel = new ToggleButtonChooserPanel<String>(UploadMatchSetting.getModeTexts(), getResourceString("WB_MATCH_MODE_CAPTION"), 
                 ToggleButtonChooserPanel.Type.RadioButton);
         modePanel.createUI();
         modePanel.setOkBtn(createButton("")); //needs an ok button for setSelectedObj() etc to work??
-        add(modePanel);
+        pb.add(modePanel, cc.xy(2,2));
+        
         rememberCheck = createCheckBox(getResourceString("WB_UPLOAD_MATCH_REMEMBER_CAPTION"));
-        add(rememberCheck);
+        pb.add(rememberCheck, cc.xy(2,4));
+        
         matchBlanksCheck = createCheckBox(getResourceString("WB_UPLOAD_MATCH_BLANKS_CAPTION"));
-        add(matchBlanksCheck);
+        pb.add(matchBlanksCheck, cc.xy(2,6));
+        
         //advancedBtn = createButton(getResourceString("WB_UPLOAD_ADVANCED_BTN"));
         //add(advancedBtn);
+
+        add(pb.getPanel());
     }
     
     public void showSetting(final UploadTable uploadTable)
