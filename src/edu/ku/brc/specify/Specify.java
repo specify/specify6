@@ -1838,6 +1838,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     if (statsTrackerTask != null)
                     {
                         UIRegistry.getTopWindow().setVisible(false);
+                        statsTrackerTask.setSendStatsAllowed(true);
                         statsTrackerTask.sendStats(true, false); // false means don't do it silently
                         return false;
                     }
