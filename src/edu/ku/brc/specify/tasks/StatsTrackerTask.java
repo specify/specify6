@@ -112,7 +112,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
         
         JLabel lbl = new JLabel(img);
         pb.add(lbl, cc.xyw(1, 1, 2));
-        lbl = new JLabel("Closing Specify...", SwingConstants.CENTER);
+        lbl = UIHelper.createI18NLabel("SPECIFY_SHUTDOWN", SwingConstants.CENTER);
         lbl.setFont(lbl.getFont().deriveFont(18.0f));
         pb.add(lbl, cc.xy(1, 3));
         
