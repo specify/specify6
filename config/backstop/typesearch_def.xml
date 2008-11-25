@@ -7,7 +7,7 @@
 	PLEASE KEEP THEM IN ALPHABETICAL ORDER!
  -->
 <typesearches>
-    <typesearch tableid="7"   name="Accession"              searchfield="accessionNumber" displaycols="accessionNumber"    format="%s"     dataobjformatter="">
+    <typesearch tableid="7"   name="AccessionCO"              searchfield="accessionNumber" displaycols="accessionNumber"    format="%s"     dataobjformatter="">
         SELECT %s1 FROM Accession ac JOIN ac.division as dv WHERE dv.divisionId = DIVID AND %s2 ORDER BY accessionNumber
     </typesearch>
     <typesearch tableid="5"   name="Agent"                  searchfield="lastName"        displaycols="lastName,firstName" format="%s, %s" dataobjformatter="Agent">
