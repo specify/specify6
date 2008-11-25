@@ -199,8 +199,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     private static final boolean isRelease          = false;
     private static final Logger  log                = Logger.getLogger(Specify.class);
     
-    public static final boolean IS_DEVELOPMENT     = true;
-    
+    public static final boolean IS_DEVELOPMENT       = true;
+    private static final String sendStatsPrefName    = "usage_tracking.send_stats";
+    private static final String sendISAStatsPrefName = "usage_tracking.send_isa_stats";
     private static final String ATTACHMENT_PATH_PREF = "attachment.path";
     
     // The preferred size of the demo
@@ -1830,15 +1831,16 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             if (okToShutdown && doAppExit)
             {
-                AppPreferences appPrefs  = AppPreferences.getRemote();
-                Boolean        sendStats = appPrefs.getBoolean("usage_tracking.send_stats", null); //$NON-NLS-1$
-                if (sendStats != null && sendStats)
+                AppPreferences remotePrefs  = AppPreferences.getRemote();
+                Boolean        canSendStats = remotePrefs.getBoolean(sendStatsPrefName, true); //$NON-NLS-1$
+                if (canSendStats)
                 {
+                    Boolean          canSendISAStats  = remotePrefs.getBoolean(sendISAStatsPrefName, true); //$NON-NLS-1$
                     StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
                     if (statsTrackerTask != null)
                     {
                         UIRegistry.getTopWindow().setVisible(false);
-                        statsTrackerTask.setSendStatsAllowed(true);
+                        statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
                         statsTrackerTask.sendStats(true, false); // false means don't do it silently
                         return false;
                     }
@@ -2002,22 +2004,28 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             dbLoginPanel.getStatusBar().setText(getResourceString("Specify.INITIALIZING_APP")); //$NON-NLS-1$
         }
-        
-        // We MUST send the stats before we switch users.
+
+        String         sendStatsPrefName    = "usage_tracking.send_stats";
+        String         sendISAStatsPrefName = "usage_tracking.send_isa_stats";
+        AppPreferences appPrefs             = AppPreferences.getRemote();
+        Boolean        canSendStats         = appPrefs.getBoolean(sendStatsPrefName, null); //$NON-NLS-1$
+        Boolean        canSendISAStats      = appPrefs.getBoolean(sendISAStatsPrefName, null); //$NON-NLS-1$
         if (!firstTime)
         {
-            StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask("StatsTracker");
-            if (statsTrackerTask != null)
+            if (canSendStats == null)
             {
-                AppPreferences appPrefs     = AppPreferences.getRemote();
-                Boolean        canSendStats = appPrefs.getBoolean("usage_tracking.send_stats", null); //$NON-NLS-1$
-                if (canSendStats == null)
+                canSendStats = true;
+                appPrefs.putBoolean(sendStatsPrefName, canSendStats); //$NON-NLS-1$
+            }
+            
+            if (canSendStats)
+            {
+                StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask("StatsTracker");
+                if (statsTrackerTask != null)
                 {
-                    canSendStats = true;
-                    appPrefs.putBoolean("usage_tracking.send_stats", canSendStats); //$NON-NLS-1$
+                    statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
+                    statsTrackerTask.sendStats(false, true);
                 }
-                statsTrackerTask.setSendStatsAllowed(canSendStats);
-                statsTrackerTask.sendStats(false, true);
             }
         }
         
@@ -2027,6 +2035,20 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
         
         SpecifyAppPrefs.initialPrefs();
+        
+        // Make sure we have the proper defaults
+        if (canSendStats == null)
+        {
+            canSendStats = true;
+            appPrefs.putBoolean("usage_tracking.send_stats", canSendStats); //$NON-NLS-1$
+        }
+        
+        if (canSendISAStats == null)
+        {
+            canSendISAStats = true;
+            appPrefs.putBoolean(sendISAStatsPrefName, canSendISAStats); //$NON-NLS-1$
+            //appPrefs.flush();
+        }
         
         if (status == AppContextMgr.CONTEXT_STATUS.OK)
         {

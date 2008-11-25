@@ -487,6 +487,7 @@ public class MySQLBackupService extends BackupServiceFactory
         
         SwingWorker<Integer, Integer> backupWorker = new SwingWorker<Integer, Integer>()
         {
+            long dspMegs    = 0;
             long fileSize   = 0;
             
             /* (non-Javadoc)
@@ -516,8 +517,9 @@ public class MySQLBackupService extends BackupServiceFactory
                         System.out.println(fileSize);
                         
                         double oneMeg     = (1024.0 * 1024.0);
-                        long   dspMegs    = 0;
                         long   totalBytes = 0;
+                        
+                        dspMegs = 0;
 
                         input = new FileInputStream(inFile);
                         try 
@@ -608,6 +610,8 @@ public class MySQLBackupService extends BackupServiceFactory
                 {
                     UIRegistry.showError(errorMsg);
                 }
+                
+                UIRegistry.getStatusBar().setText(UIRegistry.getLocalizedMessage("MySQLBackupService.RESTORE_COMPLETE", dspMegs));
                 
                 // We don't have to shutdown the App when it is stand alone
                 // really need to send the notificaiton no matter what and have the App display the Exit dialog if it wants to.

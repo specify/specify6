@@ -30,7 +30,7 @@ public class StatsTrackerTask extends BaseTask
     public  static final String           STATS_TRACKER   = "StatsTracker"; //$NON-NLS-1$
     
     protected StatsSwingWorker<?, ?> worker;
-    protected boolean                isSendStatsAllowed  = false;
+    protected boolean                isSendSecondaryStatsAllowed  = false;
 
     /**
      * Constructor.
@@ -52,19 +52,11 @@ public class StatsTrackerTask extends BaseTask
     }
 
     /**
-     * @return the isSendStatsAllowed
+     * @param isSendSecondaryStatsAllowed the isSendSecondaryStatsAllowed to set
      */
-    public boolean isSendStatsAllowed()
+    public void setSendSecondaryStatsAllowed(boolean isSendSecondaryStatsAllowed)
     {
-        return isSendStatsAllowed;
-    }
-
-    /**
-     * @param isSendStatsAllowed the isSendStatsAllowed to set
-     */
-    public void setSendStatsAllowed(boolean isSendStatsAllowed)
-    {
-        this.isSendStatsAllowed = isSendStatsAllowed;
+        this.isSendSecondaryStatsAllowed = isSendSecondaryStatsAllowed;
     }
 
     /* (non-Javadoc)
@@ -114,50 +106,47 @@ public class StatsTrackerTask extends BaseTask
      */
     public void sendStats(final boolean doExit, final boolean doSilent)
     {
-        if (isSendStatsAllowed())
+        if (!doSilent)
         {
-            if (!doSilent)
-            {
-                showClosingFrame();
-            }
-            
-            if (starting())
-            {
-                worker = new StatsSwingWorker<Object, Object>()
-                {
-                    @Override
-                    protected Object doInBackground() throws Exception
-                    {
-                        sendStats();
-                        
-                        return null;
-                    }
+            showClosingFrame();
+        }
         
-                    @Override
-                    protected void done()
-                    {
-                        super.done();
-                        
-                        completed();
-                        
-                        if (doExit)
-                        {
-                            System.exit(0);
-                        }
-                    }
-                    
-                };
-                
-                if (!doSilent)
+        if (starting())
+        {
+            worker = new StatsSwingWorker<Object, Object>()
+            {
+                @Override
+                protected Object doInBackground() throws Exception
                 {
-                    PropertyChangeListener pcl = getPCLForWorker();
-                    if (pcl != null)
+                    sendStats();
+                    
+                    return null;
+                }
+    
+                @Override
+                protected void done()
+                {
+                    super.done();
+                    
+                    completed();
+                    
+                    if (doExit)
                     {
-                        worker.addPropertyChangeListener(pcl);
+                        System.exit(0);
                     }
                 }
-                worker.execute();
+                
+            };
+            
+            if (!doSilent)
+            {
+                PropertyChangeListener pcl = getPCLForWorker();
+                if (pcl != null)
+                {
+                    worker.addPropertyChangeListener(pcl);
+                }
             }
+            worker.execute();
         }
     }
     
@@ -241,7 +230,7 @@ public class StatsTrackerTask extends BaseTask
         PostMethod postMethod = new PostMethod(versionCheckURL);
         
         // get the POST parameters (which includes usage stats, if we're allowed to send them)
-        NameValuePair[] postParams = createPostParameters(isSendStatsAllowed);
+        NameValuePair[] postParams = createPostParameters(isSendSecondaryStatsAllowed);
         postMethod.setRequestBody(postParams);
         
         // connect to the server
@@ -299,7 +288,7 @@ public class StatsTrackerTask extends BaseTask
      * Collection Statistics about the Collection (synchronously).
      * @return list of http named value pairs
      */
-    protected Vector<NameValuePair> collectExtraStats()
+    protected Vector<NameValuePair> collectSecondaryStats()
     {
         return null;
     }
@@ -307,15 +296,14 @@ public class StatsTrackerTask extends BaseTask
     /**
      * Creates an array of POST method parameters to send with the version checking / usage tracking connection.
      * 
-     * @param sendUsageStats if true, the POST parameters include usage stats
+     * @param doSendSecondaryStats if true, the POST parameters include usage stats
      * @return an array of POST parameters
      */
-    protected NameValuePair[] createPostParameters(final boolean sendUsageStats)
+    protected NameValuePair[] createPostParameters(final boolean doSendSecondaryStats)
     {
         Vector<NameValuePair> postParams = new Vector<NameValuePair>();
         try
         {
-
             // get the install ID
             String installID = UsageTracker.getInstallId();
             postParams.add(new NameValuePair("id", installID)); //$NON-NLS-1$
@@ -327,20 +315,20 @@ public class StatsTrackerTask extends BaseTask
             postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
             
             
-            if (sendUsageStats)
+            if (doSendSecondaryStats)
             {
-                Vector<NameValuePair> extraStats = collectExtraStats();
+                Vector<NameValuePair> extraStats = collectSecondaryStats();
                 if (extraStats != null)
                 {
                     postParams.addAll(extraStats);
                 }
-                
-                // get all of the usage tracking stats
-                List<Pair<String, Integer>> statistics = UsageTracker.getUsageStats();
-                for (Pair<String, Integer> stat : statistics)
-                {
-                    postParams.add(new NameValuePair(stat.first, Integer.toString(stat.second)));
-                }
+            }
+            
+            // get all of the usage tracking stats
+            List<Pair<String, Integer>> statistics = UsageTracker.getUsageStats();
+            for (Pair<String, Integer> stat : statistics)
+            {
+                postParams.add(new NameValuePair(stat.first, Integer.toString(stat.second)));
             }
             
             // create an array from the params

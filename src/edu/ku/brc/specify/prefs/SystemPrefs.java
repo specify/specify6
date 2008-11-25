@@ -27,6 +27,7 @@ import java.util.prefs.BackingStoreException;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -34,6 +35,7 @@ import javax.swing.JTextField;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.ui.forms.FormViewObj;
@@ -44,6 +46,7 @@ import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.ui.IconEntry;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
@@ -62,6 +65,9 @@ public class SystemPrefs extends GenericPrefsPanel
     protected static final String SPECIFY_BG_IMG_PATH = "specify.bg.image";
     protected static final String ATTCH_PATH          = "attachment.path";
     protected static final String VERSION_CHECK       = "version_check.auto";
+    
+    protected static final String SEND_STATS          = "usage_tracking.send_stats";
+    protected static final String SEND_ISA_STATS      = "usage_tracking.send_isa_stats";
     
     protected String oldAttachmentPath = null;
     protected String oldSplashPath     = null;
@@ -190,6 +196,27 @@ public class SystemPrefs extends GenericPrefsPanel
         
         ValCheckBox chk = form.getCompById("2");
         chk.setValue(localPrefs.getBoolean(VERSION_CHECK, true), "true");
+        
+        AppPreferences remotePrefs = AppPreferences.getRemote();
+        chk = form.getCompById("3");
+        chk.setValue(remotePrefs.getBoolean(SEND_STATS, true), "true");
+        
+        chk = form.getCompById("9");
+        chk.setValue(remotePrefs.getBoolean(SEND_ISA_STATS, true), "true");
+        chk.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+                if (collection != null)
+                {
+                    String isaNumber = collection.getSaNumber();
+                    if (StringUtils.isNotEmpty(isaNumber) && !((JCheckBox)e.getSource()).isSelected()){
+                        UIRegistry.showLocalizedMsg("ISA_STATS_WARNING");
+                    }
+                }
+            }
+         });
     }
 
     /* (non-Javadoc)
@@ -245,10 +272,17 @@ public class SystemPrefs extends GenericPrefsPanel
         {
             super.savePrefs();
             
-            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            AppPreferences localPrefs  = AppPreferences.getLocalPrefs();
+            AppPreferences remotePrefs = AppPreferences.getRemote();
             
             ValCheckBox chk = form.getCompById("2");
             localPrefs.putBoolean(VERSION_CHECK, (Boolean)chk.getValue());
+            
+            chk = form.getCompById("3");
+            remotePrefs.putBoolean(SEND_STATS, (Boolean)chk.getValue());
+            
+            chk = form.getCompById("9");
+            remotePrefs.putBoolean(SEND_ISA_STATS, (Boolean)chk.getValue());
             
             ValComboBox localeCBX = form.getCompById("5");
             Locale item = (Locale)localeCBX.getComboBox().getSelectedItem();

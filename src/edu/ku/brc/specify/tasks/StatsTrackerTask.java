@@ -190,7 +190,7 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
      * Collection Statistics about the Collection (synchronously).
      */
     @Override
-    protected Vector<NameValuePair> collectExtraStats()
+    protected Vector<NameValuePair> collectSecondaryStats()
     {
         Vector<NameValuePair> stats = new Vector<NameValuePair>();
         if (hasChanged)

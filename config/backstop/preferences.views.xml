@@ -291,7 +291,7 @@
             <desc><![CDATA[System Preference Form.]]></desc>
             
             <columnDef>p:g,2px,max(150px;p):g,280px,f:p:g</columnDef>
-            <rowDef>p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px</rowDef>
+            <rowDef>p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px, p,2px,p,10px</rowDef>
             
             <rows>
                 <row>
@@ -350,6 +350,12 @@
                 </row>
                 <row>
                     <cell type="field" id="3" name="usage_tracking.send_stats" uitype="checkbox" label="SEND_USAGE" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="separator" label="ISA_USAGE_STATS" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="field" id="9" name="usage_tracking.send_isa_stats" uitype="checkbox" label="ISA_SEND_STATS" colspan="3"/>
                 </row>
                 <row>
                     <cell type="separator" label="SPECIFY_BG_IMG" colspan="5"/>
