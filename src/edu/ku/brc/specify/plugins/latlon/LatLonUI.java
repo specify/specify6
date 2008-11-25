@@ -367,8 +367,8 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
             if (prevPanel1.validateState(false) == UIValidatable.ErrorType.Valid)
             {
                 srcFormat      = prevPanel1.getDefaultFormat();
-                latLon1.first  = convert(prevPanel1.getLatitudeStr(), fromFmt, toFmt, LATLON.Latitude);
-                latLon1.second = convert(prevPanel1.getLongitudeStr(), fromFmt, toFmt, LATLON.Longitude);
+                latLon1.first  = convert(latLon1.first, fromFmt, toFmt, LATLON.Latitude);
+                latLon1.second = convert(latLon1.second, fromFmt, toFmt, LATLON.Longitude);
                 
                 if (prevPanel2 != null && latLon2 != null)
                 {

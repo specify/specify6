@@ -383,6 +383,9 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                     if (gtpTreeDef != null)
                     {
                         adjSQL = StringUtils.replace(adjSQL, GTPTREEDEFID, Integer.toString(gtpTreeDef.getGeologicTimePeriodTreeDefId()));
+                    } else
+                    {
+                        return null;
                     }
                 }
                 
@@ -401,6 +404,9 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                     if (lithoTreeDef != null)
                     {
                         adjSQL = StringUtils.replace(adjSQL, LITHOTREEDEFID, Integer.toString(lithoTreeDef.getLithoStratTreeDefId()));
+                    } else
+                    {
+                        return null;
                     }
                 }
                 

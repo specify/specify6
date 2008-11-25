@@ -6881,9 +6881,9 @@ public class BuildSampleDatabase
                     }
                     rs.close();
                     
-                    String createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE TEMPORARY TABLES ON "+databaseName+".* TO '"+saUserName+"'@'%' IDENTIFIED BY '"+saPassword+"'";
+                    String createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE TABLES ON "+databaseName+".* TO '"+saUserName+"'@'%' IDENTIFIED BY '"+saPassword+"'";
                     int rv = stmt.executeUpdate(createUserStr);
-                    createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE,CREATE TEMPORARY TABLES ON "+databaseName+".* TO '"+saUserName+"'@'localhost' IDENTIFIED BY '"+saPassword+"'";
+                    createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE TABLES ON "+databaseName+".* TO '"+saUserName+"'@'localhost' IDENTIFIED BY '"+saPassword+"'";
                     rv = stmt.executeUpdate(createUserStr);
                     return rv == 1;
                 }

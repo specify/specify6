@@ -490,7 +490,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      */
     public String getLatitudeStr(final boolean inclZeroes)
     {
-        return latitudeDD.getText() + " " + NORTH_SOUTH[latitudeDir.getSelectedIndex()];
+        return latitudeDD.getText() + LatLonConverter.DEGREES_SYMBOL + " " + NORTH_SOUTH[latitudeDir.getSelectedIndex()];
     }
     
     /**
@@ -498,7 +498,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      */
     public String getLongitudeStr(final boolean inclZeroes)
     {
-        return longitudeDD.getText() + " " + EAST_WEST[longitudeDir.getSelectedIndex()];
+        return longitudeDD.getText() + LatLonConverter.DEGREES_SYMBOL + " " + EAST_WEST[longitudeDir.getSelectedIndex()];
     }
     
     /**

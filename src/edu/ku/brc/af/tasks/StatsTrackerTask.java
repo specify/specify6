@@ -2,6 +2,7 @@ package edu.ku.brc.af.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
@@ -12,13 +13,13 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -30,8 +31,12 @@ import edu.ku.brc.util.Pair;
  */
 public class StatsTrackerTask extends BaseTask
 {
-    public static final String STATS_TRACKER = "StatsTracker"; //$NON-NLS-1$
+    public  static final String           STATS_TRACKER   = "StatsTracker"; //$NON-NLS-1$
     
+    private static boolean                sendAtStartup = false;
+    
+    protected StatsSwingWorker<?, ?> worker;
+
     /**
      * Constructor.
      */
@@ -46,9 +51,25 @@ public class StatsTrackerTask extends BaseTask
      * @param name the name of the task
      * @param title the user-viewable name of the task
      */
-    public StatsTrackerTask(String name, String title)
+    public StatsTrackerTask(final String name, final String title)
     {
         super(name, title);
+    }
+
+    /**
+     * @return the sendAtStartup
+     */
+    public static boolean isSendAtStartup()
+    {
+        return sendAtStartup;
+    }
+
+    /**
+     * @param sendAtStartup the sendAtStartup to set
+     */
+    public static void setSendAtStartup(boolean sendAtStartup)
+    {
+        StatsTrackerTask.sendAtStartup = sendAtStartup;
     }
 
     /* (non-Javadoc)
@@ -59,6 +80,17 @@ public class StatsTrackerTask extends BaseTask
     {
         super.initialize();
         
+        if (sendAtStartup)
+        {
+            sendAtStartUp();
+        }
+    }
+    
+    /**
+     * Sends stats 5 seconds after start up.
+     */
+    protected void sendAtStartUp()
+    {
         // setup a background task to check for udpates at startup and/or send usage stats at startup
         Timer timer = new Timer("StatTrackerThread", true); //$NON-NLS-1$
         TimerTask task = new TimerTask()
@@ -81,6 +113,62 @@ public class StatsTrackerTask extends BaseTask
         if (sendUsageStats)
         {
             timer.schedule(task, 5000);
+        }
+    }
+    
+    /**
+     * @param localizedMsg
+     * @return
+     */
+    protected void showClosingFrame()
+    {
+        // no op
+    }
+    
+    protected PropertyChangeListener getPCLForWorker()
+    {
+        return null;
+    }
+    
+    /**
+     * @param doExit
+     */
+    public void sendStatsAtShutdown(final boolean doExit)
+    {
+        if (usageTrackingIsAllowed())
+        {
+            
+            showClosingFrame();
+            
+            worker = new StatsSwingWorker<Object, Object>()
+            {
+                @Override
+                protected Object doInBackground() throws Exception
+                {
+                    sendStats();
+                    
+                    return null;
+                }
+    
+                @Override
+                protected void done()
+                {
+                    super.done();
+                    
+                    if (doExit)
+                    {
+                        System.exit(0);
+                    }
+                }
+                
+            };
+            
+            PropertyChangeListener pcl = getPCLForWorker();
+            if (pcl != null)
+            {
+                worker.addPropertyChangeListener(pcl);
+            }
+            worker.execute();
         }
     }
     
@@ -211,12 +299,41 @@ public class StatsTrackerTask extends BaseTask
     }
     
     /**
-     * @param value
-     * @return
+     * Adds the string value or an empty string.
+     * @param value the value to be added.
+     * @return the new string
      */
-    private String fixParam(final String value)
+    protected static String fixParam(final String value)
     {
         return value == null ? "" : value;
+    }
+    
+    /**
+     * Executes a Query that returns a count and adds to the return parameters of the http request
+     * @param statName the name of the http param
+     * @param statsList the list the stat is to be added to
+     * @param sql the SQL statement to be executed
+     * @return the value of the count query
+     */
+    protected int addStat(final String statName, final Vector<NameValuePair> statsList, final String sql)
+    {
+        int count = 0;
+        String sqlStr = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+        if (sqlStr != null)
+        {
+            count = BasicSQLUtils.getCount(sqlStr);
+            statsList.add(new NameValuePair(statName, Integer.toString(count)));
+        }
+        return count;
+    }
+    
+    /**
+     * Collection Statistics about the Collection (synchronously).
+     * @return list of http named value pairs
+     */
+    protected Vector<NameValuePair> collectExtraStats()
+    {
+        return null;
     }
     
     /**
@@ -228,48 +345,66 @@ public class StatsTrackerTask extends BaseTask
     protected NameValuePair[] createPostParameters(final boolean sendUsageStats)
     {
         Vector<NameValuePair> postParams = new Vector<NameValuePair>();
-
-        // get the install ID
-        String installID = UsageTracker.getInstallId();
-        postParams.add(new NameValuePair("id",installID)); //$NON-NLS-1$
-
-        // get the OS name and version
-        postParams.add(new NameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
-        
-        AppContextMgr acMgr      = AppContextMgr.getInstance();
-        //Institution   inst       = acMgr.getClassObject(Institution.class);
-        //Division      division   = acMgr.getClassObject(Division.class);
-        //Discipline    discipline = acMgr.getClassObject(Discipline.class);
-        Collection    collection = acMgr.getClassObject(Collection.class);
-        
-        //postParams.add(new NameValuePair("Institution_number", fixParam(inst.getRegNumber()))); //$NON-NLS-1$
-        //postParams.add(new NameValuePair("Division_number",    fixParam(division.getRegNumber()))); //$NON-NLS-1$
-        //postParams.add(new NameValuePair("Discipline_number",  fixParam(discipline.getRegNumber()))); //$NON-NLS-1$
-        postParams.add(new NameValuePair("Collection_number",    fixParam(collection.getRegNumber()))); //$NON-NLS-1$
-
-
-        if (sendUsageStats)
+        try
         {
-            // get all of the usage tracking stats
-            List<Pair<String,Integer>> stats = UsageTracker.getUsageStats();
-            for (Pair<String,Integer> stat: stats)
+
+            // get the install ID
+            String installID = UsageTracker.getInstallId();
+            postParams.add(new NameValuePair("id", installID)); //$NON-NLS-1$
+    
+            // get the OS name and version
+            postParams.add(new NameValuePair("os_name",      System.getProperty("os.name"))); //$NON-NLS-1$
+            postParams.add(new NameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$
+            postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$
+            postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
+            
+            
+            if (sendUsageStats)
             {
-                postParams.add(new NameValuePair(stat.first, Integer.toString(stat.second)));
+                Vector<NameValuePair> extraStats = collectExtraStats();
+                if (extraStats != null)
+                {
+                    postParams.addAll(extraStats);
+                }
+                
+                // get all of the usage tracking stats
+                List<Pair<String, Integer>> statistics = UsageTracker.getUsageStats();
+                for (Pair<String, Integer> stat : statistics)
+                {
+                    postParams.add(new NameValuePair(stat.first, Integer.toString(stat.second)));
+                }
             }
-        }
+            
+            // create an array from the params
+            NameValuePair[] paramArray = new NameValuePair[postParams.size()];
+            for (int i = 0; i < paramArray.length; ++i)
+            {
+                paramArray[i] = postParams.get(i);
+            }
+            
+            return paramArray;
         
-        // create an array from the params
-        NameValuePair[] paramArray = new NameValuePair[postParams.size()];
-        for (int i = 0; i < paramArray.length; ++i)
+        } catch (Exception ex)
         {
-            paramArray[i] = postParams.get(i);
+            ex.printStackTrace();
         }
-        return paramArray;
+        return null;
     }
     
+    //--------------------------------------------------------------------------
+    //-- 
+    //--------------------------------------------------------------------------
+    public abstract class StatsSwingWorker<T, V> extends javax.swing.SwingWorker<T, V>
+    {
+        public void setProgressValue(final int value)
+        {
+            setProgress(value);
+        }
+    }
+    
+    //--------------------------------------------------------------------------
+    //-- 
+    //--------------------------------------------------------------------------
     public static class ConnectionException extends IOException
     {
         public ConnectionException(@SuppressWarnings("unused") Throwable e)

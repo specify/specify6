@@ -106,6 +106,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.af.tasks.StatsTrackerTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
 import edu.ku.brc.af.ui.db.DatabaseLoginPanel;
@@ -1780,7 +1781,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                         AppPreferences.getLocalPrefs().putInt("APP.H", r.height);
             		}
             
-                    AppPreferences.shutdownLocalPrefs();
+                    //AppPreferences.shutdownLocalPrefs();
+                    AppPreferences.getLocalPrefs().flush();
                     
              		// save the long term cache mapping info
             		try
@@ -1828,7 +1830,22 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             if (okToShutdown && doAppExit)
             {
-                System.exit(0);
+                AppPreferences appPrefs  = AppPreferences.getRemote();
+                Boolean        sendStats = appPrefs.getBoolean("usage_tracking.send_stats", null); //$NON-NLS-1$
+                if (sendStats != null && sendStats)
+                {
+                    StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
+                    if (statsTrackerTask != null)
+                    {
+                        UIRegistry.getTopWindow().setVisible(false);
+                        statsTrackerTask.sendStatsAtShutdown(true);
+                        return false;
+                    }
+                    
+                } else
+                {
+                    System.exit(0);
+                }
             }
         }
         return okToShutdown;

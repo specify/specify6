@@ -37,7 +37,7 @@
 		
 		<plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask" addui="true"/>
 		
-		<plugin class="edu.ku.brc.af.tasks.StatsTrackerTask" addui="true"/>
+		<plugin class="edu.ku.brc.specify.tasks.StatsTrackerTask" addui="false"/>
 		
 		<plugin class="edu.ku.brc.specify.tasks.BackupTask" addui="true"/>
 		

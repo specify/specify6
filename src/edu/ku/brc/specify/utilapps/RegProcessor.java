@@ -34,6 +34,7 @@ public class RegProcessor
     
     protected Hashtable<String, Hashtable<String, Entry>> typeHash   = new Hashtable<String, Hashtable<String,Entry>>();
     protected Hashtable<String, Entry>                    regNumHash = new Hashtable<String, Entry>();
+    protected Hashtable<String, Entry>                    trackHash  = new Hashtable<String, Entry>();
     
     protected Entry root = new Entry("Root");
     
@@ -43,6 +44,51 @@ public class RegProcessor
     public RegProcessor()
     {
         super();
+    }
+    
+    /**
+     * @return
+     * @throws IOException
+     */
+    protected boolean processTrackEntry() throws IOException
+    {
+        String     line  = br.readLine();
+        Properties props = new Properties();
+
+        do 
+        {
+            String[] tokens = StringUtils.split(line, "=");
+            if (tokens.length == 2)
+            {
+                props.put(tokens[0].trim(), tokens[1].trim());
+                
+            } else if (tokens.length > 2)
+            {
+                System.err.println("Length: "+tokens.length+"  ["+line+"]");
+            }
+            
+            line = br.readLine();
+            if (line != null && line.startsWith("----------"))
+            {
+                String id = props.getProperty("id");
+                if (id != null)
+                {
+                    Entry  entry = trackHash.get(id);
+                    if (entry == null)
+                    {
+                        entry = new  Entry(props);
+                        entry.setId(id);
+                        trackHash.put(id, entry);
+                    }
+                    entry.getProps().clear();
+                    entry.getProps().putAll(props);
+                }
+                
+                return true;
+            }
+        } while (line != null);
+        
+        return false;
     }
     
     /**
@@ -105,6 +151,25 @@ public class RegProcessor
         return false;
     }
     
+    protected void processTracks(final File inFile) throws IOException
+    {
+        fr = new FileReader(inFile);
+        br = new BufferedReader(fr);
+
+        // first line is header
+        br.readLine();
+        boolean rv = true;
+        while (rv)
+        {
+            rv = processTrackEntry();
+        }
+        
+        for (Entry entry : trackHash.values())
+        {
+            System.out.println(entry);
+        }
+    }
+    
     protected void process(final File inFile) throws IOException
     {
         fr = new FileReader(inFile);
@@ -154,6 +219,9 @@ public class RegProcessor
             }
         }
 
+        br.close();
+        fr.close();
+        
         System.out.println("--------");
         printEntries(root, 0);
         
@@ -188,16 +256,20 @@ public class RegProcessor
          */
         public Entry(String name)
         {
-            super();
-            this.name  = name;
-            this.props = new Properties();
+            this(name, new Properties());
         }
         
         public Entry(final Properties props)
         {
-            super();
-            this.props = props;
+            this(null, props);
             this.type  = props.getProperty("reg_type");
+        }
+        
+        public Entry(final String name, final Properties props)
+        {
+            super();
+            this.name  = name;
+            this.props = props;
         }
         
         /**
@@ -266,6 +338,22 @@ public class RegProcessor
             this.type = type;
         }
         
+        public String toString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append((name != null ? ("Name: "+ name) : "") + (type != null ? " Type: "+type : "")+ (id != null ? " id: "+id : "") +"\n");
+            for (Object key : props.keySet())
+            {
+                if (key.equals("id")) continue;
+                
+                sb.append("  ");
+                sb.append(key);
+                sb.append("=");
+                sb.append(props.get(key));
+                sb.append("\n");
+            }
+            return sb.toString();
+        }
     }
 
     public static void main(String[] args)
@@ -274,6 +362,8 @@ public class RegProcessor
         try
         {
             p.process(new File("reg.dat"));
+            p.processTracks(new File("track.dat"));
+            
         } catch (IOException ex)
         {
             ex.printStackTrace();
