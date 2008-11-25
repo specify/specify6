@@ -270,15 +270,27 @@ public class MatchHandler
             }
         });
         updateMatchUIState();
-        UIHelper.centerAndShow(matchDlg);
         try
         {
-            if (matchDlg.isCancelled()) { return null; }
-            if (matchDlg.getBtnPressed() == CustomDialog.APPLY_BTN) { throw new UploaderMatchSkipException(
-                    UploaderMatchSkipException.makeMsg(restrictedVals, uploadTable.getUploadFields().get(recNum).size(),
+            while (true) //scary...
+            {
+                UIHelper.centerAndShow(matchDlg);
+                if (matchDlg.isCancelled() && matchDlg.getBtnPressed() == CustomDialog.CANCEL_BTN) 
+                { 
+                    return null; 
+                }
+                else if (!matchDlg.isCancelled())
+                {
+                    if (matchDlg.getBtnPressed() == CustomDialog.APPLY_BTN) 
+                    { 
+                        throw new UploaderMatchSkipException(
+                            UploaderMatchSkipException.makeMsg(restrictedVals, uploadTable.getUploadFields().get(recNum).size(),
                             Uploader.getCurrentUpload().getRow()), matches, Uploader
-                            .getCurrentUpload().getRow(), uploadTable); }
-            return ((MatchedRecord )matchesList.getSelectedValue()).getDataObj(); 
+                            .getCurrentUpload().getRow(), uploadTable); 
+                    }
+                    return ((MatchedRecord )matchesList.getSelectedValue()).getDataObj();
+                }
+            }
         }
         finally
         {
