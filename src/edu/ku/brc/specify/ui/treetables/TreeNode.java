@@ -3,6 +3,7 @@ package edu.ku.brc.specify.ui.treetables;
 import java.util.Iterator;
 import java.util.Set;
 
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -252,6 +253,12 @@ public class TreeNode
 
     public synchronized boolean shouldCalcCount()
     {
+        //don't do counts for taxon synonyms
+        if (dataObjClass != null && dataObjClass.equals(Taxon.class) && acceptedParentId != null)
+        {
+            return false;
+        }
+        
         boolean isCalc = (isCalcCount || hasCalcCount) && (isCalcCount2 || hasCalcCount2);
         return !isCalc;
     }

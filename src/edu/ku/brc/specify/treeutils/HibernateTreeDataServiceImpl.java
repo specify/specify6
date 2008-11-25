@@ -232,6 +232,10 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         Set<Pair<Integer,String>> synIdsAndNames = getSynonymIdsAndNames(parent.getClass(), id);
         
         TreeNode node = new TreeNode(nodeName,fullName,id,parentId,rank,parentRank, (descCount != 0), acceptedParentId, acceptedParentFullName, synIdsAndNames);
+        if (parent != null)
+        {
+            node.setDataObjClass(parent.getClass());
+        }
         return node;
     }
     

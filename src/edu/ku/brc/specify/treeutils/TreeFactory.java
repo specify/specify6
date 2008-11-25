@@ -297,24 +297,17 @@ public class TreeFactory
 
     /**
      * @param clazz
-     * @param id
      * @return
      */
-    public static StringBuilder getRelatedRecordCountSQLBase(final Class<?> clazz, final TreeNode node)
+    public static StringBuilder getRelatedRecordCountSQLBase(final Class<?> clazz)
     {
         StringBuilder sb = new StringBuilder();
         if (clazz.equals(Taxon.class))
         {
             sb.append("SELECT count(*) ");
             sb.append("FROM taxon AS TX INNER JOIN determination as DET ON TX.TaxonID = ");
-            if (node.getAcceptedParentId() == null)
-            {
-                sb.append("DET.ActiveTaxonID ");
-            }
-            else
-            {
-                sb.append("DET.TaxonID ");
-            }
+            //Using 'ActiveTaxonID' means that counts for preferred taxa will include dets to their synonyms. 
+            sb.append("DET.ActiveTaxonID "); 
             sb.append("INNER JOIN collectionobject ON DET.CollectionObjectID = collectionobject.CollectionObjectID ");
         }
         
@@ -330,12 +323,11 @@ public class TreeFactory
 
     /**
      * @param clazz
-     * @param id
      * @return
      */
-    public static String getRelatedRecordCountSQLSingleNode(final Class<?> clazz, final TreeNode node)
+    public static String getRelatedRecordCountSQLSingleNode(final Class<?> clazz)
     {
-        StringBuilder sb = getRelatedRecordCountSQLBase(clazz, node);
+        StringBuilder sb = getRelatedRecordCountSQLBase(clazz);
         
         if (clazz.equals(Taxon.class))
         {
@@ -373,12 +365,12 @@ public class TreeFactory
 
     /**
      * @param clazz
-     * @param id
+     * @param node
      * @return
      */
     public static String getRelatedRecordCountSQLForRange(final Class<?> clazz, final TreeNode node)
     {
-        StringBuilder sb = getRelatedRecordCountSQLBase(clazz, node);
+        StringBuilder sb = getRelatedRecordCountSQLBase(clazz);
         
         if (clazz.equals(Taxon.class))
         {

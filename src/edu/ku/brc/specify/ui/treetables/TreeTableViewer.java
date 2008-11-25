@@ -2822,7 +2822,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         Integer acceptParentId      = (acceptedParent != null) ? acceptedParent.getTreeId() : null;
         String acceptParentFullName = (acceptedParent != null) ? acceptedParent.getFullName() : null;
         TreeNode node = new TreeNode(nodeName,fullName,id,parentId,rank,parentRank, (descCount != 0), acceptParentId, acceptParentFullName, synIdsAndNames);
-        
+        node.setDataObjClass(dataRecord.getClass());
         return node;
     }
     
@@ -2873,7 +2873,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         if (rankThreshold == -1 || dbRecord.getRankId() >= rankThreshold)
                         {
                             //System.out.println("Calc: "+node.getFullName()+" "+node.hashCode());
-                            new ChildNodeCounter(TreeTableViewer.this, 1, node,  TreeFactory.getRelatedRecordCountSQLSingleNode(dbRecClass, node), null, isHQL);
+                            new ChildNodeCounter(TreeTableViewer.this, 1, node,  TreeFactory.getRelatedRecordCountSQLSingleNode(dbRecClass), null, isHQL);
                             
                             new ChildNodeCounter(TreeTableViewer.this, 2, node, 
                                     TreeFactory.getNodeNumberQuery(dbRecClass), 
