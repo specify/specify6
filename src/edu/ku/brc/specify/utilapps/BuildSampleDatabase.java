@@ -234,6 +234,7 @@ public class BuildSampleDatabase
     protected static boolean     debugOn  = false;
     protected static final int   TIME_THRESHOLD = 3000;
     protected static Hashtable<String, Boolean> fieldsToHideHash = new Hashtable<String, Boolean>();
+    protected static Hashtable<String, Boolean> fieldsToSkipHash = new Hashtable<String, Boolean>();
     protected static List<Object>               locs             = null;
 
     protected Calendar           calendar = Calendar.getInstance();
@@ -6881,9 +6882,9 @@ public class BuildSampleDatabase
                     }
                     rs.close();
                     
-                    String createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE TABLES ON "+databaseName+".* TO '"+saUserName+"'@'%' IDENTIFIED BY '"+saPassword+"'";
+                    String createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE ON "+databaseName+".* TO '"+saUserName+"'@'%' IDENTIFIED BY '"+saPassword+"'";
                     int rv = stmt.executeUpdate(createUserStr);
-                    createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE TABLES ON "+databaseName+".* TO '"+saUserName+"'@'localhost' IDENTIFIED BY '"+saPassword+"'";
+                    createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE ON "+databaseName+".* TO '"+saUserName+"'@'localhost' IDENTIFIED BY '"+saPassword+"'";
                     rv = stmt.executeUpdate(createUserStr);
                     return rv == 1;
                 }
@@ -7409,14 +7410,26 @@ public class BuildSampleDatabase
                 fieldsToHideHash.put(fieldName, true);
             }
         }
+        
+        if (fieldsToSkipHash.size() == 0)
+        {
+            String[] fields = { "paleocontext", "text1"};
+            for (int i = 0;i<fields.length;i++)
+            {
+                fieldsToSkipHash.put(fields[i]+"_"+fields[i+1], true);
+                i++;
+            }
+        }
     }
     
     /**
+     * @param tableName
      * @param memoryItem
      * @param newItem
      * @param hideGenericFields
      */
-    public static void loadLocalization(final SpLocaleContainerItem memoryItem, 
+    public static void loadLocalization(final String tableName, 
+                                        final SpLocaleContainerItem memoryItem, 
                                         final SpLocaleContainerItem newItem,
                                         final boolean hideGenericFields)
     {
@@ -7431,10 +7444,11 @@ public class BuildSampleDatabase
         newItem.setIsHidden(memoryItem.getIsHidden());
         newItem.setIsRequired(memoryItem.getIsRequired());
 
-        if (fieldsToHideHash.get(itemName) != null || 
-            itemName.startsWith("text") ||
-            itemName.startsWith("number") ||
-            itemName.startsWith("yesNo"))
+        if (fieldsToSkipHash.get(tableName+"_"+itemName) == null && 
+                (fieldsToHideHash.get(itemName) != null || 
+                itemName.startsWith("text") ||
+                itemName.startsWith("number") ||
+                itemName.startsWith("yesNo")))
         {
             newItem.setIsHidden(true);
         }
@@ -7531,7 +7545,7 @@ public class BuildSampleDatabase
             newContainer.getItems().add(newItem);
             newItem.setContainer(newContainer);
             
-            loadLocalization(item, newItem, hideGenericFields);
+            loadLocalization(memoryContainer.getName(), item, newItem, hideGenericFields);
             
             if (isColObj && item.getName().equals("catalogNumber") && catFmtName != null)
             {

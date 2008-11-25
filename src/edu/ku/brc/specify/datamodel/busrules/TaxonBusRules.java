@@ -265,9 +265,10 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     {
         super.afterFillForm(dataObj);
         
-        if (formViewObj.getAltView().getMode() == CreationMode.EDIT)
+        if (formViewObj.getAltView().getMode() == CreationMode.EDIT &&
+            formViewObj.getDataObj() instanceof Taxon)
         {
-            Taxon nodeInForm = (Taxon )formViewObj.getDataObj();
+            Taxon nodeInForm = (Taxon)formViewObj.getDataObj();
             
             // TODO: the form system MUST require the hybridParent1 and hybridParent2 widgets to be present if the isHybrid checkbox is present
             JCheckBox hybridCheckBox = (JCheckBox)formViewObj.getControlByName(IS_HYBRID);
