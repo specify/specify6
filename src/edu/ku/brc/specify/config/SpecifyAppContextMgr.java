@@ -2510,19 +2510,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     UIRegistry.showError("The tree is locked!");
                     return false;
                     
-                } else
-                {
-                    return false;
                 }
-                
-            } else
+                return false;
+            } 
+            TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(lockTitle, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
+            if (action != TaskSemaphoreMgr.USER_ACTION.OK)
             {
-                TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(lockTitle, treeDefClass.getSimpleName(), "def", TaskSemaphoreMgr.SCOPE.Discipline, false);
-                if (action != TaskSemaphoreMgr.USER_ACTION.OK)
-                {
-                    UIRegistry.showError("Unable to Lock the tree!");
-                    return false;
-                }
+                UIRegistry.showError("Unable to Lock the tree!");
+                return false;
             }
         }
         return true;

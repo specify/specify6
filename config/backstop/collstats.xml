@@ -1,42 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <statistics>
-    <stat name="num_co" desc="Number of Collection Objects">
-       <![CDATA[SELECT count(*) FROM collectionobject WHERE CollectionMemberID = COLMEMID]]>
-    </stat>
-    <stat name="num_txu" desc="Number of Taxon Used">
-       <![CDATA[SELECT count(DISTINCT tx.TaxonID) FROM (SELECT DISTINCT tax.TaxonID,tax.NodeNumber FROM (SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND determination.IsCurrent <> 0) as Genera1,taxon as tax WHERE tax.IsAccepted <> 0 and tax.TaxonID = Genera1.TaxonID) as Genera2, taxon as tx WHERE Genera2.NodeNumber between tx.NodeNumber and tx.HighestChildNodeNumber]]>
-    </stat>
-    <stat name="num_tx" desc="Number of Taxon">
-       <![CDATA[SELECT count(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID]]>
-    </stat>
-    <stat name="num_geo" desc="Number of Geography">
-       <![CDATA[SELECT count(*) FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID]]>
-    </stat>
-    <stat name="num_geou" desc="Number of Geography Used">
-       <![CDATA[SELECT count(DISTINCT g.GeographyID) FROM (SELECT DISTINCT geo.GeographyID,geo.NodeNumber FROM (SELECT GeographyID FROM locality WHERE DisciplineID = DSPLNID) as TBL1,geography as geo WHERE geo.IsAccepted <> 0 and geo.GeographyID = TBL1.GeographyID) as TBL2, geography as g WHERE TBL2.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber]]>
-    </stat>
-    <stat name="num_loc" desc="Number of Localities">
-       <![CDATA[SELECT count(*) FROM locality WHERE DisciplineID = DSPLNID]]>
-    </stat>
-    <stat name="num_locgr" desc="Number of Georef'ed Localities">
-       <![CDATA[SELECT count(*) FROM locality WHERE DisciplineID = DSPLNID AND Latitude1 is not NULL AND Longitude1 is not NULL]]>
-    </stat>
-    <stat name="num_preps" desc="Number of Preparations">
-       <![CDATA[SELECT count(*) FROM preparation WHERE CollectionMemberID = COLMEMID]]>
-    </stat>
-    <stat name="num_prpcnt" desc="Total Number of Preparations Counts">
-       <![CDATA[SELECT SUM(Count) FROM preparation WHERE CollectionMemberID = COLMEMID]]>
-    </stat>
-    <stat name="num_litho" desc="Number of Litho Stratigraphy">
-       <![CDATA[SELECT count(*) FROM lithostrat WHERE LithoStratTreeDefID = LITHOTREEDEFID]]>
-    </stat>
-    <stat name="num_lithou" desc="Number of Litho Stratigraphy Used">
-       <![CDATA[SELECT count(DISTINCT l.LithoStratID) FROM (SELECT DISTINCT litho.LithoStratID,litho.NodeNumber FROM (SELECT LithoStratID FROM paleocontext WHERE CollectionMemberID = COLMEMID) as TBL1,lithostrat as litho WHERE litho.IsAccepted <> 0 and litho.LithoStratID = TBL1.LithoStratID) as TBL2, lithostrat as l WHERE TBL2.NodeNumber between l.NodeNumber and l.HighestChildNodeNumber]]>
-    </stat>
-    <stat name="num_gtp" desc="Number of Litho Chronosstratigraphy">
-       <![CDATA[SELECT count(*) FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefID = GTPTREEDEFID]]>
-    </stat>
-    <stat name="num_gtpu" desc="Number of Litho Chronosstratigraphy Used">
-       <![CDATA[SELECT count(DISTINCT g.GeologicTimePeriodID) FROM (SELECT DISTINCT gtp. GeologicTimePeriodID,gtp.NodeNumber FROM (SELECT ChronosStratID FROM paleocontext WHERE CollectionMemberID = COLMEMID) as TBL1,geologictimeperiod as gtp WHERE gtp.IsAccepted <> 0 and gtp.GeologicTimePeriodID = TBL1. ChronosStratID) as TBL2, geologictimeperiod as g WHERE TBL2.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber]]>
-    </stat>
+   <tables>
+      <table class="edu.ku.brc.specify.datamodel.CollectionObject"/>
+      <table class="edu.ku.brc.specify.datamodel.CollectingEvent"/>
+      <table class="edu.ku.brc.specify.datamodel.Determination"/>
+      <table class="edu.ku.brc.specify.datamodel.Geography"/>
+      <table class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
+      <table class="edu.ku.brc.specify.datamodel.Locality"/>
+      <table class="edu.ku.brc.specify.datamodel.PaleoContext"/>
+      <table class="edu.ku.brc.specify.datamodel.Preparation"/>
+      <table class="edu.ku.brc.specify.datamodel.LithoStrat"/>
+      <table class="edu.ku.brc.specify.datamodel.Taxon"/>
+   </tables>
+   <stats>
+       <stat name="num_co" desc="Number of Collection Objects">
+          <![CDATA[SELECT count(*) FROM collectionobject WHERE CollectionMemberID = COLMEMID]]>
+       </stat>
+       <stat name="num_txu" desc="Number of Taxon Used">
+          <![CDATA[SELECT count(DISTINCT tx.TaxonID) FROM (SELECT DISTINCT tax.TaxonID,tax.NodeNumber FROM (SELECT TaxonID FROM determination WHERE CollectionMemberID = COLMEMID AND determination.IsCurrent <> 0) as Genera1,taxon as tax WHERE tax.IsAccepted <> 0 and tax.TaxonID = Genera1.TaxonID) as Genera2, taxon as tx WHERE Genera2.NodeNumber between tx.NodeNumber and tx.HighestChildNodeNumber]]>
+       </stat>
+       <stat name="num_tx" desc="Number of Taxon">
+          <![CDATA[SELECT count(*) FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID]]>
+       </stat>
+       <stat name="num_geo" desc="Number of Geography">
+          <![CDATA[SELECT count(*) FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID]]>
+       </stat>
+       <stat name="num_geou" desc="Number of Geography Used">
+          <![CDATA[SELECT count(DISTINCT g.GeographyID) FROM (SELECT DISTINCT geo.GeographyID,geo.NodeNumber FROM (SELECT GeographyID FROM locality WHERE DisciplineID = DSPLNID) as TBL1,geography as geo WHERE geo.IsAccepted <> 0 and geo.GeographyID = TBL1.GeographyID) as TBL2, geography as g WHERE TBL2.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber]]>
+       </stat>
+       <stat name="num_loc" desc="Number of Localities">
+          <![CDATA[SELECT count(*) FROM locality WHERE DisciplineID = DSPLNID]]>
+       </stat>
+       <stat name="num_locgr" desc="Number of Georef'ed Localities">
+          <![CDATA[SELECT count(*) FROM locality WHERE DisciplineID = DSPLNID AND Latitude1 is not NULL AND Longitude1 is not NULL]]>
+       </stat>
+       <stat name="num_preps" desc="Number of Preparations">
+          <![CDATA[SELECT count(*) FROM preparation WHERE CollectionMemberID = COLMEMID]]>
+       </stat>
+       <stat name="num_prpcnt" desc="Total Number of Preparations Counts">
+          <![CDATA[SELECT SUM(Count) FROM preparation WHERE CollectionMemberID = COLMEMID]]>
+       </stat>
+       <stat name="num_litho" desc="Number of Litho Stratigraphy">
+          <![CDATA[SELECT count(*) FROM lithostrat WHERE LithoStratTreeDefID = LITHOTREEDEFID]]>
+       </stat>
+       <stat name="num_lithou" desc="Number of Litho Stratigraphy Used">
+          <![CDATA[SELECT count(DISTINCT l.LithoStratID) FROM (SELECT DISTINCT litho.LithoStratID,litho.NodeNumber FROM (SELECT LithoStratID FROM paleocontext WHERE CollectionMemberID = COLMEMID) as TBL1,lithostrat as litho WHERE litho.IsAccepted <> 0 and litho.LithoStratID = TBL1.LithoStratID) as TBL2, lithostrat as l WHERE TBL2.NodeNumber between l.NodeNumber and l.HighestChildNodeNumber]]>
+       </stat>
+       <stat name="num_gtp" desc="Number of Litho Chronosstratigraphy">
+          <![CDATA[SELECT count(*) FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefID = GTPTREEDEFID]]>
+       </stat>
+       <stat name="num_gtpu" desc="Number of Litho Chronosstratigraphy Used">
+          <![CDATA[SELECT count(DISTINCT g.GeologicTimePeriodID) FROM (SELECT DISTINCT gtp. GeologicTimePeriodID,gtp.NodeNumber FROM (SELECT ChronosStratID FROM paleocontext WHERE CollectionMemberID = COLMEMID) as TBL1,geologictimeperiod as gtp WHERE gtp.IsAccepted <> 0 and gtp.GeologicTimePeriodID = TBL1. ChronosStratID) as TBL2, geologictimeperiod as g WHERE TBL2.NodeNumber between g.NodeNumber and g.HighestChildNodeNumber]]>
+       </stat>
+   </stats>
 </statistics>

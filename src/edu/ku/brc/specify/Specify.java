@@ -1838,7 +1838,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                     if (statsTrackerTask != null)
                     {
                         UIRegistry.getTopWindow().setVisible(false);
-                        statsTrackerTask.sendStatsAtShutdown(true);
+                        statsTrackerTask.sendStats(true, false); // false means don't do it silently
                         return false;
                     }
                     
@@ -2000,6 +2000,24 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         if (dbLoginPanel != null)
         {
             dbLoginPanel.getStatusBar().setText(getResourceString("Specify.INITIALIZING_APP")); //$NON-NLS-1$
+        }
+        
+        // We MUST send the stats before we switch users.
+        if (!firstTime)
+        {
+            StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask("StatsTracker");
+            if (statsTrackerTask != null)
+            {
+                AppPreferences appPrefs     = AppPreferences.getRemote();
+                Boolean        canSendStats = appPrefs.getBoolean("usage_tracking.send_stats", null); //$NON-NLS-1$
+                if (canSendStats == null)
+                {
+                    canSendStats = true;
+                    appPrefs.putBoolean("usage_tracking.send_stats", canSendStats); //$NON-NLS-1$
+                }
+                statsTrackerTask.setSendStatsAllowed(canSendStats);
+                statsTrackerTask.sendStats(false, true);
+            }
         }
         
         AppPreferences.shutdownRemotePrefs();

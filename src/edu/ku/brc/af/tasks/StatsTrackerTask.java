@@ -5,8 +5,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.Vector;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -16,8 +14,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
-import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.util.Pair;
@@ -33,9 +29,8 @@ public class StatsTrackerTask extends BaseTask
 {
     public  static final String           STATS_TRACKER   = "StatsTracker"; //$NON-NLS-1$
     
-    private static boolean                sendAtStartup = false;
-    
     protected StatsSwingWorker<?, ?> worker;
+    protected boolean                isSendStatsAllowed  = false;
 
     /**
      * Constructor.
@@ -57,19 +52,19 @@ public class StatsTrackerTask extends BaseTask
     }
 
     /**
-     * @return the sendAtStartup
+     * @return the isSendStatsAllowed
      */
-    public static boolean isSendAtStartup()
+    public boolean isSendStatsAllowed()
     {
-        return sendAtStartup;
+        return isSendStatsAllowed;
     }
 
     /**
-     * @param sendAtStartup the sendAtStartup to set
+     * @param isSendStatsAllowed the isSendStatsAllowed to set
      */
-    public static void setSendAtStartup(boolean sendAtStartup)
+    public void setSendStatsAllowed(boolean isSendStatsAllowed)
     {
-        StatsTrackerTask.sendAtStartup = sendAtStartup;
+        this.isSendStatsAllowed = isSendStatsAllowed;
     }
 
     /* (non-Javadoc)
@@ -79,41 +74,6 @@ public class StatsTrackerTask extends BaseTask
     public void initialize()
     {
         super.initialize();
-        
-        if (sendAtStartup)
-        {
-            sendAtStartUp();
-        }
-    }
-    
-    /**
-     * Sends stats 5 seconds after start up.
-     */
-    protected void sendAtStartUp()
-    {
-        // setup a background task to check for udpates at startup and/or send usage stats at startup
-        Timer timer = new Timer("StatTrackerThread", true); //$NON-NLS-1$
-        TimerTask task = new TimerTask()
-        {
-            @Override
-            public void run()
-            {
-                // check for updates
-                //    show popup if updates available
-                //    don't show error popup if we can't contact the server
-                //    send usage stats if allowed
-                connectToServerNow(false);
-            }
-        };
-        
-        // see usage tracking is enabled
-        boolean sendUsageStats  = usageTrackingIsAllowed();
-        
-        // if either feature is enabled, schedule the background task
-        if (sendUsageStats)
-        {
-            timer.schedule(task, 5000);
-        }
     }
     
     /**
@@ -125,50 +85,79 @@ public class StatsTrackerTask extends BaseTask
         // no op
     }
     
+    /**
+     * @return
+     */
     protected PropertyChangeListener getPCLForWorker()
     {
         return null;
     }
     
     /**
+     * 
+     */
+    protected boolean starting()
+    {
+        return true;
+    }
+    
+    /**
+     * 
+     */
+    protected void completed()
+    {
+     // no op
+    }
+    
+    /**
      * @param doExit
      */
-    public void sendStatsAtShutdown(final boolean doExit)
+    public void sendStats(final boolean doExit, final boolean doSilent)
     {
-        if (usageTrackingIsAllowed())
+        if (isSendStatsAllowed())
         {
-            
-            showClosingFrame();
-            
-            worker = new StatsSwingWorker<Object, Object>()
+            if (!doSilent)
             {
-                @Override
-                protected Object doInBackground() throws Exception
+                showClosingFrame();
+            }
+            
+            if (starting())
+            {
+                worker = new StatsSwingWorker<Object, Object>()
                 {
-                    sendStats();
-                    
-                    return null;
-                }
-    
-                @Override
-                protected void done()
-                {
-                    super.done();
-                    
-                    if (doExit)
+                    @Override
+                    protected Object doInBackground() throws Exception
                     {
-                        System.exit(0);
+                        sendStats();
+                        
+                        return null;
+                    }
+        
+                    @Override
+                    protected void done()
+                    {
+                        super.done();
+                        
+                        completed();
+                        
+                        if (doExit)
+                        {
+                            System.exit(0);
+                        }
+                    }
+                    
+                };
+                
+                if (!doSilent)
+                {
+                    PropertyChangeListener pcl = getPCLForWorker();
+                    if (pcl != null)
+                    {
+                        worker.addPropertyChangeListener(pcl);
                     }
                 }
-                
-            };
-            
-            PropertyChangeListener pcl = getPCLForWorker();
-            if (pcl != null)
-            {
-                worker.addPropertyChangeListener(pcl);
+                worker.execute();
             }
-            worker.execute();
         }
     }
     
@@ -192,24 +181,6 @@ public class StatsTrackerTask extends BaseTask
         return null;
     }
 
-    /**
-     * Checks to see if usage tracking is allowed.
-     * 
-     * @return true if usage tracking is allowed.
-     */
-    protected boolean usageTrackingIsAllowed()
-    {
-        // see if the user is allowing us to send back usage data
-        AppPreferences appPrefs  = AppPreferences.getRemote();
-        Boolean        sendStats = appPrefs.getBoolean("usage_tracking.send_stats", null); //$NON-NLS-1$
-        if (sendStats == null)
-        {
-            sendStats = true;
-            appPrefs.putBoolean("usage_tracking.send_stats", sendStats); //$NON-NLS-1$
-        }
-        
-        return sendStats;
-    }
 
     /**
      * Connect to the update/usage tracking server now.  If this method is called based on the action of a user
@@ -269,10 +240,8 @@ public class StatsTrackerTask extends BaseTask
         
         PostMethod postMethod = new PostMethod(versionCheckURL);
         
-        boolean sendUsageStats = usageTrackingIsAllowed();
-        
         // get the POST parameters (which includes usage stats, if we're allowed to send them)
-        NameValuePair[] postParams = createPostParameters(sendUsageStats);
+        NameValuePair[] postParams = createPostParameters(isSendStatsAllowed);
         postMethod.setRequestBody(postParams);
         
         // connect to the server
@@ -318,10 +287,9 @@ public class StatsTrackerTask extends BaseTask
     protected int addStat(final String statName, final Vector<NameValuePair> statsList, final String sql)
     {
         int count = 0;
-        String sqlStr = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
-        if (sqlStr != null)
+        if (sql != null)
         {
-            count = BasicSQLUtils.getCount(sqlStr);
+            count = BasicSQLUtils.getCount(sql);
             statsList.add(new NameValuePair(statName, Integer.toString(count)));
         }
         return count;

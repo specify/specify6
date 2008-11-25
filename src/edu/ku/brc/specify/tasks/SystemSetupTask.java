@@ -668,7 +668,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         dlg.setVisible(true);
         if (dlg.hasChanged())
         {
-            CommandDispatcher.dispatch(new CommandAction(BaseTask.APP_CMD_TYPE, BaseTask.APP_REQ_RESTART));
+            CommandDispatcher.dispatch(new CommandAction(APP_CMD_TYPE, APP_REQ_RESTART));
         }
     }
 
@@ -890,7 +890,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             data = ((NavBoxButton)data).getData();
         }
         
-        if (cmdAction.isAction(BaseTask.DELETE_CMD_ACT))
+        if (cmdAction.isAction(DELETE_CMD_ACT))
         {
             if (data instanceof Integer)
             {
