@@ -302,7 +302,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
            {
                String latStr = LatLonConverter.ensureFormattedString(lat1, null, LatLonConverter.FORMAT.DDDDDD, LatLonConverter.LATLON.Latitude);
                String lonStr = LatLonConverter.ensureFormattedString(lon1, null, LatLonConverter.FORMAT.DDDDDD, LatLonConverter.LATLON.Longitude);
-               latLonUI.setLatLon(LatLonConverter.FORMAT.DDDDDD, latStr, lonStr, null, null);
+               latLonUI.setLatLon(latStr, lonStr, null, null);
            }
        }
     }
