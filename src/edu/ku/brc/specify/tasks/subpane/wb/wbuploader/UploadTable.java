@@ -1628,7 +1628,10 @@ public class UploadTable implements Comparable<UploadTable>
                                   int row,
                                   int seq) throws UploaderException
     {
-        return fld.isRequired() && (fld.getValue() == null || fld.getValue().trim().equals(""));
+        boolean blankButRequired = fld.isRequired() && (fld.getValue() == null || fld.getValue().trim().equals(""));
+        boolean isAutoAssignable = fld.getField().getFieldInfo() != null && fld.getField().getFieldInfo().getFormatter() != null
+            && fld.getField().getFieldInfo().getFormatter().isIncrementer();
+        return blankButRequired && !isAutoAssignable;
     }
 
     protected String getPickListName(final UploadField fld)

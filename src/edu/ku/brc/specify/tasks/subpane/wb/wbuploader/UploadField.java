@@ -52,7 +52,7 @@ public class UploadField
     /**
      * True if the field must contain data
      */
-    protected boolean                    required;
+    protected Boolean                    required = null;
     /**
      * The method used to set the field's contents to the java object representing the field's
      * Table.
@@ -91,7 +91,6 @@ public class UploadField
         this.index = index;
         this.wbFldName = wbFldName;
         this.relationship = relationship;
-        this.required = false;
     }
 
     @Override
@@ -226,7 +225,17 @@ public class UploadField
      */
     public boolean isRequired()
     {
-        return required; 
+        if (required != null)
+        {
+            return required;
+        }
+        
+        if (field != null && field.getFieldInfo() != null)
+        {
+            return field.getFieldInfo().isRequired();
+        }
+        
+        return false;
     }
 
     /**

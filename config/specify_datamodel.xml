@@ -615,7 +615,7 @@
       <display view="CollectionObject" dataobjformatter="CollectionObject" searchdlg="CollectionObjectSearch" newobjdlg="CollectionObject"/>
       <field column="AltCatalogNumber" name="altCatalogNumber" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="Availability" name="availability" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false"/>
-      <field column="CatalogNumber" name="catalogNumber" type="java.lang.String" length="32" indexName="CatalogNumberIDX" updatable="true" required="false" unique="false" indexed="true"/>
+      <field column="CatalogNumber" name="catalogNumber" type="java.lang.String" length="32" indexName="CatalogNumberIDX" updatable="true" required="true" unique="false" indexed="true"/>
       <field column="CatalogedDate" name="catalogedDate" type="java.util.Calendar" indexName="CatalogedDateIDX" updatable="true" required="false" unique="false" indexed="true"/>
       <field column="CatalogedDatePrecision" name="catalogedDatePrecision" type="java.lang.Short" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="CatalogedDateVerbatim" name="catalogedDateVerbatim" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false"/>

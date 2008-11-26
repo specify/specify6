@@ -896,7 +896,10 @@ public class Uploader implements ActionListener, KeyListener
                 int fldIdx = item.getIndex();
                 String wbFldName = item.getWbFldName();
                 UploadField newFld1 = new UploadField(fld, fldIdx, wbFldName, null);
-                newFld1.setRequired(item.isRequired());
+                if (item.isRequired())
+                {
+                    newFld1.setRequired(true);
+                }
                 newFld1.setSequence(seq);
                 uploadFields.add(newFld1);
                 
