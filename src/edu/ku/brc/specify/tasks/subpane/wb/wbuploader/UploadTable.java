@@ -999,7 +999,8 @@ public class UploadTable implements Comparable<UploadTable>
             }
             else
             {
-                if (fldStr == null || fldStr.equals(""))
+                UIFieldFormatterIFace formatter = ufld.getField().getFieldInfo().getFormatter();
+                if ((fldStr == null || fldStr.equals("")) && (formatter == null || !formatter.isIncrementer()))
                 {
                     arg[0] = null;
                 }
@@ -1008,13 +1009,19 @@ public class UploadTable implements Comparable<UploadTable>
                     Object val = fldStr;
                     if (ufld.getField().getFieldInfo() != null)
                     {
-                        UIFieldFormatterIFace formatter = ufld.getField().getFieldInfo().getFormatter();
                         if (formatter != null)
                         {
-                            val = formatter.formatFromUI(fldStr);
-                            if (!formatter.isValid((String )val))
+                            if (fldStr == null && formatter.isIncrementer())
                             {
-                                throw new UploaderException(UIRegistry.getResourceString("WB_UPLOAD_INVALID_FORMAT"), UploaderException.INVALID_DATA);
+                                val = formatter.getNextNumber("");
+                            }
+                            else
+                            {
+                                val = formatter.formatFromUI(fldStr);
+                                if (!formatter.isValid((String )val))
+                                {
+                                    throw new UploaderException(UIRegistry.getResourceString("WB_UPLOAD_INVALID_FORMAT"), UploaderException.INVALID_DATA);
+                                }
                             }
                         }
                     }

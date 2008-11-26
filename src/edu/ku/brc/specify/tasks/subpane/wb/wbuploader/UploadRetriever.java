@@ -82,8 +82,10 @@ public class UploadRetriever //implements CommandListener, SQLExecutionListener,
             CustomDialog cd = new CustomDialog((Frame )UIRegistry.getTopWindow(), 
                             "Uploaded Data", //XXX i18n
                             true,
+                            CustomDialog.OK_BTN,
                             (ESResultsSubPane )esrPane);
-            
+            cd.setOkLabel(UIRegistry.getResourceString("CLOSE"));
+            cd.setModal(false);
             UIHelper.centerAndShow(cd);
     }
 
