@@ -160,7 +160,7 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
                 {
                     icon = GraphicsUtils.uudecodeImage(null, imgBufStr);
                 }
-                welcomeBtn.setIcon(icon != null ? icon : IconManager.getIcon("AppIcon"));
+                welcomeBtn.setIcon(icon != null ? icon : IconManager.getIcon("AppIcon",IconManager.STD_ICON_SIZE));
             }
         }
     }

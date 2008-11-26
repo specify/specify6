@@ -1985,6 +1985,29 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         }
     }
     
+    protected void checkAndSendStats()
+    {
+        AppPreferences appPrefs             = AppPreferences.getRemote();
+        Boolean        canSendStats         = appPrefs.getBoolean(sendStatsPrefName, null); //$NON-NLS-1$
+        Boolean        canSendISAStats      = appPrefs.getBoolean(sendISAStatsPrefName, null); //$NON-NLS-1$
+        
+        if (canSendStats == null)
+        {
+            canSendStats = true;
+            appPrefs.putBoolean(sendStatsPrefName, canSendStats); //$NON-NLS-1$
+        }
+        
+        if (canSendStats)
+        {
+            StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask("StatsTracker");
+            if (statsTrackerTask != null)
+            {
+                statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
+                statsTrackerTask.sendStats(false, true);
+            }
+        }
+    }
+    
     /**
      * Restarts the app with a new or old database and user name and creates the core app UI.
      * @param window the login window
@@ -2005,28 +2028,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             dbLoginPanel.getStatusBar().setText(getResourceString("Specify.INITIALIZING_APP")); //$NON-NLS-1$
         }
 
-        String         sendStatsPrefName    = "usage_tracking.send_stats";
-        String         sendISAStatsPrefName = "usage_tracking.send_isa_stats";
-        AppPreferences appPrefs             = AppPreferences.getRemote();
-        Boolean        canSendStats         = appPrefs.getBoolean(sendStatsPrefName, null); //$NON-NLS-1$
-        Boolean        canSendISAStats      = appPrefs.getBoolean(sendISAStatsPrefName, null); //$NON-NLS-1$
         if (!firstTime)
         {
-            if (canSendStats == null)
-            {
-                canSendStats = true;
-                appPrefs.putBoolean(sendStatsPrefName, canSendStats); //$NON-NLS-1$
-            }
-            
-            if (canSendStats)
-            {
-                StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask("StatsTracker");
-                if (statsTrackerTask != null)
-                {
-                    statsTrackerTask.setSendSecondaryStatsAllowed(canSendISAStats);
-                    statsTrackerTask.sendStats(false, true);
-                }
-            }
+            checkAndSendStats();
         }
         
         AppPreferences.shutdownRemotePrefs();
@@ -2035,6 +2039,11 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
         
         SpecifyAppPrefs.initialPrefs();
+        
+        // Check Stats (this is mostly for the first time in.
+        AppPreferences appPrefs             = AppPreferences.getRemote();
+        Boolean        canSendStats         = appPrefs.getBoolean(sendStatsPrefName, null); //$NON-NLS-1$
+        Boolean        canSendISAStats      = appPrefs.getBoolean(sendISAStatsPrefName, null); //$NON-NLS-1$
         
         // Make sure we have the proper defaults
         if (canSendStats == null)
@@ -2047,7 +2056,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         {
             canSendISAStats = true;
             appPrefs.putBoolean(sendISAStatsPrefName, canSendISAStats); //$NON-NLS-1$
-            //appPrefs.flush();
         }
         
         if (status == AppContextMgr.CONTEXT_STATUS.OK)

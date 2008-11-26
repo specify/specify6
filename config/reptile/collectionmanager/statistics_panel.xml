@@ -5,9 +5,5 @@
       <item name="Top Five Species" title="Top Five Species" type="Pie Chart" icon="Pie Chart"/>
       <item name="ItemsCatalogedLast10Years" title="Cataloged Last 5 Years" type="Bar Chart" icon="Bar Chart"/>
       <item name="Specimens by Country" title="Specimens by Country" type="Bar Chart" icon="Bar Chart"/>
-
-      <item name="Web Stats Visitors" title="Web Stats Visitors" type="Bar Chart" icon="Bar Chart"/>
-      <item name="Web Stats Top 5 Taxon" title="Web Stats Top 5 Taxon" type="Bar Chart" icon="Bar Chart"/>
-
   </box>
 </boxes>
