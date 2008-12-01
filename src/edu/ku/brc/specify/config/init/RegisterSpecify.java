@@ -280,26 +280,43 @@ public class RegisterSpecify
                     // if an exception occurred during update check...
                     if (retVal instanceof String)
                     {
-                        String regNumber = (String)retVal;
-                        switch (regType)
+                        if (!isAnonymous)
                         {
-                            case Institution : 
-                                setInstitutionHasAutoRegistered(regNumber, isAnonymous);
-                                break;
-                                
-                            case Division : 
-                                setDivisionHasRegistered(regNumber, isAnonymous);
-                                break;
+                            String regNumber = (String)retVal;
+                            switch (regType)
+                            {
+                                case Institution : 
+                                    setInstitutionHasAutoRegistered(regNumber, isAnonymous);
+                                    break;
                                     
-                            case Discipline : 
-                                setDisciplineHasRegistered(regNumber, isAnonymous);
-                                break;
-                                    
-                            case Collection :
-                                setCollectionHasRegistered(regNumber, isAnonymous);
-                                break;
-                        } // switch
+                                case Division : 
+                                    setDivisionHasRegistered(regNumber, isAnonymous);
+                                    break;
+                                        
+                                case Discipline : 
+                                    setDisciplineHasRegistered(regNumber, isAnonymous);
+                                    break;
+                                        
+                                case Collection :
+                                    setCollectionHasRegistered(regNumber, isAnonymous);
+                                    break;
+                            } // switch
+                        } else
+                        {
+                            Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+                            
+                            String isaTitle   = getResourceString("SpReg.ISA_TITLE");
+
+                            collection = update(Collection.class, collection);
+                            UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, isaTitle, "SpReg.ISA_ACCEPTED", collection.getIsaNumber());
+                            return;
+                        }
                     }
+                }
+                
+                if (isAnonymous)
+                {
+                    UIRegistry.showLocalizedError("SpReg.ISA_ERROR");
                 }
             }
         };
@@ -341,7 +358,7 @@ public class RegisterSpecify
         // get the server response
         String responseString = postMethod.getResponseBodyAsString();
         
-        if (!isForISANumber && StringUtils.isNotEmpty(responseString))
+        if (StringUtils.isNotEmpty(responseString))
         {
             String[] tokens = StringUtils.split(responseString);
             if (tokens.length == 2 && tokens[0].equals("1"))
@@ -668,7 +685,7 @@ public class RegisterSpecify
     /**
      * 
      */
-    public static void registerSA()
+    public static void registerISA()
     {
         SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
         if (!spUser.getUserType().equals("CollectionManager"))
@@ -679,11 +696,11 @@ public class RegisterSpecify
         
         Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
         String     isaNumber  = collection.getIsaNumber();
-        String     isaTitle   = getResourceString("SpReg.SA_TITLE");
+        String     isaTitle   = getResourceString("SpReg.ISA_TITLE");
         
         if (StringUtils.isNotEmpty(isaNumber))
         {
-            String msg = UIRegistry.getLocalizedMessage("SpReg.SA_NUM", isaNumber);
+            String msg = UIRegistry.getLocalizedMessage("SpReg.ISA_NUM", isaNumber);
             JOptionPane.showMessageDialog((Frame)UIRegistry.getTopWindow(), msg, isaTitle, JOptionPane.INFORMATION_MESSAGE);
             
         } else
@@ -693,7 +710,7 @@ public class RegisterSpecify
             
             CellConstraints cc = new CellConstraints();
             PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p"));
-            pb.add(UIHelper.createI18NFormLabel("SpReg.SA_ENT"), cc.xy(1, 1));
+            pb.add(UIHelper.createI18NFormLabel("SpReg.ISA_ENT"), cc.xy(1, 1));
             pb.add(textField, cc.xy(3, 1));
             pb.setDefaultDialogBorder();
             
@@ -717,14 +734,11 @@ public class RegisterSpecify
             isaNumber = textField.getText();
             if (!dlg.isCancelled() && StringUtils.isNotEmpty(isaNumber))
             {
-                collection.setIsaNumber(isaNumber);
-                collection = update(Collection.class, collection);
-                
                 setIsAnonymous(false);
                 
-                doStartRegister(RegisterType.Collection, false, true);
+                collection.setIsaNumber(isaNumber);
                 
-                UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, isaTitle, "SpReg.SA_ACCEPTED", isaNumber);
+                doStartRegister(RegisterType.Collection, false, true);
             }
         }
     }

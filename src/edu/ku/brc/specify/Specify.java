@@ -1301,7 +1301,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             @Override
             public void actionPerformed(ActionEvent ae)
             {
-                RegisterSpecify.registerSA();
+                RegisterSpecify.registerISA();
             }
         });
         helpMenu.addSeparator();

@@ -522,7 +522,7 @@ public class BuildSampleDatabase
         String           firstName        = props.getProperty("firstName", "Test");
         String           lastName         = props.getProperty("lastName",  "User");
         String           midInit          = props.getProperty("middleInitial", "A");
-        String           abbrev           = props.getProperty("abbrev",    "");
+        String           abbrev           = props.getProperty("abbrev",     "");
         
         System.out.println("----- User Agent -----");
         System.out.println("Title:     "+title);

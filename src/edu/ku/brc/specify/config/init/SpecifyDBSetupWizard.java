@@ -172,6 +172,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             props.put("firstName", "Test");
             props.put("lastName",  "User");
             props.put("middleInitial", "a");
+            props.put("email", "tester@ku.edu");
             props.put("usrUsername", "testuser");
             props.put("usrPassword", "testuser");
     
@@ -194,7 +195,6 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             props.put("country", "USA");
             props.put("zip", "66044");
             props.put("phone", "785-864-5555");
-
         }
 
         props.put("userType", "CollectionManager");
