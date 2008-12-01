@@ -28,7 +28,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
@@ -48,6 +47,7 @@ import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.specify.plugins.UIPluginBase;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
@@ -262,10 +262,12 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                 PanelBuilder    pb     = new PanelBuilder(new FormLayout("p,2px,f:p:g", rowDef)); //$NON-NLS-1$
                 CellConstraints cc     = new CellConstraints();
                 
-                DocumentListener dl = new DocumentListener()
+                DocumentAdaptor dla = new DocumentAdaptor()
                 {
-                    private void checkFields()
+                    @Override
+                    protected void changed(DocumentEvent e)
                     {
+                        super.changed(e);
                         boolean enableOK = true;
                         for (JTextField tf : textFieldHash.values())
                         {
@@ -276,20 +278,8 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                             }
                         }
                         promptDialog.getOkBtn().setEnabled(enableOK);
-
                     }
-                    public void changedUpdate(DocumentEvent e)
-                    {
-                        checkFields();
-                    }
-                    public void insertUpdate(DocumentEvent e)
-                    {
-                        checkFields();
-                    }
-                    public void removeUpdate(DocumentEvent e)
-                    {
-                        checkFields();
-                    }
+                    
                 };
                 
                 int y = 1;
@@ -298,9 +288,14 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                     if (arg.isPrompt())
                     {
                         JTextField txtField = createTextField(15);
-                        txtField.getDocument().addDocumentListener(dl);
+                        txtField.getDocument().addDocumentListener(dla);
                         textFieldHash.put(arg.getName(), txtField);
-                        pb.add(createLabel(arg.getTitle()+":", SwingConstants.RIGHT), cc.xy(1, y));
+                        String label = arg.getTitle();
+                        if (StringUtils.isEmpty(label))
+                        {
+                            label = arg.getName();
+                        }
+                        pb.add(createLabel(label+":", SwingConstants.RIGHT), cc.xy(1, y));
                         pb.add(txtField, cc.xy(3, y));
                         y += 2;
                     }
@@ -309,7 +304,7 @@ public class WebLinkButton extends UIPluginBase implements ActionListener,
                 for (String name : backupHash.keySet())
                 {
                     JTextField txtField = createTextField(15);
-                    txtField.getDocument().addDocumentListener(dl);
+                    txtField.getDocument().addDocumentListener(dla);
                     textFieldHash.put(name, txtField);
                     pb.add(createLabel(backupHash.get(name), SwingConstants.RIGHT), cc.xy(1, y));
                     pb.add(txtField, cc.xy(3, y));

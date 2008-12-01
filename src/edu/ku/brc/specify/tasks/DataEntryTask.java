@@ -362,7 +362,8 @@ public class DataEntryTask extends BaseTask
             @SuppressWarnings("synthetic-access")
             public void run()
             {
-                if (starterPane == null)
+                SubPaneIFace taskStarterPane = task != null ? task.getStarterPane() : null;
+                if (taskStarterPane == null)
                 {
                     SubPaneIFace curPane = SubPaneMgr.getInstance().getCurrentSubPane();
                     if (curPane instanceof DroppableFormRecordSetAccepter)
@@ -373,8 +374,8 @@ public class DataEntryTask extends BaseTask
 
                 } else
                 {
-                    SubPaneMgr.getInstance().replacePane(starterPane, formPane);
-                    starterPane = null;
+                    SubPaneMgr.getInstance().replacePane(taskStarterPane, formPane);
+                    task.setStarterPane(null);
                 }
 
                 CommandDispatcher.dispatch(new CommandAction(DATA_ENTRY, VIEW_WAS_OPENED, formPane));

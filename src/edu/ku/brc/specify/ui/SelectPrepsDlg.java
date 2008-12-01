@@ -497,9 +497,6 @@ public class SelectPrepsDlg extends CustomDialog
                 int quantityAvailable = count - quantityOut;
                 if (quantityAvailable > 0)
                 {
-                    
-
-
                     maxValue = quantityAvailable;
                     
                     SpinnerModel model = new SpinnerNumberModel(0, //initial value
@@ -572,7 +569,7 @@ public class SelectPrepsDlg extends CustomDialog
             int quantityLoaned   = lpo.getQuantity() != null ? lpo.getQuantity() : 0;
             int quantityReturned = lpo.getQuantityReturned() != null ? lpo.getQuantityReturned() : 0;
             
-            System.err.println("  "+ quantityLoaned+"  "+quantityReturned);
+            //System.err.println("  "+ quantityLoaned+"  "+quantityReturned);
             
             return (quantityLoaned - quantityReturned);
         }

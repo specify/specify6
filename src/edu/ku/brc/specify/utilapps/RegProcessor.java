@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.utilapps;
 
@@ -13,6 +10,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
@@ -32,11 +31,13 @@ public class RegProcessor
     protected FileReader     fr = null;
     protected BufferedReader br = null;
     
-    protected Hashtable<String, Hashtable<String, Entry>> typeHash   = new Hashtable<String, Hashtable<String,Entry>>();
-    protected Hashtable<String, Entry>                    regNumHash = new Hashtable<String, Entry>();
-    protected Hashtable<String, Entry>                    trackHash  = new Hashtable<String, Entry>();
-    
-    protected Entry root = new Entry("Root");
+    protected Hashtable<String, Hashtable<String, RegProcEntry>> typeHash        = new Hashtable<String, Hashtable<String, RegProcEntry>>();
+    protected Hashtable<String, RegProcEntry>                    regNumHash      = new Hashtable<String, RegProcEntry>();
+    protected Hashtable<String, RegProcEntry>                    trackHash       = new Hashtable<String, RegProcEntry>();
+    protected Hashtable<String, Boolean>                         trackUsageHash  = new Hashtable<String, Boolean>();
+    protected Hashtable<String, Hashtable<String, Integer>>      trackCatsHash   = new Hashtable<String, Hashtable<String, Integer>>();
+
+    protected RegProcEntry root = new RegProcEntry("Root");
     
     /**
      * 
@@ -46,6 +47,65 @@ public class RegProcessor
         super();
     }
     
+    /**
+     * @return the root
+     */
+    public RegProcEntry getRoot(final boolean inclAnonymous)
+    {
+        Vector<RegProcEntry> kids = new Vector<RegProcEntry>(root.getKids());
+        
+        for (RegProcEntry entry : kids)
+        {
+            if (entry.getName().equals("Anonymous"))
+            {
+                root.getKids().remove(entry);
+            }
+        }
+        
+        //kids = new Vector<RegProcEntry>(root.getKids());
+        Collections.sort(root.getKids(), new Comparator<RegProcEntry>() {
+            @Override
+            public int compare(RegProcEntry o1, RegProcEntry o2)
+            {
+                String date1 = o1.getProps().getProperty("date");
+                String date2 = o2.getProps().getProperty("date");
+                return date1 != null && date2 != null ? date1.compareTo(date2) : 0;
+            }
+        });
+        return root;
+    }
+    
+    /**
+     * @param key
+     * @param valueStr
+     */
+    protected void addToTracks(final String key, final String valueStr)
+    {
+        trackUsageHash.put(key, true);
+        
+        int inx = key.indexOf('_');
+        if (inx > -1)
+        {
+            String category = key.substring(0, inx);
+            Hashtable<String, Integer> countHash = trackCatsHash.get(category);
+            if (countHash == null)
+            {
+                countHash = new Hashtable<String, Integer>();
+                trackCatsHash.put(category, countHash);
+            }
+            
+            Integer count = countHash.get(key);
+            if (count == null)
+            {
+                count = 0;
+            } else
+            {
+                count += Integer.parseInt(valueStr);
+            }
+            countHash.put(key, count);
+        }
+    }
+
     /**
      * @return
      * @throws IOException
@@ -60,7 +120,19 @@ public class RegProcessor
             String[] tokens = StringUtils.split(line, "=");
             if (tokens.length == 2)
             {
-                props.put(tokens[0].trim(), tokens[1].trim());
+                String pName = tokens[0].trim();
+                props.put(pName, tokens[1].trim());
+                /*if (pName.startsWith("Usage."))
+                {
+                    trackUsageHash.put(pName.substring(6), true); 
+                    
+                } else if (pName.startsWith("DE_") || 
+                            pName.startsWith("WB_") || 
+                            pName.startsWith("SS_") || 
+                            pName.startsWith("RS_"))
+                {
+                    trackUsageHash.put(pName, true); 
+                }*/
                 
             } else if (tokens.length > 2)
             {
@@ -73,10 +145,10 @@ public class RegProcessor
                 String id = props.getProperty("id");
                 if (id != null)
                 {
-                    Entry  entry = trackHash.get(id);
+                    RegProcEntry entry = trackHash.get(id);
                     if (entry == null)
                     {
-                        entry = new  Entry(props);
+                        entry = new  RegProcEntry(props);
                         entry.setId(id);
                         trackHash.put(id, entry);
                     }
@@ -97,12 +169,7 @@ public class RegProcessor
      */
     protected boolean processEntry() throws IOException
     {
-        String line = br.readLine();
-        /*while (!line.startsWith("----------"))
-        {
-            line = br.readLine();
-        }*/
-
+        String     line  = br.readLine();
         Properties props = new Properties();
 
         do 
@@ -112,30 +179,45 @@ public class RegProcessor
             {
                 props.put(tokens[0], tokens[1]);
                 
+                if (tokens[0].equals("SA_Number") && StringUtils.isNotEmpty(tokens[1]))
+                {
+                    int x= 0;
+                    x++;
+                }
+                
+                if (tokens[1].equals("1228100630.39"))
+                {
+                    int x= 0;
+                    x++;
+                }
+                
             } else if (tokens.length > 2)
             {
                 System.err.println("Length: "+tokens.length+"  ["+line+"]");
             }
             
             line = br.readLine();
-            if (line != null && line.startsWith("----------"))
+            if (line == null || line.startsWith("----------"))
             {
                 String regType   = props.getProperty("reg_type");
                 String regNumber = props.getProperty("reg_number");
                 
                 if (StringUtils.isNotEmpty(regType) && StringUtils.isNotEmpty(regNumber))
                 {
-                    Entry currEntry = regNumHash.get(regNumber);
+                    RegProcEntry currEntry = regNumHash.get(regNumber);
                     if (currEntry == null)
                     {
-                        currEntry = new Entry(props);
+                        currEntry = new RegProcEntry(props);
                         regNumHash.put(regNumber, currEntry);    
+                    } else
+                    {
+                        currEntry.getProps().putAll(props);
                     }
                     
-                    Hashtable<String, Entry> entryHash = typeHash.get(regType);
+                    Hashtable<String, RegProcEntry> entryHash = typeHash.get(regType);
                     if (entryHash == null)
                     {
-                        entryHash = new  Hashtable<String, Entry>();
+                        entryHash = new  Hashtable<String, RegProcEntry>();
                         typeHash.put(regType, entryHash);
                     }
                     entryHash.put(regNumber, currEntry);
@@ -144,13 +226,25 @@ public class RegProcessor
                     System.err.println("Skipping: "+regNumber);
                 }
                 
-                return true;
+                return line != null;
             }
         } while (line != null);
         
         return false;
     }
     
+    /**
+     * @return the trackCatsHash
+     */
+    public Hashtable<String, Hashtable<String, Integer>> getTrackCatsHash()
+    {
+        return trackCatsHash;
+    }
+
+    /**
+     * @param inFile
+     * @throws IOException
+     */
     protected void processTracks(final File inFile) throws IOException
     {
         fr = new FileReader(inFile);
@@ -164,13 +258,49 @@ public class RegProcessor
             rv = processTrackEntry();
         }
         
-        for (Entry entry : trackHash.values())
+        for (RegProcEntry entry : trackHash.values())
         {
-            System.out.println(entry);
+            //System.out.println(entry);
+            for (Object keyObj : entry.getProps().keySet())
+            {
+                String pName = keyObj.toString();
+                String value = (String)entry.getProps().getProperty(pName);
+                
+                if (pName.startsWith("Usage."))
+                {
+                    addToTracks(pName.substring(6), value); 
+                    
+                } else if (pName.startsWith("DE_") || 
+                            pName.startsWith("WB_") || 
+                            pName.startsWith("SS_") || 
+                            pName.startsWith("RS_"))
+                {
+                    addToTracks(pName, value);  
+                }
+            }
         }
     }
     
-    protected void process(final File inFile) throws IOException
+    /**
+     * @return sorted list of usage names.
+     */
+    public Vector<String> getTrackUsageNames()
+    {
+        Vector<String> names = new Vector<String>(trackUsageHash.keySet());
+        Collections.sort(names);
+        return names;
+    }
+    
+    protected RegProcEntry getParentFromHash(final RegProcEntry entry, final String className, final String propName)
+    {
+        return typeHash.get(className).get(entry.getProps().getProperty(propName));
+    }
+    
+    /**
+     * @param inFile
+     * @throws IOException
+     */
+    public void process(final File inFile) throws IOException
     {
         fr = new FileReader(inFile);
         br = new BufferedReader(fr);
@@ -183,34 +313,96 @@ public class RegProcessor
             rv = processEntry();
         }
         
-        for (String key : typeHash.keySet())
+        String[] regList = {"Institution", "Division", "Discipline", "Collection"};
+        
+        Hashtable<String, RegProcEntry> hh = typeHash.get(regList[0]);
+        
+        for (RegProcEntry entry : hh.values())
         {
-            //System.out.println("\n"+key);
-            Hashtable<String, Entry> h = typeHash.get(key);
+            System.out.println(entry.getId()+" "+entry.getProps().getProperty("Institution_number"));
+        }
+        
+        for (String key : regList)
+        {
+            System.out.println("\n"+key);
+            Hashtable<String, RegProcEntry> h = typeHash.get(key);
             
-            for (Entry entry : h.values())
+            for (RegProcEntry entry : h.values())
             {
+                String date = entry.getProps().getProperty("date");
+                if (date != null && date.startsWith("08/11/30 07:22:32"))
+                {
+                    int x= 0;
+                    x++;
+                }
+                
+                String isa = entry.getProps().getProperty("SA_Number");
+                if (StringUtils.isNotEmpty(isa))
+                {
+                    int x= 0;
+                    x++;
+                }
+                
+                String rn = entry.getProps().getProperty("reg_number");
+                if (StringUtils.isNotEmpty(rn) && rn.equals("1228100630.39"))
+                {
+                    int x= 0;
+                    x++;
+                }
+                
                 //String reg_number = entry.getProps().getProperty("reg_number");
                 String reg_type   = entry.getProps().getProperty("reg_type");
+                //System.out.println("=> "+entry.)
                 
                 if (reg_type.equals("Collection"))
                 {
-                    Entry parent = typeHash.get("Discipline").get(entry.getProps().getProperty("Discipline_number"));
-                    parent.getKids().add(entry);
+                    String dspNum = entry.getProps().getProperty("Discipline_number");
+                    RegProcEntry parent = typeHash.get("Discipline").get(dspNum);
+                    if (entry != null && parent != null)
+                    {
+                        parent.getKids().add(entry);
+                        entry.setParent(parent);
+                    } else
+                    {
+                        System.err.println("Couldn't find Discipline Num["+dspNum+"]");
+                    }
                     
                 } else if (reg_type.equals("Discipline"))
                 {
-                    Entry parent = typeHash.get("Division").get(entry.getProps().getProperty("Division_number"));
-                    parent.getKids().add(entry);
+                    String divNum = entry.getProps().getProperty("Division_number");
+                    RegProcEntry parent = typeHash.get("Division").get(divNum);
+                    if (entry != null && parent != null)
+                    {
+                        parent.getKids().add(entry);
+                        entry.setParent(parent);
+                    } else
+                    {
+                        System.err.println("Couldn't find Division Num["+divNum+"]");
+                    }    
                     
                 } else if (reg_type.equals("Division"))
                 {
-                    Entry parent = typeHash.get("Institution").get(entry.getProps().getProperty("Institution_number"));
-                    parent.getKids().add(entry);
+                    String       instNum = entry.getProps().getProperty("Institution_number");
+                    RegProcEntry parent  = typeHash.get("Institution").get(instNum);
+                    if (entry != null && parent != null)
+                    {
+                        parent.getKids().add(entry);
+                        entry.setParent(parent);
+                    } else
+                    {
+                        System.err.println("Couldn't find Inst Num["+instNum+"]");
+                    }
                     
                 } else if (reg_type.equals("Institution"))
                 {
+                    String nm = entry.getProps().getProperty("Institution_number");
+                    if (nm != null && nm.equals("1227547423.86"))
+                    {
+                       int x = 0;
+                       x++;
+                    }
                     root.getKids().add(entry);
+                    entry.setParent(root);
                     
                 } else
                 {
@@ -224,138 +416,28 @@ public class RegProcessor
         
         System.out.println("--------");
         printEntries(root, 0);
-        
-        /*for (Entry entry : regNumHash.values())
-        {
-            System.out.println(entry.getProps().get(key))
-        }*/
     }
     
-    protected void printEntries(final Entry parent, final int level)
+    /**
+     * @param parent
+     * @param level
+     */
+    protected void printEntries(final RegProcEntry parent, final int level)
     {
         for (int i=0;i<level;i++) System.out.print("  ");
         
         System.out.println(parent.getName()+" "+parent.getProps().getProperty("reg_number"));
-        for (Entry kid : parent.getKids())
+        for (RegProcEntry kid : parent.getKids())
         {
             printEntries(kid, level+1);
         }
     }
     
     //--------------------------------------------------------
-    class Entry
-    {
-        protected String        type;
-        protected String        name = null;
-        protected String        id;
-        protected Properties    props = null;
-        protected Vector<Entry> kids  = new Vector<Entry>();
-        
-        /**
-         * 
-         */
-        public Entry(String name)
-        {
-            this(name, new Properties());
-        }
-        
-        public Entry(final Properties props)
-        {
-            this(null, props);
-            this.type  = props.getProperty("reg_type");
-        }
-        
-        public Entry(final String name, final Properties props)
-        {
-            super();
-            this.name  = name;
-            this.props = props;
-        }
-        
-        /**
-         * @return the name
-         */
-        public String getName()
-        {
-            if (name == null)
-            {
-                name = props.getProperty(type+"_name");
-                if (name == null)
-                {
-                    name = "N/A";
-                }
-            }
-            return name;
-        }
-        /**
-         * @param name the name to set
-         */
-        public void setName(String name)
-        {
-            this.name = name;
-        }
-        
-        /**
-         * @return the id
-         */
-        public String getId()
-        {
-            return id;
-        }
-        /**
-         * @param id the id to set
-         */
-        public void setId(String id)
-        {
-            this.id = id;
-        }
-        /**
-         * @return the props
-         */
-        public Properties getProps()
-        {
-            return props;
-        }
-        /**
-         * @return the kids
-         */
-        public Vector<Entry> getKids()
-        {
-            return kids;
-        }
-        /**
-         * @return the type
-         */
-        public String getType()
-        {
-            return type;
-        }
-        /**
-         * @param type the type to set
-         */
-        public void setType(String type)
-        {
-            this.type = type;
-        }
-        
-        public String toString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.append((name != null ? ("Name: "+ name) : "") + (type != null ? " Type: "+type : "")+ (id != null ? " id: "+id : "") +"\n");
-            for (Object key : props.keySet())
-            {
-                if (key.equals("id")) continue;
-                
-                sb.append("  ");
-                sb.append(key);
-                sb.append("=");
-                sb.append(props.get(key));
-                sb.append("\n");
-            }
-            return sb.toString();
-        }
-    }
 
+    /**
+     * @param args
+     */
     public static void main(String[] args)
     {
         RegProcessor p = new RegProcessor();

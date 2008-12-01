@@ -103,6 +103,7 @@ public class StatsTrackerTask extends BaseTask
     
     /**
      * @param doExit
+     * @param doSilent
      */
     public void sendStats(final boolean doExit, final boolean doSilent)
     {
@@ -313,7 +314,6 @@ public class StatsTrackerTask extends BaseTask
             postParams.add(new NameValuePair("os_version",   System.getProperty("os.version"))); //$NON-NLS-1$
             postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$
             postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
-            
             
             if (doSendSecondaryStats)
             {

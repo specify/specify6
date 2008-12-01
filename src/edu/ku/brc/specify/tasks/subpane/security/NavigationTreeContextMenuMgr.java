@@ -35,7 +35,7 @@ public class NavigationTreeContextMenuMgr extends MouseAdapter implements TreeSe
     /**
      * Constructor. Attaches itself as tree selection and mouse listener.
      * 
-     * @param tree Tree
+     * @param treeRenderer Tree
      */
     public NavigationTreeContextMenuMgr(final NavigationTreeMgr treeMgr)
     {

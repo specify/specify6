@@ -544,7 +544,8 @@ public class UIRegistry
 	}
 
 	/**
-	 * @return
+	 * This method will create the "working" directory for the application.
+	 * @return the the working directory where local preferences and other files are saved.
 	 */
     public static String getAppDataDir()
     {

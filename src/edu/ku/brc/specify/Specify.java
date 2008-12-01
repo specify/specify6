@@ -1730,6 +1730,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             okToShutdown = SubPaneMgr.getInstance().aboutToShutdown();
             if (okToShutdown)
             {
+                UsageTracker.save();
+                
                 try
                 {
                     DataProviderSessionIFace session     = null;
@@ -1985,6 +1987,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         }
     }
     
+    /**
+     * 
+     */
     protected void checkAndSendStats()
     {
         AppPreferences appPrefs             = AppPreferences.getRemote();
@@ -2037,6 +2042,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         //moved here because context needs to be set before loading prefs, we need to know the SpecifyUser
         AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
+        
+        UsageTracker.setUserInfo(databaseNameArg, userNameArg);
         
         SpecifyAppPrefs.initialPrefs();
         

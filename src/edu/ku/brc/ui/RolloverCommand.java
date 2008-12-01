@@ -141,7 +141,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
 
         if (useEmptyBorder)
         {
-            setBorder(new EmptyBorder(new Insets(1,1,1,1)));
+            setBorder(new EmptyBorder(new Insets(2,2,2,2)));
         }
         
         setLayout(new BorderLayout());
@@ -283,19 +283,18 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 g.setFont(getFont());
             }
             FontMetrics fm     = g.getFontMetrics();
-            Insets      insets = getInsets();
 
             if (verticalLayout)
             {
-                preferredSize.width  = ins.left + ins.right + insets.left + insets.right +
+                preferredSize.width  = ins.left + ins.right + 
                                        Math.max((label != null ? fm.stringWidth(label) : 0), (imgIcon != null ? (imgIcon.getIconWidth() + 2) : 0));
-                preferredSize.height = ins.top + ins.bottom + insets.top + insets.bottom +
+                preferredSize.height = ins.top + ins.bottom + 
                                        (label != null ? fm.getHeight()+4 : 0) + (imgIcon != null ? (imgIcon.getIconHeight() + vertGap) : 0);
             } else
             {
-                preferredSize.width  = ins.left + ins.right + insets.left + insets.right + ICON_TEXT_GAP + 
+                preferredSize.width  = ins.left + ins.right + ICON_TEXT_GAP + 
                                        ((label != null ? fm.stringWidth(label) : 0)+2) + (imgIcon != null ? imgIcon.getIconWidth() : 0);
-                preferredSize.height = ins.top + ins.bottom + insets.top + insets.bottom +
+                preferredSize.height = ins.top + ins.bottom + 
                                        (Math.max(fm.getHeight(), (imgIcon != null ? (imgIcon.getIconHeight() + 2) : 0)));
             }
             g.dispose();

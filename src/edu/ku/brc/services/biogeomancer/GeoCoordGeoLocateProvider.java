@@ -255,6 +255,10 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
         if (withResults.size() == 0)
         {
             statusBar.setText(getResourceString("GeoCoordGeoLocateProvider.NO_GL_RESULTS")); //$NON-NLS-1$
+            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
+                    getResourceString("GeoCoordGeoLocateProvider.NO_GL_RESULTS"), //$NON-NLS-1$
+                    getResourceString("NO_RESULTS"), JOptionPane.INFORMATION_MESSAGE); //$NON-NLS-1$
+
             return;
         }
         

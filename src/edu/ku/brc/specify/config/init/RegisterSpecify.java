@@ -194,7 +194,7 @@ public class RegisterSpecify
         
         isFirstReg = true;
         
-        doStartRegister(RegisterType.Division, isAnonymous);
+        doStartRegister(RegisterType.Division, isAnonymous, false);
     }
     
     /**
@@ -209,7 +209,7 @@ public class RegisterSpecify
         division.setRegNumber(regNumber);
         update(Division.class, division);
         
-        doStartRegister(RegisterType.Discipline, isAnonymous);
+        doStartRegister(RegisterType.Discipline, isAnonymous, false);
     }
     
     /**
@@ -224,7 +224,7 @@ public class RegisterSpecify
         discipline.setRegNumber(regNumber);
         update(Discipline.class, discipline);
         
-        doStartRegister(RegisterType.Collection, isAnonymous);
+        doStartRegister(RegisterType.Collection, isAnonymous, false);
     }
     
     /**
@@ -244,9 +244,13 @@ public class RegisterSpecify
     }
     
     /**
-     * 
+     * @param regType
+     * @param isAnonymous
+     * @param isForISANumber
      */
-    protected static void doStartRegister(final RegisterType regType, final boolean isAnonymous)
+    protected static void doStartRegister(final RegisterType regType, 
+                                          final boolean      isAnonymous,
+                                          final boolean      isForISANumber)
     {
         // Create a SwingWorker to connect to the server in the background, then show results on the Swing thread
         SwingWorker workerThread = new SwingWorker()
@@ -257,7 +261,7 @@ public class RegisterSpecify
                 // connect to the server, sending usage stats if allowed, and gathering the latest modules version info
                 try
                 {
-                    return doRegisterInternal(regType, isAnonymous);
+                    return doRegisterInternal(regType, isAnonymous, isForISANumber);
                 }
                 catch (Exception e)
                 {
@@ -308,7 +312,9 @@ public class RegisterSpecify
      * @return
      * @throws Exception if an IO error occurred or the response couldn't be parsed
      */
-    protected static String doRegisterInternal(final RegisterType regType, final boolean isAnonymous) throws Exception
+    protected static String doRegisterInternal(final RegisterType regType, 
+                                               final boolean isAnonymous,
+                                               final boolean isForISANumber) throws Exception
     {
         HttpClient httpClient = new HttpClient();
         httpClient.getParams().setParameter("http.useragent", RegisterSpecify.class.getName()); //$NON-NLS-1$
@@ -319,7 +325,7 @@ public class RegisterSpecify
         PostMethod postMethod = new PostMethod(versionCheckURL);
         
         // get the POST parameters
-        NameValuePair[] postParams = createPostParameters(regType, isAnonymous);
+        NameValuePair[] postParams = createPostParameters(regType, isAnonymous, isForISANumber);
         postMethod.setRequestBody(postParams);
         
         // connect to the server
@@ -335,7 +341,7 @@ public class RegisterSpecify
         // get the server response
         String responseString = postMethod.getResponseBodyAsString();
         
-        if (StringUtils.isNotEmpty(responseString))
+        if (!isForISANumber && StringUtils.isNotEmpty(responseString))
         {
             String[] tokens = StringUtils.split(responseString);
             if (tokens.length == 2 && tokens[0].equals("1"))
@@ -373,7 +379,9 @@ public class RegisterSpecify
      * @param sendUsageStats if true, the POST parameters include usage stats
      * @return an array of POST parameters
      */
-    protected static NameValuePair[] createPostParameters(final RegisterType regType, final boolean isAnonymous)
+    protected static NameValuePair[] createPostParameters(final RegisterType regType, 
+                                                          final boolean isAnonymous,
+                                                          final boolean isForISANumber)
     {
         Vector<NameValuePair> postParams = new Vector<NameValuePair>();
 
@@ -395,6 +403,12 @@ public class RegisterSpecify
         Division      division   = acMgr.getClassObject(Division.class);
         Discipline    discipline = acMgr.getClassObject(Discipline.class);
         Collection    collection = acMgr.getClassObject(Collection.class);
+        
+        if (isForISANumber)
+        {
+            postParams.add(new NameValuePair("reg_isa",  "true")); //$NON-NLS-1$
+            postParams.add(new NameValuePair("reg_number",  collection.getRegNumber())); //$NON-NLS-1$
+        }
         
         switch (regType)
         {
@@ -432,7 +446,7 @@ public class RegisterSpecify
                 if (!isAnonymous)
                 {
                     postParams.add(new NameValuePair("Collection_name", fixParam(collection.getCollectionName()))); //$NON-NLS-1$
-                    postParams.add(new NameValuePair("SA_Number",       fixParam(collection.getSaNumber()))); //$NON-NLS-1$
+                    postParams.add(new NameValuePair("SA_Number",       fixParam(collection.getIsaNumber()))); //$NON-NLS-1$
                 }
                 break;
         } // switch
@@ -440,13 +454,14 @@ public class RegisterSpecify
         if (!isAnonymous)
         {
             SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-            postParams.add(new NameValuePair("User_name",  fixParam(user.getName()))); //$NON-NLS-1$
+            //postParams.add(new NameValuePair("User_name",  fixParam(user.getName()))); //$NON-NLS-1$
             postParams.add(new NameValuePair("User_email", fixParam(user.getEmail()))); //$NON-NLS-1$
             
             Address addr = inst.getAddress();
             if (addr != null)
             {
                 postParams.add(new NameValuePair("Address", fixParam(addr.getIdentityTitle()))); //$NON-NLS-1$
+                postParams.add(new NameValuePair("Phone", fixParam(addr.getPhone1()))); //$NON-NLS-1$
             }
         }
         
@@ -486,7 +501,7 @@ public class RegisterSpecify
             if (forceRegistration)
             {
                 inst = setIsAnonymous(false);
-                doStartRegister(RegisterType.Institution, false); // will register everything 
+                doStartRegister(RegisterType.Institution, false, false); // will register everything 
                 
             } else if (!hasBeenAsked)
             {
@@ -496,12 +511,12 @@ public class RegisterSpecify
                 if (okToReg)
                 {
                     setIsAnonymous(false);
-                    doStartRegister(RegisterType.Institution, false); // will register everything
+                    doStartRegister(RegisterType.Institution, false, false); // will register everything
                     
                 } else
                 {
                     setIsAnonymous(true);
-                    doStartRegister(RegisterType.Institution, true);
+                    doStartRegister(RegisterType.Institution, true, false);
                 }
             }
             
@@ -511,15 +526,15 @@ public class RegisterSpecify
             // so it is OK to register unregistered Disciplines and Collections
             if (!hasDisciplineRegistered())
             {
-                doStartRegister(RegisterType.Division, isAnonymous);
+                doStartRegister(RegisterType.Division, isAnonymous, false);
                 
             } else if (!hasDivisionRegistered())
             {
-                doStartRegister(RegisterType.Discipline, isAnonymous);
+                doStartRegister(RegisterType.Discipline, isAnonymous, false);
                 
             } else if (!hasCollectionRegistered())
             {
-                doStartRegister(RegisterType.Collection, isAnonymous);
+                doStartRegister(RegisterType.Collection, isAnonymous, false);
                 
             } else if (forceRegistration)
             {
@@ -611,7 +626,7 @@ public class RegisterSpecify
                                                                                      dm.getTitleForId(Division.getClassTableId()),    numberTitle, 
                                                                                      dm.getTitleForId(Discipline.getClassTableId()),  numberTitle, 
                                                                                      dm.getTitleForId(Collection.getClassTableId()),  numberTitle,
-                                                                                     "SA Number"}) {
+                                                                                     "ISA Number"}) {
             @Override
             public boolean isCellEditable(int row, int column)
             {
@@ -663,18 +678,18 @@ public class RegisterSpecify
         }
         
         Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
-        String     saNumber   = collection.getSaNumber();
-        String     saTitle    = getResourceString("SpReg.SA_TITLE");
+        String     isaNumber  = collection.getIsaNumber();
+        String     isaTitle   = getResourceString("SpReg.SA_TITLE");
         
-        if (StringUtils.isNotEmpty(saNumber))
+        if (StringUtils.isNotEmpty(isaNumber))
         {
-            String msg = UIRegistry.getLocalizedMessage("SpReg.SA_NUM", saNumber);
-            JOptionPane.showMessageDialog((Frame)UIRegistry.getTopWindow(), msg, saTitle, JOptionPane.INFORMATION_MESSAGE);
+            String msg = UIRegistry.getLocalizedMessage("SpReg.SA_NUM", isaNumber);
+            JOptionPane.showMessageDialog((Frame)UIRegistry.getTopWindow(), msg, isaTitle, JOptionPane.INFORMATION_MESSAGE);
             
         } else
         {
             final JTextField textField = UIHelper.createTextField(30);
-            saNumber = textField.getText();
+            isaNumber = textField.getText();
             
             CellConstraints cc = new CellConstraints();
             PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p"));
@@ -682,7 +697,7 @@ public class RegisterSpecify
             pb.add(textField, cc.xy(3, 1));
             pb.setDefaultDialogBorder();
             
-            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), saTitle, true, pb.getPanel());
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), isaTitle, true, pb.getPanel());
             dlg.createUI();
             final JButton okBtn = dlg.getOkBtn();
             okBtn.setEnabled(false);
@@ -699,15 +714,17 @@ public class RegisterSpecify
             });
             
             dlg.setVisible(true);
-            saNumber = textField.getText();
-            if (!dlg.isCancelled() && StringUtils.isNotEmpty(saNumber))
+            isaNumber = textField.getText();
+            if (!dlg.isCancelled() && StringUtils.isNotEmpty(isaNumber))
             {
-                collection.setSaNumber(saNumber);
+                collection.setIsaNumber(isaNumber);
                 collection = update(Collection.class, collection);
                 
                 setIsAnonymous(false);
                 
-                UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, saTitle, "SpReg.SA_ACCEPTED", saNumber);
+                doStartRegister(RegisterType.Collection, false, true);
+                
+                UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, isaTitle, "SpReg.SA_ACCEPTED", isaNumber);
             }
         }
     }
@@ -717,6 +734,40 @@ public class RegisterSpecify
         public ConnectionException(@SuppressWarnings("unused") Throwable e)
         {
             super();
+        }
+    }
+    
+    public static void main(String[] args)
+    {
+        try
+        {
+            HttpClient httpClient = new HttpClient();
+            httpClient.getParams().setParameter("http.useragent", RegisterSpecify.class.getName()); //$NON-NLS-1$
+            
+            // get the URL of the website to check, with usage info appended, if allowed
+            String versionCheckURL = getRegisterURL();
+            
+            PostMethod postMethod = new PostMethod(versionCheckURL);
+            
+            // get the POST parameters
+            NameValuePair[] postParams = new NameValuePair[2];
+            postParams[0] = new NameValuePair("reg_number", "XXX");
+            postParams[1] = new NameValuePair("test", "ZZZZ");
+            postMethod.setRequestBody(postParams);
+            
+            // connect to the server
+            try
+            {
+                httpClient.executeMethod(postMethod);
+            }
+            catch (Exception e)
+            {
+                throw new ConnectionException(e);
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
     }
 }

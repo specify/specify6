@@ -214,8 +214,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         //panels.add(locationPanel);
         panels.add(new GenericFormPanel("agent", 
                 "ENTER_COLMGR_INFO", 
-                new String[] { "FIRSTNAME", "LASTNAME", "MIDNAME", "USERLOGININFO", "USERNAME", "PASSWORD"}, 
-                new String[] { "firstName", "lastName", "middleInitial", "-", "usrUsername", "usrPassword"}, 
+                new String[] { "FIRSTNAME", "LASTNAME", "MIDNAME",       "EMAIL", "USERLOGININFO", "USERNAME", "PASSWORD"}, 
+                new String[] { "firstName", "lastName", "middleInitial", "email", "-", "usrUsername", "usrPassword"}, 
                 nextBtn));
          
         panels.add(new GenericFormPanel("inst", 

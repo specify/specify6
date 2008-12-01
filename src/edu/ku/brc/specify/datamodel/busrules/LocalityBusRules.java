@@ -106,8 +106,9 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
      */
     public void valueChanged(ListSelectionEvent e)
     {
-        if (formViewObj != null)
+        if (formViewObj != null && formViewObj.getDataObj() != null)
         {
+            afterFillForm(formViewObj.getDataObj());
             /*Geography geography = (Geography)geographyCBX.getValue();
             Locality  locality  = (Locality)formViewObj.getDataObj();
             if (locality  != null)

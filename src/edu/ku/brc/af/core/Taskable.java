@@ -117,10 +117,15 @@ public interface Taskable extends SecurityOptionIFace
     public abstract Class<?> getTaskClass();
     
     /**
-     * Returns a the start pane for the task.
-     * @return a the start pane for the task.
+     * Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null.
+     * @return Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null
      */
     public abstract SubPaneIFace getStarterPane();
+    
+    /**
+     * @param pane
+     */
+    public abstract void setStarterPane(SubPaneIFace pane);
     
     /**
      * @return returns whether the current pane for the task is the starter pane.

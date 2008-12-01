@@ -18,6 +18,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -239,14 +240,29 @@ public class CustomFrame extends JFrame
         mainPanel.add(bb, BorderLayout.SOUTH);
 
 
-        setContentPane(mainPanel);
+        super.setContentPane(mainPanel);
         
         pack();
         
         setLocationRelativeTo(this.getOwner());
-
     }
     
+
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JFrame#setContentPane(java.awt.Container)
+     */
+    @Override
+    public void setContentPane(Container contentPanelArg)
+    {
+        if (contentPanel != null)
+        {
+            mainPanel.remove(contentPanel);
+        }
+        contentPanel = contentPanelArg;
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
+    }
+
     /**
      * Performs cancel action.
      */

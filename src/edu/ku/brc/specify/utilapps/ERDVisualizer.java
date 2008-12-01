@@ -107,15 +107,15 @@ public class ERDVisualizer extends JFrame
         
         tblTracker = new TableTracker();
         
-        final File schemaDir = new File("schema");
-        if (!schemaDir.exists())
+        final File localSchemaDir = new File("schema");
+        if (!localSchemaDir.exists())
         {
-            schemaDir.mkdir();
+            localSchemaDir.mkdir();
         } else
         {
             try
             {
-                FileUtils.cleanDirectory(schemaDir);
+                FileUtils.cleanDirectory(localSchemaDir);
                 
             } catch (Exception ex)
             {
@@ -123,7 +123,7 @@ public class ERDVisualizer extends JFrame
             }
         }
 
-        this.schemaDir = schemaDir;
+        this.schemaDir = localSchemaDir;
         
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -489,8 +489,8 @@ public class ERDVisualizer extends JFrame
             File html = new File(fName);
             BufferedWriter output = new BufferedWriter( new FileWriter(html) );
             
-            int inx = mapTemplate.indexOf(contentTag);
-            String subContent = mapTemplate.substring(0, inx);
+            int index = mapTemplate.indexOf(contentTag);
+            String subContent = mapTemplate.substring(0, index);
             output.write(StringUtils.replace(subContent, "<!-- Title -->", "Schema Index"));
         
             output.write("<UL>");
@@ -501,7 +501,7 @@ public class ERDVisualizer extends JFrame
                 output.write("<LI><a href=\""+ti.getShortClassName()+".html\">"+StringEscapeUtils.escapeHtml(ti.getTitle())+"</a></LI>");
             }
             output.write("</UL>");
-            output.write(mapTemplate.substring(inx+contentTag.length()+1, mapTemplate.length()));
+            output.write(mapTemplate.substring(index+contentTag.length()+1, mapTemplate.length()));
             
             output.close();
 
@@ -651,8 +651,8 @@ public class ERDVisualizer extends JFrame
             File           html   = new File(fName + ".html");
             BufferedWriter output = new BufferedWriter( new FileWriter(html) );
             
-            int    inx        = mapTemplate.indexOf(contentTag);
-            String subContent = mapTemplate.substring(0, inx);
+            int    index      = mapTemplate.indexOf(contentTag);
+            String subContent = mapTemplate.substring(0, index);
             output.write(StringUtils.replace(subContent, "<!-- Title -->", tblInfo.getTitle()));
         
             File imgFile = new File(fName + (doPNG ? ".png" : ".jpg"));
@@ -671,7 +671,7 @@ public class ERDVisualizer extends JFrame
             output.write("</map>\n");
             output.write("<img border=\"0\" usemap=\"#schema\" src=\""+imgFile.getName()+"\"/>\n");
             
-            output.write(mapTemplate.substring(inx+contentTag.length()+1, mapTemplate.length()));
+            output.write(mapTemplate.substring(index+contentTag.length()+1, mapTemplate.length()));
             
             output.close();
 

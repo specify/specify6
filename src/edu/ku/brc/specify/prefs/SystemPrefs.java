@@ -210,7 +210,7 @@ public class SystemPrefs extends GenericPrefsPanel
                 Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
                 if (collection != null)
                 {
-                    String isaNumber = collection.getSaNumber();
+                    String isaNumber = collection.getIsaNumber();
                     if (StringUtils.isNotEmpty(isaNumber) && !((JCheckBox)e.getSource()).isSelected()){
                         UIRegistry.showLocalizedMsg("ISA_STATS_WARNING");
                     }

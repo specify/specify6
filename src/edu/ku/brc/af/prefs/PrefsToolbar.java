@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
@@ -80,7 +81,7 @@ public class PrefsToolbar extends JPanel
      */
     public PrefsToolbar(final PrefsPanelMgrIFace prefsDlg)
     {
-        super(new ToolbarLayoutManager(2, 8));
+        super(new ToolbarLayoutManager(2, 4));
 
         this.prefsPanelMgr = prefsDlg;
 
@@ -238,6 +239,7 @@ public class PrefsToolbar extends JPanel
                     NavBoxButton btn = new NavBoxButton(getResourceString(prefTitle), icon);
                     btn.setOpaque(false);
                     btn.setVerticalLayout(true);
+                    btn.setBorder(BorderFactory.createEmptyBorder(4, 4, 2, 4));
                     
                     try
                     {
@@ -283,6 +285,9 @@ public class PrefsToolbar extends JPanel
                     btn.addActionListener(new ShowAction(prefTitle, btn));
                 }
             }
+            
+            prevBtn = (RolloverCommand)getComponent(0);
+            prevBtn.setActive(true);
             
             /*int aveWidth = totalWidth / btns.size();
             for (NavBoxButton nbb : btns)

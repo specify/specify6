@@ -588,12 +588,20 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         SubPaneMgr.getInstance().removePane(subPane);
     }
 
-    /**
-     * Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null.
-     * @return Returns the initial pane for this task, may be a blank (empty) pane, but shouldn't null
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#getStarterPane()
      */
     public abstract SubPaneIFace getStarterPane();
 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#setStarterPane(edu.ku.brc.af.core.SubPaneIFace)
+     */
+    @Override
+    public void setStarterPane(SubPaneIFace pane)
+    {
+        starterPane = pane;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getTaskClass()

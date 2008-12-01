@@ -204,9 +204,9 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                     if (numRecordsWithResults == 0)
                     {
                         statusBar.setText(getResourceString("GeoCoordBGMProvider.NO_BG_RESULTS")); //$NON-NLS-1$
-//                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
-//                                getResourceString("NO_BG_RESULTS"),
-//                                getResourceString("NO_RESULTS"), JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
+                                getResourceString("GeoCoordBGMProvider.NO_BG_RESULTS"),
+                                getResourceString("NO_RESULTS"), JOptionPane.INFORMATION_MESSAGE);
                         return;
                     }
                     

@@ -104,26 +104,29 @@ public class StatsTrackerTask extends edu.ku.brc.af.tasks.StatsTrackerTask
     @Override
     protected void showClosingFrame()
     {
-        ImageIcon img = IconManager.getIcon("SpecifySplash");
-        
-        CellConstraints    cc = new CellConstraints();
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,150px", "f:p:g,2px,p"));
-        pb.setDefaultDialogBorder();
-        
-        JLabel lbl = new JLabel(img);
-        pb.add(lbl, cc.xyw(1, 1, 2));
-        lbl = UIHelper.createI18NLabel("SPECIFY_SHUTDOWN", SwingConstants.CENTER);
-        lbl.setFont(lbl.getFont().deriveFont(18.0f));
-        pb.add(lbl, cc.xy(1, 3));
-        
-        progress = new JProgressBar(0, 100);
-        pb.add(progress, cc.xy(2, 3));
-        
-        JFrame frame = new JFrame();
-        frame.setUndecorated(true);
-        frame.setContentPane(pb.getPanel());
-        frame.pack();
-        UIHelper.centerAndShow(frame);
+        if (hasChanged)
+        {
+            ImageIcon img = IconManager.getIcon("SpecifySplash");
+            
+            CellConstraints    cc = new CellConstraints();
+            PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,150px", "f:p:g,2px,p"));
+            pb.setDefaultDialogBorder();
+            
+            JLabel lbl = new JLabel(img);
+            pb.add(lbl, cc.xyw(1, 1, 2));
+            lbl = UIHelper.createI18NLabel("SPECIFY_SHUTDOWN", SwingConstants.CENTER);
+            lbl.setFont(lbl.getFont().deriveFont(18.0f));
+            pb.add(lbl, cc.xy(1, 3));
+            
+            progress = new JProgressBar(0, 100);
+            pb.add(progress, cc.xy(2, 3));
+            
+            JFrame frame = new JFrame();
+            frame.setUndecorated(true);
+            frame.setContentPane(pb.getPanel());
+            frame.pack();
+            UIHelper.centerAndShow(frame);
+        }
     }
 
     /* (non-Javadoc)

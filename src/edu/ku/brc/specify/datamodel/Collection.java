@@ -60,7 +60,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     
     protected String                     webPortalURI;
     protected String                     webSiteURI;
-    protected String                     saNumber;
+    protected String                     isaNumber;
     
     // ABCD Schema
     protected String                     kingdomCoverage;
@@ -72,6 +72,7 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     protected String                     institutionType;
     protected String                     scope;
     protected String                     dbContentVersion;
+    protected Integer                    estimatedSize;
     
     // Relationships
     protected Discipline                 discipline;
@@ -126,7 +127,8 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
         dbContentVersion       = null;
         webPortalURI           = null;
         webSiteURI             = null;
-        saNumber               = null;
+        isaNumber              = null;
+        estimatedSize          = 0;
         
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
@@ -500,25 +502,41 @@ public class Collection extends UserGroupScope implements java.io.Serializable, 
     {
         this.webSiteURI = webSiteURI;
     }
-
     
     /**
-     * @return the saNumber
+     * @return the isaNumber
      */
-    @Column(name = "SaNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
-    public String getSaNumber()
+    @Column(name = "IsaNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 24)
+    public String getIsaNumber()
     {
-        return saNumber;
+        return isaNumber;
     }
 
     /**
-     * @param saNumber the saNumber to set
+     * @param isaNumber the isaNumber to set
      */
-    public void setSaNumber(String saNumber)
+    public void setIsaNumber(String isaNumber)
     {
-        this.saNumber = saNumber;
+        this.isaNumber = isaNumber;
     }
-    
+
+    /**
+     * @return the estimatedSize
+     */
+    @Column(name = "EstimatedSize", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getEstimatedSize()
+    {
+        return estimatedSize;
+    }
+
+    /**
+     * @param estimatedSize the estimatedSize to set
+     */
+    public void setEstimatedSize(Integer estimatedSize)
+    {
+        this.estimatedSize = estimatedSize;
+    }
+
     /**
      *
      */

@@ -845,9 +845,11 @@ public class ViewFactory
                 // instantiate the plugin object
                 UIPluginable uiPlugin = pluginClass.asSubclass(UIPluginable.class).newInstance();
                 
+                uiPlugin.setCellName(cellField.getName());
+                
                 Properties props = (Properties)cellField.getProperties().clone();
                 
-                System.out.println(cellField.getName());
+                log.debug(cellField.getName());
                 if (uiPlugin instanceof WebLinkButton)
                 {
                     //if (StringUtils.isNotEmpty((String)props.get("weblink")))
@@ -855,11 +857,11 @@ public class ViewFactory
                         DBTableInfo tInfo = DBTableIdMgr.getInstance().getByClassName(parent.getView().getClassName());
                         if (tInfo != null)
                         {
-                            System.out.println(cellField.getName());
+                            log.debug(cellField.getName());
                             DBFieldInfo fInfo = tInfo.getFieldByName(cellField.getName());
                             if (fInfo != null)
                             {
-                                System.out.println(fInfo.getFormatStr() + " weblink: "+fInfo.getWebLinkName());
+                                log.debug(fInfo.getFormatStr() + " weblink: "+fInfo.getWebLinkName());
                                 if (StringUtils.isEmpty((String)props.get("weblink")) && StringUtils.isNotEmpty(fInfo.getWebLinkName()))
                                 {
                                     props.put("weblink", fInfo.getWebLinkName());
