@@ -2643,6 +2643,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             String msg = String.format(getResourceString("SaveChanges"), getTitle());
             JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
 
+            final String wbName = workbench.getName();
+            
             int rv = JOptionPane.showConfirmDialog(topFrame,
                                                    msg,
                                                    getResourceString("SaveChangesTitle"),
@@ -2650,7 +2652,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             if (rv == JOptionPane.YES_OPTION)
             {
                 UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), WorkbenchTask.GLASSPANE_FONT_SIZE);            
-                UIRegistry.getStatusBar().setIndeterminate(workbench.getName(), true);
+                UIRegistry.getStatusBar().setIndeterminate(wbName, true);
                 new SwingWorker()
                 {
 
@@ -2671,7 +2673,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     public void finished()
                     {
                         UIRegistry.clearSimpleGlassPaneMsg();
-                        UIRegistry.getStatusBar().setProgressDone(workbench.getName());
+                        UIRegistry.getStatusBar().setProgressDone(wbName);
                     }
                     
                 }.start();
