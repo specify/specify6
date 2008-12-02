@@ -98,8 +98,11 @@ public class SecuritySummaryDlg extends CustomDialog
 		SpecifyUser user = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
 		SpPrincipal principal = UserPrincipalHibernateService.getUserPrincipalBySpecifyUser(user);
         Hashtable<String, SpPermission> existingPerms = PermissionService.getExistingPermissions(principal.getId());
+        
+        // get the groups this user belongs to and stuff the list of overriding permissions with their permissions
+        Hashtable<String, SpPermission> overridingPerms = PermissionService.getOverridingPermissions(user);
 
-		generalEditor.updateData(principal, null, existingPerms, null, null);
+		generalEditor.updateData(principal, null, existingPerms, overridingPerms, null);
         
         pack();
     }

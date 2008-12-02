@@ -28,6 +28,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 
 /**
  * @author megkumin
@@ -116,6 +117,86 @@ public class PermissionService
             permissions.addAll(findPrincipalBasedPermissions(principalId));
         }
         return permissions;
+    }
+    
+    static private List<?> getGroupPrincipals(final SpecifyUser user) {
+
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            List<?> principals = session.getDataList("SELECT pc FROM SpPrincipal as pc " +
+            		"INNER JOIN pc.specifyUsers as user WHERE " +
+            		    "groupSubClass = 'edu.ku.brc.af.auth.specify.principal.GroupPrincipal' " +
+            		    "AND user.id = " + user.getId());
+            return principals;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            session.close();
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Get all permissions that may override the user's own permissions. It's for display purposes,
+     * so we don't need to include more than one permission per kind of permission.
+     *  
+     * @param user
+     * @return
+     */
+    static public Hashtable<String, SpPermission> getOverridingPermissions(final SpecifyUser user) {
+        
+    
+        Hashtable<String, SpPermission> hash        = new Hashtable<String, SpPermission>();
+        DataProviderSessionIFace        session     = DataProviderFactory.getInstance().createSession();
+        List<SpPrincipal>               principals  = (List<SpPrincipal>) getGroupPrincipals(user);
+        String                          strSet      = getPrincipalSet(principals); 
+        try
+        {
+            List<?> perms = session.getDataList("SELECT pm FROM SpPermission as pm INNER JOIN pm.principals as pc WHERE pc.id in " + strSet);
+            for (Object permObj : perms)
+            {
+                SpPermission perm = (SpPermission)permObj;
+                hash.put(perm.getName(), perm);
+                log.debug(perm.getName()+"  "+perm.getActions());
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            session.close();
+        }
+        
+        return hash;
+    }
+    
+    private static String getPrincipalSet(final List<SpPrincipal> principals) 
+    {
+        StringBuffer inClause = new StringBuffer();
+        inClause.append("(");
+        boolean first = true;
+        for (SpPrincipal spPrincipal : principals)
+        {
+            if (!first) 
+            {
+                inClause.append(", ");
+            }
+            else 
+            {
+                first = false;
+            } 
+            inClause.append(spPrincipal.getId());
+        }
+        inClause.append(")");
+        return inClause.toString();
     }
     
     /**
