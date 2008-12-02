@@ -46,7 +46,7 @@ public class CollectionChoice
     }
     
     /**
-     * @param name
+     * @param type
      * @param isTissue
      * @param isSelected
      */

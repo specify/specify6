@@ -4831,7 +4831,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             Discipline discipline = new Discipline();
             discipline.initialize();
-            discipline.setName(name);
+            discipline.setType(name);
             discipline.setDataType(dataType);
 
             discipline.setTaxonTreeDef(taxaTreeDef);

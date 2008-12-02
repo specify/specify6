@@ -993,7 +993,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         StringBuilder strBuf = new StringBuilder();
         strBuf.append("CS["+(collection != null ? collection.getCollectionName() : "null") + "]"); //$NON-NLS-1$ //$NON-NLS-3$
         strBuf.append(" SU["+(spUser != null ? spUser.getName() : "null") + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        strBuf.append(" COD["+(discipline != null ? discipline.getTitle() : "null") + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        strBuf.append(" COD["+(discipline != null ? discipline.getType() : "null") + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         strBuf.append(" DSP["+appResDef.getDisciplineType() + "]"); //$NON-NLS-1$ //$NON-NLS-2$
         strBuf.append(" UTYP["+appResDef.getUserType() + "]"); //$NON-NLS-1$ //$NON-NLS-2$
         
@@ -1143,7 +1143,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             AppContextMgr.getInstance().setClassObject(Discipline.class, discipline);
             
-            String disciplineStr = discipline.getName().toLowerCase();
+            String disciplineStr = discipline.getType().toLowerCase();
             
             Division division = discipline.getDivision();
             division.forceLoad();

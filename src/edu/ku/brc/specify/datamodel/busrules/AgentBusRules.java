@@ -237,7 +237,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         lastLabel.setText(lbl + ":");
         
         // Agent Variants
-        boolean useAgentVariant = AppPreferences.getRemote().getBoolean("Agent.Use.Variants."+AppContextMgr.getInstance().getClassObject(Discipline.class).getName(),
+        boolean useAgentVariant = AppPreferences.getRemote().getBoolean("Agent.Use.Variants."+AppContextMgr.getInstance().getClassObject(Discipline.class).getType(),
                 Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany));
         // I don't think this is needed anymore
         //Component agentVarSep = formViewObj.getCompById("100");

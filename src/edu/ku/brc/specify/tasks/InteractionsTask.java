@@ -405,7 +405,7 @@ public class InteractionsTask extends BaseTask
             
             if (stdList.size() == 0)
             {
-                String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+                String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
                 AppPreferences.getRemote().putBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, false);
                 JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
                 indexOfTBB = toolBar.getComponentIndex(toolBarBtn);
@@ -418,7 +418,7 @@ public class InteractionsTask extends BaseTask
                 
             } else if (isEmpty && stdList.size() > 0)
             {
-                String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+                String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
                 AppPreferences.getRemote().putBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
                 prefsChanged(new CommandAction(null, null, AppPreferences.getRemote()));
                 
@@ -440,7 +440,7 @@ public class InteractionsTask extends BaseTask
     protected void setUpCachedPrefs()
     {
         AppPreferences remotePrefs = AppPreferences.getRemote();
-        String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+        String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
         isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
     }
     
@@ -702,7 +702,7 @@ public class InteractionsTask extends BaseTask
         AppPreferences remotePrefs = AppPreferences.getRemote();
         if (remotePrefs == AppPreferences.getRemote())
         {
-            String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+            String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
             isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
         }
 
@@ -1520,7 +1520,7 @@ public class InteractionsTask extends BaseTask
         
         if (remotePrefs == AppPreferences.getRemote())
         {
-            String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+            String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
             isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
             
             JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);

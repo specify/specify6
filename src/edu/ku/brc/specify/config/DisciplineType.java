@@ -159,7 +159,7 @@ public class DisciplineType implements Comparable<DisciplineType>
 
     /**
      * Returns a DisciplineType by title.
-     * @param title the title of the disciplineType
+     * @param altName the title of the disciplineType
      * @return a DisciplineType by title.
      */
     public static DisciplineType getDiscipline(final DisciplineType.STD_DISCIPLINES dType)

@@ -123,7 +123,7 @@ public class DivisionSetupPanel extends JPanel implements SetupPanelIFace
                 } else if (cbx.getSelectedIndex() > 1)
                 {
                     division = (Division)cbx.getSelectedItem();
-                    divisionLbl.setText(division.getTitle());
+                    divisionLbl.setText(division.getName());
                     nextBtn.setEnabled(true);
                 }
                 fillDisciplineList();
@@ -177,7 +177,7 @@ public class DivisionSetupPanel extends JPanel implements SetupPanelIFace
         if (!dlg.isCancelled())
         {
             dlg.getMultiView().getDataFromUI();
-            divisionLbl.setText(division.getTitle());
+            divisionLbl.setText(division.getName());
             nextBtn.setEnabled(true);
             
         } else

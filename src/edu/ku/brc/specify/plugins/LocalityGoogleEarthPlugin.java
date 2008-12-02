@@ -155,7 +155,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     protected ImageIcon getDisciplineIcon()
     {
         Discipline discipline = AppContextMgr.getInstance().getClassObject(Discipline.class);//co.getCollection().getDiscipline()
-        return IconManager.getIcon(discipline.getName(),  IconManager.IconSize.Std32);
+        return IconManager.getIcon(discipline.getType(),  IconManager.IconSize.Std32);
     }
     
     /* (non-Javadoc)

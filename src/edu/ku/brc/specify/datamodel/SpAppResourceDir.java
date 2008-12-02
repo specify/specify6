@@ -373,7 +373,7 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         StringBuilder strBuf = new StringBuilder();
         strBuf.append(""+(collection != null ? collection.getCollectionName() : ""));
         strBuf.append(" "+(specifyUser != null ? specifyUser.getName() : ""));
-        strBuf.append(" "+(discipline != null ? discipline.getTitle() : ""));
+        strBuf.append(" "+(discipline != null ? discipline.getType() : ""));
         strBuf.append(" "+(disciplineType != null ? disciplineType : ""));
         strBuf.append(" "+(userType != null ? userType : ""));
         strBuf.append(" "+isPersonal);

@@ -168,7 +168,7 @@
         >
         <switch single="true">
             <fields>
-                <field>title</field>
+                <field>name</field>
             </fields>
         </switch>
     </format>

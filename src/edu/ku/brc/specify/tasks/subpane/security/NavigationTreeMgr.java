@@ -437,7 +437,7 @@ public class NavigationTreeMgr
         discipline.setDivision(division);
         
         division.setName("Anonymous Division");
-        discipline.setName("New Discipline");
+        discipline.setType("New Discipline");
         
         save(new Object[] { division, discipline }, false);
         

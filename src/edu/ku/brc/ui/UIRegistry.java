@@ -699,7 +699,7 @@ public class UIRegistry
 
     /**
      * Returns a UI component by name.
-     * @param title the name of the component to be retrieved
+     * @param altName the name of the component to be retrieved
      * @return a UI component by name
      */
     public static Window getTopWindow()
@@ -1687,7 +1687,7 @@ public class UIRegistry
 
     /**
      * Returns an action name.
-     * @param title
+     * @param altName
      * @return
      */
     /*private Action getActionByName(String name) 

@@ -433,7 +433,6 @@ public class RegisterSpecify
                 if (!isAnonymous)
                 {
                     postParams.add(new NameValuePair("Institution_name",  fixParam(inst.getName()))); //$NON-NLS-1$
-                    postParams.add(new NameValuePair("Institution_title", fixParam(inst.getTitle()))); //$NON-NLS-1$
                 }
                 break;
                 
@@ -442,7 +441,6 @@ public class RegisterSpecify
                 if (!isAnonymous)
                 {
                     postParams.add(new NameValuePair("Division_name",      fixParam(division.getName()))); //$NON-NLS-1$
-                    postParams.add(new NameValuePair("Division_title",     fixParam(division.getTitle()))); //$NON-NLS-1$
                 }
                 break;
                 
@@ -451,8 +449,7 @@ public class RegisterSpecify
                 postParams.add(new NameValuePair("Division_number",    fixParam(division.getRegNumber()))); //$NON-NLS-1$
                 if (!isAnonymous)
                 {
-                    postParams.add(new NameValuePair("Discipline_name",    fixParam(discipline.getName()))); //$NON-NLS-1$
-                    postParams.add(new NameValuePair("Discipline_title",   fixParam(discipline.getTitle()))); //$NON-NLS-1$
+                    postParams.add(new NameValuePair("Discipline_type",    fixParam(discipline.getType()))); //$NON-NLS-1$
                 }
                 break;
                 
@@ -462,8 +459,9 @@ public class RegisterSpecify
                 postParams.add(new NameValuePair("Discipline_number",  fixParam(discipline.getRegNumber()))); //$NON-NLS-1$
                 if (!isAnonymous)
                 {
+                    postParams.add(new NameValuePair("Discipline_type", fixParam(discipline.getType()))); //$NON-NLS-1$
                     postParams.add(new NameValuePair("Collection_name", fixParam(collection.getCollectionName()))); //$NON-NLS-1$
-                    postParams.add(new NameValuePair("SA_Number",       fixParam(collection.getIsaNumber()))); //$NON-NLS-1$
+                    postParams.add(new NameValuePair("ISA_Number",       fixParam(collection.getIsaNumber()))); //$NON-NLS-1$
                 }
                 break;
         } // switch

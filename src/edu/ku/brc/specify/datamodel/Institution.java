@@ -50,7 +50,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
 
      protected Integer       institutionId;
      protected String        name;
-     protected String        title;
+     protected String        altName;
      protected String        abbrev;
      protected String        uri;
      protected String        iconURI;
@@ -93,7 +93,7 @@ public class Institution extends UserGroupScope implements java.io.Serializable
         super.init();
         
         name              = null;
-        title             = null;
+        altName             = null;
         abbrev            = null;
         uri               = null;
         iconURI           = null;
@@ -261,13 +261,14 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
-     * @return the title
+     * @return the altName
      */
-    @Column(name = "Title", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
-    public String getTitle()
+    @Column(name = "AltName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getAltName()
     {
-        return title;
+        return altName;
     }
+
 
     /**
      * @return the uri
@@ -412,11 +413,11 @@ public class Institution extends UserGroupScope implements java.io.Serializable
     }
 
     /**
-     * @param title the title to set
+     * @param altName the altName to set
      */
-    public void setTitle(String title)
+    public void setAltName(String altName)
     {
-        this.title = title;
+        this.altName = altName;
     }
 
     /**

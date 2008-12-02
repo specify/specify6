@@ -423,7 +423,7 @@ public class FormDisplayer
      */
     protected void setup()
     {
-        String pathStr = AppContextMgr.getInstance().getClassObject(Discipline.class) != null ? AppContextMgr.getInstance().getClassObject(Discipline.class).getName() : ""; //$NON-NLS-1$
+        String pathStr = AppContextMgr.getInstance().getClassObject(Discipline.class) != null ? AppContextMgr.getInstance().getClassObject(Discipline.class).getType() : ""; //$NON-NLS-1$
         pathStr += "_" + UIHelper.getOSType().toString() + "_" + (doAll ? "all" : "user");//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
         baseDir   = new File(getUserHomeDir() + File.separator + "FormImages"); //$NON-NLS-1$

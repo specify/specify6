@@ -7,6 +7,7 @@
 package edu.ku.brc.specify.utilapps;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -26,6 +27,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
@@ -38,16 +40,14 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.TreePath;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
+import edu.ku.brc.helpers.BrowserLauncher;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
@@ -75,7 +75,6 @@ public class RegisterApp extends JPanel
     
     protected RegProcessor              rp = new RegProcessor();
     
-    
     /**
      * 
      */
@@ -99,21 +98,17 @@ public class RegisterApp extends JPanel
     {
         JTabbedPane tabbedPane = new JTabbedPane();
         
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g,4px,p"));
-        
         rp = new RegProcessor();
         try
         {
             rp.process(new File("reg.dat"));
             rp.processTracks(new File("track.dat"));
             
+            rp.mergeStats();
+            
+            
             tree       = new JTree(rp.getRoot(false));
             propsTable = new JTable();
-            
-            pb.add(UIHelper.createScrollPane(tree), cc.xy(1, 1));
-            pb.add(UIHelper.createScrollPane(propsTable), cc.xy(1, 3));
-            pb.setDefaultDialogBorder();
             
             tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
                 @Override
@@ -128,15 +123,24 @@ public class RegisterApp extends JPanel
             ex.printStackTrace();
         }
         
-        tabbedPane.add("Registration", pb.getPanel());
-        
-        pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g,4px,p"));
+        Component topComp = UIHelper.createScrollPane(tree);
+        Component botComp = UIHelper.createScrollPane(propsTable);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topComp, botComp);
+
+        splitPane.setDividerLocation(0.5);
+        splitPane.setOneTouchExpandable(true);
+
+        splitPane.setLastDividerLocation(300);
+        Dimension minimumSize = new Dimension(200, 400);
+        topComp.setMinimumSize(minimumSize);
+        botComp.setMinimumSize(minimumSize);
+
+        tabbedPane.add("Registration", splitPane);
         
         Vector<String> tucn = new Vector<String>(rp.getTrackCatsHash().keySet());
         Collections.sort(tucn);
         final JList list = new JList(tucn);
-        pb.add(UIHelper.createScrollPane(list), cc.xy(1, 1));
-        
+        //pb.add(UIHelper.createScrollPane(list), cc.xy(1, 1));
         list.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e)
@@ -149,13 +153,21 @@ public class RegisterApp extends JPanel
             }
         });
         
-        
         DefaultListModel model = new DefaultListModel();
         trackItemsList = new JList(model);
         
-        pb.add(UIHelper.createScrollPane(trackItemsList), cc.xy(1, 3));
+        topComp = UIHelper.createScrollPane(list);
+        botComp = UIHelper.createScrollPane(trackItemsList);
+        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topComp, botComp);
+        splitPane.setDividerLocation(0.5);
+        splitPane.setOneTouchExpandable(true);
+
+        topComp.setMinimumSize(minimumSize);
+        botComp.setMinimumSize(minimumSize);
+        
+        splitPane.setDividerLocation(0.5);
         trackUsageHash = rp.getTrackCatsHash();
-        tabbedPane.add("Tracking", pb.getPanel());
+        tabbedPane.add("Tracking", splitPane);
         
         add(tabbedPane, BorderLayout.CENTER);
     }
@@ -246,7 +258,7 @@ public class RegisterApp extends JPanel
         chartFrame.pack();
         chartFrame.setVisible(true);
     }
-    
+        
     /**
      * 
      */
@@ -256,7 +268,7 @@ public class RegisterApp extends JPanel
         
         RegProcEntry rpe   = (RegProcEntry)path.getLastPathComponent();
         Properties   props = rpe.getProps();
-        
+     
         Vector<String> keys = new Vector<String>();
         for (Object obj : props.keySet())
         {
@@ -275,6 +287,33 @@ public class RegisterApp extends JPanel
         propsTable.setModel(new DefaultTableModel(rows, new String[] {"Property", "Value"}));
     }
     
+    /**
+     * @param inst
+     * @return
+     */
+    private boolean hasReg(final RegProcEntry inst)
+    {
+        for (RegProcEntry div : inst.getKids())
+        {
+            for (RegProcEntry disp : div.getKids())
+            {
+                for (RegProcEntry col : disp.getKids())
+                {
+                    if (StringUtils.isNotEmpty(col.getISANumber()))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * @param inst
+     * @param type
+     * @return
+     */
     private int count(final RegProcEntry inst, final CountType type)
     {
         int divs = inst.getKids().size();
@@ -310,35 +349,59 @@ public class RegisterApp extends JPanel
      * @param title
      * @param entries
      */
-    private void createTable(final StringBuilder sb, final String title, final Vector<RegProcEntry> entries)
+    private void createTable(final StringBuilder sb, 
+                             final String title, 
+                             final Vector<RegProcEntry> entries,
+                             final boolean hasReg)
     {
         sb.append("<table class=\"brd\" border=\"1\">\n");
         sb.append("<tr>");
-        sb.append("<th colspan=\"2\">");
+        sb.append("<th colspan=\"7\">");
         sb.append(title);
         sb.append("</th>");
         sb.append("</tr>");
-        sb.append("<tr><th>Item</th><th>Count</th></tr>\n");
+        sb.append("<tr><th>Inst</th><th>Division</th><th>Discipline</th><th>Collection</th><th>ISA Number</th><th>Phone</th><th>EMail</th></tr>\n");
         
         for (RegProcEntry inst : entries)
         {
-            int cols = count(inst, CountType.Cols);
-            sb.append("<tr>\n  <td rowspan=\""+cols+"\">"+inst.getName()+"</td>\n");
+            if (hasReg(inst) != hasReg)
+            {
+                continue;
+            }
             
+            int cols = count(inst, CountType.Cols);
+            sb.append("<tr>\n  <td valign=\"top\" rowspan=\""+cols+"\">"+inst.getName()+"</td>\n");
+            
+            int divsCnt = 0;
             for (RegProcEntry div : inst.getKids())
             {
-                int disps = count(inst, CountType.Disps);
-                sb.append("  <td rowspan=\""+disps+"\">"+div.getName()+"</td>\n");
+                if (divsCnt > 0) sb.append("<tr>\n");
+               
+                int dispsCnt = 0;
+                int disps = count(div, CountType.Disps);
+                
+                sb.append("  <td valign=\"top\" "+ (divsCnt == 0 ? " rowspan=\""+disps+"\"" : "") + ">"+div.getName()+"</td>\n");
+                
                 for (RegProcEntry disp : div.getKids())
                 {
-                    sb.append("  <td rowspan=\""+disp.getKids().size()+"\">"+disp.getName()+"</td>\n");
+                    if (dispsCnt > 0) sb.append("<tr>\n");
+                    sb.append("  <td valign=\"top\" "+ (dispsCnt == 0 ? " rowspan=\""+disp.getKids().size()+"\"" : "") + ">"+disp.getName()+"</td>\n");
+                    int colsCnt = 0;
                     for (RegProcEntry col : disp.getKids())
                     {
-                        sb.append("  <td>"+col.getName()+"</td>\n  <td>"+col.getISANumber()+"</td>\n");
+                        if (colsCnt > 0) sb.append("<tr>\n");
+                        String isa = col.getISANumber();
+                        sb.append("  <td>"+col.getName()+"</td>\n  <td>"+(StringUtils.isNotEmpty(isa) ? isa : "&nbsp;")+"</td>");
+                        
+                        String phone = col.get("Phone");
+                        String email = col.get("User_email");
+                        sb.append("<td>"+(StringUtils.isNotEmpty(phone) ? phone : "&nbsp;")+"</td>\n  <td>"+(StringUtils.isNotEmpty(email) ? email : "&nbsp;")+"</td>\n");
                         sb.append("</tr>\n");
-                        sb.append("<tr>\n");
+                        colsCnt++;
                     }
+                    dispsCnt++;
                 }
+                divsCnt++;
             }
             sb.append("<tr>\n");
         }
@@ -352,12 +415,18 @@ public class RegisterApp extends JPanel
     {
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body>");
-        createTable(sb, "Registrations", rp.getRoot(false).getKids());
+        createTable(sb, "ISA Registrations", rp.getRoot(false).getKids(), true);
+        sb.append("<br><br>");
+        createTable(sb, "No ISA Registrations", rp.getRoot(false).getKids(), false);
         sb.append("</body></html>");
         
         try
         {
-            FileUtils.writeStringToFile(new File("report.html"), sb.toString());
+            File file = new File("report.html");
+            FileUtils.writeStringToFile(file, sb.toString());
+            
+            BrowserLauncher.openURL(file.toURI().toString());
+            
         } catch (IOException ex)
         {
             ex.printStackTrace();

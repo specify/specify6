@@ -416,7 +416,7 @@ public class BuildSampleDatabase
         List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
         
         institution = createInstitution(props.getProperty("instName"));
-        institution.setTitle(props.getProperty("instTitle"));
+        //institution.setTitle(props.getProperty("instTitle"));
         institution.setAbbrev(props.getProperty("instAbbrev"));
         
         Address instAddress = new Address();
@@ -458,7 +458,7 @@ public class BuildSampleDatabase
                                  disciplineType.getName(), 
                                  props.getProperty("divName"), 
                                  props.getProperty("divAbbrev"), 
-                                 props.getProperty("divTitle"));
+                                 null); //props.getProperty("divTitle");
         
         // create tree defs (later we will make the def items and nodes)
         TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
@@ -590,6 +590,10 @@ public class BuildSampleDatabase
                                                  catANS,
                                                  discipline, 
                                                  disciplineType.isEmbeddedCollecingEvent());
+        
+        collection.getTechnicalContacts().add(userAgent);
+        collection.getContentContacts().add(userAgent);
+        
         persist(collection);
         
         DataBuilder.createStandardGroups(groups, collection);
@@ -803,7 +807,7 @@ public class BuildSampleDatabase
                 }
             }
             
-            List<BldrPickList> pickLists = DataBuilder.getBldrPickLists(discipline != null ? discipline.getName() : "common");
+            List<BldrPickList> pickLists = DataBuilder.getBldrPickLists(discipline != null ? discipline.getType() : "common");
             if (pickLists != null)
             {
                 for (BldrPickList pl : pickLists)
@@ -4562,7 +4566,7 @@ public class BuildSampleDatabase
         xstream.omitField(DataModelObjBase.class,  "timestampModified");
         xstream.omitField(DataModelObjBase.class,  "lastEditedBy");
         
-        String discipline = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+        String discipline = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
         File   file       = XMLHelper.getConfigDir(discipline + File.separator + "preptypes.xml");
         if (file.exists())
         {
@@ -4595,7 +4599,7 @@ public class BuildSampleDatabase
     {
         loadQueries(XMLHelper.getConfigDirPath("common" + File.separator + "queries.xml"));
         
-        String discipline = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+        String discipline = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
         loadQueries(XMLHelper.getConfigDirPath(discipline + File.separator + "queries.xml"));
     }
     
@@ -5458,7 +5462,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         
         // setup a template and its mapping items
-        String name = discipline.getTitle() + " DataSet";
+        String name = discipline.getName() + " DataSet";
         WorkbenchTemplate wbTemplate = createWorkbenchTemplate(user, name, "These are the remarks");
         WorkbenchTemplateMappingItem wbtmi0 = createWorkbenchMappingItem("CollectionObject", 
                                                                         1, "fieldNumber", "Field Number", 25, 0, 0, wbTemplate);
@@ -7593,7 +7597,7 @@ public class BuildSampleDatabase
             container.setType(table.getType());
             container.setSchemaType(schemaType);
             
-            container.setIsHidden(hiddenTableMgr.isHidden(discipline.getName(), table.getName()));
+            container.setIsHidden(hiddenTableMgr.isHidden(discipline.getType(), table.getName()));
             
             loadLocalization(table, container, hideGenericFields, catFmtName, accFmtName);
             

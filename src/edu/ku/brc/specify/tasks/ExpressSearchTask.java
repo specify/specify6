@@ -220,7 +220,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     protected String getLastSearchKey()
     {
         Discipline discp          = AppContextMgr.getInstance().getClassObject(Discipline.class);
-        String     disciplineName = discp != null ? ("_" + discp.getName()) : "";
+        String     disciplineName = discp != null ? ("_" + discp.getType()) : "";
         return LAST_SEARCH + disciplineName;
     }
 

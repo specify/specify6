@@ -253,7 +253,7 @@ public class ChooseFromListDlg<T> extends JDialog
     /**
      * Create the UI for the dialog.
      * 
-     * @param title title for dialog
+     * @param altName title for dialog
      * @param desc the list to be selected from
      * @param includeCancelBtn  indicates whether to create and display a cancel btn
      * @param includeHelpBtn indicates whether to create and display a help btn

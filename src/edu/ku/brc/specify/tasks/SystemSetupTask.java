@@ -70,6 +70,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
@@ -161,7 +162,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
 
             // Temporary
             NavBox sysNavBox = new NavBox(getResourceString("CORE_DATA_OBJECTS"));
-            //createSysNavBtn(sysNavBox, DataType.getClassTableId());
+            createSysNavBtn(sysNavBox, Institution.getClassTableId(), false);
             createSysNavBtn(sysNavBox, Division.getClassTableId(), false);
             createSysNavBtn(sysNavBox, Discipline.getClassTableId(), false);
             createSysNavBtn(sysNavBox, edu.ku.brc.specify.datamodel.Collection.getClassTableId(), false);

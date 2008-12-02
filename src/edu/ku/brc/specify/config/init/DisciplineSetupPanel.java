@@ -106,7 +106,7 @@ public class DisciplineSetupPanel extends JPanel implements SetupPanelIFace
                 } else if (cbx.getSelectedIndex() > 1)
                 {
                     discipline = (Discipline)cbx.getSelectedItem();
-                    disciplineTxt.setText(discipline.getTitle());
+                    disciplineTxt.setText(discipline.getType());
                     props.put("discipline", discipline);
                     nextBtn.setEnabled(true);
                 }
@@ -178,7 +178,7 @@ public class DisciplineSetupPanel extends JPanel implements SetupPanelIFace
         if (!dlg.isCancelled())
         {
             dlg.getMultiView().getDataFromUI();
-            disciplineTxt.setText(discipline.getTitle());
+            disciplineTxt.setText(discipline.getType());
             nextBtn.setEnabled(true);
             props.put("discipline", discipline);
             

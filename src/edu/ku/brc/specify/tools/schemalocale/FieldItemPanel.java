@@ -1252,7 +1252,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             String dspName = disciplineType != null ? disciplineType.getName() : null;
             if (AppContextMgr.getInstance().hasContext() && AppContextMgr.getInstance().getClassObject(Discipline.class) != null)
             {
-                dspName = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+                dspName = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
             }
             
             if (disciplineName == null || !dspName.equals(disciplineName))

@@ -358,9 +358,9 @@ public class DataBuilder
         return attrDef;
     }
 
-    public static Discipline createDiscipline(final Division                 division,
+    public static Discipline createDiscipline(final Division         division,
+                                              final String           type,
                                               final String           name,
-                                              final String           title,
                                               final DataType         dataType,
                                               final TaxonTreeDef     taxonTreeDef,
                                               final GeographyTreeDef geographyTreeDef,
@@ -369,8 +369,8 @@ public class DataBuilder
     {
         Discipline discipline = new Discipline();
         discipline.initialize();
+        discipline.setType(type);
         discipline.setName(name);
-        discipline.setTitle(title);
         discipline.setDataType(dataType);
         discipline.setTaxonTreeDef(taxonTreeDef);
         discipline.setGeographyTreeDef(geographyTreeDef);//meg added to support not-null constraints
@@ -1532,7 +1532,7 @@ public class DataBuilder
         discipline.setGeographyTreeDef(geographyTreeDef);
         discipline.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);
         discipline.setTaxonTreeDef(taxonTreeDef);
-        discipline.setName(name);
+        discipline.setType(name);
         persist(discipline);
         return discipline;
     }

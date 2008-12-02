@@ -54,8 +54,8 @@ public class BaseUIFieldFormatter implements UIFieldFormatterIFace, Cloneable
     protected boolean                isDefault             = false;
     
     /**
-     * @param name the name of the formatter, must be unique and not localized
-     * @param title the localized title
+     * @param type the name of the formatter, must be unique and not localized
+     * @param altName the localized title
      * @param isIncrementer
      * @param length
      * @param isNumericCatalogNumber

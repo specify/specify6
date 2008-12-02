@@ -1199,7 +1199,7 @@ public class SpecifyDBConverter
                 conversion.doLocalizeSchema();
                 
                 BuildSampleDatabase.makeFieldVisible(null, dscp);
-                BuildSampleDatabase.makeFieldVisible(dscp.getName(), dscp);
+                BuildSampleDatabase.makeFieldVisible(dscp.getType(), dscp);
 
                 frame.incOverall();
                 

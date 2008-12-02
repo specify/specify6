@@ -138,7 +138,7 @@ public class ResourceImportExportDlg extends CustomDialog
             
         } else if (dir.getDiscipline() != null)
         {
-            hierTitle = dir.getDiscipline().getTitle() + " ("+disciplineTI.getTitle()+")";
+            hierTitle = dir.getDiscipline().getType() + " ("+disciplineTI.getTitle()+")";
         } else
         {
             hierTitle = dir.getIdentityTitle();

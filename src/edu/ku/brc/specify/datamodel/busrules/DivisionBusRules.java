@@ -116,7 +116,7 @@ public class DivisionBusRules extends BaseBusRules
                     int count = BasicSQLUtils.getCount(sql);
                     if (count > 0)
                     {
-                        UIRegistry.showError(String.format("There are too many agents associated with this the `%s` Division.", division.getTitle()));
+                        UIRegistry.showError(String.format("There are too many agents associated with this the `%s` Division.", division.getName()));
                     } else
                     {
                         try

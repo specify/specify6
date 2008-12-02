@@ -102,7 +102,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
 	{
         // get an icon URL that is specific to the current context
         
-        String discipline = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+        String discipline = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
         for ( Pair<String, ImageIcon> pair : IconManager.getListByType("disciplines", IconManager.IconSize.Std32))
         {
             if (pair.first.equals(discipline))

@@ -58,6 +58,15 @@ public class RegProcEntry implements TreeNode
     }
     
     /**
+     * @param propName
+     * @return
+     */
+    public String get(final String propName)
+    {
+        return props.getProperty(propName);
+    }
+    
+    /**
      * @return the name
      */
     public String getName()
@@ -128,11 +137,7 @@ public class RegProcEntry implements TreeNode
      */
     public boolean isRegistered()
     {
-        if (type != null && type.equals("Collection") && isaNumber == null)
-        {
-            isaNumber = props.getProperty("SA_Number", "");
-        }
-        return StringUtils.isNotEmpty(isaNumber);
+        return StringUtils.isNotEmpty(getISANumber());
     }
     
     /**
@@ -140,7 +145,11 @@ public class RegProcEntry implements TreeNode
      */
     public String getISANumber()
     {
-        return isaNumber == null ? "&nbsp;" : isaNumber;
+        if (type != null && type.equals("Collection") && isaNumber == null)
+        {
+            isaNumber = props.getProperty("SA_Number", "");
+        }
+        return isaNumber == null ? "" : isaNumber;
     }
 
     /* (non-Javadoc)

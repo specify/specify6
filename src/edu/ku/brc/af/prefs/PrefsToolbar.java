@@ -164,7 +164,7 @@ public class PrefsToolbar extends JPanel
     /**
      * Loads a Section or grouping of Prefs.
      * @param sectionElement the section elemnent
-     * @param title the localized title
+     * @param altName the localized title
      */
     protected void loadSectionPrefs(final Element sectionElement, 
                                     final ResourceBundle resBundle)

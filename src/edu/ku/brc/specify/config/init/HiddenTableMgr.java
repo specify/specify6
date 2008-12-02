@@ -65,19 +65,19 @@ public class HiddenTableMgr
     
     /**
      * Returns if the table is hidden for this discipline.
-     * @param disciplineName the discipline name (not localized)
+     * @param disciplineType the discipline name (not localized)
      * @param tableName the table name (not the class name).
      * @return true if hidden
      */
-    public boolean isHidden(final String disciplineName, final String tableName)
+    public boolean isHidden(final String disciplineType, final String tableName)
     {
-        Hashtable<String, Boolean> tableHash = disciplines.get(disciplineName);
+        Hashtable<String, Boolean> tableHash = disciplines.get(disciplineType);
         if (tableHash != null)
         {
             Boolean isHidden = tableHash.get(tableName);
             return isHidden != null && isHidden ? true : false;
         }
-        throw new RuntimeException("The discipline["+disciplineName+"] was not found.");
+        throw new RuntimeException("The discipline["+disciplineType+"] was not found.");
     }
     
 }

@@ -62,7 +62,7 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
 {
     // Fields    
      protected String                   name;
-     protected String                   title;
+     protected String                   altName;
      protected String                   abbrev;
      protected String                   uri;
      protected String                   iconURI;
@@ -110,7 +110,7 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
         super.init();
         
         name                = null;
-        title               = null;
+        altName             = null;
         abbrev              = null;
         uri                 = null;
         iconURI             = null;
@@ -294,12 +294,12 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
     }
 
     /**
-     * @return the title
+     * @return the altName
      */
-    @Column(name = "Title", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
-    public String getTitle()
+    @Column(name = "AltName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getAltName()
     {
-        return title;
+        return altName;
     }
 
     /**
@@ -431,7 +431,16 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
      */
     public void setTitle(String title)
     {
-        this.title = title;
+        this.altName = title;
+    }
+
+
+    /**
+     * @param altName the altName to set
+     */
+    public void setAltName(String altName)
+    {
+        this.altName = altName;
     }
 
     /**
@@ -665,9 +674,9 @@ public class Division extends UserGroupScope implements java.io.Serializable, Co
      */
     public int compareTo(Division obj)
     {
-        if (title != null && obj != null && StringUtils.isNotEmpty(obj.title))
+        if (altName != null && obj != null && StringUtils.isNotEmpty(obj.altName))
         {
-            return title.compareTo(obj.title);
+            return altName.compareTo(obj.altName);
         }
         
         if (name != null && obj != null && StringUtils.isNotEmpty(obj.name))

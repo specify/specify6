@@ -66,7 +66,7 @@ public class DataModelObjBaseWrapper
 			String iconName = "";
 			Discipline discipline = (Discipline) dataObj;
 			
-			icon = IconManager.getIcon(discipline.getName(), iconSize);
+			icon = IconManager.getIcon(discipline.getType(), iconSize);
 			if (icon == null)
 			{
 			    icon = IconManager.getIcon(iconName, iconSize);
@@ -198,7 +198,7 @@ public class DataModelObjBaseWrapper
 	    {
 	        if (dataObj instanceof Discipline)
 	        {
-	            DisciplineType dispType = DisciplineType.getDiscipline(((Discipline)dataObj).getName());
+	            DisciplineType dispType = DisciplineType.getDiscipline(((Discipline)dataObj).getType());
 	            title =dispType != null ?  dispType.getTitle() : "N/A";
 	        } else
 	        {

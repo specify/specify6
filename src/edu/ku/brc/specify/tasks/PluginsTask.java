@@ -465,7 +465,7 @@ public class PluginsTask extends BaseTask
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
         toolbarItems = new Vector<ToolBarItemDesc>();
-        String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+        String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
         if (AppPreferences.getRemote().getBoolean("ExportTask.OnTaskbar"+"."+ds, false))
         {
             toolbarItems.add(new ToolBarItemDesc(toolBarBtn));

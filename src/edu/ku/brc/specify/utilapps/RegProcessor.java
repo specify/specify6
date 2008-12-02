@@ -36,6 +36,8 @@ public class RegProcessor
     protected Hashtable<String, RegProcEntry>                    trackHash       = new Hashtable<String, RegProcEntry>();
     protected Hashtable<String, Boolean>                         trackUsageHash  = new Hashtable<String, Boolean>();
     protected Hashtable<String, Hashtable<String, Integer>>      trackCatsHash   = new Hashtable<String, Hashtable<String, Integer>>();
+    
+    protected Hashtable<String, RegProcEntry>                    collHash        = new Hashtable<String, RegProcEntry>();
 
     protected RegProcEntry root = new RegProcEntry("Root");
     
@@ -122,17 +124,6 @@ public class RegProcessor
             {
                 String pName = tokens[0].trim();
                 props.put(pName, tokens[1].trim());
-                /*if (pName.startsWith("Usage."))
-                {
-                    trackUsageHash.put(pName.substring(6), true); 
-                    
-                } else if (pName.startsWith("DE_") || 
-                            pName.startsWith("WB_") || 
-                            pName.startsWith("SS_") || 
-                            pName.startsWith("RS_"))
-                {
-                    trackUsageHash.put(pName, true); 
-                }*/
                 
             } else if (tokens.length > 2)
             {
@@ -154,6 +145,18 @@ public class RegProcessor
                     }
                     entry.getProps().clear();
                     entry.getProps().putAll(props);
+                }
+                
+                String collNumber = props.getProperty("Collection_number");
+                if (StringUtils.isNotEmpty(collNumber))
+                {
+                    RegProcEntry colEntry = collHash.get(collNumber);
+                    if (colEntry == null)
+                    {
+                        colEntry = new RegProcEntry(collNumber);
+                        collHash.put(collNumber, colEntry);
+                    }
+                    colEntry.getProps().putAll(props);
                 }
                 
                 return true;
@@ -179,18 +182,6 @@ public class RegProcessor
             {
                 props.put(tokens[0], tokens[1]);
                 
-                if (tokens[0].equals("SA_Number") && StringUtils.isNotEmpty(tokens[1]))
-                {
-                    int x= 0;
-                    x++;
-                }
-                
-                if (tokens[1].equals("1228100630.39"))
-                {
-                    int x= 0;
-                    x++;
-                }
-                
             } else if (tokens.length > 2)
             {
                 System.err.println("Length: "+tokens.length+"  ["+line+"]");
@@ -199,10 +190,11 @@ public class RegProcessor
             line = br.readLine();
             if (line == null || line.startsWith("----------"))
             {
-                String regType   = props.getProperty("reg_type");
-                String regNumber = props.getProperty("reg_number");
+                String regType    = props.getProperty("reg_type");
+                String regNumber  = props.getProperty("reg_number");
                 
-                if (StringUtils.isNotEmpty(regType) && StringUtils.isNotEmpty(regNumber))
+                if (StringUtils.isNotEmpty(regType) && 
+                    StringUtils.isNotEmpty(regNumber))
                 {
                     RegProcEntry currEntry = regNumHash.get(regNumber);
                     if (currEntry == null)
@@ -221,6 +213,7 @@ public class RegProcessor
                         typeHash.put(regType, entryHash);
                     }
                     entryHash.put(regNumber, currEntry);
+                    
                 } else
                 {
                     System.err.println("Skipping: "+regNumber);
@@ -233,6 +226,22 @@ public class RegProcessor
         return false;
     }
     
+    /**
+     * @return the regNumHash
+     */
+    public Hashtable<String, RegProcEntry> getRegNumHash()
+    {
+        return regNumHash;
+    }
+
+    /**
+     * @return the collHash
+     */
+    public Hashtable<String, RegProcEntry> getCollectionHash()
+    {
+        return collHash;
+    }
+
     /**
      * @return the trackCatsHash
      */
@@ -276,6 +285,37 @@ public class RegProcessor
                             pName.startsWith("RS_"))
                 {
                     addToTracks(pName, value);  
+                }
+            }
+        }
+    }
+    
+    /**
+     * 
+     */
+    public void mergeStats()
+    {
+        for (RegProcEntry entry : regNumHash.values())
+        {
+            String colType = entry.get("reg_type");
+            if (StringUtils.isNotEmpty(colType) && colType.equals("Collection"))
+            {
+                String colNum = entry.get("reg_number");
+                if (StringUtils.isNotEmpty(colNum))
+                {
+                    System.out.println(colNum);
+                    RegProcEntry colEntry = collHash.get(colNum);
+                    if (colEntry != null)
+                    {
+                        for (Object keyObj : colEntry.getProps().keySet())
+                        {
+                            String key = keyObj.toString();
+                            if (key.startsWith("num_"))
+                            {
+                                entry.getProps().put(key, colEntry.getProps().get(key));
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -329,27 +369,6 @@ public class RegProcessor
             
             for (RegProcEntry entry : h.values())
             {
-                String date = entry.getProps().getProperty("date");
-                if (date != null && date.startsWith("08/11/30 07:22:32"))
-                {
-                    int x= 0;
-                    x++;
-                }
-                
-                String isa = entry.getProps().getProperty("SA_Number");
-                if (StringUtils.isNotEmpty(isa))
-                {
-                    int x= 0;
-                    x++;
-                }
-                
-                String rn = entry.getProps().getProperty("reg_number");
-                if (StringUtils.isNotEmpty(rn) && rn.equals("1228100630.39"))
-                {
-                    int x= 0;
-                    x++;
-                }
-                
                 //String reg_number = entry.getProps().getProperty("reg_number");
                 String reg_type   = entry.getProps().getProperty("reg_type");
                 //System.out.println("=> "+entry.)

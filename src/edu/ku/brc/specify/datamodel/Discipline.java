@@ -65,8 +65,8 @@ import edu.ku.brc.specify.config.DisciplineType;
 public class Discipline extends UserGroupScope implements java.io.Serializable, Comparable<Discipline>
 {
     // Fields
+    protected String                    type;
     protected String                    name;
-    protected String                    title;
     protected DataType                  dataType;
     protected String                    regNumber;
     protected Set<Collection>           collections;
@@ -110,7 +110,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
         Discipline current = AppContextMgr.getInstance().getClassObject(Discipline.class);
         if (current != null)
         {
-            String disciplineName = current.getName();
+            String disciplineName = current.getType();
             return StringUtils.isNotEmpty(disciplineName) && disciplineName.equals(disciplineArg.toString());
         }
         return false;
@@ -122,8 +122,8 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     {
         super.init();
         
+        type                  = null;
         name                  = null;
-        title                 = null;
         dataType              = null;
         regNumber             = null;
         
@@ -181,27 +181,27 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
     /**
      *
      */
-    @Column(name="Title", length=64)
-    public String getTitle() {
-        return this.title;
+    @Column(name="Name", length=64)
+    public String getName() {
+        return this.name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String title) {
+        this.name = title;
     }
 
     /**
     *
     */
-    @Column(name="Name", length=64)
-    public String getName()
+    @Column(name="Type", length=64)
+    public String getType()
     {
-        return name;
+        return type;
     }
 
-    public void setName(String name)
+    public void setType(String type)
     {
-        this.name = name;
+        this.type = type;
     }
 
     /**
@@ -494,7 +494,7 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
         buffer.append("]");
 
         return buffer.toString();*/
-        return StringUtils.isNotEmpty(title) ? title :  name;
+        return StringUtils.isNotEmpty(name) ? name :  type;
     }
 
     
@@ -535,14 +535,14 @@ public class Discipline extends UserGroupScope implements java.io.Serializable, 
      */
     public int compareTo(Discipline obj)
     {
-        if (title != null && obj != null && StringUtils.isNotEmpty(obj.title))
-        {
-            return title.compareTo(obj.title);
-        }
-        
         if (name != null && obj != null && StringUtils.isNotEmpty(obj.name))
         {
             return name.compareTo(obj.name);
+        }
+        
+        if (type != null && obj != null && StringUtils.isNotEmpty(obj.type))
+        {
+            return type.compareTo(obj.type);
         }
         // else
         return timestampCreated.compareTo(obj.timestampCreated);

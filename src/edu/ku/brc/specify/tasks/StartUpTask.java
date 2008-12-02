@@ -114,7 +114,7 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
             }
         });
         
-        String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+        String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
         boolean hasWelcome = AppPreferences.getRemote().getBoolean(WELCOME_BTN_PREF+ds, true);
         if (hasWelcome)
         {
@@ -132,7 +132,7 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
         
         if (remotePrefs == AppPreferences.getRemote())
         {
-            String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getName();
+            String ds = AppContextMgr.getInstance().getClassObject(Discipline.class).getType();
             boolean hasWelcome = remotePrefs.getBoolean(WELCOME_BTN_PREF+"."+ds, true);
             
             JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
