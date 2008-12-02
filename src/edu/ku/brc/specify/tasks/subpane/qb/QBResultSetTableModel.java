@@ -167,7 +167,7 @@ public class QBResultSetTableModel extends ResultSetTableModel
                             } else
                             {
                                 ERTICaptionInfo erti = cols.next();
-                                if (erti instanceof ERTICaptionInfoRel 
+                                if (colObj != null && erti instanceof ERTICaptionInfoRel 
                                         && ((ERTICaptionInfoRel)erti).getRelationship().getType() == RelationshipType.OneToMany)
                                 {
                                     ERTICaptionInfoRel ertiRel = (ERTICaptionInfoRel)erti;
