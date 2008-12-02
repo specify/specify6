@@ -14,30 +14,53 @@ import edu.ku.brc.util.Pair;
 /**
  * @author timbo
  *
+ *Stores informtion about records created during a workbench upload.
+ *
  * @code_status Alpha
  *
  */
 public class UploadedRecordInfo extends Pair<Integer, Integer> implements Comparable<UploadedRecordInfo>
 {
     protected final int seq;
+    protected final Object autoAssignedVal; //value of auto-assigned field for the record. (Assuming there will never be more than one)
     
-    public UploadedRecordInfo(final Integer key, final Integer wbRow, final int seq)
+    /**
+     * @param key
+     * @param wbRow
+     * @param seq
+     */
+    public UploadedRecordInfo(final Integer key, final Integer wbRow, final int seq, final Object autoAssignedVal)
     {
         super(key, wbRow);
         this.seq = seq;
+        this.autoAssignedVal = autoAssignedVal;
     }
     
+    /**
+     * @return the record key.
+     */
     public Integer getKey()
     {
         return getFirst();
     }
     
+    /**
+     * @return the workbench row that produced the record.
+     */
     public Integer getWbRow()
     {
         return getSecond();
     }
 
     
+    /**
+     * @return the autoAssignedVal
+     */
+    public Object getAutoAssignedVal()
+    {
+        return autoAssignedVal;
+    }
+
     /**
      * @return the seq
      */
@@ -52,7 +75,13 @@ public class UploadedRecordInfo extends Pair<Integer, Integer> implements Compar
     //@Override
     public int compareTo(UploadedRecordInfo o)
     {
-        return getKey().compareTo(o.getKey());
+        //return getKey().compareTo(o.getKey());
+        int result = getWbRow().compareTo(o.getWbRow());
+        if (result == 0)
+        {
+            result = getKey().compareTo(o.getKey());
+        }
+        return result;
     }
 
     /* (non-Javadoc)

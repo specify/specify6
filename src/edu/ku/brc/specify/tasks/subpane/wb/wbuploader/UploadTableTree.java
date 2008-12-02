@@ -399,7 +399,7 @@ public class UploadTableTree extends UploadTable
         List<UploadedRecordInfo> keys = new LinkedList<UploadedRecordInfo>();
         for (Treeable defParent : defaultParents)
         {
-            keys.add(new UploadedRecordInfo(((DataModelObjBase)defParent).getId(), -1, 0));
+            keys.add(new UploadedRecordInfo(((DataModelObjBase)defParent).getId(), -1, 0, null));
         }
         deleteObjects(keys.iterator(), showProgress);
         if (parent == null && !this.incrementalNodeNumberUpdates)

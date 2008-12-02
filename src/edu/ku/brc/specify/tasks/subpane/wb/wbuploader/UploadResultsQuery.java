@@ -84,8 +84,18 @@ public class UploadResultsQuery implements CustomQueryIFace
                 Vector<edu.ku.brc.util.Pair<Integer, Integer>> index = indexes.get(rec.getSeq());
                 for (int i = 0; i < index.size(); i++)
                 {
-                    rowData[getTblCol(index.get(i)) + 1] = uploadData.getWbRow(rec.getWbRow())
-                            .getData(getWbCol(index.get(i)));
+                    int wbCol = getWbCol(index.get(i));
+                    Object val;
+                    if (rec.getAutoAssignedVal() != null && uploadTable.getAutoAssignedField() != null && wbCol == uploadTable.getAutoAssignedField().getIndex())
+                    {
+                         val = rec.getAutoAssignedVal();
+                    }
+                    else
+                    {
+                        val = uploadData.getWbRow(rec.getWbRow())
+                        .getData(wbCol);
+                    }
+                    rowData[getTblCol(index.get(i)) + 1] = val;
                 }
                 dataObjects.add(rowData);
                 if (++row == MAX_DISPLAYED_ROWS)

@@ -18,6 +18,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.persistence.CascadeType;
@@ -110,7 +112,7 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * ids of records uploaded during the most recent upload.
      */
-    protected Set<UploadedRecordInfo>                               uploadedRecs;
+    protected SortedSet<UploadedRecordInfo>                               uploadedRecs;
     
     /**
      * The workbench index of the row currently being processed.
@@ -191,6 +193,8 @@ public class UploadTable implements Comparable<UploadTable>
             getResourceString("WB_YES_ABBR"), getResourceString("WB_NO_ABBR"), "1", "0" };
 
     protected boolean                                   validatingValues             = false;
+    protected Object                                    autoAssignedVal              = null; //Assuming only one per table.
+    protected UploadField                               autoAssignedField            = null; //Assuming one per table.
     protected Collection                                collection                   = null;
     protected Discipline                                discipline                   = null;
     
@@ -207,7 +211,7 @@ public class UploadTable implements Comparable<UploadTable>
         this.table = table;
         this.relationship = relationship;
         uploadFields = new Vector<Vector<UploadField>>();
-        uploadedRecs = new HashSet<UploadedRecordInfo>();
+        uploadedRecs = new TreeSet<UploadedRecordInfo>();
         currentRecords = new Vector<DataModelObjBase>();
         matchChildren = new Vector<UploadTable>();
         relatedClassDefaults = null;
@@ -890,6 +894,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         try
         {
+            autoAssignedVal = null;
             Object arg[] = new Object[1];
             Class<?> fldClass;
 //            if (tblClass.equals(DeterminationStatus.class) && ufld.getField().getName().equalsIgnoreCase("type"))
@@ -1015,9 +1020,14 @@ public class UploadTable implements Comparable<UploadTable>
                             if (StringUtils.isBlank(fldStr) && formatter.isIncrementer())
                             {
                                 val = formatter.getNextNumber("");
+                                autoAssignedVal = formatter.formatToUI(val);
+                                if (autoAssignedField == null)
+                                {
+                                    autoAssignedField = ufld;
+                                }
 //                                if (!validatingValues)
 //                                {
-//                                    uploader.wbSS.getSpreadSheet().setValueAt(formatter.formatToUI(val), uploader.getRow(), ufld.getIndex());
+//                                    uploader.wbSS.getSpreadSheet().setValueAt(autoAssignedVal, uploader.getRow(), ufld.getIndex());
 //                                }
                             }
                             else
@@ -1915,7 +1925,7 @@ public class UploadTable implements Comparable<UploadTable>
                             {
                                 doWrite(rec);
                                 uploadedRecs.add(new UploadedRecordInfo(rec.getId(), wbCurrentRow,
-                                    recNum));
+                                    recNum, autoAssignedVal));
                             }
                         }
                         setCurrentRecord(rec, recNum);
@@ -2585,8 +2595,21 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
     
+    /**
+     * @return hasChildren
+     */
     public boolean getHasChildren()
     {
         return hasChildren;
     }
+
+    /**
+     * @return the autoAssignedField
+     */
+    public UploadField getAutoAssignedField()
+    {
+        return autoAssignedField;
+    }
+    
+    
 }
