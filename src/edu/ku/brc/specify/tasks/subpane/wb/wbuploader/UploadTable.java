@@ -190,8 +190,9 @@ public class UploadTable implements Comparable<UploadTable>
             getResourceString("WB_YES"), getResourceString("WB_NO"),
             getResourceString("WB_YES_ABBR"), getResourceString("WB_NO_ABBR"), "1", "0" };
 
-    protected Collection collection = null;
-    protected Discipline discipline = null;
+    protected boolean                                   validatingValues             = false;
+    protected Collection                                collection                   = null;
+    protected Discipline                                discipline                   = null;
     
     UploadedRecFinalizerIFace                           finalizer                    = null;
     
@@ -1000,7 +1001,7 @@ public class UploadTable implements Comparable<UploadTable>
             else
             {
                 UIFieldFormatterIFace formatter = ufld.getField().getFieldInfo().getFormatter();
-                if ((fldStr == null || fldStr.equals("")) && (formatter == null || !formatter.isIncrementer()))
+                if (StringUtils.isBlank(fldStr) && (formatter == null || !formatter.isIncrementer()))
                 {
                     arg[0] = null;
                 }
@@ -1011,9 +1012,13 @@ public class UploadTable implements Comparable<UploadTable>
                     {
                         if (formatter != null)
                         {
-                            if (fldStr == null && formatter.isIncrementer())
+                            if (StringUtils.isBlank(fldStr) && formatter.isIncrementer())
                             {
                                 val = formatter.getNextNumber("");
+//                                if (!validatingValues)
+//                                {
+//                                    uploader.wbSS.getSpreadSheet().setValueAt(formatter.formatToUI(val), uploader.getRow(), ufld.getIndex());
+//                                }
                             }
                             else
                             {
@@ -1790,58 +1795,64 @@ public class UploadTable implements Comparable<UploadTable>
             seq++;
         }
     }
+    
     public Vector<UploadTableInvalidValue> validateValues(final UploadData uploadData)
     {
-        Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
-        for (int row = 0; row < uploadData.getRows(); row++)
+        try
         {
-            validateRowValues(row, uploadData, result);
-        }
-        if (tblClass.equals(Determination.class))
-        {
-            // check that isCurrent is ok. 1 and only one true.
-            boolean isCurrentPresent = false;
-            UploadField anIsCurrentFld = null;
+            validatingValues = true;
+
+            Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
             for (int row = 0; row < uploadData.getRows(); row++)
             {
-                int trueCount = 0;
-                for (Vector<UploadField> flds : uploadFields)
+                validateRowValues(row, uploadData, result);
+            }
+            if (tblClass.equals(Determination.class))
+            {
+                // check that isCurrent is ok. 1 and only one true.
+                boolean isCurrentPresent = false;
+                UploadField anIsCurrentFld = null;
+                for (int row = 0; row < uploadData.getRows(); row++)
                 {
-                    for (UploadField fld : flds)
+                    int trueCount = 0;
+                    for (Vector<UploadField> flds : uploadFields)
                     {
-                        if (fld.getField().getName().equalsIgnoreCase("iscurrent"))
+                        for (UploadField fld : flds)
                         {
-                            isCurrentPresent = true;
-                            anIsCurrentFld = fld;
-                            fld.setValue(uploadData.get(row, fld.getIndex()));
-                            try
+                            if (fld.getField().getName().equalsIgnoreCase("iscurrent"))
                             {
-                                Object[] boolVal = getArgForSetter(fld);
-                                if (boolVal[0] != null && (Boolean) boolVal[0])
+                                isCurrentPresent = true;
+                                anIsCurrentFld = fld;
+                                fld.setValue(uploadData.get(row, fld.getIndex()));
+                                try
                                 {
-                                    trueCount++;
+                                    Object[] boolVal = getArgForSetter(fld);
+                                    if (boolVal[0] != null && (Boolean) boolVal[0])
+                                    {
+                                        trueCount++;
+                                    }
                                 }
-                            }
-                            catch (Exception e)
-                            {
-                                // ignore. assuming problem was already caught above.
+                                catch (Exception e)
+                                {
+                                    // ignore. assuming problem was already caught above.
+                                }
                             }
                         }
                     }
-                }
-                if (isCurrentPresent && trueCount != 1)
-                {
-                    result
-                            .add(new UploadTableInvalidValue(null,
-                                    this,
-                                    anIsCurrentFld,
-                                    row,
-                                    new Exception(
-                                            getResourceString("WB_UPLOAD_ONE_CURRENT_DETERMINATION"))));
+                    if (isCurrentPresent && trueCount != 1)
+                    {
+                        result.add(new UploadTableInvalidValue(null, this, anIsCurrentFld, row,
+                                new Exception(
+                                        getResourceString("WB_UPLOAD_ONE_CURRENT_DETERMINATION"))));
+                    }
                 }
             }
+            return result;
         }
-        return result;
+        finally
+        {
+            validatingValues = false;
+        }
     }
 
     /**
