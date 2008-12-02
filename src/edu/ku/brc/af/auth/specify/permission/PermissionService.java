@@ -119,7 +119,7 @@ public class PermissionService
         return permissions;
     }
     
-    static private List<?> getGroupPrincipals(final SpecifyUser user) {
+    static private List<SpPrincipal> getGroupPrincipals(final SpecifyUser user) {
 
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
@@ -128,7 +128,7 @@ public class PermissionService
             		"INNER JOIN pc.specifyUsers as user WHERE " +
             		    "groupSubClass = 'edu.ku.brc.af.auth.specify.principal.GroupPrincipal' " +
             		    "AND user.id = " + user.getId());
-            return principals;
+            return (List<SpPrincipal>) principals;
         }
         catch (Exception e)
         {
@@ -149,12 +149,11 @@ public class PermissionService
      * @param user
      * @return
      */
-    static public Hashtable<String, SpPermission> getOverridingPermissions(final SpecifyUser user) {
-        
-    
+    static public Hashtable<String, SpPermission> getOverridingPermissions(final SpecifyUser user) 
+    {
         Hashtable<String, SpPermission> hash        = new Hashtable<String, SpPermission>();
         DataProviderSessionIFace        session     = DataProviderFactory.getInstance().createSession();
-        List<SpPrincipal>               principals  = (List<SpPrincipal>) getGroupPrincipals(user);
+        List<SpPrincipal>               principals  = getGroupPrincipals(user);
         String                          strSet      = getPrincipalSet(principals); 
         try
         {
