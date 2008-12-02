@@ -273,7 +273,9 @@ public class TableSearcher
      * @param row
      * @param col
      * @param isMatchCaseOn
-     * @return
+     * @return true if cell at row and column contains searchStringArg
+     * 
+     * NOTE: Will return true when searchStringArg = ""
      */  
     public TableSearcherCell checkCellForMatch (final String searchStringArg,
                                                 final int row, 

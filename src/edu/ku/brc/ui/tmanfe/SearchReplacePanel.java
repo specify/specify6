@@ -48,6 +48,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -390,6 +391,19 @@ public class SearchReplacePanel extends JPanel
         //log.debug("clearing status lable");
         statusInfo.setHorizontalTextPosition(SwingConstants.RIGHT);
         statusInfo.setIcon(null);
+        int selRow = table.getSelectedRow();
+        int selCol = table.getSelectedColumn();
+        String findFldVal = getFindFieldValue();
+        if (selRow >= 0 && selCol >= 0 && StringUtils.isNotBlank(findFldVal))
+        {
+            TableSearcherCell cell = tableSearcher.checkCellForMatch(getFindFieldValue(),selRow, selCol, getMatchCaseFlag());
+            this.replaceButton.setEnabled(cell.isFound());
+        }
+        else
+        {
+            replaceButton.setEnabled(false); 
+        }
+        
         if (count > 0)
         {
             if(!isReplace)
@@ -403,11 +417,14 @@ public class SearchReplacePanel extends JPanel
             }
             else
             {
-                String key = count == 1 ? "SearchReplacePanel.REPLACE_CELL" : "SearchReplacePanel.REPLACED_CELLS";
+                String key = count == 1 ? "SearchReplacePanel.REPLACED_CELL" : "SearchReplacePanel.REPLACED_CELLS";
                 statusInfo.setText(String.format(UIRegistry.getResourceString(key), count));
             }
         }
-        else statusInfo.setText("");
+        else 
+        {
+            statusInfo.setText("");
+        }
     }    
     
 //    /**
