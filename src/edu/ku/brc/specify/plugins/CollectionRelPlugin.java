@@ -60,7 +60,7 @@ public class CollectionRelPlugin extends UIPluginBase
         
         // Temp
         DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        colRelType   = (CollectionRelType)tmpSession.load(CollectionRelType.class, 1);
+        colRelType   = tmpSession.load(CollectionRelType.class, 1);
         leftSideCol  = colRelType.getLeftSideCollection();
         rightSideCol = colRelType.getRightSideCollection();
         colRelType.getRelationships().size();

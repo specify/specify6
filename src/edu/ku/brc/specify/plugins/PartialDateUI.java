@@ -11,10 +11,12 @@ package edu.ku.brc.specify.plugins;
 
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 
+import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JComboBox;
@@ -43,6 +45,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.ValFormattedTextField;
+import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -76,21 +79,25 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
     protected UIFieldFormatter.PartialDateEnum origDateType   = UIFieldFormatter.PartialDateEnum.Full;
     protected boolean            dateTypeIsStr  = false;
     
+    protected UIValidatable[]         textFields = new UIValidatable[3];
+    protected UIFieldFormatterIFace[] fmts       = new UIFieldFormatterIFace[3];
+    protected JPanel[]                panels     = new JPanel[3];
+    protected CardLayout              cardLayout = new CardLayout();
+    protected JPanel                  cardPanel;
+    protected UIValidatable           currentUIV = null;
+    
     // UIValidatable && UIPluginable
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
     protected boolean            isRequired     = false;
     protected boolean            isChanged      = false;
     protected boolean            isNew          = false;
-    protected boolean            isViewOnly     = false;
-    
-    protected ValFormattedTextField textField;
     
     /**
      * Constructor.
      */
-    public PartialDateUI(final boolean isViewOnly)
+    public PartialDateUI()
     {
-        this.isViewOnly = isViewOnly;
+
     }
     
     /**
@@ -98,13 +105,40 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
      */
     protected void createUI()
     {
-        textField = new ValFormattedTextField("Date", isViewOnly);
+        List<UIFieldFormatterIFace> partialDateList = UIFieldFormatterMgr.getInstance().getDateFormatterList(true);
+        for (UIFieldFormatterIFace uiff : partialDateList)
+        {
+            if (uiff.getName().equals("PartialDateMonth"))
+            {
+                fmts[1] = uiff;
+                textFields[1] = new ValFormattedTextField(uiff, isDisplayOnly, !isDisplayOnly);
+                
+            } else if (uiff.getName().equals("PartialDateYear"))
+            {
+                fmts[2] = uiff;
+                textFields[2] = new ValFormattedTextField(uiff, isDisplayOnly, !isDisplayOnly);
+            }
+        }
+        
+        List<UIFieldFormatterIFace> dateList = UIFieldFormatterMgr.getInstance().getDateFormatterList(false);
+        for (UIFieldFormatterIFace uiff : dateList)
+        {
+            if (uiff.getName().equals("Date"))
+            {
+                fmts[0] = uiff;
+                textFields[0] = new ValFormattedTextFieldSingle(uiff, isDisplayOnly, false);
+                currentUIV = textFields[0];
+            }
+        }
+        
+        cardPanel = new JPanel(cardLayout);
         
         String[] formatKeys = {"PARTIAL_DATE_FULL", "PARTIAL_DATE_MONTH", "PARTIAL_DATE_YEAR"};
         String[] labels     = new String[formatKeys.length];
         for (int i=0;i<formatKeys.length;i++)
         {
-            labels[i] = UIRegistry.getResourceString(formatKeys[i]);
+            labels[i]  = UIRegistry.getResourceString(formatKeys[i]);
+            cardPanel.add(labels[i], (JComponent)textFields[i]);
         }
         formatSelector = createComboBox(labels);
         formatSelector.setSelectedIndex(0);
@@ -114,16 +148,24 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
         formatSelector.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
-                JComboBox                        cbx      = (JComboBox)ae.getSource();
-                UIFieldFormatter.PartialDateEnum type     = UIFieldFormatter.PartialDateEnum.values()[cbx.getSelectedIndex()+1];
+                JComboBox                        cbx  = (JComboBox)ae.getSource();
+                UIFieldFormatter.PartialDateEnum type = UIFieldFormatter.PartialDateEnum.values()[cbx.getSelectedIndex()+1];
+                Object dataValue = ((GetSetValueIFace)currentUIV).getValue();
+                
+                currentUIV = textFields[cbx.getSelectedIndex()];
+                ((GetSetValueIFace)currentUIV).setValue(currentUIV, null);
+                
                 setFormatter(type);
+                
+                cardLayout.show(cardPanel, formatSelector.getSelectedItem().toString());
+               
             }
         });
         
         PanelBuilder    builder = new PanelBuilder(new FormLayout("p, 2px, p, p:g", "p"), this);
         CellConstraints cc      = new CellConstraints();
         builder.add(formatSelector, cc.xy(1,1));
-        builder.add(textField, cc.xy(3,1));
+        builder.add(cardPanel,      cc.xy(3,1));
     }
     
     /**
@@ -141,8 +183,8 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
                 if (formatter != null)
                 {
                     //System.out.println(formatter.getName()+"  "+formatter.getPartialDateType());
-                    textField.setFormatter(formatter);
-                    textField.repaint();
+                    //textField.setFormatter(formatter);
+                    //textField.repaint();
                     
                     /*
                     DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
@@ -179,20 +221,24 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
     public void setValue(final Object value, final String defaultValue)
     {
         dataObj = value;
-        
-        if (getter == null)
+        if (dataObj != null)
         {
-            getter = DataObjectGettableFactory.get(dataObj.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
-        }
+            if (getter == null)
+            {
+                getter = DataObjectGettableFactory.get(dataObj.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
+            }
+    
+            if (setter == null)
+            {
+                setter = DataObjectSettableFactory.get(dataObj.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
+            }
 
-        if (setter == null)
+        } else if (currentUIV != null)
         {
-            setter = DataObjectSettableFactory.get(dataObj.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
-        }
-
-        if (value == null)
-        {
-            reset();
+            for (UIValidatable uiv : textFields)
+            {
+                ((GetSetValueIFace)uiv).setValue(null, "");
+            }
             return;
         }
         
@@ -204,6 +250,11 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
         if (dateObj instanceof Date)
         {
             date = (Date)dateObj;
+        }
+        
+        if (currentUIV != null)
+        {
+            ((GetSetValueIFace)currentUIV).setValue(date, "");
         }
         
         int inx = 0;
@@ -220,8 +271,8 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
         }
         dateType = UIFieldFormatter.PartialDateEnum.values()[inx+1];
         
-        textField.setFormatter(UIFieldFormatterMgr.getInstance().getDateFormmater(dateType));
-        textField.setValue(date, "");
+        //textField.setFormatter(UIFieldFormatterMgr.getInstance().getDateFormmater(dateType));
+        //textField.setValue(date, "");
         
     }
 
@@ -299,7 +350,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
      */
     public ErrorType getState()
     {
-        return textField.getState();
+        return currentUIV.getState();
     }
 
     /* (non-Javadoc)
@@ -315,7 +366,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
      */
     public boolean isChanged()
     {
-        return isChanged || textField.isChanged();
+        return isChanged || (currentUIV != null && currentUIV.isChanged());
     }
 
     /* (non-Javadoc)
@@ -323,7 +374,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
      */
     public boolean isInError()
     {
-        return textField.isInError();
+        return currentUIV.isInError();
     }
 
     /* (non-Javadoc)
@@ -339,7 +390,10 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
      */
     public void reset()
     {
-        textField.reset();
+        for (UIValidatable uiv : textFields)
+        {
+            uiv.reset();
+        }
         isChanged = false;
     }
 
@@ -372,7 +426,10 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
      */
     public void setState(final ErrorType state)
     {
-        textField.setState(state);
+        for (UIValidatable uiv : textFields)
+        {
+            uiv.setState(state);
+        }
     }
 
     /* (non-Javadoc)
@@ -380,8 +437,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
      */
     public ErrorType validateState()
     {
-        
-        return textField.validateState();
+        return currentUIV.validateState();
     }
 
     /* (non-Javadoc)
@@ -398,6 +454,5 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
     {
         return null;
     }
-
 
 }

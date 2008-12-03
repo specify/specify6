@@ -103,7 +103,7 @@ public class RegisterApp extends JPanel
         try
         {
             boolean doLocal = false;
-            rp.process(doLocal ? new File("reg.dat") : rp.getDataFromWeb("SpReg.REGISTER"));
+            rp.process(doLocal ? new File("reg.dat") : rp.getDataFromWeb("SpReg.REGISTER_URL"));
             rp.processTracks(doLocal ? new File("track.dat") : rp.getDataFromWeb("StatsTrackerTask.URL"));
             
             rp.mergeStats();
