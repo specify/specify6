@@ -181,7 +181,7 @@
                 <!--
                     <row>
                     <cell type="label" labelfor="geography" label="Geography"/>
-                    <cell type="field" id="geography" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography" isrequired="true"/>
+                    <cell type="field" id="geography" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography"/>
                     </row>
                 -->
             </rows>

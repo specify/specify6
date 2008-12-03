@@ -206,7 +206,7 @@
                 <!--
                     <row>
                     <cell type="label" labelfor="geography" label="Geography"/>
-                    <cell type="field" id="geography" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography" isrequired="true"/>
+                    <cell type="field" id="geography" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography"/>
                     </row>
                 -->
             </rows>
@@ -327,7 +327,7 @@
                     <cell type="field" id="6" name="typeStatusName" uitype="combobox" picklist="TypeStatus"/>
                     
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="determiner" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
+                    <cell type="field" id="5" name="determiner" uitype="querycbx" initialize="name=Agent"/>
 
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>
