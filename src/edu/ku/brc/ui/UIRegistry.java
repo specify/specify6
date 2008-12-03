@@ -172,6 +172,9 @@ public class UIRegistry
     
     static 
     {
+        instance.baseFont = new JLabel("").getFont();
+        instance.baseFont = instance.baseFont.deriveFont(Font.PLAIN);
+        
         final KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager(); 
         focusManager.addPropertyChangeListener( 
             new PropertyChangeListener() { 
@@ -1204,7 +1207,7 @@ public class UIRegistry
      */
     public static void setBaseFont(final Font newBaseFont)
     {
-        if (instance.baseFont != null && instance.baseFont != newBaseFont)
+        if (instance.baseFont != newBaseFont)
         {
             adjustAllFonts(instance.baseFont, newBaseFont);
         }

@@ -1940,51 +1940,27 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
     }
     
     /**
-     * @param appPRefs
-     */
-    protected void setupUIControlSize(final AppPreferences appPRefs)
-    {
-        String controlSize = AppPreferences.getRemote().get("ui.formatting.controlSizes", null); //$NON-NLS-1$
-        if (StringUtils.isNotEmpty(controlSize))
-        {
-            try
-            {
-                UIHelper.setControlSize(UIHelper.CONTROLSIZE.valueOf(controlSize));
-                UIHelper.setControlSize(UIRegistry.getStatusBar().getProgressBar());
-                UIRegistry.setBaseFont((createLabel("")).getFont()); //$NON-NLS-1$
-                
-                setupDefaultFonts();
-                
-            } catch (Exception ex) {}
-        }
-    }
-    
-    /**
      * 
      */
-    protected void setupDefaultFonts()
+    protected static void setupDefaultFonts()
     {
-        //if (UIHelper.isMacOS())
+        Font labelFont = (createLabel("")).getFont(); //$NON-NLS-1$
+        Font defaultFont;
+        if (!UIHelper.isMacOS())
         {
-            Font labelFont = (createLabel("")).getFont(); //$NON-NLS-1$
-            log.debug("****** "+labelFont); //$NON-NLS-1$
-            Font defaultFont;
-            if (!UIHelper.isMacOS())
+            defaultFont = labelFont;
+        } else
+        {
+            if (labelFont.getSize() == 13)
             {
-                defaultFont = labelFont;
+                defaultFont = labelFont.deriveFont((float)labelFont.getSize()-2);
             } else
             {
-                if (labelFont.getSize() == 13)
-                {
-                    defaultFont = labelFont.deriveFont((float)labelFont.getSize()-2);
-                } else
-                {
-                    defaultFont = labelFont;
-                }
+                defaultFont = labelFont;
             }
-            BaseTask.setToolbarBtnFont(defaultFont); // For ToolbarButtons
-            RolloverCommand.setDefaultFont(defaultFont);
         }
+        BaseTask.setToolbarBtnFont(defaultFont); // For ToolbarButtons
+        RolloverCommand.setDefaultFont(defaultFont);
     }
     
     /**
@@ -2067,35 +2043,15 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         if (status == AppContextMgr.CONTEXT_STATUS.OK)
         {
-            //if (firstTime && UIHelper.isMacOS_10_5_X())
-            //{
-            //    setupUIControlSize(AppPreferences.getRemote());
-            //}
             
-            String key = "ui.formatting.controlSizes"; //$NON-NLS-1$
-            String  fontName = AppPreferences.getRemote().get(key+".FN", null);
-            Integer fontSize = AppPreferences.getRemote().getInt(key+".SZ", null);
-            if (fontName != null && fontSize != null)
-            {
-                UIRegistry.setBaseFont(new Font(fontName, Font.PLAIN, fontSize));
-            }
-            
-            // XXX Get the current locale from prefs PREF
+             // XXX Get the current locale from prefs PREF
             
             if (AppContextMgr.getInstance().getClassObject(Discipline.class) == null)
             {
                 return;
             }
             
-            //int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
-            //SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
-            //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
-            
-            //AppContextMgr.getInstance().setClassObject(Collection.class, null);
-            //Discipline.setCurrentDiscipline(null);
-            
             // "false" means that it should use any cached values it can find to automatically initialize itself
-
             if (firstTime)
             {
                 GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
@@ -2638,6 +2594,20 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   // Load Local Prefs
                   AppPreferences localPrefs = AppPreferences.getLocalPrefs();
                   localPrefs.setDirPath(UIRegistry.getAppDataDir());
+                  
+                  Font sysBaseFont = UIHelper.getSysBaseFont(); // forces loading of System Base Font before anything happens
+
+                  setupDefaultFonts();
+                  
+                  String  key = "ui.formatting.controlSizes"; //$NON-NLS-1$
+                  String  fontName = AppPreferences.getLocalPrefs().get(key+".FN", null);
+                  Integer fontSize = AppPreferences.getLocalPrefs().getInt(key+".SZ", null);
+                  
+                  Font newBaseFont = fontName != null && fontSize != null ? new Font(fontName, Font.PLAIN, fontSize) : sysBaseFont;
+                  UIRegistry.setBaseFont(newBaseFont);
+                      
+                  BaseTask.setToolbarBtnFont(newBaseFont); // For ToolbarButtons
+                  RolloverCommand.setDefaultFont(newBaseFont);
                   
                   // Check to see if we should check for a new version
                   String VERSION_CHECK = "version_check.auto";

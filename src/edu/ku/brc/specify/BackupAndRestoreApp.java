@@ -486,26 +486,6 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
     }
     
     /**
-     * @param appPRefs
-     */
-    protected void setupUIControlSize(final AppPreferences appPRefs)
-    {
-        String controlSize = AppPreferences.getRemote().get("ui.formatting.controlSizes", null); //$NON-NLS-1$
-        if (StringUtils.isNotEmpty(controlSize))
-        {
-            try
-            {
-                UIHelper.setControlSize(UIHelper.CONTROLSIZE.valueOf(controlSize));
-                UIHelper.setControlSize(UIRegistry.getStatusBar().getProgressBar());
-                UIRegistry.setBaseFont((createLabel("")).getFont()); //$NON-NLS-1$
-                
-                setupDefaultFonts();
-                
-            } catch (Exception ex) {}
-        }
-    }
-    
-    /**
      * 
      */
     protected void setupDefaultFonts()

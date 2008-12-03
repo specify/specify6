@@ -219,6 +219,10 @@
                     <cell type="field" uitype="dsptextfield" id="fontTest" name="fontTest" readonly="true"/>
                 </row>
                 <row>
+                    <cell type="label" label="  "/>
+                    <cell type="command" id="ResetDefFontBtn" name="ResetDefFontBtn" label="RESET_DEF_FONT" ignore="true"/>
+                </row>
+                <row>
                     <cell type="label" labelfor="controlSizes" label="CONTROL_SIZE"/>
                     <cell type="field" uitype="combobox" id="controlSizes" name="ui.formatting.controlSizes" readonly="true" changesonly="true" colspan="3"/>
                 </row>

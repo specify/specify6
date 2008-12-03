@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -168,9 +169,13 @@ public final class UIHelper
     protected static Hashtable<String, Boolean> baseClassHash = new Hashtable<String, Boolean>();
     protected static CONTROLSIZE     controlSize     = CONTROLSIZE.regular;
     protected static boolean         isSecurityOn    = false;
+    protected static Font            sysBaseFont;
     
     static {
 
+        sysBaseFont = new JLabel("").getFont();
+        sysBaseFont = sysBaseFont.deriveFont(Font.PLAIN);
+        
         String osStr = System.getProperty("os.name");
         if (osStr.startsWith("Mac OS X"))
         {
@@ -236,6 +241,14 @@ public final class UIHelper
         return oSType == OSTYPE.Linux;
     }
     
+    /**
+     * @return the sysBaseFont
+     */
+    public static Font getSysBaseFont()
+    {
+        return sysBaseFont;
+    }
+
     /**
      * @return the controlSize
      */

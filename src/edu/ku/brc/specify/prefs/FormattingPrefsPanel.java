@@ -22,6 +22,7 @@ import java.util.Properties;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
@@ -38,12 +39,14 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
+import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.ui.forms.validation.UIValidator;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.helpers.ImageFilter;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -63,7 +66,8 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     protected static final String iconImagePrefName       = "ui.formatting.user_icon_image"; //$NON-NLS-1$
     protected static final String iconImageDiscipPrefName = "ui.formatting.disciplineicon"; //$NON-NLS-1$
     
-    
+    protected final int BASE_FONT_SIZE = 6;
+
     protected JComboBox    fontNames = null;
     protected JComboBox    fontSizes = null;
     protected JComboBox    controlSizes = null;
@@ -72,6 +76,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     protected ValComboBox  appIconCBX;
     protected String       newAppIconName = null;
     protected ValComboBox  dateFieldCBX;
+    protected boolean      clearFontSettings = false;
     
     protected Hashtable<String, UIHelper.CONTROLSIZE> controlSizesHash = new Hashtable<String, UIHelper.CONTROLSIZE>();
     
@@ -185,7 +190,6 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         {
             testField.setText(UIRegistry.getResourceString("FormattingPrefsPanel.THIS_TEST")); //$NON-NLS-1$
         }
-        
         if (UIHelper.isMacOS_10_5_X())
         {
             fontNamesLabel.setVisible(false);
@@ -225,17 +229,17 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
             controlSizesLabel.setVisible(false);
             controlSizesVCB.setVisible(false);
             
-            Hashtable<String, String> namesUsed = new Hashtable<String, String>();
+            Hashtable<String, Boolean> namesUsed = new Hashtable<String, Boolean>();
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             for (Font font : ge.getAllFonts())
             {
                 if (namesUsed.get(font.getFamily()) == null)
                 {
                     fontNames.addItem(font.getFamily());
-                    namesUsed.put(font.getFamily(), "X"); //$NON-NLS-1$
+                    namesUsed.put(font.getFamily(), true); //$NON-NLS-1$
                 }
             }
-            for (int i=6;i<22;i++)
+            for (int i=BASE_FONT_SIZE;i<22;i++)
             {
                 fontSizes.addItem(Integer.toString(i));
             }
@@ -252,8 +256,9 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                     {
                         public void actionPerformed(ActionEvent e)
                         {
-                            testField.setFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6)); 
+                            testField.setFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+BASE_FONT_SIZE)); 
                             form.getUIComponent().validate();
+                            clearFontSettings = false;
                         }
                     };
                     fontNames.addActionListener(al);
@@ -341,9 +346,10 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         // Do App Icon
         //-----------------------------------
         
-        final JButton getIconBtn    = form.getCompById("GetIconImage"); //$NON-NLS-1$
-        final JButton clearIconBtn  = form.getCompById("ClearIconImage"); //$NON-NLS-1$
-        final JLabel  appLabel      = form.getCompById("appIcon"); //$NON-NLS-1$
+        final JButton getIconBtn      = form.getCompById("GetIconImage"); //$NON-NLS-1$
+        final JButton clearIconBtn    = form.getCompById("ClearIconImage"); //$NON-NLS-1$
+        final JLabel  appLabel        = form.getCompById("appIcon"); //$NON-NLS-1$
+        final JButton resetDefFontBtn = form.getCompById("ResetDefFontBtn"); //$NON-NLS-1$
         
         String    imgEncoded = AppPreferences.getRemote().get(iconImagePrefName, ""); //$NON-NLS-1$
         ImageIcon appImgIcon = null;
@@ -383,6 +389,32 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                 appLabel.setIcon(IconManager.getIcon("AppIcon")); //$NON-NLS-1$
                 clearIconBtn.setEnabled(false);
                 AppPreferences.getRemote().remove(iconImagePrefName);
+                form.getValidator().dataChanged(null, null, null);
+            }
+        });
+        
+        resetDefFontBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                Font sysDefFont = UIHelper.getSysBaseFont();
+                ComboBoxModel model = fontNames.getModel();
+                for (int i=0;i<model.getSize();i++)
+                {
+                    System.out.println("["+model.getElementAt(i).toString()+"]["+sysDefFont.getFamily()+"]");
+                    if (model.getElementAt(i).toString().equals(sysDefFont.getFamily()))
+                    {
+                        fontNames.setSelectedIndex(i);
+                        clearFontSettings = true;
+                        break;
+                    }
+                }
+                
+                if (clearFontSettings)
+                {
+                    fontSizes.setSelectedIndex(sysDefFont.getSize() - BASE_FONT_SIZE);
+                    clearFontSettings = true; // needs to be redone 
+                }
+                
                 form.getValidator().dataChanged(null, null, null);
             }
         });
@@ -525,20 +557,33 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
             
             if (!(UIHelper.isMacOS_10_5_X()))
             {
+                
                 String key = "ui.formatting.controlSizes"; //$NON-NLS-1$
-                UIRegistry.setBaseFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6));
-                
-                AppPreferences.getRemote().put(key+".FN", (String)fontNames.getSelectedItem());
-                AppPreferences.getRemote().putInt(key+".SZ", fontSizes.getSelectedIndex()+6);
-                
-                AppPreferences.getLocalPrefs().put(key+".FN", (String)fontNames.getSelectedItem());
-                AppPreferences.getLocalPrefs().putInt(key+".SZ", fontSizes.getSelectedIndex()+6);
+                if (clearFontSettings)
+                {
+                    AppPreferences.getLocalPrefs().remove(key+".FN");
+                    AppPreferences.getLocalPrefs().remove(key+".SZ");
+                    
+                    UIRegistry.setBaseFont(UIHelper.getSysBaseFont());
+                    BaseTask.setToolbarBtnFont(UIHelper.getSysBaseFont()); // For ToolbarButtons
+                    RolloverCommand.setDefaultFont(UIHelper.getSysBaseFont());
+
+                    
+                } else
+                {
+                    Font newDefFont = new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+BASE_FONT_SIZE);
+                    UIRegistry.setBaseFont(newDefFont);
+                    BaseTask.setToolbarBtnFont(newDefFont); // For ToolbarButtons
+                    RolloverCommand.setDefaultFont(newDefFont);
+
+                    AppPreferences.getLocalPrefs().put(key+".FN", (String)fontNames.getSelectedItem());
+                    AppPreferences.getLocalPrefs().putInt(key+".SZ", fontSizes.getSelectedIndex()+BASE_FONT_SIZE);
+                }
                 
             } else
             {
                 String key = "ui.formatting.controlSizes"; //$NON-NLS-1$
                 UIHelper.setControlSize(controlSizesHash.get(controlSizes.getSelectedItem()));
-                AppPreferences.getRemote().put(key, controlSizesHash.get(controlSizes.getSelectedItem()).toString());
                 AppPreferences.getLocalPrefs().put(key, controlSizesHash.get(controlSizes.getSelectedItem()).toString());
             }
         }
