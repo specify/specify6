@@ -1893,14 +1893,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             Statement     updateStatement = newDBConn.createStatement();
             
             // Adding Institution
-            strBuf.append("INSERT INTO division (DivisionID, InstitutionID, TimestampModified, DisciplineType, Name, Title, Abbrev, IsAccessionBound, TimestampCreated, ");
+            strBuf.append("INSERT INTO division (DivisionID, InstitutionID, TimestampModified, DisciplineType, Name, AltName, Abbrev, IsAccessionBound, TimestampCreated, ");
             strBuf.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
             strBuf.append(curDivisionID + ",");
             strBuf.append(institutionId + ",");
             strBuf.append("'" + dateFormatter.format(now) + "',"); // TimestampModified
             strBuf.append("'" + disciplineType.getName() + "',");
-            strBuf.append("'" + disciplineType.getName() + "',");
             strBuf.append("'" + disciplineType.getTitle() + "',");
+            strBuf.append("NULL,");
             strBuf.append("'" + disciplineType.getAbbrev() + "',");
             strBuf.append("1, ");  // IsAccessionBound
             strBuf.append("'" + dateFormatter.format(now) + "',"); // TimestampCreated
@@ -2074,7 +2074,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 curDisciplineID = taxonomyTypeMapper.get(taxonomyTypeID);
                 
                 // adding DivisioniID
-                strBuf2.append("INSERT INTO discipline (DisciplineID, TimestampModified, Name, Title, TimestampCreated, ");
+                strBuf2.append("INSERT INTO discipline (DisciplineID, TimestampModified, Type, Name, TimestampCreated, ");
                 strBuf2.append("DataTypeID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, TaxonTreeDefID, DivisionID, ");
                 strBuf2.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
                 strBuf2.append(curDisciplineID + ",");

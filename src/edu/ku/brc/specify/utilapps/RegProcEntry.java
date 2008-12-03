@@ -163,7 +163,7 @@ public class RegProcEntry implements TreeNode
     {
         if (parent != null)
         {
-            return name + (isRegistered() ? ("  (Registered)") : "");
+            return getName() + (isRegistered() ? ("  (Registered)") : "");
         }
         
         getISANumber();

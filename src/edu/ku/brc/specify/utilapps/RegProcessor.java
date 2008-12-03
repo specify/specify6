@@ -15,11 +15,13 @@ import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.specify.config.init.RegisterSpecify;
@@ -66,7 +68,7 @@ public class RegProcessor
         
         for (RegProcEntry entry : kids)
         {
-            if (entry.getName().equals("Anonymous"))
+            if (!inclAnonymous && entry.getName().equals("Anonymous"))
             {
                 root.getKids().remove(entry);
             }
@@ -137,12 +139,6 @@ public class RegProcessor
             String urlStr = UIRegistry.getResourceString(urlKey);
             
             PostMethod postMethod = new PostMethod(urlStr + "?dmp=1&");
-            
-            // get the POST parameters
-            /*NameValuePair[] postParams = new NameValuePair[2];
-            postParams[0] = new NameValuePair("reg_number", "XXX");
-            postParams[1] = new NameValuePair("test", "ZZZZ");
-            postMethod.setRequestBody(postParams);*/
             
             // connect to the server
             try
@@ -389,11 +385,11 @@ public class RegProcessor
             for (Object keyObj : entry.getProps().keySet())
             {
                 String pName = keyObj.toString();
-                String value = (String)entry.getProps().getProperty(pName);
+                String value = entry.getProps().getProperty(pName);
                 
                 if (pName.startsWith("Usage_"))
                 {
-                    System.err.println("Usage: ["+pName+"] ["+pName.substring(6)+"]");
+                    //System.err.println("Usage: ["+pName+"] ["+pName.substring(6)+"]");
                     addToTracks(pName.substring(6), value); 
                     
                 } else if (pName.startsWith("DE_") || 
@@ -406,7 +402,7 @@ public class RegProcessor
                             pName.startsWith("Tools_"))
                 {
                     addToTracks(pName, value); 
-                    System.err.println("Adding: ["+pName+"] ");
+                    //System.err.println("Adding: ["+pName+"] ");
                 } else
                 {
                     System.err.println("Couldn't find: ["+pName+"]");
@@ -465,6 +461,7 @@ public class RegProcessor
      * @param inFile
      * @throws IOException
      */
+    @SuppressWarnings({ "unchecked", "cast" })
     public void process(final File inFile) throws IOException
     {
         fr = new FileReader(inFile);
@@ -480,16 +477,15 @@ public class RegProcessor
         
         String[] regList = {"Institution", "Division", "Discipline", "Collection"};
         
-        Hashtable<String, RegProcEntry> hh = typeHash.get(regList[0]);
-        
+        /*Hashtable<String, RegProcEntry> hh = typeHash.get(regList[0]);
         for (RegProcEntry entry : hh.values())
         {
             System.out.println(entry.getId()+" "+entry.getProps().getProperty("Institution_number"));
-        }
+        }*/
         
         for (String key : regList)
         {
-            System.out.println("\n"+key);
+            //System.out.println("\n"+key);
             Hashtable<String, RegProcEntry> h = typeHash.get(key);
             
             for (RegProcEntry entry : h.values())
@@ -551,8 +547,34 @@ public class RegProcessor
         br.close();
         fr.close();
         
-        System.out.println("--------");
-        printEntries(root, 0);
+        boolean doDemo = false;
+        if (doDemo)
+        {
+            Hashtable<String, Boolean> siteNamesHash = new Hashtable<String, Boolean>();
+            List<String> lines = (List<String>)FileUtils.readLines(new File("sites.csv"));
+            for (int i=1;i<lines.size();i++)
+            {
+                String[] toks = lines.get(i).split("\t");
+                if (toks.length > 4)
+                {
+                    String   nm   = toks[4];
+                    if (StringUtils.isNotEmpty(nm) && !nm.startsWith("TOTAL"))
+                    {
+                        siteNamesHash.put(toks[4], true);
+                    }
+                }
+            }
+            Vector<String> names = new Vector<String>(siteNamesHash.keySet());
+            int cnt = 0;
+            for (RegProcEntry entry : typeHash.get("Institution").values())
+            {
+                entry.setName(names.get(cnt % names.size()));
+                cnt++;
+            }
+        }
+        
+        //System.out.println("--------");
+        //printEntries(root, 0);
     }
     
     /**

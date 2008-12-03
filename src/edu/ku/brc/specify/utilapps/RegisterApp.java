@@ -102,7 +102,7 @@ public class RegisterApp extends JPanel
         rp = new RegProcessor();
         try
         {
-            boolean doLocal = true;
+            boolean doLocal = false;
             rp.process(doLocal ? new File("reg.dat") : rp.getDataFromWeb("SpReg.REGISTER"));
             rp.processTracks(doLocal ? new File("track.dat") : rp.getDataFromWeb("StatsTrackerTask.URL"));
             
@@ -191,7 +191,6 @@ public class RegisterApp extends JPanel
     {
         DefaultListModel           model = (DefaultListModel)trackItemsList.getModel();
         Hashtable<String, Integer> hash  = trackUsageHash.get(catName);
-        System.err.println("catName "+catName);
         Vector<String>             tucn  = new Vector<String>(hash.keySet());
         Collections.sort(tucn);
         
@@ -476,7 +475,6 @@ public class RegisterApp extends JPanel
                 }
             }
         }
-        System.err.println(key+": "+total);
         sb.append("<tr><td>");
         sb.append(desc);
         sb.append("</td><td align=\"right\">");
