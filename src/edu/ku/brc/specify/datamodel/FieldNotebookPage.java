@@ -48,7 +48,7 @@ import org.hibernate.annotations.Index;
 public class FieldNotebookPage extends DisciplineMember
 {
     protected Integer  fieldNotebookPageId;
-    protected Short    pageNumber;
+    protected String   pageNumber;
     protected Calendar scanDate;
     protected String   description;
     
@@ -93,7 +93,7 @@ public class FieldNotebookPage extends DisciplineMember
     /**
      * @param pageNumber the pageNumber to set
      */
-    public void setPageNumber(Short pageNumber)
+    public void setPageNumber(String pageNumber)
     {
         this.pageNumber = pageNumber;
     }
@@ -144,8 +144,8 @@ public class FieldNotebookPage extends DisciplineMember
     /**
      * @return the pageNumber
      */
-    @Column(name = "PageNumber", unique = false, nullable = false, insertable = true, updatable = true)
-    public Short getPageNumber()
+    @Column(name = "PageNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 16)
+    public String getPageNumber()
     {
         return pageNumber;
     }
@@ -233,7 +233,7 @@ public class FieldNotebookPage extends DisciplineMember
     @Transient
     public String getIdentityTitle()
     {
-        return pageNumber != null ? Short.toString(pageNumber) : super.getIdentityTitle();
+        return pageNumber != null ? pageNumber : super.getIdentityTitle();
     }
     
     /* (non-Javadoc)
