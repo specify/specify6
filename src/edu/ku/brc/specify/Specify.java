@@ -2641,12 +2641,18 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   
                   // Check to see if we should check for a new version
                   String VERSION_CHECK = "version_check.auto";
-                  if (AppPreferences.getLocalPrefs().getBoolean(VERSION_CHECK, null) == null)
+                  if (localPrefs.getBoolean(VERSION_CHECK, null) == null)
                   {
-                      AppPreferences.getLocalPrefs().putBoolean(VERSION_CHECK, true);
+                      localPrefs.putBoolean(VERSION_CHECK, true);
                   }
 
-                  if (localPrefs.getBoolean(VERSION_CHECK, true))
+                  String EXTRA_CHECK = "extra.check";
+                  if (localPrefs.getBoolean(EXTRA_CHECK, null) == null)
+                  {
+                      localPrefs.putBoolean(EXTRA_CHECK, true);
+                  }
+
+                  if (localPrefs.getBoolean(VERSION_CHECK, true) && localPrefs.getBoolean(EXTRA_CHECK, true))
                   {
                       try
                       {

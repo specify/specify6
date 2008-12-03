@@ -4,21 +4,13 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.TransferHandler;
 import javax.swing.event.DocumentEvent;
-import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
@@ -32,7 +24,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -58,6 +50,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class RegisterSpecify
 {
+    private static final String EXTRA_CHECK = "extra.check";
+
     private enum RegisterType { Institution, Division, Discipline, Collection }
     
     private static boolean isFirstReg = false;
@@ -280,7 +274,7 @@ public class RegisterSpecify
                     // if an exception occurred during update check...
                     if (retVal instanceof String)
                     {
-                        if (!isAnonymous)
+                        if (!isForISANumber)
                         {
                             String regNumber = (String)retVal;
                             switch (regType)
@@ -301,20 +295,19 @@ public class RegisterSpecify
                                     setCollectionHasRegistered(regNumber, isAnonymous);
                                     break;
                             } // switch
+                            
                         } else
                         {
                             Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
                             
-                            String isaTitle   = getResourceString("SpReg.ISA_TITLE");
+                            String isaTitle = getResourceString("SpReg.ISA_TITLE");
 
                             collection = update(Collection.class, collection);
                             UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, isaTitle, "SpReg.ISA_ACCEPTED", collection.getIsaNumber());
                             return;
                         }
                     }
-                }
-                
-                if (isAnonymous)
+                } else if (isForISANumber)
                 {
                     UIRegistry.showLocalizedError("SpReg.ISA_ERROR");
                 }
@@ -352,6 +345,7 @@ public class RegisterSpecify
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             throw new ConnectionException(e);
         }
         
@@ -364,6 +358,10 @@ public class RegisterSpecify
             if (tokens.length == 2 && tokens[0].equals("1"))
             {
                 return tokens[1];
+                
+            } else if (isForISANumber && tokens.length == 1 && tokens[0].equals("1"))
+            {
+                return tokens[0];
             }
         }
         
@@ -377,7 +375,7 @@ public class RegisterSpecify
      */
     public static String getRegisterURL()
     {
-        String baseURL = getResourceString("SpReg.REGISTER"); //$NON-NLS-1$
+        String baseURL = getResourceString("SpReg.REGISTER_URL"); //$NON-NLS-1$
         return baseURL;
     }
     
@@ -495,6 +493,8 @@ public class RegisterSpecify
      */
     public static void register(final boolean forceRegistration)
     {
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        
         SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
         if (forceRegistration && !spUser.getUserType().equals("CollectionManager"))
         {
@@ -515,8 +515,14 @@ public class RegisterSpecify
         {
             if (forceRegistration)
             {
-                inst = setIsAnonymous(false);
+                if (!isAnonymous)
+                {
+                    UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "SpReg.REGISTER", "SpReg.ITMS_REGED");
+                    return;
+                }
+                setIsAnonymous(false);
                 doStartRegister(RegisterType.Institution, false, false); // will register everything 
+                localPrefs.putBoolean(EXTRA_CHECK, true);
                 
             } else if (!hasBeenAsked)
             {
@@ -532,6 +538,7 @@ public class RegisterSpecify
                 {
                     setIsAnonymous(true);
                     doStartRegister(RegisterType.Institution, true, false);
+                    localPrefs.putBoolean(EXTRA_CHECK, false);
                 }
             }
             
@@ -563,121 +570,23 @@ public class RegisterSpecify
      */
     protected static void showRegisteredNumbers(final boolean isAnonymous)
     {
-        String sqlStr = "SELECT inst.Name, inst.Title, inst.RegNumber, dv.Name, dv.Title, dv.RegNumber, ds.Name, ds.Title, ds.RegNumber, cl.CollectionName, cl.RegNumber, cl.SANumber " + 
-                        "FROM division dv INNER JOIN institution inst ON dv.InstitutionID = inst.UserGroupScopeId " +
-                        "INNER JOIN discipline ds ON ds.DivisionID = dv.UserGroupScopeId " +
-                        "INNER JOIN collection cl ON cl.DisciplineID = ds.UserGroupScopeId ORDER BY inst.Name, inst.Title, dv.Name, dv.Title, ds.Name, ds.Title, cl.CollectionName";
-        
-        Vector<Vector<String>> rows = new Vector<Vector<String>>();
-        
-        Connection dbConnection = null;
-        Statement  dbStatement  = null;
-        try
-        {
-            dbConnection = DBConnection.getInstance().getConnection();
-            dbStatement = dbConnection.createStatement();
-    
-            ResultSet rs = dbStatement.executeQuery(sqlStr);
-            while (rs.next())
-            {
-                Vector<String> row = new Vector<String>();
-                
-                String str = rs.getString(2);
-                row.add(StringUtils.isNotEmpty(str) ? str : rs.getString(1));
-                str = rs.getString(3);
-                row.add(StringUtils.isNotEmpty(str) ? str : "");
-                
-                str = rs.getString(5);
-                row.add(StringUtils.isNotEmpty(str) ? str : rs.getString(4));
-                str = rs.getString(6);
-                row.add(StringUtils.isNotEmpty(str) ? str : "");
-                
-                str = rs.getString(8);
-                row.add(StringUtils.isNotEmpty(str) ? str : rs.getString(7));
-                str = rs.getString(9);
-                row.add(StringUtils.isNotEmpty(str) ? str : "");
-                
-                row.add(rs.getString(10));
-                str = rs.getString(11);
-                row.add(StringUtils.isNotEmpty(str) ? str : "");
-                str = rs.getString(12);
-                row.add(StringUtils.isNotEmpty(str) ? str : "");
-
-                rows.add(row);
-            }
-            
-            dbStatement.close();
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        
-        Object[][] objRows = new Object[rows.size()][9];
-        String[]   strs    = new String[9];
-        for (int i=0;i<strs.length;i++) strs[i] = "";
-        
-        int r = 0;
-        for (Vector<String> row : rows)
-        {
-            int c = 0;
-            for (String col : row)
-            {
-                if (!col.equals(strs[c]))
-                {
-                    strs[c] = col;
-                } else
-                {
-                    col = "";
-                }
-                objRows[r][c++] = col;
-            }
-            r++;
-        }
-        
-        String numberTitle = "SpReg.Number";
-        DBTableIdMgr dm = DBTableIdMgr.getInstance();
-        final JTable table = new JTable(new DefaultTableModel(objRows, new String[] {dm.getTitleForId(Institution.getClassTableId()), numberTitle, 
-                                                                                     dm.getTitleForId(Division.getClassTableId()),    numberTitle, 
-                                                                                     dm.getTitleForId(Discipline.getClassTableId()),  numberTitle, 
-                                                                                     dm.getTitleForId(Collection.getClassTableId()),  numberTitle,
-                                                                                     "ISA Number"}) {
-            @Override
-            public boolean isCellEditable(int row, int column)
-            {
-                return false;
-            }
-        
-        });
-        UIHelper.calcColumnWidths(table);
-        UIHelper.makeTableHeadersCentered(table, false);
-        
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,6px,p"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "10px,p,10px"));
         
-        String desc = "<html>" + getResourceString("SpReg.ITMS_REGED") + (isAnonymous ? (" \'<font color=\'red\'>" + getResourceString("SpReg.ANON") + "</font>\'") : "") + ".</html>";
-        pb.add(UIHelper.createLabel(desc), cc.xy(1,1));
-        pb.add(UIHelper.createScrollPane(table), cc.xy(1,3));
+        pb.add(UIHelper.createI18NLabel("SpReg.ITMS_NOT_REGED"), cc.xy(1,2));
         pb.setDefaultDialogBorder();
         
-        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), getResourceString("SpReg.REG_TITLE"), true, CustomDialog.OKCANCELHELP, pb.getPanel()) {
-            @Override
-            protected void cancelButtonPressed()
-            {
-                table.selectAll();
-                TransferHandler th = table.getTransferHandler();
-                if (th != null) 
-                {
-                    Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-                    th.exportToClipboard(table, cb, TransferHandler.COPY);
-                }
-                //table.clearSelection();
-            }
-            
-        };
-        dlg.setOkLabel(getResourceString("CLOSE"));
-        dlg.setCancelLabel(getResourceString("COPY"));
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), getResourceString("SpReg.REG_TITLE"), true, CustomDialog.OKCANCELHELP, pb.getPanel());
+        dlg.setCancelLabel(getResourceString("CLOSE"));
+        dlg.setOkLabel(getResourceString("SpReg.REGISTER"));
+        
         dlg.setVisible(true);
+        
+        if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+        {
+            setIsAnonymous(false);
+            doStartRegister(RegisterType.Institution, false, false); // will register everything 
+        }
     }
 
     /**
@@ -699,7 +608,7 @@ public class RegisterSpecify
         if (StringUtils.isNotEmpty(isaNumber))
         {
             String msg = UIRegistry.getLocalizedMessage("SpReg.ISA_NUM", isaNumber);
-            JOptionPane.showMessageDialog((Frame)UIRegistry.getTopWindow(), msg, isaTitle, JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), msg, isaTitle, JOptionPane.INFORMATION_MESSAGE);
             
         } else
         {
@@ -707,9 +616,10 @@ public class RegisterSpecify
             isaNumber = textField.getText();
             
             CellConstraints cc = new CellConstraints();
-            PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p"));
+            PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,10px,p"));
             pb.add(UIHelper.createI18NFormLabel("SpReg.ISA_ENT"), cc.xy(1, 1));
             pb.add(textField, cc.xy(3, 1));
+            pb.add(UIHelper.createI18NFormLabel("SpReg.ISA_EXPL"), cc.xyw(1, 3, 3));
             pb.setDefaultDialogBorder();
             
             CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), isaTitle, true, pb.getPanel());
@@ -737,6 +647,8 @@ public class RegisterSpecify
                 collection.setIsaNumber(isaNumber);
                 
                 doStartRegister(RegisterType.Collection, false, true);
+                
+                AppPreferences.getLocalPrefs().putBoolean(EXTRA_CHECK, true);
             }
         }
     }
@@ -749,6 +661,7 @@ public class RegisterSpecify
         }
     }
     
+    /*
     public static void main(String[] args)
     {
         try
@@ -781,5 +694,5 @@ public class RegisterSpecify
         {
             ex.printStackTrace();
         }
-    }
+    }*/
 }
