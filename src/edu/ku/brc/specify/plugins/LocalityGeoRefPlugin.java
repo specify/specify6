@@ -107,10 +107,16 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
             Geography geo = locality.getGeography();
             if (geo == null)
             {
-                ValComboBoxFromQuery cbx = parent.getCompById(geoId);
-                if (cbx != null)
+                if (geoId != null)
                 {
-                    geo = (Geography)cbx.getValue();
+                    ValComboBoxFromQuery cbx = parent.getCompById(geoId);
+                    if (cbx != null)
+                    {
+                        geo = (Geography)cbx.getValue();
+                    }
+                } else
+                {
+                    return;
                 }
             }
             

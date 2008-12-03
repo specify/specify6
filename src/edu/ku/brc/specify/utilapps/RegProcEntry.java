@@ -76,7 +76,11 @@ public class RegProcEntry implements TreeNode
             name = props.getProperty(type+"_name");
             if (name == null)
             {
-                name = "Anonymous";
+                name = props.getProperty(type+"_type");
+                if (name == null)
+                {
+                    name = "Anonymous";
+                }
             }
         }
         return name;
@@ -147,7 +151,7 @@ public class RegProcEntry implements TreeNode
     {
         if (type != null && type.equals("Collection") && isaNumber == null)
         {
-            isaNumber = props.getProperty("SA_Number", "");
+            isaNumber = props.getProperty("ISA_Number", "");
         }
         return isaNumber == null ? "" : isaNumber;
     }
@@ -162,11 +166,7 @@ public class RegProcEntry implements TreeNode
             return name + (isRegistered() ? ("  (Registered)") : "");
         }
         
-        if (isaNumber == null)
-        {
-            isaNumber = props.getProperty("SA_Number", "");
-            System.out.println(isaNumber);
-        }
+        getISANumber();
         
         StringBuilder sb = new StringBuilder();
         sb.append((name != null ? ("Name: "+ name) : "") + (type != null ? " Type: "+type : "")+ (id != null ? " id: "+id : ""));

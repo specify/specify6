@@ -10,13 +10,21 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
+
+import edu.ku.brc.specify.config.init.RegisterSpecify;
+import edu.ku.brc.specify.config.init.RegisterSpecify.ConnectionException;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -85,7 +93,18 @@ public class RegProcessor
     {
         trackUsageHash.put(key, true);
         
-        int inx = key.indexOf('_');
+        int inx = -1;
+        if (key.equals("RunCount"))
+        {
+            inx = key.length();
+        } else if (key.startsWith("TREE_OPEN_"))
+        {
+            inx = 9;
+        } else
+        {
+            inx = key.indexOf('_');
+        }
+        
         if (inx > -1)
         {
             String category = key.substring(0, inx);
@@ -106,6 +125,62 @@ public class RegProcessor
             }
             countHash.put(key, count);
         }
+    }
+    
+    public File getDataFromWeb(final String urlKey)
+    {
+        try
+        {
+            HttpClient httpClient = new HttpClient();
+            httpClient.getParams().setParameter("http.useragent", RegisterSpecify.class.getName()); //$NON-NLS-1$
+            
+            String urlStr = UIRegistry.getResourceString(urlKey);
+            
+            PostMethod postMethod = new PostMethod(urlStr + "?dmp=1&");
+            
+            // get the POST parameters
+            /*NameValuePair[] postParams = new NameValuePair[2];
+            postParams[0] = new NameValuePair("reg_number", "XXX");
+            postParams[1] = new NameValuePair("test", "ZZZZ");
+            postMethod.setRequestBody(postParams);*/
+            
+            // connect to the server
+            try
+            {
+                httpClient.executeMethod(postMethod);
+                
+                InputStream iStream = postMethod.getResponseBodyAsStream();
+                
+                File   tempFile = File.createTempFile("web", "data");
+                byte[] bytes    = new byte[8196];
+                
+                PrintWriter pw = new PrintWriter(tempFile);
+                int numBytes = 0;
+                do 
+                {
+                    numBytes = iStream.read(bytes);
+                    if (numBytes > 0)
+                    {
+                        pw.write(new String(bytes, 0, numBytes));
+                    }
+                    
+                } while (numBytes > 0);
+                
+                pw.close();
+                
+                return tempFile;
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                throw new ConnectionException(e);
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -150,13 +225,26 @@ public class RegProcessor
                 String collNumber = props.getProperty("Collection_number");
                 if (StringUtils.isNotEmpty(collNumber))
                 {
-                    RegProcEntry colEntry = collHash.get(collNumber);
+                    /*RegProcEntry colEntry = collHash.get(collNumber);
                     if (colEntry == null)
                     {
                         colEntry = new RegProcEntry(collNumber);
                         collHash.put(collNumber, colEntry);
                     }
-                    colEntry.getProps().putAll(props);
+                    colEntry.getProps().putAll(props);*/
+                    
+                    RegProcEntry colEntry = regNumHash.get(collNumber);
+                    if (colEntry != null)
+                    {
+                        for (Object keyObj : props.keySet())
+                        {
+                            String key = keyObj.toString();
+                            if (key.startsWith("num_"))
+                            {
+                                colEntry.getProps().put(key, props.get(key));
+                            }
+                        }
+                    }
                 }
                 
                 return true;
@@ -180,7 +268,12 @@ public class RegProcessor
             String[] tokens = StringUtils.split(line, "=");
             if (tokens.length == 2)
             {
-                props.put(tokens[0], tokens[1]);
+                String key = tokens[0];
+                if (key.equals("SA_Number"))
+                {
+                    key = "ISA_Number";
+                }
+                props.put(key, tokens[1]);
                 
             } else if (tokens.length > 2)
             {
@@ -226,6 +319,29 @@ public class RegProcessor
         return false;
     }
     
+    public String[] getTrackDescPairs()
+    {
+        return new String[] {
+                "DE", "Data Entry", 
+                "WB", "WorkBench", 
+                "SS", "System Configuration", 
+                "RS", "RecordSets", 
+                "QB", "Query Builder", 
+                "TREE_OPEN", "Tree Open", 
+                "RunCount", "Run Count", 
+                "Tools", "PLugins", 
+                            };
+        
+    }
+    
+    /**
+     * @return
+     */
+    public Hashtable<String, RegProcEntry> getCollectionsHash()
+    {
+        return typeHash.get("Collection");
+    }
+    
     /**
      * @return the regNumHash
      */
@@ -237,10 +353,10 @@ public class RegProcessor
     /**
      * @return the collHash
      */
-    public Hashtable<String, RegProcEntry> getCollectionHash()
+    /*public Hashtable<String, RegProcEntry> getCollectionHash()
     {
         return collHash;
-    }
+    }*/
 
     /**
      * @return the trackCatsHash
@@ -275,16 +391,25 @@ public class RegProcessor
                 String pName = keyObj.toString();
                 String value = (String)entry.getProps().getProperty(pName);
                 
-                if (pName.startsWith("Usage."))
+                if (pName.startsWith("Usage_"))
                 {
+                    System.err.println("Usage: ["+pName+"] ["+pName.substring(6)+"]");
                     addToTracks(pName.substring(6), value); 
                     
                 } else if (pName.startsWith("DE_") || 
                             pName.startsWith("WB_") || 
                             pName.startsWith("SS_") || 
-                            pName.startsWith("RS_"))
+                            pName.startsWith("RS_") || 
+                            pName.startsWith("QB_") || 
+                            pName.startsWith("TREE_OPEN_") || 
+                            pName.startsWith("RunCount") || 
+                            pName.startsWith("Tools_"))
                 {
-                    addToTracks(pName, value);  
+                    addToTracks(pName, value); 
+                    System.err.println("Adding: ["+pName+"] ");
+                } else
+                {
+                    System.err.println("Couldn't find: ["+pName+"]");
                 }
             }
         }
@@ -369,13 +494,11 @@ public class RegProcessor
             
             for (RegProcEntry entry : h.values())
             {
-                //String reg_number = entry.getProps().getProperty("reg_number");
                 String reg_type   = entry.getProps().getProperty("reg_type");
-                //System.out.println("=> "+entry.)
                 
                 if (reg_type.equals("Collection"))
                 {
-                    String dspNum = entry.getProps().getProperty("Discipline_number");
+                    String       dspNum = entry.getProps().getProperty("Discipline_number");
                     RegProcEntry parent = typeHash.get("Discipline").get(dspNum);
                     if (entry != null && parent != null)
                     {
@@ -388,7 +511,7 @@ public class RegProcessor
                     
                 } else if (reg_type.equals("Discipline"))
                 {
-                    String divNum = entry.getProps().getProperty("Division_number");
+                    String       divNum = entry.getProps().getProperty("Division_number");
                     RegProcEntry parent = typeHash.get("Division").get(divNum);
                     if (entry != null && parent != null)
                     {
@@ -414,12 +537,7 @@ public class RegProcessor
                     
                 } else if (reg_type.equals("Institution"))
                 {
-                    String nm = entry.getProps().getProperty("Institution_number");
-                    if (nm != null && nm.equals("1227547423.86"))
-                    {
-                       int x = 0;
-                       x++;
-                    }
+                    //String nm = entry.getProps().getProperty("Institution_number");
                     root.getKids().add(entry);
                     entry.setParent(root);
                     
@@ -457,7 +575,7 @@ public class RegProcessor
     /**
      * @param args
      */
-    public static void main(String[] args)
+    /*public static void main(String[] args)
     {
         RegProcessor p = new RegProcessor();
         try
@@ -469,5 +587,5 @@ public class RegProcessor
         {
             ex.printStackTrace();
         }
-    }
+    }*/
 }

@@ -215,7 +215,7 @@ public class MasterPasswordMgr
     {
         loadAndPushResourceBundle("masterusrpwd");
         
-        FormLayout layout = new FormLayout("p, 2px, p, 4px, p", "p,2dlu,p,2dlu,p,2dlu,p");
+        FormLayout layout = new FormLayout("p, 2px, f:p:g, 4px, p", "p,2px,p,2dlu,p,2dlu,p");
                  
         layout.setRowGroups(new int[][] { { 1, 3, 5 } });
 
@@ -229,8 +229,8 @@ public class MasterPasswordMgr
         group.add(isNetworkRB);
         group.add(isPrefBasedRB);
         
-        final JTextField keyTxt      = createTextField(50);
-        final JTextField urlTxt      = createTextField(50);
+        final JTextField keyTxt      = createTextField();
+        final JTextField urlTxt      = createTextField();
         final JLabel     keyLbl      = createI18NFormLabel("ENCRYPTED_USRPWD");
         final JLabel     urlLbl      = createI18NFormLabel("URL");
         final JButton    createBtn   = createI18NButton("CREATE_KEY");

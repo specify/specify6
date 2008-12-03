@@ -77,6 +77,17 @@ public class UsageTracker
             try
             {
                 usageProps.load(new FileInputStream(usageFile.getAbsoluteFile()));
+                
+                // RELEASE TEMP Code
+                for (Object keyObj : new Vector<Object>(usageProps.keySet()))
+                {
+                    String key = keyObj.toString();
+                    if (!key.startsWith(USAGE_PREFIX))
+                    {
+                        usageProps.put(USAGE_PREFIX + key, usageProps.get(key));
+                        usageProps.remove(key);
+                    }
+                }
 
             } catch (IOException ex)
             {
@@ -172,7 +183,7 @@ public class UsageTracker
                 currentUsageCount = Integer.parseInt(currentUsageCountStr);
             }
             currentUsageCount++;
-            usageProps.put(featureName, Integer.toString(currentUsageCount));
+            usageProps.put(USAGE_PREFIX + featureName, Integer.toString(currentUsageCount));
         }
     }
     
@@ -182,7 +193,7 @@ public class UsageTracker
      * 
      * @return a collection of all usage statistics
      */
-    public synchronized static List<Pair<String,Integer>> getUsageStatsFromLocalPrefs()
+    /*public synchronized static List<Pair<String,Integer>> getUsageStatsFromLocalPrefs()
     {
         List<Pair<String,Integer>> usageStats = new Vector<Pair<String,Integer>>();
         
@@ -200,7 +211,7 @@ public class UsageTracker
         }
         
         return usageStats;
-    }
+    }*/
     
     /**
      * Returns a {@link List} of usage statistics as name/value pairs.  If a statistic has a count of 0,

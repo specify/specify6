@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -101,8 +102,9 @@ public class RegisterApp extends JPanel
         rp = new RegProcessor();
         try
         {
-            rp.process(new File("reg.dat"));
-            rp.processTracks(new File("track.dat"));
+            boolean doLocal = true;
+            rp.process(doLocal ? new File("reg.dat") : rp.getDataFromWeb("SpReg.REGISTER"));
+            rp.processTracks(doLocal ? new File("track.dat") : rp.getDataFromWeb("StatsTrackerTask.URL"));
             
             rp.mergeStats();
             
@@ -137,9 +139,16 @@ public class RegisterApp extends JPanel
 
         tabbedPane.add("Registration", splitPane);
         
-        Vector<String> tucn = new Vector<String>(rp.getTrackCatsHash().keySet());
-        Collections.sort(tucn);
-        final JList list = new JList(tucn);
+        final String[] trackDescPairs = rp.getTrackDescPairs();
+        Vector<String> trkItems = new Vector<String>();
+        for (int i=1;i<trackDescPairs.length;i++)
+        {
+            trkItems.add(trackDescPairs[i]);
+            i++;
+        }
+        
+        //Collections.sort(trkItems);
+        final JList list = new JList(trkItems);
         //pb.add(UIHelper.createScrollPane(list), cc.xy(1, 1));
         list.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -147,8 +156,11 @@ public class RegisterApp extends JPanel
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    String catName = (String)list.getSelectedValue();
-                    fillUsageItemsList(catName);
+                    int inx = list.getSelectedIndex();
+                    if (inx > -1)
+                    {
+                        fillUsageItemsList(trackDescPairs[inx*2]);
+                    }
                 }
             }
         });
@@ -179,6 +191,7 @@ public class RegisterApp extends JPanel
     {
         DefaultListModel           model = (DefaultListModel)trackItemsList.getModel();
         Hashtable<String, Integer> hash  = trackUsageHash.get(catName);
+        System.err.println("catName "+catName);
         Vector<String>             tucn  = new Vector<String>(hash.keySet());
         Collections.sort(tucn);
         
@@ -265,26 +278,31 @@ public class RegisterApp extends JPanel
     protected void fillPropsTable()
     {
         TreePath path = tree.getSelectionPath();
-        
-        RegProcEntry rpe   = (RegProcEntry)path.getLastPathComponent();
-        Properties   props = rpe.getProps();
-     
-        Vector<String> keys = new Vector<String>();
-        for (Object obj : props.keySet())
+        if (path != null)
         {
-            keys.add(obj.toString());
-        }
-        Collections.sort(keys);
-        
-        Object[][] rows = new Object[keys.size()][2];
-        int inx = 0;
-        for (Object key : keys)
+            RegProcEntry rpe   = (RegProcEntry)path.getLastPathComponent();
+            Properties   props = rpe.getProps();
+         
+            Vector<String> keys = new Vector<String>();
+            for (Object obj : props.keySet())
+            {
+                keys.add(obj.toString());
+            }
+            Collections.sort(keys);
+            
+            Object[][] rows = new Object[keys.size()][2];
+            int inx = 0;
+            for (Object key : keys)
+            {
+                rows[inx][0] = key;
+                rows[inx][1] = props.get(key);
+                inx++;
+            }
+            propsTable.setModel(new DefaultTableModel(rows, new String[] {"Property", "Value"}));
+        } else
         {
-            rows[inx][0] = key;
-            rows[inx][1] = props.get(key);
-            inx++;
+            propsTable.setModel(new DefaultTableModel());
         }
-        propsTable.setModel(new DefaultTableModel(rows, new String[] {"Property", "Value"}));
     }
     
     /**
@@ -433,6 +451,129 @@ public class RegisterApp extends JPanel
         }
     }
     
+    protected int calcStat(final StringBuilder sb, 
+                           final Collection<RegProcEntry> entries,
+                           final String key, 
+                           final String desc, 
+                           final String discipline)
+    {
+        int total = 0;
+        for (RegProcEntry entry : entries)
+        {
+            String       disp   = null;
+            RegProcEntry parent = (RegProcEntry)entry.getParent();
+            if (parent != null)
+            {
+                disp = parent.getName();
+            }
+            
+            if (discipline == null || disp != null && discipline.equals(disp))
+            {
+                String val = entry.get(key);
+                if (val != null)
+                {
+                    total += Integer.parseInt(val);
+                }
+            }
+        }
+        System.err.println(key+": "+total);
+        sb.append("<tr><td>");
+        sb.append(desc);
+        sb.append("</td><td align=\"right\">");
+        sb.append(Integer.toString(total));
+        sb.append("</td></tr>\n");
+        return total;
+    }
+    
+    /**
+     * 
+     */
+    public void createStatsReport()
+    {
+        String[] statsArray = {"num_co", "Collection Objects", 
+                               "num_tx", "Taxon", 
+                               "num_txu", "Taxon in Use", 
+                               "num_geo", "Geography", 
+                               "num_geou", "Geography in Use", 
+                               "num_loc", "Localities", 
+                               "num_locgr", "Localities Geo-Referenced", 
+                               "num_preps", "Preparations", 
+                               "num_prpcnt", "Preparations Count", 
+                               "num_litho", "Lithostratigraphy", 
+                               "num_lithou", "Lithostratigraphy in Use", 
+                               "num_gtp", "Chronstragigraphy", 
+                               "num_gtpu", "Chronstragigraphy in Use", };
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html><body><center>");
+        sb.append("<table class=\"brd\" border=\"1\">\n");
+        sb.append("<tr>");
+        sb.append("<th colspan=\"2\">");
+        sb.append("Statistics - All Collections");
+        sb.append("</th>");
+        sb.append("</tr>");
+        sb.append("<tr><th>Name</th><th>Total</th></tr>\n");
+
+        Collection<RegProcEntry> collEntries = rp.getCollectionsHash().values();
+        
+        int[] values = new int[statsArray.length / 2];
+        for (int i=0;i<statsArray.length;i++)
+        {
+            values[i/2] = calcStat(sb, collEntries, statsArray[i], statsArray[i+1], null);
+            i++;
+        }
+        sb.append("</table>");
+        
+        Hashtable<String, Boolean> dispHash = new Hashtable<String, Boolean>();
+        for (RegProcEntry entry : collEntries)
+        {
+            String       disp   = null;
+            RegProcEntry parent = (RegProcEntry)entry.getParent();
+            if (parent != null)
+            {
+                disp = parent.getName();
+                if (disp != null)
+                {
+                    dispHash.put(disp, true);
+                }
+            }
+        }
+        
+        for (String disp : dispHash.keySet())
+        {
+            sb.append("<br><br><table class=\"brd\" border=\"1\">\n");
+            sb.append("<tr>");
+            sb.append("<th colspan=\"2\">");
+            sb.append("Statistics for "+disp);
+            sb.append("</th>");
+            sb.append("</tr>");
+            sb.append("<tr><th>Name</th><th>Total</th></tr>\n");
+
+            values = new int[statsArray.length / 2];
+            for (int i=0;i<statsArray.length;i++)
+            {
+                values[i/2] = calcStat(sb, collEntries, statsArray[i], statsArray[i+1], disp);
+                i++;
+            }
+            sb.append("</table>"); 
+        }
+        //sb.append("<br><br>");
+        //createTable(sb, "No ISA Registrations", rp.getRoot(false).getKids(), false);
+        sb.append("</center></body></html>");
+        
+        try
+        {
+            File file = new File("stats.html");
+            FileUtils.writeStringToFile(file, sb.toString());
+            
+            BrowserLauncher.openURL(file.toURI().toString());
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
     /**
      * @param args
      */
@@ -445,8 +586,12 @@ public class RegisterApp extends JPanel
                 JFrame    frame      = new JFrame();
                 JMenuBar  mb         = new JMenuBar();
                 JMenu     menu       = new JMenu("File");
-                JMenuItem doReportMI = new JMenuItem("Report");
-                menu.add(doReportMI);
+                JMenuItem doISARegReportMI = new JMenuItem("ISA Reg Report");
+                menu.add(doISARegReportMI);
+                
+                JMenuItem doStatsMI = new JMenuItem("Stats");
+                menu.add(doStatsMI);
+                
                 mb.add(menu);
                 
                 final RegisterApp regApp = new RegisterApp();
@@ -456,11 +601,19 @@ public class RegisterApp extends JPanel
                 frame.setBounds(0, 0, 800, 768);
                 frame.setVisible(true);
                 
-                doReportMI.addActionListener(new ActionListener() {
+                doISARegReportMI.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e)
                     {
                         regApp.createRegReport();
+                    }
+                });
+                
+                doStatsMI.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        regApp.createStatsReport();
                     }
                 });
             }

@@ -375,7 +375,7 @@ public class RegisterSpecify
      * 
      * @return the URL string
      */
-    protected static String getRegisterURL()
+    public static String getRegisterURL()
     {
         String baseURL = getResourceString("SpReg.REGISTER"); //$NON-NLS-1$
         return baseURL;
