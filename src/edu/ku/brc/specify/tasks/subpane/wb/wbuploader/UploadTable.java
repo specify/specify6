@@ -2610,6 +2610,4 @@ public class UploadTable implements Comparable<UploadTable>
     {
         return autoAssignedField;
     }
-    
-    
 }

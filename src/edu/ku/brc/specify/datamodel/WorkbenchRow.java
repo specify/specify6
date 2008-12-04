@@ -571,11 +571,26 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
                 workbenchDataItems.add(wbdi);
             }
         }
+        
+        this.uploadStatus = WorkbenchRow.UPLD_NONE;
+
+        if (wbdi != null)
+        {
+            if (wbdi.getValidationStatus() == WorkbenchDataItem.VAL_ERROR)
+            {
+                wbdi.setValidationStatus(WorkbenchDataItem.VAL_ERROR_EDIT);
+            }
+            else if (wbdi.getValidationStatus() == WorkbenchDataItem.VAL_OK)
+            {
+                wbdi.setValidationStatus(WorkbenchDataItem.VAL_NONE);
+            }
+        }
         return wbdi;
     }
     
     /**
      * Removes an item from the Row.
+     * 
      * @param item the item to be removed
      * @return the same items that was removed
      */
