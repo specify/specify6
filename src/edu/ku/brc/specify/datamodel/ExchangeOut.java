@@ -184,7 +184,7 @@ public class ExchangeOut extends CollectionMember implements java.io.Serializabl
     /**
      *      * Number of items sent
      */
-    @Column(name = "QuantityExchanged", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "QuantityExchanged", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getQuantityExchanged() 
     {
         return this.quantityExchanged;
