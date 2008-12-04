@@ -589,7 +589,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             return false; //??
         }
         
-        if (dataObj.getDescendantCount() > 0)
+        if (dataObj.getChildren().size() > 0)
         {
             return false;
         }
