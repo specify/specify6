@@ -217,6 +217,7 @@
 		<copy file="packaging/specify.icns" todir="${installer.dir}" />
 		<copy file="packaging/spwizard.icns" todir="${installer.dir}" />
 		<copy file="packaging/backuprestore.icns" todir="${installer.dir}" />
+		<copy file="packaging/spireports.icns" todir="${installer.dir}" />
 		<copy file="packaging/changelog.html" todir="${installer.dir}" />
 		<copy file="./packaging/SpecifyBigSplashBordered.png" todir="${installer.dir}" />
 		<rename src="${installer.dir}/SpecifyBigSplashBordered.png" dest="${installer.dir}/SpecifyBigSplash.png"/>

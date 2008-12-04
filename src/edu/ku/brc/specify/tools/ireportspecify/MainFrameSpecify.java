@@ -1361,7 +1361,7 @@ public class MainFrameSpecify extends MainFrame
                     }
                 };
                 String nameAndTitle = "Specify iReport"; // I18N
-                UIHelper.doLogin(usrPwdProvider, false, false, new IReportLauncher(), null, nameAndTitle, nameAndTitle); // true means do auto login if it can, second bool means use dialog instead of frame
+                UIHelper.doLogin(usrPwdProvider, false, false, new IReportLauncher(), "SPIReports", nameAndTitle, nameAndTitle); // true means do auto login if it can, second bool means use dialog instead of frame
                 
                 localPrefs.load();
                 
