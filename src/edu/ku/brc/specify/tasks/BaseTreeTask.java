@@ -179,7 +179,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     	            @Override
     	            public Object construct()
     	            {
-    	                UsageTracker.incrUsageCount("TREE.OPEN."+treeDefClass.getSimpleName());
+    	                UsageTracker.incrUsageCount("TR.OPEN."+treeDefClass.getSimpleName());
     
     	                treeViewer = createTreeViewer(titleArg, !isViewMode);
     	                if (isViewMode)
@@ -272,7 +272,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                             @Override
                             public Object construct()
                             {
-                                UsageTracker.incrUsageCount("TREEDEF.OPEN."+treeDefClass.getSimpleName());
+                                UsageTracker.incrUsageCount("TD.OPEN."+treeDefClass.getSimpleName());
                                 defEditor = createDefEditor(titleArg);
                                 return defEditor;
                             }

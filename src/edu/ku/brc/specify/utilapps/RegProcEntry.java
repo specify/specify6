@@ -137,6 +137,19 @@ public class RegProcEntry implements TreeNode
     }
     
     /**
+     * @return
+     */
+    public String getVersion()
+    {
+        String verStr = props.getProperty("app_version");
+        if (verStr == null)
+        {
+            verStr = "Unknown";
+        }
+        return verStr;
+    }
+    
+    /**
      * @return whether this node (as a collection) has been registered.
      */
     public boolean isRegistered()

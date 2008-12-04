@@ -11,6 +11,8 @@
     <icon name="SpecifyLargeIcon" file="specify128.png" sizes="NonStd"/>
     <icon name="SpecifySplash"    file="SpecifyBigSplash.png" sizes="NonStd"/>
     <icon name="SpecifySplashCache" file="SpecifyBigSplash.png" sizes="NonStd"/>
+    <icon name="WizardIcon"       file="spwizard128.png" sizes="NonStd"/>
+    <icon name="DatabaseIcon"     file="spbackup128.png" sizes="NonStd"/>
     
     <icon name="Save"             file="Save32x32.png" sizes="all"/>
     <icon name="Import16"         file="ImportData16x16.png" sizes="16"/>

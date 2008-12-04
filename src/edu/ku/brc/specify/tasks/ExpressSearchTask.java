@@ -55,6 +55,7 @@ import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -875,6 +876,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         
         if (cmdAction.isType(EXPRESSSEARCH))
         {
+            UsageTracker.incrUsageCount("ES."+cmdAction.getType());
+            
             if (cmdAction.isAction("HQL"))
             {
                 doHQLQuery((QueryForIdResultsIFace)cmdAction.getData(), (Boolean)cmdAction.getProperty("reuse_panel"));

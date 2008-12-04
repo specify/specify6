@@ -38,6 +38,9 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class RegProcessor
 {
+    protected String         version     = null;
+    protected String         prevVersion = null;
+    
     protected FileReader     fr = null;
     protected BufferedReader br = null;
     
@@ -88,6 +91,15 @@ public class RegProcessor
     }
     
     /**
+     * @param version
+     */
+    public void setVersion(final String versionStr, final String preVersionStr)
+    {
+        version     = versionStr.equals("Clear") ? null : versionStr;
+        prevVersion = preVersionStr;
+    }
+    
+    /**
      * @param key
      * @param valueStr
      */
@@ -99,9 +111,6 @@ public class RegProcessor
         if (key.equals("RunCount"))
         {
             inx = key.length();
-        } else if (key.startsWith("TREE_OPEN_"))
-        {
-            inx = 9;
         } else
         {
             inx = key.indexOf('_');
@@ -120,7 +129,7 @@ public class RegProcessor
             Integer count = countHash.get(key);
             if (count == null)
             {
-                count = 0;
+                count = 1;
             } else
             {
                 count += Integer.parseInt(valueStr);
@@ -129,7 +138,12 @@ public class RegProcessor
         }
     }
     
-    public File getDataFromWeb(final String urlKey)
+    /**
+     * @param urlKey
+     * @param inclDmp
+     * @return
+     */
+    public File getDataFromWeb(final String urlKey, final boolean inclDmp)
     {
         try
         {
@@ -138,7 +152,7 @@ public class RegProcessor
             
             String urlStr = UIRegistry.getResourceString(urlKey);
             
-            PostMethod postMethod = new PostMethod(urlStr + "?dmp=1&");
+            PostMethod postMethod = new PostMethod(urlStr + (inclDmp ? "?dmp=1&" : ""));
             
             // connect to the server
             try
@@ -323,11 +337,16 @@ public class RegProcessor
                 "SS", "System Configuration", 
                 "RS", "RecordSets", 
                 "QB", "Query Builder", 
-                "TREE_OPEN", "Tree Open", 
+                "TR", "Tree", 
+                "TD", "Tree Def", 
+                "ST", "Statistics", 
+                "IR", "Information Request", 
+                "DB", "Database Save/Update/Remove", 
+                "IN", "Interactions", 
+                "RP", "Reports", 
                 "RunCount", "Run Count", 
                 "Tools", "PLugins", 
                             };
-        
     }
     
     /**

@@ -48,6 +48,7 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -626,11 +627,13 @@ public class ReportsBaseTask extends BaseTask
      */
     protected void processRecordSetCommands(final CommandAction cmdAction)
     {
+        Object data = cmdAction.getData();
+        UsageTracker.incrUsageCount("RP."+cmdAction.getType()+(data != null ? ("."+data.getClass().getSimpleName()) : ""));
+
         if (cmdAction.isAction("Clicked"))
         {
             Object srcObj = cmdAction.getSrcObj();
             Object dstObj = cmdAction.getDstObj();
-            Object data   = cmdAction.getData();
             
             log.debug("********* In Labels doCommand src["+srcObj+"] dst["+dstObj+"] data["+data+"] context["+ContextMgr.getCurrentContext()+"]");
              
@@ -749,6 +752,9 @@ public class ReportsBaseTask extends BaseTask
                 return;
             }
         }*/
+        
+        Object data = cmdAction.getData();
+        UsageTracker.incrUsageCount("RP."+cmdAction.getType()+(data != null ? ("."+data.getClass().getSimpleName()) : ""));
            
         if (cmdAction.isAction(NEWRECORDSET_ACTION))
         {

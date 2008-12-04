@@ -470,6 +470,8 @@ public class InfoRequestTask extends BaseTask
      */
     protected void processInfoRequestCommands(final CommandAction cmdAction)
     {
+        UsageTracker.incrUsageCount("IR."+cmdAction.getType());
+        
         if (cmdAction.isAction(CREATE_MAILMSG))
         {
             createAndSendEMail();

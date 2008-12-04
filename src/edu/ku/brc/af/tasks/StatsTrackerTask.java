@@ -10,12 +10,17 @@ import java.util.Vector;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -38,6 +43,11 @@ public class StatsTrackerTask extends BaseTask
     public StatsTrackerTask()
     {
         super(STATS_TRACKER, getResourceString(STATS_TRACKER));
+        
+        if (UIRegistry.isTesting())
+        {
+            CommandDispatcher.register(DB_CMD_TYPE, this);
+        }
     }
     
     /**
@@ -315,6 +325,13 @@ public class StatsTrackerTask extends BaseTask
             postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$
             postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
             
+            String install4JStr = UIHelper.getInstall4JInstallString();
+            if (StringUtils.isEmpty(install4JStr))
+            {
+                install4JStr = "Unknown"; 
+            }
+            postParams.add(new NameValuePair("app_version", install4JStr)); //$NON-NLS-1$
+            
             if (doSendSecondaryStats)
             {
                 Vector<NameValuePair> extraStats = collectSecondaryStats();
@@ -345,6 +362,24 @@ public class StatsTrackerTask extends BaseTask
             ex.printStackTrace();
         }
         return null;
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.CommandListener#doCommand(edu.ku.brc.af.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(final CommandAction cmdAction)
+    {
+        if (UIRegistry.isTesting() && cmdAction.isType(DB_CMD_TYPE))
+        {
+            Object dataObj = cmdAction.getData();
+            if (dataObj != null)
+            {
+                UsageTracker.incrUsageCount("DB."+cmdAction.getAction()+"."+dataObj.getClass().getSimpleName());
+            }
+        }
+        super.doCommand(cmdAction);
     }
     
     //--------------------------------------------------------------------------

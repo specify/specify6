@@ -31,6 +31,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.tasks.subpane.StatsPane;
 import edu.ku.brc.stats.StatsMgr;
@@ -224,6 +225,7 @@ public class StatsTask extends BaseTask
 
         public void actionPerformed(ActionEvent e)
         {
+            UsageTracker.incrUsageCount("ST."+statName);
             createStatPane(statName);
         }
     }

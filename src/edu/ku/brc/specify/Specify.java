@@ -196,7 +196,6 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 public class Specify extends JPanel implements DatabaseLoginListener, CommandListener, FrameworkAppIFace
 {
 
-    private static final boolean isRelease          = false;
     private static final Logger  log                = Logger.getLogger(Specify.class);
     
     public static final boolean IS_DEVELOPMENT       = true;
@@ -241,7 +240,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public Specify()
     {
+        // XXX RELEASE
+        boolean isRelease = false;
         UIRegistry.setRelease(isRelease);
+        UIRegistry.setTesting(!isRelease);
 
         XMLHelper.setUseChecksum(isRelease); 
     }
@@ -1009,7 +1011,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         //-- Debug Menu
         //--------------------------------------------------------------------
 
-        if (!isRelease)
+        if (!UIRegistry.isRelease())
         {
             menu = UIHelper.createLocalizedMenu(mb, "Specify.DEBUG_MENU", "Specify.DEBUG_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
             String ttle =  "Specify.SHOW_LOC_PREFS";//$NON-NLS-1$ 
@@ -2107,7 +2109,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         
         TaskMgr.requestInitalContext();
         
-        if (!isRelease)
+        if (!UIRegistry.isRelease())
         {
             DebugLoggerDialog dialog = new DebugLoggerDialog(null);
             dialog.configureLoggers();
@@ -2380,7 +2382,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
       
-      if (!isRelease)
+      if (!UIRegistry.isRelease())
       {
           MemoryWarningSystem.setPercentageUsageThreshold(0.75);
 

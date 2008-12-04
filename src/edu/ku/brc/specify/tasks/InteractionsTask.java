@@ -59,6 +59,7 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
@@ -1551,11 +1552,13 @@ public class InteractionsTask extends BaseTask
      */
     protected void processRecordSetCommands(final CommandAction cmdAction)
     {
+        Object data = cmdAction.getData();
+        UsageTracker.incrUsageCount("IN."+cmdAction.getType()+(data != null ? ("."+data.getClass().getSimpleName()) : ""));
+
         if (cmdAction.isAction("Clicked"))
         {
             Object srcObj = cmdAction.getSrcObj();
             Object dstObj = cmdAction.getDstObj();
-            Object data   = cmdAction.getData();
             
             log.debug("********* In Labels doCommand src["+srcObj+"] dst["+dstObj+"] data["+data+"] context["+ContextMgr.getCurrentContext()+"]");
              
@@ -1663,6 +1666,8 @@ public class InteractionsTask extends BaseTask
     {
         boolean isNewLoan = cmdAction.isAction(NEW_LOAN);
         
+        UsageTracker.incrUsageCount("IN."+cmdAction.getType());
+
         if (cmdAction.isAction(CREATE_MAILMSG))
         {
             createAndSendEMail();

@@ -122,7 +122,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
 
-        ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16); //$NON-NLS-1$
+        ImageIcon helpIcon = IconManager.getIcon("WizardIcon",IconSize.Std16); //$NON-NLS-1$
         HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
         
         UIRegistry.loadAndPushResourceBundle("specifydbsetupwiz");
@@ -137,7 +137,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             
         }
         
-        setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
+        setIconImage(IconManager.getIcon("WizardIcon", IconManager.IconSize.Std16).getImage());
         
         setTitle(getResourceString("MAIN_TITLE"));
         cardPanel = new JPanel(cardLayout);
@@ -318,7 +318,7 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         
         JPanel mainPanel = new JPanel(new BorderLayout());
         PanelBuilder    iconBldr    = new PanelBuilder(new FormLayout("8px, f:p:g,130px,f:p:g", "8px,f:p:g,130px,f:p:g, 8px"));
-        iconBldr.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(3, 3));
+        iconBldr.add(new JLabel(IconManager.getIcon("WizardIcon")), cc.xy(3, 3));
         mainPanel.add(iconBldr.getPanel(), BorderLayout.WEST);
         mainPanel.add(builder.getPanel(), BorderLayout.CENTER);
             

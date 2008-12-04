@@ -3180,7 +3180,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     {
         boolean isClickedOn = cmdAction.getData() instanceof CommandAction && cmdAction.getData() == cmdAction;
         
-        UsageTracker.incrUsageCount(cmdAction.getAction());
+        UsageTracker.incrUsageCount("WB."+cmdAction.getAction());
 
         if (cmdAction.isAction(SELECTED_WORKBENCH))
         {

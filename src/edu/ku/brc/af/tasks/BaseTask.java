@@ -1501,28 +1501,4 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         return null;
     }
     
-    //--------------------------------------------------------------
-    // Inner Classes
-    //--------------------------------------------------------------
-
-    /**
-     * XXX This is now generic and should be moved out of here
-     * @author rods
-     *
-     */
-    class RSAction implements ActionListener
-    {
-        protected CommandAction cmdAction;
-
-        public RSAction(final CommandAction cmdAction)
-        {
-            this.cmdAction = cmdAction;
-         }
-
-        public void actionPerformed(ActionEvent e)
-        {
-            CommandDispatcher.dispatch(cmdAction);
-        }
-    }
-
 }

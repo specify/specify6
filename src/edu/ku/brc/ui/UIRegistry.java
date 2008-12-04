@@ -118,11 +118,15 @@ public class UIRegistry
     
     public static final String LONGTERM_CACHE_MAP = "longterm-cache-map.xml";
 
-    private static final Logger       log       = Logger.getLogger(UIRegistry.class);
-    protected static final UIRegistry instance  = new UIRegistry();
-    protected static Rectangle        frameRect = null;
-    protected static GhostGlassPane   oldGlassPane = null;    
+    private static final Logger       log              = Logger.getLogger(UIRegistry.class);
+    protected static final UIRegistry instance         = new UIRegistry();
+    
+    protected static Rectangle        frameRect        = null;
+    protected static GhostGlassPane   oldGlassPane     = null;    
     protected static boolean          showingGlassPane = false;
+    protected static boolean          isRelease        = false;
+    protected static boolean          isTesting        = false;
+    
 
     // Data Members
     protected Hashtable<String, Component> components  = new Hashtable<String, Component>();
@@ -142,8 +146,6 @@ public class UIRegistry
     protected String         userDataDir        = null;
     protected String         appDataDir         = null;
     protected String         appName            = null;
-    
-    protected boolean        isRelease          = false;
     
     // Resource Management
     protected ResourceBundle       resourceBundle = null;
@@ -460,7 +462,7 @@ public class UIRegistry
      */
     public static boolean isRelease()
     {
-        return instance.isRelease;
+        return isRelease;
     }
 
     /**
@@ -469,7 +471,23 @@ public class UIRegistry
      */
     public static void setRelease(boolean isRelease)
     {
-        instance.isRelease = isRelease;
+        UIRegistry.isRelease = isRelease;
+    }
+
+    /**
+     * @return the isTesting
+     */
+    public static boolean isTesting()
+    {
+        return isTesting;
+    }
+
+    /**
+     * @param isTesting the isTesting to set
+     */
+    public static void setTesting(boolean isTesting)
+    {
+        UIRegistry.isTesting = isTesting;
     }
 
     /**

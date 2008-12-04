@@ -170,7 +170,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         // set the preferred size of the demo
         //setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
         setPreferredSize(new Dimension(1024, 768)); // For demo
-
+        
         topFrame = new JFrame(gc);
         topFrame.setIconImage(IconManager.getImage("AppIcon").getImage()); //$NON-NLS-1$
         //topFrame.setAlwaysOnTop(true);
@@ -594,7 +594,7 @@ public class BackupAndRestoreApp extends JPanel implements DatabaseLoginListener
         
         CommandDispatcher.register(BaseTask.APP_CMD_TYPE, this);
         
-        dbLoginPanel = UIHelper.doLogin(null, false, false, this, "SpecifyLargeIcon", getTitle(), null); // true means do auto login if it can, second bool means use dialog instead of frame
+        dbLoginPanel = UIHelper.doLogin(null, false, false, this, "DatabaseIcon", getTitle(), null); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
     /**

@@ -12,12 +12,15 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -48,7 +51,12 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.helpers.BrowserLauncher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
@@ -65,6 +73,8 @@ public class RegisterApp extends JPanel
 {
     private enum CountType {Divs, Disps, Cols}
 
+    protected JFrame               frame;
+    protected String               title = "Registration and Statistics Tool";
     protected JTree                tree;
     protected JTable               propsTable;
     
@@ -103,8 +113,8 @@ public class RegisterApp extends JPanel
         try
         {
             boolean doLocal = false;
-            rp.process(doLocal ? new File("reg.dat") : rp.getDataFromWeb("SpReg.REGISTER_URL"));
-            rp.processTracks(doLocal ? new File("track.dat") : rp.getDataFromWeb("StatsTrackerTask.URL"));
+            rp.process(doLocal ? new File("reg.dat") : rp.getDataFromWeb("SpReg.REGISTER_URL", true));
+            rp.processTracks(doLocal ? new File("track.dat") : rp.getDataFromWeb("StatsTrackerTask.URL", true));
             
             rp.mergeStats();
             
@@ -191,33 +201,40 @@ public class RegisterApp extends JPanel
     {
         DefaultListModel           model = (DefaultListModel)trackItemsList.getModel();
         Hashtable<String, Integer> hash  = trackUsageHash.get(catName);
-        Vector<String>             tucn  = new Vector<String>(hash.keySet());
-        Collections.sort(tucn);
-        
-        Vector<Pair<String, Integer>> values = new Vector<Pair<String,Integer>>();
-        int total = 0;
-        for (String key : hash.keySet())
+        if (hash != null)
         {
-            Integer val = hash.get(key);
-            values.add(new Pair<String, Integer>(key, val));
-            total += val;
-        }
-        
-        Collections.sort(values, new Comparator<Pair<String, Integer>>() {
-            @Override
-            public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2)
+            Vector<String> tucn = new Vector<String>(hash.keySet());
+            Collections.sort(tucn);
+            
+            Vector<Pair<String, Integer>> values = new Vector<Pair<String,Integer>>();
+            int total = 0;
+            for (String key : hash.keySet())
             {
-                return o1.second.compareTo(o2.second);
+                Integer val = hash.get(key);
+                System.err.println(val+"  "+key);
+                values.add(new Pair<String, Integer>(key, val));
+                total += val;
             }
-        });
-        
-        createBarChart(catName, values);
-        
-        // Fill Model
-        model.clear();
-        for (String n : tucn)
+            
+            Collections.sort(values, new Comparator<Pair<String, Integer>>() {
+                @Override
+                public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2)
+                {
+                    return o1.second.compareTo(o2.second);
+                }
+            });
+            
+            createBarChart(catName, values);
+            
+            // Fill Model
+            model.clear();
+            for (String n : tucn)
+            {
+                model.addElement(n);
+            }
+        } else
         {
-            model.addElement(n);
+            model.clear();
         }
     }
     
@@ -363,18 +380,18 @@ public class RegisterApp extends JPanel
     
     /**
      * @param sb
-     * @param title
+     * @param tableTitle
      * @param entries
      */
     private void createTable(final StringBuilder sb, 
-                             final String title, 
+                             final String tableTitle, 
                              final Vector<RegProcEntry> entries,
                              final boolean hasReg)
     {
         sb.append("<table class=\"brd\" border=\"1\">\n");
         sb.append("<tr>");
         sb.append("<th colspan=\"7\">");
-        sb.append(title);
+        sb.append(tableTitle);
         sb.append("</th>");
         sb.append("</tr>");
         sb.append("<tr><th>Inst</th><th>Division</th><th>Discipline</th><th>Collection</th><th>ISA Number</th><th>Phone</th><th>EMail</th></tr>\n");
@@ -572,6 +589,152 @@ public class RegisterApp extends JPanel
         }
     }
     
+    @SuppressWarnings("unchecked")
+    protected void doSetVersion()
+    {
+        CellConstraints cc = new CellConstraints();
+        
+        PanelBuilder pb   = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g"));
+        Vector<String> versionsList = new Vector<String>();
+        try
+        {
+            
+            List<String> lines = FileUtils.readLines(rp.getDataFromWeb("http://specify6-test.nhm.ku.edu/specifydownloads/specify6/alpha/versions.txt", false));
+            for (String line : lines)
+            {
+                String[] toks = line.split(",");
+                if (toks.length> 1)
+                {
+                    versionsList.insertElementAt(toks[1].trim(), 0);
+                }
+            }
+            versionsList.insertElementAt("Clear", 0);
+            
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        final JList        list = new JList(versionsList);
+        final CustomDialog dlg  = new CustomDialog(null, "Set Version", true, pb.getPanel());
+        
+        pb.add(UIHelper.createLabel("Versions"), cc.xy(1,1));
+        pb.add(UIHelper.createScrollPane(list),  cc.xy(1,3));
+        
+        list.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    dlg.getOkBtn().setEnabled(list.getSelectedIndex() > -1);
+                }
+            }
+        });
+        list.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                super.mouseClicked(e);
+                if (e.getClickCount() == 2)
+                {
+                    dlg.getOkBtn().doClick();
+                }
+            }
+            
+        });
+        
+        pb.setDefaultDialogBorder();
+        
+        dlg.createUI();
+        dlg.getOkBtn().setEnabled(false);
+        
+        dlg.setVisible(true);
+        if (!dlg.isCancelled())
+        {
+            int   inx          = list.getSelectedIndex();
+            String version     = (String)list.getSelectedValue();
+            String prevVersion = inx == list.getModel().getSize()-1 ? null : (String)list.getModel().getElementAt(inx+1);
+            rp.setVersion(version, prevVersion);
+            
+            if (version.equals("Clear"))
+            {
+                frame.setTitle(title);
+            } else
+            {
+                frame.setTitle(title+" for "+version);
+            }
+        }
+    }
+    
+    /**
+     * 
+     */
+    protected void doStart()
+    {
+        frame                = new JFrame();
+        JMenuBar  mb         = new JMenuBar();
+        JMenu     menu       = new JMenu("File");
+        JMenuItem doISARegReportMI = new JMenuItem("ISA Reg Report");
+        menu.add(doISARegReportMI);
+        
+        frame.setTitle(title);
+        
+        JMenuItem doStatsMI = new JMenuItem("Stats");
+        menu.add(doStatsMI);
+        
+        menu.addSeparator();
+        JMenuItem doSetVersionMI = new JMenuItem("Set Version");
+        menu.add(doSetVersionMI);
+        
+        if (!UIHelper.isMacOS())
+        {
+            menu.addSeparator();
+            JMenuItem doExitMI = new JMenuItem("Exit");
+            menu.add(doExitMI);
+            doExitMI.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    System.exit(0);
+                }
+            });
+        }
+        
+        mb.add(menu);
+        
+        frame.setJMenuBar(mb);
+        frame.setContentPane(this);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setBounds(0, 0, 800, 768);
+        frame.setVisible(true);
+        
+        doISARegReportMI.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                createRegReport();
+            }
+        });
+        
+        doStatsMI.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                createStatsReport();
+            }
+        });
+        
+        doSetVersionMI.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                doSetVersion();
+            }
+        });
+    }
+    
     /**
      * @param args
      */
@@ -581,41 +744,8 @@ public class RegisterApp extends JPanel
         {
             public void run()
             {
-                JFrame    frame      = new JFrame();
-                JMenuBar  mb         = new JMenuBar();
-                JMenu     menu       = new JMenu("File");
-                JMenuItem doISARegReportMI = new JMenuItem("ISA Reg Report");
-                menu.add(doISARegReportMI);
-                
-                JMenuItem doStatsMI = new JMenuItem("Stats");
-                menu.add(doStatsMI);
-                
-                mb.add(menu);
-                
-                final RegisterApp regApp = new RegisterApp();
-                frame.setJMenuBar(mb);
-                frame.setContentPane(regApp);
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setBounds(0, 0, 800, 768);
-                frame.setVisible(true);
-                
-                doISARegReportMI.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        regApp.createRegReport();
-                    }
-                });
-                
-                doStatsMI.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        regApp.createStatsReport();
-                    }
-                });
+                new RegisterApp().doStart();
             }
         });
     }
-
 }

@@ -218,18 +218,18 @@ class SetUpBuildDlg extends CustomDialog
         CellConstraints cc         = new CellConstraints();
         int y = 1;
         builder.addSeparator("Username and Passwords",                      cc.xyw(1,y,12)); y += 2;
-        builder.add(createLabel("DB Username:", SwingConstants.RIGHT),      cc.xy(1,y));
+        builder.add(createLabel("IT Username:", SwingConstants.RIGHT),      cc.xy(1,y));
         builder.add(dbUsernameTxtFld,                                       cc.xy(3,y)); 
-        builder.add(createLabel("SP SAUsername:", SwingConstants.RIGHT),    cc.xy(5,y));
+        builder.add(createLabel("Master Username:", SwingConstants.RIGHT),    cc.xy(5,y));
         builder.add(saUsernameTxtFld,                                       cc.xy(7,y)); 
-        builder.add(createLabel("Col Mgr Username:", SwingConstants.RIGHT), cc.xy(9,y));
+        builder.add(createLabel("User Username:", SwingConstants.RIGHT), cc.xy(9,y));
         builder.add(usrUsernameTxtFld,                                      cc.xy(11,y));  y += 2;
         
-        builder.add(createLabel("DB Password:", SwingConstants.RIGHT),      cc.xy(1,y));
+        builder.add(createLabel("IT Password:", SwingConstants.RIGHT),      cc.xy(1,y));
         builder.add(dbPasswdTxtFld,                                         cc.xy(3,y)); 
-        builder.add(createLabel("SP SA Password:", SwingConstants.RIGHT),   cc.xy(5,y));
+        builder.add(createLabel("Master Password:", SwingConstants.RIGHT),   cc.xy(5,y));
         builder.add(saPasswdTxtFld,                                         cc.xy(7,y)); 
-        builder.add(createLabel("Col Mgr Password:", SwingConstants.RIGHT), cc.xy(9,y)); 
+        builder.add(createLabel("User Password:", SwingConstants.RIGHT), cc.xy(9,y)); 
         builder.add(usrPasswdTxtFld,                                        cc.xy(11,y)); y += 2;
         
         builder.addSeparator("Database Info",                            cc.xyw(1,y,12)); y += 2;
