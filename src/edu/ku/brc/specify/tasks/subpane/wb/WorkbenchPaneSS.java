@@ -41,7 +41,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.net.ConnectException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,7 +49,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -2658,6 +2656,19 @@ public class WorkbenchPaneSS extends BaseSubPane
                                                    JOptionPane.YES_NO_CANCEL_OPTION);
             if (rv == JOptionPane.YES_OPTION)
             {
+                //GlassPane and Progress bar currently don't show up during shutdown
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {
+                        UIRegistry.writeSimpleGlassPaneMsg(String.format(
+                                getResourceString("WB_SAVING"),
+                                new Object[] { workbench.getName() }),
+                                WorkbenchTask.GLASSPANE_FONT_SIZE);
+                        UIRegistry.getStatusBar().setIndeterminate(wbName, true);
+                    }
+                });
+                
                 SwingWorker saver = new SwingWorker()
                 {
 
@@ -2667,24 +2678,6 @@ public class WorkbenchPaneSS extends BaseSubPane
                     @Override
                     public Object construct()
                     {
-//                        try
-//                        {
-//                            SwingUtilities.invokeAndWait(new Runnable(){
-//                                public void run()
-//                                {
-//                                    UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), WorkbenchTask.GLASSPANE_FONT_SIZE);            
-//                                    UIRegistry.getStatusBar().setIndeterminate(wbName, true);
-//                                }
-//                            });
-//                        }
-//                        catch (InterruptedException ex)
-//                        {
-//                            //who cares?
-//                        }
-//                        catch (InvocationTargetException ex)
-//                        {
-//                            //don't give a damn
-//                        }
                         
                         Boolean result = null;
                         try
