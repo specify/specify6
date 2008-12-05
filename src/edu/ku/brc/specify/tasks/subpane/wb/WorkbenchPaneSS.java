@@ -403,7 +403,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         // NOTE: This needs to be done after the creation of the saveBtn
-        //initColumnSizes(spreadSheet, saveBtn);
+        initColumnSizes(spreadSheet, saveBtn);
         
         Action delAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F3, "DelRow", new AbstractAction()
         {
