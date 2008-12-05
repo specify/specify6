@@ -168,12 +168,12 @@
     <field column="Number 34 (Col. Obj. Attribute)" name="colObjAttributeNumber34" type="java.lang.Integer" length="10"/>
     <field column="Number 35 (Col. Obj. Attribute)" name="colObjAttributeNumber35" type="java.lang.Integer" length="10"/>
     <field column="Number 36 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
-    <field column="Number 37 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
-    <field column="Number 38 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
-    <field column="Number 39 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
-    <field column="Number 40 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
-    <field column="Number 41 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
-    <field column="Number 42 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
+    <field column="Number 37 (Col. Obj. Attribute)" name="colObjAttributeNumber37" type="java.lang.Integer" length="10"/>
+    <field column="Number 38 (Col. Obj. Attribute)" name="colObjAttributeNumber38" type="java.lang.Integer" length="10"/>
+    <field column="Number 39 (Col. Obj. Attribute)" name="colObjAttributeNumber39" type="java.lang.Integer" length="10"/>
+    <field column="Number 40 (Col. Obj. Attribute)" name="colObjAttributeNumber40" type="java.lang.Integer" length="10"/>
+    <field column="Number 41 (Col. Obj. Attribute)" name="colObjAttributeNumber41" type="java.lang.Integer" length="10"/>
+    <field column="Number 42 (Col. Obj. Attribute)" name="colObjAttributeNumber42" type="java.lang.Integer" length="10"/>
     <field column="Text 1 (Col. Obj. Attribute)" name="colObjAttributeText1" type="java.lang.String" length="300"/>
     <field column="Text 2 (Col. Obj. Attribute)" name="colObjAttributeText2" type="java.lang.String" length="300"/>
     <field column="Text 3 (Col. Obj. Attribute)" name="colObjAttributeText3" type="java.lang.String" length="300"/>
@@ -183,11 +183,11 @@
     <field column="Text 7 (Col. Obj. Attribute)" name="colObjAttributeText7" type="java.lang.String" length="100"/>
     <field column="Text 8 (Col. Obj. Attribute)" name="colObjAttributeText8" type="java.lang.String" length="50"/>
     <field column="Text 9 (Col. Obj. Attribute)" name="colObjAttributeText9" type="java.lang.String" length="50"/>
-    <field column="Text 10 (Col. Obj. Attribute)" name="colObjAttributeText9" type="java.lang.String" length="50"/>
-    <field column="Text 11 (Col. Obj. Attribute)" name="colObjAttributeText9" type="java.lang.String" length="50"/>
-    <field column="Text 12 (Col. Obj. Attribute)" name="colObjAttributeText9" type="java.lang.String" length="50"/>
-    <field column="Text 13 (Col. Obj. Attribute)" name="colObjAttributeText9" type="java.lang.String" length="50"/>
-    <field column="Text 14 (Col. Obj. Attribute)" name="colObjAttributeText9" type="java.lang.String" length="50"/>
+    <field column="Text 10 (Col. Obj. Attribute)" name="colObjAttributeText10" type="java.lang.String" length="50"/>
+    <field column="Text 11 (Col. Obj. Attribute)" name="colObjAttributeText11" type="java.lang.String" length="50"/>
+    <field column="Text 12 (Col. Obj. Attribute)" name="colObjAttributeText12" type="java.lang.String" length="50"/>
+    <field column="Text 13 (Col. Obj. Attribute)" name="colObjAttributeText13" type="java.lang.String" length="50"/>
+    <field column="Text 14 (Col. Obj. Attribute)" name="colObjAttributeText14" type="java.lang.String" length="50"/>
     <field column="YesNo 1 (Col. Obj. Attribute)" name="colObjAttributeYesNo1" type="boolean"/>
     <field column="YesNo 2 (Col. Obj. Attribute)" name="colObjAttributeYesNo2" type="boolean"/>
     <field column="YesNo 3 (Col. Obj. Attribute)" name="colObjAttributeYesNo3" type="boolean"/>
