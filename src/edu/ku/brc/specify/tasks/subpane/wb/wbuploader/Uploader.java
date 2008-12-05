@@ -1293,12 +1293,12 @@ public class Uploader implements ActionListener, KeyListener
         if (!task.isDone())
         {
             tooLate = false;
-            boolean undo = UIRegistry.displayConfirm(getResourceString("WB_UPLOAD_FORM_TITLE"),
-                getResourceString(task.getCancelMsg()), getResourceString("YES"),
-                getResourceString("NO"), JOptionPane.QUESTION_MESSAGE);
+//            boolean undo = UIRegistry.displayConfirm(getResourceString("WB_UPLOAD_FORM_TITLE"),
+//                getResourceString(task.getCancelMsg()), getResourceString("YES"),
+//                getResourceString("NO"), JOptionPane.QUESTION_MESSAGE);
             if (!task.isDone())
             {
-                task.setUndo(undo);
+                task.setUndo(false);
                 task.interrupt();
             }
             else
@@ -2417,8 +2417,10 @@ public class Uploader implements ActionListener, KeyListener
             {
                 saveRecordSets();
                 result = true;
+                wbSS.setChanged(true); //this will ensure that UploadStatus for rows will be saved.
+                                        //also for cells - which may not be desirable??
             }
-            if (rv == JOptionPane.NO_OPTION)
+            else if (rv == JOptionPane.NO_OPTION)
             {
                 undoUpload(false, true, true);
                 result = true;

@@ -41,6 +41,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.ConnectException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -49,6 +50,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -187,8 +189,8 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
  */
 public class WorkbenchPaneSS extends BaseSubPane
 {
-    private static boolean          debugging = false;
-    private static final Logger     log = Logger.getLogger(WorkbenchPaneSS.class);
+    private static boolean          debugging = true;
+    protected static final Logger     log = Logger.getLogger(WorkbenchPaneSS.class);
     
     private enum PanelType {Spreadsheet, Form}
     
@@ -252,7 +254,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected int                   mapSize                    = 500;
     
     protected boolean               isReadOnly;
-    
+        
     /**
      * Constructs the pane for the spreadsheet.
      * 
@@ -401,7 +403,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         // NOTE: This needs to be done after the creation of the saveBtn
-        initColumnSizes(spreadSheet, saveBtn);
+        //initColumnSizes(spreadSheet, saveBtn);
         
         Action delAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F3, "DelRow", new AbstractAction()
         {
@@ -2631,6 +2633,11 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }
         
+        if (datasetUploader != null && !datasetUploader.aboutToShutdown(this))
+        {
+            return false;
+        }
+
         boolean retStatus = true;
         if (hasChanged)
         {
@@ -2651,9 +2658,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                                                    JOptionPane.YES_NO_CANCEL_OPTION);
             if (rv == JOptionPane.YES_OPTION)
             {
-                UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), WorkbenchTask.GLASSPANE_FONT_SIZE);            
-                UIRegistry.getStatusBar().setIndeterminate(wbName, true);
-                new SwingWorker()
+                SwingWorker saver = new SwingWorker()
                 {
 
                     /* (non-Javadoc)
@@ -2662,8 +2667,36 @@ public class WorkbenchPaneSS extends BaseSubPane
                     @Override
                     public Object construct()
                     {
-                        saveObject();                        
-                        return null;
+//                        try
+//                        {
+//                            SwingUtilities.invokeAndWait(new Runnable(){
+//                                public void run()
+//                                {
+//                                    UIRegistry.writeSimpleGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), WorkbenchTask.GLASSPANE_FONT_SIZE);            
+//                                    UIRegistry.getStatusBar().setIndeterminate(wbName, true);
+//                                }
+//                            });
+//                        }
+//                        catch (InterruptedException ex)
+//                        {
+//                            //who cares?
+//                        }
+//                        catch (InvocationTargetException ex)
+//                        {
+//                            //don't give a damn
+//                        }
+                        
+                        Boolean result = null;
+                        try
+                        {
+                            saveObject();
+                            result = new Boolean(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            log.error(ex);
+                        }
+                        return result;
                     }
 
                     /* (non-Javadoc)
@@ -2676,8 +2709,9 @@ public class WorkbenchPaneSS extends BaseSubPane
                         UIRegistry.getStatusBar().setProgressDone(wbName);
                     }
                     
-                }.start();
-                
+                };
+                saver.start();
+                retStatus = saver.get() != null;
             }
             else if (rv == JOptionPane.CANCEL_OPTION || rv == JOptionPane.CLOSED_OPTION)
             {
@@ -2689,12 +2723,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             
         }
-        
-        if (datasetUploader != null && !datasetUploader.aboutToShutdown(this))
-        {
-            return false;
-        }
-      
+              
         if (retStatus)
         {
             ((WorkbenchTask)task).closing(this);
@@ -2727,7 +2756,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             return;
         }
-        
+                
         //--------------------------------------------------------------------------------
         // I really don't know how much of all this is necessary
         // but using the JProfiler it seems things got better when I did certain things.
