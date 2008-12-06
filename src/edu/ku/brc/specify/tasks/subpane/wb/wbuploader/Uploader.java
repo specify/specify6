@@ -30,7 +30,6 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
@@ -2253,6 +2252,7 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected void closeMainForm(boolean notifyWB)
     {
+        logDebug("closing main form");
         mainPanel.setVisible(false);
         mainPanel = null;
         closeUploadedDataViewers();
@@ -2559,6 +2559,13 @@ public class Uploader implements ActionListener, KeyListener
             {
                 msg = (UploadMessage) mainPanel.getMsgList().getSelectedValue();
             }
+            
+            if (msg == null)
+            {
+                logDebug("gotToMsgWBCell: null message");
+                return;
+            }
+            
             if (msg.getRow() != -1)
             {
                 if (msg.getCol() == -1)
@@ -2579,9 +2586,6 @@ public class Uploader implements ActionListener, KeyListener
                         
                         //Now add this as a listener to the editorComponent to allow moving to next/prev
                         //invalid cell after ENTER/TAB/UP/DOWN
-                        //Currently doesn't work. No KeyEvents make it to this.keyTyped().
-                        //But alternate approach to enable the spreadsheet and intercept it's KeyEvents
-                        //was too complex.
                         Component editor = wbSS.getSpreadSheet().getEditorComponent();
                         boolean addListener = true;
                         KeyListener[] listeners = editor.getKeyListeners();
@@ -2611,15 +2615,17 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * See note in goToMsgWBCell re addKeyListener().
      */
-    protected void goToNextInvalidCell(final Component c)
+    protected void goToNextInvalidCell()
     {
-        int sel = mainPanel.getMsgList().getSelectedIndex() + 1;
-        if (sel >= mainPanel.getMsgList().getModel().getSize())
-            sel = 0;
+       logDebug("goToNextInvalidCell");
+        int sel = mainPanel.getValidationErrorList().getSelectedIndex() + 1;
+        if (sel >= mainPanel.getValidationErrorList().getModel().getSize())
+            sel = 1; //first msg is explanatory
         if (sel != -1)
         {
-            mainPanel.getMsgList().setSelectedIndex(sel);
-            goToMsgWBCell(c);
+            mainPanel.getValidationErrorList().setSelectedIndex(sel);
+            logDebug("Going to msg " + sel);
+            goToMsgWBCell(mainPanel.getValidationErrorList());
         }
     }
     
@@ -2630,15 +2636,15 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * See note in goToMsgWBCell re addKeyListener().
     */
-    protected void goToPrevInvalidCell(final Component c)
+    protected void goToPrevInvalidCell()
     {
-        int sel = mainPanel.getMsgList().getSelectedIndex() - 1;
-        if (sel <= 0)
-            sel = mainPanel.getMsgList().getModel().getSize()-1;
+        int sel = mainPanel.getValidationErrorList().getSelectedIndex() - 1;
+        if (sel <= 1) //first msg is explanatory
+            sel = mainPanel.getValidationErrorList().getModel().getSize()-1;
         if (sel != -1)
         {
-            mainPanel.getMsgList().setSelectedIndex(sel);
-            goToMsgWBCell(c);
+            mainPanel.getValidationErrorList().setSelectedIndex(sel);
+            goToMsgWBCell(mainPanel.getValidationErrorList());
         }
     }
     
@@ -2649,12 +2655,12 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * See note in goToMsgWBCell re addKeyListener().
      */
-    protected void goToFirstInvalidCell(final Component c)
+    protected void goToFirstInvalidCell()
     {
-        if (mainPanel.getMsgList().getModel().getSize() > 0)
+        if (mainPanel.getValidationErrorList().getModel().getSize() > 0)
         {
-            mainPanel.getMsgList().setSelectedIndex(0);
-            goToMsgWBCell(c);
+            mainPanel.getValidationErrorList().setSelectedIndex(0);
+            goToMsgWBCell(mainPanel.getValidationErrorList());
         }
     }
 
@@ -2665,15 +2671,13 @@ public class Uploader implements ActionListener, KeyListener
      * 
      * See note in goToMsgWBCell re addKeyListener().
      */
-    protected void goToLastInvalidCell(final Component c)
+    protected void goToLastInvalidCell()
     {
-        if (c instanceof JList)
+        if (mainPanel.getValidationErrorList().getModel().getSize() > 0)
         {
-            if (((JList)c).getModel().getSize() > 0)
-            {
-                ((JList)c).setSelectedIndex(((JList)c).getModel().getSize()-1);
-                goToMsgWBCell(c);
-            }
+            mainPanel.getValidationErrorList().setSelectedIndex(
+                    mainPanel.getValidationErrorList().getModel().getSize() - 1);
+            goToMsgWBCell(mainPanel.getValidationErrorList());
         }
     }
 
@@ -3613,27 +3617,7 @@ public class Uploader implements ActionListener, KeyListener
     //@Override
     public void keyPressed(KeyEvent e)
     {
-        //see note in goToMsgWBCell() re addKeyListener()
-        //nuthin
-    }
-    
-    /* (non-Javadoc)
-     * @see java.awt.event.KeyListener#keyReleased(java.awt.event.KeyEvent)
-     */
-    //@Override
-    public void keyReleased(KeyEvent e)
-    {
-        //see note in goToMsgWBCell() re addKeyListener()
-        // nuthin
-    }
-
-    /* (non-Javadoc)
-     * @see java.awt.event.KeyListener#keyTyped(java.awt.event.KeyEvent)
-     */
-    //@Override
-    public void keyTyped(KeyEvent e)
-    {
-        //see note in goToMsgWBCell() re addKeyListener()
+        logDebug("keyPressed");
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_ENTER || 
                 key == KeyEvent.VK_TAB || 
@@ -3646,6 +3630,37 @@ public class Uploader implements ActionListener, KeyListener
             e.consume();
         }
     }
+    
+    /* (non-Javadoc)
+     * @see java.awt.event.KeyListener#keyReleased(java.awt.event.KeyEvent)
+     */
+    //@Override
+    public void keyReleased(KeyEvent e)
+    {
+        // nuthin
+        logDebug("keyReleased");
+   }
+
+    /* (non-Javadoc)
+     * @see java.awt.event.KeyListener#keyTyped(java.awt.event.KeyEvent)
+     */
+    //@Override
+    public void keyTyped(KeyEvent e)
+    {
+        logDebug("KeyTyped");
+        //see note in goToMsgWBCell() re addKeyListener()
+//        int key = e.getKeyCode();
+//        if (key == KeyEvent.VK_ENTER || 
+//                key == KeyEvent.VK_TAB || 
+//                key == KeyEvent.VK_DOWN ||
+//                key == KeyEvent.VK_UP || (key == KeyEvent.VK_TAB && e.isShiftDown()) ||
+//                key == KeyEvent.VK_HOME ||
+//                key == KeyEvent.VK_END)
+//        {
+//            editInvalidCell(e);
+//            e.consume();
+//        }
+    }
 
     /**
      * @param e
@@ -3654,15 +3669,16 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected void editInvalidCell(KeyEvent e)
     {
+        logDebug("editing invalid cell");
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_ENTER || key == KeyEvent.VK_TAB || key == KeyEvent.VK_DOWN)
-            goToNextInvalidCell(e.getComponent());
+            goToNextInvalidCell();
         else if (key == KeyEvent.VK_UP || (key == KeyEvent.VK_TAB && e.isShiftDown()))
-            goToPrevInvalidCell(e.getComponent());
+            goToPrevInvalidCell();
         else if (key == KeyEvent.VK_HOME)
-            goToFirstInvalidCell(e.getComponent());
+            goToFirstInvalidCell();
         else if (key == KeyEvent.VK_END)
-            goToLastInvalidCell(e.getComponent());
+            goToLastInvalidCell();
     }
 
     
