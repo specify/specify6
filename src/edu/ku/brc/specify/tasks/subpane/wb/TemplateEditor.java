@@ -703,7 +703,14 @@ public class TemplateEditor extends CustomDialog
         fmp.setColInfo(colInfo);
         fmp.setFieldInfo(fieldInfo);
         fmp.setWbtmi(wbtmi);
-        fmp.setIcon(tableInfo.getTableInfo().getIcon(IconManager.STD_ICON_SIZE));
+        if (tableInfo.getIcon() == null)
+        {
+            fmp.setIcon(tableInfo.getTableInfo().getIcon(IconManager.STD_ICON_SIZE));
+        }
+        else
+        {
+            fmp.setIcon(tableInfo.getIcon());
+        }
         
         fmp.getArrowLabel().setVisible(true);
         
