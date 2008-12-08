@@ -3015,7 +3015,6 @@ public class Uploader implements ActionListener, KeyListener
                             break;
                         }
                         logDebug("uploading row " + String.valueOf(rowUploading));
-                        setCurrentOpProgress(rowUploading + 1);
                         
                         if (wbSS.getWorkbench().getRow(rowUploading).getUploadStatus() != WorkbenchRow.UPLD_SUCCESS)
                         {
