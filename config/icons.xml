@@ -14,6 +14,7 @@
     <icon name="WizardIcon"       file="spwizard128.png" sizes="NonStd"/>
     <icon name="DatabaseIcon"     file="spbackup128.png" sizes="NonStd"/>
     <icon name="SPIReports"       file="spireport128.png" sizes="NonStd"/>
+    <icon name="SpBuilder"         file="spireport128.png" sizes="NonStd"/>
     
     
     <icon name="Save"             file="Save32x32.png" sizes="all"/>
@@ -130,7 +131,7 @@
     
     <icon name="Close"         file="close.gif" sizes="NonStd"/>
     <icon name="CloseHover"    file="closeHover.gif" sizes="NonStd"/>
-    <icon name="Print"         file="printer.gif" sizes="all"/>
+    <icon name="Print"         file="printer.png" sizes="all"/>
     <icon name="Backup"        file="backup.png" sizes="all"/>
     <icon name="Reload"        file="reload.png" sizes="NonStd"/>
     

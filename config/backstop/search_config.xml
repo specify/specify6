@@ -881,8 +881,8 @@
                 </sql>
                 <captions>
                     <caption tableid="26" col="DisciplineID" visible="false"/>
+                    <caption tableid="26" col="Type"/>
                     <caption tableid="26" col="Name"/>
-                    <caption tableid="26" col="Title"/>
                 </captions>
             </detailView>
         </table>  

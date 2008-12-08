@@ -91,12 +91,15 @@ public class ViewLoader
     protected String  viewSetName         = null;
     
     // Members needed for verification
-    protected static boolean               doFieldVerification = false;
+    protected static boolean               doFieldVerification = true;
     protected static boolean               isTreeClass         = false;
     protected static DBTableInfo           fldVerTableInfo     = null;
     protected static FormViewDef           fldVerFormViewDef   = null;
     
     protected FieldVerifyTableModel        fldVerTableModel    = null;
+    
+    // Debug
+    //protected static ViewDef gViewDef = null;
     
     static
     {
@@ -662,6 +665,12 @@ public class ViewLoader
                     String  cellName    = getAttr(cellElement, NAME, cellId); // let the name default to the id if it doesn't have a name
                     int     colspan     = getAttr(cellElement, "colspan", 1);
                     int     rowspan     = getAttr(cellElement, "rowspan", 1);
+                    
+                    /*boolean isReq    = getAttr(cellElement, "isrequired", false);
+                    if (isReq)
+                    {
+                        System.err.println(String.format("%s\t%s\t%s\t%s", gViewDef.getName(), cellId, cellName, tableinfo != null ? tableinfo.getTitle() : "N/A"));
+                    }*/
 
                     FormCell.CellType cellType = FormCellIFace.CellType.valueOf(cellElement.attributeValue(TYPE));
                     FormCellIFace     cell     = null;
@@ -993,7 +1002,7 @@ public class ViewLoader
             }
         }
     }
-    
+   
     /**
      * @param element the DOM element for building the form
      * @param type the type of form to be built
@@ -1050,6 +1059,8 @@ public class ViewLoader
             List<FormRowIFace> rows = formViewDef.getRows();
             
             instance.doingResourceLabels = useResourceLabels;
+            
+            //gViewDef = formViewDef;
             
             processRows(element, rows, tableinfo);
             
