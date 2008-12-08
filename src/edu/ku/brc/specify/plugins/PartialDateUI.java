@@ -143,6 +143,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             if (uiff.getName().equals("PartialDateMonth"))
             {
                 ValFormattedTextField tf = new ValFormattedTextField(uiff, isDisplayOnly, !isDisplayOnly);
+                tf.setRequired(isRequired);
                 if (docListener != null) tf.addDocumentListener(docListener);
                 uivs[1]       = tf;
                 textFields[1] = tf.getTextField();
@@ -150,6 +151,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             } else if (uiff.getName().equals("PartialDateYear"))
             {
                 ValFormattedTextField tf = new ValFormattedTextField(uiff, isDisplayOnly, !isDisplayOnly);
+                tf.setRequired(isRequired);
                 if (docListener != null) tf.addDocumentListener(docListener);
                 uivs[2]       = tf;
                 textFields[2] = tf.getTextField();
@@ -162,6 +164,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             if (uiff.getName().equals("Date"))
             {
                 ValFormattedTextFieldSingle tf = new ValFormattedTextFieldSingle(uiff, isDisplayOnly, false);
+                tf.setRequired(isRequired);
                 if (docListener != null) tf.addDocumentListener(docListener);
                 uivs[0]       = tf;
                 textFields[0] = tf;
