@@ -877,7 +877,7 @@
         <table id="105" tableid="26" name="DisciplineSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT DisciplineID, Name, Title FROM discipline WHERE (%s)]]>
+                    <![CDATA[SELECT DisciplineID, Type, Name FROM discipline WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="26" col="DisciplineID" visible="false"/>

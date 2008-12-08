@@ -558,6 +558,14 @@ public class LatLonUI extends UIPluginBase implements UIValidatable, ChangeListe
 
             panels[currentInx*2].set(srcFormat, latStr1, lonStr1);
             panels[(currentInx*2)+1].set(srcFormat, latStr2, lonStr2);
+            
+            if (latStr1 == null && lonStr1 == null)
+            {
+                isChanged = false;
+            } else
+            {
+                setChanged(true);
+            }
         }
     }
     
