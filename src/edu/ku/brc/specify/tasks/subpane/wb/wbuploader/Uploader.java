@@ -84,21 +84,21 @@ import edu.ku.brc.util.Pair;
  */
 public class Uploader implements ActionListener, KeyListener
 {
-    protected static boolean                          debugging               = false;
-    
+    private static boolean                       debugging                    = false;
+
     // Phases in the upload process...
-    protected final static String                   INITIAL_STATE            = "WB_UPLOAD_INITIAL_STATE";
-    protected final static String                   CHECKING_REQS            = "WB_UPLOAD_CHECKING_REQS";
-    protected final static String                   VALIDATING_DATA          = "WB_UPLOAD_VALIDATING_DATA";
-    protected final static String                   READY_TO_UPLOAD          = "WB_UPLOAD_READY_TO_UPLOAD";
-    protected final static String                   UPLOADING                = "WB_UPLOAD_UPLOADING";
-    protected final static String                   SUCCESS                  = "WB_UPLOAD_SUCCESS";
-    protected final static String                   SUCCESS_PARTIAL          = "WB_UPLOAD_SUCCESS_PARTIAL";
-    protected final static String                   RETRIEVING_UPLOADED_DATA = "WB_RETRIEVING_UPLOADED_DATA";
-    protected final static String                   FAILURE                  = "WB_UPLOAD_FAILURE";
-    protected final static String                   USER_INPUT               = "WB_UPLOAD_USER_INPUT";
-    protected final static String                   UNDOING_UPLOAD           = "WB_UPLOAD_UNDO";
-    protected final static String                   CLEANING_UP              = "WB_UPLOAD_CLEANUP";
+    protected final static String                INITIAL_STATE                = "WB_UPLOAD_INITIAL_STATE";
+    protected final static String                CHECKING_REQS                = "WB_UPLOAD_CHECKING_REQS";
+    protected final static String                VALIDATING_DATA              = "WB_UPLOAD_VALIDATING_DATA";
+    protected final static String                READY_TO_UPLOAD              = "WB_UPLOAD_READY_TO_UPLOAD";
+    protected final static String                UPLOADING                    = "WB_UPLOAD_UPLOADING";
+    protected final static String                SUCCESS                      = "WB_UPLOAD_SUCCESS";
+    protected final static String                SUCCESS_PARTIAL              = "WB_UPLOAD_SUCCESS_PARTIAL";
+    protected final static String                RETRIEVING_UPLOADED_DATA     = "WB_RETRIEVING_UPLOADED_DATA";
+    protected final static String                FAILURE                      = "WB_UPLOAD_FAILURE";
+    protected final static String                USER_INPUT                   = "WB_UPLOAD_USER_INPUT";
+    protected final static String                UNDOING_UPLOAD               = "WB_UPLOAD_UNDO";
+    protected final static String                CLEANING_UP                  = "WB_UPLOAD_CLEANUP";
     
     /**
      * Resource string Ids
@@ -159,6 +159,12 @@ public class Uploader implements ActionListener, KeyListener
     boolean                                         dataValidated            = false;
 
     protected UploadMainPanel                       mainPanel;
+    
+    /**
+     * While editing invalid cells, this is added as a listener to the WorkbenchPaneSS's spreadsheet cell editor component.
+     * The cell editor component is currently always the same object.
+     */
+    protected Component                             keyListeningTo           = null;
 
     /**
      * Problems with contents of cells in dataset.
@@ -398,10 +404,7 @@ public class Uploader implements ActionListener, KeyListener
 
     protected void logDebug(Object toLog)
     {
-        if (debugging)
-        {
             log.debug(toLog);
-        }
     }
     
     /**
@@ -2256,6 +2259,14 @@ public class Uploader implements ActionListener, KeyListener
         mainPanel.setVisible(false);
         mainPanel = null;
         closeUploadedDataViewers();
+        
+        if (keyListeningTo != null)
+        {
+            logDebug("removing key listener");
+            keyListeningTo.removeKeyListener(this);
+            keyListeningTo = null;
+        }
+        
         if (notifyWB)
         {
             wbSS.uploadDone();
@@ -2547,7 +2558,10 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected void goToMsgWBCell(final Component c)
     {
-        if (mainPanel == null) { throw new RuntimeException("Upload form does not exist."); }
+        if (mainPanel == null) 
+        { 
+            throw new RuntimeException("Upload form does not exist."); 
+        }
         if (wbSS != null)
         {
             UploadMessage msg;
@@ -2583,28 +2597,46 @@ public class Uploader implements ActionListener, KeyListener
                     if (msg instanceof UploadTableInvalidValue && msg.getCol() != -1)
                     {
                         wbSS.getSpreadSheet().editCellAt(msg.getRow(), msg.getCol(), null);
-                        
-                        //Now add this as a listener to the editorComponent to allow moving to next/prev
-                        //invalid cell after ENTER/TAB/UP/DOWN
-                        Component editor = wbSS.getSpreadSheet().getEditorComponent();
-                        boolean addListener = true;
-                        KeyListener[] listeners = editor.getKeyListeners();
-                        for (int k=0; k<listeners.length; k++)
+
+                        // Now, if necessary, add this as a listener to the editorComponent to allow moving to
+                        // next/prev
+                        // invalid cell after ENTER/TAB/UP/DOWN
+                        Component editor = wbSS.getSpreadSheet().getEditorComponent(); //currently this is always the same object
+                                                                                       //could check keyListeningTo first.
+                        if (keyListeningTo == null)
                         {
-                            if (listeners[k] == this)
+                            boolean addListener = true;
+                            KeyListener[] listeners = editor.getKeyListeners();
+                            for (int k = 0; k < listeners.length; k++)
                             {
-                                addListener = false;
-                                break;
+                                if (listeners[k] instanceof Uploader)
+                                {
+                                    if (listeners[k] == this)
+                                    {
+                                        logDebug("already listening to spreadsheet editor");
+                                        addListener = false;
+                                        break;
+                                    }
+                                    //should never get here, but just in case:
+                                    logDebug("removing previous listener");
+                                    editor.removeKeyListener(listeners[k]);
+                                }
+                            }
+                            if (addListener)
+                            {
+                                logDebug("adding this as listener to spreadsheet editor");
+                                editor.addKeyListener(this);
+                                this.keyListeningTo = editor;
                             }
                         }
-                        if (addListener)
-                        {
-                            editor.addKeyListener(this);
-                        }
-                        wbSS.getSpreadSheet().grabFocus();
+                        editor.requestFocusInWindow();
                     }
                 }
             }
+        }
+        if (mainPanel == null) 
+        { 
+            throw new RuntimeException("Upload form does not exist."); 
         }
     }
 
@@ -2617,10 +2649,10 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected void goToNextInvalidCell()
     {
-       logDebug("goToNextInvalidCell");
+        logDebug("goToNextInvalidCell");
         int sel = mainPanel.getValidationErrorList().getSelectedIndex() + 1;
         if (sel >= mainPanel.getValidationErrorList().getModel().getSize())
-            sel = 1; //first msg is explanatory
+            sel = 1; // first msg is explanatory
         if (sel != -1)
         {
             mainPanel.getValidationErrorList().setSelectedIndex(sel);
@@ -2639,7 +2671,7 @@ public class Uploader implements ActionListener, KeyListener
     protected void goToPrevInvalidCell()
     {
         int sel = mainPanel.getValidationErrorList().getSelectedIndex() - 1;
-        if (sel <= 1) //first msg is explanatory
+        if (sel < 1) //first msg is explanatory
             sel = mainPanel.getValidationErrorList().getModel().getSize()-1;
         if (sel != -1)
         {
