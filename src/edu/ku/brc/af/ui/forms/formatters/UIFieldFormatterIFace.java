@@ -18,7 +18,6 @@ package edu.ku.brc.af.ui.forms.formatters;
 import java.util.List;
 
 import edu.ku.brc.af.core.db.AutoNumberIFace;
-import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatter.PartialDateEnum;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.util.Pair;
 
@@ -36,7 +35,9 @@ import edu.ku.brc.util.Pair;
  */
 public interface UIFieldFormatterIFace
 {
-    
+    public enum PartialDateEnum {None, Full, Month, Year}
+    public enum FormatterType   {generic, date, numeric} // all lower case to follow convention in uiformatters.xml
+
     /**
      * @return whether it is a system formatter that cannot be deleted.
      */

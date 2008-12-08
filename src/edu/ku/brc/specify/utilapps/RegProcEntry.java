@@ -13,6 +13,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import org.apache.commons.lang.StringUtils;
@@ -25,7 +26,7 @@ import org.apache.commons.lang.StringUtils;
  * Nov 27, 2008
  *
  */
-public class RegProcEntry implements TreeNode
+public class RegProcEntry extends DefaultMutableTreeNode
 {
     protected RegProcEntry         parent;
     protected String               type;

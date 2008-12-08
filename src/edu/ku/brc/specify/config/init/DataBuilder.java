@@ -26,6 +26,7 @@ import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.db.PickListIFace;
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -596,6 +597,7 @@ public class DataBuilder
         return collector;
     }
 
+
     public static CollectionObject createCollectionObject(final String catalogNumber,
                                                           final String fieldNumber,
                                                           final Agent cataloger,
@@ -603,6 +605,21 @@ public class DataBuilder
                                                           final int count,
                                                           final CollectingEvent collectingEvent,
                                                           final Calendar catalogedDate,
+                                                          @SuppressWarnings("unused") final String lastEditedBy)
+    {
+        return createCollectionObject(catalogNumber, fieldNumber, cataloger,
+                                      collection, count, collectingEvent, catalogedDate, 
+                                      UIFieldFormatterIFace.PartialDateEnum.Full, lastEditedBy);
+    }
+    
+    public static CollectionObject createCollectionObject(final String catalogNumber,
+                                                          final String fieldNumber,
+                                                          final Agent cataloger,
+                                                          final Collection collection,
+                                                          final int count,
+                                                          final CollectingEvent collectingEvent,
+                                                          final Calendar catalogedDate,
+                                                          final UIFieldFormatterIFace.PartialDateEnum dateType,
                                                           @SuppressWarnings("unused") final String lastEditedBy)
     {
         // Create Collection Object
@@ -613,6 +630,7 @@ public class DataBuilder
         colObj.setCatalogedDate(catalogedDate);
         colObj.setCatalogedDateVerbatim(DateFormat.getInstance().format(catalogedDate.getTime()));
         colObj.setCatalogNumber(catalogNumber);
+        colObj.setCatalogedDatePrecision((short)dateType.ordinal());
         colObj.setCollection(collection);
         colObj.setCollectingEvent(collectingEvent);
         colObj.setCountAmt(count);

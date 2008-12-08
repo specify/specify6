@@ -47,8 +47,6 @@ import edu.ku.brc.util.Pair;
  */
 public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
 {
-    public enum PartialDateEnum {None, Full, Month, Year}
-    public enum FormatterType   {generic, date, numeric} // all lower case to follow convention in uiformatters.xml
     //private static final Logger log = Logger.getLogger(UIFieldFormatter.class);
 
     public static int[]            daysInMon = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}; 
@@ -745,14 +743,17 @@ public class UIFieldFormatter implements UIFieldFormatterIFace, Cloneable
                 return false;
             }
             
-            daysInMon[1] = isLeapYear(yearVal) ? 29 : 28;
-            
-            val    = text.substring(dayInx, dayInx+day.getSize());
-            int    dayVal = Integer.parseInt(val);
-            
-            if (dayVal < 1 || dayVal > daysInMon[monVal-1])
+            if (day != null)
             {
-                return false;
+                daysInMon[1] = isLeapYear(yearVal) ? 29 : 28;
+                
+                val    = text.substring(dayInx, dayInx+day.getSize());
+                int    dayVal = Integer.parseInt(val);
+                
+                if (dayVal < 1 || dayVal > daysInMon[monVal-1])
+                {
+                    return false;
+                }
             }
         }
         return true;

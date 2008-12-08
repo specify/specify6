@@ -4208,6 +4208,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 rs2.close();
                 */
 
+                int catalogedDatePrecision = 0;
+
                 String catalogNumber = null;
                 String colObjId = null;
 
@@ -4234,7 +4236,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     }
 
                     String newFieldName = newFieldMetaData.get(i).getName();
-
+                    if (newFieldName.equalsIgnoreCase("CatalogedDate"))
+                    {
+                        int x = 0;
+                        x++;
+                    }
                     if (i == 0)
                     {
                         Integer oldColObjId = rs.getInt(1);
@@ -4315,10 +4321,43 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         {
                             str.append("NULL");
                         }
+                        
+                    } else if (newFieldName.equals("CatalogedDate"))
+                    {
+                        Integer index   = oldNameIndex.get(newFieldName);
+                        Object  data    = rs.getObject(index + 1);
+                        if (data != null && ((Integer)data) > 0)
+                        {
+                            // 012345678
+                            // 20051314
+                            Date   dateObj = null;
+                            String dateStr = getStrValue(data, newFieldMetaData.get(i).getType());
+                            if (dateStr.length() == 8)
+                            {
+                                System.out.println("["+dateStr+"]["+data+"]");//["+(dateStr.length() >)+"]");
+                                int    fndInx  = dateStr.substring(4, 8).indexOf("00");
+                                if (fndInx > -1)
+                                {
+                                    catalogedDatePrecision = fndInx == 4 ? 2 : 1;
+                                    dateStr = StringUtils.replace(dateStr, "00", "01");
+                                    dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
+                                } else
+                                {
+                                    dateObj = UIHelper.convertIntToDate((Integer)data); 
+                                }
+                                str.append(dateObj == null ? "NULL" : '"'+dateFormatter.format(dateObj) + '"');
+                            } else
+                            {
+                                str.append("NULL");
+                            }
+                        } else
+                        {
+                            str.append("NULL");
+                        }
 
                     } else if (newFieldName.equals("CatalogedDatePrecision"))
                     {
-                        str.append("NULL");
+                        str.append(catalogedDatePrecision);
 
                     } else if (newFieldName.equals("Availability"))
                     {

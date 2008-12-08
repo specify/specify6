@@ -25,6 +25,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
+import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JMenu;
@@ -35,12 +36,17 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 
 import org.apache.commons.io.FileUtils;
@@ -56,8 +62,11 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.helpers.BrowserLauncher;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.Specify;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.CustomFrame;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 
@@ -72,11 +81,15 @@ import edu.ku.brc.util.Pair;
 public class RegisterApp extends JPanel
 {
     private enum CountType {Divs, Disps, Cols}
+    private enum DateType  {None, Date, Monthly, Yearly}
 
+    protected boolean              doLocal = false;
     protected JFrame               frame;
     protected String               title = "Registration and Statistics Tool";
     protected JTree                tree;
     protected JTable               propsTable;
+    
+    protected Hashtable<String, String> fullDescHash = null;
     
     protected JList                trackItemsList;
     protected Hashtable<String, Hashtable<String, Integer>> trackUsageHash;
@@ -85,6 +98,9 @@ public class RegisterApp extends JPanel
     protected Hashtable<String, String> trackDescHash = new Hashtable<String, String>();
     
     protected RegProcessor              rp = new RegProcessor();
+    
+    protected Comparator<Pair<String, Integer>> countComparator = null;
+    protected Comparator<Pair<String, Integer>> titleComparator  = null;
     
     /**
      * 
@@ -100,6 +116,21 @@ public class RegisterApp extends JPanel
             trackDescHash.put(trackDescStr[i], trackDescStr[i+1]);
             i++;
         }
+        
+        countComparator = new Comparator<Pair<String, Integer>>() {
+            @Override
+            public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2)
+            {
+                return o1.second.compareTo(o2.second);
+            }
+        };
+        titleComparator = new Comparator<Pair<String, Integer>>() {
+            @Override
+            public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2)
+            {
+                return o1.first.compareTo(o2.first);
+            }
+        };
     }
 
     /**
@@ -112,7 +143,7 @@ public class RegisterApp extends JPanel
         rp = new RegProcessor();
         try
         {
-            boolean doLocal = false;
+            
             rp.process(doLocal ? new File("reg.dat") : rp.getDataFromWeb("SpReg.REGISTER_URL", true));
             rp.processTracks(doLocal ? new File("track.dat") : rp.getDataFromWeb("StatsTrackerTask.URL", true));
             
@@ -129,6 +160,7 @@ public class RegisterApp extends JPanel
                     fillPropsTable();
                 }
             });
+            tree.setCellRenderer(new MyTreeCellRenderer());
             
         } catch (IOException ex)
         {
@@ -149,12 +181,11 @@ public class RegisterApp extends JPanel
 
         tabbedPane.add("Registration", splitPane);
         
-        final String[] trackDescPairs = rp.getTrackDescPairs();
+        final List<Pair<String, String>> trackDescPairs = rp.getTrackKeyDescPairs();
         Vector<String> trkItems = new Vector<String>();
-        for (int i=1;i<trackDescPairs.length;i++)
+        for (Pair<String, String> p : trackDescPairs)
         {
-            trkItems.add(trackDescPairs[i]);
-            i++;
+            trkItems.add(p.second);
         }
         
         //Collections.sort(trkItems);
@@ -169,11 +200,13 @@ public class RegisterApp extends JPanel
                     int inx = list.getSelectedIndex();
                     if (inx > -1)
                     {
-                        fillUsageItemsList(trackDescPairs[inx*2]);
+                        fillUsageItemsList(trackDescPairs.get(inx).first);
                     }
                 }
             }
         });
+        
+        tabbedPane.add("Reg Stats", getStatsPane("Registration", rp.getRegNumHash().values()));
         
         DefaultListModel model = new DefaultListModel();
         trackItemsList = new JList(model);
@@ -189,7 +222,10 @@ public class RegisterApp extends JPanel
         
         splitPane.setDividerLocation(0.5);
         trackUsageHash = rp.getTrackCatsHash();
-        tabbedPane.add("Tracking", splitPane);
+        tabbedPane.add("Usage Tracking", splitPane);
+        
+        
+        tabbedPane.add("User Stats", getStatsPane("Tracking", rp.getTrackIdHash().values()));
         
         add(tabbedPane, BorderLayout.CENTER);
     }
@@ -199,6 +235,7 @@ public class RegisterApp extends JPanel
      */
     protected void fillUsageItemsList(final String catName)
     {
+        trackUsageHash = rp.getTrackCatsHash();
         DefaultListModel           model = (DefaultListModel)trackItemsList.getModel();
         Hashtable<String, Integer> hash  = trackUsageHash.get(catName);
         if (hash != null)
@@ -211,20 +248,35 @@ public class RegisterApp extends JPanel
             for (String key : hash.keySet())
             {
                 Integer val = hash.get(key);
-                System.err.println(val+"  "+key);
-                values.add(new Pair<String, Integer>(key, val));
+                
+                String str;
+                if (catName.length() == 2 && key.charAt(2) == '_')
+                {
+                    str = key.substring(catName.length()+1);
+                    /*if (str.startsWith(catName) && str.charAt(2) == '_')
+                    {
+                        str = str.substring(catName.length()+1);
+                    }*/
+                    if (str.startsWith("VIEW_"))
+                    {
+                        str = str.substring(5);
+                    }
+                } else
+                {
+                    str = key;
+                }
+                
+                values.add(new Pair<String, Integer>(str, val));
                 total += val;
             }
             
-            Collections.sort(values, new Comparator<Pair<String, Integer>>() {
-                @Override
-                public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2)
-                {
-                    return o1.second.compareTo(o2.second);
-                }
-            });
+            Collections.sort(values, countComparator);
+            /*for (Pair<String, Integer> p : values)
+            {
+                System.out.println(p.second+"  "+p.first);
+            }*/
             
-            createBarChart(catName, values);
+            createBarChart(trackDescHash.get(catName), "Actions", values);
             
             // Fill Model
             model.clear();
@@ -235,27 +287,296 @@ public class RegisterApp extends JPanel
         } else
         {
             model.clear();
+            if (chartFrame != null && chartFrame.isVisible())
+            {
+                chartFrame.setVisible(false);
+            }
         }
+    }
+    
+    /**
+     * @param entries
+     * @return
+     */
+    private Vector<String> getKeyWordsList(final Collection<RegProcEntry> entries)
+    {
+        
+        Properties props = new Properties();
+        Hashtable<String, Boolean> statKeywords = new Hashtable<String, Boolean>();
+        for (RegProcEntry entry : entries)
+        {
+            props.clear();
+            props.putAll(entry.getProps());
+            
+            String os  = props.getProperty("os_name");
+            String ver = props.getProperty("os_version");
+            props.put("platform", os+" "+ver);
+            
+            for (Object keywordObj : props.keySet())
+            {
+                statKeywords.put(keywordObj.toString(), true);
+            }
+        }
+        
+        String[] trackKeys = rp.getTrackKeys();
+        
+        for (String keyword : new Vector<String>(statKeywords.keySet()))
+        {
+            if (keyword.startsWith("Usage") || 
+                keyword.startsWith("num_") || 
+                keyword.endsWith("_portal") || 
+                keyword.endsWith("_number") || 
+                keyword.endsWith("_website") || 
+                keyword.endsWith("id") || 
+                keyword.endsWith("os_name") || 
+                keyword.endsWith("os_version"))
+            {
+                statKeywords.remove(keyword);
+                
+            } else 
+            {
+                for (String key : trackKeys)
+                {
+                    if (keyword.startsWith(key))
+                    {
+                        statKeywords.remove(keyword); 
+                    }
+                }
+            }
+        }
+        
+        statKeywords.remove("date");
+        statKeywords.put("by_date",  true);
+        statKeywords.put("by_month", true);
+        statKeywords.put("by_year",  true);
+        
+        return new Vector<String>(statKeywords.keySet());
+    }
+    
+    /**
+     * @return
+     */
+    private JPanel getStatsPane(final String chartPrefixTitle, 
+                                final Collection<RegProcEntry> entries)
+    {
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
+        
+        final Hashtable<String, String> keyDescPairsHash  = rp.getAllDescPairsHash();
+        final Hashtable<String, String> desc2KeyPairsHash = new  Hashtable<String, String>();
+        for (String key : keyDescPairsHash.keySet())
+        {
+            desc2KeyPairsHash.put(keyDescPairsHash.get(key), key); 
+        }
+
+        Vector<String> keywords = new Vector<String>();
+        for (String keyword : getKeyWordsList(entries))
+        {
+            if (keyword.endsWith("_name") || 
+                    keyword.endsWith("_type") || 
+                    keyword.endsWith("ISA_Number") || 
+                    keyword.endsWith("reg_isa"))
+            {
+                //keywords.add(keyword);
+                
+            } else
+            {
+                String desc = keyDescPairsHash.get(keyword);
+                //System.out.println("["+keyword+"]->["+desc+"]");
+                keywords.add(desc);
+            }
+        }
+        Collections.sort(keywords);
+        
+        final JList list = new JList(keywords);
+        pb.add(UIHelper.createScrollPane(list),  cc.xy(1,1));
+        
+        list.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    String statName = (String)list.getSelectedValue();
+                    System.out.print("["+statName+"]");
+                    statName = desc2KeyPairsHash.get(statName);
+                    System.out.println(" ["+statName+"]");
+                    
+                    DateType dateType = convertDateType(statName);
+                    if (dateType == DateType.None)
+                    {
+                        createStatsChart(statName, chartPrefixTitle, entries);
+                    } else
+                    {
+                        String                        desc   = getByDateDesc(dateType);
+                        Vector<Pair<String, Integer>> values = getDateValues(dateType, entries);
+                        Collections.sort(values, titleComparator);
+                        createBarChart(chartPrefixTitle + " "+ desc, desc, values);
+                    }
+                }
+            }
+        });
+
+        return pb.getPanel();
+    }
+    
+    /**
+     * @param name
+     * @return
+     */
+    private DateType convertDateType(final String name)
+    {
+        if (name != null)
+        {
+            if (name.equals("by_date"))
+            {
+                return DateType.Date;
+            }
+            if (name.equals("by_month"))
+            {
+                return DateType.Monthly;
+            }
+            if (name.equals("by_year"))
+            {
+                return DateType.Yearly;
+            }
+        }
+        return DateType.None;
+    }
+    
+    /**
+     * @param dateType
+     * @return
+     */
+    private String getByDateDesc(final DateType dateType)
+    {
+        String[] desc = {"None", "By Date", "By Month", "By Year"};
+        return desc[dateType.ordinal()];
+    }
+    
+    /**
+     * @param dateType
+     * @param srcList
+     * @return
+     */
+    private Vector<Pair<String, Integer>> getDateValues(final DateType dateType, 
+                                                        final Collection<RegProcEntry> srcList)
+    {
+        Hashtable<String, Integer> countHash = new Hashtable<String, Integer>();
+        for (RegProcEntry entry : srcList)
+        {
+            String valueStr = entry.getProps().getProperty("date");
+            
+            String[] toks = StringUtils.split(valueStr, ' ');
+            valueStr = toks[0];
+            
+            if (dateType != DateType.Date)
+            {
+                toks = StringUtils.split(valueStr, '/');
+                if (dateType == DateType.Monthly)
+                {
+                    valueStr = toks[1];
+                    
+                } else if (dateType == DateType.Yearly)
+                {
+                    valueStr = toks[0];
+                }
+            }
+            Integer count = countHash.get(valueStr);
+            if (count == null)
+            {
+                count = 1;
+                
+            } else
+            {
+                count++;
+            }
+            countHash.put(valueStr, count);
+        }
+        
+        Vector<Pair<String, Integer>> values = new Vector<Pair<String,Integer>>();
+        for (Object keyObj : countHash.keySet())
+        {
+            Integer value = countHash.get(keyObj);
+            values.add(new Pair<String, Integer>(keyObj.toString(), value));
+        }
+        return values;
+    }
+    
+    /**
+     * @param statName
+     * @param prefixTitle
+     * @param entries
+     */
+    private void createStatsChart(final String statName,
+                                  final String prefixTitle,
+                                  final Collection<RegProcEntry> entries)
+    {
+        
+        Properties props  = new Properties();
+        Hashtable<String, Integer> countHash = new Hashtable<String, Integer>();
+        for (RegProcEntry entry : entries)
+        {
+            props.clear();
+            props.putAll(entry.getProps());
+            
+            String os  = props.getProperty("os_name");
+            String ver = props.getProperty("os_version");
+            props.put("platform", os+" "+ver);
+
+            for (Object keywordObj : props.keySet())
+            {
+                if (keywordObj.toString().equals(statName))
+                {
+                    String valueStr = props.getProperty(keywordObj.toString());
+                    Integer count = countHash.get(valueStr);
+                    if (count == null)
+                    {
+                        count = 1;
+                        
+                    } else
+                    {
+                        count++;
+                    }
+                    countHash.put(valueStr, count);
+                    break;
+                }
+            }
+        }
+
+        Vector<Pair<String, Integer>> values = new Vector<Pair<String,Integer>>();
+        for (Object keyObj : countHash.keySet())
+        {
+            Integer value = countHash.get(keyObj);
+           values.add(new Pair<String, Integer>(keyObj.toString(), value));
+        }
+        
+        Collections.sort(values, countComparator);
+        
+        createBarChart(prefixTitle+" Stats for "+statName, "Statistics", values);
     }
     
     /**
      * @param catName
      * @param values
      */
-    private void createBarChart(final String catName, final Vector<Pair<String, Integer>> values)
+    private void createBarChart(final String chartTitle, 
+                                final String xTitle,
+                                final Vector<Pair<String, Integer>> values)
     {
         String cat = ""; //$NON-NLS-1$
         DefaultCategoryDataset dataset = new DefaultCategoryDataset(); 
         
         for (Pair<String, Integer> p : values)
-        {         
+        {
+            System.out.println(p.second+"  "+p.first);
             dataset.addValue(p.second, p.first, cat);
         }
 
         // create the chart... 
         JFreeChart chart = ChartFactory.createBarChart3D( 
-                trackDescHash.get(catName),      // chart title 
-                "Actions", // domain axis label 
+                chartTitle,      // chart title 
+                xTitle,     // domain axis label 
                 "Occurrence", // range axis label 
                 dataset,    // data 
                 PlotOrientation.VERTICAL,
@@ -267,16 +588,22 @@ public class RegisterApp extends JPanel
         // create and display a frame... 
         ChartPanel panel = new ChartPanel(chart, true, true, true, true, true); 
         
-        
+        boolean wasVisible = false;
+        boolean wasCreated = false;
         if (chartFrame == null)
         {
             panel.setPreferredSize(new Dimension(800,600)); 
             chartFrame = new CustomFrame("Statistics", CustomFrame.OK_BTN, null);
             chartFrame.setOkLabel("Close");
             chartFrame.createUI();
+            wasCreated = true;
+        } else
+        {
+            wasVisible = chartFrame.isVisible();
         }
         
         chartFrame.setContentPane(panel);
+        
         // Can't believe I have to do this
         Rectangle r = chartFrame.getBounds();
         r.height++;
@@ -284,8 +611,16 @@ public class RegisterApp extends JPanel
         r.height--;
         //----
         chartFrame.setBounds(r);
-        chartFrame.pack();
-        chartFrame.setVisible(true);
+        
+        if (wasCreated)
+        {
+            chartFrame.pack();
+        }
+        
+        if (!wasVisible)
+        {
+            UIHelper.centerAndShow(chartFrame);
+        }
     }
         
     /**
@@ -306,11 +641,22 @@ public class RegisterApp extends JPanel
             }
             Collections.sort(keys);
             
+            if (fullDescHash == null)
+            {
+                fullDescHash = rp.getAllDescPairsHash();
+            }
+            
             Object[][] rows = new Object[keys.size()][2];
             int inx = 0;
             for (Object key : keys)
             {
-                rows[inx][0] = key;
+                String titleStr = fullDescHash.get(key);
+                if (titleStr == null)
+                {
+                    titleStr = key.toString();
+                }
+                rows[inx][0] = titleStr;
+                
                 rows[inx][1] = props.get(key);
                 inx++;
             }
@@ -348,7 +694,8 @@ public class RegisterApp extends JPanel
      * @param type
      * @return
      */
-    private int count(final RegProcEntry inst, final CountType type)
+    private int count(final RegProcEntry inst, 
+                      final CountType type)
     {
         int divs = inst.getKids().size();
         
@@ -382,11 +729,12 @@ public class RegisterApp extends JPanel
      * @param sb
      * @param tableTitle
      * @param entries
+     * @param hasReg
      */
-    private void createTable(final StringBuilder sb, 
-                             final String tableTitle, 
+    private void createTable(final StringBuilder        sb, 
+                             final String               tableTitle, 
                              final Vector<RegProcEntry> entries,
-                             final boolean hasReg)
+                             final boolean              hasReg)
     {
         sb.append("<table class=\"brd\" border=\"1\">\n");
         sb.append("<tr>");
@@ -394,7 +742,7 @@ public class RegisterApp extends JPanel
         sb.append(tableTitle);
         sb.append("</th>");
         sb.append("</tr>");
-        sb.append("<tr><th>Inst</th><th>Division</th><th>Discipline</th><th>Collection</th><th>ISA Number</th><th>Phone</th><th>EMail</th></tr>\n");
+        sb.append("<tr><th>Institution</th><th>Division</th><th>Discipline</th><th>Collection</th><th>ISA Number</th><th>Phone</th><th>EMail</th></tr>\n");
         
         for (RegProcEntry inst : entries)
         {
@@ -467,6 +815,14 @@ public class RegisterApp extends JPanel
         }
     }
     
+    /**
+     * @param sb
+     * @param entries
+     * @param key
+     * @param desc
+     * @param discipline
+     * @return
+     */
     protected int calcStat(final StringBuilder sb, 
                            final Collection<RegProcEntry> entries,
                            final String key, 
@@ -505,19 +861,23 @@ public class RegisterApp extends JPanel
      */
     public void createStatsReport()
     {
-        String[] statsArray = {"num_co", "Collection Objects", 
-                               "num_tx", "Taxon", 
-                               "num_txu", "Taxon in Use", 
-                               "num_geo", "Geography", 
-                               "num_geou", "Geography in Use", 
-                               "num_loc", "Localities", 
-                               "num_locgr", "Localities Geo-Referenced", 
-                               "num_preps", "Preparations", 
-                               "num_prpcnt", "Preparations Count", 
-                               "num_litho", "Lithostratigraphy", 
-                               "num_lithou", "Lithostratigraphy in Use", 
-                               "num_gtp", "Chronstragigraphy", 
-                               "num_gtpu", "Chronstragigraphy in Use", };
+        if (fullDescHash == null)
+        {
+            fullDescHash = rp.getAllDescPairsHash();
+        }
+        String[] statsArray = {"num_co",
+                               "num_tx", 
+                               "num_txu", 
+                               "num_geo",
+                               "num_geou", 
+                               "num_loc", 
+                               "num_locgr", 
+                               "num_preps", 
+                               "num_prpcnt", 
+                               "num_litho", 
+                               "num_lithou", 
+                               "num_gtp", 
+                               "num_gtpu"};
         
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body><center>");
@@ -528,14 +888,13 @@ public class RegisterApp extends JPanel
         sb.append("</th>");
         sb.append("</tr>");
         sb.append("<tr><th>Name</th><th>Total</th></tr>\n");
-
+        
         Collection<RegProcEntry> collEntries = rp.getCollectionsHash().values();
         
-        int[] values = new int[statsArray.length / 2];
+        int[] values = new int[statsArray.length];
         for (int i=0;i<statsArray.length;i++)
         {
-            values[i/2] = calcStat(sb, collEntries, statsArray[i], statsArray[i+1], null);
-            i++;
+            values[i] = calcStat(sb, collEntries, statsArray[i], fullDescHash.get(statsArray[i]), null);
         }
         sb.append("</table>");
         
@@ -564,11 +923,10 @@ public class RegisterApp extends JPanel
             sb.append("</tr>");
             sb.append("<tr><th>Name</th><th>Total</th></tr>\n");
 
-            values = new int[statsArray.length / 2];
+            values = new int[statsArray.length];
             for (int i=0;i<statsArray.length;i++)
             {
-                values[i/2] = calcStat(sb, collEntries, statsArray[i], statsArray[i+1], disp);
-                i++;
+                values[i] = calcStat(sb, collEntries, statsArray[i], fullDescHash.get(statsArray[i]), disp);
             }
             sb.append("</table>"); 
         }
@@ -595,7 +953,9 @@ public class RegisterApp extends JPanel
         CellConstraints cc = new CellConstraints();
         
         PanelBuilder pb   = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g"));
-        Vector<String> versionsList = new Vector<String>();
+        
+        Vector<String>    versionsList = new Vector<String>();
+        Hashtable<String, String> verToDateHash = new Hashtable<String, String>();
         try
         {
             
@@ -603,9 +963,15 @@ public class RegisterApp extends JPanel
             for (String line : lines)
             {
                 String[] toks = line.split(",");
-                if (toks.length> 1)
+                if (toks.length > 2)
                 {
-                    versionsList.insertElementAt(toks[1].trim(), 0);
+                    String ver  = toks[1].trim();
+                    
+                    versionsList.insertElementAt(ver, 0);
+                    
+                    String date = toks[2].trim();
+                    date = StringUtils.replace(date, ".", "/");
+                    verToDateHash.put(ver, date);
                 }
             }
             versionsList.insertElementAt("Clear", 0);
@@ -619,7 +985,7 @@ public class RegisterApp extends JPanel
         final JList        list = new JList(versionsList);
         final CustomDialog dlg  = new CustomDialog(null, "Set Version", true, pb.getPanel());
         
-        pb.add(UIHelper.createLabel("Versions"), cc.xy(1,1));
+        pb.add(UIHelper.createLabel("Versions", SwingConstants.CENTER), cc.xy(1,1));
         pb.add(UIHelper.createScrollPane(list),  cc.xy(1,3));
         
         list.addListSelectionListener(new ListSelectionListener() {
@@ -656,7 +1022,18 @@ public class RegisterApp extends JPanel
             int   inx          = list.getSelectedIndex();
             String version     = (String)list.getSelectedValue();
             String prevVersion = inx == list.getModel().getSize()-1 ? null : (String)list.getModel().getElementAt(inx+1);
-            rp.setVersion(version, prevVersion);
+            rp.setVersionDates(version, prevVersion, verToDateHash);
+            
+            try
+            {
+                rp.process(doLocal ? new File("reg.dat") : rp.getDataFromWeb("SpReg.REGISTER_URL", true));
+                rp.processTracks(doLocal ? new File("track.dat") : rp.getDataFromWeb("StatsTrackerTask.URL", true));
+                rp.mergeStats();
+                
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
             
             if (version.equals("Clear"))
             {
@@ -675,24 +1052,30 @@ public class RegisterApp extends JPanel
     {
         frame                = new JFrame();
         JMenuBar  mb         = new JMenuBar();
-        JMenu     menu       = new JMenu("File");
-        JMenuItem doISARegReportMI = new JMenuItem("ISA Reg Report");
-        menu.add(doISARegReportMI);
+        JMenu     fileMenu   = new JMenu("File");
+        JMenu     rptMenu    = new JMenu("Reports");
+        //JMenu     chrtMenu   = new JMenu("Charts");
         
         frame.setTitle(title);
         
-        JMenuItem doStatsMI = new JMenuItem("Stats");
-        menu.add(doStatsMI);
+        JMenuItem doISARegReportMI = new JMenuItem("ISA Reg Report");
+        rptMenu.add(doISARegReportMI);
         
-        menu.addSeparator();
+        JMenuItem doStatsMI = new JMenuItem("Registration");
+        rptMenu.add(doStatsMI);
+        
+        //JMenuItem doMiscMI = new JMenuItem("Misc");
+        //chrtMenu.add(doMiscMI);
+        
+        //menu.addSeparator();
         JMenuItem doSetVersionMI = new JMenuItem("Set Version");
-        menu.add(doSetVersionMI);
+        fileMenu.add(doSetVersionMI);
         
         if (!UIHelper.isMacOS())
         {
-            menu.addSeparator();
+            fileMenu.addSeparator();
             JMenuItem doExitMI = new JMenuItem("Exit");
-            menu.add(doExitMI);
+            fileMenu.add(doExitMI);
             doExitMI.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e)
@@ -702,13 +1085,15 @@ public class RegisterApp extends JPanel
             });
         }
         
-        mb.add(menu);
+        mb.add(fileMenu);
+        mb.add(rptMenu);
+        //mb.add(chrtMenu);
         
         frame.setJMenuBar(mb);
         frame.setContentPane(this);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setBounds(0, 0, 800, 768);
-        frame.setVisible(true);
+        frame.setBounds(0, 0, 600, 768);
+        UIHelper.centerAndShow(frame);
         
         doISARegReportMI.addActionListener(new ActionListener() {
             @Override
@@ -735,6 +1120,63 @@ public class RegisterApp extends JPanel
         });
     }
     
+    class MyTreeCellRenderer extends DefaultTreeCellRenderer implements TreeCellRenderer 
+    {
+        public Component getTreeCellRendererComponent(JTree treeArg,
+                                                      Object value,
+                                                      boolean bSelected,
+                                                      boolean bExpanded,
+                                                      boolean bLeaf,
+                                                      int iRow,
+                                                      boolean bHasFocus ) 
+        {
+            super.getTreeCellRendererComponent(treeArg,
+                    value,
+                    bSelected,
+                    bExpanded,
+                    bLeaf,
+                    iRow,
+                    bHasFocus);
+            
+            // Find out which node we are rendering and get its text
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
+            String labelText = (String)node.toString();
+            setText(labelText);
+            
+            RegProcEntry entry   = (RegProcEntry)node;
+            String       regType = entry.get("reg_type");
+            if (regType!= null)
+            {
+                String iconName = null;
+                if (regType.equals("Discipline"))
+                {
+                    iconName = entry.get("Discipline_type");
+                    if (iconName == null)
+                    {
+                        iconName = regType;
+                    }
+                } else if (!entry.getName().equals("Root"))
+                {
+                    iconName = regType;
+                }
+                
+                if (iconName != null)
+                {
+                    Icon myIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std16);
+                    if (myIcon != null)
+                    {
+                        setOpenIcon(myIcon);
+                        setClosedIcon(myIcon);
+                        setLeafIcon(myIcon);
+                        setIcon(myIcon);
+                    }
+                }
+            }
+ 
+            return this;
+        }
+    }
+    
     /**
      * @param args
      */
@@ -744,6 +1186,12 @@ public class RegisterApp extends JPanel
         {
             public void run()
             {
+                // Then set this
+                IconManager.setApplicationClass(Specify.class);
+                IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
+                IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
+                IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
+           
                 new RegisterApp().doStart();
             }
         });

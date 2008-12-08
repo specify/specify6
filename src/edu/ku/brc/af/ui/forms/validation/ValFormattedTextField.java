@@ -104,11 +104,11 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
 
     protected List<JFormattedDoc>         documents      = new Vector<JFormattedDoc>();
     protected String                      defaultValue   = null;
-    protected DocumentListener            documentListener = null;
 
     protected UIFieldFormatterIFace       formatter;
-    protected List<UIFieldFormatterField> fields         = null;
+    protected List<UIFieldFormatterField> fields              = null;
     protected boolean                     isFromUIFmtOverride = false;
+    protected List<DocumentListener>      documentListeners   = null;
     
     protected boolean                     isAutoFmtOn    = true;
     
@@ -305,13 +305,16 @@ s     * @param isViewOnly
             viewtextField = new JTextField();
             setControlSize(viewtextField);
             
-            JFormattedDoc document = new JFormattedDoc(viewtextField, formatter, formatter.getFields().get(0));
-            viewtextField.setDocument(document);
-            document.addDocumentListener(this);
-            documents.add(document);
+            // Remove by rods 12/5/08 this messes thihngs up
+            // values don't get inserted correctly, shouldn't be needed anyway
+            
+            //JFormattedDoc document = new JFormattedDoc(viewtextField, formatter, formatter.getFields().get(0));
+            //viewtextField.setDocument(document);
+            //document.addDocumentListener(this);
+            //documents.add(document);
             
             ViewFactory.changeTextFieldUIForDisplay(viewtextField, false);
-            PanelBuilder    builder = new PanelBuilder(new FormLayout("1px,P,1px", "1px,P,1px"), this);
+            PanelBuilder    builder = new PanelBuilder(new FormLayout("1px,f:p:g,1px", "1px,f:p:g,1px"), this);
             builder.add(viewtextField, cc.xy(2, 2));
             bgColor = viewtextField.getBackground();
 
@@ -978,7 +981,7 @@ s     * @param isViewOnly
     {
         if (formatter.isDate())
         {
-            return UIHelper.getDate(getText(), formatter.getDateWrapper());
+            return UIHelper.getCalendar(getText(), formatter.getDateWrapper());
         }
         // else
         String val = getText();
@@ -997,11 +1000,22 @@ s     * @param isViewOnly
      */
     public void addDocumentListener(final DocumentListener dl)
     {
-        documentListener = dl;
-        //for (JFormattedDoc document : documents)
-        //{
-        //    document.addDocumentListener(dl);
-        //}
+        if (documentListeners == null)
+        {
+            documentListeners = new Vector<DocumentListener>();
+        }
+        documentListeners.add(dl);
+    }
+
+    /**
+     * @param dl
+     */
+    public void removeDocumentListener(final DocumentListener dl)
+    {
+        if (documentListeners != null)
+        {
+            documentListeners.remove(dl);
+        }
     }
 
 
@@ -1020,15 +1034,24 @@ s     * @param isViewOnly
     protected void changeOccurred()
     {
         isChanged = true;
-        if (changeListener != null && !shouldIgnoreNotifyDoc)
+        if (!shouldIgnoreNotifyDoc)
         {
             //validateState();
-            changeListener.stateChanged(new ChangeEvent(this));
-            if (documentListener != null)
+            if (changeListener != null)
             {
-                documentListener.changedUpdate(null);
+                changeListener.stateChanged(new ChangeEvent(this));
+            }
+            
+            if (documentListeners != null)
+            {
+                for (DocumentListener dl : documentListeners)
+                {
+                    dl.changedUpdate(null);
+                }
             }
         }
+        
+                
         currCachedValue = null;
     }
     

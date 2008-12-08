@@ -96,7 +96,7 @@ public class ViewLoader
     protected static DBTableInfo           fldVerTableInfo     = null;
     protected static FormViewDef           fldVerFormViewDef   = null;
     
-    protected FieldVerifyTableModel fldVerTableModel    = null;
+    protected FieldVerifyTableModel        fldVerTableModel    = null;
     
     static
     {

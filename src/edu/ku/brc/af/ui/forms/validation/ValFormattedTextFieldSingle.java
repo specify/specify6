@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -91,6 +92,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     protected boolean                     isViewOnly     = false;
     protected Color                       bgColor        = null;
     protected boolean                     needsUpdating  = false;
+    protected List<DocumentListener>      documentListeners = null;
 
     protected boolean                     doSetText      = false;
     
@@ -260,6 +262,29 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             {
                 super.setEnabled(true);
             }
+        }
+    }
+    
+    /**
+     * @param dl
+     */
+    public void addDocumentListener(final DocumentListener dl)
+    {
+        if (documentListeners == null)
+        {
+            documentListeners = new Vector<DocumentListener>();
+        }
+        documentListeners.add(dl);
+    }
+
+    /**
+     * @param dl
+     */
+    public void removeDocumentListener(final DocumentListener dl)
+    {
+        if (documentListeners != null)
+        {
+            documentListeners.remove(dl);
         }
     }
     
@@ -955,6 +980,14 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         {
             setState(formatter.isValid(getText()) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error);
             repaint();
+        }
+        
+        if (documentListeners != null)
+        {
+            for (DocumentListener dl : documentListeners)
+            {
+                dl.changedUpdate(null);
+            }
         }
     }
 

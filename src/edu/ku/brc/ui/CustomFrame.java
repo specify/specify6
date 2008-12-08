@@ -389,8 +389,9 @@ public class CustomFrame extends JFrame
         if (okBtn == null && visible)
         {
             createUI();
+            UIHelper.centerWindow(this);
         }
-        UIHelper.centerWindow(this);
+        
         super.setVisible(visible);
     }
 
