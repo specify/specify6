@@ -36,7 +36,7 @@ import edu.ku.brc.ui.IconManager;
  * @author rods
  *
  */
-public class ServiceInfo implements Comparable<ServiceInfo>
+public class ServiceInfo implements Comparable<ServiceInfo>, Cloneable
 {
     private static final Logger log = Logger.getLogger(ServiceInfo.class);
             
@@ -222,15 +222,6 @@ public class ServiceInfo implements Comparable<ServiceInfo>
     //-- Static Methods
     //------------------------------------------
 
-
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    public int compareTo(ServiceInfo si)
-    {
-        return priority.compareTo(si.priority);
-    }
-
     /**
      * Returns the a string that includes the name and the table ID
      * @return Returns the a string that includes the name and the table ID
@@ -240,5 +231,27 @@ public class ServiceInfo implements Comparable<ServiceInfo>
         return name + "_" + (task != null ? task.getName() : "") + "_" + (tableId != -1 ? Integer.toString(tableId) : ""); //$NON-NLS-1$
     }
 
+    //-------------------------------------------
+    //-- Interface implementation
+    //-------------------------------------------
     
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(ServiceInfo si)
+    {
+        return priority.compareTo(si.priority);
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        ServiceInfo result = (ServiceInfo )super.clone();
+        result.command = (CommandAction )command.clone();
+        return result;
+    }
+
 }

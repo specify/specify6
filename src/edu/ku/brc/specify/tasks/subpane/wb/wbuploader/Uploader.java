@@ -404,7 +404,10 @@ public class Uploader implements ActionListener, KeyListener
 
     protected void logDebug(Object toLog)
     {
+        if (debugging)
+        {
             log.debug(toLog);
+        }
     }
     
     /**

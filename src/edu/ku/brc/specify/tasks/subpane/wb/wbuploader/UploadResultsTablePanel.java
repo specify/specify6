@@ -10,6 +10,9 @@
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import java.util.List;
+import java.util.Vector;
+
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
@@ -27,6 +30,7 @@ import edu.ku.brc.specify.ui.db.ResultSetTableModel;
  */
 public class UploadResultsTablePanel extends ESResultsTablePanel
 {
+    private static final Logger log = Logger.getLogger(UploadResultsTablePanel.class);
 
     /**
      * @param esrPane
@@ -71,19 +75,28 @@ public class UploadResultsTablePanel extends ESResultsTablePanel
     @Override
     protected List<ServiceInfo> getServices()
     {
-        // TODO Auto-generated method stub
-        List<ServiceInfo> result =  super.getServices();
-        for (int s = result.size()-1; s >= 0; s--)
+        List<ServiceInfo> result =  new Vector<ServiceInfo>();
+        List<ServiceInfo> services = super.getServices();
+        for (int s = services.size()-1; s >= 0; s--)
         {
-            ServiceInfo service = result.get(s);
-            System.out.println(service.getName());
-            if (!includeService(result.get(s)))
+            ServiceInfo service = services.get(s);
+            if (includeService(service))
             {
-                result.remove(s);
-            }
-            else if (result.get(s).getTask() instanceof DataEntryTask)
-            {
-                result.get(s).getCommandAction().setProperty("readonly", true);
+                if (service.getTask() instanceof DataEntryTask)
+                {
+                    try
+                    {
+                        ServiceInfo newService = (ServiceInfo )service.clone();
+                        newService.getCommandAction().setProperty("readonly", true);
+                        service = newService;
+                    }
+                    catch (CloneNotSupportedException ex)
+                    {
+                        log.error(ex);
+                        continue;
+                    }
+                }
+                result.add(service);
             }
         }
         return result;
