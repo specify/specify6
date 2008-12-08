@@ -629,7 +629,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="accessionNumber" uitype="formattedtext" isrequired="true"/>
+                    <cell type="field" id="1" name="accessionNumber" uitype="formattedtext" />
 
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true"/>
@@ -662,16 +662,16 @@
                     
                     <cell type="label" labelfor="27"/>
                     <cell type="field" id="27" name="verbatimDate" uitype="text" isrequired="false" />
-                </row>
-                <row>
+                </row> -->
+                <!--<row>
                 	<cell type="label" labelfor="29"/>
                 	<cell type="field" id="29" name="number1" uitype="text"/>
                 	
                 	
                 	<cell type="label" labelfor="30"/>
                 	<cell type="field" id="30" name="number2" uitype="text"/>
-                </row>
-                <row>
+                </row> -->
+             <!--   <row>
                 	<cell type="field" id="34" uitype="checkbox" name="yesNo1" label="yesNo1"/>
                 	
                 	<cell type="field" id="35" uitype="checkbox" name="yesNo2" label="yesNo2"/>
