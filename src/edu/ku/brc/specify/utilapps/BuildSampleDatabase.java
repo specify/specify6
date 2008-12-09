@@ -6672,7 +6672,7 @@ public class BuildSampleDatabase
     {
         if (frame == null)
         {
-            frame = new ProgressFrame("Building Specify Database", "SpecifyLargeIcon");
+            frame = new ProgressFrame("Building Specify Database", "AppIcon");
             frame.pack();
         } 
         return frame;
@@ -6740,6 +6740,9 @@ public class BuildSampleDatabase
         
         // Then set this
         IconManager.setApplicationClass(Specify.class);
+        
+        IconManager.aliasImages("SpBuilder", // Source //$NON-NLS-1$
+                                "AppIcon");  // Dest //$NON-NLS-1$
         
         createProgressFrame();
         

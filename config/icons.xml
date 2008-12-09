@@ -14,7 +14,7 @@
     <icon name="WizardIcon"       file="spwizard128.png" sizes="NonStd"/>
     <icon name="DatabaseIcon"     file="spbackup128.png" sizes="NonStd"/>
     <icon name="SPIReports"       file="spireport128.png" sizes="NonStd"/>
-    <icon name="SpBuilder"         file="spireport128.png" sizes="NonStd"/>
+    <icon name="SpBuilder"         file="spbuilder.png" sizes="NonStd"/>
     
     
     <icon name="Save"             file="Save32x32.png" sizes="all"/>
