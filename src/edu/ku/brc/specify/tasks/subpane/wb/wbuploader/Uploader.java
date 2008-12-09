@@ -164,7 +164,7 @@ public class Uploader implements ActionListener, KeyListener
      * While editing invalid cells, this is added as a listener to the WorkbenchPaneSS's spreadsheet cell editor component.
      * The cell editor component is currently always the same object.
      */
-    protected Component                             keyListeningTo           = null;
+    protected List<Component>                       keyListeningTo           = new LinkedList<Component>();
 
     /**
      * Problems with contents of cells in dataset.
@@ -2263,12 +2263,12 @@ public class Uploader implements ActionListener, KeyListener
         mainPanel = null;
         closeUploadedDataViewers();
         
-        if (keyListeningTo != null)
+        for (Component c : keyListeningTo)
         {
             logDebug("removing key listener");
-            keyListeningTo.removeKeyListener(this);
-            keyListeningTo = null;
+            c.removeKeyListener(this);
         }
+        keyListeningTo.clear();
         
         if (notifyWB)
         {
@@ -2604,33 +2604,29 @@ public class Uploader implements ActionListener, KeyListener
                         // Now, if necessary, add this as a listener to the editorComponent to allow moving to
                         // next/prev
                         // invalid cell after ENTER/TAB/UP/DOWN
-                        Component editor = wbSS.getSpreadSheet().getEditorComponent(); //currently this is always the same object
-                                                                                       //could check keyListeningTo first.
-                        if (keyListeningTo == null)
+                        Component editor = wbSS.getSpreadSheet().getEditorComponent();
+                        boolean addListener = true;
+                        KeyListener[] listeners = editor.getKeyListeners();
+                        for (int k = 0; k < listeners.length; k++)
                         {
-                            boolean addListener = true;
-                            KeyListener[] listeners = editor.getKeyListeners();
-                            for (int k = 0; k < listeners.length; k++)
+                            if (listeners[k] instanceof Uploader)
                             {
-                                if (listeners[k] instanceof Uploader)
+                                if (listeners[k] == this)
                                 {
-                                    if (listeners[k] == this)
-                                    {
-                                        logDebug("already listening to spreadsheet editor");
-                                        addListener = false;
-                                        break;
-                                    }
-                                    //should never get here, but just in case:
-                                    logDebug("removing previous listener");
-                                    editor.removeKeyListener(listeners[k]);
+                                    logDebug("already listening to spreadsheet editor");
+                                    addListener = false;
+                                    break;
                                 }
+                                // should never get here, but just in case:
+                                logDebug("removing previous listener");
+                                editor.removeKeyListener(listeners[k]);
                             }
-                            if (addListener)
-                            {
-                                logDebug("adding this as listener to spreadsheet editor");
-                                editor.addKeyListener(this);
-                                this.keyListeningTo = editor;
-                            }
+                        }
+                        if (addListener)
+                        {
+                            logDebug("adding this as listener to spreadsheet editor");
+                            editor.addKeyListener(this);
+                            this.keyListeningTo.add(editor);
                         }
                         editor.requestFocusInWindow();
                     }
