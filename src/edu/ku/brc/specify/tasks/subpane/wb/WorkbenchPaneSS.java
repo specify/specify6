@@ -3088,14 +3088,16 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             if (sp.getClass().equals(WorkbenchPaneSS.class))
             {
-                ((WorkbenchPaneSS)sp).uploadDatasetBtn.setEnabled(enabled);
-                if (enabled)
+                WorkbenchPaneSS wbSS = (WorkbenchPaneSS )sp;
+                boolean canEnable = enabled && !wbSS.isChanged();
+                wbSS.uploadDatasetBtn.setEnabled(canEnable);
+                if (canEnable)
                 {
-                    ((WorkbenchPaneSS)sp).uploadDatasetBtn.setToolTipText(getResourceString("WB_UPLOAD_DATA"));
+                    wbSS.uploadDatasetBtn.setToolTipText(getResourceString("WB_UPLOAD_DATA"));
                 }
                 else
                 {
-                    ((WorkbenchPaneSS)sp).uploadDatasetBtn.setToolTipText(getResourceString("WB_UPLOAD_IN_PROGRESS"));
+                    wbSS.uploadDatasetBtn.setToolTipText(getResourceString("WB_UPLOAD_IN_PROGRESS"));
                 }
             }
         }

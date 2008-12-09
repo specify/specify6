@@ -48,6 +48,10 @@ public class TableNameRenderer extends DefaultListCellRenderer
         this.blankIcon = IconManager.getIcon("Blank", iconSize); //$NON-NLS-1$
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.DefaultListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
+     */
+    @Override
     public Component getListCellRendererComponent(JList list,
                                                   Object value,   // value to display
                                                   int index,      // cell index
