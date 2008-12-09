@@ -41,7 +41,7 @@ import edu.ku.brc.ui.RolloverCommand;
 public class GhostGlassPane extends JPanel
 {
     public enum ImagePaintMode {CENTERED, DRAG, ABSOLUTE}
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     
     private static GhostGlassPane instance = new GhostGlassPane();
 
