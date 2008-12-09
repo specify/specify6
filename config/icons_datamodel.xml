@@ -276,6 +276,9 @@
     <icon name="TreeDefEditor"             alias="taxon"/>
     <icon name="TreeViewer"			       alias="taxon"/>
     
+    <!--  Misc -->
+    
+    <icon name="InstBldg"                  file="institution_bldg.png" sizes="all"/> 
     <icon name="Person"                    alias="person"/>
     <icon name="People"                    alias="group"/>
     

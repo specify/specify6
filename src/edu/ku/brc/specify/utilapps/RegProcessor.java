@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -76,6 +77,14 @@ public class RegProcessor
         super();
     }
     
+    /**
+     * @return the dateFmt
+     */
+    public SimpleDateFormat getDateFmt()
+    {
+        return dateFmt;
+    }
+
     /**
      * @return the root
      */
@@ -716,6 +725,8 @@ public class RegProcessor
         list.add(new Pair<String, String>("Collection_number",    "Collection Number"));
         list.add(new Pair<String, String>("reg_number",           "Registration Number"));
         list.add(new Pair<String, String>("id",                   "Id"));
+        list.add(new Pair<String, String>("last_used_date",       "Last Opened Date"));
+        
         
         list.addAll(getRegKeyDescPairs());
         list.addAll(getTrackKeyDescPairs());
@@ -742,10 +753,10 @@ public class RegProcessor
     /**
      * @return the collHash
      */
-    /*public Hashtable<String, RegProcEntry> getCollectionHash()
+    public Hashtable<String, RegProcEntry> getCollectionHash()
     {
         return collHash;
-    }*/
+    }
 
     /**
      * @return the trackIdHash
@@ -767,10 +778,15 @@ public class RegProcessor
      * @param dateStr
      * @return
      */
-    private long getDate(final String dateStr)
+    public long getDate(final String dateStrArg)
     {
+        String dateStr = dateStrArg;
         try
         {
+            if (dateStr.indexOf(' ') == 8)
+            {
+                dateStr = dateStr.substring(0, 8);
+            }
             return dateFmt.parse((dateStr.length() == 8 ? "20" : "") + dateStr).getTime();
             
         } catch (ParseException ex)
@@ -834,6 +850,12 @@ public class RegProcessor
                 {
                     //System.err.println("Couldn't find: ["+pName+"]");
                 }
+            }
+            
+            String collectionNum = entry.get("Collection_number");
+            if (collectionNum != null)
+            {
+                collHash.put(collectionNum, entry);
             }
         }
     }
@@ -917,7 +939,10 @@ public class RegProcessor
             //System.out.println("\n"+key);
             Hashtable<String, RegProcEntry> h = typeHash.get(key);
             
-            for (RegProcEntry entry : h.values())
+            Vector<RegProcEntry> items = new Vector<RegProcEntry>(h.values());
+            Collections.sort(items);
+            
+            for (RegProcEntry entry : items)
             {
                 String reg_type   = entry.getProps().getProperty("reg_type");
                 
@@ -976,7 +1001,7 @@ public class RegProcessor
         br.close();
         fr.close();
         
-        boolean doDemo = false;
+        boolean doDemo = true;
         if (doDemo)
         {
             Hashtable<String, Boolean> siteNamesHash = new Hashtable<String, Boolean>();
@@ -1001,6 +1026,8 @@ public class RegProcessor
                 cnt++;
             }
         }
+        
+        root.sortKids();
         
         //System.out.println("--------");
         //printEntries(root, 0);

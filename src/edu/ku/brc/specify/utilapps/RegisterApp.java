@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -38,7 +39,6 @@ import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -64,6 +64,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.helpers.BrowserLauncher;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.IconManager;
@@ -736,13 +737,16 @@ public class RegisterApp extends JPanel
                              final Vector<RegProcEntry> entries,
                              final boolean              hasReg)
     {
-        sb.append("<table class=\"brd\" border=\"1\">\n");
+        Hashtable<String, RegProcEntry> collHash = rp.getCollectionHash();
+        
+        sb.append("<table class=\"brd\" border=\"0\" cellspacing=\"0\">\n");
         sb.append("<tr>");
-        sb.append("<th colspan=\"7\">");
+        sb.append("<th colspan=\"8\">");
         sb.append(tableTitle);
         sb.append("</th>");
         sb.append("</tr>");
-        sb.append("<tr><th>Institution</th><th>Division</th><th>Discipline</th><th>Collection</th><th>ISA Number</th><th>Phone</th><th>EMail</th></tr>\n");
+        sb.append("<tr><th>Institution</th><th>Division</th><th>Discipline</th><th>Collection</th>" +
+                  "<th>ISA Number</th><th>Phone</th><th>EMail</th><th>Last Opened</th></tr>\n");
         
         for (RegProcEntry inst : entries)
         {
@@ -771,13 +775,30 @@ public class RegisterApp extends JPanel
                     int colsCnt = 0;
                     for (RegProcEntry col : disp.getKids())
                     {
+                        
+                        
+                        RegProcEntry colEntry = collHash.get(col.get("reg_number"));
+                        if (colEntry != null)
+                        {
+                            String       dateStr      = colEntry.get("date");
+                            Date         lastUsedDate = new Date(rp.getDate(dateStr));
+                            dateStr = rp.getDateFmt().format(lastUsedDate);
+                            col.getProps().put("last_used_date", dateStr);
+                        } else
+                        {
+                            col.getProps().put("last_used_date", "&nbsp;");
+                        }
+
                         if (colsCnt > 0) sb.append("<tr>\n");
                         String isa = col.getISANumber();
                         sb.append("  <td>"+col.getName()+"</td>\n  <td>"+(StringUtils.isNotEmpty(isa) ? isa : "&nbsp;")+"</td>");
                         
-                        String phone = col.get("Phone");
-                        String email = col.get("User_email");
-                        sb.append("<td>"+(StringUtils.isNotEmpty(phone) ? phone : "&nbsp;")+"</td>\n  <td>"+(StringUtils.isNotEmpty(email) ? email : "&nbsp;")+"</td>\n");
+                        String phone  = col.get("Phone");
+                        String email  = col.get("User_email");
+                        String ludate = col.get("last_used_date");
+                        sb.append("<td>"+(StringUtils.isNotEmpty(phone) ? phone : "&nbsp;")+"</td>\n  <td>"+
+                                   (StringUtils.isNotEmpty(email) ? email : "&nbsp;")+"</td>\n  <td>"+
+                                   (StringUtils.isNotEmpty(ludate) ? ludate : "&nbsp;"));
                         sb.append("</tr>\n");
                         colsCnt++;
                     }
@@ -796,7 +817,10 @@ public class RegisterApp extends JPanel
     public void createRegReport()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("<html><body>");
+        sb.append("<html><head>\n<title>Registrations</title>\n");
+        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://specify6.specifysoftware.org/css/report.css\">\n");
+        sb.append("</head><body>\n<div style=\"text-align: left;\"><img src=\"http://specify6.specifysoftware.org/images/logosmaller.png\" height=\"42\" width=\"117\"></div>\n");
+
         createTable(sb, "ISA Registrations", rp.getRoot(false).getKids(), true);
         sb.append("<br><br>");
         createTable(sb, "No ISA Registrations", rp.getRoot(false).getKids(), false);
@@ -880,8 +904,10 @@ public class RegisterApp extends JPanel
                                "num_gtpu"};
         
         StringBuilder sb = new StringBuilder();
-        sb.append("<html><body><center>");
-        sb.append("<table class=\"brd\" border=\"1\">\n");
+        sb.append("<html><head>\n<title>Statistics</title>\n");
+        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://specify6.specifysoftware.org/css/report.css\">\n");
+        sb.append("</head><body>\n<div style=\"text-align: left;\"><img src=\"http://specify6.specifysoftware.org/images/logosmaller.png\" height=\"42\" width=\"117\"></div>\n");
+        sb.append("<center\n<table class=\"brd\" border=\"0\" cellspacing=\"0\">\n");
         sb.append("<tr>");
         sb.append("<th colspan=\"2\">");
         sb.append("Statistics - All Collections");
@@ -915,10 +941,13 @@ public class RegisterApp extends JPanel
         
         for (String disp : dispHash.keySet())
         {
-            sb.append("<br><br><table class=\"brd\" border=\"1\">\n");
+            DisciplineType discipline = DisciplineType.getDiscipline(disp);
+            String         dTitle     = discipline != null ? discipline.getTitle() : disp;
+             
+            sb.append("<br><br><table class=\"brd\" border=\"0\" cellspacing=\"0\">\n");
             sb.append("<tr>");
             sb.append("<th colspan=\"2\">");
-            sb.append("Statistics for "+disp);
+            sb.append("Statistics for "+dTitle);
             sb.append("</th>");
             sb.append("</tr>");
             sb.append("<tr><th>Name</th><th>Total</th></tr>\n");
@@ -926,6 +955,7 @@ public class RegisterApp extends JPanel
             values = new int[statsArray.length];
             for (int i=0;i<statsArray.length;i++)
             {
+                
                 values[i] = calcStat(sb, collEntries, statsArray[i], fullDescHash.get(statsArray[i]), disp);
             }
             sb.append("</table>"); 
@@ -947,6 +977,9 @@ public class RegisterApp extends JPanel
         }
     }
     
+    /**
+     * 
+     */
     @SuppressWarnings("unchecked")
     protected void doSetVersion()
     {
@@ -1143,11 +1176,16 @@ public class RegisterApp extends JPanel
             String labelText = (String)node.toString();
             setText(labelText);
             
-            RegProcEntry entry   = (RegProcEntry)node;
-            String       regType = entry.get("reg_type");
-            if (regType!= null)
+            String       iconName = null;
+            RegProcEntry entry    = (RegProcEntry)node;
+            String       regType  = entry.get("reg_type");
+            if (entry.getName().equals("Root"))
             {
-                String iconName = null;
+                iconName = "InstBldg";
+                
+            } else if (regType!= null)
+            {
+                
                 if (regType.equals("Discipline"))
                 {
                     iconName = entry.get("Discipline_type");
@@ -1160,19 +1198,20 @@ public class RegisterApp extends JPanel
                     iconName = regType;
                 }
                 
-                if (iconName != null)
+                
+            }
+            
+            if (iconName != null)
+            {
+                Icon myIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std16);
+                if (myIcon != null)
                 {
-                    Icon myIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std16);
-                    if (myIcon != null)
-                    {
-                        setOpenIcon(myIcon);
-                        setClosedIcon(myIcon);
-                        setLeafIcon(myIcon);
-                        setIcon(myIcon);
-                    }
+                    setOpenIcon(myIcon);
+                    setClosedIcon(myIcon);
+                    setLeafIcon(myIcon);
+                    setIcon(myIcon);
                 }
             }
- 
             return this;
         }
     }

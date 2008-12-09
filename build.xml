@@ -224,11 +224,15 @@
 		<copy file="${source.root}/edu/ku/brc/specify/images/spwizard32.png" todir="${installer.dir}" />
 		<copy file="${source.root}/edu/ku/brc/specify/images/spwizard16.png" todir="${installer.dir}" />
 
+		<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder32.png" todir="${installer.dir}" />
+		<copy file="${source.root}/edu/ku/brc/specify/images/spbuilder16.png" todir="${installer.dir}" />
+
 		<!-- <copy file="${source.root}/edu/ku/brc/specify/images/SpecifyBigSplash.png" todir="${installer.dir}" /> -->
 		<copy file="packaging/specify.icns" todir="${installer.dir}" />
 		<copy file="packaging/spwizard.icns" todir="${installer.dir}" />
 		<copy file="packaging/backuprestore.icns" todir="${installer.dir}" />
 		<copy file="packaging/spireports.icns" todir="${installer.dir}" />
+		<copy file="packaging/spbuilder.icns" todir="${installer.dir}" />
 		
 		<copy file="packaging/changelog.html" todir="${installer.dir}" />
 		<copy file="./packaging/SpecifyBigSplashBordered.png" todir="${installer.dir}" />

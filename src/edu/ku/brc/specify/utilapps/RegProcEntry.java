@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.utilapps;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
@@ -26,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
  * Nov 27, 2008
  *
  */
-public class RegProcEntry extends DefaultMutableTreeNode
+public class RegProcEntry extends DefaultMutableTreeNode implements Comparable<RegProcEntry>
 {
     protected RegProcEntry         parent;
     protected String               type;
@@ -36,6 +37,7 @@ public class RegProcEntry extends DefaultMutableTreeNode
     protected Vector<RegProcEntry> kids  = new Vector<RegProcEntry>();
     
     protected String               isaNumber = null;
+    protected boolean              isSorted = false;
     
     /**
      * 
@@ -56,6 +58,11 @@ public class RegProcEntry extends DefaultMutableTreeNode
         super();
         this.name  = name;
         this.props = props;
+    }
+    
+    public void sortKids()
+    {
+        Collections.sort(kids);
     }
     
     /**
@@ -223,7 +230,7 @@ public class RegProcEntry extends DefaultMutableTreeNode
     @Override
     public boolean getAllowsChildren()
     {
-        return false;
+        return true;
     }
 
     /* (non-Javadoc)
@@ -232,6 +239,11 @@ public class RegProcEntry extends DefaultMutableTreeNode
     @Override
     public TreeNode getChildAt(int childIndex)
     {
+        if (!isSorted)
+        {
+            Collections.sort(kids);
+            isSorted = true;
+        }
         return kids.get(childIndex);
     }
 
@@ -270,4 +282,15 @@ public class RegProcEntry extends DefaultMutableTreeNode
     {
         return kids.size() == 0;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(RegProcEntry obj)
+    {
+        return getName().compareTo(obj.getName());
+    }
+    
+    
 }
