@@ -174,8 +174,8 @@
     <icon name="CollectingEventAttr"       alias="attribute"/>
     <icon name="PreparationAttribute"      alias="attribute"/>
     <icon name="PreparationAttr"           alias="attribute"/>
-  	<icon name="CollectionobjectAttribute" alias="attribute"/>
-  	<icon name="CollectionobjectAttr"      alias="attribute"/>
+  	<icon name="CollectionObjectAttribute" alias="attribute"/>
+  	<icon name="CollectionObjectAttr"      alias="attribute"/>
     
     
     <icon name="Accession Agent"        alias="accessionagent"/>
