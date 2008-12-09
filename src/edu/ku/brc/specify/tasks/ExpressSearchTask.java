@@ -20,6 +20,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Color;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -47,6 +48,10 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.af.auth.PermissionSettings;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
@@ -72,7 +77,6 @@ import edu.ku.brc.af.core.expresssearch.SearchConfigService;
 import edu.ku.brc.af.core.expresssearch.SearchTableConfig;
 import edu.ku.brc.af.core.expresssearch.SearchTermField;
 import edu.ku.brc.af.prefs.AppPreferences;
-
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.ui.SearchBox;
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
@@ -98,6 +102,7 @@ import edu.ku.brc.specify.web.ExplorerESPanel;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
@@ -244,13 +249,37 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     
                 } else if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(searchTerm.toLowerCase()))
                 {
-                    ESResultsSubPane expressSearchPane = new ESResultsSubPane(searchTerm, this, true);
-                    if (!doQuery(searchText, null, expressSearchPane))
+                    boolean isOK = true;
+                    if (searchTerm.startsWith("*") && searchTerm.endsWith("*") && searchTerm.length() > 3)
                     {
-                        setUserInputToNotFound("BAD_SEARCH_TERMS", true);
-                    } else
+                        int inx = searchTerm.length() - 2;
+                        if (searchTerm.indexOf(' ', 2) > 1 && 
+                            searchTerm.lastIndexOf(' ') < searchTerm.length()-2 &&
+                            searchTerm.charAt(1) != '"' && searchTerm.charAt(1) != '\'' && searchTerm.charAt(1) != '`' &&
+                            searchTerm.charAt(inx) != '"' && searchTerm.charAt(inx) != '\'' && searchTerm.charAt(inx) != '`')
+                        {
+                            JLabel label = UIHelper.createI18NLabel("ExpressSearchTask.MISSING_QUOTES");
+                            PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "f:p:g"));
+                            pb.add(label, (new CellConstraints()).xy(1, 1));
+                            pb.setDefaultDialogBorder();
+                            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), getResourceString("HINT"), true, pb.getPanel());
+                            dlg.setOkLabel(getResourceString("ExpressSearchTask.SRCH_ANYWAY"));
+                            dlg.setCancelLabel(getResourceString("ExpressSearchTask.DNT_SRCH"));
+                            dlg.setVisible(true);
+                            isOK = !dlg.isCancelled();
+                        }
+                    }
+                    
+                    if (isOK)
                     {
-                        AppPreferences.getLocalPrefs().put(getLastSearchKey(), searchTerm);
+                        ESResultsSubPane expressSearchPane = new ESResultsSubPane(searchTerm, this, true);
+                        if (!doQuery(searchText, null, expressSearchPane))
+                        {
+                            setUserInputToNotFound("BAD_SEARCH_TERMS", true);
+                        } else
+                        {
+                            AppPreferences.getLocalPrefs().put(getLastSearchKey(), searchTerm);
+                        }
                     }
                     
                 } else

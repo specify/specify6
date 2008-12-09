@@ -79,6 +79,12 @@ public class ESTermParser
         if (searchTerm.length() > 0)
         {
             String[] terms;
+            
+            boolean startWith = searchTerm.startsWith("*");
+            boolean endsWith  = searchTerm.endsWith("*");
+
+            searchTerm = StringUtils.remove(searchTerm, '*');
+            
             if (searchTerm.startsWith("\"") || searchTerm.startsWith("'") || searchTerm.startsWith("`"))
             {
                 searchTerm = StringUtils.stripStart(searchTerm, "\"'`");
@@ -94,6 +100,16 @@ public class ESTermParser
                 terms = StringUtils.split(searchTerm, ' ');
             }
             
+            if (terms.length == 1)
+            {
+                terms[0] = (startWith ? "*" : "") + terms[0] + (endsWith ? "*" : "");
+            } else
+            {
+                 
+                terms[0] = (startWith ? "*" : "") + terms[0];
+                terms[terms.length-1] = terms[terms.length-1] + (endsWith ? "*" : ""); 
+            }
+
             for (String term : terms)
             {
                 SearchTermField stf = new SearchTermField(term);
