@@ -100,8 +100,8 @@ public class TaskSemaphoreMgr
      * @return the semaphore or null if no matching semaphore exists.
      */
     protected static SpTaskSemaphore getLockInfo(final String title, 
-                                   final String name, 
-                                   final SCOPE  scope)
+                                                 final String name, 
+                                                 final SCOPE  scope)
     {
         DataProviderSessionIFace session = null;
         try

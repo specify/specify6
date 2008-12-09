@@ -30,6 +30,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.ViewBasedDialogFactoryIFace;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayActionAdapter;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayFrame;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
@@ -61,7 +62,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
     
     public static final String   factoryName = "edu.ku.brc.specify.ui.DBObjDialogFactory"; //$NON-NLS-1$
     
-    public enum FormLockStatus {Skip, OK, ViewOnly}
+    public enum FormLockStatus {Skip, OK, GotLock, ViewOnly}
     
     protected static DBObjDialogFactory instance = null;
 
@@ -210,7 +211,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             String viewSetName = info.getViewSetName();
             String viewName    = info.getViewName();
             
-            ViewIFace view = sacm.getView(null, viewName);
+            final ViewIFace view = sacm.getView(null, viewName);
             if (view != null)
             {
                 viewSetName = view.getViewSetName();
@@ -220,7 +221,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             }
             
             FormLockStatus lockStatus = isLockOK("LockTitle", view, MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT), isEdit);
-            if (lockStatus != FormLockStatus.OK)
+            if (lockStatus != FormLockStatus.GotLock)
             {
                 if (lockStatus == FormLockStatus.ViewOnly)
                 {
@@ -245,57 +246,90 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                 }
             }
             
+            ViewBasedDisplayIFace viewDisplay;
             if (type == ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME)
             {
+                
                 if (parent instanceof Frame)
                 {
-                    return new ViewBasedDisplayFrame(viewSetName,
-                                                     info.getViewName(),
-                                                     info.getSearchName(),
-                                                     frameTitle,
-                                                     closeBtnTitle,
-                                                     info.getClassName(),
-                                                     info.getIdFieldName(),
-                                                     isEdit,
-                                                     options);
-                }
+                    viewDisplay = new ViewBasedDisplayFrame(viewSetName,
+                                                             info.getViewName(),
+                                                             info.getSearchName(),
+                                                             frameTitle,
+                                                             closeBtnTitle,
+                                                             info.getClassName(),
+                                                             info.getIdFieldName(),
+                                                             isEdit,
+                                                             options);
+                } else
+                {
                 
-                return new ViewBasedDisplayDialog((Dialog)parent,
-                                                    viewSetName,
-                                                    info.getViewName(),
-                                                    info.getSearchName(),
-                                                    frameTitle,
-                                                    closeBtnTitle,
-                                                    info.getClassName(),
-                                                    info.getIdFieldName(),
-                                                    isEdit,
-                                                    options);
+                    viewDisplay = new ViewBasedDisplayDialog((Dialog)parent,
+                                                                viewSetName,
+                                                                info.getViewName(),
+                                                                info.getSearchName(),
+                                                                frameTitle,
+                                                                closeBtnTitle,
+                                                                info.getClassName(),
+                                                                info.getIdFieldName(),
+                                                                isEdit,
+                                                                options);
+                }
                 
             } else if (parent instanceof Frame)
             {
-                return new ViewBasedDisplayDialog((Frame)parent,
-                                                  viewSetName,
-                                                  info.getViewName(),
-                                                  info.getSearchName(),
-                                                  frameTitle,
-                                                  closeBtnTitle,
-                                                  info.getClassName(),
-                                                  info.getIdFieldName(),
-                                                  isEdit,
-                                                  options);
+                viewDisplay = new ViewBasedDisplayDialog((Frame)parent,
+                                                          viewSetName,
+                                                          info.getViewName(),
+                                                          info.getSearchName(),
+                                                          frameTitle,
+                                                          closeBtnTitle,
+                                                          info.getClassName(),
+                                                          info.getIdFieldName(),
+                                                          isEdit,
+                                                          options);
             } else
             {
-                return new ViewBasedDisplayDialog((Dialog)parent,
-                                                  viewSetName,
-                                                  info.getViewName(),
-                                                  info.getSearchName(),
-                                                  frameTitle,
-                                                  closeBtnTitle,
-                                                  info.getClassName(),
-                                                  info.getIdFieldName(),
-                                                  isEdit,
-                                                  options);
+                viewDisplay = new ViewBasedDisplayDialog((Dialog)parent,
+                                                          viewSetName,
+                                                          info.getViewName(),
+                                                          info.getSearchName(),
+                                                          frameTitle,
+                                                          closeBtnTitle,
+                                                          info.getClassName(),
+                                                          info.getIdFieldName(),
+                                                          isEdit,
+                                                          options);
             }
+            
+            if (viewDisplay != null)
+            {
+                if (lockStatus == FormLockStatus.GotLock)
+                {
+                    final String ERR_UNLOCKING_FORM = "DBObjDialogFactory.ERR_UNLOCKING_FORM";
+                    viewDisplay.setCloseListener(new ViewBasedDisplayActionAdapter() {
+                        @Override
+                        public boolean cancelPressed(ViewBasedDisplayIFace vbd)
+                        {
+                            if (!unLockOK("LockTitle", view))
+                            {
+                                UIRegistry.showLocalizedError(ERR_UNLOCKING_FORM);
+                            }
+                            return true;
+                        }
+                        @Override
+                        public boolean okPressed(ViewBasedDisplayIFace vbd)
+                        {
+                            if (!unLockOK("LockTitle", view))
+                            {
+                                UIRegistry.showLocalizedError(ERR_UNLOCKING_FORM);
+                            }
+                            return true;
+                        }
+                    });
+                }
+            }
+            return viewDisplay;
         }
         // else
         throw new RuntimeException("Couldn't create ViewBasedDisplayFrame by name["+name+"] (Check the List of dialog in dailog_defs.xml)");
@@ -319,8 +353,8 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
         Class<?> treeDefClass = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getTreeDefClass(view);
         if (treeDefClass != null)
         {
-            String treeSemaphoreName     = treeDefClass.getSimpleName();
-            String treeFormSemaphoreName = treeDefClass.getSimpleName() + "Form";
+            String  treeSemaphoreName     = treeDefClass.getSimpleName();
+            String  treeFormSemaphoreName = treeDefClass.getSimpleName() + "Form";
             
             DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
             String       title    = tableInfo.getTitle() + " " + "Tree";
@@ -376,6 +410,8 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                     UIRegistry.showLocalizedError("TREE_LOCKED_ERR_FRM");
                     return FormLockStatus.Skip;
                 }
+                return FormLockStatus.GotLock;
+                
             } else
             {
                 UIRegistry.showLocalizedError("TREE_LOCKED_ERR");
@@ -383,6 +419,42 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             }
         }
         return FormLockStatus.OK;
+    }
+    
+    /**
+     * @param lockTitle
+     * @param view
+     * @return
+     */
+    public static boolean unLockOK(final String    lockTitle, 
+                                   final ViewIFace view)
+    {
+        Class<?> treeDefClass = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getTreeDefClass(view);
+        if (treeDefClass != null)
+        {
+            String  treeSemaphoreName     = treeDefClass.getSimpleName();
+            String  treeFormSemaphoreName = treeDefClass.getSimpleName() + "Form";
+            
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+            String       title    = tableInfo.getTitle() + " " + "Tree";
+            
+            // If this user owns the Tree Form Lock then they can open the View
+            if (!TaskSemaphoreMgr.doesOwnSemaphore(treeFormSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline))
+            {
+                return false;
+            }
+            
+            if (TaskSemaphoreMgr.unlock(title, treeFormSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline))
+            {
+                if (TaskSemaphoreMgr.unlock(title, treeSemaphoreName, TaskSemaphoreMgr.SCOPE.Discipline))
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+        return true;
     }
     
     /* (non-Javadoc)

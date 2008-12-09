@@ -317,7 +317,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
     {
         if (vbdaa != null)
         {
-            if (!vbdaa.helpPressed(this))
+            if (!vbdaa.okPressed(this))
             {
                 return;
             }
