@@ -1264,12 +1264,7 @@ public class InteractionsTask extends BaseTask
                         
                         //EMailHelper.setDebugging(true);
                         String text = emailPrefs.get("bodytext").replace("\n", "<br>") + "<BR><BR>" + sb.toString();
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run()
-                            {
-                                UIRegistry.displayLocalizedStatusBarText("SENDING_EMAIL");
-                            }
-                        });
+                        UIRegistry.displayLocalizedStatusBarText("SENDING_EMAIL");
                         
                         String password = Encryption.decrypt(emailPrefs.get("password"));
                         if (StringUtils.isEmpty(password))
@@ -1279,23 +1274,18 @@ public class InteractionsTask extends BaseTask
                         
                         if (StringUtils.isNotEmpty(password))
                         {
-                            final boolean status = EMailHelper.sendMsg(emailPrefs.get("smtp"), 
-                                                                       emailPrefs.get("username"), 
-                                                                       password, 
-                                                                       emailPrefs.get("email"), 
-                                                                       emailPrefs.get("to"), 
-                                                                       emailPrefs.get("subject"), 
-                                                                       text, 
-                                                                       EMailHelper.HTML_TEXT, 
-                                                                       emailPrefs.get("port"), 
-                                                                       emailPrefs.get("security"), 
-                                                                       excelFile);
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run()
-                                {
-                                    UIRegistry.displayLocalizedStatusBarText(status ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
-                                }
-                            });
+                            boolean status = EMailHelper.sendMsg(emailPrefs.get("smtp"), 
+                                                                   emailPrefs.get("username"), 
+                                                                   password, 
+                                                                   emailPrefs.get("email"), 
+                                                                   emailPrefs.get("to"), 
+                                                                   emailPrefs.get("subject"), 
+                                                                   text, 
+                                                                   EMailHelper.HTML_TEXT, 
+                                                                   emailPrefs.get("port"), 
+                                                                   emailPrefs.get("security"), 
+                                                                   excelFile);
+                            UIRegistry.displayLocalizedStatusBarText(status ? "EMAIL_SENT_OK" : "EMAIL_SENT_ERROR");
                         }
                     }
                 }
@@ -1586,7 +1576,10 @@ public class InteractionsTask extends BaseTask
     {
         if (cmdAction.getData() instanceof InfoRequest)
         {
-            if (cmdAction.isAction(INSERT_CMD_ACT) || cmdAction.isAction(UPDATE_CMD_ACT))
+            // NOTE: An Update message is sent right after an Insert.
+            // So we can ignore the Insert
+            System.out.println(cmdAction);
+            if (cmdAction.isAction(UPDATE_CMD_ACT))
             {
                 // Create Specify Application
                 SwingUtilities.invokeLater(new Runnable() {
@@ -1596,11 +1589,10 @@ public class InteractionsTask extends BaseTask
                     }
                 });
                 
-                if (cmdAction.isAction(INSERT_CMD_ACT))
-                {
-                    InfoRequest infoRequest = (InfoRequest)cmdAction.getData();
-                    createNavBtn(infoRequestNavBox, INFOREQUEST_FLAVOR, infoRequest, DBTableIdMgr.getInstance().getInfoById(InfoRequest.getClassTableId()));
-                }
+            } else if (cmdAction.isAction(INSERT_CMD_ACT))
+            {
+                InfoRequest infoRequest = (InfoRequest)cmdAction.getData();
+                createNavBtn(infoRequestNavBox, INFOREQUEST_FLAVOR, infoRequest, DBTableIdMgr.getInstance().getInfoById(InfoRequest.getClassTableId()));
             }
         }
     }

@@ -331,9 +331,9 @@ public class InfoRequestTask extends BaseTask
      */
     public boolean isEMailPrefsOK(final Hashtable<String, String> emailPrefs)
     {
-        AppPreferences appPrefs = AppPreferences.getLocalPrefs();
+        AppPreferences appPrefs = AppPreferences.getRemote();
         boolean allOK = true;
-        String[] emailPrefNames = { "servername", "username", "password", "email", "port", "security"};
+        String[] emailPrefNames = { "smtp", "username", "password", "email", "port", "security"};
         for (String pName : emailPrefNames)
         {
             String value = appPrefs.get("settings.email."+pName, null);
@@ -518,7 +518,7 @@ public class InfoRequestTask extends BaseTask
                     public void run()
                     {
                         //createAndSendEMail((InfoRequest)cm.getData());  
-                        CommandDispatcher.dispatch(new CommandAction(INFOREQUEST, CREATE_MAILMSG, SubPaneMgr.getInstance().getCurrentSubPane()));
+                        //CommandDispatcher.dispatch(new CommandAction(INFOREQUEST, CREATE_MAILMSG, SubPaneMgr.getInstance().getCurrentSubPane()));
                     }
                 });
             }
