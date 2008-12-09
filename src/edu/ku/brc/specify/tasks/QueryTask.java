@@ -1032,27 +1032,37 @@ public class QueryTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#requestContext()
      */
+    @Override
     public void requestContext()
     {
-        ContextMgr.requestContext(this);
-
-        if (starterPane == null)
+        /* this method is complicated by a fix for bug 6252 (no starter pane created for QueryTask in some situations)
+         * 
+         * The reason for the problem probably has to do with QueryTask being a singletonPane. It could probably be solved
+         * more cleanly/generally, but doing it here avoids possibility of creating problems for other tasks.
+         * 
+         */
+        boolean goodStarterPane = starterPane != null && SubPaneMgr.getInstance().indexOfComponent(starterPane.getUIComponent()) > -1;
+        boolean goodQueryPane = queryBldrPane != null && SubPaneMgr.getInstance().indexOfComponent(queryBldrPane.getUIComponent()) > -1;
+        if (goodStarterPane || goodQueryPane)
         {
-            if (queryBldrPane == null)
+            ContextMgr.requestContext(this);
+        }
+
+        if (!goodStarterPane)
+        {
+            if (!goodQueryPane)
             {
                 super.requestContext();
-                
-            } else
+
+            }
+            else
             {
                 SubPaneMgr.getInstance().showPane(queryBldrPane);
             }
-            
-        } else  
+        }
+        else
         {
-            if (SubPaneMgr.getInstance().indexOfComponent(starterPane.getUIComponent()) > -1)
-            {
-                SubPaneMgr.getInstance().showPane(starterPane);
-            }
+            SubPaneMgr.getInstance().showPane(starterPane);
         }
     }
     
