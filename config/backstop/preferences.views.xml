@@ -171,7 +171,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="" label="" />
-                    <cell type="command" id="testconnection" name="settings.email.testconnection" label="SEND_TEST_EMAIL" commandtype="EmailPref" action="test"/>
+                    <cell type="command" id="testconnection" name="settings.email.testconnection" label="SEND_TEST_EMAIL"/>
                 </row>
             </rows>
         </viewdef>

@@ -21,9 +21,12 @@ import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -37,13 +40,11 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -60,7 +61,7 @@ import edu.ku.brc.ui.UIRegistry;
  *
  */
 @SuppressWarnings("serial")
-public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, CommandListener, PrefsPanelIFace
+public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, PrefsPanelIFace
 {
     // Checker
     protected ImageIcon    checkIcon     = IconManager.getIcon("Checkmark", IconManager.IconSize.Std24);
@@ -97,15 +98,21 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
 
         if (formView != null & form != null && form.getUIComponent() != null)
         {
-            /*ValComboBox cbx = (ValComboBox)form.getCompById("accounttype");
-            if (cbx.getComboBox().getSelectedIndex() == -1)
+            if (form instanceof FormViewObj)
             {
-                cbx.getComboBox().setSelectedIndex(0);
+                FormViewObj fvo = (FormViewObj)form;
+                JButton btn = fvo.getCompById("testconnection");
+                if (btn != null)
+                {
+                    btn.addActionListener(new ActionListener(){
+                        @Override
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            startEMailSettingsTest();
+                        }
+                    });
+                }
             }
-            form.getValidator().validateForm();
-            */
-
-            CommandDispatcher.register("EmailPref", this);
         }
     }
 
@@ -336,14 +343,6 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
     }
 
     //--------------------------------------------------------------------
-    // CommandListener Interface
-    //--------------------------------------------------------------------
-    public void doCommand(CommandAction cmdAction)
-    {
-        startEMailSettingsTest();
-    }
-
-    //--------------------------------------------------------------------
     // PrefsSavable Interface
     //--------------------------------------------------------------------
 
@@ -437,11 +436,11 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
             if (!status)
             {
                 // XXX Get response error message from Helper and display it.
-                UIRegistry.showError("Error Sending EMail"); // XXX I18N
+                UIRegistry.showLocalizedError("EMailPrefsPanel.ERROR", EMailHelper.getLastErrorMsg()); // XXX I18N
                 
             } else
             {
-                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(), "Message Sent\nCheck your mailbox to see if it worked.");
+                UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "", "EMailPrefsPanel.OK");
             }
             parentDlg.setVisible(false);
             parentDlg.dispose();

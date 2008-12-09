@@ -2416,10 +2416,10 @@ public class FormViewObj implements Viewable,
             traverseToToSetAsNew(mvParent, false, true); // last arg means it should traverse
             updateControllerUI();
             
-            if (doCarryForward)
-            {
+            //if (doCarryForward)
+            //{
                 carryFwdDataObj = dataObj;
-            }
+            //}
 
             if (saveControl != null)
             {

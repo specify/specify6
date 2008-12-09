@@ -39,6 +39,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
+import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
@@ -94,10 +95,18 @@ public class EMailHelper
      * Default Constructor.
      *
      */
-    public EMailHelper()
+    protected EMailHelper()
     {
     }
 
+    /**
+     * @return the singleton
+     */
+    public static EMailHelper getInstance()
+    {
+        return instance;
+    }
+    
     /**
      * Send an email. Also sends it as a gmail if applicable, and does password checking.
      * @param host host of SMTP server
@@ -158,6 +167,7 @@ public class EMailHelper
                 props.put("mail.smtp.socketFactory.port", port);
                 props.put("mail.smtp.socketFactory.class", SSL_FACTORY);
                 props.put("mail.smtp.socketFactory.fallback", "false");
+                props.put("mail.imap.auth.plain.disable","true");
             }
         }
         
@@ -249,9 +259,12 @@ public class EMailHelper
             }
 
 
+            final int TRIES = 1;
+            
             // set the Date: header
             msg.setSentDate(new Date());
 
+            Exception exception = null;
             // send the message
             int cnt = 0;
             do
@@ -272,30 +285,20 @@ public class EMailHelper
                     
                     fail = false;
     
+                } catch (SendFailedException mex)
+                {
+                    mex.printStackTrace();
+                    exception = mex;
+                    
+                } catch (MessagingException mex)
+                {
+                    mex.printStackTrace();
+                    exception = mex;
+                    
                 } catch (Exception mex)
                 {
-                    instance.lastErrorMsg = mex.toString();
-                    
-                    Exception ex = null;
-                    if (mex instanceof MessagingException && (ex = ((MessagingException)mex).getNextException()) != null) 
-                    {
-                      ex.printStackTrace();
-                      instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString(); //$NON-NLS-1$
-                    }
-                    
-                    //wrong username or password, get new one
-                    if (mex.toString().equals("javax.mail.AuthenticationFailedException")) //$NON-NLS-1$
-                    {
-                        fail = true;
-                        userAndPass = askForUserAndPassword((Frame)UIRegistry.getTopWindow());
-                        
-                        if (userAndPass == null)
-                        {//the user is done
-                            return false;
-                        }
-                        userName = userAndPass.get(0);
-                        password = userAndPass.get(1);
-                    }
+                    mex.printStackTrace();
+                    exception = mex;
                 
                 } finally
                 {
@@ -306,7 +309,29 @@ public class EMailHelper
                      }
                 }
                 
-            } while (fail && cnt < 6);
+                if (exception != null)
+                {
+                    fail = true;
+                    
+                    instance.lastErrorMsg = exception.toString();
+                    
+                    //wrong username or password, get new one
+                    if (exception.toString().equals("javax.mail.AuthenticationFailedException")) //$NON-NLS-1$
+                    {
+                        userAndPass = askForUserAndPassword((Frame)UIRegistry.getTopWindow());
+                        
+                        if (userAndPass == null)
+                        {//the user is done
+                            return false;
+                        }
+                        userName = userAndPass.get(0);
+                        password = userAndPass.get(1);
+                    }
+
+                }
+                exception = null;
+                
+            } while (fail && cnt < TRIES);
 
         } catch (Exception mex)
         {
@@ -735,8 +760,8 @@ public class EMailHelper
                                          final String subject,
                                          final String bodyText,
                                          final String mimeType,
-                                         final String port,
-                                         final String security,
+                                         @SuppressWarnings("unused") final String port,
+                                         @SuppressWarnings("unused") final String security,
                                          final File   fileAttachment)
     {
         String  userName = uName;

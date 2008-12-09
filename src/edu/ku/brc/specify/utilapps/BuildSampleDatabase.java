@@ -5343,8 +5343,7 @@ public class BuildSampleDatabase
         Calendar originalDueDate3 = Calendar.getInstance();
         originalDueDate3.set(2006, 9, 21);
         
-        Loan loan3 = createLoan(yr + "-003", loanDate3, currentDueDate3, originalDueDate3,  
-                                      null, Loan.OPEN, null);
+        Loan loan3 = createLoan(yr + "-003", loanDate3, currentDueDate3, originalDueDate3, null, Loan.OPEN, null);
         Vector<LoanPreparation> newLoanLPOs = new Vector<LoanPreparation>();
         int lpoCountInNewLoan = 0;
         // put some LPOs in this loan that are from CollObjs that have other preps loaned out already
