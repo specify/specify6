@@ -6,7 +6,10 @@
  */
 package edu.ku.brc.services.biogeomancer;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -64,8 +67,6 @@ public class BioGeomancer
                                                  final String adm2,
                                                  final String localityArg) throws IOException
     {
-        String retVal = null;
-
         HttpClient httpClient = new HttpClient();
         PostMethod postMethod = new PostMethod("http://130.132.27.130/cgi-bin/bgm-0.2/batch_test.pl"); //$NON-NLS-1$
         StringBuilder strBuf = new StringBuilder(128);
@@ -85,16 +86,28 @@ public class BioGeomancer
         // method, as addParameters is deprecated
         postMethod.addParameters(postData);
 
-        String responseBody = ""; //$NON-NLS-1$
-
         httpClient.executeMethod(postMethod);
-        responseBody = postMethod.getResponseBodyAsString();
+        
+        InputStream iStream = postMethod.getResponseBodyAsStream();
+        
+        StringBuilder sb       = new StringBuilder();
+        byte[]        bytes    = new byte[8196];
+        int           numBytes = 0;
+        do 
+        {
+            numBytes = iStream.read(bytes);
+            if (numBytes > 0)
+            {
+               sb.append(new String(bytes, 0, numBytes));
+            }
+            
+        } while (numBytes > 0);
+        
 
         //release the connection used by the method
         postMethod.releaseConnection();
 
-        retVal = responseBody;
-        return retVal;
+        return  sb.toString();
     }
     
     
