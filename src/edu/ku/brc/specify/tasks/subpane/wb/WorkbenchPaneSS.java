@@ -45,9 +45,12 @@ import java.net.ConnectException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventObject;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -145,6 +148,8 @@ import edu.ku.brc.specify.rstools.ExportToFile;
 import edu.ku.brc.specify.rstools.GoogleEarthExporter;
 import edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace;
 import edu.ku.brc.specify.rstools.WorkbenchRowPlacemarkWrapper;
+import edu.ku.brc.specify.tasks.DataEntryTask;
+import edu.ku.brc.specify.tasks.InteractionsTask;
 import edu.ku.brc.specify.tasks.PluginsTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
@@ -2929,6 +2934,72 @@ public class WorkbenchPaneSS extends BaseSubPane
         return currentPanelType == PanelType.Spreadsheet ? "WorkbenchGridEditing" : "WorkbenchFormEditing";
     }
     
+    /**
+     * @return  a list of open panes that prohibit uploading.
+     */
+    protected List<SubPaneIFace> checkOpenTasksForUpload()
+    {
+        List<SubPaneIFace> result = new LinkedList<SubPaneIFace>();
+        for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes())
+        {
+            if (prohibitsUpload(pane))
+            {
+                result.add(pane);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * @param pane
+     * @return true if uploads are prohibited while pane is open.
+     */
+    protected boolean prohibitsUpload(final SubPaneIFace pane)
+    {
+        if (pane.getTask().getClass().equals(DataEntryTask.class))
+        {
+            return true;
+        }
+        if (pane.getTask().getClass().equals(InteractionsTask.class))
+        {
+            return true;
+        }
+        //others....
+        return false;
+    }
+    
+    /**
+     * @param badPanes
+     * @return a list of the distinct tasks represented by badPanes 
+     */
+    protected String getListOfBadTasks(final List<SubPaneIFace> badPanes)
+    {
+        Set<Taskable> badTasks = new HashSet<Taskable>();
+        for (SubPaneIFace pane : badPanes)
+        {
+            badTasks.add(pane.getTask());
+        }
+        String result = "";
+        Iterator<Taskable> badI= badTasks.iterator();
+        while (badI.hasNext())
+        {
+            Taskable badTask = badI.next();
+            if (!StringUtils.isBlank(result))
+            {
+                if (badI.hasNext())
+                {
+                    result += ", ";
+                }
+                else
+                {
+                    result += " or ";
+                }
+            }
+            result += badTask.getTitle();
+        }
+        return result;
+    }
+    
     protected void doDatasetUpload()
     {        
         if (datasetUploader != null)
@@ -2936,6 +3007,24 @@ public class WorkbenchPaneSS extends BaseSubPane
             //the button shouldn't be enabled in this case, but just to be sure:
             log.error("The upload button was enabled but the datasetUploader was not null.");
             return;
+        }
+        
+        List<SubPaneIFace> badPanes = checkOpenTasksForUpload();
+        if (badPanes.size() > 0)
+        {
+            if (!UIRegistry.displayConfirm(UIRegistry.getResourceString("WB_UPLOAD_CLOSE_ALL_TITLE"), 
+                    String.format(getResourceString("WB_UPLOAD_CLOSE_ALL_MSG"), getListOfBadTasks(badPanes)), 
+                    getResourceString("OK"), getResourceString("CANCEL"), JOptionPane.QUESTION_MESSAGE))
+            {
+                return;
+            }
+            for (SubPaneIFace badPane : badPanes)
+            {
+                if (!SubPaneMgr.getInstance().removePane(badPane, true))
+                {
+                    return;
+                }
+            }
         }
         
         List<String> logins = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getAgentListLoggedIn(AppContextMgr.getInstance().getClassObject(Discipline.class));
