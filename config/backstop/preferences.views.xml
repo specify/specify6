@@ -371,7 +371,7 @@
                     <cell type="separator" label="ATTCH_PATH" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="field" id="8" name="attachment.path" cols="30" uitype="browse" colspan="4"/>
+                    <cell type="field" id="8" name="attachment.path" cols="30" uitype="browse" initialize="dirsonly=true" colspan="4"/>
                 </row>
             </rows>
         </viewdef>
