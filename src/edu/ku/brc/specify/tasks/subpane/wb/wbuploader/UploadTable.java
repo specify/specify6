@@ -894,7 +894,6 @@ public class UploadTable implements Comparable<UploadTable>
     {
         try
         {
-            autoAssignedVal = null;
             Object arg[] = new Object[1];
             Class<?> fldClass;
 //            if (tblClass.equals(DeterminationStatus.class) && ufld.getField().getName().equalsIgnoreCase("type"))
@@ -1900,6 +1899,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         int recNum = 0;
         logDebug("writeRowOrNot: " + this.table.getName());
+        autoAssignedVal = null;  //assumes one autoassign field per table.
         for (Vector<UploadField> seq : uploadFields)
         {
             try
