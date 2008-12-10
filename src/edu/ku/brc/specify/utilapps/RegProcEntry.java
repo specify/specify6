@@ -184,6 +184,7 @@ public class RegProcEntry extends DefaultMutableTreeNode implements Comparable<R
     {
         if (parent != null)
         {
+            System.out.println(isRegistered());
             return getName() + (isRegistered() ? ("  (Registered)") : "");
         }
         

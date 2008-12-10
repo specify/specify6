@@ -286,10 +286,6 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                                     throw new RuntimeException("Locality can only have ONE GeoCoordDetail!");
                                 }
                                 
-                                log.debug("XML Length: "+item.getXML().length());
-                                gcDetail.setBgmXML(item.getXML());
-                                // Need code here to break apart the XML and put it into the fields
-                                
                                 try
                                 {
                                     session.beginTransaction();

@@ -35,6 +35,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
+
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "determination")
@@ -52,6 +54,8 @@ public class Determination extends CollectionMember implements java.io.Serializa
      protected Boolean             isCurrent;
      protected String              typeStatusName;
      protected Calendar            determinedDate;
+     protected Byte                determinedDatePrecision;   // Accurate to Year, Month, Day
+
      protected String              qualifier;
      protected String              addendum;
      protected String              confidence;
@@ -100,6 +104,7 @@ public class Determination extends CollectionMember implements java.io.Serializa
         isCurrent = false;
         typeStatusName = null;
         determinedDate = null;
+        determinedDatePrecision = null;
         confidence = null;
         qualifier  = null;
         addendum = null;
@@ -212,6 +217,23 @@ public class Determination extends CollectionMember implements java.io.Serializa
     public void setDeterminedDate(Calendar determinedDate) 
     {
         this.determinedDate = determinedDate;
+    }
+
+    /**
+     * @return the determinedDatePrecision
+     */
+    @Column(name = "DeterminedDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getDeterminedDatePrecision()
+    {
+        return this.determinedDatePrecision != null ? this.determinedDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
+    }
+
+    /**
+     * @param determinedDatePrecision the determinedDatePrecision to set
+     */
+    public void setDeterminedDatePrecision(Byte determinedDatePrecision)
+    {
+        this.determinedDatePrecision = determinedDatePrecision;
     }
 
     /**

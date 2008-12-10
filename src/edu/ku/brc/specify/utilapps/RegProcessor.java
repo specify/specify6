@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -66,6 +65,9 @@ public class RegProcessor
     protected Hashtable<String, RegProcEntry>                    prvRegNumHash     = new Hashtable<String, RegProcEntry>();
     protected Hashtable<String, Boolean>                         prvTrackUsageHash = new Hashtable<String, Boolean>();
     protected Hashtable<String, Hashtable<String, Integer>>      prvTrackCatsHash  = new Hashtable<String, Hashtable<String, Integer>>();
+    
+    protected Vector<Pair<String, String>>                       dateTimeVector    = new Vector<Pair<String, String>>();
+
 
     protected RegProcEntry root = new RegProcEntry("Root");
     
@@ -136,28 +138,29 @@ public class RegProcessor
         prvTrackUsageHash.clear();
         prvTrackCatsHash.clear();
         
-        
-        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-        verToDateHash   = verToDateHashArg;
-        for (String ver : verToDateHash.keySet())
+        if (verToDateHashArg != null)
         {
-            String dateStr = verToDateHash.get(ver);
-            try
+            SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+            verToDateHash   = verToDateHashArg;
+            for (String ver : verToDateHash.keySet())
             {
-                long time = df.parse(dateStr).getTime();
-                dateToVer.put(time, ver);
-                dateList.add(time);
-                
-            } catch (ParseException ex)
-            {
-                ex.printStackTrace();
+                String dateStr = verToDateHash.get(ver);
+                try
+                {
+                    long time = df.parse(dateStr).getTime();
+                    dateToVer.put(time, ver);
+                    dateList.add(time);
+                    
+                } catch (ParseException ex)
+                {
+                    ex.printStackTrace();
+                }
             }
+            Collections.sort(dateList);
+            
         }
-        Collections.sort(dateList);
-        
-        versionNum     = versionStr.equals("Clear") ? null : versionStr;
+        versionNum     = versionStr;
         prevVersionNum = preVersionStr;
-        
     }
     
     /**
@@ -181,17 +184,14 @@ public class RegProcessor
                 trackCatsHashArg.put(category, countHash);
             }
             
-            Integer count = countHash.get(key);
+            Integer count  = countHash.get(key);
+            int     valNum = Integer.parseInt(valueStr);
             if (count == null)
             {
-                count = 1;
+                count = valNum;
             } else
             {
-                count += Integer.parseInt(valueStr);
-            }
-            if (key.equals("DE_VIEW_Agent_RS"))
-            {
-                System.out.println("Count: "+count);
+                count += valNum;
             }
             countHash.put(key, count);
         }
@@ -226,15 +226,9 @@ public class RegProcessor
             Hashtable<String, Boolean>                    trkUsageHash  = new Hashtable<String, Boolean>();
             Hashtable<String, Hashtable<String, Integer>> trkCatsHash   = new Hashtable<String, Hashtable<String, Integer>>();
             
-            Vector<String> collectionNumbers = new Vector<String>();
-            for (String collKey : trackRegNumHash.keySet())
-            {
-                if (prvRegNumHash.get(collKey) != null)
-                {
-                    collectionNumbers.add(collKey);
-                }
-            }
-            
+            // First find all the Collection Register Numbers
+            // that were the same from 
+            Vector<String> collectionNumbers = new Vector<String>(trackRegNumHash.keySet());
             System.out.println("========================");
             for (String colKey : collectionNumbers)
             {
@@ -269,26 +263,29 @@ public class RegProcessor
             for (String colKey : collectionNumbers)
             {
                 RegProcEntry entry = prvRegNumHash.get(colKey);
-                System.out.println("PRV "+entry.get("date")+"  "+colKey);
-                for (Object keyObj : entry.getProps().keySet())
+                if (entry != null)
                 {
-                    String pName = keyObj.toString();
-                    String value = entry.getProps().getProperty(pName);
-                    
-                    if (pName.startsWith("Usage_"))
+                    System.out.println("PRV "+entry.get("date")+"  "+colKey);
+                    for (Object keyObj : entry.getProps().keySet())
                     {
-                        addToTracks(pName.substring(6), value, prvTrackUsageHash, prvTrackCatsHash);
+                        String pName = keyObj.toString();
+                        String value = entry.getProps().getProperty(pName);
                         
-                    } else if (pName.startsWith("DE_") || 
-                            pName.startsWith("WB_") || 
-                            pName.startsWith("SS_") || 
-                            pName.startsWith("RS_") || 
-                            pName.startsWith("QB_") || 
-                            pName.startsWith("TREE_OPEN_") || 
-                            pName.startsWith("RunCount") || 
-                            pName.startsWith("Tools_"))
-                    {
-                        addToTracks(pName, value, prvTrackUsageHash, prvTrackCatsHash);
+                        if (pName.startsWith("Usage_"))
+                        {
+                            addToTracks(pName.substring(6), value, prvTrackUsageHash, prvTrackCatsHash);
+                            
+                        } else if (pName.startsWith("DE_") || 
+                                pName.startsWith("WB_") || 
+                                pName.startsWith("SS_") || 
+                                pName.startsWith("RS_") || 
+                                pName.startsWith("QB_") || 
+                                pName.startsWith("TREE_OPEN_") || 
+                                pName.startsWith("RunCount") || 
+                                pName.startsWith("Tools_"))
+                        {
+                            addToTracks(pName, value, prvTrackUsageHash, prvTrackCatsHash);
+                        }
                     }
                 }
             }
@@ -395,6 +392,19 @@ public class RegProcessor
             if (tokens.length == 2)
             {
                 String pName = tokens[0].trim();
+                if (pName.indexOf("TREE_") > -1)
+                {
+                    pName = StringUtils.replace(pName, "TREE_", "TR_");
+                    pName = StringUtils.remove(pName, "Def");
+                    
+                } else if (pName.indexOf("TREEDEF") > -1)
+                {
+                    pName = StringUtils.replace(pName, "TREEDEF_", "TD_");
+                    
+                } else if (pName.indexOf("TR_") > -1 && pName.endsWith("Def"))
+                {
+                    pName = StringUtils.remove(pName, "Def");
+                }
                 props.put(pName, tokens[1].trim());
                 
             } else if (tokens.length > 2)
@@ -409,6 +419,27 @@ public class RegProcessor
                 String id         = props.getProperty("id");
                 if (id != null)
                 {
+                    String   dateStr;
+                    String   date     = props.getProperty("date");
+                    if (date != null)
+                    {
+                        String[] dateTime = StringUtils.split(date, " ");
+                        dateStr  = dateTime[0] != null ? dateTime[0] : "";
+                        
+                        String timeStr = dateTime.length == 2 && dateTime[1] != null ? dateTime[1] : "";
+                        props.put("date", dateStr);
+                        props.put("time", timeStr);
+                        
+                        if (StringUtils.isNotEmpty(dateStr) || StringUtils.isNotEmpty(dateStr))
+                        {
+                            dateTimeVector.add(new Pair<String, String>(dateStr, timeStr));
+                        }
+                        
+                    } else
+                    {
+                        dateStr = "";
+                    }
+                    
                     boolean isNew = false;
                     RegProcEntry entry = trackIdHash.get(id);
                     if (entry == null)
@@ -416,16 +447,12 @@ public class RegProcessor
                         entry = new  RegProcEntry(props);
                         entry.setId(id);
                         isNew = true;
-                     }
+                    }
                         
                     // Version Stuff
                     String version = null;
                     if (verTime != 0 && prevVerTime != 0)
                     {
-                        String   date     = props.getProperty("date");
-                        String[] dateTime = StringUtils.split(date, " ");
-                        String   dateStr  = dateTime[0];
-                        
                         if (dateStr.equals("08/12/03") || 
                             dateStr.equals("08/12/02"))
                         {
@@ -440,9 +467,9 @@ public class RegProcessor
                             version = "Alpha 6.1.64";
                         } else
                         {
-                            int x= 0;
-                            x++;
+                            version = props.getProperty("app_version");
                         }
+                        
                         /*
                         long     time     = getDate(dateTime[0]);
                         int      inx      = -1;
@@ -493,9 +520,6 @@ public class RegProcessor
                         } else
                         {
                             System.out.println("###  "+version+" "+collNumber+"  "+entry.get("date"));
-                            int x= 0;
-                            x++;
-                            
                             Properties p = new Properties();
                             p.putAll(props);
                             RegProcEntry e = new RegProcEntry((Properties)props.clone());
@@ -536,8 +560,7 @@ public class RegProcessor
         } while (line != null);
         
         return false;
-    }
-    
+    }    
     /**
      * @return
      * @throws IOException
@@ -573,6 +596,14 @@ public class RegProcessor
                 if (StringUtils.isNotEmpty(regType) && 
                     StringUtils.isNotEmpty(regNumber))
                 {
+                    String   date     = props.getProperty("date");
+                    if (date != null)
+                    {
+                        String[] dateTime = StringUtils.split(date, " ");
+                        props.put("date", dateTime.length > 0 && dateTime[0] != null ? dateTime[0] : "");
+                        props.put("time", dateTime.length == 2 && dateTime[1] != null ? dateTime[1] : "");
+                    }
+                    
                     RegProcEntry currEntry = regNumHash.get(regNumber);
                     if (currEntry == null)
                     {
@@ -639,7 +670,18 @@ public class RegProcessor
         return hash;
     }
     
-    
+    /**
+     * @return the dateTimeVector
+     */
+    public Vector<Pair<String, String>> getDateTimeVector()
+    {
+        for (Pair<String, String> p : dateTimeVector)
+        {
+            System.out.println(p.first+"  "+p.second);
+        }
+        return dateTimeVector;
+    }
+
     /**
      * @return
      */
@@ -662,6 +704,7 @@ public class RegProcessor
         list.add(new Pair<String, String>("by_date",      "By Date")); 
         list.add(new Pair<String, String>("by_month",     "By Month")); 
         list.add(new Pair<String, String>("by_year",      "By Year")); 
+        list.add(new Pair<String, String>("time",         "By Time")); 
 
         return list;
     }
@@ -832,8 +875,9 @@ public class RegProcessor
                 
                 if (pName.startsWith("Usage_"))
                 {
+                    String name = pName.substring(6);
                     //System.err.println("Usage: ["+pName+"] ["+pName.substring(6)+"]");
-                    addToTracks(pName.substring(6), value, trackUsageHash, trackCatsHash); 
+                    addToTracks(name, value, trackUsageHash, trackCatsHash); 
                     
                 } else if (pName.startsWith("DE_") || 
                             pName.startsWith("WB_") || 
@@ -841,6 +885,7 @@ public class RegProcessor
                             pName.startsWith("RS_") || 
                             pName.startsWith("QB_") || 
                             pName.startsWith("TREE_OPEN_") || 
+                            pName.startsWith("TREEDEF_OPEN_") || 
                             pName.startsWith("RunCount") || 
                             pName.startsWith("Tools_"))
                 {

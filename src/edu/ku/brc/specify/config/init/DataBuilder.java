@@ -630,7 +630,7 @@ public class DataBuilder
         colObj.setCatalogedDate(catalogedDate);
         colObj.setCatalogedDateVerbatim(DateFormat.getInstance().format(catalogedDate.getTime()));
         colObj.setCatalogNumber(catalogNumber);
-        colObj.setCatalogedDatePrecision((short)dateType.ordinal());
+        colObj.setCatalogedDatePrecision((byte)dateType.ordinal());
         colObj.setCollection(collection);
         colObj.setCollectingEvent(collectingEvent);
         colObj.setCountAmt(count);
@@ -1490,10 +1490,10 @@ public class DataBuilder
                                                         final String   method,
                                                         final String   verbatimDate,
                                                         final Calendar startDate,
-                                                        final Short    startDatePrecision,
+                                                        final Byte    startDatePrecision,
                                                         final String   startDateVerbatim,
                                                         final Calendar endDate,
-                                                        final Short    endDatePrecision,
+                                                        final Byte     endDatePrecision,
                                                         final String   endDateVerbatim,
                                                         final Short    startTime,
                                                         final Short    endTime,

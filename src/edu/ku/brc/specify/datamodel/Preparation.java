@@ -52,6 +52,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.AttributeProviderIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
@@ -83,6 +84,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected String                      storageLocation;
     protected String                      remarks;
     protected Calendar                    preparedDate;
+    protected Byte                        preparedDatePrecision;   // Accurate to Year, Month, Day
     protected String                      status;
     protected String                      sampleNumber;
     
@@ -138,6 +140,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         storageLocation = null;
         remarks = null;
         preparedDate = null;
+        preparedDatePrecision = null;
         status = null;
         sampleNumber = null;
         
@@ -318,6 +321,23 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     
     public void setPreparedDate(Calendar preparedDate) {
         this.preparedDate = preparedDate;
+    }
+
+    /**
+     * @return the preparedDatePrecision
+     */
+    @Column(name = "PreparedDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getPreparedDatePrecision()
+    {
+        return this.preparedDatePrecision != null ? this.preparedDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
+    }
+
+    /**
+     * @param preparedDatePrecision the preparedDatePrecision to set
+     */
+    public void setPreparedDatePrecision(Byte preparedDatePrecision)
+    {
+        this.preparedDatePrecision = preparedDatePrecision;
     }
 
     /**

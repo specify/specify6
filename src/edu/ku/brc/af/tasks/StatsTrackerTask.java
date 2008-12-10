@@ -325,6 +325,15 @@ public class StatsTrackerTask extends BaseTask
             postParams.add(new NameValuePair("java_version", System.getProperty("java.version"))); //$NON-NLS-1$
             postParams.add(new NameValuePair("java_vendor",  System.getProperty("java.vendor"))); //$NON-NLS-1$
             
+            if (!UIRegistry.isRelease()) // For Testing Only
+            {
+                postParams.add(new NameValuePair("user_name", System.getProperty("user.name"))); //$NON-NLS-1$
+                //try 
+                //{
+                //    postParams.add(new NameValuePair("ip", InetAddress.getLocalHost().getHostAddress())); //$NON-NLS-1$
+                //} catch (UnknownHostException e) {}
+            }
+            
             String install4JStr = UIHelper.getInstall4JInstallString();
             if (StringUtils.isEmpty(install4JStr))
             {

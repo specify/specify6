@@ -375,7 +375,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 String lockName     = treeDefClass.getSimpleName();
                 String formLockName = lockName + "Form";
                 
-                UsageTracker.incrUsageCount("TREEDEF.UNLOCK."+treeDefClass.getSimpleName());
+                UsageTracker.incrUsageCount("TD.UNLOCK."+treeDefClass.getSimpleName());
 
                 if (TaskSemaphoreMgr.isLocked(tabtitle, formLockName, TaskSemaphoreMgr.SCOPE.Discipline))
                 {

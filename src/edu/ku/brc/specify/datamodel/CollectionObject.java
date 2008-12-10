@@ -104,7 +104,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected String                        name;
     protected String                        modifier;
     protected Calendar                      catalogedDate;
-    protected Short                         catalogedDatePrecision;   // Accurate to Year, Month, Day
+    protected Byte                          catalogedDatePrecision;   // Accurate to Year, Month, Day
     protected String                        catalogedDateVerbatim;
     protected String                        guid;
     protected String                        altCatalogNumber;
@@ -584,15 +584,15 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
      * @return the catalogedDatePrecision
      */
     @Column(name = "CatalogedDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
-    public Short getCatalogedDatePrecision()
+    public Byte getCatalogedDatePrecision()
     {
-        return catalogedDatePrecision;
+        return catalogedDatePrecision != null ? this.catalogedDatePrecision : (byte)UIFieldFormatterIFace.PartialDateEnum.Full.ordinal();
     }
 
     /**
      * @param catalogedDatePrecision the catalogedDatePrecision to set
      */
-    public void setCatalogedDatePrecision(Short catalogedDatePrecision)
+    public void setCatalogedDatePrecision(Byte catalogedDatePrecision)
     {
         this.catalogedDatePrecision = catalogedDatePrecision;
     }

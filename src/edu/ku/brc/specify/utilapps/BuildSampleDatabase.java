@@ -6006,7 +6006,7 @@ public class BuildSampleDatabase
         state.setIsInFullName(true);
         GeographyTreeDefItem county = createGeographyTreeDefItem(state, geoTreeDef, "County", 400);
         county.setIsInFullName(true);
-        county.setTextAfter(" Co.");
+        //county.setTextAfter(" Co.");
 
         // 0
         newObjs.add(root);

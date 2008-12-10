@@ -55,7 +55,6 @@ public class GeoCoordDetail extends DataModelObjBase
     protected String                protocol; 
     protected String                source; 
     
-    protected String                bgmXML;
     protected Locality              locality;
     
     /**
@@ -92,7 +91,6 @@ public class GeoCoordDetail extends DataModelObjBase
         validation            = null;  
         protocol              = null;  
         source                = null;  
-        bgmXML                = null; 
         locality              = null;
     }
 
@@ -348,23 +346,6 @@ public class GeoCoordDetail extends DataModelObjBase
         return source;
     }
 
-    /**
-     * @return the bgmXML
-     */
-    @Column(name = "BgmXML", unique = false, nullable = true, insertable = true, updatable = true, length = 4096)
-    public String getBgmXML()
-    {
-        return bgmXML;
-    }
-
-    /**
-     * @param bgmXML the bgmXML to set
-     */
-    public void setBgmXML(String bgmXML)
-    {
-        this.bgmXML = bgmXML;
-    }
-    
     /**
      * 
      */

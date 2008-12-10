@@ -363,9 +363,6 @@
             
             <rows>
                 <row>
-                    <cell type="separator" label="Preparation Types" colspan="5"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="1" label="Name"/>
                     <cell type="field" id="1" name="name" uitype="text" isrequired="true"/> 
                     <cell type="field" id="2" name="isLoanable" label="Is Loanable" uitype="checkbox"/>
