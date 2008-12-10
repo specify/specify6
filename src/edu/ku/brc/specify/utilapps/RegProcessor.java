@@ -704,7 +704,7 @@ public class RegProcessor
         list.add(new Pair<String, String>("by_date",      "By Date")); 
         list.add(new Pair<String, String>("by_month",     "By Month")); 
         list.add(new Pair<String, String>("by_year",      "By Year")); 
-        list.add(new Pair<String, String>("time",         "By Time")); 
+        list.add(new Pair<String, String>("time",         "Time")); 
 
         return list;
     }
@@ -766,6 +766,7 @@ public class RegProcessor
         list.add(new Pair<String, String>("Discipline_type",      "Discipline"));
         list.add(new Pair<String, String>("Collection_name",      "Collection Name"));
         list.add(new Pair<String, String>("Collection_number",    "Collection Number"));
+        list.add(new Pair<String, String>("Collection_estsize",   "Collection Estimated Size"));
         list.add(new Pair<String, String>("reg_number",           "Registration Number"));
         list.add(new Pair<String, String>("id",                   "Id"));
         list.add(new Pair<String, String>("last_used_date",       "Last Opened Date"));
