@@ -178,7 +178,7 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
     @Column(name = "Value", length = 64)
     public String getValue()
     {
-        return this.value == null ? title : value;
+        return this.value == null ? title : (value.equals("<null>") ? null : value);
     }
 
     public void setValue(String value)

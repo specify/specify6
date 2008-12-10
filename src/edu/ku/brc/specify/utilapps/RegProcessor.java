@@ -753,8 +753,8 @@ public class RegProcessor
         list.add(new Pair<String, String>("num_locgr",  "Locality Records Used"));
         list.add(new Pair<String, String>("num_preps",  "Preparations Records"));
         list.add(new Pair<String, String>("num_prpcnt", "Count of Preparations"));
-        list.add(new Pair<String, String>("num_litho",  "Lithpstratigrahpy Records"));
-        list.add(new Pair<String, String>("num_lithou", "Lithpstratigrahpy Records Used"));
+        list.add(new Pair<String, String>("num_litho",  "Lithostratigraphy Records"));
+        list.add(new Pair<String, String>("num_lithou", "Lithostratigraphy Records Used"));
         list.add(new Pair<String, String>("num_gtp",    "Chronostratigraphy Records"));
         list.add(new Pair<String, String>("num_gtpu",   "Chronostratigraphy Records Used"));
         

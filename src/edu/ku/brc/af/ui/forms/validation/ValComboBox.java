@@ -15,7 +15,7 @@
 
 package edu.ku.brc.af.ui.forms.validation;
 
-import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.*;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -93,40 +93,68 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public ValComboBox(boolean editable)
     {
-        comboBox = createComboBox(new DefaultComboBoxModel());
+        if (editable)
+        {
+            comboBox = createComboBox(new DefaultComboBoxModel());
+        } else
+        {
+            comboBox = new ClearableComboBox();
+            setControlSize(comboBox);
+        }
         init(editable);
     }
 
     /**
      * Constructor
-     * @param arg0 with a model
+     * @param model with a model
      */
-    public ValComboBox(ComboBoxModel arg0, boolean editable)
+    public ValComboBox(ComboBoxModel model, boolean editable)
     {
-        comboBox = createComboBox(arg0);
+        if (editable)
+        {
+            comboBox = createComboBox(model);
+        } else
+        {
+            comboBox = new ClearableComboBox(model);
+            setControlSize(comboBox);
+        }
         init(editable);
     }
 
     /**
      * Constructor
-     * @param arg0 object array of items
+     * @param array object array of items
      */
-    public ValComboBox(Object[] arg0, boolean editable)
+    public ValComboBox(Object[] array, boolean editable)
     {
-        comboBox = createComboBox(arg0);
+        if (editable)
+        {
+            comboBox = createComboBox(array);
+        } else
+        {
+            comboBox = new ClearableComboBox(array);
+            setControlSize(comboBox);
+        }
         init(editable);
     }
 
     /**
      * Constructor
-     * @param arg0 vector of items
+     * @param vector vector of items
      */
-    public ValComboBox(Vector<?> arg0, boolean editable)
+    public ValComboBox(Vector<?> vector, boolean editable)
     {
-        comboBox = createComboBox(arg0);
+        if (editable)
+        {
+            comboBox = createComboBox(vector);
+        } else
+        {
+            comboBox = new ClearableComboBox(vector);
+            setControlSize(comboBox);
+        }
         init(editable);
     }
-
+    
     /**
      * Constructor with dbAdapter
      * @param dbAdapter the adaptor for enabling auto complete
@@ -135,7 +163,14 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     {
         if (adapter instanceof ComboBoxModel)
         {
-            comboBox = createComboBox((ComboBoxModel)adapter);
+            if (!adapter.isReadOnly())
+            {
+                comboBox = createComboBox((ComboBoxModel)adapter);
+            } else
+            {
+                comboBox = new ClearableComboBox((ComboBoxModel)adapter);
+                setControlSize(comboBox);
+            }
         } else
         {
             throw new RuntimeException("PickListDBAdapterIFace is not an instanceof ComboBoxModel and MUST BE!");
@@ -197,6 +232,50 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
             {
                 throw new RuntimeException("JComboBox editor compoent is not an instanceof JTextComponent");
             }
+            
+            
+            comboBox.addKeyListener(new KeyAdapter() {
+
+                @Override
+                public void keyPressed(KeyEvent e)
+                {
+                    super.keyPressed(e);
+                    if (e.getKeyCode() == KeyEvent.VK_ESCAPE || 
+                               e.getKeyCode() == KeyEvent.VK_DELETE || 
+                               e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+                    {
+                        comboBox.setSelectedIndex(-1);
+                    }
+                }
+
+                @Override
+                public void keyReleased(KeyEvent e)
+                {
+                    if (e.getKeyCode() == KeyEvent.VK_ESCAPE || 
+                            e.getKeyCode() == KeyEvent.VK_DELETE || 
+                            e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+                    {
+                         comboBox.setSelectedIndex(-1);
+                    }
+                    super.keyReleased(e);
+                }
+
+                /* (non-Javadoc)
+                 * @see java.awt.event.KeyAdapter#keyTyped(java.awt.event.KeyEvent)
+                 */
+                @Override
+                public void keyTyped(KeyEvent e)
+                {
+                    if (e.getKeyCode() == KeyEvent.VK_ESCAPE || 
+                            e.getKeyCode() == KeyEvent.VK_DELETE || 
+                            e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+                    {
+                         comboBox.setSelectedIndex(-1);
+                    }
+                    super.keyTyped(e);
+                }
+                
+            });
         }
 
         setOpaque(false);
@@ -696,6 +775,68 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
             if (textEditor != null)
             {
                 textEditor.setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : defaultTextBGColor);
+            }
+        }
+    }
+    
+
+    //-------------------------------------------------
+    // ClearableComboBox
+    //-------------------------------------------------
+    class ClearableComboBox extends JComboBox
+    {
+        public ClearableComboBox(ComboBoxModel model)
+        {
+            super(model);
+            addKL();
+        }
+        
+        /**
+         * 
+         */
+        public ClearableComboBox()
+        {
+            super();
+            addKL();
+        }
+
+        /**
+         * @param items
+         */
+        public ClearableComboBox(Object[] items)
+        {
+            super(items);
+            addKL();
+        }
+
+        /**
+         * @param items
+         */
+        public ClearableComboBox(Vector<?> items)
+        {
+            super(items);
+            addKL();
+        }
+
+        private void addKL()
+        {
+            addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent e)
+                {
+                    super.keyPressed(e);
+                    checkKeyCode(e);
+                }
+            });
+        }
+        
+        private void checkKeyCode(KeyEvent e)
+        {
+            if (e.getKeyCode() == KeyEvent.VK_ESCAPE || 
+                    e.getKeyCode() == KeyEvent.VK_DELETE || 
+                    e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+            {
+                 setSelectedIndex(-1);
             }
         }
     }

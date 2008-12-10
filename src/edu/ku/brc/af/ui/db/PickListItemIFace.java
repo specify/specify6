@@ -26,34 +26,76 @@ import java.sql.Timestamp;
  */
 public interface PickListItemIFace extends Comparable<PickListItemIFace>
 {
+    /**
+     * @return
+     */
     public abstract Integer getId();
     
+	/**
+	 * @param pickList
+	 */
 	public abstract void setPickList(PickListIFace pickList);
 	
+	/**
+	 * @return
+	 */
 	public abstract PickListIFace getPickList();
 	
+    /**
+     * @return
+     */
     public abstract String getTitle();
 
+    /**
+     * @param title
+     */
     public abstract void setTitle(String title);
 
+    /**
+     * @return
+     */
     public abstract String getValue();
 
+    /**
+     * @param value
+     */
     public abstract void setValue(String value);
     
+    /**
+     * @return
+     */
     public abstract Timestamp getTimestampCreated();
 
+    /**
+     * @param createdDate
+     */
     public abstract void setTimestampCreated(Timestamp createdDate);
     
+    /**
+     * @param ordinal
+     */
     public abstract void setOrdinal(Integer ordinal);
     
+    /**
+     * @return
+     */
     public abstract Integer getOrdinal();
     
+    /**
+     * @param pickList
+     */
     public abstract void SetPickList(PickListIFace pickList);
     
     // Non-Presisted Field
     
+    /**
+     * @return
+     */
     public abstract Object getValueObject();
 
+    /**
+     * @param valueObject
+     */
     public abstract void setValueObject(Object valueObject);
     
 }
