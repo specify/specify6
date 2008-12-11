@@ -115,7 +115,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
     protected void createUI()
     {
         DocumentAdaptor docListener = null;
-        if (isDisplayOnly)
+        if (!isDisplayOnly)
         {
             docListener = new DocumentAdaptor()
             {
@@ -221,7 +221,6 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         {
             builder.add(cardPanel,      cc.xy(1,1));
         }
-        
     }
     
     /* (non-Javadoc)
@@ -254,6 +253,19 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             setter.setFieldValue(dataObj, dateTypeName, formatSelector.getSelectedIndex());
         }
         return dataObj;
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
+    public void setEnabled(final boolean enabled)
+    {
+        super.setEnabled(enabled);
+        for (UIValidatable uiv : uivs)
+        {
+            ((JComponent)uiv).setEnabled(enabled);
+        }
+        formatSelector.setEnabled(enabled);
     }
     
     /**
@@ -289,6 +301,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             {
                 ((GetSetValueIFace)uiv).setValue(null, "");
             }
+            currentUIV = uivs[0];
             return;
         }
         
@@ -420,7 +433,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
      */
     public ErrorType getState()
     {
-        return currentUIV != null ? currentUIV.getState() : ErrorType.Incomplete;
+        return validateState();
     }
 
     /* (non-Javadoc)
@@ -512,7 +525,20 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
      */
     public ErrorType validateState()
     {
-        return currentUIV != null ? currentUIV.validateState() : ErrorType.Error;
+        ErrorType errType = ErrorType.Valid;
+        if (currentUIV != null)
+        {
+            errType = currentUIV.validateState();
+            if (errType == ErrorType.Incomplete && !isRequired)
+            {
+                errType = ErrorType.Valid;
+            }
+        } else
+        {
+            errType = ErrorType.Error;
+        }
+        System.err.println(errType);
+        return errType;
     }
 
     /* (non-Javadoc)
@@ -521,6 +547,10 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
     public void stateChanged(final ChangeEvent e)
     {
         System.err.println(e);
+        if (changeListener != null)
+        {
+            changeListener.stateChanged(e);
+        }
     }
     
     /* (non-Javadoc)
