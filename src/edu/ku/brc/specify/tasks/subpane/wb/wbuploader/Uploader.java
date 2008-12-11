@@ -2382,7 +2382,7 @@ public class Uploader implements ActionListener, KeyListener
         }
         else if (e.getActionCommand().equals(UploadMainPanel.MSG_CLICK))
         {
-            goToMsgWBCell((Component)e.getSource());
+            goToMsgWBCell((Component)e.getSource(), false);
         }
         else if (e.getActionCommand().equals(UploadMainPanel.PRINT_INVALID))
         {
@@ -2563,7 +2563,7 @@ public class Uploader implements ActionListener, KeyListener
     /**
      * Moves to dataset cell corresponding to currently selected validation issue and starts editor.
      */
-    protected void goToMsgWBCell(final Component c)
+    protected void goToMsgWBCell(final Component c, boolean stopEdit)
     {
         if (mainPanel == null) 
         { 
@@ -2603,36 +2603,48 @@ public class Uploader implements ActionListener, KeyListener
                     wbSS.getSpreadSheet().scrollRectToVisible(rect);
                     if (msg instanceof UploadTableInvalidValue && msg.getCol() != -1)
                     {
-                        wbSS.getSpreadSheet().editCellAt(msg.getRow(), msg.getCol(), null);
-
-                        // Now, if necessary, add this as a listener to the editorComponent to allow moving to
-                        // next/prev
-                        // invalid cell after ENTER/TAB/UP/DOWN
-                        Component editor = wbSS.getSpreadSheet().getEditorComponent();
-                        boolean addListener = true;
-                        KeyListener[] listeners = editor.getKeyListeners();
-                        for (int k = 0; k < listeners.length; k++)
+                        if (!stopEdit)
                         {
-                            if (listeners[k] instanceof Uploader)
+
+                            wbSS.getSpreadSheet().editCellAt(msg.getRow(), msg.getCol(), null);
+
+                            // Now, if necessary, add this as a listener to the editorComponent to
+                            // allow moving to
+                            // next/prev
+                            // invalid cell after ENTER/TAB/UP/DOWN
+                            Component editor = wbSS.getSpreadSheet().getEditorComponent();
+                            boolean addListener = true;
+                            KeyListener[] listeners = editor.getKeyListeners();
+                            for (int k = 0; k < listeners.length; k++)
                             {
-                                if (listeners[k] == this)
+                                if (listeners[k] instanceof Uploader)
                                 {
-                                    logDebug("already listening to spreadsheet editor");
-                                    addListener = false;
-                                    break;
+                                    if (listeners[k] == this)
+                                    {
+                                        logDebug("already listening to spreadsheet editor");
+                                        addListener = false;
+                                        break;
+                                    }
+                                    // should never get here, but just in case:
+                                    logDebug("removing previous listener");
+                                    editor.removeKeyListener(listeners[k]);
                                 }
-                                // should never get here, but just in case:
-                                logDebug("removing previous listener");
-                                editor.removeKeyListener(listeners[k]);
+                            }
+                            if (addListener)
+                            {
+                                logDebug("adding this as listener to spreadsheet editor");
+                                editor.addKeyListener(this);
+                                this.keyListeningTo.add(editor);
+                            }
+                            editor.requestFocusInWindow();
+                        }
+                        else
+                        {
+                            if (wbSS.getSpreadSheet().getCellEditor() != null)
+                            {
+                                wbSS.getSpreadSheet().getCellEditor().stopCellEditing();
                             }
                         }
-                        if (addListener)
-                        {
-                            logDebug("adding this as listener to spreadsheet editor");
-                            editor.addKeyListener(this);
-                            this.keyListeningTo.add(editor);
-                        }
-                        editor.requestFocusInWindow();
                     }
                 }
             }
@@ -2658,9 +2670,10 @@ public class Uploader implements ActionListener, KeyListener
             sel = 1; // first msg is explanatory
         if (sel != -1)
         {
+            boolean stopEditing = sel == mainPanel.getValidationErrorList().getSelectedIndex();
             mainPanel.getValidationErrorList().setSelectedIndex(sel);
             logDebug("Going to msg " + sel);
-            goToMsgWBCell(mainPanel.getValidationErrorList());
+            goToMsgWBCell(mainPanel.getValidationErrorList(), stopEditing);
         }
     }
     
@@ -2678,8 +2691,9 @@ public class Uploader implements ActionListener, KeyListener
             sel = mainPanel.getValidationErrorList().getModel().getSize()-1;
         if (sel != -1)
         {
+            boolean stopEdit = sel == mainPanel.getValidationErrorList().getSelectedIndex();
             mainPanel.getValidationErrorList().setSelectedIndex(sel);
-            goToMsgWBCell(mainPanel.getValidationErrorList());
+            goToMsgWBCell(mainPanel.getValidationErrorList(), stopEdit);
         }
     }
     
@@ -2695,7 +2709,7 @@ public class Uploader implements ActionListener, KeyListener
         if (mainPanel.getValidationErrorList().getModel().getSize() > 0)
         {
             mainPanel.getValidationErrorList().setSelectedIndex(0);
-            goToMsgWBCell(mainPanel.getValidationErrorList());
+            goToMsgWBCell(mainPanel.getValidationErrorList(), false);
         }
     }
 
@@ -2712,7 +2726,7 @@ public class Uploader implements ActionListener, KeyListener
         {
             mainPanel.getValidationErrorList().setSelectedIndex(
                     mainPanel.getValidationErrorList().getModel().getSize() - 1);
-            goToMsgWBCell(mainPanel.getValidationErrorList());
+            goToMsgWBCell(mainPanel.getValidationErrorList(), false);
         }
     }
 
