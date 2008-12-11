@@ -26,6 +26,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -64,7 +65,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
                                                      UIValidatable, 
                                                      ChangeListener
 {
-    //private String[] formatterNames = {"DATE", "PARTIALDATEMONTH", "PARTIALDATEYEAR"};
+    private static final Logger log  = Logger.getLogger(PartialDateUI.class);
     
     protected DataObjectGettable      getter;
     protected DataObjectSettable      setter;
@@ -399,9 +400,15 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
             if (tblInfo != null)
             {
                 DBFieldInfo fi = tblInfo.getFieldByName(dateFieldName);
-                if (StringUtils.isNotEmpty(fi.getTitle()))
+                if (fi != null)
                 {
-                    lbl.setText(fi.getTitle()+":");
+                    if (StringUtils.isNotEmpty(fi.getTitle()))
+                    {
+                        lbl.setText(fi.getTitle()+":");
+                    }
+                } else
+                {
+                    log.error("PartialDateUI - Couldn't find date field ["+dateFieldName+"] in data obj View: "+parent.getView().getName());
                 }
             }
         }

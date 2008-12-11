@@ -138,7 +138,7 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="stationFieldNumber" uitype="text"/>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" uitype="plugin" initialize="name=PartialDateUI;df=startDateDate;tp=startDateDatePrecision" uifieldformatter="Date"/>
+                    <cell type="field" id="2" uitype="plugin" initialize="name=PartialDateUI;df=startDate;tp=startDatePrecision" uifieldformatter="Date"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
@@ -181,7 +181,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" uitype="plugin" initialize="name=PartialDateUI;df=startDateDate;tp=startDateDatePrecision" uifieldformatter="Date"/>
+                    <cell type="field" id="2" uitype="plugin" initialize="name=PartialDateUI;df=startDate;tp=startDatePrecision" uifieldformatter="Date"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>

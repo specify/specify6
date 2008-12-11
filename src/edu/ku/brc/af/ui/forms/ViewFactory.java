@@ -1392,7 +1392,7 @@ public class ViewFactory
                     } else
                     {
                         bi.compToAdd = new JPanel();
-                        log.error("Couldn't create UIPlugin ["+cellField.getName()+"]");
+                        log.error("Couldn't create UIPlugin ["+cellField.getName()+"] ID:"+cellField.getIdent());
                     }
                     bi.doRegControl = false;                        
 
