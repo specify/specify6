@@ -18,7 +18,6 @@
         <view name="AccessionCO"
             class="edu.ku.brc.specify.datamodel.Accession"
             busrules="edu.ku.brc.specify.datamodel.busrules.AccessionBusRules"
-            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[The Accession form as seen in the CO form.]]></desc>
             <altviews>
