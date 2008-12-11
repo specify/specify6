@@ -84,7 +84,7 @@ import edu.ku.brc.util.Pair;
  */
 public class Uploader implements ActionListener, KeyListener
 {
-    private static boolean                       debugging                    = false;
+    private static boolean                       debugging                    = true;
 
     // Phases in the upload process...
     protected final static String                INITIAL_STATE                = "WB_UPLOAD_INITIAL_STATE";
@@ -3176,7 +3176,7 @@ public class Uploader implements ActionListener, KeyListener
                         }
                         else
                         {
-                            SwingUtilities.invokeAndWait(new Runnable()
+                            SwingUtilities.invokeLater(new Runnable()
                             {
                                 public void run()
                                 {
@@ -3300,6 +3300,10 @@ public class Uploader implements ActionListener, KeyListener
         }
         undoTask.start();
         setCurrentOp(isUserCmd ? Uploader.UNDOING_UPLOAD : Uploader.CLEANING_UP);
+        if (shuttingDown)
+        {
+            undoTask.get();
+        }
     }
 
     /**

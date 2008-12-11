@@ -2641,6 +2641,16 @@ public class WorkbenchPaneSS extends BaseSubPane
             return false;
         }
 
+        if (datasetUploader != null)
+        {
+            if (datasetUploader.closing(this))
+            {
+                datasetUploader = null;
+                Uploader.unlockApp();
+                Uploader.unlockUpload();
+            }
+        }
+
         boolean retStatus = true;
         if (hasChanged)
         {
@@ -2725,15 +2735,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (retStatus)
         {
             ((WorkbenchTask)task).closing(this);
-            if (datasetUploader != null)
-            {
-                if (datasetUploader.closing(this))
-                {
-                    datasetUploader = null;
-                    Uploader.unlockApp();
-                    Uploader.unlockUpload();
-                }
-            }
             if (spreadSheet != null)
             {
                 spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
