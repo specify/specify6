@@ -28,14 +28,14 @@
   </format>
 
   <format system="false" name="CatalogNumber" class="edu.ku.brc.specify.datamodel.CollectionObject" fieldname="catalogNumber" default="true">
-    <autonumber>edu.ku.brc.af.core.db.AutoNumberGeneric</autonumber>
+    <autonumber>edu.ku.brc.specify.dbsupport.CollectionAutoNumber</autonumber>
     <field type="year" size="4" value="YEAR"/>
     <field type="separator" size="1" value="-"/>
     <field type="numeric" size="6" inc="true"/>
   </format>
 
   <format system="false" name="CatalogNumberAlphaNumByYear" class="edu.ku.brc.specify.datamodel.CollectionObject" fieldname="catalogNumber">
-    <autonumber>edu.ku.brc.af.core.db.AutoNumberGeneric</autonumber>
+    <autonumber>edu.ku.brc.specify.dbsupport.CollectionAutoNumber</autonumber>
     <field type="year" size="4" value="YEAR" byyear="true"/>
     <field type="separator" size="1" value="-"/>
     <field type="numeric" size="6" inc="true"/>

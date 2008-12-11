@@ -158,7 +158,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                    <cell type="field" id="2" uitype="plugin" initialize="name=PartialDateUI;df=startDateDate;tp=startDateDatePrecision" uifieldformatter="Date"/>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="verbatimDate" uitype="text"/>
                 </row>
@@ -203,7 +203,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>   
+                    <cell type="field" id="2" uitype="plugin" initialize="name=PartialDateUI;df=startDateDate;tp=startDateDatePrecision" uifieldformatter="Date"/>   
                 </row>
                 <row>
                     <cell type="label" labelfor="4"/>
@@ -277,7 +277,7 @@
                     <cell type="field" id="5" name="determiner" uitype="querycbx" initialize="name=Agent"/>
 
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                    <cell type="field" id="7" uitype="plugin" initialize="name=PartialDateUI;df=determinedDate;tp=determinedDatePrecision" uifieldformatter="Date"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="12"/>

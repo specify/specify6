@@ -330,7 +330,7 @@
                     <cell type="field" id="5" name="determiner" uitype="querycbx" initialize="name=Agent"/>
 
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                    <cell type="field" id="7" uitype="plugin" initialize="name=PartialDateUI;df=determinedDate;tp=determinedDatePrecision" uifieldformatter="Date"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="12"/>

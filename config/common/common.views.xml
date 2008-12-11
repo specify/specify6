@@ -1053,7 +1053,7 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="stationFieldNumber" uitype="text"/>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                    <cell type="field" id="2" uitype="plugin" initialize="name=PartialDateUI;df=startDateDate;tp=startDateDatePrecision" uifieldformatter="Date"/>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="method" uitype="combobox" dspuitype="dsptextfield" picklist="CollectingMethod"/>
                 </row>
@@ -1561,7 +1561,7 @@
                     <cell type="field" id="5" name="determiner" uitype="querycbx" initialize="name=Agent"/>
 
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="determinedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                    <cell type="field" id="7" uitype="plugin" initialize="name=PartialDateUI;df=determinedDate;tp=determinedDatePrecision" uifieldformatter="Date"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="12"/>
@@ -2341,9 +2341,9 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="startDate" uitype="formattedtext" uifieldformatter="Date" default="today" />                   
+                    <cell type="field" id="8" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>                   
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="endDate" uitype="formattedtext"  uifieldformatter="Date" default="today"/>
+                    <cell type="field" id="1" name="endDate" uitype="formattedtext"  uifieldformatter="Date"/>
                 </row>
                 <row>                   
                     <cell type="label" labelfor="9"/>
@@ -2532,7 +2532,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="preparedDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
+                    <cell type="field" id="1" uitype="plugin" initialize="name=PartialDateUI;df=preparedDate;tp=preparedDateDatePrecision" uifieldformatter="Date"/>
 
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
@@ -2577,10 +2577,10 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="startDate" uitype="formattedtext" uifieldformatter="Date" default="today" isrequired="true"/>
+                    <cell type="field" id="5" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
                     
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="endDate" uitype="formattedtext" uifieldformatter="Date" default="today" isrequired="true"/>
+                    <cell type="field" id="6" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>
