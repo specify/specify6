@@ -14,6 +14,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
+
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -38,7 +40,7 @@ import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 public class DateConverter
 {
     protected static final Logger log            = Logger.getLogger(DateConverter.class);
-    protected boolean             preferMonthDay = true;
+    protected boolean             preferMonthDay;
     
     public static enum DateFormats {
         MON_DAY_LYEAR(
@@ -474,9 +476,13 @@ public class DateConverter
         public abstract String adjustForPrecision(String original, UIFieldFormatterIFace.PartialDateEnum prec) throws ParseException;
     }
 
+    /**
+     * 
+     */
     public DateConverter()
     {
-        //nothing do do
+        Locale loc = Locale.getDefault();
+        preferMonthDay = /*loc == Locale.CANADA || */loc == Locale.US;            
     }
 
     /**
@@ -596,6 +602,23 @@ public class DateConverter
         
         throw new ParseException("unrecognized date format", 0);
     }
+    
+    /**
+     * @return the preferMonthDay
+     */
+    public boolean isPreferMonthDay()
+    {
+        return preferMonthDay;
+    }
+
+    /**
+     * @param preferMonthDay the preferMonthDay to set
+     */
+    public void setPreferMonthDay(boolean preferMonthDay)
+    {
+        this.preferMonthDay = preferMonthDay;
+    }
+
     /**
      * @param args
      */
