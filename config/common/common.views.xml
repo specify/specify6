@@ -2724,7 +2724,7 @@
                     <cell type="field" id="1" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject;editbtn=false;newbtn=false"/>
                     
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
+                    <cell type="field" id="2" name="accession" uitype="querycbx" initialize="name=AccessionCO;title=AccessionCO" isrequired="false"/>
                     
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="division" uitype="combobox" picklist="Division"/>
