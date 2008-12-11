@@ -23,10 +23,34 @@
       <picklistitem title="no data" value="no data"/>
     </items>
   </picklist>
-  <picklist name="LoanAgentRole" issystem="true" type="0" readonly="true" sizelimit="2">
+  <picklist name="LoanAgentRole" issystem="true" type="0" readonly="true" sizelimit="12">
     <items>
       <picklistitem title="Borrower" value="borrower"/>
+      <picklistitem title="Benefactor" value="benefactor"/>
+      <picklistitem title="Contributor" value="contributor"/>
+      <picklistitem title="Donor" value="donor"/>
+      <picklistitem title="Guest" value="guest"/>
+      <picklistitem title="Other" value="other"/>
+      <picklistitem title="Preparer" value="preparer"/>
       <picklistitem title="Receiver" value="receiver"/>
+      <picklistitem title="Sponsor" value="sponsor"/>
+      <picklistitem title="Staff" value="staff"/>
+      <picklistitem title="Student" value="student"/>
+    </items>
+  </picklist>
+  <picklist name="BorrowRole" issystem="true" type="0" readonly="true" sizelimit="12">
+    <items>
+      <picklistitem title="Borrower" value="borrower"/>
+      <picklistitem title="Benefactor" value="benefactor"/>
+      <picklistitem title="Contributor" value="contributor"/>
+      <picklistitem title="Donor" value="donor"/>
+      <picklistitem title="Guest" value="guest"/>
+      <picklistitem title="Other" value="other"/>
+      <picklistitem title="Preparer" value="preparer"/>
+      <picklistitem title="Receiver" value="receiver"/>
+      <picklistitem title="Sponsor" value="sponsor"/>
+      <picklistitem title="Staff" value="staff"/>
+      <picklistitem title="Student" value="student"/>
     </items>
   </picklist>
   <picklist name="AccessionStatus" issystem="true" type="0" readonly="true" sizelimit="3">
