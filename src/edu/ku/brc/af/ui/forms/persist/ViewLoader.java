@@ -1113,8 +1113,8 @@ public class ViewLoader
         DBTableChildIFace tblChild = derivedCI != null ? derivedCI : tableInfo.getItemByName(fieldName);
         if (tblChild == null)
         {
-            String msg = "The Field Name ["+fieldName+"] was not int the Table ["+tableInfo.getTitle()+"] in ViewSet ["+instance.viewSetName+"]";
-            UIRegistry.showError(msg);
+            String msg = "The Field Name ["+fieldName+"] was not in the Table ["+tableInfo.getTitle()+"] in ViewSet ["+instance.viewSetName+"]";
+            //UIRegistry.showError(msg);
             log.error(msg);
             return "";
         }

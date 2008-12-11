@@ -17,6 +17,7 @@ package edu.ku.brc.af.ui.forms.validation;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
+import static edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterField.*;
 
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -343,7 +344,7 @@ s     * @param isViewOnly
             for (UIFieldFormatterField f : fields)
             {
                 sb.append(",");
-                if (f.getType() == UIFieldFormatterField.FieldType.separator)
+                if (f.getType() == FieldType.separator)
                 {
                     sb.append('p');
                 } else
@@ -362,7 +363,7 @@ s     * @param isViewOnly
                 JComponent comp    = null;
                 JComponent tfToAdd = null;
                 
-                if (f.getType() == UIFieldFormatterField.FieldType.separator)
+                if (f.getType() == FieldType.separator)
                 {
                     comp = createLabel(f.getValue());
                     tfToAdd = comp;
@@ -594,7 +595,7 @@ s     * @param isViewOnly
             {
                 /*if (field.isEntryField())
                 {
-                    if (field.getType() == UIFieldFormatterField.FieldType.year)
+                    if (field.getType() == FieldType.year)
                     {
                         val = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
                     } else
@@ -1155,15 +1156,16 @@ s     * @param isViewOnly
          */
         protected boolean isCharOK(final UIFieldFormatterField field, final String str)
         {
-            if (field.getType() == UIFieldFormatterField.FieldType.alpha && !StringUtils.isAlpha(str))
+            FieldType type = field.getType();
+            if (type == FieldType.alpha && !StringUtils.isAlpha(str))
             {
                 return false;
 
-            } else if (field.getType() == UIFieldFormatterField.FieldType.alphanumeric && !StringUtils.isAlphanumeric(str))
+            } else if (type == FieldType.alphanumeric && !StringUtils.isAlphanumeric(str))
             {
                 return false;
 
-            } else if (field.getType() == UIFieldFormatterField.FieldType.numeric && !StringUtils.isNumeric(str))
+            } else if ((type == FieldType.numeric || type == FieldType.year) && !StringUtils.isNumeric(str))
             {
                 return false;
 
@@ -1258,11 +1260,11 @@ s     * @param isViewOnly
                    }
                    
                    Vector<UIFieldFormatterField> fields = new Vector<UIFieldFormatterField>();
-                   fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.year,   4, "YYYY", false, true));
-                   fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.separator, 1, "-", false));
-                   fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.alpha,   2, "XX", false));
-                   fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.separator, 1, "-", false));
-                   fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric,   4, "NNNN", true));
+                   fields.add(new UIFieldFormatterField(FieldType.year,   4, "YYYY", false, true));
+                   fields.add(new UIFieldFormatterField(FieldType.separator, 1, "-", false));
+                   fields.add(new UIFieldFormatterField(FieldType.alpha,   2, "XX", false));
+                   fields.add(new UIFieldFormatterField(FieldType.separator, 1, "-", false));
+                   fields.add(new UIFieldFormatterField(FieldType.numeric,   4, "NNNN", true));
                    
                    UIFieldFormatter uif = new UIFieldFormatter("Accession", false, null, Accession.class, true, true, fields);
 
