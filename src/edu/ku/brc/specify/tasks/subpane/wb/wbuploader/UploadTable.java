@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -199,6 +200,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected Discipline                                discipline                   = null;
     
     UploadedRecFinalizerIFace                           finalizer                    = null;
+    List<Pair<UploadField, Method>>                     precisionDateFields         = new LinkedList<Pair<UploadField, Method>>();
     
     /**
      * @param table
@@ -259,6 +261,19 @@ public class UploadTable implements Comparable<UploadTable>
         finalizer = findFinalizer();
     }
 
+    
+    public void findPrecisionDateFields()
+    {
+        for (UploadField fld : uploadFields.get(0)) //assuming all 'seqs' in uploadFields have the same fields.
+        {
+            DBFieldInfo precFld = this.getDatePrecisionFld(fld.getField().getFieldInfo());
+            if (precFld != null)
+            {
+                this.precisionDateFields.add(new Pair<UploadField, Method>(fld, this.getFldSetter(precFld)));
+            }
+        }
+    }
+    
     protected UploadedRecFinalizerIFace findFinalizer() throws UploaderException
     {
         String className = this.getClass().getPackage().getName() + "." + tblClass.getSimpleName() + "RecFinalizer";
@@ -880,6 +895,32 @@ public class UploadTable implements Comparable<UploadTable>
     
     /**
      * @param fld
+     * @return true if 
+     */
+    protected boolean isDateWithPrecision(final DBFieldInfo fld)
+    {
+        return getDatePrecisionFld(fld) != null;
+    }
+    
+    /**
+     * @param fld
+     * @return precision field associated with fld.
+     */
+    protected DBFieldInfo getDatePrecisionFld(final DBFieldInfo fld)
+    {
+        String precFldName = fld.getName() + "Precision";
+        for (DBFieldInfo otherFld : fld.getTableInfo().getFields())
+        {
+            if (otherFld.getName().equalsIgnoreCase(precFldName))
+            {
+                return otherFld;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * @param fld
      * @return values of the correct class for fld's setter.
      * @throws NoSuchMethodException
      * @throws InvocationTargetException
@@ -922,6 +963,11 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 else
                 {
+                    if (isDateWithPrecision(ufld.getField().getFieldInfo()))
+                    {
+                        fldStr = dateConverter.adjustForPrecision(fldStr);
+                    }
+                    
                     arg[0] = dateConverter.convert(fldStr);
                 }
             }
@@ -1055,6 +1101,29 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
     /**
+     * @param fld
+     * @return the setter for fld, if it exists.
+     */
+    protected Method getFldSetter(final DBFieldInfo fld)
+    {
+        Class<?> fldClass = getFieldClass(fld);
+        Class<?> parTypes[] = new Class<?>[1];
+        parTypes[0] = fldClass;
+        String methName = "set" + capitalize(fld.getName());
+        try
+        {
+            return tblClass.getMethod(methName, parTypes);
+        }
+        catch (NoSuchMethodException nsmEx)
+        {
+            // this should only happen for many-to-many relationships, in which cases the
+            // field
+            // actually gets handled via the parentSetters
+            return null;
+        }
+    }
+    
+    /**
      * Finds and assigns setXXX methods for each upload field.
      * 
      * @throws NoSuchMethodException
@@ -1065,21 +1134,7 @@ public class UploadTable implements Comparable<UploadTable>
         {
             for (UploadField fld : flds)
             {
-                Class<?> fldClass = getFieldClass(fld.getField().getFieldInfo());
-                Class<?> parTypes[] = new Class<?>[1];
-                parTypes[0] = fldClass;
-                String methName = "set" + capitalize(fld.getField().getName());
-                try
-                {
-                    fld.setSetter(tblClass.getMethod(methName, parTypes));
-                }
-                catch (NoSuchMethodException nsmEx)
-                {
-                    // this should only happen for many-to-many relationships, in which cases the
-                    // field
-                    // actually gets handled via the parentSetters
-                    fld.setSetter(null);
-                }
+                fld.setSetter(getFldSetter(fld.getField().getFieldInfo()));
             }
         }
     }
@@ -1611,13 +1666,55 @@ public class UploadTable implements Comparable<UploadTable>
     @SuppressWarnings("unused")
     protected void finalizeWrite(DataModelObjBase rec, int recNum) throws UploaderException
     {
+        finalizeDatePrecisionFields(rec);
         if (finalizer != null)
         {
             finalizer.finalizeForWrite(rec, recNum);
         }
     }
 
-
+    /**
+     * @param rec
+     * @throws UploaderException
+     * 
+     * Sets values for XXXPrecision fields that exist for dates in the table.
+     */
+    protected void finalizeDatePrecisionFields(final DataModelObjBase rec) throws UploaderException
+    {
+        for (Pair<UploadField, Method> fld : precisionDateFields)
+        {
+            if (fld.getSecond() != null)
+            {
+                try
+                {
+                    fld.getSecond().invoke(rec, (byte )getDatePrecision(fld.getFirst()).ordinal());
+                }
+                catch (InvocationTargetException ex)
+                {
+                    throw new UploaderException(ex, UploaderException.ABORT_ROW);
+                }
+                catch (IllegalAccessException ex)
+                {
+                    throw new UploaderException(ex, UploaderException.ABORT_ROW);
+                }
+                catch (ParseException ex)
+                {
+                    throw new UploaderException(ex, UploaderException.ABORT_ROW);
+                }
+            }
+        }
+    }
+    
+    /**
+     * @param fld
+     * @return the date precision for the current value of fld.
+     * @throws ParseException
+     */
+    protected UIFieldFormatterIFace.PartialDateEnum getDatePrecision(final UploadField fld) throws ParseException
+    {
+        return dateConverter.getDatePrecision(fld.getValue());
+    }
+    
     protected UploadField findUploadField(final String name, int seq)
     {
         if (seq >= uploadFields.size())

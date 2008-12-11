@@ -400,6 +400,10 @@ public class Uploader implements ActionListener, KeyListener
                 }
             }
         }
+        for (UploadTable ut : uploadTables)
+        {
+            ut.findPrecisionDateFields();
+        }
     }
 
     protected void logDebug(Object toLog)
