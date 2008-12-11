@@ -65,7 +65,6 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PreferencesDlg;
-
 import edu.ku.brc.af.ui.db.CommandActionForDB;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayIFace;
@@ -80,6 +79,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.TableModel2Excel;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
@@ -99,6 +99,9 @@ import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationsProviderIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.LoanReturnDlg;
 import edu.ku.brc.specify.ui.LoanReturnDlg.LoanReturnInfo;
@@ -1134,6 +1137,13 @@ public class InteractionsTask extends BaseTask
             //printLoan = false;
             if (printLoan)
             {
+                SpReport invoice = getLoanReport();
+                
+                if (invoice == null)
+                {
+                    UIRegistry.displayErrorDlg(getResourceString("LOAN_INVOICE_REPORT_NOT_FOUND"));
+                }
+                
                 DataProviderSessionIFace session = null;
                 try
                 {
@@ -1141,36 +1151,36 @@ public class InteractionsTask extends BaseTask
                     //session.attach(loan);
                     loan = (Loan)session.getData("From Loan where loanId = "+loan.getLoanId());
                     
-                    if (loan.getShipments().size() == 0)
-                    {
-                        UIRegistry.displayErrorDlg(getResourceString("NO_SHIPMENTS_ERROR"));
-                        
-                    } else if (loan.getShipments().size() > 1)
-                    {
-                        // XXX Do we allow them to pick a shipment or print all?
-                        UIRegistry.displayErrorDlg(getResourceString("MULTI_SHIPMENTS_NOT_SUPPORTED"));
-                        
-                    } else
-                    {
-                        // XXX At the moment this is just checking to see if there is at least one "good/valid" shipment
-                        // but the hard part will be sending the correct info so the report can be printed
-                        // using bouth a Loan Id and a Shipment ID, and at some point distinguishing between using
-                        // the shipped by versus the shipper.
-                        Shipment shipment = loan.getShipments().iterator().next();
-                        if (shipment.getShippedBy() == null)
-                        {
-                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDBY"));
-                        } else if (shipment.getShippedBy().getAddresses().size() == 0)
-                        {
-                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDBY_MISSING_ADDR"));
-                        } else if (shipment.getShippedTo() == null)
-                        {
-                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDTO"));
-                        } else if (shipment.getShippedTo().getAddresses().size() == 0)
-                        {
-                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDTO_MISSING_ADDR"));
-                        } else
-                        {
+//                    if (loan.getShipments().size() == 0)
+//                    {
+//                        UIRegistry.displayErrorDlg(getResourceString("NO_SHIPMENTS_ERROR"));
+//                        
+//                    } else if (loan.getShipments().size() > 1)
+//                    {
+//                        // XXX Do we allow them to pick a shipment or print all?
+//                        UIRegistry.displayErrorDlg(getResourceString("MULTI_SHIPMENTS_NOT_SUPPORTED"));
+//                        
+//                    } else
+//                    {
+//                        // XXX At the moment this is just checking to see if there is at least one "good/valid" shipment
+//                        // but the hard part will be sending the correct info so the report can be printed
+//                        // using bouth a Loan Id and a Shipment ID, and at some point distinguishing between using
+//                        // the shipped by versus the shipper.
+//                        Shipment shipment = loan.getShipments().iterator().next();
+//                        if (shipment.getShippedBy() == null)
+//                        {
+//                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDBY"));
+//                        } else if (shipment.getShippedBy().getAddresses().size() == 0)
+//                        {
+//                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDBY_MISSING_ADDR"));
+//                        } else if (shipment.getShippedTo() == null)
+//                        {
+//                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDTO"));
+//                        } else if (shipment.getShippedTo().getAddresses().size() == 0)
+//                        {
+//                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDTO_MISSING_ADDR"));
+//                        } else
+//                        {
                             //session.close();
                             //session = null;
                             
@@ -1179,9 +1189,11 @@ public class InteractionsTask extends BaseTask
                             rs.setName(loan.getIdentityTitle());
                             rs.setDbTableId(loan.getTableId());
                             rs.addItem(loan.getId());
-                            printLoan(null, rs);
-                        }
-                    }
+                            QueryBldrPane.runReport(invoice, UIRegistry.getResourceString("LoanInvoice"),
+                                    rs);
+//                            printLoan(null, rs);
+//                        }
+//                    }
                 } finally
                 {
                     if (session != null)
@@ -1193,6 +1205,86 @@ public class InteractionsTask extends BaseTask
         }
     }
     
+    /**
+     * @return a loan invoice if one exists.
+     * 
+     * If more than one report is defined for loan then user must choose.
+     * 
+     * Currently does not search for Imported reports, only reports with an associated Specify query.
+     * 
+     * Fairly goofy code. Eventually may want to add ui to allow labeling resources as "invoice" (see printLoan()).
+     */
+    public SpReport getLoanReport()
+    {
+        DataProviderSessionIFace session = null;
+        ChooseFromListDlg<SpReport> dlg = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            StringBuilder ids = new StringBuilder();
+            boolean comma = false;
+            //ids is supposed to hold keys of only valid resources for current context.
+            for (AppResourceIFace res : AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.LABELS_MIME))
+            {
+                if (comma)
+                {
+                    ids.append(",");
+                }
+                ids.append(((SpAppResource )res).getId());
+                comma = true;
+            }
+            for (AppResourceIFace res : AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.REPORTS_MIME))
+            {
+                if (comma)
+                {
+                    ids.append(",");
+                }
+                ids.append(((SpAppResource )res).getId());
+                comma = true;
+            }
+            
+            QueryIFace q = session.createQuery("from SpReport spr join spr.query spq join spr.appResource apr "
+                    + "where spq.contextTableId = "
+                    + DBTableIdMgr.getInstance().getIdByShortName("Loan")
+                    + " and apr.id in(" + ids.toString() + ") order by spr.name", false);
+            List<?> reports = q.list();
+            if (reports.size() == 0)
+            {
+                return null;
+            }
+            if (reports.size() == 1)
+            {
+                SpReport result = (SpReport )((Object[] )reports.get(0))[0];
+                result.forceLoad();
+                return result;
+            }
+
+            Vector<SpReport> reps = new Vector<SpReport>(reports.size());
+            for (Object rep : reports)
+            {
+                reps.add((SpReport )((Object[] )rep)[0]);
+            }
+            dlg = new ChooseFromListDlg<SpReport>((Frame) UIRegistry
+                    .getTopWindow(), UIRegistry.getResourceString("REP_CHOOSE_SP_REPORT"),
+                    reps);
+            dlg.setVisible(true);
+            if (dlg.isCancelled()) 
+            { 
+                return null; 
+            }
+            SpReport result = dlg.getSelectedObject();
+            result.forceLoad();
+            return result;
+        }
+        finally
+        {
+            session.close();
+            if (dlg != null)
+            {
+                dlg.dispose();
+            }
+        }
+    }
     /**
      * Creates an Excel SpreadSheet or CVS file and attaches it to an email and send it to an agent.
      */
