@@ -42,6 +42,7 @@ import edu.ku.brc.af.ui.forms.DataObjectSettableFactory;
 import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.UIPluginable;
+import edu.ku.brc.af.ui.forms.ViewFactory;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatter;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterMgr;
@@ -148,6 +149,10 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
                 if (docListener != null) tf.addDocumentListener(docListener);
                 uivs[1]       = tf;
                 textFields[1] = tf.getTextField();
+                if (isDisplayOnly)
+                {
+                    ViewFactory.changeTextFieldUIForDisplay(textFields[1], false);
+                }
                 
             } else if (uiff.getName().equals("PartialDateYear"))
             {
@@ -156,6 +161,10 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
                 if (docListener != null) tf.addDocumentListener(docListener);
                 uivs[2]       = tf;
                 textFields[2] = tf.getTextField();
+                if (isDisplayOnly)
+                {
+                    ViewFactory.changeTextFieldUIForDisplay(textFields[2], false);
+                }
             }
         }
         
@@ -169,6 +178,11 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
                 if (docListener != null) tf.addDocumentListener(docListener);
                 uivs[0]       = tf;
                 textFields[0] = tf;
+                if (isDisplayOnly)
+                {
+                    ViewFactory.changeTextFieldUIForDisplay(textFields[0], false);
+                }
+
             }
         }
         

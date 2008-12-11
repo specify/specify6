@@ -631,7 +631,7 @@ public class ViewFactory
         }
         textField.setForeground(Color.BLACK);
         textField.setEditable(false);
-        textField.setFocusable(false);
+        //textField.setFocusable(false); // rods - commented out because it makes it so you can't select and copy
         
         if (isTransparent)
         {

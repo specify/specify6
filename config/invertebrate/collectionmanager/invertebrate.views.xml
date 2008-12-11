@@ -77,8 +77,7 @@
     			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="5"/>
-    			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-    			    <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="name=PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
+                    <cell type="field" id="5" uitype="plugin" name="this" initialize="name=PartialDateUI;df=catalogedDate;tp=catalogedDatePrecision" uifieldformatter="Date"/>
     			</row>
     			<row>
     			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="16" rows="5" initialize="noscrollbars=true;border=line;bordercolor=150,150,150;"/>
