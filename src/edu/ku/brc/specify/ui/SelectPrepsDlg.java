@@ -506,14 +506,12 @@ public class SelectPrepsDlg extends CustomDialog
                     spinner = new JSpinner(model);
                     fixBGOfJSpinner(spinner);
                     pbuilder.add(spinner, cc.xy(3, 1));
-                    //String str = " of " + Integer.toString(quantityAvailable) + "  " + (quantityOut > 0 ? "(" + quantityOut + " on loan.)" : "");
-                    String fmtStr = getLocalizedMessage("LoanSelectPrepsDlg.OF_QUANT_OUT", quantityAvailable);
+                    String fmtStr = getLocalizedMessage("LoanSelectPrepsDlg.OF_QUANT_OUT", quantityAvailable); //$NON-NLS-1$
                     pbuilder.add(label2 = createLabel(fmtStr), cc.xy(5, 1));
                     if (quantityOut > 0)
                     {
-                        fmtStr = getLocalizedMessage("LoanSelectPrepsDlg.OF_QUANT_OUT", quantityOut); //$NON-NLS-1$
+                        fmtStr = getLocalizedMessage("LoanSelectPrepsDlg.NUM_ON_LOAN", quantityOut); //$NON-NLS-1$
                         prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon", IconManager.IconSize.Std16)); //$NON-NLS-1$
-                        //prepInfoBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
                         pbuilder.add(prepInfoBtn, cc.xy(7, 1));
                     }
                     
