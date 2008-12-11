@@ -544,7 +544,6 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace,
         {
             errType = ErrorType.Error;
         }
-        System.err.println(errType);
         return errType;
     }
 
