@@ -60,20 +60,20 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
                                                              GeoCoordProviderListenerIFace,
                                                              CommandListener
 {
-    protected final String     PREFERENCES = "Preferences";
+    protected final String           PREFERENCES = "Preferences";
     
-    protected Locality         locality   = null;
-    protected FormViewObj      fvo        = null;    
-    protected Object           dataObj    = null;
+    protected Locality               locality    = null;
+    protected FormViewObj            fvo         = null;    
+    protected Object                 dataObj     = null;
     
-    protected boolean          isViewMode = false;
-    protected boolean          doGeoLocate = false;
+    protected boolean                isViewMode  = false;
+    protected boolean                doGeoLocate = false;
     
-    protected String                 llId      = null;
-    protected String                 geoId     = null;
-    protected String                 locId     = null;
-    protected FormViewObj            parent    = null;
-    protected Vector<ChangeListener> listeners = null;
+    protected String                 llId        = null;
+    protected String                 geoId       = null;
+    protected String                 locId       = null;
+    protected FormViewObj            parent      = null;
+    protected Vector<ChangeListener> listeners   = null;
     
     /**
      * Default Constructor.
@@ -240,6 +240,8 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
     {
         this.isViewMode = isViewModeArg;
         
+        setEnabled(!isViewMode);
+        
         geoId = properties.getProperty("geoid");
         locId = properties.getProperty("locid");
         llId  = properties.getProperty("llid");
@@ -280,7 +282,7 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
      */
     public void setEnabled(final boolean enable)
     {
-        super.setEnabled(enable && locality != null);// && locality.getLat1() != null && locality.getLong1() != null);
+        super.setEnabled(enable && locality != null && !isViewMode);// && locality.getLat1() != null && locality.getLong1() != null);
     }
 
     /* (non-Javadoc)

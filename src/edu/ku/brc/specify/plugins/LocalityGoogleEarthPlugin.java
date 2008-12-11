@@ -64,12 +64,12 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
                                                                   UIPluginable,
                                                                   PropertyChangeListener
 {
-    protected CollectionObject colObj    = null;
-    protected CollectingEvent  ce;
-    protected Locality         locality;
-    protected Object           origData  = null;
-    protected boolean          hasPoints = false;
-    protected ImageIcon        imageIcon = null;
+    protected CollectionObject             colObj       = null;
+    protected CollectingEvent              ce;
+    protected Locality                     locality;
+    protected Object                       origData     = null;
+    protected boolean                      hasPoints    = false;
+    protected ImageIcon                    imageIcon    = null;
     
     protected String                       watchId      = null;
     protected LatLonUI                     latLonPlugin = null;
