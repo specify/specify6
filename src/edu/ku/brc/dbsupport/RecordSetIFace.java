@@ -21,7 +21,7 @@ import javax.swing.ImageIcon;
 public interface RecordSetIFace
 {
     /**
-     * @return
+     * @return the name
      */
     public abstract Integer getRecordSetId();
 
@@ -36,17 +36,18 @@ public interface RecordSetIFace
     public abstract String getName();
 
     /**
-     * @param name
+     * Sets the name.
+     * @param name the name
      */
     public abstract void setName(String name);
 
     /**
-     * @return
+     * @return the Table ID of the items in the RecordSet
      */
     public abstract Integer getDbTableId();
 
     /**
-     * @param tableId
+     * @param tableId the ID of the type of items in the RecordSet
      */
     public abstract void setDbTableId(Integer tableId);
 
@@ -70,17 +71,18 @@ public interface RecordSetIFace
     public abstract void setItems(Set<RecordSetItemIFace> items);
 
     /**
-     * @return
+     * @return the remarks
      */
     public abstract String getRemarks();
 
     /**
-     * @param remarks
+     * Sets the remarks
+     * @param remarks the remarks text
      */
     public abstract void setRemarks(String remarks);
     
     /**
-     * @return
+     * @return the number of RecordSetItems
      */
     public abstract int getNumItems();
 
@@ -108,17 +110,18 @@ public interface RecordSetIFace
     public abstract void removeItem(final RecordSetItemIFace rsi);
     
     /**
-     * 
+     * Clear all the items in the RecordSet
      */
     public abstract void clearItems();
     
     /**
-     * @param list
+     * Add all the items in the list to this RecordSet
+     * @param list the items to be added
      */
     public abstract void addAll(Collection<RecordSetItemIFace> list);
 
     /**
-     * @return
+     * @return An Icon that represents the data that is held in the RecordSet
      */
     public abstract ImageIcon getDataSpecificIcon();
 
@@ -128,12 +131,12 @@ public interface RecordSetIFace
     public abstract void setDataSpecificIcon(ImageIcon dataSpecificIcon);
 
     /**
-     * @return
+     * @return The table ID for the RecordSet class
      */
     public abstract int getTableId();
     
     /**
-     * @return
+     * @return the first and only item
      */
     public abstract RecordSetItemIFace getOnlyItem();
     

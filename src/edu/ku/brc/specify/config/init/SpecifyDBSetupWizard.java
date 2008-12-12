@@ -166,8 +166,8 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             props.put("dbUserName", "Specify");
             props.put("dbPassword", "Specify");
             
-            props.put("saUserName", "SPSAUser");
-            props.put("saPassword", "SPSAUser");
+            props.put("saUserName", "Master");
+            props.put("saPassword", "Master");
             
             props.put("firstName", "Test");
             props.put("lastName",  "User");
@@ -177,11 +177,9 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             props.put("usrPassword", "testuser");
     
             props.put("instName", "KU natural History Museum");
-            //props.put("instTitle", "KU natural History Museum");
             props.put("instAbbrev", "KU-NHM");
     
             props.put("divName", "Fish");
-            //props.put("divTitle", "Ichty");
             props.put("divAbbrev", "IT");
     
             props.put("collPrefix", "KUFSH");
@@ -201,7 +199,6 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         
         userPanel = new DatabasePanel(nextBtn, true);
         panels.add(userPanel);
-        //locationPanel = new DBLocationPanel(nextBtn);
                
         UIFieldFormatterMgr.setDoingLocal(true);
         
@@ -211,7 +208,6 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                 new String[] { "saUserName", "saPassword"}, 
                 nextBtn));
 
-        //panels.add(locationPanel);
         panels.add(new GenericFormPanel("agent", 
                 "ENTER_COLMGR_INFO", 
                 new String[] { "FIRSTNAME", "LASTNAME", "MIDNAME",       "EMAIL", "USERLOGININFO", "USERNAME", "PASSWORD"}, 
@@ -258,7 +254,6 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
                     {
                         step--;
                         cardLayout.show(cardPanel, Integer.toString(step));
-                        //((BaseSetupPanel)panels.get(step)).updateBtnUI();
                     }
                     updateBtnBar();
                 }
@@ -295,15 +290,10 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
             }
          });
 
-        //boolean isAllOK = true;
         for (int i=0;i<panels.size();i++)
         {
             cardPanel.add(Integer.toString(i), panels.get(i));
             panels.get(i).setValues(props);
-            if (!panels.get(i).isUIValid())
-            {
-                //isAllOK = false;
-            }
         }
         cardLayout.show(cardPanel, "0");
         
@@ -333,7 +323,6 @@ public class SpecifyDBSetupWizard extends JFrame implements FrameworkAppIFace
         UIRegistry.register(UIRegistry.MENUBAR, menuBar);
         
         pack();
-        
     }
     
     /**

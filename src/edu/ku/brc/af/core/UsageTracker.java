@@ -47,6 +47,9 @@ import edu.ku.brc.util.Pair;
  */
 public class UsageTracker
 {
+    public static final String NT_CON_EX = "NT_CON_EX"; // Network Connection Exception
+    public static final String SQL_EX    = "SQ_EX";     // SQL Exception
+    
     private static final String USAGE_PREFIX = "Usage.";
     
     private static File       usageFile  = null;

@@ -485,10 +485,10 @@ public class MasterPasswordMgr
     /**
      * Calls the URL by adding the username and password to the URL in the form of
      * "u=<username>&p=<password" both are encrypted so they are not password as clear text.
-     * @param urlLoc the URL called to retrive the SPSAUser's username,password
+     * @param urlLoc the URL called to retrive the Master's username,password
      * @param username the encrypted user's username
      * @param password the encrypted user's password
-     * @return a single string containing the SPSAUser username and password that can be decypted with
+     * @return a single string containing the Master username and password that can be decypted with
      * the user's password.
      */
     protected String getKeyFromURL(final String urlLoc,

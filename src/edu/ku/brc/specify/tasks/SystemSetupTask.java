@@ -68,6 +68,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Institution;
@@ -199,7 +200,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         {
             if (sp.getTask().getClass() != StartUpTask.class)
             {
-                UIRegistry.displayErrorDlgLocalized("Please all you tabs.");
+                UIRegistry.displayInfoMsgDlgLocalized("SystemSetupTask.PL_CLOSE_TABS");
                 return;
             }
             
@@ -207,6 +208,12 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             {
                 break;
             }
+        }
+        
+        boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.CFG_SETUP");
+        if (!ok)
+        {
+            return;
         }
         
         ContextMgr.requestContext(this);
@@ -643,6 +650,12 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     protected void doSchemaConfig(final Byte schemaType, final DBTableIdMgr tableMgr)
     {
+        boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.SCHEMA_CFG");
+        if (!ok)
+        {
+            return;
+        }
+        
         UsageTracker.incrUsageCount("SS.SCHEMACFG");
         
         UIRegistry.getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);

@@ -108,7 +108,7 @@ public class SpecifyDBConverter
     
     protected Pair<String, String> srcUsrPwd = new Pair<String, String>(null, null);
     protected Pair<String, String> dstUsrPwd = new Pair<String, String>(null, null);
-    protected Pair<String, String> saUser    = new Pair<String, String>("SPSAUser", "SPSAUser");
+    protected Pair<String, String> saUser    = new Pair<String, String>("Master", "Master");
     
 
     /**

@@ -231,7 +231,7 @@ public class RegisterSpecify
         collection.setRegNumber(regNumber);
         update(Collection.class, collection);
         
-        if (isFirstReg && !isAnonymous())
+        if (!isFirstReg && !isAnonymous())
         {
             UIRegistry.showLocalizedMsg(JOptionPane.INFORMATION_MESSAGE, "SpReg.REG_TITLE", "SpReg.REG_OK");
         }

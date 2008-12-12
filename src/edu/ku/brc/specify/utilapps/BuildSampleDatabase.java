@@ -6771,8 +6771,8 @@ public class BuildSampleDatabase
         Pair<String, String> dbUser = new Pair<String, String>(initPrefs.getProperty("initializer.dbUserName", "Specify"),
                                                                initPrefs.getProperty("initializer.dbPassword", "Specify"));
         
-        Pair<String, String> saUser = new Pair<String, String>(initPrefs.getProperty("initializer.saUserName", "SPSAUser"),
-                                                               initPrefs.getProperty("initializer.saPassword", "SPSAUser"));
+        Pair<String, String> saUser = new Pair<String, String>(initPrefs.getProperty("initializer.saUserName", "Master"),
+                                                               initPrefs.getProperty("initializer.saPassword", "Master"));
         
         Pair<String, String> cmUser = new Pair<String, String>(initPrefs.getProperty("useragent.username", "testuser"),
                                                                initPrefs.getProperty("useragent.password", "testuser"));

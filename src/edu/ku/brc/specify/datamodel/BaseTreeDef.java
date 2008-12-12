@@ -395,29 +395,9 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                     }
                 });
 
-        List<String> logins = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getAgentListLoggedIn(AppContextMgr.getInstance().getClassObject(Discipline.class));
-        if (logins.size() > 0)
+        boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("BaseTreeDef.TREE_UPDATE_DENIED_TITLE", "BaseTreeDef.OTHER_USERS");
+        if (!ok)
         {
-            String loginStr = "";
-            for (int l = 0; l < logins.size(); l++)
-            {
-                if (l > 0)
-                {
-                    loginStr += ", ";
-                }
-                loginStr += "'" + logins.get(l) + "'";
-            }
-            PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
-            pb.add(new JLabel(UIRegistry.getResourceString("BaseTreeDef.OTHER_USERS")), new CellConstraints().xy(2, 2));
-            pb.add(new JLabel(loginStr), new CellConstraints().xy(2, 4));
-            pb.add(new JLabel(UIRegistry.getResourceString("BaseTreeDef.OTHER_USERS2")), new CellConstraints().xy(2, 6));
-            
-            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
-                    UIRegistry.getResourceString("BaseTreeDef.TREE_UPDATE_DENIED_TITLE"),
-                    true,
-                    CustomDialog.OKHELP,
-                    pb.getPanel());
-            UIHelper.centerAndShow(dlg);
             return;
         }
 

@@ -15,12 +15,15 @@
 package edu.ku.brc.specify.config;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
+import static edu.ku.brc.ui.UIHelper.createI18NLabel;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getViewbasedFactory;
 import static edu.ku.brc.ui.UIRegistry.showLocalizedError;
 
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.Connection;
@@ -46,6 +49,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -101,6 +108,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -161,7 +169,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected boolean        debug                 = false;
     protected long           lastLoadTime          = 0;
     protected long           lastLoadTimeBS        = 0;
-    protected UnhandledExceptionDialog dlg         = null;
+    protected UnhandledExceptionDialog uheDlg      = null;
     
     protected DataProviderSessionIFace globalSession    = null;
     protected int                      openSessionCount = 0;
@@ -2661,6 +2669,55 @@ public class SpecifyAppContextMgr extends AppContextMgr
         }
   
         return names;
+    }
+    
+    /**
+     * @param titleKey
+     * @param msgKey
+     * @return
+     */
+    public boolean displayAgentsLoggedInDlg(final String msgKey)
+    {
+        return displayAgentsLoggedInDlg(null, msgKey);
+    }
+    
+    /**
+     * @param titleKey
+     * @param msgKey
+     * @return
+     */
+    public boolean displayAgentsLoggedInDlg(final String titleKey, final String msgKey)
+    {
+        List<String> logins = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getAgentListLoggedIn(AppContextMgr.getInstance().getClassObject(Discipline.class));
+        if (logins.size() > 0)
+        {
+            String loginStr = "";
+            for (int l = 0; l < logins.size(); l++)
+            {
+                if (l > 0)
+                {
+                    loginStr += ", ";
+                }
+                loginStr += "'" + logins.get(l) + "'";
+            }
+            
+            CellConstraints cc = new CellConstraints();
+            String titleStr = UIRegistry.getResourceString(titleKey != null ? titleKey : "SpecifyAppContextMgr.OU_TITLE");
+            PanelBuilder pb = new PanelBuilder(new FormLayout("5dlu, f:p:g, 5dlu", "5dlu, f:p:g, 2dlu, f:p:g, 2dlu, f:p:g, 5dlu"));
+            
+            pb.add(createI18NLabel("SpecifyAppContextMgr.OTHER_USERS"), cc.xy(2, 2));
+            pb.add(createLabel(loginStr),   cc.xy(2, 4));
+            pb.add(createI18NLabel(msgKey), cc.xy(2, 6));
+            
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+                                                titleStr,
+                                                true,
+                                                CustomDialog.OKHELP,
+                                                pb.getPanel());
+            UIHelper.centerAndShow(dlg);
+            return false;
+        }
+        return true;
     }
 
     /* (non-Javadoc)
