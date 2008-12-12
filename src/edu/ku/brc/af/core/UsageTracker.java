@@ -164,6 +164,22 @@ public class UsageTracker
     }
 
     /**
+     * Incremements the usage count for a network exception.
+     */
+    public synchronized static void incrNetworkUsageCount()
+    {
+        incrUsageCount(NT_CON_EX);
+    }
+
+    /**
+     * Incremements the usage count for a SQL exception.
+     */
+    public synchronized static void incrSQLUsageCount()
+    {
+        incrUsageCount(SQL_EX);
+    }
+
+    /**
      * Incremements the usage count of the given feature.
      * 
      * @param featureName the name of the feature for which to increment the usage count

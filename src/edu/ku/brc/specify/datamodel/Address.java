@@ -48,6 +48,8 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.util.Orderable;
+
 /**
 
  */
@@ -55,7 +57,10 @@ import org.apache.commons.lang.StringUtils;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "address")
-public class Address extends DataModelObjBase implements java.io.Serializable {
+public class Address extends DataModelObjBase implements Orderable,
+                                                         Comparable<Address>,
+                                                         java.io.Serializable 
+{
 
     // Fields
 
@@ -68,6 +73,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     protected String            postalCode;
     protected String            remarks;
     protected Agent             agent;
+    protected Integer           ordinal;
 
     // From Agent
     protected Boolean           isPrimary;
@@ -113,8 +119,9 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
         country = null;
         postalCode = null;
         remarks = null;
-        agent = null;
-        
+        agent   = null;
+        ordinal = null;
+
         // Agent
         isPrimary = false;
         phone1 = null;
@@ -387,6 +394,38 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
         this.positionHeld = positionHeld;
     }
     
+    @Column(name = "Ordinal")
+    public Integer getOrdinal()
+    {
+        return ordinal;
+    }
+
+    public void setOrdinal(Integer ordinal)
+    {
+        this.ordinal = ordinal;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.Orderable#getOrderIndex()
+     */
+    @Transient
+    public int getOrderIndex()
+    {
+        return (this.ordinal != null) ? this.ordinal : 0;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.Orderable#setOrderIndex(int)
+     */
+    public void setOrderIndex(int ordinal)
+    {
+        this.ordinal = ordinal;
+    }
+
+    /**
+     * @param sb
+     * @param val
+     */
     public static void append(final StringBuilder sb, final String val)
     {
         if (StringUtils.isNotEmpty(val))
@@ -524,5 +563,12 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     {
         return 8;
     }
-
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Address obj)
+    {
+        return ordinal.compareTo(obj.ordinal);
+    }
 }

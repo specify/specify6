@@ -1272,8 +1272,8 @@ public class BuildSampleDatabase
         agentVariants.add(createAgentVariant(AgentVariant.VERNACULAR, "James VERNACULAR #1", steveBoyd));
      
         List<Address> addrs = new Vector<Address>();
-        addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500"));
-        addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045"));
+        addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500", 0));
+        addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045", 1));
         addrs.add(createAddress(agents.get(2), "1 Main St", "", "Lenexa", "KS", "USA", "66071"));
         addrs.add(createAddress(agents.get(3), "13355 Inverness", "Bldg #3", "Lawrence", "KS", "USA", "66047"));
         addrs.add(createAddress(agents.get(4), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));
@@ -2048,8 +2048,8 @@ public class BuildSampleDatabase
         agentVariants.add(createAgentVariant(AgentVariant.VERNACULAR, "James VERNACULAR #1", steveBoyd));
      
         List<Address> addrs = new Vector<Address>();
-        addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500"));
-        addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045"));
+        addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500", 0));
+        addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045", 1));
         addrs.add(createAddress(agents.get(2), "1 Main St", "", "Lenexa", "KS", "USA", "66071"));
         addrs.add(createAddress(agents.get(3), "13355 Inverness", "Bldg #3", "Lawrence", "KS", "USA", "66047"));
         addrs.add(createAddress(agents.get(4), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));
@@ -2554,8 +2554,8 @@ public class BuildSampleDatabase
         startTx();
         
         List<Address> addrs = new Vector<Address>();
-        addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500"));
-        addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045"));
+        addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500", 0));
+        addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045", 1));
         addrs.add(createAddress(agents.get(2), "1 Main St", "", "Lenexa", "KS", "USA", "66071"));
         addrs.add(createAddress(agents.get(3), "13355 Inverness", "Bldg #3", "Lawrence", "KS", "USA", "66047"));
         addrs.add(createAddress(agents.get(4), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));
@@ -3640,8 +3640,8 @@ public class BuildSampleDatabase
         startTx();
         
         List<Address> addrs = new Vector<Address>();
-        addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500"));
-        addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045"));
+        addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500", 0));
+        addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045", 1));
         addrs.add(createAddress(agents.get(2), "1 Main St", "", "Lenexa", "KS", "USA", "66071"));
         addrs.add(createAddress(agents.get(3), "13355 Inverness", "Bldg #3", "Lawrence", "KS", "USA", "66047"));
         addrs.add(createAddress(agents.get(4), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));
@@ -4963,8 +4963,8 @@ public class BuildSampleDatabase
             agentVariants.add(createAgentVariant(AgentVariant.VERNACULAR, "John VERNACULAR #1", johnByrn));
          
             List<Address> addrs = new Vector<Address>();
-            addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500"));
-            addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045"));
+            addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500", 0));
+            addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045", 1));
             addrs.add(createAddress(agents.get(2), "1 Main St", "", "Lenexa", "KS", "USA", "66071"));
             addrs.add(createAddress(agents.get(3), "13355 Inverness", "Bldg #3", "Lawrence", "KS", "USA", "66047"));
             addrs.add(createAddress(agents.get(4), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));

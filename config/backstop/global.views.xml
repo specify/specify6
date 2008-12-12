@@ -56,6 +56,8 @@
             <altviews>
                 <altview name="Address View" viewdef="Address" mode="view" validated="false" default="true"/>
                 <altview name="Address Edit" viewdef="Address" mode="edit" validated="true"/>
+                <altview name="Address Table View" viewdef="Address Table" mode="view" />
+                <altview name="Address Table Edit" viewdef="Address Table" mode="edit"/>
             </altviews>
         </view>
         
@@ -721,6 +723,17 @@
         </viewdef>
 
         <viewdef
+            type="formtable"
+            name="Address Table"
+            class="edu.ku.brc.specify.datamodel.Address"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Address grid view.]]></desc>
+            <definition>Address</definition>
+         </viewdef>
+        
+         <viewdef
             type="form"
             name="Address"
             class="edu.ku.brc.specify.datamodel.Address"

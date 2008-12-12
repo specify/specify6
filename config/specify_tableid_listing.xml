@@ -27,7 +27,7 @@
             <display dataobjformatter="AccessionAuthorization"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Address" abbrev="ad" id="8" workbench="false" searchable="true">
-            <display view="Address"/>
+            <display view="Address" newobjdlg="AddressDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AddressOfRecord" abbrev="aor" id="125" workbench="false" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.Agent" abbrev="ag" id="5" workbench="true" searchable="true">

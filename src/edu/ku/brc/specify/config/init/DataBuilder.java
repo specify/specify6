@@ -1267,6 +1267,18 @@ public class DataBuilder
                                         final String country,
                                         final String postalCode)
     {
+        return createAddress(agent, address1, address2, city, state, country, postalCode, 0);
+    }
+
+    public static Address createAddress(final Agent agent,
+                                        final String address1,
+                                        final String address2,
+                                        final String city,
+                                        final String state,
+                                        final String country,
+                                        final String postalCode,
+                                        final int    ordinal)
+    {
         Address address = new Address();
         address.initialize();
         address.setAgent(agent);
@@ -1278,7 +1290,8 @@ public class DataBuilder
         address.setPostalCode(postalCode);
         address.setState(state);
         address.setIsPrimary(true);
-
+        address.setOrdinal(ordinal);
+        
         agent.getAddresses().add(address);
         persist(address);
         persist(agent);

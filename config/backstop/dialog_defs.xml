@@ -26,8 +26,9 @@
     <dialog type="search" viewset="Search" view="RepositoryAgreementSearch" name="RepositoryAgreementSearch" class="edu.ku.brc.specify.datamodel.RepositoryAgreement" idfield="repositoryAgreementId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="TaxonSearch"              name="TaxonSearch"              class="edu.ku.brc.specify.datamodel.Taxon"          idfield="taxonId" helpcontext="CBXQSearch"/>
     
-    <dialog type="display" view="AccessionCO"          name="AccessionDisplay"         class="edu.ku.brc.specify.datamodel.Accession"/>
-    <dialog type="display" view="AccessionAgent"     name="AccessionAgentDisplay"    class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
+    <dialog type="display" view="AccessionCO"        name="AccessionDisplay"         class="edu.ku.brc.specify.datamodel.Accession"/>
+    <dialog type="display" view="AccessionAgent"     name="AccessionAgentDisplay"    class="edu.ku.brc.specify.datamodel.Address"/>
+    <dialog type="display" view="Address"            name="AddressDisplay"           class="edu.ku.brc.specify.datamodel.Accession"/>
     <dialog type="display" view="Agent"              name="AgentDisplay"             class="edu.ku.brc.specify.datamodel.Agent"/>
     <dialog type="display" view="AgentVariant"       name="AgentVariant"             class="edu.ku.brc.specify.datamodel.AgentVariant"/>
     <dialog type="display" view="Appraisal"          name="AppraisalDisplay"         class="edu.ku.brc.specify.datamodel.Appraisal"/>
