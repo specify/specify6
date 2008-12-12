@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.ui.ExtendedTabbedPane;
 import edu.ku.brc.ui.ExtendedTabPanel;
 import edu.ku.brc.ui.UIRegistry;
@@ -499,9 +500,9 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
 
     /**
-     * Returns a SubPaneIFace that currently contains the same recordset as the one in question.
-     * @param rs the recordset in question
-     * @return the subpane containing the recordset or null.
+     * Returns a SubPaneIFace that currently contains the same RecordSet as the one in question.
+     * @param rs the RecordSet in question
+     * @return the subpane containing the RecordSet or null.
      */
     public static SubPaneIFace getSubPaneWithRecordSet(final RecordSetIFace rs)
     {
@@ -511,12 +512,38 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             for (SubPaneIFace sp : instance.panes.values())
             {
                 RecordSetIFace sprs = sp.getRecordSet();
-                if (sprs == rs || 
-                   (sprs != null && sprs.getRecordSetId() != null && 
-                                    rs.getRecordSetId() != null &&
-                                    sprs.getRecordSetId().intValue() == rs.getRecordSetId().intValue()))
+                if (sprs != null)
                 {
-                    return sp;
+                    if (sprs == rs)
+                    {
+                        return sp;
+                    }
+
+                    if (sprs.getRecordSetId() != null && 
+                        rs.getRecordSetId() != null &&
+                        sprs.getRecordSetId().equals(rs.getRecordSetId()))
+                    {
+                        return sp;
+                    }
+                    
+                    if (sprs.getDbTableId().equals(rs.getDbTableId()) &&
+                        sprs.getNumItems() == rs.getNumItems())
+                    {
+                        Hashtable<Integer, Boolean> hash = new Hashtable<Integer, Boolean>();
+                        for (RecordSetItemIFace rsi : rs.getItems())
+                        {
+                            hash.put(rsi.getRecordId(), true);
+                        }
+                        
+                        for (RecordSetItemIFace rsi : sprs.getItems())
+                        {
+                            if (hash.get(rsi.getRecordId()) == null)
+                            {
+                                return null;
+                            }
+                        }
+                        return sp;
+                    }
                 }
             }
         }
