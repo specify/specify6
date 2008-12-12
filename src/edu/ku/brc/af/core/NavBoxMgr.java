@@ -172,7 +172,7 @@ public class NavBoxMgr extends JPanel
     }
     
     /**
-     * Registers a Task's NavBoxes into the Manager.
+     * Unregisters a Task's NavBoxes into the Manager.
      */
     public static void unregister()
     {

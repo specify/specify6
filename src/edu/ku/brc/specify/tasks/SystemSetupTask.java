@@ -195,6 +195,20 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     public void requestContext()
     {
+        for (SubPaneIFace sp : SubPaneMgr.getInstance().getSubPanes())
+        {
+            if (sp.getTask().getClass() != StartUpTask.class)
+            {
+                UIRegistry.displayErrorDlgLocalized("Please all you tabs.");
+                return;
+            }
+            
+            if (sp.getTask() == this)
+            {
+                break;
+            }
+        }
+        
         ContextMgr.requestContext(this);
 
         if (starterPane == null)
@@ -210,7 +224,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             
         } else  
         {
-            SubPaneMgr.getInstance().showPane(starterPane);
+            SubPaneMgr.getInstance().addPane(starterPane);
         }
     }
     
