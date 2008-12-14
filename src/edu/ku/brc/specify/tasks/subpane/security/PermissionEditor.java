@@ -258,7 +258,7 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
         }
         
 		table.setModel(model);
-		table.setRowHeight(label.getPreferredSize().height+3);
+		table.setRowHeight(label.getPreferredSize().height + 5);
 		
 		/*int rows   = 15;
 		int height = 0; 

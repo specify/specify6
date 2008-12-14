@@ -60,9 +60,11 @@ public class YesNoCellRenderer extends DefaultTableCellRenderer
             }
             else
             {
-                label.setForeground(Color.LIGHT_GRAY);
+                label.setForeground(Color.DARK_GRAY);
                 label.setFont(boldFont);
-                label.setText(YES + " (" + wrapper.getOverrulingPermissionText() + ")");
+                label.setText("<html><center><font size=\"-2\">" + YES + "</font><br>" + 
+                        "<font size=\"-3\">(" + wrapper.getOverrulingPermissionText() + 
+                        ")</font><center></html>");
             }
         }
         return label;

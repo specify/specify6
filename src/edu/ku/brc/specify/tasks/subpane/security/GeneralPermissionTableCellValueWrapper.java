@@ -42,7 +42,7 @@ public class GeneralPermissionTableCellValueWrapper
         }
         else if (overrulingPermission != null) 
         {
-            this.permissionActionValue = overrulingPermission.hasAction(permissionAction);
+            this.overrulingPermissionActionValue = overrulingPermission.hasAction(permissionAction);
             // get name of first user group principal associated with this permission
             Iterator<SpPrincipal> it = overrulingPermission.getPrincipals().iterator();
             while (it.hasNext()) 
