@@ -39,6 +39,7 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
 	private List<SpPermission> customPermissions;
 	private ImageIcon    icon;
     protected PermissionEditorIFace editorPanel;
+    protected boolean adminPrincipal;
 
 
 	/**
@@ -369,6 +370,16 @@ public class ObjectPermissionEditorRow implements PermissionEditorRowIFace
     public int compareTo(PermissionEditorRowIFace o)
     {
         return getTitle().compareTo(o.getTitle());
+    }
+
+    public boolean isAdminPrincipal()
+    {
+        return adminPrincipal;
+    }
+
+    public void setAdminPrincipal(boolean adminPrincipal)
+    {
+        this.adminPrincipal = adminPrincipal;
     }
 	
 	

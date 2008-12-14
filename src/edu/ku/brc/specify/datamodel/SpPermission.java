@@ -191,14 +191,14 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	/**
 	 *
 	 */
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {}, fetch = FetchType.EAGER)
     @JoinTable(name = "spprincipal_sppermission", 
-            joinColumns = 
-            { 
-            @JoinColumn(name = "SpPermissionID", unique = false, nullable = false, insertable = true, updatable = false) 
-            }, 
-            inverseJoinColumns = 
-            { @JoinColumn(name = "SpPrincipalID", unique = false, nullable = false, insertable = true, updatable = false) 
+            joinColumns = { 
+                @JoinColumn(name = "SpPermissionID", 
+                            unique = false, nullable = false, insertable = true, updatable = false) }, 
+            inverseJoinColumns = { 
+                @JoinColumn(name = "SpPrincipalID", 
+                            unique = false, nullable = false, insertable = true, updatable = false) 
             }
     )	public Set<SpPrincipal> getPrincipals()
 	{
@@ -237,6 +237,11 @@ public class SpPermission /*extends DataModelObjBase*/implements java.io.Seriali
 	/**
 	 * @return
 	 */
+    public boolean hasAction(final String action)
+    {
+        return (actions != null) && (actions.indexOf(action) >= 0);
+    }
+
 	public boolean canView()
 	{
 		return (actions != null) && (actions.indexOf("view") >= 0);

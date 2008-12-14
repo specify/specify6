@@ -74,4 +74,13 @@ public interface PermissionEditorRowIFace extends Comparable<PermissionEditorRow
 	 * @param newPerm
 	 */
 	public abstract void updatePerm(SpPermission oldPerm, SpPermission newPerm);
+	
+	/**
+	 * Indicates whether the information being displayed is from an administrator.
+	 * That will affect the way permissions can be set or displayed, i.e., administrators 
+	 * have the right to do anything in the system. 
+	 */
+	public abstract boolean isAdminPrincipal();
+	public abstract void setAdminPrincipal(boolean isAdminPrincipal);
+	
 }

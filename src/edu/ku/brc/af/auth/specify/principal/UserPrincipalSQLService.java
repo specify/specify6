@@ -128,6 +128,53 @@ public class UserPrincipalSQLService
         return rs;
     }
 
+    static public boolean isPrincipalAdmin(Integer principalId)
+    {
+        Connection conn = null;
+        ResultSet rs = null;
+        PreparedStatement pstmt = null;
+        boolean result = false;
+        try
+        {
+            log.debug("isAdmin: " + principalId); //$NON-NLS-1$
+            conn = DatabaseService.getInstance().getConnection();
+            if (conn != null)
+            {
+                pstmt = conn.prepareStatement("SELECT count(up.SpPrincipalID) as ct" //$NON-NLS-1$
+                		+ " FROM specifyuser_spprincipal as up" //$NON-NLS-1$
+                		+ " INNER JOIN spprincipal as p on (up.SpPrincipalID=p.SpPrincipalID)" //$NON-NLS-1$
+                        + " WHERE p.GroupSubClass='" + AdminPrincipal.class.getCanonicalName() + "'"
+                        + "  AND up.SpecifyUserID=?"); //$NON-NLS-1$
+                pstmt.setInt(1, principalId);
+                log.debug("executing: " + pstmt.toString()); //$NON-NLS-1$
+                rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    result = rs.getInt(1) >= 1;
+                }
+            } else
+            {
+                log.error("getUsersPrincipalsByUserId - database connection was null"); //$NON-NLS-1$
+            }
+        } catch (SQLException e)
+        {
+            log.error("Exception caught: " + e); //$NON-NLS-1$
+            e.printStackTrace();
+        } finally
+        {
+            try
+            {
+                if (conn != null)  conn.close();
+                if(pstmt != null)  pstmt.close();
+                if   (rs != null)  rs.close();
+            } catch (SQLException e)
+            {
+                log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
     static public boolean deleteFromUserGroup(Integer userId, Integer userGroupId)
     {
         Connection conn = null;

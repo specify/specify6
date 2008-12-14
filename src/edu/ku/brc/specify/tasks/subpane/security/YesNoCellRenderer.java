@@ -47,6 +47,24 @@ public class YesNoCellRenderer extends DefaultTableCellRenderer
             label.setFont(((Boolean)value) ? boldFont : normalFont);
             label.setText(((Boolean)value) ? YES : NO);
         }
+        else if (value instanceof GeneralPermissionTableCellValueWrapper)
+        {
+            // it's a wrapper object that supports displaying of overriding permissions
+            GeneralPermissionTableCellValueWrapper wrapper = (GeneralPermissionTableCellValueWrapper) value;
+            if (!wrapper.isOverriden()) 
+            {
+                // not overriden, so display regular label
+                label.setForeground(wrapper.getPermissionActionValue() ? Color.BLACK : Color.LIGHT_GRAY);
+                label.setFont(wrapper.getPermissionActionValue() ? boldFont : normalFont);
+                label.setText(wrapper.getPermissionActionValue() ? YES : NO);
+            }
+            else
+            {
+                label.setForeground(Color.LIGHT_GRAY);
+                label.setFont(boldFont);
+                label.setText(YES + " (" + wrapper.getOverrulingPermissionText() + ")");
+            }
+        }
         return label;
     }
     

@@ -15,8 +15,11 @@ import javax.swing.ImageIcon;
 import edu.ku.brc.af.auth.PermissionEditorIFace;
 import edu.ku.brc.af.auth.SecurityOptionIFace;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
+import edu.ku.brc.af.auth.specify.principal.UserPrincipalSQLService;
 import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpPermission;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.ui.UIRegistry;
@@ -65,33 +68,6 @@ public abstract class PermissionEnumerator
     }*/
 
     /**
-     * Returns a special permission that allows user to see all tasks
-     * @return
-     */
-    protected PermissionEditorRowIFace getStarPermission(final String permissionBaseName,
-                                                         final String type,
-                                                         final String title,
-                                                         final String description,
-                                                         final Hashtable<String, SpPermission> existingPerms,
-                                                         final Hashtable<String, SpPermission> overrulingPerms)
-    {
-        String       permName = permissionBaseName + ".*";
-        SpPermission perm     = existingPerms.get(permName);
-        SpPermission oPerm    = (overrulingPerms != null)? overrulingPerms.get(permName) : null;
-
-        if (perm == null)
-        {
-            // no permission with this name, create new one
-            perm = new SpPermission();
-            perm.initialize();
-            perm.setName(permName);
-            perm.setActions("");
-            perm.setPermissionClass(BasicSpPermission.class.getCanonicalName());
-        }
-        return new GeneralPermissionEditorRow(perm, oPerm, type, title, description, null, null);
-    }
-    
-    /**
      * @param perms
      * @param securityOption
      * @param icon
@@ -105,7 +81,8 @@ public abstract class PermissionEnumerator
                                          final SpPrincipal                     principal, 
                                          final Hashtable<String, SpPermission> existingPerms,
                                          final Hashtable<String, SpPermission> overrulingPerms,
-                                         final String                          userType)
+                                         final String                          userType,
+                                         final boolean                         admin)
     {
         // first check if there is a permission with this name
         String       secName = permBaseName + "." + securityOption.getPermissionName();
@@ -137,7 +114,7 @@ public abstract class PermissionEnumerator
         
         // add newly created permission to the bag that will be returned
         perms.add(new GeneralPermissionEditorRow(perm, oPerm, permBaseName, securityOption.getPermissionTitle(), 
-                                                 desc, icon, editPanel));
+                                                 desc, icon, editPanel, admin));
     }
     
     /**
@@ -154,33 +131,37 @@ public abstract class PermissionEnumerator
     {
         List<SecurityOptionIFace> list = getSecurityOptions();
 
-        if (list != null)
+        if (list == null)
         {
-            List<PermissionEditorRowIFace> perms = new ArrayList<PermissionEditorRowIFace>(list.size());
-            
-            for (SecurityOptionIFace securityOption : list)
+            return null;
+        }
+        
+        boolean admin = UserPrincipalSQLService.isPrincipalAdmin(principal.getId());
+
+        List<PermissionEditorRowIFace> perms = new ArrayList<PermissionEditorRowIFace>(list.size());
+
+        for (SecurityOptionIFace securityOption : list)
+        {
+            ImageIcon taskIcon = securityOption.getIcon(Taskable.StdIcon20);
+
+            checkAndAddPermission(perms, securityOption, taskIcon, principal, existingPerms, overrulingPerms, userType, admin);
+
+            List<SecurityOptionIFace> additionalOptions = securityOption.getAdditionalSecurityOptions();
+            if (additionalOptions != null)
             {
-                ImageIcon taskIcon = securityOption.getIcon(Taskable.StdIcon20);
-                
-                checkAndAddPermission(perms, securityOption, taskIcon, principal, existingPerms, overrulingPerms, userType);
-                
-                List<SecurityOptionIFace> additionalOptions = securityOption.getAdditionalSecurityOptions();
-                if (additionalOptions != null)
+                for (SecurityOptionIFace sOpt : additionalOptions)
                 {
-                    for (SecurityOptionIFace sOpt : additionalOptions)
+                    ImageIcon icon = sOpt.getIcon(Taskable.StdIcon20);
+                    if (icon == null)
                     {
-                        ImageIcon icon = sOpt.getIcon(Taskable.StdIcon20);
-                        if (icon == null)
-                        {
-                            icon = taskIcon;
-                        }
-                        checkAndAddPermission(perms, sOpt, icon, principal, existingPerms, overrulingPerms, userType);
+                        icon = taskIcon;
                     }
+                    checkAndAddPermission(perms, sOpt, icon, principal, existingPerms, overrulingPerms, userType, admin);
                 }
             }
-            return perms;
         }
-        return null;
+
+        return perms;
     }
     
     /**

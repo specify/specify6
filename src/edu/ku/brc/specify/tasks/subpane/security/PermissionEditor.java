@@ -14,7 +14,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,7 +26,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
@@ -140,14 +145,26 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 
 	private void setCellRenderer() {
 	    
-	    if (readOnly) {
-	        YesNoCellRenderer yesNoRenderer = new YesNoCellRenderer();
-	        TableColumnModel tblModel = table.getColumnModel();
-	        for (int i=2;i<tblModel.getColumnCount();i++)
-	        {
-	            tblModel.getColumn(i).setCellRenderer(yesNoRenderer);
-	        }
+	    TableCellRenderer renderer;
+	    TableCellEditor editor;
+	    
+	    if (readOnly) 
+	    {
+            renderer = new YesNoCellRenderer();
+            editor   = null;
 	    }
+	    else 
+	    {
+            renderer = new GeneralPermissionTableCellRenderer();
+            editor   = new GeneralPermissionTableCellEditor();
+	    }
+	    
+        TableColumnModel tblModel = table.getColumnModel();
+        for (int i=2;i<tblModel.getColumnCount();i++)
+        {
+            tblModel.getColumn(i).setCellRenderer(renderer);
+            tblModel.getColumn(i).setCellEditor(editor);
+        }
 	}
 	
 	/* (non-Javadoc)
@@ -197,7 +214,8 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 				{
 					case 0: return ImageIcon.class;
 					case 1: return String.class;
-					default: return Boolean.class;
+					// the wrapper for permissions and their overriding values and descriptions
+					default: return GeneralPermissionTableCellValueWrapper.class;
 				}
 			}
 			
@@ -319,10 +337,10 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 		    PermissionEditorRowIFace wrapper = (PermissionEditorRowIFace) model.getValueAt(row, taskCol);
 			SpPermission perm = wrapper.getPermissionList().get(0); // Only has one
 		    
-			Boolean canView = viewCol > -1 ? (Boolean) model.getValueAt(row, viewCol) : false;
-			Boolean canAdd  = addCol > -1 ? (Boolean) model.getValueAt(row, addCol) : false;
-			Boolean canMod  = modCol > -1 ? (Boolean) model.getValueAt(row, modCol) : false;
-			Boolean canDel  = delCol > -1 ? (Boolean) model.getValueAt(row, delCol) : false;
+			Boolean canView = getValueAt(row, viewCol);
+			Boolean canAdd  = getValueAt(row, addCol);
+			Boolean canMod  = getValueAt(row, modCol);
+			Boolean canDel  = getValueAt(row, delCol);
 			
 			if ( !(canView || canAdd || canMod || canDel) )
 			{
@@ -348,5 +366,18 @@ public class PermissionEditor extends JPanel implements PermissionPanelContainer
 				session.saveOrUpdate(session.merge(perm));
 			}
 		}
+	}
+	
+	private boolean getValueAt(int row, int column) 
+	{
+	    if (column <= -1)
+	    {
+	        return false;
+	    }
+	    
+	    GeneralPermissionTableCellValueWrapper wrapper;
+	    wrapper = (GeneralPermissionTableCellValueWrapper) model.getValueAt(row, column);
+	    
+	    return wrapper.getPermissionActionValue();
 	}
 }
