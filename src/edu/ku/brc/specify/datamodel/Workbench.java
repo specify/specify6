@@ -82,6 +82,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     protected SpecifyUser            specifyUser;
     protected SpPrincipal            group;
     protected String                 srcFilePath;
+    protected String                 lockedByUserName;
 
      // Transient Data
     protected Vector<WorkbenchRow> rows        = new Vector<WorkbenchRow>();
@@ -126,6 +127,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         workbenchRows         = new HashSet<WorkbenchRow>();
         specifyUser           = null;
         group                 = null;
+        lockedByUserName      = null;
         
         rows.clear();
         //deletedRows.clear();
@@ -137,6 +139,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     /**
      * Assumes it is connected to a Session and forces all the data to be loaded. 
      */
+    @Override
     public void forceLoad()
     {
         getWorkbenchTemplate().forceLoad();
@@ -182,6 +185,18 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     
     public void setWorkbenchId(Integer workbenchId) {
         this.workbenchId = workbenchId;
+    }
+
+    /**
+     *      * Name of user editing  workbench
+     */
+    @Column(name = "LockedByUserName", length = 64)
+    public String getLockedByUserName() {
+        return this.lockedByUserName;
+    }
+    
+    public void setLockedByUserName(String userName) {
+        this.lockedByUserName = userName;
     }
 
     /**
