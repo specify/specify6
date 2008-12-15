@@ -44,6 +44,8 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.UIManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -124,6 +126,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     public static final int RESULTS_THRESHOLD   = 5000;
     public static final String EXPRESSSEARCH      = "Express_Search";
     public static final String CHECK_INDEXER_PATH = "CheckIndexerPath";
+    
+    protected Color selectionFG = UIManager.getColor("TextField.selectionForeground");
+    protected Color selectionBG = UIManager.getColor("TextField.selectionBackground");
     
     // Static Data Members
     protected static ExpressSearchTask      instance    = null;
@@ -210,6 +215,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         if (textBGColor != null)
         {
             searchText.setBackground(textBGColor);
+            searchText.setForeground(UIManager.getColor("TextField.foreground"));
         }
         
         SearchConfigService.getInstance().reset();
@@ -240,6 +246,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         if (true)
         {
             searchText.setBackground(textBGColor);
+            searchText.setForeground(UIManager.getColor("TextField.foreground"));
+
             String searchTerm = searchText.getText();
             if (isNotEmpty(searchTerm))
             {
@@ -789,6 +797,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 if (searchText.getBackground() != textBGColor)
                 {
                     searchText.setBackground(textBGColor);
+                    searchText.setForeground(UIManager.getColor("TextField.foreground"));
                 }
             }
         });
@@ -1066,12 +1075,32 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      */
     protected void setUserInputToNotFound(final String msgKey, final boolean isInError)
     {
-        if (badSearchColor != null)
+        
+        /*UIDefaults uiDefaults = UIManager.getDefaults();
+        Enumeration e = uiDefaults.keys();
+        while (e.hasMoreElements())
         {
-            searchText.setBackground(badSearchColor);
+            Object key = e.nextElement();
+            Object val = uiDefaults.get(key);
+            if (key.toString().indexOf("Text") > -1 || key.toString().indexOf("select") > -1)
+            System.out.println("[" + key.toString() + "]:[" +
+                (null != val ? val.toString() : "(null)") +
+                "]");
+        }*/
+        if (isInError)
+        {
+            if (badSearchColor != null)
+            {
+                searchText.setBackground(badSearchColor);
+            }
+            searchText.setSelectionStart(0);
+            searchText.setSelectionEnd(searchText.getText().length());
+
+        } else
+        {
+            //searchText.setBackground(selectionBG);
+            
         }
-        searchText.setSelectionStart(0);
-        searchText.setSelectionEnd(searchText.getText().length());
         searchText.getToolkit().beep();
         searchText.repaint();
         searchText.requestFocus();
@@ -1085,7 +1114,48 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         } else
         {
             UIRegistry.displayLocalizedStatusBarText(StringUtils.isNotEmpty(msgKey) ? msgKey : "NoExpressSearchResults");
+            displayNotFound();
         }
+    }
+    
+    /**
+     * 
+     */
+    protected void displayNotFound()
+    {
+        SwingWorker<Integer, Integer> msgWorker = new SwingWorker<Integer, Integer>()
+        {
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#doInBackground()
+             */
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                try
+                {
+                    Thread.sleep(5000);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+                
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                UIRegistry.clearSimpleGlassPaneMsg();
+            }
+        };
+        
+        UIRegistry.writeSimpleGlassPaneMsg(String.format("'%s' Not Found", searchText.getText()), 24);
+        
+        msgWorker.execute();
+   
     }
     
     //-------------------------------------------------------------------------

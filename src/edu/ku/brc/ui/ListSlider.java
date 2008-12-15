@@ -25,7 +25,6 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -358,7 +357,7 @@ public class ListSlider extends JPanel
      */
     public static void testListSlider()
     {
-        String sTitle = "Available Collections";
+        /*String sTitle = "Available Collections";
         String dTitle = "Collections Assigned to User";
         String[] sData = { "ABC", "123", "xyz", "cat", "dog", "bird", "mammal", 
                 "crocodile", "alligator", "monkey",  "giraffe", "lizard", "ostrich", 
@@ -372,7 +371,7 @@ public class ListSlider extends JPanel
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setContentPane(testSlider);
         frame.pack();
-        frame.setVisible(true);
+        frame.setVisible(true);*/
     }
 
     /**

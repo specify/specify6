@@ -171,6 +171,7 @@ import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.JTiledToolbar;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIHelper;
@@ -690,7 +691,16 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public JToolBar createToolBar()
     {
-        JToolBar toolBar = new JToolBar();
+        JToolBar toolBar;
+        if (UIHelper.isBGTiled())
+        {
+            JTiledToolbar ttb = new JTiledToolbar(UIHelper.getTiledBGImage());
+            ttb.setOpaque(false);
+            toolBar = ttb;
+        } else
+        {
+            toolBar = new JToolBar();
+        }
         toolBar.setLayout(new ToolbarLayoutManager(2, 2));
         
         appIcon = new JLabel("  "); //$NON-NLS-1$
@@ -2381,6 +2391,13 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
+      
+      String tiledFileName = "./tiled.png";
+      if ((new File(tiledFileName)).exists())
+      {
+          ImageIcon img = new ImageIcon(tiledFileName);
+          UIHelper.setTiledBGImage(img.getImage());
+      }
       
       if (!UIRegistry.isRelease())
       {

@@ -113,6 +113,12 @@ public class StatsPane extends BaseSubPane
         init(upperDisplayComp);
         
         registerPrintContextMenu();
+        
+        if (UIHelper.isBGTiled())
+        {
+            setTileImage(UIHelper.getTiledBGImage());
+            setOpaque(false);
+        }
     }
 
     /**
@@ -549,7 +555,15 @@ public class StatsPane extends BaseSubPane
             JPanel centerPanel = builder.getPanel();
 
             centerPanel.setBackground(Color.WHITE);
-            //centerPanel.setOpaque(false);
+            
+            //For Tiling
+            if (isTiled())
+            {
+                centerPanel.setOpaque(false);
+                setOpaque(false);
+                statPanel.setOpaque(false);
+            }
+            
             centerPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
             add(centerPanel, BorderLayout.CENTER);

@@ -1376,7 +1376,7 @@ public class UIRegistry
      * @param msg
      * @param pointSize
      */
-    public static void writeSimpleGlassPaneMsg(final String msg, final int pointSize)
+    public static SimpleGlassPane writeSimpleGlassPaneMsg(final String msg, final int pointSize)
     {
         SimpleGlassPane glassPane = new SimpleGlassPane(msg, pointSize);
         
@@ -1385,6 +1385,8 @@ public class UIRegistry
         ((JFrame)UIRegistry.getTopWindow()).setGlassPane(glassPane);
         glassPane.setVisible(true);
         showingGlassPane = true;
+        
+        return glassPane;
     }
     
     /**

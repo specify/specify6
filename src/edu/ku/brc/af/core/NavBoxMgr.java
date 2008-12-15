@@ -21,11 +21,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 
 import edu.ku.brc.exceptions.ConfigurationException;
+import edu.ku.brc.ui.JTiledPanel;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
@@ -41,7 +42,7 @@ import edu.ku.brc.ui.dnd.Trash;
  *
 */
 @SuppressWarnings("serial") //$NON-NLS-1$
-public class NavBoxMgr extends JPanel
+public class NavBoxMgr extends JTiledPanel
 {
     // Static Data Members
     private static final NavBoxMgr instance = new NavBoxMgr();
@@ -97,6 +98,12 @@ public class NavBoxMgr extends JPanel
              }
        };
        addMouseListener(mouseListener);
+       
+       if (UIHelper.isBGTiled())
+       {
+           setTileImage(UIHelper.getTiledBGImage());
+           setOpaque(false);
+       }
     }
     
     /**

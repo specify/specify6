@@ -72,6 +72,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.JTiledPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
 
@@ -93,7 +94,7 @@ import edu.ku.brc.util.Pair;
  * @author rods
  * 
  */
-public class DatabaseLoginPanel extends JPanel
+public class DatabaseLoginPanel extends JTiledPanel
 {
     private static final Logger          log            = Logger.getLogger(DatabaseLoginPanel.class);
 
@@ -241,6 +242,12 @@ public class DatabaseLoginPanel extends JPanel
         this.appName     = appName;
         
         createUI(isDlg, iconName);
+        
+        if (UIHelper.isBGTiled())
+        {
+            setTileImage(UIHelper.getTiledBGImage());
+            setOpaque(false);
+        }
     }
 
     /**
@@ -550,9 +557,14 @@ public class DatabaseLoginPanel extends JPanel
         {
             outerPanel.add(icon, cc.xy(1, 1));
         }
+        JPanel btnPanel = ButtonBarFactory.buildOKCancelHelpBar(loginBtn, cancelBtn, helpBtn);
         outerPanel.add(formBuilder.getPanel(), cc.xy(3, 1));
-        outerPanel.add(ButtonBarFactory.buildOKCancelHelpBar(loginBtn, cancelBtn, helpBtn), cc.xywh(1, 3, 3, 1));
+        outerPanel.add(btnPanel, cc.xywh(1, 3, 3, 1));
         outerPanel.add(statusBar, cc.xywh(1, 5, 3, 1));
+        
+        formBuilder.getPanel().setOpaque(false);
+        outerPanel.getPanel().setOpaque(false);
+        btnPanel.setOpaque(false);
         
         updateUIControls();
     }

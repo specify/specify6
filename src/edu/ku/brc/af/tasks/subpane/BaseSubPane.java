@@ -53,6 +53,8 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.GraphicsUtils;
+import edu.ku.brc.ui.JTiledPanel;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -65,7 +67,7 @@ import edu.ku.brc.ui.UIRegistry;
  *
  */
 @SuppressWarnings("serial") //$NON-NLS-1$
-public class BaseSubPane extends JPanel implements SubPaneIFace, Printable
+public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
 {
     //private static final Logger log = Logger.getLogger(BaseSubPane.class);
 
@@ -127,6 +129,12 @@ public class BaseSubPane extends JPanel implements SubPaneIFace, Printable
     
             progressBarPanel = builder2.getPanel();
             add(progressBarPanel, BorderLayout.CENTER);
+        }
+        
+        if (UIHelper.isBGTiled())
+        {
+            setTileImage(UIHelper.getTiledBGImage());
+            setOpaque(false);
         }
     }
     
