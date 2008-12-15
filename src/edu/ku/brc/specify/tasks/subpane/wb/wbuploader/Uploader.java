@@ -43,6 +43,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -59,6 +60,8 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr;
+import edu.ku.brc.specify.tasks.DataEntryTask;
+import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
@@ -310,6 +313,39 @@ public class Uploader implements ActionListener, KeyListener
         return currentUpload;
     }
 
+    public List<ServiceInfo> filterServices(final List<ServiceInfo> services)
+    {
+        List<ServiceInfo> result =  new Vector<ServiceInfo>();
+        for (int s = 0; s < services.size(); s++)
+        {
+            ServiceInfo service = services.get(s);
+            if (includeService(service))
+            {
+                if (service.getTask() instanceof DataEntryTask)
+                {
+                    try
+                    {
+                        ServiceInfo newService = (ServiceInfo )service.clone();
+                        newService.getCommandAction().setProperty("readonly", true);
+                        service = newService;
+                    }
+                    catch (CloneNotSupportedException ex)
+                    {
+                        log.error(ex);
+                        continue;
+                    }
+                }
+                result.add(service);
+            }
+        }
+        return result;
+    }
+    
+    protected boolean includeService(final ServiceInfo service)
+    {
+        return !(service.getTask() instanceof RecordSetTask);
+    }
+    
     /**
      * the index of the currently processing row in the dataset.
      */
@@ -2796,6 +2832,18 @@ public class Uploader implements ActionListener, KeyListener
                mainPanel.getValidateContentBtn().setEnabled(canValidateContent(op));
                
                mainPanel.getCancelBtn().setEnabled(canCancel(op));
+               if (mainPanel.getCancelBtn().isEnabled())
+               {
+            	   if (op.equals(UPLOADING))
+            	   {
+            		   mainPanel.getCancelBtn().setText(getResourceString("WB_UPLOAD_PAUSE"));
+            	   }
+            	   else
+            	   {
+            		   mainPanel.getCancelBtn().setText(getResourceString("WB_UPLOAD_CANCEL"));
+            	   }
+               }
+            	   
                mainPanel.getCancelBtn().setVisible(mainPanel.getCancelBtn().isEnabled());
 
                mainPanel.getDoUploadBtn().setEnabled(canUpload(op));
@@ -3288,6 +3336,11 @@ public class Uploader implements ActionListener, KeyListener
                         setCurrentOp(Uploader.FAILURE);
                     }
                 }
+                if (shuttingDown)
+                {
+                	wbSS.decShutdownLock();
+                	wbSS.shutdown();
+                }
             }
 
         };
@@ -3311,12 +3364,13 @@ public class Uploader implements ActionListener, KeyListener
                 }
             });
         }
+        wbSS.incShutdownLock();
         undoTask.start();
         setCurrentOp(isUserCmd ? Uploader.UNDOING_UPLOAD : Uploader.CLEANING_UP);
-        if (shuttingDown)
-        {
-            undoTask.get();
-        }
+//        if (shuttingDown)
+//        {
+//            undoTask.get();
+//        }
     }
 
     /**

@@ -72,39 +72,39 @@ public class UploadResultsTablePanel extends ESResultsTablePanel
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel#getServices()
      */
-    @Override
-    protected List<ServiceInfo> getServices()
-    {
-        List<ServiceInfo> result =  new Vector<ServiceInfo>();
-        List<ServiceInfo> services = super.getServices();
-        for (int s = services.size()-1; s >= 0; s--)
-        {
-            ServiceInfo service = services.get(s);
-            if (includeService(service))
-            {
-                if (service.getTask() instanceof DataEntryTask)
-                {
-                    try
-                    {
-                        ServiceInfo newService = (ServiceInfo )service.clone();
-                        newService.getCommandAction().setProperty("readonly", true);
-                        service = newService;
-                    }
-                    catch (CloneNotSupportedException ex)
-                    {
-                        log.error(ex);
-                        continue;
-                    }
-                }
-                result.add(service);
-            }
-        }
-        return result;
-    }
-    
-    protected boolean includeService(final ServiceInfo service)
-    {
-        return !(service.getTask() instanceof RecordSetTask);
-    }
+//    @Override
+//    protected List<ServiceInfo> getServices()
+//    {
+//        List<ServiceInfo> result =  new Vector<ServiceInfo>();
+//        return Uploader.getCurrentUpload.filterServices(super.getServices();
+//        for (int s = services.size()-1; s >= 0; s--)
+//        {
+//            ServiceInfo service = services.get(s);
+//            if (includeService(service))
+//            {
+//                if (service.getTask() instanceof DataEntryTask)
+//                {
+//                    try
+//                    {
+//                        ServiceInfo newService = (ServiceInfo )service.clone();
+//                        newService.getCommandAction().setProperty("readonly", true);
+//                        service = newService;
+//                    }
+//                    catch (CloneNotSupportedException ex)
+//                    {
+//                        log.error(ex);
+//                        continue;
+//                    }
+//                }
+//                result.add(service);
+//            }
+//        }
+//        return result;
+//    }
+//    
+//    protected boolean includeService(final ServiceInfo service)
+//    {
+//        return !(service.getTask() instanceof RecordSetTask);
+//    }
     
 }

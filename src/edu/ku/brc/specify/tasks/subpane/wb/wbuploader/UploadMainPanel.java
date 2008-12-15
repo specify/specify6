@@ -286,7 +286,7 @@ public class UploadMainPanel extends JPanel
         currOpProgress = createProgressBar();
         
         pPane.add(currOpProgress, cc.xy(1, 1));
-        cancelBtn = createButton(getResourceString("WB_UPLOAD_PAUSE")); 
+        cancelBtn = createButton(getResourceString("WB_UPLOAD_CANCEL")); 
         cancelBtn.setActionCommand(CANCEL_OPERATION);
         pPane.add(cancelBtn, cc.xy(2, 1));
         add(pPane, cc.xywh(4, 2, 3, 1));

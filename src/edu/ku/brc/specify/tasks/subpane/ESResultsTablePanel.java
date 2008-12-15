@@ -71,6 +71,7 @@ import edu.ku.brc.af.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.tasks.RecordSetTask;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.ui.CloseButton;
 import edu.ku.brc.ui.CommandAction;
@@ -416,6 +417,10 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             {
                 services.addAll(additionalServices);
             }
+        }
+        if (Uploader.getCurrentUpload() != null)
+        {
+        	services = Uploader.getCurrentUpload().filterServices(services);
         }
         return services;
     }
