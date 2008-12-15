@@ -127,6 +127,7 @@ public class UIRegistry
     protected static boolean          showingGlassPane = false;
     protected static boolean          isRelease        = false;
     protected static boolean          isTesting        = false;
+    protected static int              STD_WAIT_TIME    = 2000; // 2 Seconds
     
 
     // Data Members
@@ -1397,10 +1398,10 @@ public class UIRegistry
      * @param textColor the color of the text
      * @param pointSize the point size to draw the text
      */
-    public static void writeTimedSimpleGlassPaneMsg(final String localizedMsg,
-                                                    final int    milliseconds, 
-                                                    final Color  textColor,
-                                                    final int    pointSize)
+    public static void writeTimedSimpleGlassPaneMsg(final String  localizedMsg,
+                                                    final Integer milliseconds, 
+                                                    final Color   textColor,
+                                                    final int     pointSize)
     {
         final SimpleGlassPane sgp = UIRegistry.writeSimpleGlassPaneMsg(localizedMsg, pointSize);
         if (sgp != null)
@@ -1418,7 +1419,7 @@ public class UIRegistry
             {
                 try
                 {
-                    Thread.sleep(milliseconds);
+                    Thread.sleep(milliseconds != null ? milliseconds : STD_WAIT_TIME);
                     
                 } catch (Exception ex)
                 {
