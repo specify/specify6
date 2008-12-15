@@ -1076,18 +1076,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      */
     protected void setUserInputToNotFound(final String msgKey, final boolean isInError)
     {
-        
-        /*UIDefaults uiDefaults = UIManager.getDefaults();
-        Enumeration e = uiDefaults.keys();
-        while (e.hasMoreElements())
-        {
-            Object key = e.nextElement();
-            Object val = uiDefaults.get(key);
-            if (key.toString().indexOf("Text") > -1 || key.toString().indexOf("select") > -1)
-            System.out.println("[" + key.toString() + "]:[" +
-                (null != val ? val.toString() : "(null)") +
-                "]");
-        }*/
         if (isInError)
         {
             if (badSearchColor != null)
@@ -1113,19 +1101,21 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 statusBar.setErrorMessage(getResourceString(msgKey));
             }
             UIRegistry.writeTimedSimpleGlassPaneMsg(msgKey, 2000, Color.RED, 24);
+            
         } else
         {
-            UIRegistry.displayLocalizedStatusBarText(StringUtils.isNotEmpty(msgKey) ? msgKey : "NoExpressSearchResults");
-            displayNoResults();
+            displayNoResults(msgKey);
         }
     }
     
     /**
-     * 
+     * Displays "No Results Message
      */
-    protected void displayNoResults()
+    protected void displayNoResults(final String msgKey)
     {
-        UIRegistry.writeTimedSimpleGlassPaneMsg(String.format("'%s' Not Found", searchText.getText()), 2000, null, 24);
+        String fullMsg = UIRegistry.getLocalizedMessage(StringUtils.isNotEmpty(msgKey) ? msgKey : "NoExpressSearchResults", searchText.getText());
+        UIRegistry.displayStatusBarText(fullMsg);
+        UIRegistry.writeTimedSimpleGlassPaneMsg(fullMsg, null, null, 24);
     }
     
     //-------------------------------------------------------------------------
@@ -1399,8 +1389,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                  * occurred for the QueryBuilder and I don't know if the method for determining 'hasResults()'
                  * in the QueryBuilder results block below are applicable for all types of results.
                  */
-                	UIRegistry.displayLocalizedStatusBarText("QB_NO_RESULTS");
-                    displayNoResults();
+                    displayNoResults("QB_NO_RESULTS");
                     results.complete();
                     return;
                 }
@@ -1441,9 +1430,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     
                     else if (rowCount == 0)
                     {
-                        //UIRegistry.displayInfoMsgDlgLocalized("QB_NO_RESULTS");
-                        UIRegistry.displayLocalizedStatusBarText("QB_NO_RESULTS");
-                        displayNoResults();
+                        displayNoResults("QB_NO_RESULTS");
                     }
                     else
                     {

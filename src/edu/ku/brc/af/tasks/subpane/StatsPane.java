@@ -359,11 +359,6 @@ public class StatsPane extends BaseSubPane
                 try
                 {
                     Element sqlStmt = (Element)sqlElement.selectSingleNode("statement"); //$NON-NLS-1$
-                    if (sqlStmt == null)
-                    {
-                        int xx = 0;
-                        xx++;
-                    }
                     String sql =  QueryAdjusterForDomain.getInstance().adjustSQL(sqlStmt.getText());
                     
                     switch (queryType)

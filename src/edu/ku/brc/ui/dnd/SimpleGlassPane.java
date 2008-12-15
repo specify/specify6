@@ -138,6 +138,8 @@ public class SimpleGlassPane extends JPanel
         this.textColor = textColor;
     }
 
+    //private static final ImageIcon blood = new ImageIcon("./BloodDropS.gif");
+    
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paint(java.awt.Graphics)
      */
@@ -159,6 +161,19 @@ public class SimpleGlassPane extends JPanel
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(new Color(255, 255, 255, 128));
         g2.fillRect(0, 0, size.width, size.height);
+        
+        /*if (text != null && text.indexOf("Not Found") > -1)
+        {
+            Random rand = new Random();
+            
+            for (int i=0;i<50;i++)
+            {
+                int x = rand.nextInt(size.width);
+                int y = rand.nextInt(size.height);
+                g.drawImage(blood.getImage(), x, y, this);
+            }
+        }*/
+
         
         g2.setFont(new Font((new JLabel()).getFont().getName(), Font.BOLD, pointSize));
         FontMetrics fm = g2.getFontMetrics();

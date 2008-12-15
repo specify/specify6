@@ -352,7 +352,7 @@ public class SortableTableModel implements TableModel, TableModelListener
         {
             
             this.setIcon(isSorted && vColIndex == sortColumn ? (sortDirection[vColIndex] ? downIcon : upIcon) : blankIcon);
-            setText(value.toString());
+            setText(value != null ? value.toString() : "");
             return this;
         }
         
