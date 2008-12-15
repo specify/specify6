@@ -718,6 +718,18 @@ public class QueryFieldPanel extends JPanel
                     }
                     catch (InvocationTargetException ex)
                     {
+                        if (ex.getTargetException() instanceof NumberFormatException)
+                        {
+                            String msg = ex.getTargetException().getLocalizedMessage();
+                            if (StringUtils.isBlank(msg))
+                            {
+                                msg = ex.getTargetException().getClass().getSimpleName();
+                               
+                            }
+                            throw new ParseException(getLabel()
+                                    + " - "
+                                    + String.format(UIRegistry.getResourceString("QB_PARSE_ERROR"), msg), -1);
+                        }
                         throw new RuntimeException(ex);
                     }
                     catch (IllegalAccessException ex)
@@ -730,10 +742,14 @@ public class QueryFieldPanel extends JPanel
                     }
                     catch (NumberFormatException ex)
                     {
+                        String msg = ex.getLocalizedMessage();
+                        if (StringUtils.isBlank(msg))
+                        {
+                            msg = ex.getClass().getSimpleName();
+                        }
                         throw new ParseException(getLabel()
                                 + " - "
-                                + String.format(UIRegistry.getResourceString("QB_PARSE_ERROR"), ex
-                                        .getLocalizedMessage()), -1);
+                                + String.format(UIRegistry.getResourceString("QB_PARSE_ERROR"), msg), -1);
                     }
                     criteriaFormula = concatCriteria(criteriaStrs, operStr, false);
                 }
