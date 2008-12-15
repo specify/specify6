@@ -827,6 +827,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         searchPanel.add(searchBox);
 
         searchPanel.add(spacer);
+        searchPanel.setOpaque(false);
         
         if (!UIHelper.isMacOS())
         {

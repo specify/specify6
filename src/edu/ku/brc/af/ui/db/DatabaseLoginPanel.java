@@ -521,6 +521,7 @@ public class DatabaseLoginPanel extends JTiledPanel
             PanelBuilder pb = new PanelBuilder(new FormLayout("p,f:p:g", "p"));
             pb.add(editKeyInfoBtn, cc.xy(1, 1));
             y = addLine(null, pb.getPanel(), formBuilder, cc, y);
+            pb.getPanel().setOpaque(false);
         }
         
         PanelBuilder extraPanelBlder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p):g", "p,2dlu,p,2dlu,p")); //$NON-NLS-1$ //$NON-NLS-2$

@@ -5286,7 +5286,7 @@ public class BuildSampleDatabase
         {
             Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
             int available = p.getLoanAvailable();
-            if (available<1)
+            if (available < 1 && !p.getPrepType().getIsLoanable())
             {
                 // retry
                 i--;
