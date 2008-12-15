@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -258,6 +259,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     protected boolean               isReadOnly;
         
+    protected AtomicInteger         shutdownLock               = new AtomicInteger(0);
+    
     /**
      * Constructs the pane for the spreadsheet.
      * 
@@ -2532,7 +2535,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * Save the Data. 
      */
-    protected void saveObject()
+    public void saveObject()
     {
         //backup current database contents for workbench
         logDebug("backupObject(): " + System.nanoTime());
@@ -2715,11 +2718,14 @@ public class WorkbenchPaneSS extends BaseSubPane
                     {
                         UIRegistry.clearSimpleGlassPaneMsg();
                         UIRegistry.getStatusBar().setProgressDone(wbName);
+                        shutdownLock.decrementAndGet();
+                        shutdown();
                     }
                     
                 };
+                shutdownLock.incrementAndGet();
                 saver.start();
-                retStatus = saver.get() != null;
+                //retStatus = saver.get() != null;
             }
             else if (rv == JOptionPane.CANCEL_OPTION || rv == JOptionPane.CLOSED_OPTION)
             {
@@ -2751,6 +2757,12 @@ public class WorkbenchPaneSS extends BaseSubPane
     @Override
     public void shutdown()
     {
+        //Check to see if background tasks accessing the Workbanch are active.
+        if (shutdownLock.get() > 0)
+        {
+            return;
+        }
+        
         if (spreadSheet == null)
         {
             return;
@@ -3590,6 +3602,16 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             System.out.println("All field lengths are OK.");
         }
+    }
+    
+    public void incShutdownLock()
+    {
+        shutdownLock.incrementAndGet();
+    }
+    
+    public void decShutdownLock()
+    {
+        shutdownLock.decrementAndGet();
     }
     
 }

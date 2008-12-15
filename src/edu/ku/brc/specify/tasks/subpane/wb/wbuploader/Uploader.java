@@ -214,7 +214,6 @@ public class Uploader implements ActionListener, KeyListener
 
     protected static final Logger                   log                      = Logger
                                                                                      .getLogger(Uploader.class);
-
     /**
      * @author timbo
      *
@@ -2435,8 +2434,7 @@ public class Uploader implements ActionListener, KeyListener
             {
                 saveRecordSets();
                 result = true;
-                wbSS.setChanged(true); //this will ensure that UploadStatus for rows will be saved.
-                                        //also for cells - which may not be desirable??
+                wbSS.saveObject();
             }
             else if (rv == JOptionPane.NO_OPTION)
             {
@@ -3245,6 +3243,7 @@ public class Uploader implements ActionListener, KeyListener
                     {
                         wbRow.setUploadStatus(WorkbenchRow.UPLD_NONE); 
                     }
+                    wbSS.setChanged(false);
                 }
                 
                 statusBar.setText("");
