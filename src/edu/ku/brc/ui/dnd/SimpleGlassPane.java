@@ -16,9 +16,7 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.util.Random;
 
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -40,6 +38,7 @@ public class SimpleGlassPane extends JPanel
 {
     private String text;
     private int    pointSize;
+    private Color  textColor = null;
     
     /**
      * @param text
@@ -130,7 +129,14 @@ public class SimpleGlassPane extends JPanel
         });
     }
     
-    private static final ImageIcon blood = new ImageIcon("./BloodDropS.gif");
+    
+    /**
+     * @param textColor the textColor to set
+     */
+    public void setTextColor(Color textColor)
+    {
+        this.textColor = textColor;
+    }
 
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paint(java.awt.Graphics)
@@ -151,20 +157,8 @@ public class SimpleGlassPane extends JPanel
         }
         
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(new Color(255, 100, 100, 128));
+        g2.setColor(new Color(255, 255, 255, 128));
         g2.fillRect(0, 0, size.width, size.height);
-        
-        if (text != null && text.indexOf("Not Found") > -1)
-        {
-            Random rand = new Random();
-            
-            for (int i=0;i<50;i++)
-            {
-                int x = rand.nextInt(size.width);
-                int y = rand.nextInt(size.height);
-                g.drawImage(blood.getImage(), x, y, this);
-            }
-        }
         
         g2.setFont(new Font((new JLabel()).getFont().getName(), Font.BOLD, pointSize));
         FontMetrics fm = g2.getFontMetrics();
@@ -185,7 +179,7 @@ public class SimpleGlassPane extends JPanel
         g2.setColor(Color.BLACK);
         g2.drawRoundRect(tx-(expand / 2), ty-fm.getAscent()-(expand / 2), tw+expand, th+expand, arc, arc);
         
-        g2.setColor(Color.BLACK);
+        g2.setColor(textColor == null ? Color.BLACK : textColor);
         g2.drawString(text, tx, ty);
         g2.dispose();
     }

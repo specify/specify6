@@ -57,6 +57,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.event.UndoableEditEvent;
@@ -1387,6 +1388,61 @@ public class UIRegistry
         showingGlassPane = true;
         
         return glassPane;
+    }
+    
+    /**
+     * Fades screen and writes message to screen
+     * @param localizedMsg the already localized message
+     * @param milliseconds the number of milliseconds to pause showing the message
+     * @param textColor the color of the text
+     * @param pointSize the point size to draw the text
+     */
+    public static void writeTimedSimpleGlassPaneMsg(final String localizedMsg,
+                                                    final int    milliseconds, 
+                                                    final Color  textColor,
+                                                    final int    pointSize)
+    {
+        final SimpleGlassPane sgp = UIRegistry.writeSimpleGlassPaneMsg(localizedMsg, pointSize);
+        if (sgp != null)
+        {
+            sgp.setTextColor(textColor);
+        }
+
+        SwingWorker<Integer, Integer> msgWorker = new SwingWorker<Integer, Integer>()
+        {
+            /* (non-Javadoc)
+             * @see javax.swing.SwingWorker#doInBackground()
+             */
+            @Override
+            protected Integer doInBackground() throws Exception
+            {
+                try
+                {
+                    Thread.sleep(milliseconds);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+                
+                return null;
+            }
+
+            @Override
+            protected void done()
+            {
+                super.done();
+                
+                if (sgp != null)
+                {
+                    sgp.setTextColor(null);
+                }
+                
+                UIRegistry.clearSimpleGlassPaneMsg();
+            }
+        };
+          
+        msgWorker.execute();
     }
     
     /**

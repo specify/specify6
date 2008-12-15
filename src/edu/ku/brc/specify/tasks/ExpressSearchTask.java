@@ -44,7 +44,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 
 import org.apache.commons.lang.StringUtils;
@@ -284,6 +283,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                         if (!doQuery(searchText, null, expressSearchPane))
                         {
                             setUserInputToNotFound("BAD_SEARCH_TERMS", true);
+                            
                         } else
                         {
                             AppPreferences.getLocalPrefs().put(getLastSearchKey(), searchTerm);
@@ -1112,51 +1112,20 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             {
                 statusBar.setErrorMessage(getResourceString(msgKey));
             }
+            UIRegistry.writeTimedSimpleGlassPaneMsg(msgKey, 2000, Color.RED, 24);
         } else
         {
             UIRegistry.displayLocalizedStatusBarText(StringUtils.isNotEmpty(msgKey) ? msgKey : "NoExpressSearchResults");
-            displayNotFound();
+            displayNoResults();
         }
     }
     
     /**
      * 
      */
-    protected void displayNotFound()
+    protected void displayNoResults()
     {
-        SwingWorker<Integer, Integer> msgWorker = new SwingWorker<Integer, Integer>()
-        {
-            /* (non-Javadoc)
-             * @see javax.swing.SwingWorker#doInBackground()
-             */
-            @Override
-            protected Integer doInBackground() throws Exception
-            {
-                try
-                {
-                    Thread.sleep(5000);
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-                
-                return null;
-            }
-
-            @Override
-            protected void done()
-            {
-                super.done();
-                
-                UIRegistry.clearSimpleGlassPaneMsg();
-            }
-        };
-        
-        UIRegistry.writeSimpleGlassPaneMsg(String.format("'%s' Not Found", searchText.getText()), 24);
-        
-        msgWorker.execute();
-   
+        UIRegistry.writeTimedSimpleGlassPaneMsg(String.format("'%s' Not Found", searchText.getText()), 2000, null, 24);
     }
     
     //-------------------------------------------------------------------------
@@ -1431,6 +1400,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                  * in the QueryBuilder results block below are applicable for all types of results.
                  */
                 	UIRegistry.displayLocalizedStatusBarText("QB_NO_RESULTS");
+                    displayNoResults();
                     results.complete();
                     return;
                 }
@@ -1471,8 +1441,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     
                     else if (rowCount == 0)
                     {
-                        UIRegistry.displayInfoMsgDlgLocalized("QB_NO_RESULTS");
+                        //UIRegistry.displayInfoMsgDlgLocalized("QB_NO_RESULTS");
                         UIRegistry.displayLocalizedStatusBarText("QB_NO_RESULTS");
+                        displayNoResults();
                     }
                     else
                     {
