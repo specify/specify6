@@ -413,6 +413,7 @@ public class Uploader implements ActionListener, KeyListener
         uploadTables = new Vector<UploadTable>();
         for (UploadField f : uploadFields)
         {
+            logDebug(f.getWbFldName());
             if (f.getField() != null)
             {
                 UploadTable it = getUploadTable(f);

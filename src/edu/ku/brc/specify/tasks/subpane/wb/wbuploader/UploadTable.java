@@ -266,10 +266,13 @@ public class UploadTable implements Comparable<UploadTable>
     {
         for (UploadField fld : uploadFields.get(0)) //assuming all 'seqs' in uploadFields have the same fields.
         {
-            DBFieldInfo precFld = this.getDatePrecisionFld(fld.getField().getFieldInfo());
-            if (precFld != null)
+            if (fld.getField() != null && fld.getField().getFieldInfo() != null)
             {
-                this.precisionDateFields.add(new Pair<UploadField, Method>(fld, this.getFldSetter(precFld)));
+                DBFieldInfo precFld = this.getDatePrecisionFld(fld.getField().getFieldInfo());
+                if (precFld != null)
+                {
+                    this.precisionDateFields.add(new Pair<UploadField, Method>(fld, this.getFldSetter(precFld)));
+                }
             }
         }
     }
@@ -1134,7 +1137,10 @@ public class UploadTable implements Comparable<UploadTable>
         {
             for (UploadField fld : flds)
             {
-                fld.setSetter(getFldSetter(fld.getField().getFieldInfo()));
+                if (fld.getField() != null && fld.getField().getFieldInfo() != null)
+                {
+                    fld.setSetter(getFldSetter(fld.getField().getFieldInfo()));
+                }
             }
         }
     }
