@@ -40,6 +40,7 @@ import edu.ku.brc.util.Pair;
 public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryListener
 {
     protected static final Logger log = Logger.getLogger(QBJRDataSource.class);
+    protected boolean firstRow = true;
     
     /**
      * hql that produces the data.
@@ -164,6 +165,15 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     {
         if (rows.get().hasNext())
         {
+            if (!firstRow)
+            {
+                rows.get().remove();
+            }
+            else
+            {
+                firstRow = false;
+            }
+            
             Object nextRow = rows.get().next();
             if (Object[].class.isAssignableFrom(nextRow.getClass()))
             {
