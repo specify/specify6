@@ -87,7 +87,7 @@ import edu.ku.brc.util.Pair;
  */
 public class Uploader implements ActionListener, KeyListener
 {
-    private static boolean                       debugging                    = true;
+    private static boolean                       debugging                    = false;
 
     // Phases in the upload process...
     protected final static String                INITIAL_STATE                = "WB_UPLOAD_INITIAL_STATE";
