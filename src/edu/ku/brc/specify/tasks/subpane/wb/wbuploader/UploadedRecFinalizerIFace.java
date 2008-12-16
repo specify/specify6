@@ -32,5 +32,5 @@ public interface UploadedRecFinalizerIFace
      * 
      * Performs final field assignment in preparation for persisting the rec.
      */
-    public void finalizeForWrite(final DataModelObjBase rec, int recNum);
+    public void finalizeForWrite(final DataModelObjBase rec, int recNum, final Uploader uploader);
 }

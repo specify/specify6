@@ -1675,7 +1675,7 @@ public class UploadTable implements Comparable<UploadTable>
         finalizeDatePrecisionFields(rec);
         if (finalizer != null)
         {
-            finalizer.finalizeForWrite(rec, recNum);
+            finalizer.finalizeForWrite(rec, recNum, uploader);
         }
     }
 

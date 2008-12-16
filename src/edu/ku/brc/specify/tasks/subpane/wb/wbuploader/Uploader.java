@@ -215,7 +215,12 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected UploaderTask                          currentTask = null;
 
-    protected static final Logger                   log                      = Logger
+    /**
+     * the index of the currently processing row in the dataset.
+     */
+    protected int rowUploading;
+    
+   protected static final Logger                   log                      = Logger
                                                                                      .getLogger(Uploader.class);
     /**
      * @author timbo
@@ -346,10 +351,6 @@ public class Uploader implements ActionListener, KeyListener
         return !(service.getTask() instanceof RecordSetTask);
     }
     
-    /**
-     * the index of the currently processing row in the dataset.
-     */
-    protected int rowUploading;
 
     /**
      * @return rowUploading
@@ -3904,5 +3905,13 @@ public class Uploader implements ActionListener, KeyListener
     public static void unlockApp()
     {
         setAppLock(false);
+    }
+
+    /**
+     * @return the wbSS
+     */
+    public WorkbenchPaneSS getWbSS()
+    {
+        return wbSS;
     }
 }

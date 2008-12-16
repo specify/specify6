@@ -76,6 +76,10 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     protected Set<WorkbenchRowImage> workbenchRowImages;
     protected Workbench              workbench;
     protected Byte                   uploadStatus;
+    protected String                 lat1Text;
+    protected String                 lat2Text;
+    protected String                 long1Text;
+    protected String                 long2Text;
     
     // XXX PREF
     protected int                      maxWidth  = 500;
@@ -119,6 +123,10 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         workbenchDataItems = new HashSet<WorkbenchDataItem>();
         workbenchRowImages = new HashSet<WorkbenchRowImage>();
         uploadStatus       = UPLD_NONE;
+        lat1Text           = null;
+        lat2Text           = null;
+        long1Text          = null;
+        long2Text          = null;
     }
     // End Initializer
     
@@ -572,6 +580,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             }
         }
         
+        //XXX - currently not controlling edits of uploaded recs. 
+        //Just clear status when edited, for now.
         this.uploadStatus = WorkbenchRow.UPLD_NONE;
 
         if (wbdi != null)
@@ -587,7 +597,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         }
         return wbdi;
     }
-    
+        
     /**
      * Removes an item from the Row.
      * 
@@ -836,6 +846,74 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     public void setUploadStatus(Byte uploadStatus)
     {
         this.uploadStatus = uploadStatus;
+    }
+
+    /**
+     * @return the lat1Text
+     */
+    @Column(name = "Lat1Text", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getLat1Text()
+    {
+        return lat1Text;
+    }
+
+    /**
+     * @param lat1Text the lat1Text to set
+     */
+    public void setLat1Text(String lat1Text)
+    {
+        this.lat1Text = lat1Text;
+    }
+
+    /**
+     * @return the lat2Text
+     */
+    @Column(name = "Lat2Text", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getLat2Text()
+    {
+        return lat2Text;
+    }
+
+    /**
+     * @param lat2Text the lat2Text to set
+     */
+    public void setLat2Text(String lat2Text)
+    {
+        this.lat2Text = lat2Text;
+    }
+
+    /**
+     * @return the long1Text
+     */
+    @Column(name = "Long1Text", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getLong1Text()
+    {
+        return long1Text;
+    }
+
+    /**
+     * @param long1Text the long1Text to set
+     */
+    public void setLong1Text(String long1Text)
+    {
+        this.long1Text = long1Text;
+    }
+
+    /**
+     * @return the long2Text
+     */
+    @Column(name = "Long2Text", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getLong2Text()
+    {
+        return long2Text;
+    }
+
+    /**
+     * @param long2Text the long2Text to set
+     */
+    public void setLong2Text(String long2Text)
+    {
+        this.long2Text = long2Text;
     }
 
 }

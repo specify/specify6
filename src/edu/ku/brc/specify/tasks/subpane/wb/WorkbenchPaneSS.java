@@ -1890,7 +1890,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 continue;
             }
             
-            model.setValueAt(convertedValue, rowIndex, columnIndex);
+            model.setValueAt(convertedValue, rowIndex, columnIndex, !(converter instanceof GeoRefConverter));
             if (!currentValue.equals(convertedValue))
             {
                 setChanged(true);

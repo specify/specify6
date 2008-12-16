@@ -16,7 +16,9 @@ import javax.swing.ImageIcon;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
@@ -40,6 +42,7 @@ public class GridTableModel extends SpreadSheetModel
             
     protected Workbench          workbench;
     protected boolean            isInImageMode    = false;
+    protected boolean            isUserEdit       = true;
     protected ImageIcon          blankIcon = IconManager.getIcon("Blank", IconManager.IconSize.Std16);
     protected ImageIcon          imageIcon = IconManager.getIcon("CardImage", IconManager.IconSize.Std16);
     
@@ -233,11 +236,87 @@ public class GridTableModel extends SpreadSheetModel
         if (getRowCount() >= 0)
         {
             
-            workbench.getWorkbenchRowsAsList().get(row).setData(value.toString(), (short)column);
+            WorkbenchDataItem wbdi = workbench.getWorkbenchRowsAsList().get(row).setData(value.toString(), (short)column);
+            if (this.isUserEdit && wbdi != null)
+            {
+                updateGeoRefTextFldsIfNecessary(wbdi);
+            }
             fireDataChanged();
         }
     }
 
+    /**
+     * @param wbdi
+     */
+    protected void updateGeoRefTextFldsIfNecessary(final WorkbenchDataItem wbdi)
+    {
+        WorkbenchTemplateMappingItem map = wbdi.getWorkbenchTemplateMappingItem();
+        if (map.getFieldInfo().getTableInfo().getClassObj().equals(Locality.class))
+        {
+            if (map.getFieldName().equalsIgnoreCase("latitude1"))
+            {
+                wbdi.getWorkbenchRow().setLat1Text(getLatString(wbdi.getCellData()));
+            }
+            else if (map.getFieldName().equalsIgnoreCase("latitude2"))
+            {
+                wbdi.getWorkbenchRow().setLat2Text(getLatString(wbdi.getCellData()));
+            }
+            else if (map.getFieldName().equalsIgnoreCase("longitude1"))
+            {
+                wbdi.getWorkbenchRow().setLong1Text(getLongString(wbdi.getCellData()));
+            }
+            else if (map.getFieldName().equalsIgnoreCase("longitude2"))
+            {
+                wbdi.getWorkbenchRow().setLong2Text(getLongString(wbdi.getCellData()));
+            }
+        }
+    }
+    
+    /**
+     * @param latEntry
+     * @return a formatted string for use by specify.plugins.latlon  plugin
+     */
+    protected String getLatString(final String latEntry)
+    {
+        return null;
+    }
+    
+    /**
+     * @param longEntry
+     * @return a formatted string for use by specify.plugins.latlon  plugin
+     */
+    protected String getLongString(final String longEntry)
+    {
+        return null;
+    }
+    
+    protected boolean isLatLonMapping(final WorkbenchDataItem wbdi)
+    {
+        WorkbenchTemplateMappingItem map = wbdi.getWorkbenchTemplateMappingItem();
+        if (map.getFieldInfo().getTableInfo().getClassObj().equals(Locality.class))
+        {
+            return map.getFieldName().equalsIgnoreCase("latitude1")
+              || map.getFieldName().equalsIgnoreCase("latitude2")
+              || map.getFieldName().equalsIgnoreCase("longitude1")
+              || map.getFieldName().equalsIgnoreCase("longitude2");
+        }
+        return false;
+    }
+
+    public void setValueAt(Object value, int row, int column, boolean isUserEdit)
+    {
+        //Right now, isUserEdit is only false if a GeoRefConversion is responsible for the setValueAt() call.
+        this.isUserEdit = isUserEdit;
+        try
+        {
+            setValueAt(value, row, column);
+        }
+        finally
+        {
+            this.isUserEdit = true;
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.tmanfe.SpreadSheetModel#appendRow()
      */
@@ -405,6 +484,7 @@ public class GridTableModel extends SpreadSheetModel
     /**
      * Cleans up references.
      */
+    @Override
     public void cleanUp()
     {
         super.cleanUp();
