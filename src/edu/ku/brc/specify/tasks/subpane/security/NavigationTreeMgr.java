@@ -16,6 +16,7 @@ import javax.swing.tree.TreePath;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -72,7 +73,219 @@ public class NavigationTreeMgr
     {
         return tree;
     }
+
+    /**
+     * Indicates whether we can remove this user from group.
+     * We cannot remove a user from a group if it's the only group the user belongs to. In this
+     * case, we only offer to delete the user. If we do let the admin remove the user from the 
+     * last group he belongs to, the user will disapear from all groups and so the admin won't be
+     * able to get to the user acount again.
+     * 
+     * @param userNode
+     * @return
+     */
+    public boolean canRemoveUserFromGroup(final DefaultMutableTreeNode userNode)
+    {
+        DataProviderSessionIFace session = null;
+        boolean result = false;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) userNode.getUserObject();
+            Object object = wrapper.getDataObj();
+            SpecifyUser user  = (SpecifyUser) object;
+            int count = 0;
+            for (SpPrincipal principal : user.getSpPrincipals())
+            {
+                if (GroupPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()) ||
+                        AdminPrincipal.class.getCanonicalName().equals(principal.getGroupSubClass()))
+                {
+                    ++count;
+                }
+            }
+            result = count > 1; 
+        } 
+        catch (final Exception e1)
+        {
+            session.rollback();
+            
+            e1.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+
+        return result;
+    }
     
+    public void removeUserFromGroup(final DefaultMutableTreeNode userNode)
+    {
+        DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) userNode.getUserObject();
+        Object object = wrapper.getDataObj();
+        
+        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) userNode.getParent();
+        DataModelObjBaseWrapper parentWrapper = (DataModelObjBaseWrapper) parent.getUserObject();
+        Object parentObject = parentWrapper.getDataObj();
+
+        if (!(object instanceof SpecifyUser) || 
+                !(parentObject instanceof SpPrincipal) || 
+                !canRemoveUserFromGroup(userNode))
+        {
+            // not a user, so bail out
+            return;
+        }
+
+        SpecifyUser user  = (SpecifyUser) object;
+        SpPrincipal group = (SpPrincipal) parentObject;
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            session.beginTransaction();
+            user.getSpPrincipals().remove(group);
+            group.getSpecifyUsers().remove(user);
+            session.commit();
+            
+            // remove child from tree
+            DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+            model.removeNodeFromParent(userNode);
+        } 
+        catch (final Exception e1)
+        {
+            session.rollback();
+            
+            e1.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+    }
+    
+    public boolean canDeleteUser(final DefaultMutableTreeNode userNode)
+    {
+        // for now, we can always delete a user
+        return true;
+    }
+    
+    /**
+     * Deletes a user from the database and from the navigation tree.
+     * @param userNode
+     */
+    public void deleteUser(final DefaultMutableTreeNode userNode)
+    {
+        DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) userNode.getUserObject();
+        Object object = wrapper.getDataObj();
+        if (!(object instanceof SpecifyUser) || !canDeleteUser(userNode))
+        {
+            // for some reason, we cannot delete this user
+            return;
+        }
+
+        SpecifyUser user = (SpecifyUser) object;
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            session.beginTransaction();
+            session.delete(user);
+            // should we also delete him from his groups??
+            session.commit();
+            
+            // remove user from the group in the tree
+            DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+            model.removeNodeFromParent(userNode);
+            
+        } catch (final Exception e1)
+        {
+            session.rollback();
+            
+            e1.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+    }
+
+    /**
+     * Indicates whether we can delete this navigation tree item or not.
+     * We can only delete an item if it doesn't have any children
+     * @param node
+     * @return
+     */
+    public boolean canDeleteItem(final DefaultMutableTreeNode node)
+    {
+        DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) node.getUserObject();
+        Object object = wrapper.getDataObj();
+
+        if (!(object instanceof SpPrincipal) && 
+            !(object instanceof Collection) &&
+            !(object instanceof Discipline))
+        {
+            // cannot delete object that is not an instance of one the above types
+            return false;
+        }
+
+        // only childless nodes can be deleted
+        return node.getChildCount() == 0;
+    }
+
+    /**
+     * Delete an item in the navigation tree. The item can be any instance of ...
+     * @param node
+     */
+    public void deleteItem(DefaultMutableTreeNode node) 
+    {
+        DataModelObjBaseWrapper wrapper = (DataModelObjBaseWrapper) node.getUserObject();
+        Object object = wrapper.getDataObj();
+        
+        if (!canDeleteItem(node))
+        {
+            // for some reason, we cannot delete this item
+            // object type was already checked in the last call above 
+            return;
+        }
+
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            session.beginTransaction();
+            //session.attach(object);
+            session.delete(object);
+            session.commit();
+            
+            // remove user from the group in the tree
+            DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+            model.removeNodeFromParent(node);
+            
+        } catch (final Exception e1)
+        {
+            session.rollback();
+            
+            e1.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+    }
+    
+
     /**
      * @param grpNode
      */
@@ -456,14 +669,6 @@ public class NavigationTreeMgr
         model.insertNodeInto(discNode, instNode,  instNode.getChildCount());
         
         tree.setSelectionPath(new TreePath(discNode.getPath()));
-    }
-    
-    /**
-     * @param node
-     */
-    public void deleteItem(@SuppressWarnings("unused")DefaultMutableTreeNode node) 
-    {
-        
     }
     
     /**
