@@ -2036,6 +2036,7 @@ public class FormViewObj implements Viewable,
      */
     private BusinessRulesIFace recurseProcessBR(final MultiView mv)
     {
+        BusinessRulesIFace busRulesRV = null;
         FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
         if (fvo != null && fvo.getAltView().getMode() == AltViewIFace.CreationMode.EDIT)
         {
@@ -2046,7 +2047,7 @@ public class FormViewObj implements Viewable,
                 BusinessRulesIFace.STATUS status = busRules.processBusinessRules(fvoDataObj);
                 if (status != BusinessRulesIFace.STATUS.OK && status != BusinessRulesIFace.STATUS.None)
                 {
-                    return busRules;
+                    busRulesRV = busRules;
                 }
             }
         }
@@ -2059,7 +2060,7 @@ public class FormViewObj implements Viewable,
                 return brInError;
             }
         }
-        return null;
+        return busRulesRV;
     }
     
     /**
@@ -2146,10 +2147,8 @@ public class FormViewObj implements Viewable,
                     }
                 }
                 
-                mvParent.updateAutoNumbers();
-                
+                // First get data so business Rules can be checked
                 this.getDataFromUI();
-
                 traverseToGetDataFromForms(mvParent);
                 
                 //log.debug("saveObject checking businessrules for [" + (dataObjArg != null ? dataObjArg.getClass(): "null") + "]");
@@ -2160,6 +2159,13 @@ public class FormViewObj implements Viewable,
                     UIRegistry.showError(busRuleInError.getMessagesAsString());
                     return null;
                 }
+                
+                // Now update the auto number fields and re-get all the data
+                // we can't update the auto number fields before we run the business rules.
+                mvParent.updateAutoNumbers();
+                
+                this.getDataFromUI();
+                traverseToGetDataFromForms(mvParent);
                 
                 // XXX RELEASE - Need to walk the form tree and set them manually
                 //FormHelper.updateLastEdittedInfo(dataObjArg);
@@ -2361,6 +2367,15 @@ public class FormViewObj implements Viewable,
     @SuppressWarnings("unchecked")
     public boolean saveObject()
     {
+        /*if (formValidator != null)
+        {
+            formValidator.wasValidated(null);
+            if (!formValidator.isFormValid())
+            {
+                return false;
+            }
+        }*/
+        
         if (mvParent != null && mvParent.isTopLevel())
         {
             collectionViewState();
