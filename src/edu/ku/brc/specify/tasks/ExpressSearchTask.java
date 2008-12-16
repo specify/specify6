@@ -1100,7 +1100,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             {
                 statusBar.setErrorMessage(getResourceString(msgKey));
             }
-            UIRegistry.writeTimedSimpleGlassPaneMsg(msgKey, 2000, Color.RED, 24);
+            UIRegistry.writeTimedSimpleGlassPaneMsg(msgKey, Color.RED);
             
         } else
         {
@@ -1114,7 +1114,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     protected void displayNoResults(final String msgKey)
     {
         String fullMsg = UIRegistry.getLocalizedMessage(StringUtils.isNotEmpty(msgKey) ? msgKey : "NoExpressSearchResults", searchText.getText());
-        UIRegistry.displayStatusBarText(fullMsg);
         UIRegistry.writeTimedSimpleGlassPaneMsg(fullMsg, null, null, 24);
     }
     

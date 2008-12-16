@@ -226,6 +226,14 @@ public class CustomDialog extends JDialog
     }
     
     /**
+     * @param whichBtns the whichBtns to set
+     */
+    public void setWhichBtns(int whichBtns)
+    {
+        this.whichBtns = whichBtns;
+    }
+
+    /**
      * Create the UI for the dialog.
      */
     public void createUI()

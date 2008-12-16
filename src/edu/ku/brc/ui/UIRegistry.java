@@ -128,6 +128,7 @@ public class UIRegistry
     protected static boolean          isRelease        = false;
     protected static boolean          isTesting        = false;
     protected static int              STD_WAIT_TIME    = 2000; // 2 Seconds
+    protected static int              STD_FONT_SIZE    = 20;   // 20 point size
     
 
     // Data Members
@@ -1394,6 +1395,26 @@ public class UIRegistry
     /**
      * Fades screen and writes message to screen
      * @param localizedMsg the already localized message
+     */
+    public static void writeTimedSimpleGlassPaneMsg(final String  localizedMsg)
+    {
+        writeTimedSimpleGlassPaneMsg(localizedMsg, null, null, null);
+    }
+    
+    /**
+     * Fades screen and writes message to screen
+     * @param localizedMsg the already localized message
+     * @param textColor the color of the text
+     */
+    public static void writeTimedSimpleGlassPaneMsg(final String  localizedMsg,
+                                                    final Color   textColor)
+    {
+        writeTimedSimpleGlassPaneMsg(localizedMsg, null, textColor, null);
+    }
+    
+    /**
+     * Fades screen and writes message to screen
+     * @param localizedMsg the already localized message
      * @param milliseconds the number of milliseconds to pause showing the message
      * @param textColor the color of the text
      * @param pointSize the point size to draw the text
@@ -1401,9 +1422,9 @@ public class UIRegistry
     public static void writeTimedSimpleGlassPaneMsg(final String  localizedMsg,
                                                     final Integer milliseconds, 
                                                     final Color   textColor,
-                                                    final int     pointSize)
+                                                    final Integer pointSize)
     {
-        final SimpleGlassPane sgp = UIRegistry.writeSimpleGlassPaneMsg(localizedMsg, pointSize);
+        final SimpleGlassPane sgp = UIRegistry.writeSimpleGlassPaneMsg(localizedMsg, pointSize == null ? STD_FONT_SIZE : pointSize);
         if (sgp != null)
         {
             sgp.setTextColor(textColor);
@@ -1440,6 +1461,14 @@ public class UIRegistry
                 }
                 
                 UIRegistry.clearSimpleGlassPaneMsg();
+                
+                if (textColor == Color.RED)
+                {
+                    getStatusBar().setErrorMessage(localizedMsg);
+                } else
+                {
+                    displayStatusBarText(localizedMsg);
+                }
             }
         };
           

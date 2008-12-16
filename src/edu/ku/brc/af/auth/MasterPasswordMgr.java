@@ -74,8 +74,8 @@ public class MasterPasswordMgr
     
     public static final String factoryName = "edu.ku.brc.af.auth.MasterPasswordMgr"; //$NON-NLS-1$
     
-    private static final String MASTER_LOCAL = "master.islocal";
-    private static final String MASTER_PATH  = "master.path";
+    public static final String MASTER_LOCAL = "master.islocal";
+    public static final String MASTER_PATH  = "master.path";
     
     
     private static MasterPasswordMgr instance = null;
@@ -199,7 +199,6 @@ public class MasterPasswordMgr
                 return new Pair<String, String>(tokens[0], tokens[1]);
             }
             return noUP;
-
         }
         return noUP;
 
@@ -334,7 +333,7 @@ public class MasterPasswordMgr
             public void actionPerformed(ActionEvent e)
             {
                 String[] keys = getUserNamePasswordKey();
-                String encryptedStr = encrypt(keys[0], keys[1], keys[2]);
+                String encryptedStr = encrypt(keys[0], keys[1], keys[3]);
                 if (encryptedStr != null)
                 {
                     loadAndPushResourceBundle("masterusrpwd");

@@ -15,15 +15,20 @@
 
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.ui.UIRegistry.getFormattedResStr;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Color;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JMenuItem;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.MasterPasswordMgr;
@@ -34,13 +39,19 @@ import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.DataEntryTask.DroppableFormRecordSetAccepter;
 import edu.ku.brc.specify.tasks.subpane.security.SecurityAdminPane;
 import edu.ku.brc.specify.tasks.subpane.security.SecuritySummaryDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 /**
  * 
@@ -96,6 +107,84 @@ public class SecurityAdminTask extends BaseTask
         return starterPane;
     }
     
+    /**
+     * Enables the User to change password.
+     */
+    private void changePassword()
+    {
+        ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
+                "SystemSetup",
+                "ChangePassword",
+                null,
+                "Change Password",
+                "OK",
+                null,
+                null,
+                true,
+                MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE |
+                MultiView.IS_EDITTING);
+        dlg.setWhichBtns(CustomDialog.OK_BTN | CustomDialog.CANCEL_BTN);
+        Hashtable<String, String> valuesHash = new Hashtable<String, String>();
+        dlg.setData(valuesHash);
+        UIHelper.centerAndShow(dlg);
+        
+        if (!dlg.isCancelled())
+        {
+            int pwdLen = 6;
+            
+            String oldPwd  = valuesHash.get("OldPwd");
+            String newPwd1 = valuesHash.get("NewPwd1");
+            String newPwd2 = valuesHash.get("NewPwd2");
+            
+            if (newPwd1.equals(newPwd2))
+            {
+                if (newPwd1.length() < pwdLen)
+                {
+                    SpecifyUser spUser    = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                    String      username  = spUser.getName();
+                    String      spuOldPwd = spUser.getPassword();
+                    if (oldPwd.equals(spuOldPwd))
+                    {
+                        Pair<String, String> masterPwd = MasterPasswordMgr.getInstance().getUserNamePassword();
+                        
+                        String encryptedMasterUP = MasterPasswordMgr.getInstance().encrypt(masterPwd.first, masterPwd.second, newPwd2);
+                        if (StringUtils.isNotEmpty(encryptedMasterUP))
+                        {
+                            AppPreferences.getLocalPrefs().put(username+"_"+MasterPasswordMgr.MASTER_PATH, encryptedMasterUP);
+                            spUser.setPassword(newPwd1);
+                            if (!SpecifyUser.save(spUser))
+                            {
+                                UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(getKey("PWD_ERR_SAVE")), Color.RED);
+                            }
+                        } else
+                        {
+                            UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(getKey("PWD_ERR_RTRV")), Color.RED);
+                        }
+                        
+                    } else
+                    {
+                        UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(getKey("PWD_ERR_BAD")), Color.RED);
+                    }
+                } else
+                {
+                    UIRegistry.writeTimedSimpleGlassPaneMsg(getFormattedResStr(getKey("PWD_ERR_LEN"), pwdLen), Color.RED);
+                }
+            } else
+            {
+                UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(getKey("PWD_ERR_NOTSAME")), Color.RED);
+            }
+        }
+    }
+    
+    /**
+     * @param key
+     * @return
+     */
+    private String getKey(final String key)
+    {
+        return "SecurityAdminTask." + key;
+    }
+    
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
@@ -106,9 +195,9 @@ public class SecurityAdminTask extends BaseTask
         
         // show security summary menu item
     	// no need to check security as everyone can see their own summary... besides it's read only
-        String menuTitle = "SecurityAdminTask.SHOW_SECURITY_SUMMARY_MENU"; //$NON-NLS-1$
-        String mneu      = "SecurityAdminTask.SHOW_SECURITY_SUMMARY_MNEU"; //$NON-NLS-1$
-        String desc      = "SecurityAdminTask.SHOW_SECURITY_SUMMARY_DESC"; //$NON-NLS-1$
+        String menuTitle = getKey("SHOW_SECURITY_SUMMARY_MENU"); //$NON-NLS-1$
+        String mneu      = getKey("SHOW_SECURITY_SUMMARY_MNEU"); //$NON-NLS-1$
+        String desc      = getKey("SHOW_SECURITY_SUMMARY_DESC"); //$NON-NLS-1$
         JMenuItem mi     = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null); // I18N
         mi.addActionListener(new ActionListener()
         {
@@ -121,7 +210,7 @@ public class SecurityAdminTask extends BaseTask
         String menuDesc = "Specify.SYSTEM_MENU/Specify.COLSETUP_MENU";
         
         MenuItemDesc showSummaryMenuDesc = new MenuItemDesc(mi, menuDesc);
-        showSummaryMenuDesc.setPosition(MenuItemDesc.Position.After, getResourceString("SecurityAdminTask.SECURITY_TOOLS_MENU"));
+        showSummaryMenuDesc.setPosition(MenuItemDesc.Position.After, getResourceString(getKey("SECURITY_TOOLS_MENU")));
 
         // check whether user can see the security admin panel
         // other permissions will be checked when the panel is created 
@@ -129,10 +218,10 @@ public class SecurityAdminTask extends BaseTask
         if (!UIHelper.isSecurityOn() || SecurityMgr.getInstance().checkPermission("Task." + SECURITY_ADMIN, BasicSpPermission.view)) //$NON-NLS-1$
         {
             // security tools menu item
-            menuTitle = "SecurityAdminTask.SECURITY_TOOLS_MENU"; //$NON-NLS-1$
-            mneu      = "SecurityAdminTask.SECURITY_TOOLS_MNEU"; //$NON-NLS-1$
-            desc      = "SecurityAdminTask.SECURITY_TOOLS_DESC"; //$NON-NLS-1$
-            mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null); // I18N
+            menuTitle = getKey("SECURITY_TOOLS_MENU"); //$NON-NLS-1$
+            mneu      = getKey("SECURITY_TOOLS_MNEU"); //$NON-NLS-1$
+            desc      = getKey("SECURITY_TOOLS_DESC"); //$NON-NLS-1$
+            mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
             mi.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -148,10 +237,10 @@ public class SecurityAdminTask extends BaseTask
             menuItems.add(showSummaryMenuDesc);
         }
         
-        menuTitle = "SecurityAdminTask.MASTER_PWD_MENU"; //$NON-NLS-1$
-        mneu      = "SecurityAdminTask.MASTER_PWD_MNEU"; //$NON-NLS-1$
-        desc      = "SecurityAdminTask.MASTER_PWD_DESC"; //$NON-NLS-1$
-        mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null); // I18N
+        menuTitle = getKey("MASTER_PWD_MENU"); //$NON-NLS-1$
+        mneu      = getKey("MASTER_PWD_MNEU"); //$NON-NLS-1$
+        desc      = getKey("MASTER_PWD_DESC"); //$NON-NLS-1$
+        mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
         mi.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -160,8 +249,22 @@ public class SecurityAdminTask extends BaseTask
                 MasterPasswordMgr.getInstance().editMasterInfo(spUser.getName());
             }
         });
+        MenuItemDesc mid = new MenuItemDesc(mi, UIHelper.isMacOS() ? "HELP" : "HELP/ABOUT", MenuItemDesc.Position.Before); //$NON-NLS-1$ $NON-NLS-2$
+        menuItems.add(mid);
+
+        menuTitle = getKey("CHANGE_PWD_MENU"); //$NON-NLS-1$
+        mneu      = getKey("CHANGE_PWD_MNEU"); //$NON-NLS-1$
+        desc      = getKey("CHANGE_PWD_DESC"); //$NON-NLS-1$
+        mi        = UIHelper.createLocalizedMenuItem(menuTitle, mneu, desc, true, null);
+        mi.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                changePassword();
+            }
+        });
         
-        MenuItemDesc mid = new MenuItemDesc(mi, UIHelper.isMacOS() ? "HELP" : "HELP/ABOUT", MenuItemDesc.Position.Before);
+        mid = new MenuItemDesc(mi, mid.getMenuPath(), MenuItemDesc.Position.After); //$NON-NLS-1$ $NON-NLS-2$
         menuItems.add(mid);
         
         return menuItems;
