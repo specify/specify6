@@ -491,7 +491,7 @@ public class SelectPrepsDlg extends CustomDialog
             
             if (prep.getCount() != null)
             {
-                int count       = prep.getCount() == null ? 0 : prep.getCount();
+                int count       = prep.getCount();
                 int quantityOut = getLoanQuantityOut(prep);
                 
                 int quantityAvailable = count - quantityOut;
@@ -500,9 +500,9 @@ public class SelectPrepsDlg extends CustomDialog
                     maxValue = quantityAvailable;
                     
                     SpinnerModel model = new SpinnerNumberModel(0, //initial value
-                                               0, //min
-                                               quantityAvailable, //max
-                                               1);                //step
+                                               0,                  //min
+                                               quantityAvailable,  //max
+                                               1);                 //step
                     spinner = new JSpinner(model);
                     fixBGOfJSpinner(spinner);
                     pbuilder.add(spinner, cc.xy(3, 1));

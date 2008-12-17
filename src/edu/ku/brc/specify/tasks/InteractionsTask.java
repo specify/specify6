@@ -34,7 +34,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
@@ -798,7 +797,7 @@ public class InteractionsTask extends BaseTask
         PanelBuilder    pb     = new PanelBuilder(new FormLayout("p:g", "p,2px,p"));
         CellConstraints cc     = new CellConstraints();
         JTextArea       ta     = UIHelper.createTextArea(5, 40);
-        JScrollPane     scroll = new JScrollPane(ta, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane     scroll = UIHelper.createScrollPane(ta);
         JLabel          lbl    = UIHelper.createLabel(getResourceString("InteractionsTask.MISSING_DET"));
         
         pb.add(lbl,    cc.xy(1, 1));
@@ -1487,7 +1486,7 @@ public class InteractionsTask extends BaseTask
                         
                         quantityReturned += loanRetInfo.getQuantity();
                         
-                        if ((quantityResolved + quantityReturned) == quantity)
+                        if (quantityResolved == quantity)
                         {
                             loanPrep.setIsResolved(true);
                         }

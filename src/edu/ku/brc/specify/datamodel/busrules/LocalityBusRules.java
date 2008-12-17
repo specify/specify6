@@ -38,7 +38,7 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
      * @see edu.ku.brc.ui.forms.BaseBusRules#initialize(edu.ku.brc.ui.forms.Viewable)
      */
     @Override
-    public void initialize(Viewable viewableArg)
+    public void initialize(final Viewable viewableArg)
     {
         super.initialize(viewableArg);
         

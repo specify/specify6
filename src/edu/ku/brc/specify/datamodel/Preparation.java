@@ -28,6 +28,10 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -52,10 +56,11 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.AttributeProviderIFace;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.dbsupport.DBConnection;
 
 /**
 
@@ -271,10 +276,79 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     {
         if (isOnLoan == null)
         {
-            String sql = "SELECT count(*) FROM preparation p INNER JOIN loanpreparation lp ON p.PreparationID = lp.PreparationID WHERE lp.Quantity > 0 AND lp.IsResolved = 0 AND p.PreparationID = "+getId();
-            isOnLoan = BasicSQLUtils.getCount(sql) > 0;
+            Connection conn = DBConnection.getInstance().createConnection();
+            Statement  stmt = null;
+            try
+            {
+                conn = DBConnection.getInstance().createConnection();
+                if (conn != null)
+                {
+                    stmt = conn.createStatement();
+                    String sql = "SELECT p.Count, lp.Quantity, lp.QuantityResolved, lp.QuantityReturned, lp.IsResolved FROM preparation p " +
+                                 "INNER JOIN loanpreparation lp ON p.PreparationID = lp.PreparationID WHERE p.PreparationID = "+getId();
+                    ResultSet rs = stmt.executeQuery(sql);
+                    
+                    int     totalAvail = 0;
+                    Integer prepQty    = null;
+                    
+                    while (rs.next())
+                    {
+                        prepQty = rs.getObject(1) != null ? rs.getInt(1) : 0;
+                        System.err.print("\nprepQty "+prepQty);
+                        
+                        boolean isResolved = rs.getObject(5) != null ? rs.getBoolean(5) : false;
+                        
+                        int loanQty = rs.getObject(2) != null ? rs.getInt(2) : 0;
+                        int qtyRes  = rs.getObject(3) != null ? rs.getInt(3) : 0;
+                        int qtyRtn  = rs.getObject(4) != null ? rs.getInt(4) : 0;
+                        
+                        if (isResolved && qtyRes != loanQty) // this shouldn't happen
+                        {
+                            qtyRes = loanQty;
+                        }
+                        
+                        System.err.println("  loanQty "+loanQty+"   qtyRtn "+qtyRtn+"   qtyRes "+qtyRes);
+                        
+                        totalAvail += qtyRes - loanQty;
+                        System.err.println("totalAvail: "+totalAvail);
+                    }
+                    rs.close();
+                    
+                    if (prepQty == null)
+                    {
+                        return false;
+                    }
+                        
+                    isOnLoan = totalAvail < prepQty;
+                } else
+                {
+                    UsageTracker.incrNetworkUsageCount();
+                }
+                
+            } catch (SQLException ex)
+            {
+                UsageTracker.incrSQLUsageCount();
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (stmt != null)
+                {
+                    try
+                    {
+                        stmt.close();
+                    } catch (SQLException ex) {}
+                }
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.close();
+                    } catch (SQLException ex) {}
+                }
+            }
         }
-        return isOnLoan;
+        return isOnLoan == null ? false : true;
     }
     
     /**
@@ -282,7 +356,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
      */
     public void setIsOnLoan(final Boolean isOnLoan)
     {
-        
+        this.isOnLoan = isOnLoan;
     }
 
     /**

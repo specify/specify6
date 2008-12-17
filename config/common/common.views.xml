@@ -1990,23 +1990,27 @@
             
             <desc><![CDATA[Loan viewing form.]]></desc>
             <columnDef>125px,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
-            <columnDef os="mac">110px,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
+            <columnDef os="mac">150px,4px,p,10px,p,4px,p,10px,p,4px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="1dlu"/>
             
             <rows>
                 <row>
                     <cell type="label" labelfor="9" />
                     <cell type="field" id="9" name="preparation.collectionObject.catalogNumber" uitype="text" readonly="true"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="preparation.prepType.name" uitype="dsptextfield" readonly="true"/>
+                </row>
+                <row>
                     <cell type="label" labelfor="3" />
-                    <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="5"/>
+                    <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="9"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=2000" isrequired="true"/>
+                    <cell type="field" id="1" name="quantity" uitype="spinner" initialize="max=5000" isrequired="true"/>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="quantityReturned" uitype="spinner" initialize="max=2000;min=1" isrequired="true"/>
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="preparation.prepType.name" uitype="dsptextfield" readonly="true"/>
+                    <cell type="field" id="7" name="quantityReturned" uitype="spinner" initialize="max=5000;min=1" isrequired="true"/>
+                    <cell type="label" labelfor="10"/>
+                    <cell type="field" id="10" name="quantityResolved" uitype="spinner" initialize="max=5000;min=1" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5" />

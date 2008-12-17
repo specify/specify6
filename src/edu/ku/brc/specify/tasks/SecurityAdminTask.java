@@ -123,7 +123,7 @@ public class SecurityAdminTask extends BaseTask
                 "SystemSetup",
                 "ChangePassword",
                 null,
-                "Change Password",
+                getResourceString(getKey("CHG_PWD_TITLE")),
                 "OK",
                 null,
                 null,

@@ -11,6 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -120,21 +123,66 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
             Component comp = formViewObj.getControlByName("quantityReturned");
             if (comp instanceof ValSpinner)
             {
-                boolean    isNewObj         = loanPrep.getId() == null;
-                ValSpinner quantityReturned = (ValSpinner)comp;
-                ValSpinner quantity         = (ValSpinner)formViewObj.getControlByName("quantity");
+                final boolean    isNewObj         = loanPrep.getId() == null;
+                final ValSpinner quantityReturned = (ValSpinner)comp;
+                final ValSpinner quantity         = (ValSpinner)formViewObj.getControlByName("quantityReturned");
+                final ValSpinner qtyResolved      = (ValSpinner)formViewObj.getControlByName("quantityResolved");
                 
                 quantity.setRange(0, loanPrep.getQuantity(), loanPrep.getQuantity());
                 
                 quantityReturned.setEnabled(!isNewObj);
-                int max = Math.max(loanPrep.getQuantity(), loanPrep.getQuantityReturned());
+                int max = Math.max(loanPrep.getQuantity(), loanPrep.getQuantityResolved());
                 quantityReturned.setRange(0, max, loanPrep.getQuantityReturned());
+                qtyResolved.setRange(0, max, loanPrep.getQuantityReturned());
                 formViewObj.getLabelFor(quantityReturned).setEnabled(!isNewObj);
                 
                 ValCheckBox isResolved = (ValCheckBox)formViewObj.getControlByName("isResolved");
                 isResolved.setEnabled(!isNewObj);
+                
+                ChangeListener cl = new ChangeListener()
+                {
+                    @Override
+                    public void stateChanged(ChangeEvent e)
+                    {
+                        quantitiesChanged(quantity, quantityReturned, qtyResolved);
+                    }
+                };
+                quantity.addChangeListener(cl);
+                quantityReturned.addChangeListener(cl);
+                qtyResolved.addChangeListener(cl);
             }
         }
+    }
+    
+    /**
+     * @param quantity
+     * @param quantityReturned
+     * @param qtyResolved
+     */
+    private void quantitiesChanged(final ValSpinner quantity, 
+                                   final ValSpinner quantityReturned, 
+                                   final ValSpinner qtyResolved)
+    {
+        int qty    = (Integer)quantity.getValue();
+        int qtyRet = (Integer)quantityReturned.getValue();
+        int qtyRes = (Integer)qtyResolved.getValue();
+        
+        String errKey = null;
+        if (qty > qtyRes)
+        {
+            errKey = "LOAN_RET_QTY_GT_RES";
+        } else if (qtyRet > qtyRes)
+        {
+            errKey = "LOAN_RET_RET_GT_RES";
+        }
+        final String errorKey = errKey;
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run()
+            {
+                UIRegistry.displayErrorDlgLocalized(errorKey);
+            }
+        });
     }
 
     /* (non-Javadoc)
