@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -40,8 +42,12 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.tasks.subpane.FormPane;
+import edu.ku.brc.af.ui.PasswordStrengthUI;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.DataEntryTask.DroppableFormRecordSetAccepter;
 import edu.ku.brc.specify.tasks.subpane.security.SecurityAdminPane;
@@ -49,6 +55,7 @@ import edu.ku.brc.specify.tasks.subpane.security.SecuritySummaryDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -112,7 +119,7 @@ public class SecurityAdminTask extends BaseTask
      */
     private void changePassword()
     {
-        ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
+        final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
                 "SystemSetup",
                 "ChangePassword",
                 null,
@@ -124,6 +131,44 @@ public class SecurityAdminTask extends BaseTask
                 MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE |
                 MultiView.IS_EDITTING);
         dlg.setWhichBtns(CustomDialog.OK_BTN | CustomDialog.CANCEL_BTN);
+        
+        dlg.setFormAdjuster(new FormPane.FormPaneAdjusterIFace() {
+            @Override
+            public void adjustForm(final FormViewObj fvo)
+            {
+                final ValPasswordField   oldPwdVTF    = fvo.getCompById("1");
+                final ValPasswordField   newPwdVTF    = fvo.getCompById("2");
+                final ValPasswordField   verPwdVTF    = fvo.getCompById("3");
+                final PasswordStrengthUI pwdStrenthUI = fvo.getCompById("4");
+                
+                DocumentAdaptor da = new DocumentAdaptor() {
+                    @Override
+                    protected void changed(DocumentEvent e)
+                    {
+                        super.changed(e);
+                        
+                        // Need to invoke later so the da gets to set the enabled state last.
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                boolean enabled = dlg.getOkBtn().isEnabled();
+                                String  pwdStr  = new String(newPwdVTF.getPassword());
+                                boolean pwdOK   = pwdStrenthUI.checkStrength(pwdStr);
+                                
+                                dlg.getOkBtn().setEnabled(enabled && pwdOK);
+                                pwdStrenthUI.repaint();
+                            }
+                        });
+                    }
+                };
+                
+                oldPwdVTF.getDocument().addDocumentListener(da);
+                verPwdVTF.getDocument().addDocumentListener(da);
+                newPwdVTF.getDocument().addDocumentListener(da);
+            }
+        
+        });
         Hashtable<String, String> valuesHash = new Hashtable<String, String>();
         dlg.setData(valuesHash);
         UIHelper.centerAndShow(dlg);

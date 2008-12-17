@@ -912,15 +912,20 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Old Password"/>
-                    <cell type="field" id="1" name="OldPwd" uitype="password" isrequired="true" cols="15"/> 
+                    <cell type="field" id="1" name="OldPwd" uitype="password" isrequired="true" cols="20"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="New Password"/>
-                    <cell type="field" id="2" name="NewPwd1" uitype="password" isrequired="true" cols="15"/>
+                    <cell type="field" id="2" name="NewPwd1" uitype="password" isrequired="true" cols="20"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Verify New Password"/>
-                    <cell type="field" id="3" name="NewPwd2" uitype="password" isrequired="true" cols="15"/>
+                    <cell type="field" id="3" name="NewPwd2" uitype="password" isrequired="true" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Password Strength"/>
+                    <!-- <cell type="field" id="4" name="strength" uitype="progress" isrequired="true" readonly="true"/> -->
+                    <cell type="field" id="4" uitype="plugin" name="this" initialize="name=PasswordStrengthUI"/>
                 </row>
             </rows>
         </viewdef>

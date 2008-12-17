@@ -52,6 +52,8 @@
 		<plugin name="LatLonUI" class="edu.ku.brc.specify.plugins.latlon.LatLonUI"/>
 		<plugin name="TaxonLabelFormatting" class="edu.ku.brc.specify.plugins.TaxonLabelFormatting"/>
 		<plugin name="ColRelTypePlugin" class="edu.ku.brc.specify.plugins.CollectionRelPlugin"/>
+		<plugin name="PasswordStrengthUI" class="edu.ku.brc.af.ui.PasswordStrengthUI"/>
+		
 	</uiplugins>
 	
 	<external>
