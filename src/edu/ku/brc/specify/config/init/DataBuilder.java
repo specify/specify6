@@ -2526,7 +2526,7 @@ public class DataBuilder
                                                             final Integer      columnNumber)
     {
         
-        WorkbenchDataItem wbdi = workbenchRow.setData(cellData, columnNumber.shortValue());
+        WorkbenchDataItem wbdi = workbenchRow.setData(cellData, columnNumber.shortValue(), true);
         
         if (wbdi != null)
         {

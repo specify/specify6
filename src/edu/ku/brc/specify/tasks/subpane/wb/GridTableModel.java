@@ -16,9 +16,7 @@ import javax.swing.ImageIcon;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Workbench;
-import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
@@ -235,72 +233,9 @@ public class GridTableModel extends SpreadSheetModel
         
         if (getRowCount() >= 0)
         {
-            
-            WorkbenchDataItem wbdi = workbench.getWorkbenchRowsAsList().get(row).setData(value.toString(), (short)column);
-            if (this.isUserEdit && wbdi != null)
-            {
-                updateGeoRefTextFldsIfNecessary(wbdi);
-            }
+            workbench.getWorkbenchRowsAsList().get(row).setData(value.toString(), (short)column, isUserEdit);
             fireDataChanged();
         }
-    }
-
-    /**
-     * @param wbdi
-     */
-    protected void updateGeoRefTextFldsIfNecessary(final WorkbenchDataItem wbdi)
-    {
-        WorkbenchTemplateMappingItem map = wbdi.getWorkbenchTemplateMappingItem();
-        if (map.getFieldInfo().getTableInfo().getClassObj().equals(Locality.class))
-        {
-            if (map.getFieldName().equalsIgnoreCase("latitude1"))
-            {
-                wbdi.getWorkbenchRow().setLat1Text(getLatString(wbdi.getCellData()));
-            }
-            else if (map.getFieldName().equalsIgnoreCase("latitude2"))
-            {
-                wbdi.getWorkbenchRow().setLat2Text(getLatString(wbdi.getCellData()));
-            }
-            else if (map.getFieldName().equalsIgnoreCase("longitude1"))
-            {
-                wbdi.getWorkbenchRow().setLong1Text(getLongString(wbdi.getCellData()));
-            }
-            else if (map.getFieldName().equalsIgnoreCase("longitude2"))
-            {
-                wbdi.getWorkbenchRow().setLong2Text(getLongString(wbdi.getCellData()));
-            }
-        }
-    }
-    
-    /**
-     * @param latEntry
-     * @return a formatted string for use by specify.plugins.latlon  plugin
-     */
-    protected String getLatString(final String latEntry)
-    {
-        return null;
-    }
-    
-    /**
-     * @param longEntry
-     * @return a formatted string for use by specify.plugins.latlon  plugin
-     */
-    protected String getLongString(final String longEntry)
-    {
-        return null;
-    }
-    
-    protected boolean isLatLonMapping(final WorkbenchDataItem wbdi)
-    {
-        WorkbenchTemplateMappingItem map = wbdi.getWorkbenchTemplateMappingItem();
-        if (map.getFieldInfo().getTableInfo().getClassObj().equals(Locality.class))
-        {
-            return map.getFieldName().equalsIgnoreCase("latitude1")
-              || map.getFieldName().equalsIgnoreCase("latitude2")
-              || map.getFieldName().equalsIgnoreCase("longitude1")
-              || map.getFieldName().equalsIgnoreCase("longitude2");
-        }
-        return false;
     }
 
     public void setValueAt(Object value, int row, int column, boolean isUserEdit)
@@ -343,7 +278,7 @@ public class GridTableModel extends SpreadSheetModel
             WorkbenchRow wbRow = workbench.getRow(rowInx);
             for (int col : cols)
             {
-                wbRow.setData("", (short)col);
+                wbRow.setData("", (short)col, true);
             }
         }
         fireDataChanged();
@@ -459,7 +394,7 @@ public class GridTableModel extends SpreadSheetModel
             {
                 if (wbdmi.getCarryForward())
                 {
-                    newRow.setData(wbRow.getData( wbdmi.getViewOrder()), wbdmi.getViewOrder());
+                    newRow.setData(wbRow.getData( wbdmi.getViewOrder()), wbdmi.getViewOrder(), true);
                 }
             }
         }

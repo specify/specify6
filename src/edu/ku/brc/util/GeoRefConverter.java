@@ -129,6 +129,33 @@ public class GeoRefConverter implements StringConverter
     }
 
     /**
+     * @param entry
+     * @return the LatLonConverter FORMAT for entry.
+     */
+    public LatLonConverter.FORMAT getLatLonFormat(final String entry)
+    {
+        for (GeoRefFormat format: GeoRefFormat.values())
+        {
+            if (format.matches(entry))
+            {
+                if (format.equals(GeoRefFormat.D_NSEW) || format.equals(GeoRefFormat.D_PLUS_MINUS))
+                {
+                    return LatLonConverter.FORMAT.DDDDDD;
+                }
+                if (format.equals(GeoRefFormat.DM_NSEW) || format.equals(GeoRefFormat.DM_PLUS_MINUS))
+                {
+                    return LatLonConverter.FORMAT.DDMMMM;
+                }
+                if (format.equals(GeoRefFormat.DMS_NSEW) || format.equals(GeoRefFormat.DMS_PLUS_MINUS))
+                {
+                    return LatLonConverter.FORMAT.DDMMSS;
+                }
+            }
+        }
+        return LatLonConverter.FORMAT.None;
+    }
+    
+    /**
      * @param args
      * @throws Exception 
      * @throws Exception 

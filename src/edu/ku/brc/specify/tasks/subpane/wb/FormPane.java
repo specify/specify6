@@ -821,7 +821,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                 String cellData = wbRow.getData(col);
                 if (StringUtils.isNotEmpty(cellData) || data != null)
                 {
-                    wbRow.setData(data == null ? "" : data, col);
+                    wbRow.setData(data == null ? "" : data, col, true);
                 }
                 
             } else if (p.getComp() instanceof GetSetValueIFace)
@@ -830,7 +830,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                 String cellData = wbRow.getData(col);
                 if (StringUtils.isNotEmpty(cellData) || data != null)
                 {
-                    wbRow.setData(data == null ? "" : data.toString(), col);
+                    wbRow.setData(data == null ? "" : data.toString(), col, true);
                 }
                 
             } else if (p.getComp() instanceof JScrollPane)
@@ -839,7 +839,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                 Component   comp = sc.getViewport().getView();
                 if (comp instanceof JTextArea)
                 {
-                    wbRow.setData(((JTextArea)comp).getText(), col);
+                    wbRow.setData(((JTextArea)comp).getText(), col, true);
                 }
             } else
             {

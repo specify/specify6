@@ -18,6 +18,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
@@ -44,6 +45,9 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.ui.GraphicsUtils;
+import edu.ku.brc.util.GeoRefConverter;
+import edu.ku.brc.util.LatLonConverter;
+import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 
 /**
  * WorkbenchRow generated rods
@@ -560,15 +564,25 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      * @param dataStr the string data
      * @param col the column index to be set
      */
-    public WorkbenchDataItem setData(final String dataStr, final short col)
+    public WorkbenchDataItem setData(final String dataStr, final short col, final boolean updateGeoRefInfo)
     {
         WorkbenchDataItem wbdi = items.get(col);
         if (wbdi != null)
         {
             // XXX we may actually want to remove and 
             // delete the item if it is set to empty
-            wbdi.setCellData(dataStr);
             
+            //if nothing has changed return null. (Mostly to prevent unnecessary updates of Georef texts).
+            if (dataStr == null && wbdi.getCellData() == null)
+            {
+                return null; 
+            }
+            if (dataStr != null && dataStr.equals(wbdi.getCellData()))
+            {
+                return null;
+            }
+            
+            wbdi.setCellData(dataStr);
         } else // the cell doesn't exist so create one
         {
             if (StringUtils.isNotEmpty(dataStr))
@@ -586,6 +600,10 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
 
         if (wbdi != null)
         {
+            if (updateGeoRefInfo)
+            {
+                updateGeoRefTextFldsIfNecessary(wbdi);
+            }
             if (wbdi.getValidationStatus() == WorkbenchDataItem.VAL_ERROR)
             {
                 wbdi.setValidationStatus(WorkbenchDataItem.VAL_ERROR_EDIT);
@@ -597,7 +615,94 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         }
         return wbdi;
     }
-        
+
+    /**
+     * @param wbdi
+     */
+    protected void updateGeoRefTextFldsIfNecessary(final WorkbenchDataItem wbdi)
+    {
+        WorkbenchTemplateMappingItem map = wbdi.getWorkbenchTemplateMappingItem();
+        if (map.getTableName().equals("locality"))
+        {
+            if (map.getFieldName().equalsIgnoreCase("latitude1"))
+            {
+                wbdi.getWorkbenchRow().setLat1Text(getLatString(wbdi.getCellData()));
+            }
+            else if (map.getFieldName().equalsIgnoreCase("latitude2"))
+            {
+                wbdi.getWorkbenchRow().setLat2Text(getLatString(wbdi.getCellData()));
+            }
+            else if (map.getFieldName().equalsIgnoreCase("longitude1"))
+            {
+                wbdi.getWorkbenchRow().setLong1Text(getLongString(wbdi.getCellData()));
+            }
+            else if (map.getFieldName().equalsIgnoreCase("longitude2"))
+            {
+                wbdi.getWorkbenchRow().setLong2Text(getLongString(wbdi.getCellData()));
+            }
+        }
+    }
+    
+    /**
+     * @param latEntry
+     * @return a formatted string for use by specify.plugins.latlon  plugin
+     */
+    protected String getLatString(final String latEntry)
+    {
+        String ddString = null;
+        try
+        {
+            GeoRefConverter geoConverter = new GeoRefConverter();
+            LatLonConverter.FORMAT fmt = geoConverter.getLatLonFormat(latEntry);
+            if (fmt.equals(LatLonConverter.FORMAT.None))
+            {
+                return null;
+            }
+            ddString = geoConverter.convert(latEntry, GeoRefFormat.D_PLUS_MINUS.name());
+            BigDecimal bigD = new BigDecimal(ddString);
+            return LatLonConverter.ensureFormattedString(bigD, null, fmt, LatLonConverter.LATLON.Latitude);
+        }
+        catch (NumberFormatException ex)
+        {
+            //ignore
+        }
+        catch (Exception ex)
+        {
+            //ignore;
+        }
+        return null;
+    }
+    
+    /**
+     * @param longEntry
+     * @return a formatted string for use by specify.plugins.latlon  plugin
+     */
+    protected String getLongString(final String longEntry)
+    {
+        String ddString = null;
+        try
+        {
+            GeoRefConverter geoConverter = new GeoRefConverter();
+            LatLonConverter.FORMAT fmt = geoConverter.getLatLonFormat(longEntry);
+            if (fmt.equals(LatLonConverter.FORMAT.None))
+            {
+                return null;
+            }
+            ddString = geoConverter.convert(longEntry, GeoRefFormat.D_PLUS_MINUS.name());
+            BigDecimal bigD = new BigDecimal(ddString);
+            return LatLonConverter.ensureFormattedString(bigD, null, fmt, LatLonConverter.LATLON.Longitude);
+        }
+        catch (NumberFormatException ex)
+        {
+            //ignore
+        }
+        catch (Exception ex)
+        {
+            //ignore;
+        }
+        return null;
+    }
+    
     /**
      * Removes an item from the Row.
      * 
@@ -819,8 +924,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     @Transient
     public void set(String latitude, String longitude)
     {
-        setData(latitude, (short)getLatitudeIndex());
-        setData(longitude, (short)getLongitudeIndex());
+        setData(latitude, (short)getLatitudeIndex(), true);
+        setData(longitude, (short)getLongitudeIndex(), true);
     }
 
     /* (non-Javadoc)

@@ -26,7 +26,7 @@ public class LocalityRecFinalizer implements UploadedRecFinalizerIFace
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadedRecFinalizerIFace#finalizeForWrite(edu.ku.brc.specify.datamodel.DataModelObjBase, int, edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader)
      */
     @Override
-    public void finalizeForWrite(DataModelObjBase rec, int recNum, Uploader uploader)
+    public void finalizeForWrite(DataModelObjBase rec, int recNum, Uploader uploader) throws UploaderException
     {
         //This assumes that rec is a newly uploaded/created record. 
         //Will need to be re-worked when record updates are implemented
