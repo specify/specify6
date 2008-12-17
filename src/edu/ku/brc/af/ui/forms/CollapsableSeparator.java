@@ -25,7 +25,9 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -105,7 +107,10 @@ public class CollapsableSeparator extends JPanel
             panelBldr.add(moreBtn, cc.xy(x,1));
             x++;
         }
-        panelBldr.add(UIHelper.createLabel(title), cc.xy(x, 1));
+        JLabel titleLbl = UIHelper.createLabel(title);
+        titleLbl.setFont(UIManager.getFont("TitledBorder.font"));
+        titleLbl.setForeground(UIManager.getColor("TitledBorder.titleColor"));
+        panelBldr.add(titleLbl, cc.xy(x, 1));
         x += 2;
         panelBldr.addSeparator(" ",                cc.xy(x, 1));
     }
