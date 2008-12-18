@@ -38,7 +38,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class LoanPreparationBusRules extends BaseBusRules implements CommandListener
 {
-    private final String CMDTYPE = "Interactions";
+    private final String CMDTYPE     = "Interactions";
+    private final String ADD_TO_LOAN = "AddToLoan";
     /**
      * 
      */
@@ -76,7 +77,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                         if (loanMV != null)
                         {
                             formViewObj.getDataFromUI();
-                            CommandDispatcher.dispatch(new CommandAction(CMDTYPE, "AddToLoan", loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
+                            CommandDispatcher.dispatch(new CommandAction(CMDTYPE, ADD_TO_LOAN, loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
                         }
                     }
                 });
@@ -100,8 +101,7 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                         MultiView loanMV = tvo.getMVParent().getMultiViewParent();
                         if (loanMV != null)
                         {
-                            //formViewObj.getDataFromUI();
-                            CommandDispatcher.dispatch(new CommandAction(CMDTYPE, "AddToLoan", loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
+                            CommandDispatcher.dispatch(new CommandAction(CMDTYPE, ADD_TO_LOAN, loanMV.getCurrentViewAsFormViewObj().getCurrentDataObj()));
                         }
                     }
                 });
@@ -126,15 +126,17 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
             {
                 final boolean    isNewObj         = loanPrep.getId() == null;
                 final ValSpinner quantityReturned = (ValSpinner)comp;
-                final ValSpinner quantity         = (ValSpinner)formViewObj.getControlByName("quantityReturned");
+                final ValSpinner quantity         = (ValSpinner)formViewObj.getControlByName("quantity");
                 final ValSpinner qtyResolved      = (ValSpinner)formViewObj.getControlByName("quantityResolved");
                 
                 quantity.setRange(0, loanPrep.getQuantity(), loanPrep.getQuantity());
                 
                 quantityReturned.setEnabled(!isNewObj);
                 int max = Math.max(loanPrep.getQuantity(), loanPrep.getQuantityResolved());
+                
                 quantityReturned.setRange(0, max, loanPrep.getQuantityReturned());
                 qtyResolved.setRange(0, max, loanPrep.getQuantityReturned());
+                
                 formViewObj.getLabelFor(quantityReturned).setEnabled(!isNewObj);
                 
                 ValCheckBox isResolved = (ValCheckBox)formViewObj.getControlByName("isResolved");
