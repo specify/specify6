@@ -21,6 +21,7 @@ import edu.ku.brc.af.ui.forms.TableViewObj;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
+import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -211,8 +212,10 @@ public class LoanPreparationBusRules extends BaseBusRules implements CommandList
                 {
                     if (formViewObj.getValidator() != null)
                     {
+                        // Reset in the data sp it shows up
+                        Loan loan = (Loan)loanMV.getData();
+                        formViewObj.setDataObj(loan.getLoanPreparations());
                         formViewObj.getValidator().setHasChanged(true);
-                        formViewObj.setDataIntoUI();
                         formViewObj.getValidator().validateRoot();
                     }
                 }
