@@ -22,25 +22,22 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Hashtable;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -194,22 +191,9 @@ public class RepositoryAgreementBusRules extends AttachmentOwnerBaseBusRules
                     // potentially is REALLY slow if a lot of CollectionObjects are attached 
                     // to an RepositoryAgreements
                     // So instead we will use straight SQL
-                    try
-                    {
-                        Statement stmt = DBConnection.getInstance().getConnection().createStatement();
-                        ResultSet rs   = stmt.executeQuery("select count(*) from collectionobject where RepositoryAgreementID = "+repositoryAgreement.getRepositoryAgreementId());
-                        if (rs.next())
-                        {
-                            return rs.getInt(1) == 0;
-                        }
-                        rs.close();
-                        stmt.close();
-                        
-                    } catch (Exception ex)
-                    {
-                        log.error(ex);
-                        throw new RuntimeException(ex);
-                    }
+                    int count = BasicSQLUtils.getCount("select count(*) from accession where RepositoryAgreementID = "+repositoryAgreement.getRepositoryAgreementId());
+                    return count == 0;
+                    
                 } else
                 {
                     return true;
