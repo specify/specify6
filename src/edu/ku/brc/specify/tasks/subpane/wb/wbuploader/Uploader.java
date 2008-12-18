@@ -2476,7 +2476,7 @@ public class Uploader implements ActionListener, KeyListener
             }
             else if (rv == JOptionPane.NO_OPTION)
             {
-                undoUpload(false, true, true);
+                undoUpload(true, true, true);
                 result = true;
             }
             //else rv equals JOptionPane.CANCEL_OPTION or CLOSED_OPTION
@@ -3338,7 +3338,7 @@ public class Uploader implements ActionListener, KeyListener
                         setCurrentOp(Uploader.FAILURE);
                     }
                 }
-                if (shuttingDown)
+                if (shuttingDown && !isUserCmd)
                 {
                 	wbSS.decShutdownLock();
                 	wbSS.shutdown();
@@ -3366,7 +3366,10 @@ public class Uploader implements ActionListener, KeyListener
                 }
             });
         }
-        wbSS.incShutdownLock();
+        if (shuttingDown && !isUserCmd)
+        {
+            wbSS.incShutdownLock();
+        }
         undoTask.start();
         setCurrentOp(isUserCmd ? Uploader.UNDOING_UPLOAD : Uploader.CLEANING_UP);
 //        if (shuttingDown)
