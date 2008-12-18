@@ -107,9 +107,13 @@ public class CollapsableSeparator extends JPanel
             panelBldr.add(moreBtn, cc.xy(x,1));
             x++;
         }
+        
         JLabel titleLbl = UIHelper.createLabel(title);
-        titleLbl.setFont(UIManager.getFont("TitledBorder.font"));
-        titleLbl.setForeground(UIManager.getColor("TitledBorder.titleColor"));
+        if (!UIHelper.isMacOS())
+        {
+            titleLbl.setFont(UIManager.getFont("TitledBorder.font"));
+            titleLbl.setForeground(UIManager.getColor("TitledBorder.titleColor"));
+        }
         panelBldr.add(titleLbl, cc.xy(x, 1));
         x += 2;
         panelBldr.addSeparator(" ",                cc.xy(x, 1));
