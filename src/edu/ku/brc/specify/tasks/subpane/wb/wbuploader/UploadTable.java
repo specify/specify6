@@ -55,6 +55,7 @@ import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -66,6 +67,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.GeoRefConverter;
+import edu.ku.brc.util.LatLonConverter;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 
@@ -1853,6 +1855,11 @@ public class UploadTable implements Comparable<UploadTable>
         boolean gotABlank = false;
         int blankSeq = 0;
         UploadField blankFirstFld = null;
+        
+        //for Locality table only
+        LatLonConverter.FORMAT llFmt = null;
+        GeoRefConverter gc = new GeoRefConverter();
+        
         for (Vector<UploadField> flds : uploadFields)
         {
             boolean isBlank = true;
@@ -1885,6 +1892,27 @@ public class UploadTable implements Comparable<UploadTable>
                         invalidValues.add(new UploadTableInvalidValue(null, this, fld, row, e));
                     }
                 }
+                if (tblClass.equals(Locality.class))
+                {
+                    //Check each row to see that lat/long formats are the same.
+                    if (fld.getField().getName().equalsIgnoreCase("latitude1") || fld.getField().getName().equalsIgnoreCase("latitude1")
+                            || fld.getField().getName().equalsIgnoreCase("longitude1") || fld.getField().getName().equalsIgnoreCase("longitude2"))
+                    {
+                        LatLonConverter.FORMAT fmt = gc.getLatLonFormat(uploadData.get(row, fld.getIndex()));
+                        if (llFmt == null)
+                        {
+                            llFmt = fmt;
+                        }
+                        else
+                        {
+                            if (!llFmt.equals(fmt))
+                            {
+                                invalidValues.add(new UploadTableInvalidValue(null, this, fld, row, 
+                                        new Exception(UIRegistry.getResourceString("WB_UPLOADER_UNMATCHING_LATLONG_FORMAT"))));
+                            }
+                        }
+                    }
+                }
             }
             if (isBlank && !gotABlank && currFirstFld != null)
             /* 
@@ -1908,6 +1936,12 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
     
+    /**
+     * @param uploadData
+     * @return Vector of invalid values.
+     * 
+     * Validates values in all workbench cells that are mapped to this table.
+     */
     public Vector<UploadTableInvalidValue> validateValues(final UploadData uploadData)
     {
         try
@@ -2256,6 +2290,10 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
     
+    /**
+     * @param session
+     * @return sql delete statements necessary to delete uploaded records.
+     */
     protected Vector<QueryIFace> getQueriesForRawDeletes(final DataProviderSessionIFace session)
     {
         Vector<QueryIFace> result = new Vector<QueryIFace>();
