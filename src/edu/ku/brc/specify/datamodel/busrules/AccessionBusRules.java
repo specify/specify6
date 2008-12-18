@@ -27,10 +27,13 @@ import java.sql.Statement;
 import java.util.Hashtable;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
@@ -71,11 +74,33 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
         Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
         if (collection != null)
         {
-            Division division = collection.getDiscipline().getDivision();
-            if (division != null)
+            DataProviderSessionIFace session = null;
+            try
             {
-                Accession accession = (Accession) newDataObj;
-                accession.setDivision(division);
+                session = DataProviderFactory.getInstance().createSession();
+                
+                // Just in case the Discipline and Division aren't loaded
+                // that should happen.
+                session.attach(collection); 
+                
+                Division division = collection.getDiscipline().getDivision();
+                if (division != null)
+                {
+                    Accession accession = (Accession)newDataObj;
+                    accession.setDivision(division);
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                UsageTracker.incrNetworkUsageCount();
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
             }
         }
     }
