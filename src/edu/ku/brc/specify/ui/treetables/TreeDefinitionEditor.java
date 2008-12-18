@@ -577,6 +577,13 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                         
                         notifyApplication(mergedItem, EDITED_ITEM);
                         log.info("Successfully saved changes to " + mergedItem.getName()); //$NON-NLS-1$
+                        
+                        // at this point, the new node is in the DB (if success == true)
+                        if (businessRules != null && success == true)
+                        {
+                            businessRules.afterSaveCommit(defItem, session);
+                        }
+
                     }
                     catch (Exception e)
                     {
@@ -589,13 +596,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     finally
                     {
                         session.close();
-                    }
-                    
-                    // at this point, the new node is in the DB (if success == true)
-
-                    if (businessRules != null && success == true)
-                    {
-                        businessRules.afterSaveCommit(defItem);
                     }
                     
                     return success;
@@ -964,16 +964,16 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     {
                         session.refresh(origChild);
                     }
-                    session.close();
 
                     if (businessRules != null && success == true)
                     {
-                        businessRules.afterSaveCommit(newItem);
+                        businessRules.afterSaveCommit(newItem, session);
                         if (origChild != null)
                         {
-                            businessRules.afterSaveCommit(origChild);
+                            businessRules.afterSaveCommit(origChild, session);
                         }
                     }
+                    session.close();
                     
                     return success;
                 }
@@ -1196,17 +1196,18 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 {
                     session.refresh(child);
                 }
-                session.close();
 
                 if (businessRules != null && success == true)
                 {
                     businessRules.afterDeleteCommit(mergedItem);
-                    businessRules.afterSaveCommit(parent);
+                    businessRules.afterSaveCommit(parent, session);
                     if (child != null)
                     {
-                        businessRules.afterSaveCommit(child);
+                        businessRules.afterSaveCommit(child, session);
                     }
                 }
+                
+                session.close();
                 
                 return success;
             }
@@ -1350,12 +1351,12 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 
                     session = DataProviderFactory.getInstance().createSession();
                     session.refresh(def);
-                    session.close();
 
                     if (businessRules != null && success == true)
                     {
-                        businessRules.afterSaveCommit(def);
+                        businessRules.afterSaveCommit(def, session);
                     }
+                    session.close();
                     
                     return success;
                 }

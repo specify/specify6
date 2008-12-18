@@ -165,10 +165,10 @@ public class TreeDefBusRules extends BaseBusRules
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterSaveCommit(java.lang.Object)
      */
     @Override
-    public boolean afterSaveCommit(Object dataObj)
+    public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
     {
         ValComboBox fnDirCBX = (ValComboBox)formViewObj.getControlByName("fnDirCBX");
         if (fnDirCBX != null)
@@ -180,7 +180,7 @@ public class TreeDefBusRules extends BaseBusRules
                 treeDef.setFullNameDirection(newDir);
             }
         }
-        return super.afterSaveCommit(dataObj);
+        return super.afterSaveCommit(dataObj, session);
     }
     
 }

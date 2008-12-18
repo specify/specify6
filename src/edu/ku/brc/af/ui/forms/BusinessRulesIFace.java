@@ -164,8 +164,10 @@ public interface BusinessRulesIFace
      * objects that have been editted.
      * 
      * @param dataObj the object that was saved
+     * @param session the data provider session (it might be null)
+     * 
      */
-    public abstract boolean afterSaveCommit(Object dataObj);
+    public abstract boolean afterSaveCommit(Object dataObj, DataProviderSessionIFace session);
     
     /**
      * Called BEFORE deleting an object from the DB.  This is called before the object is even

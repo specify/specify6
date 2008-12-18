@@ -192,6 +192,16 @@ public class DisciplineType implements Comparable<DisciplineType>
     }
     
     /**
+     * Returns a DisciplineType by name.
+     * @param nameStr the name of the disciplineType
+     * @return a DisciplineType by title.
+     */
+    public static DisciplineType getByName(final String nameStr)
+    {
+        return getDisciplineHash().get(nameStr);
+    }
+    
+    /**
      * Reads in the disciplines file (is loaded when the class is loaded).
      */
     public static Vector<DisciplineType> getDisciplineList()

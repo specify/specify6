@@ -204,6 +204,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.Institution" abbrev="inst" id="94" searchable="true">
             <display view="Institution"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.InstitutionBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Journal" abbrev="jn" id="51" searchable="true">
             <display view="JournalForm" searchdlg="JournalSearch" newobjdlg="JournalDisplay"/>

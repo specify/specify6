@@ -551,7 +551,7 @@ public class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#afterSave(java.lang.Object)
      */
-    public boolean afterSaveCommit(final Object dataObj)
+    public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
     {
         return true;
     }
@@ -615,7 +615,7 @@ public class BaseBusRules implements BusinessRulesIFace
      */
     protected String getErrorMsg(final String msgKey, final String fieldName, final Class<?> dataClass)
     {
-        String      title = "Number"; // this should never happen so I am not localizing it
+        String      title = "Unknown Field"; // this should never happen so I am not localizing it
         DBTableInfo ti    = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
         if (ti != null)
         {
@@ -643,10 +643,28 @@ public class BaseBusRules implements BusinessRulesIFace
                                               final Class<?>         dataClass,
                                               final String           primaryFieldName)
     {
-        String number = (String)FormHelper.getValue(dataObj, numFieldName);
+        return isCheckDuplicateNumberOK(numFieldName, dataObj, dataClass, primaryFieldName, false);
+    }
+
+    /**
+     * Helper method for checking for a duplicate number in a field that is unique.
+     * @param numFieldName the name of the field to be checked
+     * @param dataObj the data object containing the number
+     * @param dataClass the class of the object beng checked
+     * @param primaryFieldName the primary key field
+     * @param isEmptyOK is it ok for the field to be empty
+     * @return whether it is ok or in error
+     */
+    protected STATUS isCheckDuplicateNumberOK(final String           numFieldName, 
+                                              final FormDataObjIFace dataObj,
+                                              final Class<?>         dataClass,
+                                              final String           primaryFieldName,
+                                              final boolean          isEmptyOK)
+    {
+        String fieldValue = (String)FormHelper.getValue(dataObj, numFieldName);
         
         // Let's check for duplicates 
-        if (StringUtils.isNotEmpty(number))
+        if (StringUtils.isNotEmpty(fieldValue))
         {
             Integer id = dataObj.getId();
             if (id != null)
@@ -676,7 +694,7 @@ public class BaseBusRules implements BusinessRulesIFace
                     stmt = conn.createStatement();
         
                     String quote  = fi.getDataClass() == String.class || fi.getDataClass() == Date.class ? "'" : "";
-                    String sqlStr = "SELECT "+colName+","+fi.getColumn()+" FROM "+ti.getName()+" WHERE "+fi.getColumn() + " = " + quote + number + quote;
+                    String sqlStr = "SELECT "+colName+","+fi.getColumn()+" FROM "+ti.getName()+" WHERE "+fi.getColumn() + " = " + quote + fieldValue + quote;
                     ResultSet rs = stmt.executeQuery(sqlStr);
                     int     cnt  = 0;
                     Integer dbId = null;
@@ -717,10 +735,12 @@ public class BaseBusRules implements BusinessRulesIFace
             {
                 return STATUS.OK;
             }
-        } else
+        } else if (isEmptyOK)
         {
-            reasonList.add(getErrorMsg("GENERIC_NUMBER_MISSING", numFieldName, dataClass));
-        }
+            return STATUS.OK;
+            
+        } 
+        reasonList.add(getErrorMsg("GENERIC_NUMBER_MISSING", numFieldName, dataClass));
 
         return STATUS.Error;
     }

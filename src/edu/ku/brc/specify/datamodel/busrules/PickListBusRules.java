@@ -525,13 +525,13 @@ public class PickListBusRules extends BaseBusRules implements FormPaneAdjusterIF
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterSaveCommit(java.lang.Object)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterSaveCommit(java.lang.Object)
      */
     @Override
-    public boolean afterSaveCommit(Object dataObj)
+    public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
     {
         adjustSizeSpinner();
-        return super.afterSaveCommit(dataObj);
+        return super.afterSaveCommit(dataObj, session);
     }
 
 

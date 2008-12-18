@@ -702,7 +702,7 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        dataObjects .clear();
+        dataObjects.clear();
                 
         frame.setProcess(++createStep);
         
@@ -827,7 +827,7 @@ public class BuildSampleDatabase
                     {
                         pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
                                                        pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
-                                                       pl.getSizeLimit(), pl.getIsSystem(), pl.getSortType());
+                                                       pl.getSizeLimit(), pl.getIsSystem(), pl.getSortType(), collection);
                     }
                     pickList.setIsSystem(true);
                     pickList.setCollection(collection);

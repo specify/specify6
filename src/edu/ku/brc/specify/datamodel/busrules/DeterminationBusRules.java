@@ -270,10 +270,10 @@ public class DeterminationBusRules extends BaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterSaveCommit(java.lang.Object)
      */
     @Override
-    public boolean afterSaveCommit(Object dataObj)
+    public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
     {
         determination = null;
-        return super.afterSaveCommit(dataObj);
+        return super.afterSaveCommit(dataObj, session);
     }
 
     /* (non-Javadoc)

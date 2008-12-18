@@ -2135,7 +2135,7 @@ public class UploadTable implements Comparable<UploadTable>
             tblTransactionOpen = false;
             if (busRule != null)
             {
-                busRule.afterSaveCommit(rec);
+                busRule.afterSaveCommit(rec, tblSession);
             }
             if (needToRefreshAfterWrite())
             {

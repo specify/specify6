@@ -15,6 +15,8 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.ResultSetController;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Division;
@@ -54,6 +56,35 @@ public class DivisionBusRules extends BaseBusRules
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg)
+    {
+        super.initialize(viewableArg);
+        
+        if (formViewObj != null && formViewObj.getMVParent().isTopLevel())
+        {
+            ResultSetController rsc = formViewObj.getRsController();
+            if (rsc != null)
+            {
+                if (rsc.getNewRecBtn() != null) rsc.getNewRecBtn().setVisible(false);
+                if (rsc.getDelRecBtn() != null) rsc.getDelRecBtn().setVisible(false);
+            }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
+     */
+    @Override
+    public void afterFillForm(Object dataObj)
+    {
+        super.afterFillForm(dataObj);
+    }
+
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#okToEnableDelete(java.lang.Object)
      */
     @Override
@@ -80,12 +111,7 @@ public class DivisionBusRules extends BaseBusRules
                                                       Division.class, 
                                                       "userGroupScopeId");
         
-        STATUS titleStatus = isCheckDuplicateNumberOK("title", 
-                                                    (FormDataObjIFace)dataObj, 
-                                                    Division.class, 
-                                                    "userGroupScopeId");
-        
-        return nameStatus != STATUS.OK || titleStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
+        return nameStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
     }
 
     /* (non-Javadoc)

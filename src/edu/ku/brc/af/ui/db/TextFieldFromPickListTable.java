@@ -57,24 +57,9 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
         
         setControlSize(this);
 
-        //if (adapter.isTabledBased())
-       // {
-            this.adapter = adapter; 
+        this.adapter = adapter; 
             
-        //} else
-        //{
-        //   throw new RuntimeException("Wrong type of picklist! Must be table based wher the type is not 0.");
-        //}
-        
         setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-
-        //bgColor = getBackground();
-        //if (valtextcolor == null)
-        //{
-            //valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
-        //}
-        //AppPreferences.getRemote().addChangeListener("ui.formatting.valtextcolor", this);
-
     }
     
     //--------------------------------------------------------
@@ -88,9 +73,16 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
     {
         dataObj = value;
         
+        
         if (value != null)
         {
-            if (adapter != null && adapter.isTabledBased())
+            if (adapter == null)
+            {
+                setText(value.toString());
+                return;
+            }
+            
+            if (adapter.isTabledBased())
             {
                 String data = null;
     
@@ -127,7 +119,7 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
                 
                 setText(data);
                 
-            } else if (adapter != null)
+            } else 
             {
                 for (PickListItemIFace item : adapter.getList())
                 {
@@ -174,6 +166,22 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
         }
     }
     
+    /**
+     * @return the adapter
+     */
+    public PickListDBAdapterIFace getAdapter()
+    {
+        return adapter;
+    }
+
+    /**
+     * @param adapter the adapter to set
+     */
+    public void setAdapter(PickListDBAdapterIFace adapter)
+    {
+        this.adapter = adapter;
+    }
+
     /**
      * @return the adapter
      */

@@ -893,7 +893,8 @@ public class DataBuilder
                                           final boolean readOnly, 
                                           final int     sizeLimit,
                                           final Boolean isSystem,
-                                          final Byte    sortType)
+                                          final Byte    sortType,
+                                          final Collection collectionArg)
     {
         PickList pickList = new PickList();
         pickList.initialize();
@@ -907,7 +908,7 @@ public class DataBuilder
         pickList.setIsSystem(isSystem);
         pickList.setSortType(sortType);
         
-        Collection collection = AppContextMgr.getInstance().hasContext() ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
+        Collection collection = collectionArg != null ? collectionArg : AppContextMgr.getInstance().hasContext() ? AppContextMgr.getInstance().getClassObject(Collection.class) : null;
         if (collection != null)
         {
             pickList.setCollection(collection);
@@ -2697,7 +2698,7 @@ public class DataBuilder
     /**
      * 
      */
-    public static void buildPickListFromXML(List<BldrPickList> list)
+    /*public static void buildPickListFromXML(List<BldrPickList> list)
     {
         if (list != null)
         {
@@ -2724,16 +2725,15 @@ public class DataBuilder
                 ex.printStackTrace();
             }
         }
-
-    }
+    }*/
     
     /**
      * 
      */
-    public static void buildPickListFromXML(final String dirName)
+    /*public static void buildPickListFromXML(final String dirName)
     {
         buildPickListFromXML(getBldrPickLists(dirName));
-    }
+    }*/
 
     /**
      * Helper method for saving when there is a session.

@@ -896,7 +896,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             boolean success = commitTransaction(session, tx); // NOTE: Closes open session
             if (busRules != null)
             {
-                success &= busRules.afterSaveCommit(mergedNode);
+                success &= busRules.afterSaveCommit(mergedNode, null);
             }
             
             return success;

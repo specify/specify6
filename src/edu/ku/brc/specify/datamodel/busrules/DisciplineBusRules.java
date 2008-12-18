@@ -19,14 +19,30 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createGeologicTimePerio
 import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDef;
 import static edu.ku.brc.specify.config.init.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import org.hibernate.LockMode;
+import org.hibernate.Session;
+
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.af.ui.db.TextFieldFromPickListTable;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.Viewable;
+import edu.ku.brc.af.ui.forms.validation.ValComboBox;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
@@ -34,7 +50,9 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
+import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -54,6 +72,68 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg)
+    {
+        super.initialize(viewableArg);
+        
+        if (formViewObj != null && formViewObj.getMVParent().isTopLevel())
+        {
+            ResultSetController rsc = formViewObj.getRsController();
+            if (rsc != null)
+            {
+                if (rsc.getNewRecBtn() != null) rsc.getNewRecBtn().setVisible(false);
+                if (rsc.getDelRecBtn() != null) rsc.getDelRecBtn().setVisible(false);
+            }
+        }
+        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
+     */
+    @Override
+    public void afterFillForm(Object dataObj)
+    {
+        super.afterFillForm(dataObj);
+        
+        if (formViewObj != null && dataObj != null)
+        {
+            Component comp = formViewObj.getControlByName("type");
+            if (comp instanceof ValComboBox)
+            {
+                final ValComboBox dspCbx = (ValComboBox)comp;
+                if (dspCbx.getModel().getSize() == 0)
+                {
+                    for (DisciplineType dt : DisciplineType.getDisciplineList())
+                    {
+                        dspCbx.getComboBox().addItem(dt);
+                    }
+                    dspCbx.getComboBox().setSelectedIndex(-1);
+                    
+                    dspCbx.getComboBox().addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            DisciplineType dt = (DisciplineType)dspCbx.getComboBox().getSelectedItem();
+                            if (dt != null)
+                            {
+                                ((Discipline)formViewObj.getDataObj()).setType(dt.getName());
+                            }
+                        }
+                    });
+                }
+            } else if (comp instanceof TextFieldFromPickListTable)
+            {
+                TextFieldFromPickListTable tf = (TextFieldFromPickListTable)comp;
+                tf.setValue(DisciplineType.getByName(tf.getValue().toString()), "");
+            }
+        }
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#formShutdown()
      */
     @Override
@@ -67,7 +147,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object)
      */
     @Override
-    public STATUS processBusinessRules(Object dataObj)
+    public STATUS processBusinessRules(final Object dataObj)
     {
         reasonList.clear();
         
@@ -77,17 +157,17 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
             return STATUS.Error;
         }
         
-        STATUS nameStatus = isCheckDuplicateNumberOK("name", 
+        STATUS typeStatus = isCheckDuplicateNumberOK("type", 
                                                       (FormDataObjIFace)dataObj, 
                                                       Discipline.class, 
                                                       "userGroupScopeId");
         
-        STATUS titleStatus = isCheckDuplicateNumberOK("title", 
+        STATUS nameStatus = isCheckDuplicateNumberOK("name", 
                                                     (FormDataObjIFace)dataObj, 
                                                     Discipline.class, 
                                                     "userGroupScopeId");
         
-        return nameStatus != STATUS.OK || titleStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
+        return typeStatus != STATUS.OK || nameStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
     }
 
     /* (non-Javadoc)
@@ -143,6 +223,30 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    {
+        super.beforeMerge(dataObj, session);
+        
+        Discipline discipline = (Discipline)dataObj;
+        if (formViewObj != null && dataObj != null)
+        {
+            Component comp = formViewObj.getControlByName("type");
+            if (comp instanceof ValComboBox)
+            {
+                ValComboBox dspCbx = (ValComboBox)comp;
+                DisciplineType dt = (DisciplineType)dspCbx.getComboBox().getSelectedItem();
+                if (dt != null)
+                {
+                    discipline.setType(dt.getName());
+                }
+            }
+        }
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeSave(java.lang.Object)
      */
     @Override
@@ -150,12 +254,44 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
     {
         super.beforeSave(dataObj,session);
         
-        Discipline ct = (Discipline)dataObj;
-        if (ct.getTaxonTreeDef() == null)
+        Discipline discipline = (Discipline)dataObj;
+        if (discipline.getTaxonTreeDef() == null)
         {
             TaxonTreeDef taxonTreeDef = createTaxonTreeDef("Sample Taxon Tree Def");
-            ct.setTaxonTreeDef(taxonTreeDef);
+            discipline.setTaxonTreeDef(taxonTreeDef);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterSaveCommit(java.lang.Object)
+     */
+    @Override
+    public boolean afterSaveCommit(final Object dataObj, final DataProviderSessionIFace session)
+    {
+        Discipline discipline = (Discipline)dataObj;
+        for (Collection collection : discipline.getCollections())
+        {
+            int count = BasicSQLUtils.getCount("SELECT count(*) FROM picklist WHERE CollectionID = " + collection.getId());
+            if (count == 0)
+            {
+                try
+                {
+                    if (session instanceof HibernateDataProviderSession)
+                    {
+                        HibernateDataProviderSession hibSession = (HibernateDataProviderSession)session;
+                        BuildSampleDatabase.createPickLists(hibSession.getSession(), null, false, collection); // do 'common' first
+                        BuildSampleDatabase.createPickLists(hibSession.getSession(), collection.getDiscipline(), false, collection);
+                    }
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    UsageTracker.incrNetworkUsageCount();
+                }
+            }
+        }
+        
+        return true;
     }
 
     /* (non-Javadoc)
@@ -332,16 +468,6 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         }
 
 */
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
-     */
-    @Override
-    public void initialize(Viewable viewableArg)
-    {
-        super.initialize(viewableArg);
-        
     }
     
     /*public void disciplinehasBeenAdded(Division division, final Discipline discipline)

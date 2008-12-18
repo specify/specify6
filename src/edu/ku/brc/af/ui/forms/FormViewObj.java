@@ -2398,7 +2398,7 @@ public class FormViewObj implements Viewable,
         {
             if (businessRules != null)
             {
-                businessRules.afterSaveCommit(dataObj);
+                businessRules.afterSaveCommit(dataObj, session);
             }
             session.refresh(dataObj);
             

@@ -1847,6 +1847,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                             }
                             session.commit();
                             //log.info("Successfully saved changes to " + mergedNode.getFullName());
+                            
+                            // at this point, the new node is in the DB (if success == true)
+        
+                            if (businessRules != null && success == true)
+                            {
+                                afterSaveSuccess = businessRules.afterSaveCommit(mergedNode, session);
+                            }
                         }
                         catch (Exception e)
                         {
@@ -1860,13 +1867,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         {
                             session.close();
                         }
-                        
-                        // at this point, the new node is in the DB (if success == true)
-    
-                        if (businessRules != null && success == true)
-                        {
-                            afterSaveSuccess = businessRules.afterSaveCommit(mergedNode);
-                        }
+
                     }
                     return success;
                 }

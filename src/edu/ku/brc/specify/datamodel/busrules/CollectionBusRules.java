@@ -15,8 +15,10 @@ import java.util.Vector;
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -26,12 +28,14 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.init.NumberingSchemeSetupDlg;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
-import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
+import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -128,11 +132,11 @@ public class CollectionBusRules extends BaseBusRules
         
         Collection collection = (Collection)newDataObj;
         
-        MultiView disciplineMV = formViewObj.getMVParent().getMultiViewParent();
-        MultiView divisionMV   = disciplineMV.getMultiViewParent();
+        MultiView  disciplineMV = formViewObj.getMVParent().getMultiViewParent();
+        Discipline discipline   = (Discipline)disciplineMV.getData();
         
-        NumberingSchemeSetupDlg dlg = new NumberingSchemeSetupDlg((Division)divisionMV.getData(), 
-                                                                  (Discipline)disciplineMV.getData(), 
+        NumberingSchemeSetupDlg dlg = new NumberingSchemeSetupDlg(discipline.getDivision(), 
+                                                                  discipline, 
                                                                   (Collection)newDataObj);
         dlg.setVisible(true);
         if (!dlg.isCancelled())
@@ -192,7 +196,8 @@ public class CollectionBusRules extends BaseBusRules
         STATUS titleStatus = isCheckDuplicateNumberOK("collectionPrefix", 
                                                     (FormDataObjIFace)dataObj, 
                                                     Collection.class, 
-                                                    "userGroupScopeId");
+                                                    "userGroupScopeId",
+                                                    true);
         
         return nameStatus != STATUS.OK || titleStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
     }
