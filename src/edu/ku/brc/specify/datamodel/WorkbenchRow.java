@@ -21,6 +21,8 @@ import java.lang.ref.SoftReference;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -624,29 +626,62 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         WorkbenchTemplateMappingItem map = wbdi.getWorkbenchTemplateMappingItem();
         if (map.getTableName().equals("locality"))
         {
-            if (map.getFieldName().equalsIgnoreCase("latitude1"))
+            
+            if (map.getFieldName().equalsIgnoreCase("latitude1") || map.getFieldName().equalsIgnoreCase("latitude2")
+                    || map.getFieldName().equalsIgnoreCase("longitude1") || map.getFieldName().equalsIgnoreCase("longitude2"))
             {
-                wbdi.getWorkbenchRow().setLat1Text(getLatString(wbdi.getCellData()));
+                for (WorkbenchDataItem geoFld : getGeoCoordFlds())
+                {
+                    WorkbenchTemplateMappingItem geoMap = geoFld.getWorkbenchTemplateMappingItem();
+                    if (geoMap.getFieldName().equalsIgnoreCase("latitude1"))
+                    {
+                        setLat1Text(getLatString(geoFld.getCellData()));
+                    }
+                    else if (geoMap.getFieldName().equalsIgnoreCase("latitude2"))
+                    {
+                        setLat2Text(getLatString(geoFld.getCellData()));
+                    }
+                    else if (geoMap.getFieldName().equalsIgnoreCase("longitude1"))
+                    {
+                        setLong1Text(getLongString(geoFld.getCellData()));
+                    }
+                    else if (geoMap.getFieldName().equalsIgnoreCase("longitude2"))
+                    {
+                        setLong2Text(getLongString(geoFld.getCellData()));
+                    }
+                }
+                
             }
-            else if (map.getFieldName().equalsIgnoreCase("latitude2"))
+            
+        }
+    }
+    
+    
+    /**
+     * @return data items that map to latitude1/2 or longitude1/2. 
+     */
+    @Transient
+    protected List<WorkbenchDataItem> getGeoCoordFlds()
+    {
+        LinkedList<WorkbenchDataItem> result = new LinkedList<WorkbenchDataItem>();
+        for (WorkbenchDataItem wbdi : workbenchDataItems)
+        {
+            WorkbenchTemplateMappingItem map = wbdi.getWorkbenchTemplateMappingItem();
+            if (map.getTableName().equals("locality"))
             {
-                wbdi.getWorkbenchRow().setLat2Text(getLatString(wbdi.getCellData()));
-            }
-            else if (map.getFieldName().equalsIgnoreCase("longitude1"))
-            {
-                wbdi.getWorkbenchRow().setLong1Text(getLongString(wbdi.getCellData()));
-            }
-            else if (map.getFieldName().equalsIgnoreCase("longitude2"))
-            {
-                wbdi.getWorkbenchRow().setLong2Text(getLongString(wbdi.getCellData()));
+                if (map.getFieldName().equalsIgnoreCase("latitude1") || map.getFieldName().equalsIgnoreCase("latitude2")
+                        || map.getFieldName().equalsIgnoreCase("longitude1") || map.getFieldName().equalsIgnoreCase("longitude2"))
+                result.add(wbdi);
             }
         }
+        return result;
     }
     
     /**
      * @param latEntry
      * @return a formatted string for use by specify.plugins.latlon  plugin
      */
+    @Transient
     protected String getLatString(final String latEntry)
     {
         String ddString = null;
@@ -677,6 +712,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      * @param longEntry
      * @return a formatted string for use by specify.plugins.latlon  plugin
      */
+    @Transient
     protected String getLongString(final String longEntry)
     {
         String ddString = null;

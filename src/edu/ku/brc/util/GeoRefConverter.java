@@ -2,6 +2,8 @@ package edu.ku.brc.util;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang.StringUtils;
+
 public class GeoRefConverter implements StringConverter
 {
     public static enum GeoRefFormat
@@ -103,7 +105,12 @@ public class GeoRefConverter implements StringConverter
         int decIndex = original.lastIndexOf('.');
         if (decIndex > -1 && original.length() > decIndex)
         {
-            decimalFmtLen = original.length() - decIndex;
+            int end = original.length();
+            while (!StringUtils.isNumeric(original.substring(decIndex+1,end)) && end >= 0)
+            {
+                end--;
+            }
+            decimalFmtLen = end - decIndex - 1;
         }
         
         // if we weren't able to find a matching format, throw an exception
@@ -134,21 +141,24 @@ public class GeoRefConverter implements StringConverter
      */
     public LatLonConverter.FORMAT getLatLonFormat(final String entry)
     {
-        for (GeoRefFormat format: GeoRefFormat.values())
+        if (entry != null)
         {
-            if (format.matches(entry))
+            for (GeoRefFormat format: GeoRefFormat.values())
             {
-                if (format.equals(GeoRefFormat.D_NSEW) || format.equals(GeoRefFormat.D_PLUS_MINUS))
+                if (format.matches(entry))
                 {
-                    return LatLonConverter.FORMAT.DDDDDD;
-                }
-                if (format.equals(GeoRefFormat.DM_NSEW) || format.equals(GeoRefFormat.DM_PLUS_MINUS))
-                {
-                    return LatLonConverter.FORMAT.DDMMMM;
-                }
-                if (format.equals(GeoRefFormat.DMS_NSEW) || format.equals(GeoRefFormat.DMS_PLUS_MINUS))
-                {
-                    return LatLonConverter.FORMAT.DDMMSS;
+                    if (format.equals(GeoRefFormat.D_NSEW) || format.equals(GeoRefFormat.D_PLUS_MINUS))
+                    {
+                        return LatLonConverter.FORMAT.DDDDDD;
+                    }
+                    if (format.equals(GeoRefFormat.DM_NSEW) || format.equals(GeoRefFormat.DM_PLUS_MINUS))
+                    {
+                        return LatLonConverter.FORMAT.DDMMMM;
+                    }
+                    if (format.equals(GeoRefFormat.DMS_NSEW) || format.equals(GeoRefFormat.DMS_PLUS_MINUS))
+                    {
+                        return LatLonConverter.FORMAT.DDMMSS;
+                    }
                 }
             }
         }

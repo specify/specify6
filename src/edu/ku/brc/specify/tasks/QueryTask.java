@@ -65,7 +65,6 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.prefs.AppPreferences;
-
 import edu.ku.brc.af.ui.db.ERTICaptionInfo;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.FormHelper;
@@ -92,11 +91,11 @@ import edu.ku.brc.specify.tasks.subpane.qb.QBLiveJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.qb.QBReportInfoPanel;
 import edu.ku.brc.specify.tasks.subpane.qb.QBResultReportServiceCmdData;
 import edu.ku.brc.specify.tasks.subpane.qb.QBResultReportServiceInfo;
+import edu.ku.brc.specify.tasks.subpane.qb.QBResultSetTableModel;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tasks.subpane.qb.TableTree;
 import edu.ku.brc.specify.tasks.subpane.qb.TreeLevelQRI;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerDlg;
-import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -1267,9 +1266,15 @@ public class QueryTask extends BaseTask
                QBResultReportServiceCmdData srvData = (QBResultReportServiceCmdData)cmdAction.getData();
                List<QBResultReportServiceInfo> reps = new Vector<QBResultReportServiceInfo>(srvData.getInfo().getReports());
                QBResultReportServiceInfo selectedRep = null;
+               JTable dataTbl = ((ESResultsTablePanel)srvData.getData()).getTable();
+               QBResultSetTableModel rsm = (QBResultSetTableModel)dataTbl.getModel();
                if (reps.size() == 0)
                {
                    log.error("no reports for query. Should't have gotten here.");
+               }
+               else if (rsm.isLoadingCells())
+               {
+                   UIRegistry.writeTimedSimpleGlassPaneMsg(UIRegistry.getResourceString("QB_NO_REPORTS_WHILE_LOADING_RESULTS"), 5000, null, null);
                }
                else
                {
@@ -1283,8 +1288,6 @@ public class QueryTask extends BaseTask
                }
                if (selectedRep == null || selectedRep.getFileName() == null) { return; }
 
-               JTable dataTbl = ((ESResultsTablePanel)srvData.getData()).getTable();
-               ResultSetTableModel rsm = (ResultSetTableModel)dataTbl.getModel();
                Object src;
                if (selectedRep.isLiveData())
                {

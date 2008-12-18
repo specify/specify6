@@ -1584,12 +1584,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         final int lonColIndex = workbench.getColumnIndex(locTabId, "longitude1");
         final int lat2ColIndex = workbench.getColumnIndex(locTabId,"latitude2");
         final int lon2ColIndex = workbench.getColumnIndex(locTabId, "longitude2");
-        // it's fine if these come back as -1
-        // that results in no backups of the original values
-        final int lat1TextColIndex = workbench.getColumnIndex(locTabId, "Lat1Text");
-        final int long1TextColIndex = workbench.getColumnIndex(locTabId, "Long1Text");
-        final int lat2TextColIndex = workbench.getColumnIndex(locTabId, "Lat2Text");
-        final int long2TextColIndex = workbench.getColumnIndex(locTabId, "Long2Text");
 
         JFrame mainFrame = (JFrame)UIRegistry.getTopWindow();
         
@@ -1641,26 +1635,26 @@ public class WorkbenchPaneSS extends BaseSubPane
                 {
                     case 0:
                     {
-                        convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(), lat1TextColIndex);
-                        convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(), long1TextColIndex);
-                        convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(), lat2TextColIndex);
-                        convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(), long2TextColIndex);
+                        convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
+                        convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
+                        convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
+                        convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
                         break;
                     }
                     case 1:
                     {
-                        convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(), lat1TextColIndex);
-                        convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(), long1TextColIndex);
-                        convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(), lat2TextColIndex);
-                        convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(), long2TextColIndex);
+                        convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
+                        convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
+                        convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
+                        convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
                         break;
                     }
                     case 2:
                     {
-                        convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(), lat1TextColIndex);
-                        convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(), long1TextColIndex);
-                        convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(), lat2TextColIndex);
-                        convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(), long2TextColIndex);
+                        convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
+                        convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
+                        convertColumnContents(lat2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
+                        convertColumnContents(lon2ColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
                         break;
                     }
                 }
@@ -1830,14 +1824,38 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
     }
     
+    protected String getLatLonSrc(int columnIdx, int rowIndex)
+    {
+        WorkbenchTemplateMappingItem map = workbench.getMappingFromColumn((short )columnIdx);
+        if (map.getTableName().equals("locality"))
+        {
+            if (map.getFieldName().equalsIgnoreCase("latitude1"))
+            {
+                return workbench.getRow(rowIndex).getLat1Text();
+            }
+            else if (map.getFieldName().equalsIgnoreCase("latitude2"))
+            {
+                return workbench.getRow(rowIndex).getLat2Text();
+            }
+            else if (map.getFieldName().equalsIgnoreCase("longitude1"))
+            {
+                return workbench.getRow(rowIndex).getLong1Text();
+            }
+            else if (map.getFieldName().equalsIgnoreCase("longitude2"))
+            {
+                return workbench.getRow(rowIndex).getLong2Text();
+            }
+        }
+        return null;
+    }
+    
     /**
      * Converts the column contents from on format of Lat/Lon to another
      * @param columnIndex the index of the column being converted
      * @param converter the converter to use
      * @param outputFormat the format string
-     * @param backupColIndex the column index of the column to store the original value in, or -1 if none
      */
-    protected void convertColumnContents(int columnIndex, int[] rows, StringConverter converter, String outputFormat, int backupColIndex)
+    protected void convertColumnContents(int columnIndex, int[] rows, StringConverter converter, String outputFormat)
     {
         if (columnIndex == -1)
         {
@@ -1851,10 +1869,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             int rowIndex = rows[index];
             String currentValue = null; 
             //check backup col for original value before any conversions...
-            if (backupColIndex != -1)
-            {
-                currentValue = (String )model.getValueAt(rowIndex, backupColIndex);
-            }
+            currentValue = getLatLonSrc(columnIndex, rowIndex);
             if (StringUtils.isBlank(currentValue))
             {
                 currentValue = (String)model.getValueAt(rowIndex, columnIndex);
@@ -1870,17 +1885,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 convertedValue = converter.convert(currentValue, outputFormat);
                 
-                // if the caller specified a "backup" column index, copy the original value to it
-                // if the backup column doesn't already have contents and the converted value is actually
-                // different from the current value
-                if (backupColIndex != -1 && !convertedValue.equals(currentValue))
-                {
-                    String currVal = (String)model.getValueAt(rowIndex, backupColIndex);
-                    if (currVal == null || StringUtils.isEmpty(currVal))
-                    {
-                        model.setValueAt(currentValue, rowIndex, backupColIndex);
-                    }
-                }
             }
             catch (Exception e)
             {
