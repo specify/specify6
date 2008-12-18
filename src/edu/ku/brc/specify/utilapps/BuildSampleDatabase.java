@@ -6888,11 +6888,19 @@ public class BuildSampleDatabase
                     }
                     rs.close();
                     
-                    String createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE ON "+databaseName+".* TO '"+saUserName+"'@'%' IDENTIFIED BY '"+saPassword+"'";
-                    int rv = stmt.executeUpdate(createUserStr);
-                    createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE ON "+databaseName+".* TO '"+saUserName+"'@'localhost' IDENTIFIED BY '"+saPassword+"'";
-                    rv = stmt.executeUpdate(createUserStr);
-                    return rv == 1;
+                    try
+                    {
+                        String createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE ON "+databaseName+".* TO '"+saUserName+"'@'%' IDENTIFIED BY '"+saPassword+"'";
+                        int rv = stmt.executeUpdate(createUserStr);
+                        createUserStr = "GRANT SELECT,INSERT,UPDATE,DELETE ON "+databaseName+".* TO '"+saUserName+"'@'localhost' IDENTIFIED BY '"+saPassword+"'";
+                        rv = stmt.executeUpdate(createUserStr);
+                        return rv == 1;
+                        
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                    return false;
                 }
             } catch (SQLException ex)
             {

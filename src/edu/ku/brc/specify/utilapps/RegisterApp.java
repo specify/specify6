@@ -628,6 +628,7 @@ public class RegisterApp extends JPanel
      * @param srcList
      * @return
      */
+    @SuppressWarnings("unused")
     private Vector<Pair<String, Integer>> getDateValues(final DateType dateType, 
                                                         final Collection<RegProcEntry> srcList)
     {

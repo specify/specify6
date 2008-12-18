@@ -670,7 +670,7 @@ public class SpecifyDBConverter
                                                                                 "TypeStatusNameID",  "ObservationMethodID",  "StatusID",
                                                                                 "TypeID",  "ShipmentMethodID", "RankID", "DirectParentRankID",
                                                                                 "RequiredParentRankID", "MediumID"});
-                    conversion.mapIds();//MEG LOOK HERE
+                    conversion.mapIds();
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
                 }
                 //GenericDBConversion.setShouldCreateMapTables(startfromScratch);

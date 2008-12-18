@@ -136,9 +136,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
     protected static StringBuilder                          strBuf                 = new StringBuilder("");
 
-    protected static SimpleDateFormat                       dateFormatter          = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    protected static SimpleDateFormat                       dateTimeFormatter      = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    protected static SimpleDateFormat                       dateFormatter          = new SimpleDateFormat("yyyy-MM-dd");
     protected static Timestamp                              now                    = new Timestamp(System .currentTimeMillis());
-    protected static String                                 nowStr                 = dateFormatter.format(now);
+    protected static String                                 nowStr                 = dateTimeFormatter.format(now);
 
     protected String                                        oldDriver              = "";
     protected String                                        oldDBName              = "";
@@ -168,6 +169,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     protected Hashtable<String, Integer>                    collectionHash         = new Hashtable<String, Integer>();
     protected Hashtable<String, String>                     prefixHash             = new Hashtable<String, String>();
     protected Hashtable<String, Integer>                    catNumSchemeHash       = new Hashtable<String, Integer>();
+    
+    protected Hashtable<DisciplineType, Pair<Integer, Boolean>> dispToObjTypeHash = new Hashtable<DisciplineType, Pair<Integer, Boolean>>();
 
     protected Session                                       session;
 
@@ -217,6 +220,22 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         DBConnection oldDB = DBConnection.createInstance(oldDriver, null, oldDBName, connectionStr, oldUserName, oldPassword);
         oldDBConn = oldDB.createConnection();
         newDBConn = DBConnection.getInstance().createConnection();
+        
+        int[]     objTypes  = {10,      14,   11,   17,   18,   15,   9,    12,   13,   16,   19,    0,   0,    0,  };
+        boolean[] isEmbdded = {false, true, true, true, true, true, true, true, true, true, true, true, true, true, };
+        
+        /*
+         fish, amphibian, reptile, paleobotany, invertpaleo, vertpaleo, bird, 
+                                 mammal, insect, botany, invertebrate, minerals, fungi, 
+                                 anthropology
+         */
+        int i = 0;
+        for (DisciplineType.STD_DISCIPLINES dt : DisciplineType.STD_DISCIPLINES.values())
+        {
+            dispToObjTypeHash.put(DisciplineType.getDiscipline(dt), new Pair<Integer, Boolean>(objTypes[i], isEmbdded[i]));
+            i++;
+        }
+        
 
     }
 
@@ -602,8 +621,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "BorrowMaterialID",
                 "BorrowMaterial",
                 "BorrowMaterialID",
+                
                 // XXX "BorrowReturnMaterial", "ReturnedByID", "Agent", "AgentID",
                 // XXX "Preparation", "PreparedByID", "Agent", "AgentID",
+                
                 "Preparation",
                 "ParasiteTaxonNameID",
                 "TaxonName",
@@ -613,6 +634,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "PhysicalObjectID",
                 "preparation",
                 "PreparationID",
+                
                 "LoanPhysicalObject",
                 "LoanID",
                 "Loan",
@@ -636,6 +658,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "JournalID",
                 "Journal",
                 "JournalID",
+                
                 "ReferenceWork",
                 "ContainingReferenceWorkID",
                 "ReferenceWork",
@@ -648,10 +671,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "BiologicalObjectID",
                 "CollectionObject",
                 "CollectionObjectID",
+                
                 "BiologicalObjectRelation",
                 "RelatedBiologicalObjectID",
                 "CollectionObject",
                 "CollectionObjectID",
+                
                 "BiologicalObjectRelation",
                 "BiologicalObjectRelationTypeID",
                 "BiologicalObjectRelationType",
@@ -672,10 +697,12 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "ReferenceWorkID",
                 "ReferenceWork",
                 "ReferenceWorkID",
+                
                 "BorrowMaterial",
                 "BorrowID",
                 "Borrow",
                 "BorrowID",
+                
                 "BorrowAgents",
                 "BorrowID",
                 "Borrow",
@@ -686,6 +713,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "DeaccessionID",
                 "Deaccession",
                 "DeaccessionID",
+                
                 "DeaccessionCollectionObject",
                 "CollectionObjectID",
                 "Preparation",
@@ -700,18 +728,22 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 "ReferenceWorkID",
                 "ReferenceWork",
                 "ReferenceWorkID",
+                
                 "CollectionObjectCitation",
                 "BiologicalObjectID",
                 "CollectionObject",
                 "CollectionObjectID",
+                
                 "CollectingEvent",
                 "HabitatAttributeID",
                 "Habitat",
                 "HabitatID",
+                
                 "CollectingEvent",
                 "LocalityID",
                 "Locality",
                 "LocalityID",
+                
                 "CollectingEvent",
                 "StratigraphyID",
                 "Stratigraphy",
@@ -726,19 +758,23 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 // XXX "Permit", "IssuerID", "AgentAddress", "AgentAddressID",
                 // XXX "Permit", "IssueeID", "AgentAddress", "AgentAddressID",
                 // XXX "Sound", "RecordedByID", "Agent", "AgentID",
+                
                 "TaxonCitation",
                 "ReferenceWorkID",
                 "ReferenceWork",
                 "ReferenceWorkID",
+                
                 "TaxonCitation",
                 "TaxonNameID",
                 "TaxonName",
                 "TaxonNameID",
                 // XXX "Determination", "DeterminerID", "Agent", "AgentID",
+                
                 "Determination",
                 "TaxonNameID",
                 "TaxonName",
                 "TaxonNameID",
+                
                 "Determination",
                 "BiologicalObjectID",
                 "CollectionObject",
@@ -757,91 +793,39 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 // As you might expect the CatalogSeriesDefinitionID is mapped to the new
                 // Discipline
                 // ************************************************************************************
-                "CollectionObjectType",
-                "CollectionObjectTypeID",
-                "CatalogSeriesDefinition",
-                "CatalogSeriesDefinitionID",
-                "CollectionObject",
-                "CollectionObjectTypeID",
-                "CatalogSeriesDefinition",
-                "CatalogSeriesDefinitionID",
+                "CollectionObjectType",  "CollectionObjectTypeID", "CatalogSeriesDefinition", "CatalogSeriesDefinitionID",
+                
+                "CollectionObject", "CollectionObjectTypeID", "CatalogSeriesDefinition", "CatalogSeriesDefinitionID",
 
-                "CollectionObject",
-                "CollectingEventID",
-                "CollectingEvent",
-                "CollectingEventID",
+                "CollectionObject", "CollectingEventID", "CollectingEvent", "CollectingEventID",
 
-                "CollectionObject",
-                "AccessionID",
-                "Accession",
-                "AccessionID",
+                "CollectionObject", "AccessionID", "Accession", "AccessionID",
                 // XXX "CollectionObject", "CatalogerID", "Agent", "AgentID",
-                "Loan",
-                "ShipmentID",
-                "Shipment",
-                "ShipmentID",
-                "AccessionAuthorizations",
-                "AccessionID",
-                "Accession",
-                "AccessionID",
-                "AccessionAuthorizations",
-                "PermitID",
-                "Permit",
-                "PermitID",
-                "AccessionAgents",
-                "AccessionID",
-                "Accession",
-                "AccessionID",
+                "Loan", "ShipmentID", "Shipment", "ShipmentID",
+                "AccessionAuthorizations", "AccessionID", "Accession", "AccessionID",
+                "AccessionAuthorizations", "PermitID", "Permit", "PermitID",
+                "AccessionAgents", "AccessionID", "Accession", "AccessionID",
                 // XXX "AccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
-                "DeterminationCitation",
-                "ReferenceWorkID",
-                "ReferenceWork",
-                "ReferenceWorkID",
-                "DeterminationCitation",
-                "DeterminationID",
-                "Determination",
-                "DeterminationID",
-                "OtherIdentifier",
-                "CollectionObjectID",
-                "CollectionObject",
-                "CollectionObjectID",
+                "DeterminationCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
+                "DeterminationCitation", "DeterminationID", "Determination", "DeterminationID",
+                "OtherIdentifier", "CollectionObjectID", "CollectionObject", "CollectionObjectID",
 
                 // XXX "Agent", "ParentOrganizationID", "Agent", "AgentID",
                 // XXX "AgentAddress", "AddressID", "Address", "AddressID",
                 // XXX "AgentAddress", "AgentID", "Agent", "AgentID",
                 // XXX "AgentAddress", "OrganizationID", "Agent", "AgentID",
 
-                "LocalityCitation", "ReferenceWorkID", "ReferenceWork",
-                "ReferenceWorkID",
-                "LocalityCitation",
-                "LocalityID",
-                "Locality",
-                "LocalityID",
-                "LoanReturnPhysicalObject",
-                "LoanPhysicalObjectID",
-                "LoanPhysicalObject",
-                "LoanPhysicalObjectID",
+                "LocalityCitation", "ReferenceWorkID", "ReferenceWork",  "ReferenceWorkID",
+                "LocalityCitation", "LocalityID", "Locality", "LocalityID",
+                "LoanReturnPhysicalObject", "LoanPhysicalObjectID", "LoanPhysicalObject", "LoanPhysicalObjectID",
                 // XXX "LoanReturnPhysicalObject", "ReceivedByID", "Agent", "AgentID",
-                "LoanReturnPhysicalObject", "DeaccessionPhysicalObjectID",
-                "CollectionObject",
-                "CollectionObjectID",
-                "DeaccessionAgents",
-                "DeaccessionID",
-                "Deaccession",
-                "DeaccessionID",
+                "LoanReturnPhysicalObject", "DeaccessionPhysicalObjectID", "CollectionObject", "CollectionObjectID",
+                "DeaccessionAgents", "DeaccessionID", "Deaccession", "DeaccessionID",
                 // XXX "DeaccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
-                "ProjectCollectionObjects", "ProjectID",
-                "Project",
-                "ProjectID",
-                "ProjectCollectionObjects",
-                "CollectionObjectID",
-                "CollectionObject",
-                "CollectionObjectID",
+                "ProjectCollectionObjects", "ProjectID", "Project", "ProjectID",
+                "ProjectCollectionObjects", "CollectionObjectID", "CollectionObject", "CollectionObjectID",
                 // XXX "Project", "ProjectAgentID", "Agent", "AgentID",
-                "LoanAgents",
-                "LoanID",
-                "Loan",
-                "LoanID",
+                "LoanAgents", "LoanID", "Loan", "LoanID",
                 // XXX "LoanAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
 
                 // taxonname ID mappings
@@ -1689,7 +1673,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
     }
 
     /**
-     * Convert a CollectionObjectTypeName to a DataType
+     * Convert a taxonomyTypeName to a Discipline name
      * @param name the name
      * @return the Standard DataType
      */
@@ -1698,14 +1682,14 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         DisciplineType disciplineType = DisciplineType.getDiscipline(name.toLowerCase());
         if (disciplineType != null) { return disciplineType.getName(); }
 
-        if (checkName(new String[] { "Plant", "Herb" }, name)) { return "plant"; }
+        if (checkName(new String[] { "Plant", "Herb" }, name)) { return "botany"; }
         // TO DO: Rod needs to look at this at make sure that things are geting mapped properly
         // for disciplineType types, disciplines, and datatypes. Meg ran into problems when
         // converting the
         // uvgherps database, we decided to make note of the issue and address later. For the time
         // being
         // I added "Herps" to this listing so that the converter would pass without failing.
-        if (checkName(new String[] { "FishHerps", "Herps" }, name)) { return "animal"; }
+        if (checkName(new String[] { "FishHerps", "Herps", "Herp" }, name)) { return "amphibian"; }
 
         if (checkName(new String[] { "Mineral", "Rock" }, name)) { return "mineral"; }
 
@@ -1851,9 +1835,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             strBuf.append("INSERT INTO institution (InstitutionID, IsServerBased, TimestampModified, Name, TimestampCreated, StorageTreeDefID, ");
             strBuf.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
             strBuf.append(institutionId + ",FALSE,");
-            strBuf.append("'" + dateFormatter.format(now) + "',"); // TimestampModified
+            strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
             strBuf.append("'" + instName + "',");
-            strBuf.append("'" + dateFormatter.format(now) + "',"); // TimestampCreated
+            strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
             strBuf.append(storageTreeDef.getStorageTreeDefId()+","); // StorageTreeDefID
             strBuf.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(null) + ",0, ");
             strBuf.append(institutionId); // UserGroupScopeID
@@ -1897,13 +1881,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
             strBuf.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
             strBuf.append(curDivisionID + ",");
             strBuf.append(institutionId + ",");
-            strBuf.append("'" + dateFormatter.format(now) + "',"); // TimestampModified
+            strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
             strBuf.append("'" + disciplineType.getName() + "',");
             strBuf.append("'" + disciplineType.getTitle() + "',");
             strBuf.append("NULL,");
             strBuf.append("'" + disciplineType.getAbbrev() + "',");
             strBuf.append("1, ");  // IsAccessionBound
-            strBuf.append("'" + dateFormatter.format(now) + "',"); // TimestampCreated
+            strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
             strBuf.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(null) + ",0, ");
             strBuf.append(curDivisionID); // UserGroupScopeID
             strBuf.append(")");
@@ -2078,10 +2062,10 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 strBuf2.append("DataTypeID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, TaxonTreeDefID, DivisionID, ");
                 strBuf2.append("CreatedByAgentID, ModifiedByAgentID, Version, UserGroupScopeId) VALUES (");
                 strBuf2.append(curDisciplineID + ",");
-                strBuf2.append("'" + dateFormatter.format(now) + "',"); // TimestampModified
+                strBuf2.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
                 strBuf2.append("'" + disciplineType.getName() + "',");
                 strBuf2.append("'" + disciplineType.getTitle() + "',");
-                strBuf2.append("'" + dateFormatter.format(now) + "',"); // TimestampCreated
+                strBuf2.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
                 strBuf2.append(dataTypeId + ",");
                 strBuf2.append("1,"); // GeographyTreeDefID
                 strBuf2.append("1,"); // GeologicTimePeriodTreeDefID
@@ -2140,9 +2124,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     String prefix       = rs.getString(4);
                     String remarks      = rs.getString(5);
                     String lastEditedBy = rs.getString(6);
-                    // int catSeriesDefID = rs.getInt(7);
                     int taxonomyTypeID = rs.getInt(8);
-
+                    
                     String newSeriesName = seriesName + " " + taxTypeName;
                     if (seriesNameHash.get(newSeriesName) != null)
                     {
@@ -2213,8 +2196,8 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     strBuf.append(getStrValue(prefix) + ",");
                     strBuf.append(getStrValue(remarks) + ",");
                     strBuf.append((isEmbeddedCE ? 1 : 0)  + ",");
-                    strBuf.append("'" + dateFormatter.format(now) + "',"); // TimestampModified
-                    strBuf.append("'" + dateFormatter.format(now) + "',"); // TimestampCreated
+                    strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampModified
+                    strBuf.append("'" + dateTimeFormatter.format(now) + "',"); // TimestampCreated
                     strBuf.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(lastEditedBy) + ", 0, ");
                     strBuf.append(curCollectionID);  // UserGroupScopeId
                     strBuf.append(")");
@@ -2274,6 +2257,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 log.info("Collection Join Records: " + recordCnt);
                 rs.close();
                 stmt.close();
+                
             } else
             {
                 log.warn("taxonomyTypeMapper is empty.");
@@ -3402,29 +3386,36 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 prepIdMapper = (IdTableMapper)idMapperMgr.get("preparation", "PreparationID");
             }
 
+            Pair<String, String> datePair = new Pair<String, String>();
+            
             prepIdMapper.setShowLogErrors(false);
 
+            int     prepDateInx     = oldNameIndex.get("CatalogedDate") + 1;
             int     lastEditedByInx = oldNameIndex.get("LastEditedBy") + 1;
             Integer idIndex         = oldNameIndex.get("CollectionObjectID");
             int     count           = 0;
             do
             {
+                datePair.first  = null;
+                datePair.second = null;
+                
                 Integer preparedById = null;
-                Date    preparedDate = null;
-
                 boolean checkForPreps = true;
                 if (checkForPreps)
                 {
                     Integer   recordId    = rs.getInt(idIndex + 1);
                     Statement subStmt     = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                     String    subQueryStr = "select PreparedByID, PreparedDate from preparation where PreparationID = " + recordId;
-                    //log.debug(subQueryStr);
                     ResultSet subQueryRS  = subStmt.executeQuery(subQueryStr);
                     
                     if (subQueryRS.next())
                     {
                         preparedById = subQueryRS.getInt(1);
-                        preparedDate = UIHelper.convertIntToDate(subQueryRS.getInt(2));
+                        getPartialDate(rs.getObject(2), datePair);
+                    } else
+                    {
+                        datePair.first  = "NULL";
+                        datePair.second = "NULL";
                     }
                     subQueryRS.close();
                     subStmt.close();
@@ -3455,11 +3446,9 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     {
                         fieldList.append(", ");
                     }
-                    //if (i > 0)
-                    {
-                        String newFieldName = newFieldMetaData.get(i).getName();
-                        fieldList.append(newFieldName + " ");
-                    }
+                    
+                    String newFieldName = newFieldMetaData.get(i).getName();
+                    fieldList.append(newFieldName + " ");
                 }
                 fieldList.append(")");
 
@@ -3505,7 +3494,11 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                     } else if (newFieldName.equals("PreparedDate"))
                     {
-                        str.append(getStrValue(preparedDate));
+                        str.append(datePair.first);
+
+                    } else if (newFieldName.equals("PreparedDatePrecision"))
+                    {
+                        str.append(datePair.second);
 
                     } else if (newFieldName.equals("DerivedFromIDX"))
                     {
@@ -3835,11 +3828,21 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
 
+            Pair<String, String> datePair = new Pair<String, String>();
+            
             int lastEditedByInx = oldNameIndex.get("LastEditedBy") + 1;
-
+            Integer detDateInx  = oldNameIndex.get("Date1") + 1;
+            if (detDateInx == null)
+            {
+                detDateInx = oldNameIndex.get("Date") + 1;
+            }
+            
             int count = 0;
             do
             {
+                datePair.first  = null;
+                datePair.second = null;
+                
                 String lastEditedBy = rs.getString(lastEditedByInx);
 
                 str.setLength(0);
@@ -3875,6 +3878,23 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     {
                         str.append("0");
 
+                    } else if (newFieldName.equals("DeterminedDate"))
+                    {
+                        if (datePair.first == null)
+                        {
+                            getPartialDate(rs.getObject(detDateInx), datePair);
+                        }
+                        str.append(datePair.first);
+                        
+                        
+                    } else if (newFieldName.equals("DeterminedDatePrecision"))
+                    {
+                        if (datePair.first == null)
+                        {
+                            getPartialDate(rs.getObject(detDateInx), datePair);
+                        }
+                        str.append(datePair.second);
+                        
                     } else if (newFieldName.equals("CreatedByAgentID")) // User/Security changes
                     {
                         str.append(getCreatorAgentId(null));
@@ -4024,7 +4044,55 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 BasicSQLUtils.myDestinationServerType);
 
         return true;
-
+    }
+    
+    /**
+     * @param data
+     * @param newFieldType
+     * @param datePair
+     */
+    protected void getPartialDate(final Object data, final Pair<String, String> datePair)
+    {
+        datePair.first  = "NULL";
+        datePair.second = "NULL";
+        
+        if (data != null && ((Integer)data) > 0)
+        {
+            // 012345678
+            // 20051314
+            Date   dateObj = null;
+            String dateStr = ((Integer)data).toString();
+            if (dateStr.length() == 8)
+            {
+                //System.out.println("["+dateStr+"]["+data+"]");//["+(dateStr.length() >)+"]");
+                int    fndInx  = dateStr.substring(4, 8).indexOf("00");
+                if (fndInx > -1)
+                {
+                    if (fndInx == 0)
+                    {
+                        dateStr = dateStr.substring(0, 4) + "0101";
+                        dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
+                        datePair.second = "2";
+                        
+                    } else if (fndInx == 2)
+                    {
+                        dateStr = dateStr.substring(0, 6) + "01";
+                        dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
+                        datePair.second = "1";
+                        
+                    } else
+                    {
+                        dateObj = UIHelper.convertIntToDate((Integer)data);
+                        datePair.second = "0";
+                    }
+                } else
+                {
+                    dateObj = UIHelper.convertIntToDate((Integer)data); 
+                    datePair.second = "0";
+                }
+                datePair.first = dateObj == null ? "NULL" : '"'+dateFormatter.format(dateObj) + '"';
+            }
+        }
     }
 
     /**
@@ -4033,6 +4101,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
      * "physical" records are moved to the Preparation table.
      * @return true if no errors
      */
+    @SuppressWarnings("cast")
     public boolean convertCollectionObjects(final boolean useNumericCatNumbers,
                                             final boolean usePrefix)
     {
@@ -4042,6 +4111,23 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         log.debug(formatter0);
         UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getInstance().getFormatter("CatalogNumberNumeric");
         log.debug(formatter);
+        
+        DisciplineType dt;
+        Discipline discipline = (Discipline)AppContextMgr.getInstance().getClassObject(Discipline.class);
+        if (discipline != null)
+        {
+            dt = DisciplineType.getDiscipline(discipline.getType());
+        } else
+        {
+            Vector<Object[]> list = BasicSQLUtils.query(newDBConn, "SELECT Type FROM discipline");
+            String typeStr = (String)list.get(0)[0];
+            dt = DisciplineType.getDiscipline(typeStr);
+        }
+        
+        Pair<Integer, Boolean> objTypePair = dispToObjTypeHash.get(dt);
+        
+        int     objTypeId  = objTypePair.first;
+        //boolean isEmbedded = objTypePair.second;
         
         idMapperMgr.dumpKeys();
         IdHashMapper colObjTaxonMapper = (IdHashMapper)idMapperMgr.get("ColObjCatToTaxonType" .toLowerCase());
@@ -4079,7 +4165,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
         {
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             StringBuilder str = new StringBuilder();
-
+            
             List<String> oldFieldNames = new ArrayList<String>();
 
             StringBuilder sql = new StringBuilder("select ");
@@ -4097,7 +4183,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
             String fromClause = " From collectionobject Inner Join collectionobjectcatalog ON " +
                                 "collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID " +
-                                "Where collectionobject.CollectionObjectTypeID = 10";
+                                "WHERE collectionobject.CollectionObjectTypeID = " + objTypeId;
             sql.append(fromClause);
 
             log.info(sql);
@@ -4153,17 +4239,23 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 }
             }
 
+            Pair<String, String> datePair = new Pair<String, String>();
+            
             Statement stmt2 = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
-            int catNumInx = oldNameIndex.get("CatalogNumber");
-
-            int colObjAttrsNotMapped = 0;
-            int count = 0;
-            boolean skipRecord = false;
+            int catNumInx  = oldNameIndex.get("CatalogNumber") + 1;
+            int catDateInx = oldNameIndex.get("CatalogedDate") + 1;
+            
+            int     colObjAttrsNotMapped = 0;
+            int     count                = 0;
+            boolean skipRecord           = false;
             do
             {
+                datePair.first  = null;
+                datePair.second = null;
+                
                 skipRecord = false;
-                String catIdTaxIdStr = "SELECT collectionobjectcatalog.CollectionObjectCatalogID,collectionobjectcatalog.CatalogSeriesID, collectiontaxonomytypes.TaxonomyTypeID "
+                String catIdTaxIdStr = "SELECT collectionobjectcatalog.CollectionObjectCatalogID, collectionobjectcatalog.CatalogSeriesID, collectiontaxonomytypes.TaxonomyTypeID "
                         + "FROM collectionobjectcatalog "
                         + "Inner Join collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID "
                         + "Inner Join collectiontaxonomytypes ON collectionobject.CollectionObjectTypeID = collectiontaxonomytypes.BiologicalObjectTypeID "
@@ -4181,6 +4273,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 if (newCatSeriesId == null)
                 {
                     log.error("Can't find " + catalogSeriesID + "_" + taxonomyTypeID);
+                    continue;
                 }
 
                 /*
@@ -4208,8 +4301,6 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                 rs2.close();
                 */
 
-                int catalogedDatePrecision = 0;
-
                 String catalogNumber = null;
                 String colObjId = null;
 
@@ -4236,11 +4327,7 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                     }
 
                     String newFieldName = newFieldMetaData.get(i).getName();
-                    if (newFieldName.equalsIgnoreCase("CatalogedDate"))
-                    {
-                        int x = 0;
-                        x++;
-                    }
+
                     if (i == 0)
                     {
                         Integer oldColObjId = rs.getInt(1);
@@ -4256,13 +4343,13 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
 
                         if (useNumericCatNumbers)
                         {
-                            catalogNumber = rs.getString(catNumInx + 1);
+                            catalogNumber = rs.getString(catNumInx);
                             
                             catalogNumber = "\"" + ZEROES.substring(catalogNumber.length()) + catalogNumber + "\"";
 
                         } else
                         {
-                            float catNum = rs.getFloat(catNumInx + 1);
+                            float catNum = rs.getFloat(catNumInx);
                             catalogNumber = "\"" + (usePrefix && StringUtils.isNotEmpty(prefix) ? (prefix + "-") : "")
                                             + String.format("%9.0f", catNum).trim() + "\"";
                         }
@@ -4324,40 +4411,19 @@ public class GenericDBConversion implements IdMapperIndexIncrementerIFace
                         
                     } else if (newFieldName.equals("CatalogedDate"))
                     {
-                        Integer index   = oldNameIndex.get(newFieldName);
-                        Object  data    = rs.getObject(index + 1);
-                        if (data != null && ((Integer)data) > 0)
+                        if (datePair.first == null)
                         {
-                            // 012345678
-                            // 20051314
-                            Date   dateObj = null;
-                            String dateStr = getStrValue(data, newFieldMetaData.get(i).getType());
-                            if (dateStr.length() == 8)
-                            {
-                                System.out.println("["+dateStr+"]["+data+"]");//["+(dateStr.length() >)+"]");
-                                int    fndInx  = dateStr.substring(4, 8).indexOf("00");
-                                if (fndInx > -1)
-                                {
-                                    catalogedDatePrecision = fndInx == 4 ? 2 : 1;
-                                    dateStr = StringUtils.replace(dateStr, "00", "01");
-                                    dateObj = UIHelper.convertIntToDate(Integer.parseInt(dateStr)); 
-                                } else
-                                {
-                                    dateObj = UIHelper.convertIntToDate((Integer)data); 
-                                }
-                                str.append(dateObj == null ? "NULL" : '"'+dateFormatter.format(dateObj) + '"');
-                            } else
-                            {
-                                str.append("NULL");
-                            }
-                        } else
-                        {
-                            str.append("NULL");
+                            getPartialDate(rs.getObject(catDateInx), datePair);
                         }
+                        str.append(datePair.first);
 
                     } else if (newFieldName.equals("CatalogedDatePrecision"))
                     {
-                        str.append(catalogedDatePrecision);
+                        if (datePair.first == null)
+                        {
+                            getPartialDate(rs.getObject(catDateInx), datePair);
+                        }
+                        str.append(datePair.second);
 
                     } else if (newFieldName.equals("Availability"))
                     {

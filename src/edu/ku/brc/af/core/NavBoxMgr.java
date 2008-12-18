@@ -103,6 +103,9 @@ public class NavBoxMgr extends JTiledPanel
        {
            setTileImage(UIHelper.getTiledBGImage());
            setOpaque(false);
+       } else
+       {
+           setOpaque(true);
        }
     }
     

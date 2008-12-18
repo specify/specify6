@@ -207,7 +207,7 @@ public class IdMapperMgr
         } else
         {
             //System.err.println("Couldn't find ["+(tableName.toLowerCase()+"_"+idName)+"] to map to foreign key.");
-            throw new RuntimeException("Couldn't find ["+(tableName.toLowerCase()+"_"+idName)+"] to map to foreign key.");
+            // ZZZ throw new RuntimeException("Couldn't find ["+(tableName.toLowerCase()+"_"+idName)+"] to map to foreign key.");
         }
     }
     

@@ -458,6 +458,60 @@ public class BasicSQLUtils
     }
 
     /**
+     * @param sql
+     * @return
+     */
+    public static Vector<Object[]> query(final String sql)
+    {
+        return query(null, sql);
+    }
+
+    /**
+     * @param sql
+     * @return
+     */
+    public static Vector<Object[]> query(final Connection conn, final String sql)
+    {
+        Vector<Object[]> list = new Vector<Object[]>();
+        Statement stmt = null;
+        try
+        {
+            Connection connection = conn != null ? conn : (dbConn != null ? dbConn : DBConnection.getInstance().getConnection());
+
+            stmt = connection.createStatement();
+            ResultSet         rs       = stmt.executeQuery(sql);
+            ResultSetMetaData metaData = rs.getMetaData();
+            int numCols = metaData.getColumnCount();
+            if (rs.next())
+            {
+                Object[] colData = new Object[numCols];
+                list.add(colData);
+                for (int i=0;i<numCols;i++)
+                {
+                    colData[i] = rs.getObject(i+1);
+                }
+            }
+            rs.close();
+
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (stmt != null)
+            {
+                try
+                {
+                    stmt.close();
+                } catch (Exception ex) {}
+            }
+        }
+
+        return list;
+    }
+
+    /**
      * Deletes all the records from a table
      * @param connection connection to the DB
      * @param tableName the name of the table
