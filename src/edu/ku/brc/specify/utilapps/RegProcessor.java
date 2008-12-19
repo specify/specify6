@@ -1047,7 +1047,7 @@ public class RegProcessor
         br.close();
         fr.close();
         
-        boolean doDemo = true;
+        boolean doDemo = false;
         if (doDemo)
         {
             Hashtable<String, Boolean> siteNamesHash = new Hashtable<String, Boolean>();

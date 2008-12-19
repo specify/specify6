@@ -19,7 +19,7 @@ public class GeneralPermissionTableCellEditor extends AbstractCellEditor
 {
     private GeneralPermissionTableCellValueWrapper currentWrapper;
     private Font                                   normalFont;
-    private Font                                   boldFont;
+    //private Font                                   boldFont;
     private JLabel                                 adminLabel;
     private JCheckBox                              checkbox;
 
