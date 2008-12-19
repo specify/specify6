@@ -28,6 +28,7 @@
  */
 package edu.ku.brc.specify.config;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -51,6 +52,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
+import edu.ku.brc.util.LatLonConverter;
 
 /*
  * @code_status Unknown (auto-generated)
@@ -231,36 +233,26 @@ public class Scriptlet extends JRDefaultScriptlet
     }
 
     /**
-     * Formats a float string into a lat/lon with "N","S","E", "W".
-     * @param floatStr the float to be formatted
-     * @param isLat whether itis a lat or lon
-     * @return Formats a float string into a lat/lon with "N","S","E", "W"
+     * Formats a BigDecimal into a lat/lon with "N","S","E", "W".
+     * @param value
+     * @param originalLatLongUnit
+     * @param isLat
+     * @return
      * @throws JRScriptletException
      */
-    public String degrees(Float floatStr, boolean isLat) throws JRScriptletException
+    public String formatLatLon(final BigDecimal value, 
+                               final Integer    originalLatLongUnit, 
+                               final boolean    isLat) throws JRScriptletException
     {
-        if (floatStr == null) { return ""; }
-        float coord = floatStr.floatValue();
-        DecimalFormat df = new DecimalFormat("#.####");
-        String dir = "";
-        if (isLat)
-            dir = coord > 0.0 ? "N" : "S";
-        else dir = coord > 0.0 ? "E" : "W";
-        /*String str = "";
-        for (int i=150;i<190;i++)
-        {
-            str += Character.forDigit(i, 10);
-        }*/
-        //return str;
-        //try {
-        //String degress = new String("&#8600;?".getBytes("UTF-8"), "UTF-8");
-        //"�"
-        return df.format(coord) + " " + dir;
-        //} catch (Exception ex)
-        //{
-
-        //}
-        //return "XXX";
+        if (value != null) 
+        { 
+            return LatLonConverter.format(value, 
+                                   isLat ? LatLonConverter.LATLON.Latitude : LatLonConverter.LATLON.Longitude, 
+                                   LatLonConverter.convertIntToFORMAT(originalLatLongUnit), 
+                                   LatLonConverter.DEGREES_FORMAT.Symbol, 
+                                   LatLonConverter.DECIMAL_SIZES[originalLatLongUnit]);
+        }
+        return "";
     }
 
     /**
@@ -272,7 +264,7 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public String degrees(String floatStr, boolean isLat) throws JRScriptletException
     {
-        return degrees(new Float(Float.parseFloat(floatStr)), isLat);
+    return "Not Implemented!";//degrees(new Float(Float.parseFloat(floatStr)), isLat);
     }
 
     /**
@@ -283,7 +275,10 @@ public class Scriptlet extends JRDefaultScriptlet
      * @return Formats a Lat,Lon into a single string where the values are separated by a comma
      * @throws JRScriptletException XXX
      */
-    public String locality(Object desc, Float lat, Float lon) throws JRScriptletException
+    public String locality(final Object desc, 
+                           final BigDecimal lat, 
+                           final BigDecimal lon, 
+                           final Integer    originalLatLongUnit) throws JRScriptletException
     {
 
         StringBuffer strBuf = new StringBuffer();
@@ -295,9 +290,9 @@ public class Scriptlet extends JRDefaultScriptlet
             strBuf.append(new String((byte[]) desc));
         }
         strBuf.append(" ");
-        strBuf.append(degrees(lat, true));
+        strBuf.append(formatLatLon(lat, originalLatLongUnit, true));
         strBuf.append(", ");
-        strBuf.append(degrees(lon, false));
+        strBuf.append(formatLatLon(lon, originalLatLongUnit, false));
         return strBuf.toString();
     }
 

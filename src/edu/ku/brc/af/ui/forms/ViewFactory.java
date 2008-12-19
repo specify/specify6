@@ -128,8 +128,9 @@ public class ViewFactory
     private static final String LF = "\\" + "n";
     
     // Data Members
-    protected static ColorWrapper     viewFieldColor = null;
-    protected static boolean          doFixLabels    = true;
+    protected static ColorWrapper     viewFieldColor    = null;
+    protected static boolean          doFixLabels       = true;
+    protected static boolean          isFormTransparent = false;
 
     // transient - is valid only during a build process
     protected MultiView               rootMultiView    = null;
@@ -2368,5 +2369,21 @@ public class ViewFactory
             }
         }
         return null;
+    }
+
+    /**
+     * @return the isFormTransparent
+     */
+    public static boolean isFormTransparent()
+    {
+        return isFormTransparent;
+    }
+
+    /**
+     * @param isFormTransparent the isFormTransparent to set
+     */
+    public static void setFormTransparent(boolean isFormTransparent)
+    {
+        ViewFactory.isFormTransparent = isFormTransparent;
     }
 }

@@ -65,6 +65,7 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
     public GenericPrefsPanel()
     {
         super(new BorderLayout());
+        setOpaque(false);
     }
     
     /**
@@ -111,10 +112,16 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
         {
             UIValidator.setIgnoreAllValidation(this, true);
             
+            ViewFactory.setFormTransparent(true);
             form = ViewFactory.createFormView(null, formView, null, null, MultiView.NO_OPTIONS, null);
+            ViewFactory.setFormTransparent(false);
             form.setDataObj(AppPreferences.getRemote());
             UIValidator.setIgnoreAllValidation(this, false);
             
+            if (form.getUIComponent() instanceof JPanel)
+            {
+                ((JPanel)form.getUIComponent()).setOpaque(false);
+            }
             add(form.getUIComponent(), BorderLayout.CENTER);
             
             form.getValidator().validateForm();

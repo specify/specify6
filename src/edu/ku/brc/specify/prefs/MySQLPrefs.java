@@ -109,6 +109,7 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
         createUI();
         
         UIRegistry.popResourceBundle();
+        setOpaque(false);
     }
     
     /* (non-Javadoc)
@@ -132,13 +133,14 @@ public class MySQLPrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
         restoreBtn = createI18NButton("MYS_RESTORE");
 
         
-        PanelBuilder btnPB         = new PanelBuilder(new FormLayout("f:p:g,2px,p,5px,p,f:p:g", "p"));
+        PanelBuilder btnPB = new PanelBuilder(new FormLayout("f:p:g,2px,p,5px,p,f:p:g", "p"));
         
         btnPB.add(backupBtn, cc.xy(3, 1));
         if (doShowRestore)
         {
             btnPB.add(restoreBtn, cc.xy(5, 1));
         }
+        btnPB.setOpaque(false);
 
         PanelBuilder pb = new PanelBuilder(new FormLayout("p,2px,p,p:g,f:p:g", "p,2dlu,p,2dlu,p,2dlu,p,14px,p"), this);
         

@@ -480,12 +480,21 @@ public class FormViewObj implements Viewable,
 
         }
         
+        if (ViewFactory.isFormTransparent())
+        {
+            builder.getPanel().setOpaque(false);
+        }
         mainComp.add(builder.getPanel(), BorderLayout.CENTER);
             
         if (comps.size() > 0 || addController || createResultSetController) 
         {
             controlPanel = new ControlBarPanel(bgColor);
             controlPanel.addComponents(comps, false); // false -> right side
+            
+            if (ViewFactory.isFormTransparent())
+            {
+                controlPanel.setOpaque(false);
+            }
             
             mainComp.add(controlPanel, BorderLayout.SOUTH);
             
@@ -1211,6 +1220,10 @@ public class FormViewObj implements Viewable,
         // add new component
         if (MultiView.isOptionOn(options, MultiView.NO_SCROLLBARS))
         {
+            if (ViewFactory.isFormTransparent())
+            {
+                formComp.setOpaque(false);
+            }
             this.mainComp.add(formComp, BorderLayout.CENTER);
             this.formComp = formComp;
             
@@ -1220,6 +1233,12 @@ public class FormViewObj implements Viewable,
             scrollPane.setBorder(null);
             this.mainComp.add(scrollPane, BorderLayout.CENTER); 
             this.formComp = scrollPane;
+            
+            if (ViewFactory.isFormTransparent())
+            {
+                scrollPane.setOpaque(false);
+                scrollPane.getViewport().setOpaque(false);
+            }
         }
         
         if (businessRules != null && !hasInitBR)

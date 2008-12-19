@@ -54,8 +54,9 @@ import edu.ku.brc.af.ui.forms.MultiView;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.JTiledPanel;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.skin.SkinItem;
+import edu.ku.brc.ui.skin.SkinsMgr;
 
 /**
  * Class that implements the SubPanelIFace interface which enables derived classes to participate in the main pane.
@@ -131,10 +132,10 @@ public class BaseSubPane extends JTiledPanel implements SubPaneIFace, Printable
             add(progressBarPanel, BorderLayout.CENTER);
         }
         
-        if (UIHelper.isBGTiled())
+        SkinItem skinItem = SkinsMgr.getSkinItem("SubPane");
+        if (skinItem != null)
         {
-            setTileImage(UIHelper.getTiledBGImage());
-            setOpaque(false);
+            skinItem.setupPanel(this);
         }
     }
     

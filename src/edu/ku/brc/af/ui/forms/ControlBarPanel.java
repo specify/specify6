@@ -54,6 +54,7 @@ public class ControlBarPanel extends JPanel
     {
         builder = new PanelBuilder(new FormLayout("p,2px,f:p:g,2px,p", "p"), this);
         setBackground(bgColor);
+        setOpaque(false);
     }
 
     /**
@@ -84,6 +85,7 @@ public class ControlBarPanel extends JPanel
         CellConstraints cc      = new CellConstraints();
         JPanel panel = ButtonBarFactory.buildGrowingBar(btns);
         panel.setBackground(getBackground());
+        panel.setOpaque(false);
         
         if (onLeftSide)
         {
@@ -100,6 +102,7 @@ public class ControlBarPanel extends JPanel
                 rightSidePanel. setLayout(new BoxLayout(rightSidePanel, BoxLayout.X_AXIS));
                 rightSidePanel.add(Box.createRigidArea(leftSidePanel.getPreferredSize()));
                 builder.add(rightSidePanel, cc.xy(5,1));
+                rightSidePanel.setOpaque(false);
             }
             
         } else
@@ -117,6 +120,8 @@ public class ControlBarPanel extends JPanel
                 leftSidePanel. setLayout(new BoxLayout(leftSidePanel, BoxLayout.X_AXIS));
                 leftSidePanel.add(Box.createRigidArea(rightSidePanel.getPreferredSize()));
                 builder.add(leftSidePanel, cc.xy(1,1));
+                leftSidePanel.setOpaque(false);
+
             }
 
         }

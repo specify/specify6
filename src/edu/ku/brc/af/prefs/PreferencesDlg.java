@@ -59,8 +59,11 @@ import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.JTiledPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.skin.SkinItem;
+import edu.ku.brc.ui.skin.SkinsMgr;
 
 
 /**
@@ -88,16 +91,17 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
     protected PrefsToolbar  prefsToolbar  = null;
     protected PrefsToolbar  prefsPane     = null;
 
-    protected Color         textBGColor = null;
+    protected Color         textBGColor    = null;
     protected Color         badSearchColor = new Color(255,235,235);
 
-    protected Component     currentComp = null;
+    protected Component     currentComp    = null;
+    protected SkinItem      skinItem       = null;
 
     protected Hashtable<String, Component> compsHash      = new Hashtable<String, Component>();
     protected String                       firstPanelName = null;
 
     protected Hashtable<String, PrefsPanelIFace>        prefPanelsHash = new Hashtable<String, PrefsPanelIFace>();
-
+    
     /**
      * Constructor.
      * @param addSearchUI  true adds the search ui
@@ -106,11 +110,31 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
     {
         super((Frame)UIRegistry.getTopWindow(), getResourceString("PreferencesDlg.PREFERENCES"), true, OKCANCELHELP, null); //$NON-NLS-1$
 
+        this.skinItem = SkinsMgr.getSkinItem("PrefDlg");
+        
         createUI();
         initAsToolbar(addSearchUI);
         pack();
         okBtn.setEnabled(false);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#createMainPanel()
+     */
+    @Override
+    protected JPanel createMainPanel()
+    {
+        JPanel   panel    = new JTiledPanel();
+
+        if (skinItem != null)
+        {
+            skinItem.setupPanel(panel);
+        }
+
+        panel.setLayout(new BorderLayout());
+        
+        return panel;
     }
     
     /**
@@ -124,17 +148,20 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         
         if (prefsToolbar.getNumPrefs() > 1)
         {
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("f:p:g", "p")); //$NON-NLS-1$ //$NON-NLS-2$
+            JTiledPanel tiledPanel = new JTiledPanel();
+            if (skinItem != null)
+            {
+                skinItem.setupPanel(tiledPanel);
+            }
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("f:p:g", "p"), tiledPanel); //$NON-NLS-1$ //$NON-NLS-2$
             CellConstraints cc         = new CellConstraints();
     
-            builder.add( prefsToolbar, cc.xy(1,1));
+            builder.add(prefsToolbar, cc.xy(1,1));
             if (addSearchUI)
             {
                 builder.add( createSearchPanel(), cc.xy(3,1));
             }
     
-            //builder.getPanel().setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));//.createEmptyBorder(1,1,0,1));
-            //builder.getPanel().setBackground(Color.WHITE);
             mainPanel.add(builder.getPanel(), BorderLayout.NORTH);
             
             prefsToolbar.setPreferredSize(prefsToolbar.getPreferredSize());

@@ -113,12 +113,6 @@ public class StatsPane extends BaseSubPane
         init(upperDisplayComp);
         
         registerPrintContextMenu();
-        
-        if (UIHelper.isBGTiled())
-        {
-            setTileImage(UIHelper.getTiledBGImage());
-            setOpaque(false);
-        }
     }
 
     /**

@@ -40,6 +40,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
@@ -65,10 +66,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
+import javax.swing.LookAndFeel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import javax.swing.plaf.FontUIResource;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -178,6 +182,8 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
+import edu.ku.brc.ui.skin.SkinItem;
+import edu.ku.brc.ui.skin.SkinsMgr;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.CacheManager;
@@ -691,11 +697,20 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public JToolBar createToolBar()
     {
+        
         JToolBar toolBar;
-        if (UIHelper.isBGTiled())
+        SkinItem skinItem = SkinsMgr.getSkinItem("ToolBar");
+        if (SkinsMgr.hasSkins() && skinItem != null && (skinItem.getBGImage() != null || skinItem.getBgColor() != null))
         {
-            JTiledToolbar ttb = new JTiledToolbar(UIHelper.getTiledBGImage());
-            ttb.setOpaque(false);
+            JTiledToolbar ttb = new JTiledToolbar(skinItem.getBGImage());
+            if (skinItem.getBgColor() != null)
+            {
+                ttb.setBackground(skinItem.getBgColor());
+                ttb.setOpaque(true);
+            } else
+            {
+                ttb.setOpaque(false);  
+            }
             toolBar = ttb;
         } else
         {
@@ -2392,13 +2407,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
       IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
       
-      String tiledFileName = "./tiled.png";
-      if ((new File(tiledFileName)).exists())
-      {
-          ImageIcon img = new ImageIcon(tiledFileName);
-          UIHelper.setTiledBGImage(img.getImage());
-      }
-      
       if (!UIRegistry.isRelease())
       {
           MemoryWarningSystem.setPercentageUsageThreshold(0.75);
@@ -2528,6 +2536,18 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
    */
   public static void main(String[] args)
   {
+      SkinsMgr.getInstance().setSkin("Metal");
+      
+      /*UIDefaults uiDefaults = UIManager.getDefaults();
+      Enumeration<Object> e = uiDefaults.keys();
+      while (e.hasMoreElements())
+      {
+          Object key = e.nextElement();
+          if (key.toString().startsWith("Label"))
+          {
+              System.out.println(key);
+          }
+      }*/
       /*if (true)
       {
           File[] files = (new File("iReportLibs")).listFiles();

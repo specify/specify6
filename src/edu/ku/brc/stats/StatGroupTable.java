@@ -57,6 +57,8 @@ import edu.ku.brc.ui.CurvedBorder;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.SortableJTable;
 import edu.ku.brc.ui.SortableTableModel;
+import edu.ku.brc.ui.skin.SkinItem;
+import edu.ku.brc.ui.skin.SkinsMgr;
 
 /**
  * Class to manage an entire group of StatItems where each StatItem gets its own data from a unique query.
@@ -87,9 +89,7 @@ public class StatGroupTable extends JPanel
     
     protected int                 colId        = -1;
     protected CommandAction       cmdAction    = null;
-
-
-
+    protected SkinItem            skinItem;
 
     /**
      * Constructor with the localized name of the Group
@@ -97,12 +97,15 @@ public class StatGroupTable extends JPanel
      */
     public StatGroupTable(final String name, @SuppressWarnings("unused")final String[] columnNames)
     {
-        this.name = name;
+        this.name     = name;
+        this.skinItem = SkinsMgr.getSkinItem("StatGroup");
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), BorderFactory.createEmptyBorder(15, 2, 2, 2)));
         setBackground(Color.WHITE);
-
+        
+        setOpaque(SkinsMgr.shouldBeOpaque(skinItem));
+        
         if (progressIcon == null)
         {
             progressIcon = IconManager.getIcon("Progress", IconManager.IconSize.Std16);
@@ -118,21 +121,28 @@ public class StatGroupTable extends JPanel
     {
         this.name         = name;
         this.useSeparator = useSeparator;
+        this.skinItem     = SkinsMgr.getSkinItem("StatGroup");
 
         if (progressIcon == null)
         {
             progressIcon = IconManager.getIcon("Progress", IconManager.IconSize.Std16);
         }
+        
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
-
+        
         model = new StatGroupTableModel(this, columnNames);
         table = numRows > SCROLLPANE_THRESOLD ? (new SortableJTable(new SortableTableModel(model))) : (new JTable(model));
         table.setShowVerticalLines(false);
         table.setShowHorizontalLines(false);
+        
+        if (!SkinsMgr.shouldBeOpaque(skinItem))
+        {
+            table.setOpaque(false);
+            setOpaque(false);
+        }
 
         table.addMouseMotionListener(new TableMouseMotion());
-
         table.addMouseListener(new LinkListener());
 
         if (table.getColumnModel().getColumnCount() == 1)
@@ -145,7 +155,6 @@ public class StatGroupTable extends JPanel
             table.getColumnModel().getColumn(1).setCellRenderer(new StatGroupTableCellRenderer(SwingConstants.RIGHT, 2));
         }
 
-
         //table.setRowSelectionAllowed(true);
 
         if (numRows > SCROLLPANE_THRESOLD)
@@ -154,6 +163,12 @@ public class StatGroupTable extends JPanel
             if (table instanceof SortableJTable)
             {
                 ((SortableJTable)table).installColumnHeaderListeners();
+            }
+            
+            if (SkinsMgr.hasSkins())
+            {
+                scrollPane.setOpaque(false);
+                scrollPane.getViewport().setOpaque(false);
             }
         }
 

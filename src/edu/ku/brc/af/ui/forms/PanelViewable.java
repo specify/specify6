@@ -69,7 +69,7 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
         this.parentBuilder = parentBuilder;
         
         builder = new DefaultFormBuilder(new FormLayout(cellPanel.getColDef(), cellPanel.getRowDef()), this);
-       
+        setOpaque(false);
     }
     
     /**

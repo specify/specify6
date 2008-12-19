@@ -342,6 +342,7 @@ public class CustomDialog extends JDialog
         {
             bb = ButtonBarFactory.buildOKBar(okBtn);
         }
+        bb.setOpaque(false);
         
         Component bbComp = bb;
         if (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX) // adjust for intruding resizer on Mac OS X
@@ -349,6 +350,7 @@ public class CustomDialog extends JDialog
             PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g,15px", "p"));
             CellConstraints cc         = new CellConstraints();
             builder.add(bb, cc.xy(1,1));
+            builder.getPanel().setOpaque(false);
             
             bbComp = builder.getPanel();
         }

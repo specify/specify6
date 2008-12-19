@@ -23,7 +23,6 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -171,7 +170,6 @@ public final class UIHelper
     protected static CONTROLSIZE     controlSize     = CONTROLSIZE.regular;
     protected static boolean         isSecurityOn    = false;
     protected static Font            sysBaseFont;
-    protected static Image           tiledBGImage    = null;
     
     static {
 
@@ -2987,28 +2985,4 @@ public final class UIHelper
         return maskFormatter;
     }
 
-    /**
-     * @return whether there is a tiled BG image
-     */
-    public static boolean isBGTiled()
-    {
-        return tiledBGImage != null;
-    }
-    
-    /**
-     * @return the tiledBGImage
-     */
-    public static Image getTiledBGImage()
-    {
-        return tiledBGImage;
-    }
-
-    /**
-     * @param tiledBGImage the tiledBGImage to set
-     */
-    public static void setTiledBGImage(Image tiledBGImage)
-    {
-        UIHelper.tiledBGImage = tiledBGImage;
-    }
-    
 }

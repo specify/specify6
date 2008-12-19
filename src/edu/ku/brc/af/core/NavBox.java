@@ -46,6 +46,8 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
+import edu.ku.brc.ui.skin.SkinItem;
+import edu.ku.brc.ui.skin.SkinsMgr;
 
 /**
  * This organized NavBoxItemIFace object in a vertical layout (via a layout manager)<br>
@@ -101,20 +103,29 @@ public class NavBox extends JPanel implements NavBoxIFace
         
         this.scrollable = scrollable;
         
+        SkinItem skinItem = SkinsMgr.getSkinItem("NavBox");
+        
         if (scrollable)
         {
             itemsPanel = new JPanel();
             itemsPanel.setLayout(new NavBoxLayoutManager(0, 0));
 
             itemsPanel.setBorder(null);
-            itemsPanel.setBackground(NavBoxMgr.getBGColor());
-            itemsPanel.setOpaque(true);
+            
+            if (skinItem != null)
+            {
+                itemsPanel.setOpaque(skinItem.isOpaque());
+                skinItem.setupPanel(itemsPanel);
+                
+            } else
+            {
+                itemsPanel.setBackground(NavBoxMgr.getBGColor());
+            }
         }
         
         setBorder(BorderFactory.createEmptyBorder(22, 4, 4, 4));
-        //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
         setBackground(NavBoxMgr.getBGColor());
-        setOpaque(true);
+        setOpaque(!SkinsMgr.hasSkins());
         
         if (scrollable)
         {
@@ -275,7 +286,7 @@ public class NavBox extends JPanel implements NavBoxIFace
         }
        
         item.getUIComponent().setBackground(getBackground());
-        item.getUIComponent().setOpaque(true);
+        item.getUIComponent().setOpaque(!SkinsMgr.hasSkins());
         
         if (doLayout)
         {

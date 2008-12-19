@@ -44,6 +44,17 @@ public class JTiledToolbar extends JToolBar
      * Create a JTiledPanel with the given image. The tile argument may be null, you can set it
      * later with setTileImage(). Note that a JTiledPanel is always opaque.
      */
+    public JTiledToolbar()
+    {
+        super();
+        rb = new Rectangle(0, 0, 1, 1);
+        ri = new Insets(0, 0, 0, 0);
+    }
+
+    /**
+     * Create a JTiledPanel with the given image. The tile argument may be null, you can set it
+     * later with setTileImage(). Note that a JTiledPanel is always opaque.
+     */
     public JTiledToolbar(Image tile)
     {
         super();
@@ -83,8 +94,8 @@ public class JTiledToolbar extends JToolBar
      */
     public void setTileImage(Image tile)
     {
-        tileimage = tile;
-        tilewidth = 0;
+        tileimage  = tile;
+        tilewidth  = 0;
         tileheight = 0;
     }
 

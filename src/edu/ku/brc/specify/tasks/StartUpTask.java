@@ -82,8 +82,8 @@ public class StartUpTask extends edu.ku.brc.af.tasks.StartUpTask
             img = bgImg.getImage();
         }
         JPanel splashPanel = new JPanel(new BorderLayout());
-        splashPanel.setBackground(Color.WHITE);
-        splashPanel.setOpaque(true);
+        //splashPanel.setBackground(Color.WHITE);
+        splashPanel.setOpaque(false);
         splashPanel.add(new JLabel(new ImageIcon(img)), BorderLayout.CENTER);
         return splashPanel;
     }

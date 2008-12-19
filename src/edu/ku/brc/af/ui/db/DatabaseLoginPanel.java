@@ -74,6 +74,8 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.JTiledPanel;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.skin.SkinItem;
+import edu.ku.brc.ui.skin.SkinsMgr;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -243,10 +245,10 @@ public class DatabaseLoginPanel extends JTiledPanel
         
         createUI(isDlg, iconName);
         
-        if (UIHelper.isBGTiled())
+        SkinItem skinItem = SkinsMgr.getSkinItem("LoginPanel");
+        if (skinItem != null)
         {
-            setTileImage(UIHelper.getTiledBGImage());
-            setOpaque(false);
+            skinItem.setupPanel(this);
         }
     }
 
@@ -316,7 +318,13 @@ public class DatabaseLoginPanel extends JTiledPanel
     protected void createUI(final boolean isDlg,
                             final String iconName)
     {
-
+        //Font cachedFont = UIManager.getFont("JLabel.font");
+        SkinItem skinItem = SkinsMgr.getSkinItem("LoginPanel");
+        if (skinItem != null)
+        {
+            skinItem.pushFG("Label.foreground");
+        }
+        
         // First create the controls and hook up listeners
 
         PropertiesPickListAdapter dbPickList = new PropertiesPickListAdapter("login.databases"); //$NON-NLS-1$
@@ -568,6 +576,11 @@ public class DatabaseLoginPanel extends JTiledPanel
         btnPanel.setOpaque(false);
         
         updateUIControls();
+        
+        if (skinItem != null)
+        {
+            skinItem.popFG("Label.foreground");
+        }
     }
 
     /**

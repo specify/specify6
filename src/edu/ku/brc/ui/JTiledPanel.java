@@ -19,7 +19,6 @@ package edu.ku.brc.ui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -38,14 +37,25 @@ public class JTiledPanel extends JPanel
     private int       tilewidth;
     private int       tileheight;
     private Rectangle rb;
-    private Insets    ri;
 
+    /**
+     * 
+     */
     public JTiledPanel()
     {
         super();
         setOpaque(false);
         rb = new Rectangle(0, 0, 1, 1);
-        ri = new Insets(0, 0, 0, 0);
+    }
+
+    /**
+     * @param layout
+     */
+    public JTiledPanel(LayoutManager layout)
+    {
+        super(layout);
+        setOpaque(false);
+        rb = new Rectangle(0, 0, 1, 1);
     }
 
     /**
@@ -58,7 +68,6 @@ public class JTiledPanel extends JPanel
         setTileImage(tile);
         setOpaque(false);
         rb = new Rectangle(0, 0, 1, 1);
-        ri = new Insets(0, 0, 0, 0);
     }
 
     /**
@@ -71,7 +80,6 @@ public class JTiledPanel extends JPanel
         setTileImage(tile);
         setOpaque(false);
         rb = new Rectangle(0, 0, 1, 1);
-        ri = new Insets(0, 0, 0, 0);
     }
 
     /**
@@ -89,8 +97,8 @@ public class JTiledPanel extends JPanel
      */
     public void setTileImage(Image tile)
     {
-        tileimage = tile;
-        tilewidth = 0;
+        tileimage  = tile;
+        tilewidth  = 0;
         tileheight = 0;
     }
     
@@ -108,19 +116,24 @@ public class JTiledPanel extends JPanel
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
+        
         if (tileimage != null && tilewidth <= 0)
         {
             tileheight = tileimage.getHeight(this);
             tilewidth = tileimage.getWidth(this);
         }
+        
         if (tileimage != null && tilewidth > 0)
         {
             Color bg = getBackground();
             getBounds(rb);
-            Insets riv = getInsets(ri);
-            rb.translate(riv.left, riv.top);
-            rb.width -= (riv.left + riv.right);
-            rb.height -= (riv.top + riv.bottom);
+            rb.x = 0;
+            rb.y = 0;
+
+            //Insets riv = getInsets(ri);
+            //rb.translate(riv.left, riv.top);
+            //rb.width -= (riv.left + riv.right);
+            //rb.height -= (riv.top + riv.bottom);
             Shape ccache = g.getClip();
             g.clipRect(rb.x, rb.y, rb.width, rb.height);
             int xp, yp;

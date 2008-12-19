@@ -26,11 +26,12 @@ import javax.swing.JSplitPane;
 
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.JTiledPanel;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.dnd.Trash;
+import edu.ku.brc.ui.skin.SkinItem;
+import edu.ku.brc.ui.skin.SkinsMgr;
 
 /**
  * A singleton that manages a list of NavBoxIFace items. The NavBoxIFace are layed out using a manager 
@@ -99,10 +100,10 @@ public class NavBoxMgr extends JTiledPanel
        };
        addMouseListener(mouseListener);
        
-       if (UIHelper.isBGTiled())
+       SkinItem skinItem = SkinsMgr.getSkinItem("NavBoxMgr");
+       if (skinItem != null)
        {
-           setTileImage(UIHelper.getTiledBGImage());
-           setOpaque(false);
+           skinItem.setupPanel(this);
        } else
        {
            setOpaque(true);
