@@ -40,7 +40,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.Enumeration;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
@@ -66,13 +65,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
-import javax.swing.LookAndFeel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
-import javax.swing.plaf.FontUIResource;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -2536,8 +2532,6 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
    */
   public static void main(String[] args)
   {
-      SkinsMgr.getInstance().setSkin("Metal");
-      
       /*UIDefaults uiDefaults = UIManager.getDefaults();
       Enumeration<Object> e = uiDefaults.keys();
       while (e.hasMoreElements())
@@ -2645,6 +2639,8 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                   Font newBaseFont = fontName != null && fontSize != null ? new Font(fontName, Font.PLAIN, fontSize) : sysBaseFont;
                   UIRegistry.setBaseFont(newBaseFont);
                       
+                  SkinsMgr.getInstance().setSkin("Metal");
+                  
                   BaseTask.setToolbarBtnFont(newBaseFont); // For ToolbarButtons
                   RolloverCommand.setDefaultFont(newBaseFont);
                   
