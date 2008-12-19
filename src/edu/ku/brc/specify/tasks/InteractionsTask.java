@@ -1141,6 +1141,7 @@ public class InteractionsTask extends BaseTask
                 if (invoice == null)
                 {
                     UIRegistry.displayErrorDlg(getResourceString("LOAN_INVOICE_REPORT_NOT_FOUND"));
+                    return;
                 }
                 
                 DataProviderSessionIFace session = null;
