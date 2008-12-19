@@ -207,8 +207,27 @@ public class QBJRDataSourceBase implements JRDataSource
         return obj;
     }
     
+    /**
+     * @return the record Id
+     */
     public Object getRecordId()
     {
         return null;
+    }
+    
+    /**
+     * @return true if the source knows it size.
+     */
+    public boolean hasResultSize()
+    {
+        return false;
+    }
+    
+    /**
+     * @return
+     */
+    public int size()
+    {
+        return -1;
     }
 }

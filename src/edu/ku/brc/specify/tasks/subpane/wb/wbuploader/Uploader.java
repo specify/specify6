@@ -3372,10 +3372,6 @@ public class Uploader implements ActionListener, KeyListener
         }
         undoTask.start();
         setCurrentOp(isUserCmd ? Uploader.UNDOING_UPLOAD : Uploader.CLEANING_UP);
-//        if (shuttingDown)
-//        {
-//            undoTask.get();
-//        }
     }
 
     /**

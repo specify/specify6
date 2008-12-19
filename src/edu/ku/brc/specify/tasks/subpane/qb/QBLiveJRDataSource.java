@@ -156,7 +156,26 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
             return super.getRecordId();
         }
         return data.getRowId(row);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#hasResultSize()
+     */
+    @Override
+    public boolean hasResultSize()
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#size()
+     */
+    @Override
+    public int size()
+    {
+        //this does not take repeats into account.
+        return getRowCount();
     }    
     
-   
+    
 }

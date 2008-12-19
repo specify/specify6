@@ -35,12 +35,14 @@ import javax.swing.SwingUtilities;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
 import net.sf.jasperreports.engine.fill.AsynchronousFilllListener;
+import net.sf.jasperreports.engine.fill.JRFileVirtualizer;
 import net.sf.jasperreports.engine.query.JRHibernateQueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JRViewer;
@@ -57,6 +59,7 @@ import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase;
 import edu.ku.brc.ui.UIRegistry;
 
 
@@ -73,7 +76,8 @@ import edu.ku.brc.ui.UIRegistry;
 public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 {
     // Static Data Members
-    private static final Logger log = Logger.getLogger(LabelsPane.class);
+    protected static final Logger    log = Logger.getLogger(LabelsPane.class);
+    protected static int         virtualizerThresholdSize = 666;
     
     // Data Members
     protected AsynchronousFillHandle asyncFillHandler = null;
@@ -88,6 +92,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     protected boolean                requiresHibernate = false;
     protected Session                session           = null;
     protected ImageIcon              icon              = null;
+    
 
     /**
      * Constructor.
@@ -293,6 +298,21 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                 JasperReport jasperReport = (JasperReport)JRLoader.loadObject(compiledFile.getAbsoluteFile());
                 if (jasperReport != null)
                 {
+                    int size = -1;
+                    if (recordSet != null)
+                    {
+                        size = recordSet.getNumItems();
+                        
+                    } else if (dataSource != null)
+                    {
+                        if (dataSource instanceof QBJRDataSourceBase)
+                        {
+                            //if source has not finished retrieving results, size = -1
+                            size = ((QBJRDataSourceBase )dataSource).size();
+                        }
+                    }
+
+                    
                     Map<Object, Object> parameters = new HashMap<Object, Object>();
                     
                     parameters.put("RPT_IMAGE_DIR", JasperReportsCache.getImagePath().getAbsolutePath());
@@ -303,7 +323,11 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     {
                         parameters.put("itemnum", DBTableIdMgr.getInstance().getInClause(recordSet));
                     }
-                    
+                    if (size > virtualizerThresholdSize)
+                    {
+                        JRFileVirtualizer fileVirtualizer = new JRFileVirtualizer(10);
+                        parameters.put(JRParameter.REPORT_VIRTUALIZER, fileVirtualizer);
+                    }
                     // Add external parameters
                     if (params != null)
                     {

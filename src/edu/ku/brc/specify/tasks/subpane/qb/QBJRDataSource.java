@@ -71,7 +71,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     /**
      * stores size of the data set.
      */
-    protected final AtomicInteger resultSetSize = new AtomicInteger();
+    protected final AtomicInteger resultSetSize = new AtomicInteger(-1);
     /**
      * column values for the current record.
      */
@@ -318,6 +318,25 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     {
         int result = super.getFldIdx(fldName);
         return recordIdsIncluded ? result + 1 : result;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#hasResultSize()
+     */
+    @Override
+    public boolean hasResultSize()
+    {
+        return this.resultSetSize.get() != -1;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase#size()
+     */
+    @Override
+    public int size()
+    {
+        //this does not take repeats into account.
+        return this.resultSetSize.get();
     }
 
     
