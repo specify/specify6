@@ -987,12 +987,57 @@ public class MainFrameSpecify extends MainFrame
         return null;
     }
     
+    
+    /**
+     * @param rep
+     * @return ReportSpecify object for resource rep.
+     */
+    public static ReportSpecify loadReport(final AppResourceIFace rep)
+    {
+        ReportSpecify report = null;
+        SpReport spRep = null;
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            spRep = session.getData(SpReport.class, "appResource", 
+                  rep, DataProviderSessionIFace.CompareType.Equals);
+            if (spRep != null)
+            {
+                report = new ReportSpecify(spRep);
+            }
+            else
+            {
+                report = new ReportSpecify(rep);
+            }
+        }
+        finally
+        {
+            session.close();
+        }
+        
+        java.io.InputStream xmlStream = new ByteArrayInputStream(rep.getDataAsString().getBytes());
+        
+        // Remove default style...
+        while (report.getStyles().size() > 0)
+        {
+            report.removeStyle((Style) report.getStyles().get(0));
+        }
+        ReportReader rr = new ReportReader(report);
+        try
+        {
+            rr.readFromStream(xmlStream);
+            return report;
+        } catch (IOException e)
+        {
+            return null;
+        }
+    }
     /**
      * @param rep -
      *            specify report resource
      * @return a Report constructed from rep's jrxml definition.
      */
-    private ReportSpecify makeReport(final AppResourceIFace rep)
+    public ReportSpecify makeReport(final AppResourceIFace rep)
     {
         ReportSpecify report = null;
         SpReport spRep = null;

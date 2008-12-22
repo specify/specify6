@@ -19,13 +19,13 @@ import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -36,7 +36,6 @@ import javax.swing.SwingUtilities;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -60,6 +59,9 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase;
+import edu.ku.brc.specify.tasks.subpane.qb.ReportParametersPanel;
+import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 
@@ -73,10 +75,11 @@ import edu.ku.brc.ui.UIRegistry;
  *
  */
 @SuppressWarnings("serial")
-public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
+public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener, JasperCompileListener
 {
     // Static Data Members
     protected static final Logger    log = Logger.getLogger(LabelsPane.class);
+    
     protected static int         virtualizerThresholdSize = 666;
     
     // Data Members
@@ -201,95 +204,102 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             this.dataSource = (JRDataSource)data;
         }
         this.params    = paramsArg;
-     
-        JasperReportsCache.refreshCacheFromDatabase();
-        
-        Vector<File>   reportFiles = new Vector<File>();
+
         AppResourceIFace appRes    = AppContextMgr.getInstance().getResource(mainReportName); 
-        if (appRes != null)
+        String hqlStr = appRes.getMetaData("hql");
+        if (StringUtils.isNotEmpty(hqlStr))
         {
-            String subReportsStr = appRes.getMetaData("subreports");
-            String hqlStr = appRes.getMetaData("hql");
-            
-            if (StringUtils.isNotEmpty(hqlStr))
-            {
-                requiresHibernate = Boolean.parseBoolean(hqlStr.toLowerCase());
-            }
-            
-            if (StringUtils.isNotEmpty(subReportsStr))
-            {
-                String[] subReportNames = subReportsStr.split(",");
-                for (String subReportName : subReportNames)
-                {
-                    AppResourceIFace subReportAppRes = AppContextMgr.getInstance().getResource(subReportName); 
-                    if (subReportAppRes != null)
-                    {
-                        File subReportPath = new File(cachePath.getAbsoluteFile() + File.separator + subReportName);
-                        if (subReportPath.exists())
-                        {
-                            reportFiles.add(subReportPath);
-                            
-                        } else
-                        {
-                            throw new RuntimeException("Subreport doesn't exist on disk ["+subReportPath.getAbsolutePath()+"]");
-                        }
-                        
-                    } else
-                    {
-                        throw new RuntimeException("Couldn't load subreport ["+name+"]");
-                    }
-                }
-            }
-            
-            File reportPath = new File(cachePath.getAbsoluteFile() + File.separator + mainReportName);
-            if (reportPath.exists())
-            {
-                reportFiles.add(reportPath);
-                
-            } else
-            {
-                throw new RuntimeException("Subreport doesn't exist on disk ["+reportPath.getAbsolutePath()+"]");
-            }
-            
-        } else
-        {
-            throw new RuntimeException("Couldn't load report/label ["+mainReportName+"]");
+            requiresHibernate = Boolean.parseBoolean(hqlStr.toLowerCase());
         }
 
-
-        boolean allAreCompiled = true;
-        Vector<ReportCompileInfo> files = new Vector<ReportCompileInfo>();
-        for (File file : reportFiles)
-        {
-            ReportCompileInfo info = JasperReportsCache.checkReport(file);
-            files.add(info);
-            if (!info.isCompiled())
-            {
-                allAreCompiled = false;
-            }
-        }
+//        JasperReportsCache.refreshCacheFromDatabase();
+//        
+//        Vector<File>   reportFiles = new Vector<File>();
+//        if (appRes != null)
+//        {
+//            String subReportsStr = appRes.getMetaData("subreports");
+////            String hqlStr = appRes.getMetaData("hql");
+//            
+//            if (StringUtils.isNotEmpty(hqlStr))
+//            {
+//                requiresHibernate = Boolean.parseBoolean(hqlStr.toLowerCase());
+//            }
+//            
+//            if (StringUtils.isNotEmpty(subReportsStr))
+//            {
+//                String[] subReportNames = subReportsStr.split(",");
+//                for (String subReportName : subReportNames)
+//                {
+//                    AppResourceIFace subReportAppRes = AppContextMgr.getInstance().getResource(subReportName); 
+//                    if (subReportAppRes != null)
+//                    {
+//                        File subReportPath = new File(cachePath.getAbsoluteFile() + File.separator + subReportName);
+//                        if (subReportPath.exists())
+//                        {
+//                            reportFiles.add(subReportPath);
+//                            
+//                        } else
+//                        {
+//                            throw new RuntimeException("Subreport doesn't exist on disk ["+subReportPath.getAbsolutePath()+"]");
+//                        }
+//                        
+//                    } else
+//                    {
+//                        throw new RuntimeException("Couldn't load subreport ["+name+"]");
+//                    }
+//                }
+//            }
+//            
+//            File reportPath = new File(cachePath.getAbsoluteFile() + File.separator + mainReportName);
+//            if (reportPath.exists())
+//            {
+//                reportFiles.add(reportPath);
+//                
+//            } else
+//            {
+//                throw new RuntimeException("Subreport doesn't exist on disk ["+reportPath.getAbsolutePath()+"]");
+//            }
+//            
+//        } else
+//        {
+//            throw new RuntimeException("Couldn't load report/label ["+mainReportName+"]");
+//        }
+//
+//
+//        boolean allAreCompiled = true;
+//        Vector<ReportCompileInfo> files = new Vector<ReportCompileInfo>();
+//        for (File file : reportFiles)
+//        {
+//            ReportCompileInfo info = JasperReportsCache.checkReport(file);
+//            files.add(info);
+//            if (!info.isCompiled())
+//            {
+//                allAreCompiled = false;
+//            }
+//        }
 
         // Check to see if it needs to be recompiled, if it doesn't need compiling then
         // call "compileComplete" directly to have it start filling the labels
         // otherswise create the compiler runnable and have it be compiled 
         // asynchronously
-        if (allAreCompiled)
-        {
-            this.compileComplete(files.get(files.size()-1).getCompiledFile());
-
-        } else
+//        if (allAreCompiled)
+//        {
+//            this.compileComplete(files.get(files.size()-1).getCompiledFile());
+//
+//        } else
         {
             progressLabel.setText(getResourceString("JasperReportCompiling"));
-            compiler = new JasperCompilerRunnable(this, files);
+            //compiler = new JasperCompilerRunnable(this, files, cachePath);
+            compiler = new JasperCompilerRunnable(this, mainReportName); 
             compiler.start();
         }
     }
 
-    /**
-     * The compiling of the report is complete
-     * @param report the completeed report, or null if there was a compiling error
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.JasperCompileListener#compileComplete(java.io.File)
      */
-    protected void compileComplete(final File compiledFile)
+    public void compileComplete(final File compiledFile)
     {
         if (compiledFile != null)
         {
@@ -311,6 +321,14 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                             size = ((QBJRDataSourceBase )dataSource).size();
                         }
                     }
+
+                    ReportParametersPanel rpp = new ReportParametersPanel(jasperReport, true);
+                    rpp.createUI();
+                    CustomDialog cd = new CustomDialog((Frame) UIRegistry.getTopWindow(), UIRegistry
+                            .getResourceString("RB_REPORT_PARAMS"), true, rpp);
+                    UIHelper.centerAndShow(cd);
+                    //go = !cd.isCancelled(); // XXX what about x box?
+                    cd.dispose();
 
                     
                     Map<Object, Object> parameters = new HashMap<Object, Object>();
@@ -494,73 +512,5 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     //------------------------------------------------------------
     // Inner Classes
     //------------------------------------------------------------
-    public class JasperCompilerRunnable implements Runnable
-    {
-        protected Thread                    thread;
-        protected LabelsPane                listener;
-        protected Vector<ReportCompileInfo> files;
-
-        /**
-         * Constructs a an object to execute an SQL staement and then notify the listener
-         * @param listener the listener
-         * @param reportFile the file that contains the report
-         * @param compiledFile the file that will contain the compiled report
-         */
-        public JasperCompilerRunnable(final LabelsPane listener, 
-                                      final Vector<ReportCompileInfo> files)
-        {
-            this.listener     = listener;
-            this.files   = files;
-        }
-
-        /**
-         * Starts the thread to make the SQL call
-         *
-         */
-        public void start()
-        {
-            thread = new Thread(this);
-            thread.start();
-        }
-
-        /**
-         * Stops the thread making the call
-         *
-         */
-        public synchronized void stop()
-        {
-            if (thread != null)
-            {
-                thread.interrupt();
-            }
-            thread = null;
-            notifyAll();
-        }
-
-        /**
-         * Creates a connection, makes the call and returns the results
-         */
-        public void run()
-        {
-            try
-            {
-                for (ReportCompileInfo info : files)
-                {
-                    JasperCompileManager.compileReportToFile(info.getReportFile().getAbsolutePath(), info.getCompiledFile().getAbsolutePath());
-                }
-                listener.compileComplete(files.get(files.size()-1).getCompiledFile());
-
-            } catch (Exception ex)
-            {
-                log.error(ex);
-                ex.printStackTrace();
-                
-                listener.compileComplete(null);
-            }
-            listener     = null;
-            files.clear();
-            files = null;
-        }
-    }
 
 }

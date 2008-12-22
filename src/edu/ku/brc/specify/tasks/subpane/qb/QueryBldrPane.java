@@ -61,6 +61,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -97,6 +101,7 @@ import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
+import edu.ku.brc.specify.tasks.subpane.JasperCompilerRunnable;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -1480,7 +1485,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             cd.dispose();
         }
         if (go)
-        {
+        {            
+        	JasperCompilerRunnable jcr = new JasperCompilerRunnable(null, report.getName());
+        	jcr.findFiles();
+        	if (jcr.isCompileRequired())
+        	{
+        		jcr.get();
+        	}
+        	try
+        	{
+        		JasperReport jr =(JasperReport )JRLoader.loadObject(jcr.getCompiledFile());
+        	ReportParametersPanel rpp = new ReportParametersPanel(jr, false);
+            rpp.createUI();
+            CustomDialog cd = new CustomDialog((Frame) UIRegistry.getTopWindow(), UIRegistry
+                    .getResourceString("RB_REPORT_PARAMS"), true, rpp);
+            UIHelper.centerAndShow(cd);
+            //go = !cd.isCancelled(); // XXX what about x box?
+            cd.dispose();
+
+            
             TableQRI rootQRI = null;
             int cId = report.getQuery().getContextTableId();
             for (TableTree tt : ttHash.values())
@@ -1519,6 +1542,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             cmd.setProperty("title", title); 
             cmd.setProperty("file", report.getName());
             CommandDispatcher.dispatch(cmd);
+            } catch (JRException ex)
+            {
+                log.error(ex);
+                ex.printStackTrace();
+            }
+
         }
     }
     
