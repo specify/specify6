@@ -7,6 +7,7 @@
 package edu.ku.brc.specify.tasks.subpane;
 
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -181,7 +182,8 @@ public class JasperReportsCache implements DataCacheIFace
             } else
             {
                 Date fileDate = new Date(fileFromJasperCache.lastModified());
-                updateCache   = ap.getTimestampModified() == null || fileDate.getTime() < ap.getTimestampModified().getTime();
+                Timestamp apTime = ap.getTimestampModified() == null ? ap.getTimestampCreated() : ap.getTimestampModified();
+                updateCache   = apTime == null || fileDate.getTime() < apTime.getTime();
             }
             
             // If it has changed then copy the contents into the cache and delete the compiled file
@@ -215,8 +217,6 @@ public class JasperReportsCache implements DataCacheIFace
     {
         String fileName     = file.getName();
         
-        //XXX reports ALWAYS need to be compiled?
-        //String compiledName = FilenameUtils.getBaseName(fileName);// + ".jasper"; 
         String compiledName = FilenameUtils.getBaseName(fileName) + ".jasper";
         
         return new File(getCachePath().getAbsoluteFile() + File.separator + compiledName);
@@ -250,9 +250,11 @@ public class JasperReportsCache implements DataCacheIFace
         // call "compileComplete" directly to have it start filling the labels
         // otherswise create the compiler runnable and have it be compiled 
         // asynchronously
-        boolean needsCompiling = appRes.getTimestampModified() == null || 
+        
+        Timestamp apTime = appRes.getTimestampModified() == null ? appRes.getTimestampCreated() : appRes.getTimestampModified();
+        boolean needsCompiling = apTime == null || 
                                  !compiledPath.exists() || 
-                                 appRes.getTimestampModified().getTime() > reportFileFromCache.lastModified();
+                                 apTime.getTime() > reportFileFromCache.lastModified();
         
         //log.debug(appRes.getTimestampModified().getTime()+" > "+reportFileFromCache.lastModified() +"  "+(appRes.getTimestampModified().getTime() > reportFileFromCache.lastModified()));
         //log.debug(compiledPath.exists());
