@@ -214,7 +214,11 @@ public class JasperReportsCache implements DataCacheIFace
     protected static File getCompiledFile(final File file)
     {
         String fileName     = file.getName();
-        String compiledName = FilenameUtils.getBaseName(fileName);// + ".jasper";
+        
+        //XXX reports ALWAYS need to be compiled?
+        //String compiledName = FilenameUtils.getBaseName(fileName);// + ".jasper"; 
+        String compiledName = FilenameUtils.getBaseName(fileName) + ".jasper";
+        
         return new File(getCachePath().getAbsoluteFile() + File.separator + compiledName);
     }
     

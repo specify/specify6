@@ -19,7 +19,6 @@ import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -59,9 +58,6 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase;
-import edu.ku.brc.specify.tasks.subpane.qb.ReportParametersPanel;
-import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 
@@ -322,13 +318,13 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                         }
                     }
 
-                    ReportParametersPanel rpp = new ReportParametersPanel(jasperReport, true);
-                    rpp.createUI();
-                    CustomDialog cd = new CustomDialog((Frame) UIRegistry.getTopWindow(), UIRegistry
-                            .getResourceString("RB_REPORT_PARAMS"), true, rpp);
-                    UIHelper.centerAndShow(cd);
-                    //go = !cd.isCancelled(); // XXX what about x box?
-                    cd.dispose();
+//                    ReportParametersPanel rpp = new ReportParametersPanel(jasperReport, true);
+//                    rpp.createUI();
+//                    CustomDialog cd = new CustomDialog((Frame) UIRegistry.getTopWindow(), UIRegistry
+//                            .getResourceString("RB_REPORT_PARAMS"), true, rpp);
+//                    UIHelper.centerAndShow(cd);
+//                    //go = !cd.isCancelled(); // XXX what about x box?
+//                    cd.dispose();
 
                     
                     Map<Object, Object> parameters = new HashMap<Object, Object>();
