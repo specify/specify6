@@ -167,7 +167,10 @@ public class JasperCompilerRunnable implements Runnable
             }
         	for (ReportCompileInfo info : files)
             {
-                JasperCompileManager.compileReportToFile(info.getReportFile().getAbsolutePath(), info.getCompiledFile().getAbsolutePath());
+                if (!info.isCompiled())
+                {
+                    JasperCompileManager.compileReportToFile(info.getReportFile().getAbsolutePath(), info.getCompiledFile().getAbsolutePath());
+                }
             }
     		compileRequired = false;
         	if (listener != null)

@@ -109,9 +109,6 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
        
         cachePath = JasperReportsCache.checkAndCreateReportsCache();
         
-        // Checks for out of date Labels / Reports
-        // and copies them over to the cache for compiling
-        JasperReportsCache.refreshCacheFromDatabase();
     }
 
     /* (non-Javadoc)

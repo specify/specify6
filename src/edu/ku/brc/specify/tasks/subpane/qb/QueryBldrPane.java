@@ -1476,7 +1476,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             CustomDialog cd = new CustomDialog((Frame) UIRegistry.getTopWindow(), UIRegistry
                     .getResourceString("QB_GET_REPORT_CONTENTS_TITLE"), true, qpp);
             UIHelper.centerAndShow(cd);
-            go = !cd.isCancelled(); // XXX what about x box?
+            go = !cd.isCancelled(); 
             cd.dispose();
         }
         if (go)
