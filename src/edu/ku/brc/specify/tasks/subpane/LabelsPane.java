@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -58,7 +59,11 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceBase;
+import edu.ku.brc.specify.tasks.subpane.qb.ReportParametersPanel;
+import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 
 /**
@@ -205,87 +210,17 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             requiresHibernate = Boolean.parseBoolean(hqlStr.toLowerCase());
         }
 
-//        JasperReportsCache.refreshCacheFromDatabase();
-//        
-//        Vector<File>   reportFiles = new Vector<File>();
-//        if (appRes != null)
-//        {
-//            String subReportsStr = appRes.getMetaData("subreports");
-////            String hqlStr = appRes.getMetaData("hql");
-//            
-//            if (StringUtils.isNotEmpty(hqlStr))
-//            {
-//                requiresHibernate = Boolean.parseBoolean(hqlStr.toLowerCase());
-//            }
-//            
-//            if (StringUtils.isNotEmpty(subReportsStr))
-//            {
-//                String[] subReportNames = subReportsStr.split(",");
-//                for (String subReportName : subReportNames)
-//                {
-//                    AppResourceIFace subReportAppRes = AppContextMgr.getInstance().getResource(subReportName); 
-//                    if (subReportAppRes != null)
-//                    {
-//                        File subReportPath = new File(cachePath.getAbsoluteFile() + File.separator + subReportName);
-//                        if (subReportPath.exists())
-//                        {
-//                            reportFiles.add(subReportPath);
-//                            
-//                        } else
-//                        {
-//                            throw new RuntimeException("Subreport doesn't exist on disk ["+subReportPath.getAbsolutePath()+"]");
-//                        }
-//                        
-//                    } else
-//                    {
-//                        throw new RuntimeException("Couldn't load subreport ["+name+"]");
-//                    }
-//                }
-//            }
-//            
-//            File reportPath = new File(cachePath.getAbsoluteFile() + File.separator + mainReportName);
-//            if (reportPath.exists())
-//            {
-//                reportFiles.add(reportPath);
-//                
-//            } else
-//            {
-//                throw new RuntimeException("Subreport doesn't exist on disk ["+reportPath.getAbsolutePath()+"]");
-//            }
-//            
-//        } else
-//        {
-//            throw new RuntimeException("Couldn't load report/label ["+mainReportName+"]");
-//        }
-//
-//
-//        boolean allAreCompiled = true;
-//        Vector<ReportCompileInfo> files = new Vector<ReportCompileInfo>();
-//        for (File file : reportFiles)
-//        {
-//            ReportCompileInfo info = JasperReportsCache.checkReport(file);
-//            files.add(info);
-//            if (!info.isCompiled())
-//            {
-//                allAreCompiled = false;
-//            }
-//        }
-
-        // Check to see if it needs to be recompiled, if it doesn't need compiling then
-        // call "compileComplete" directly to have it start filling the labels
-        // otherswise create the compiler runnable and have it be compiled 
-        // asynchronously
-//        if (allAreCompiled)
-//        {
-//            this.compileComplete(files.get(files.size()-1).getCompiledFile());
-//
-//        } else
+        File compiledFile = (File )params.get("compiled-file");
+        if (compiledFile != null)
         {
-            progressLabel.setText(getResourceString("JasperReportCompiling"));
-            //compiler = new JasperCompilerRunnable(this, files, cachePath);
+            compileComplete(compiledFile);
+        }
+        else
+        {
+            progressLabel.setText(getResourceString("JasperReportCompiling"));            
             compiler = new JasperCompilerRunnable(this, mainReportName); 
             compiler.start();
-        }
+        }        
     }
 
     
@@ -315,58 +250,93 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                         }
                     }
 
-//                    ReportParametersPanel rpp = new ReportParametersPanel(jasperReport, true);
-//                    rpp.createUI();
-//                    CustomDialog cd = new CustomDialog((Frame) UIRegistry.getTopWindow(), UIRegistry
-//                            .getResourceString("RB_REPORT_PARAMS"), true, rpp);
-//                    UIHelper.centerAndShow(cd);
-//                    //go = !cd.isCancelled(); // XXX what about x box?
-//                    cd.dispose();
-
-                    
-                    Map<Object, Object> parameters = new HashMap<Object, Object>();
-                    
-                    parameters.put("RPT_IMAGE_DIR", JasperReportsCache.getImagePath().getAbsolutePath());
-                    parameters.put("SUBREPORT_DIR", cachePath.getAbsoluteFile() + File.separator);
-                    parameters.put("DATASOURCE", dataSource);
-                    
-                    if (recordSet != null)
+                    boolean go = true;
+                    ReportParametersPanel rpp = null;
+                    String skipParams = params.getProperty("skip-parameter-prompt");
+                    if (StringUtils.isBlank(skipParams) || skipParams.equalsIgnoreCase("false"))
                     {
-                        parameters.put("itemnum", DBTableIdMgr.getInstance().getInClause(recordSet));
-                    }
-                    if (size > virtualizerThresholdSize)
-                    {
-                        JRFileVirtualizer fileVirtualizer = new JRFileVirtualizer(10);
-                        parameters.put(JRParameter.REPORT_VIRTUALIZER, fileVirtualizer);
-                    }
-                    // Add external parameters
-                    if (params != null)
-                    {
-                        for (Object key : params.keySet())
+                        rpp = new ReportParametersPanel(jasperReport, true);
+                        if (rpp.getParamCount() > 0)
                         {
-                            //System.out.println("key["+key+"]  Val["+params.get(key)+"]");
-                            parameters.put(key, params.get(key));
+                            CustomDialog cd = new CustomDialog((Frame) UIRegistry.getTopWindow(), UIRegistry
+                                    .getResourceString("LabelsPane.REPORT_PARAMS"), true, rpp);
+                            UIHelper.centerAndShow(cd);
+                            go = !cd.isCancelled(); // XXX what about x box?
+                            cd.dispose();
+
                         }
                     }
                     
-                    // XXX What about losing a connection here?
-                    if (requiresHibernate)
+                    if (go)
                     {
-                        session = HibernateUtil.getNewSession();
-                        parameters.put(JRHibernateQueryExecuterFactory.PARAMETER_HIBERNATE_SESSION, session);
-                    }
+                        Map<Object, Object> parameters = new HashMap<Object, Object>();
 
-                    progressLabel.setText(getResourceString("JasperReportFilling"));
-                    if (recordSet != null)
-                    {
-                        asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport, parameters, DBConnection.getInstance().getConnection());
-                    } else
-                    {
-                        asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport, parameters, dataSource);
+                        if (rpp != null)
+                        {
+                            for (int p = 0; p < rpp.getParamCount(); p++)
+                            {
+                                Pair<String, String> param = rpp.getParam(p);
+                                if (StringUtils.isNotBlank(param.getSecond()))
+                                {
+                                    parameters.put(param.getFirst(), param.getSecond());
+                                }
+                            }
+                        }
+                        
+                        parameters.put("RPT_IMAGE_DIR", JasperReportsCache.getImagePath()
+                                .getAbsolutePath());
+                        parameters.put("SUBREPORT_DIR", cachePath.getAbsoluteFile()
+                                + File.separator);
+                        parameters.put("DATASOURCE", dataSource);
+
+                        if (recordSet != null)
+                        {
+                            parameters.put("itemnum", DBTableIdMgr.getInstance().getInClause(
+                                    recordSet));
+                        }
+                        if (size > virtualizerThresholdSize)
+                        {
+                            JRFileVirtualizer fileVirtualizer = new JRFileVirtualizer(10);
+                            parameters.put(JRParameter.REPORT_VIRTUALIZER, fileVirtualizer);
+                        }
+                        // Add external parameters
+                        if (params != null)
+                        {
+                            for (Object key : params.keySet())
+                            {
+                                // System.out.println("key["+key+"] Val["+params.get(key)+"]");
+                                parameters.put(key, params.get(key));
+                            }
+                        }
+
+                        // XXX What about losing a connection here?
+                        if (requiresHibernate)
+                        {
+                            session = HibernateUtil.getNewSession();
+                            parameters.put(
+                                    JRHibernateQueryExecuterFactory.PARAMETER_HIBERNATE_SESSION,
+                                    session);
+                        }
+
+                        progressLabel.setText(getResourceString("JasperReportFilling"));
+                        if (recordSet != null)
+                        {
+                            asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport,
+                                    parameters, DBConnection.getInstance().getConnection());
+                        }
+                        else
+                        {
+                            asyncFillHandler = AsynchronousFillHandle.createHandle(jasperReport,
+                                    parameters, dataSource);
+                        }
+                        asyncFillHandler.addListener(this);
+                        asyncFillHandler.startFill();
                     }
-                    asyncFillHandler.addListener(this);
-                    asyncFillHandler.startFill();
-                    
+                    else
+                    {
+                        removeAll();
+                        setLabelText(getResourceString("LabelsPane.ReportCancelled"));
+                    }
                 } else
                 {
                     log.error("jasperReport came back null ["+compiledFile.getAbsolutePath()+"]");

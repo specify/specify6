@@ -661,7 +661,7 @@ public class ReportsBaseTask extends BaseTask
         String paramList = cmdAction.getPropertyAsString("params");
         if (StringUtils.isNotEmpty(paramList))
         {
-            params = UIHelper.parseProperties(paramList);
+            params.putAll(UIHelper.parseProperties(paramList));
         }
         
         if (cmdAction.getData() instanceof RecordSetIFace)

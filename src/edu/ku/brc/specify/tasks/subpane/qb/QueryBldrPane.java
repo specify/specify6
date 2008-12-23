@@ -53,6 +53,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -60,6 +61,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -97,6 +102,7 @@ import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
+import edu.ku.brc.specify.tasks.subpane.JasperCompilerRunnable;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -1471,33 +1477,44 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         boolean go = true;
         QueryParameterPanel qpp = new QueryParameterPanel();
         qpp.setQuery(report.getQuery(), tblTree, ttHash);
-        if (rs == null && qpp.getHasPrompts())
+        try
         {
-            CustomDialog cd = new CustomDialog((Frame) UIRegistry.getTopWindow(), UIRegistry
-                    .getResourceString("QB_GET_REPORT_CONTENTS_TITLE"), true, qpp);
-            UIHelper.centerAndShow(cd);
-            go = !cd.isCancelled(); 
-            cd.dispose();
-        }
-        if (go)
-        {            
-//        	JasperCompilerRunnable jcr = new JasperCompilerRunnable(null, report.getName());
-//        	jcr.findFiles();
-//        	if (jcr.isCompileRequired())
-//        	{
-//        		jcr.get();
-//        	}
-//        	try
-//        	{
-//                JasperReport jr = (JasperReport) JRLoader.loadObject(jcr.getCompiledFile());
-//                ReportParametersPanel rpp = new ReportParametersPanel(jr, false);
-//                rpp.createUI();
-//                CustomDialog cd = new CustomDialog((Frame) UIRegistry.getTopWindow(), UIRegistry
-//                        .getResourceString("RB_REPORT_PARAMS"), true, rpp);
-//                UIHelper.centerAndShow(cd);
-//                // go = !cd.isCancelled(); // XXX what about x box?
-//                cd.dispose();
+            JasperCompilerRunnable jcr = new JasperCompilerRunnable(null, report.getName());
+            jcr.findFiles();
+            if (jcr.isCompileRequired())
+            {
+                jcr.get();
+            }
+            JasperReport jr = (JasperReport) JRLoader.loadObject(jcr.getCompiledFile());
+            ReportParametersPanel rpp = new ReportParametersPanel(jr, true);
+            if (rs == null && (qpp.getHasPrompts() || rpp.getParamCount() > 0))
+            {
 
+                Component pane = null;
+                if (qpp.getHasPrompts() && rpp.getParamCount() > 0)
+                {
+                    pane = new JTabbedPane();
+                    ((JTabbedPane) pane).addTab(UIRegistry
+                            .getResourceString("QB_REP_RUN_CRITERIA_TAB_TITLE"), qpp);
+                    ((JTabbedPane) pane).addTab(UIRegistry
+                            .getResourceString("QB_REP_RUN_PARAM_TAB_TITLE"), rpp);
+                }
+                else if (qpp.getHasPrompts())
+                {
+                    pane = qpp;
+                }
+                else
+                {
+                    pane = rpp;
+                }
+                CustomDialog cd = new CustomDialog((Frame) UIRegistry.getTopWindow(), UIRegistry
+                        .getResourceString("QB_GET_REPORT_CONTENTS_TITLE"), true, pane);
+                UIHelper.centerAndShow(cd);
+                go = !cd.isCancelled();
+                cd.dispose();
+            }
+            if (go)
+            {
                 TableQRI rootQRI = null;
                 int cId = report.getQuery().getContextTableId();
                 for (TableTree tt : ttHash.values())
@@ -1536,14 +1553,31 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         ReportsBaseTask.PRINT_REPORT, src);
                 cmd.setProperty("title", title);
                 cmd.setProperty("file", report.getName());
+                cmd.setProperty("skip-parameter-prompt", "true");
+                cmd.setProperty("compiled-file", jcr.getCompiledFile());
+                if (rpp != null && rpp.getParamCount() > 0)
+                {
+                    StringBuilder params = new StringBuilder();
+                    for (int p = 0; p < rpp.getParamCount(); p++)
+                    {
+                        Pair<String, String> param = rpp.getParam(p);
+                        if (StringUtils.isNotBlank(param.getSecond()))
+                        {
+                            params.append(param.getFirst());
+                            params.append("=");
+                            params.append(param.getSecond());
+                            params.append(";");
+                        }
+                        cmd.setProperty("params", params.toString());
+                    }
+                }
                 CommandDispatcher.dispatch(cmd);
-//            }
-//            catch (JRException ex)
-//            {
-//                log.error(ex);
-//                ex.printStackTrace();
-//            }
-
+            }
+        }
+        catch (JRException ex)
+        {
+            log.error(ex);
+            ex.printStackTrace();
         }
     }
     
