@@ -195,8 +195,14 @@ public class NavigationTreeMgr
         {
             session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
+            // break the association between the user and all its agents, 
+            // so the user can be later deleted
+            user.getAgents().clear();
+            // remove user from groups
+            user.getSpPrincipals().clear();
+            session.saveOrUpdate(user);
+            user.setModifiedByAgent(null);
             session.delete(user);
-            // should we also delete him from his groups??
             session.commit();
             
             // remove user from the group in the tree
