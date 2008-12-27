@@ -72,6 +72,7 @@ import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroupScope;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -170,17 +171,13 @@ public class SecurityAdminPane extends BaseSubPane
 
         JPanel navTreePanel = createFullTreeNavPanel(); // navigation jTree gets created here 
 
-        DocumentListener searchDL = new DocumentListener()
+        DocumentListener searchDL = new DocumentAdaptor()
         {
-            public void removeUpdate(DocumentEvent e)  { changed(e); }
-            public void insertUpdate(DocumentEvent e)  { changed(e); }
-            public void changedUpdate(DocumentEvent e) { changed(e); }
-
-            private void changed(@SuppressWarnings("unused") DocumentEvent e)
+            @Override
+            protected void changed(@SuppressWarnings("unused") DocumentEvent e)
             { 
                 FilteredTreeModel model = (FilteredTreeModel) tree.getModel();
-                Filter filter = (StringUtils.isNotEmpty(searchText.getText())) ? 
-                        new Filter(searchText.getText()) : null;
+                Filter filter = (StringUtils.isNotEmpty(searchText.getText())) ? new Filter(searchText.getText()) : null;
                 model.setFilter(filter);
             }
         };
@@ -372,7 +369,7 @@ public class SecurityAdminPane extends BaseSubPane
         if (currentDisplayPanel != null)
         {
             MultiView mv = currentDisplayPanel.getMultiView();
-            return mv.hasChanged();
+            return mv != null ? mv.hasChanged() : false;
         }
 
         return false;
