@@ -99,6 +99,17 @@
                 <altview name="Discipline Edit" viewdef="DisciplineViewOnlyCollections" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
+        
+        <view name="DisciplineWithoutCollections"
+            class="edu.ku.brc.specify.datamodel.Discipline"
+            busrules="edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules"
+            resourcelabels="false">
+            <desc><![CDATA[The Discipline Object form without collections subform.]]></desc>
+            <altviews>
+                <altview name="Discipline Edit View" viewdef="DisciplineWithoutCollections" mode="view" validated="false"/>
+                <altview name="Discipline Edit" viewdef="DisciplineWithoutCollections" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
 
         <view name="UserGroup"
             class="edu.ku.brc.specify.datamodel.SpPrincipal"
@@ -474,7 +485,36 @@
                 </row>
             </rows>
         </viewdef>
-
+        
+		<viewdef
+            type="form"
+            name="DisciplineWithoutCollections"
+            class="edu.ku.brc.specify.datamodel.Discipline"
+            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Discipline Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>            
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Discipline" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="dataType" uitype="dsptextfield" readonly="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="type" uitype="text" isrequired="true" readonly="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="name" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
         <viewdef
             type="formtable"
             name="CollectionGridViewOnly"
