@@ -440,7 +440,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    spreadSheet.setSortable(false);
+                    spreadSheet.clearSorter();
 
                     if (spreadSheet.getCellEditor() != null)
                     {
@@ -3108,7 +3108,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 return;
             }
             Uploader.lockApp();
-            spreadSheet.clearSorter();
+            spreadSheet.setSortable(false);
             datasetUploader = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), this);
             Vector<UploadMessage> structureErrors = datasetUploader.verifyUploadability();
             if (structureErrors.size() > 0) 
