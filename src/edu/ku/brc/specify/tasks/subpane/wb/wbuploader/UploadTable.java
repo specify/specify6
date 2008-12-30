@@ -56,6 +56,7 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttribute;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -1859,7 +1860,7 @@ public class UploadTable implements Comparable<UploadTable>
         //for Locality table only
         LatLonConverter.FORMAT llFmt = null;
         GeoRefConverter gc = new GeoRefConverter();
-        
+        Vector<UploadTableInvalidValue> invalidNulls = new Vector<UploadTableInvalidValue>();
         for (Vector<UploadField> flds : uploadFields)
         {
             boolean isBlank = true;
@@ -1876,11 +1877,11 @@ public class UploadTable implements Comparable<UploadTable>
                     isBlank &= isBlankVal(fld, seq, row, uploadData);
                     try
                     {
-                        if (invalidNull(fld, uploadData, row, seq)) 
+                        if (!tblClass.equals(PrepType.class) && invalidNull(fld, uploadData, row, seq)) 
                         { 
                             throw new Exception(
                                 getResourceString("WB_UPLOAD_FIELD_MUST_CONTAIN_DATA")); 
-                        }                
+                        }       
                         if (!pickListCheck(fld))
                         {
                             throw new Exception(getInvalidPicklistValErrMsg(fld));
@@ -1889,7 +1890,14 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                     catch (Exception e)
                     {
-                        invalidValues.add(new UploadTableInvalidValue(null, this, fld, row, e));
+                        if (hasChildren)
+                        {
+                            invalidValues.add(new UploadTableInvalidValue(null, this, fld, row, e));
+                        }
+                        else
+                        {
+                            invalidNulls.add(new UploadTableInvalidValue(null, this, fld, row, e));
+                        }
                     }
                 }
                 if (tblClass.equals(Locality.class))
@@ -1931,6 +1939,12 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 addInvalidValueMsgForOneToManySkip(invalidValues, blankFirstFld, toString(), row, blankSeq);
             }
+            
+            if (!hasChildren && !isBlank && invalidNulls.size() != 0)
+            {
+                invalidValues.addAll(invalidNulls);
+            }
+            invalidNulls.clear();
                 
             seq++;
         }
