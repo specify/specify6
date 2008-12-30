@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.specify.tools.ireportspecify;
 
+import java.util.Vector;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -19,8 +21,18 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.specify.tasks.DataEntryTask;
+import edu.ku.brc.specify.tasks.DataEntryView;
+import edu.ku.brc.specify.tasks.GeographyTreeTask;
+import edu.ku.brc.specify.tasks.GtpTreeTask;
+import edu.ku.brc.specify.tasks.InteractionEntry;
+import edu.ku.brc.specify.tasks.InteractionsTask;
+import edu.ku.brc.specify.tasks.LithoStratTreeTask;
+import edu.ku.brc.specify.tasks.StorageTreeTask;
+import edu.ku.brc.specify.tasks.TaxonTreeTask;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -70,6 +82,11 @@ public class RepResourcePropsPanel extends JPanel
         createUI(rep);
     }
     
+    /**
+     * @param rep
+     * 
+     * sets up the UI
+     */
     protected void createUI(final  ReportSpecify rep)
     {
         String rowDefStr = showTableIds ? "p,p,p,p,p,p,p,10dlu" : "p,p,p,p,p,p,10dlu"; //adding 10dlu lower padding to try  
@@ -132,6 +149,9 @@ public class RepResourcePropsPanel extends JPanel
         }
     }
 
+    /**
+     * @return tableid for resource
+     */
     public int getTableId()
     {
         if (!showTableIds)
@@ -141,14 +161,115 @@ public class RepResourcePropsPanel extends JPanel
         return ((DBTableInfo)tblCombo.getSelectedItem()).getTableId();
     }
     
+    /**
+     * fills tableCombo with tables and treeable tables available/visible on DataEntryTask and InteractionsTask
+     */
     protected void fillTblCombo()
     {
-        //XXX need to get 'main' tbls...
-        for (int id=1; id<10; id++)
+        
+        Vector<DBTableInfo> tbls = new Vector<DBTableInfo>();
+        DataEntryTask dataEntryTask = (DataEntryTask )TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+        if (dataEntryTask != null)
         {
-            tblCombo.addItem(DBTableIdMgr.getInstance().getInfoById(id));
+            for (DataEntryView dv : dataEntryTask.getStdViews())
+            {
+                if (dv.isVisible())
+                {
+                    tbls.add(dv.getTableInfo());
+                }
+            }
         }
-    }
+        if (TaskMgr.getTask(TaxonTreeTask.TAXON) != null)
+        {
+            DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName("taxon");
+            if (!tbls.contains(info))
+            {
+                tbls.add(info);
+            }
+        }
+        if (TaskMgr.getTask(GeographyTreeTask.GEOGRAPHY) != null)
+        {
+            DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName("geography");
+            if (!tbls.contains(info))
+            {
+                tbls.add(info);
+            }
+        }
+        if (TaskMgr.getTask(LithoStratTreeTask.LITHO) != null)
+        {
+            DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName("lithostrat");
+            if (!tbls.contains(info))
+            {
+                tbls.add(info);
+            }
+        }
+        if (TaskMgr.getTask(GtpTreeTask.GTP) != null)
+        {
+            DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName("geologictimeperiod");
+            if (!tbls.contains(info))
+            {
+                tbls.add(info);
+            }
+        }
+        if (TaskMgr.getTask(StorageTreeTask.STORAGE) != null)
+        {
+            DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName("storage");
+            if (!tbls.contains(info))
+            {
+                tbls.add(info);
+            }
+        }
+        
+
+        InteractionsTask interactionsTask = (InteractionsTask )TaskMgr.getTask(InteractionsTask.INTERACTIONS);
+        if (interactionsTask != null)
+        {
+            for (InteractionEntry ie : interactionsTask.getEntries())
+            {
+                if (ie.isOnLeft() && ie.isVisible())
+                {
+                    DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName(ie.getTableName());
+                    if (!tbls.contains(info))
+                    {
+                        tbls.add(info);
+                    }
+                }
+            }
+        }
+        if (dataEntryTask != null)
+        {
+            for (DataEntryView dv : dataEntryTask.getMiscViews())
+            {
+                if (dv.isVisible())
+                {
+                    DBTableInfo info = dv.getTableInfo();
+                    if (!tbls.contains(info))
+                    {
+                        tbls.add(info);
+                    }
+                }
+            }
+        }
+        if (interactionsTask != null)
+        {
+            for (InteractionEntry ie : interactionsTask.getEntries())
+            {
+                if (!ie.isOnLeft() && ie.isVisible())
+                {
+                    DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName(ie.getTableName());
+                    if (!tbls.contains(info))
+                    {
+                        tbls.add(info);
+                    }
+                }
+            }
+        }
+        
+        for (DBTableInfo tbl : tbls)
+        {
+            tblCombo.addItem(tbl);
+        }
+     }
     
     /**
      * @return the nameTxt
@@ -205,6 +326,9 @@ public class RepResourcePropsPanel extends JPanel
         this.canceller = canceller;
     }
     
+    /**
+     * @return the repeat property for the report.
+     */
     public Object getRepeats()
     {
         if (repeatPanel != null)
@@ -214,6 +338,9 @@ public class RepResourcePropsPanel extends JPanel
         return null;
     }
     
+    /**
+     * @return true if all properties are valid.
+     */
     public boolean validInputs()
     {
         if (repeatPanel != null)

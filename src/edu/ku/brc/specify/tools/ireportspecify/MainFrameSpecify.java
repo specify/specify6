@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -490,6 +491,7 @@ public class MainFrameSpecify extends MainFrame
         {
             if (spRep != null) 
             { 
+                appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
                 return getProps(jrf.getReport().getName(), -1, (ReportSpecify )jrf.getReport(), appRes);
             }
         }

@@ -181,8 +181,10 @@ public class JasperCompilerRunnable implements Runnable
         {
             log.error(ex);
             ex.printStackTrace();
-            
-            listener.compileComplete(null);
+            if (listener != null)
+            {
+                listener.compileComplete(null);
+            }
         }
     }
 

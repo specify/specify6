@@ -250,6 +250,7 @@ public class SpReport extends DataModelObjBase
     /**
      * Assuming object is attached to an open session, loads lazily-loaded members.
      */
+    @Override
     public void forceLoad()
     {
         getQuery().forceLoad(false);

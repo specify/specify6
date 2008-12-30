@@ -48,6 +48,16 @@ public class ReportParametersPanel extends JPanel
     protected String[] paramNames;
     
     
+    /**
+     * @param jasperReport
+     * @param userPanel 
+     * 
+     * Creates a parameter panel for the supplied JasperReport. If userPanel is true,
+     * then only user-defined parameters are displayed. Otherwise only system parameters 
+     * are displayed. 
+     * Only parameters for which isForPrompting() is true are displayed.
+     * 
+     */
     public ReportParametersPanel(final JasperReport jasperReport, final boolean userPanel)
     {
         super();
@@ -56,6 +66,20 @@ public class ReportParametersPanel extends JPanel
         createUI();
     }
     
+    /**
+     * @param param
+     * @return true if the param should be displayed.
+     */
+    protected boolean shouldDisplay(final net.sf.jasperreports.engine.JRParameter param)
+    {
+        return param.isSystemDefined() != userPanel && param.isForPrompting();
+    }
+    
+    /**
+     * @return a JGoodies row layout string.
+     * 
+     *  Also counts the number of displayed parameters.
+     */
     protected String getRowLayoutAndCountParams()
     {
         String result = "10dlu";
@@ -63,7 +87,7 @@ public class ReportParametersPanel extends JPanel
         for (int p = 0; p < params.length; p++)
         {
             net.sf.jasperreports.engine.JRParameter param = params[p];
-            if (param.isSystemDefined() != userPanel)
+            if (shouldDisplay(param))
             {
                 result += ", f:p, 2dlu";
                 paramCount++;
@@ -72,6 +96,7 @@ public class ReportParametersPanel extends JPanel
         
         return result;
     }
+    
     /**
      * Sets up UI for the parameters in the report.
      */
@@ -90,9 +115,10 @@ public class ReportParametersPanel extends JPanel
             for (int p = 0; p < params.length; p++)
             {
                 net.sf.jasperreports.engine.JRParameter param = params[p];
-                if (param.isSystemDefined() != userPanel)
+                if (shouldDisplay(param))
                 {
-                    String paramVal = defaultVals.get(param.getName()).toString();
+                    Object paramValObj = defaultVals.get(param.getName());
+                    String paramVal = paramValObj != null ? paramValObj.toString() : null;
                     paramTexts[currentParam] = new JTextField(paramVal);
                     paramNames[currentParam] = param.getName();
                     pb.add(new JLabel(param.getName()), cc.xy(2, 2*currentParam + 2));
@@ -117,6 +143,10 @@ public class ReportParametersPanel extends JPanel
         return paramCount;
     }
     
+    /**
+     * @param paramIdx
+     * @return the parameter at position paramIdx.
+     */
     public Pair<String, String> getParam(int paramIdx)
     {
         return new Pair<String, String>(paramNames[paramIdx], paramTexts[paramIdx].getText());

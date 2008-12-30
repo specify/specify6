@@ -1485,13 +1485,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 jcr.get();
             }
-            JasperReport jr = (JasperReport) JRLoader.loadObject(jcr.getCompiledFile());
-            ReportParametersPanel rpp = new ReportParametersPanel(jr, true);
-            if (rs == null && (qpp.getHasPrompts() || rpp.getParamCount() > 0))
+            //if isCompileRequired() is still true, then an error probably occurred compiling the report.
+            JasperReport jr = !jcr.isCompileRequired() ? (JasperReport) JRLoader.loadObject(jcr.getCompiledFile()) : null;
+            ReportParametersPanel rpp = jr != null ? new ReportParametersPanel(jr, true) : null;
+            if (rs == null && (qpp.getHasPrompts() || (rpp != null && rpp.getParamCount() > 0)))
             {
-
                 Component pane = null;
-                if (qpp.getHasPrompts() && rpp.getParamCount() > 0)
+                if (qpp.getHasPrompts() && rpp != null && rpp.getParamCount() > 0)
                 {
                     pane = new JTabbedPane();
                     ((JTabbedPane) pane).addTab(UIRegistry
@@ -1554,7 +1554,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 cmd.setProperty("title", title);
                 cmd.setProperty("file", report.getName());
                 cmd.setProperty("skip-parameter-prompt", "true");
-                cmd.setProperty("compiled-file", jcr.getCompiledFile());
+                //if isCompileRequired is true then an error probably occurred while compiling,
+                //and, if so, it will be caught again and reported in the report results pane.
+                if (!jcr.isCompileRequired())
+                {
+                    cmd.setProperty("compiled-file", jcr.getCompiledFile());
+                }
                 if (rpp != null && rpp.getParamCount() > 0)
                 {
                     StringBuilder params = new StringBuilder();

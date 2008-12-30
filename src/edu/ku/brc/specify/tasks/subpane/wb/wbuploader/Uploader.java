@@ -1825,119 +1825,133 @@ public class Uploader implements ActionListener, KeyListener
     {
         Vector<UploadMessage> result = new Vector<UploadMessage>();
 
-        // Make sure that the tax tree levels included for each determination are consistent.
-        // All need to include the same levels, for example [Genus 1, Species1, SubSpecies 1, Genus
-        // 2, Species 2] is inconsistent because SubSpecies 2 is missing.
-        // Since, right now, tax trees are the only trees that require this test.
-        // Non-tree 1-manys like Collector are ok (but possibly not desirable?) if inconsistent:
-        // [FirstName 1, LastName 1, LastName 2] works.
-        TreeMapElements maxTaxSeqLevel = null;
-        for (int m = 0; m < uploadData.getCols(); m++)
+        try
         {
-            if (uploadData.getMapping(m).getTable().equalsIgnoreCase("taxon"))
+            // Make sure that the tax tree levels included for each determination are consistent.
+            // All need to include the same levels, for example [Genus 1, Species1, SubSpecies 1,
+            // Genus
+            // 2, Species 2] is inconsistent because SubSpecies 2 is missing.
+            // Since, right now, tax trees are the only trees that require this test.
+            // Non-tree 1-manys like Collector are ok (but possibly not desirable?) if inconsistent:
+            // [FirstName 1, LastName 1, LastName 2] works.
+            TreeMapElements maxTaxSeqLevel = null;
+            for (int m = 0; m < uploadData.getCols(); m++)
             {
-                UploadMappingDefTree tmap = (UploadMappingDefTree) uploadData.getMapping(m);
-                boolean seqSizeInconsistent = false;
-                for (int l = 0; l < tmap.getLevels().size(); l++)
+                if (uploadData.getMapping(m).getTable().equalsIgnoreCase("taxon"))
                 {
-                    TreeMapElements tmes = tmap.getLevels().get(l); 
-                    if (tmes.getMaxSeq() > 0 || maxTaxSeqLevel != null && maxTaxSeqLevel.getRank() < tmes.getRank())
+                    UploadMappingDefTree tmap = (UploadMappingDefTree) uploadData.getMapping(m);
+                    boolean seqSizeInconsistent = false;
+                    for (int l = 0; l < tmap.getLevels().size(); l++)
                     {
-                        if (maxTaxSeqLevel == null)
+                        TreeMapElements tmes = tmap.getLevels().get(l);
+                        if (tmes.getMaxSeq() > 0 || maxTaxSeqLevel != null
+                                && maxTaxSeqLevel.getRank() < tmes.getRank())
                         {
-                            maxTaxSeqLevel = tmes;
-                        }
-                        else if (maxTaxSeqLevel.getMaxSeq() != tmes.getMaxSeq())
-                        {
-                            seqSizeInconsistent = true;
-                            if (maxTaxSeqLevel.getMaxSeq() < tmes.getMaxSeq())
+                            if (maxTaxSeqLevel == null)
                             {
                                 maxTaxSeqLevel = tmes;
                             }
+                            else if (maxTaxSeqLevel.getMaxSeq() != tmes.getMaxSeq())
+                            {
+                                seqSizeInconsistent = true;
+                                if (maxTaxSeqLevel.getMaxSeq() < tmes.getMaxSeq())
+                                {
+                                    maxTaxSeqLevel = tmes;
+                                }
+                            }
+
                         }
-                        
-                    }
-                    
-                    boolean[] seqs = tmes.getSeqs();
-                    for (int s = 0; s < seqs.length; s++)
-                    {
-                        if (!seqs[s])
+
+                        boolean[] seqs = tmes.getSeqs();
+                        for (int s = 0; s < seqs.length; s++)
                         {
-                            String msg = String.format(getResourceString("WB_UPLOAD_MISSING_SEQ"),  tmes.getWbFldName());
+                            if (!seqs[s])
+                            {
+                                String msg = String.format(
+                                        getResourceString("WB_UPLOAD_MISSING_SEQ"), tmes
+                                                .getWbFldName());
+                                result.add(new InvalidStructure(msg, null));
+                            }
+                        }
+                    }
+
+                    if (seqSizeInconsistent && maxTaxSeqLevel != null)
+                    {
+                        for (int l = 0; l < tmap.getLevels().size(); l++)
+                        {
+                            TreeMapElements tmes = tmap.getLevels().get(l);
+                            if (tmes.getRank() > maxTaxSeqLevel.getRank()
+                                    && tmes.getMaxSeq() < maxTaxSeqLevel.getMaxSeq())
+                            {
+                                for (int s = tmes.getMaxSeq() + 1; s <= maxTaxSeqLevel.getMaxSeq(); s++)
+                                {
+                                    String msg = String.format(
+                                            getResourceString("WB_UPLOAD_MISSING_SEQ"), tmes
+                                                    .getWbFldName());
+                                    result.add(new InvalidStructure(msg, null));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (maxTaxSeqLevel != null && maxTaxSeqLevel.size() > 1)
+            {
+                // check to see if Determination.isCurrent is either not present or always present.
+                int isCurrentCount = 0;
+                boolean[] isCurrentPresent = new boolean[maxTaxSeqLevel.size()];
+                for (int b = 0; b < isCurrentPresent.length; b++)
+                    isCurrentPresent[b] = false;
+                String isCurrentCaptionSample = null;
+                for (int m = 0; m < uploadData.getCols(); m++)
+                {
+                    if (uploadData.getMapping(m).getTable().equalsIgnoreCase("determination")
+                            && uploadData.getMapping(m).getField().equalsIgnoreCase("iscurrent"))
+                    {
+                        isCurrentCount++;
+                        isCurrentPresent[((UploadMappingDefRel) uploadData.getMapping(m))
+                                .getSequence()] = true;
+                        isCurrentCaptionSample = uploadData.getMapping(m).getWbFldName();
+                    }
+                }
+                if (isCurrentCount != 0 && isCurrentCount != maxTaxSeqLevel.size())
+                {
+                    for (int c = 0; c < isCurrentPresent.length; c++)
+                    {
+                        if (!isCurrentPresent[c])
+                        {
+                            String fldName;
+                            // strip off trailing number (assuming we will never allow it to be >
+                            // 10)
+                            // and trim.
+                            if (isCurrentCaptionSample != null)
+                            {
+                                fldName = isCurrentCaptionSample.substring(0,
+                                        isCurrentCaptionSample.length() - 2).trim();
+                            }
+                            else
+                            {
+                                fldName = "Is Current"; // i18n (but isCurrentCaptionSample can't be
+                                // null. Right.)
+                            }
+                            String msg = getResourceString("WB_UPLOAD_MISSING_FLD") + ": "
+                                    + fldName + " " + Integer.toString(c + 1);
                             result.add(new InvalidStructure(msg, null));
                         }
                     }
                 }
+            }
 
-                if (seqSizeInconsistent && maxTaxSeqLevel != null)
-                {
-                    for (int l = 0; l < tmap.getLevels().size(); l++)
-                    {
-                        TreeMapElements tmes = tmap.getLevels().get(l); 
-                        if (tmes.getRank() > maxTaxSeqLevel.getRank()
-                                && tmes.getMaxSeq() < maxTaxSeqLevel.getMaxSeq())
-                        {
-                            for (int s = tmes.getMaxSeq() + 1; s <= maxTaxSeqLevel.getMaxSeq(); s++)
-                            {
-                                    String msg = String.format(getResourceString("WB_UPLOAD_MISSING_SEQ"), tmes.getWbFldName());
-                                    result.add(new InvalidStructure(msg, null));
-                            }
-                        }
-                    }
-                }
-            }
+            return result;
         }
-        
-        if (maxTaxSeqLevel != null && maxTaxSeqLevel.size() > 1)
+        finally
         {
-            // check to see if Determination.isCurrent is either not present or always present.
-            int isCurrentCount = 0;
-            boolean[] isCurrentPresent = new boolean[maxTaxSeqLevel.size()];
-            for (int b = 0; b < isCurrentPresent.length; b++)
-                isCurrentPresent[b] = false;
-            String isCurrentCaptionSample = null;
-            for (int m = 0; m < uploadData.getCols(); m++)
+            if (result.size() > 0)
             {
-                if (uploadData.getMapping(m).getTable().equalsIgnoreCase("determination")
-                        && uploadData.getMapping(m).getField().equalsIgnoreCase(
-                                "iscurrent"))
-                {
-                            isCurrentCount++;
-                            isCurrentPresent[((UploadMappingDefRel) uploadData.getMapping(m)).getSequence()] = true;
-                            isCurrentCaptionSample = uploadData.getMapping(m).getWbFldName();
-                }
-            }
-            if (isCurrentCount != 0 && isCurrentCount != maxTaxSeqLevel.size())
-            {
-                for (int c = 0; c < isCurrentPresent.length; c++)
-                {
-                    if (!isCurrentPresent[c])
-                    {
-                        String fldName;
-                        // strip off trailing number (assuming we will never allow it to be > 10)
-                        // and trim.
-                        if (isCurrentCaptionSample != null)
-                        {
-                            fldName = isCurrentCaptionSample.substring(0,
-                                    isCurrentCaptionSample.length() - 2).trim();
-                        }
-                        else
-                        {
-                            fldName = "Is Current"; // i18n (but isCurrentCaptionSample can't be
-                                                    // null. Right.)
-                        }
-                        String msg = getResourceString("WB_UPLOAD_MISSING_FLD") + ": " + fldName
-                                + " " + Integer.toString(c + 1);
-                        result.add(new InvalidStructure(msg, null));
-                    }
-                }
+                currentUpload = null;
             }
         }
-        if (result.size() > 0)
-        {
-            currentUpload = null;
-        }
-        return result;
     }
 
     /**
@@ -2299,23 +2313,29 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected void closeMainForm(boolean notifyWB)
     {
-        logDebug("closing main form");
-        mainPanel.setVisible(false);
-        mainPanel = null;
-        closeUploadedDataViewers();
-        
-        for (Component c : keyListeningTo)
+        try
         {
-            logDebug("removing key listener");
-            c.removeKeyListener(this);
+            logDebug("closing main form");
+            mainPanel.setVisible(false);
+            mainPanel = null;
+            closeUploadedDataViewers();
+
+            for (Component c : keyListeningTo)
+            {
+                logDebug("removing key listener");
+                c.removeKeyListener(this);
+            }
+            keyListeningTo.clear();
+
+            if (notifyWB)
+            {
+                wbSS.uploadDone();
+            }
         }
-        keyListeningTo.clear();
-        
-        if (notifyWB)
+        finally
         {
-            wbSS.uploadDone();
+            currentUpload = null;
         }
-        currentUpload = null;
     }
 
     public UploadMainPanel getMainPanel()

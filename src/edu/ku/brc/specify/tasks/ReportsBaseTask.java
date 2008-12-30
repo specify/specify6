@@ -285,7 +285,7 @@ public class ReportsBaseTask extends BaseTask
     {
         CommandAction cmdAction = new CommandAction(REPORTS, PRINT_REPORT, tcd.getParams().getProperty("tableid"));
         cmdAction.addProperties(tcd.getParams());
-        cmdAction.getProperties().put("icon", IconManager.getIcon(tcd.getIconName()));
+        cmdAction.getProperties().put("icon", IconManager.getIcon(tcd.getIconName(), IconManager.IconSize.Std16));
         cmdAction.getProperties().put("task name", getName());
         
         //Rough

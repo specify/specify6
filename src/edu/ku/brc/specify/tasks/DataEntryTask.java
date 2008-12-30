@@ -1096,7 +1096,7 @@ public class DataEntryTask extends BaseTask
             {
                 miscList.add((DataEntryView)de.clone());
             }
-        } catch (CloneNotSupportedException ex) {}
+        } catch (CloneNotSupportedException ex) {/*ignore*/}
         
         UsageTracker.incrUsageCount("DE.CONFIG");
 
@@ -1498,6 +1498,7 @@ public class DataEntryTask extends BaseTask
         /* (non-Javadoc)
          * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
          */
+        @Override
         public void paintComponent(Graphics g)
         {
             super.paintComponent(g);

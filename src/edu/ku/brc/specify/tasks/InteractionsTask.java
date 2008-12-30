@@ -116,6 +116,7 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.Trash;
+import edu.ku.brc.util.Pair;
 
 
 /**
@@ -188,6 +189,62 @@ public class InteractionsTask extends BaseTask
         INFOREQUEST_FLAVOR.addTableId(50);
     }
 
+    /**
+     * @author timbo
+     *
+     * @code_status Alpha
+     *
+     *Stores info about reports.
+     */
+    private class InvoiceInfo extends Pair<SpAppResource, SpReport> implements Comparable<InvoiceInfo>
+    {
+        /**
+         * @param appResource
+         * @param report
+         */
+        public InvoiceInfo(final SpAppResource spAppResource, final SpReport spReport)
+        {
+            super(spAppResource, spReport);
+        }
+        
+        /**
+         * @return the appResource
+         */
+        public SpAppResource getSpAppResource()
+        {
+            return getFirst();
+        }
+        
+        /**
+         * @return the spReport
+         */
+        public SpReport getSpReport()
+        {
+            return getSecond();
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.util.Pair#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return getSpAppResource().getName();
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        @Override
+        public int compareTo(InvoiceInfo o)
+        {
+            // TODO Auto-generated method stub
+            return getSpAppResource().getName().compareTo(o.getSpAppResource().getName());
+        }
+        
+        
+    }
+    
    /**
      * Default Constructor
      *
@@ -359,7 +416,7 @@ public class InteractionsTask extends BaseTask
             try
             {
                 list.add((TaskConfigItemIFace)entry.clone());
-            } catch (CloneNotSupportedException ex) {}
+            } catch (CloneNotSupportedException ex) {/* ignore */}
         }
         
         int origNumStd = stdList.size();
@@ -1136,13 +1193,14 @@ public class InteractionsTask extends BaseTask
             //printLoan = false;
             if (printLoan)
             {
-                SpReport invoice = getLoanReport();
+                InvoiceInfo invoice = getLoanReport();
                 
                 if (invoice == null)
                 {
                     UIRegistry.displayErrorDlg(getResourceString("LOAN_INVOICE_REPORT_NOT_FOUND"));
                     return;
                 }
+                
                 
                 DataProviderSessionIFace session = null;
                 try
@@ -1189,11 +1247,24 @@ public class InteractionsTask extends BaseTask
                             rs.setName(loan.getIdentityTitle());
                             rs.setDbTableId(loan.getTableId());
                             rs.addItem(loan.getId());
-                            QueryBldrPane.runReport(invoice, UIRegistry.getResourceString("LoanInvoice"),
-                                    rs);
-//                            printLoan(null, rs);
-//                        }
-//                    }
+                            
+                            if (invoice.getSpReport() != null)
+                            {
+                                SpReport spRep = invoice.getSpReport();
+                                QueryBldrPane.runReport(spRep, UIRegistry.getResourceString("LoanInvoice"),
+                                        rs);
+                            }
+                            else
+                            {
+                                SpAppResource rep = invoice.getSpAppResource();
+                                CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT,
+                                        rs);
+                                cmd.getProperties().put("title", rep.getName());
+                                cmd.getProperties().put("file", rep.getFileName());
+                                cmd.getProperties().put("reporttype", "report");
+                                cmd.getProperties().put("name", rep.getName());
+                                CommandDispatcher.dispatch(cmd);
+                            }
                 } finally
                 {
                     if (session != null)
@@ -1210,71 +1281,169 @@ public class InteractionsTask extends BaseTask
      * 
      * If more than one report is defined for loan then user must choose.
      * 
-     * Currently does not search for Imported reports, only reports with an associated Specify query.
-     * 
      * Fairly goofy code. Eventually may want to add ui to allow labeling resources as "invoice" (see printLoan()).
      */
-    public SpReport getLoanReport()
+    public InvoiceInfo getLoanReport()
     {
         DataProviderSessionIFace session = null;
-        ChooseFromListDlg<SpReport> dlg = null;
+        ChooseFromListDlg<InvoiceInfo> dlg = null;
         try
         {
             session = DataProviderFactory.getInstance().createSession();
-            StringBuilder ids = new StringBuilder();
-            boolean comma = false;
-            //ids is supposed to hold keys of only valid resources for current context.
-            for (AppResourceIFace res : AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.LABELS_MIME))
+            int loanTblId = DBTableIdMgr.getInstance().getIdByShortName("Loan");
+            List<AppResourceIFace> reps = AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.LABELS_MIME);
+            reps.addAll(AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.REPORTS_MIME));
+            Vector<InvoiceInfo> repInfo = new Vector<InvoiceInfo>();
+            
+            for (AppResourceIFace rep : reps)
             {
-                if (comma)
+                Properties params = rep.getMetaDataMap();
+                String tableid = params.getProperty("tableid"); 
+                SpReport spReport = null;
+                boolean includeIt = false;
+                try
                 {
-                    ids.append(",");
+                    Integer tblId = Integer.valueOf(tableid);
+                    if (tblId.equals(loanTblId))
+                    {
+                        includeIt = true;
+                    }
+                    else if (tblId.equals(-1))
+                    {
+                        QueryIFace q = session.createQuery("from SpReport spr join spr.appResource apr "
+                              + " join spr.query spq "
+                              + "where apr.id = " + ((SpAppResource )rep).getId() 
+                              + " and spq.contextTableId = " + loanTblId, false);
+                        List<?> spReps = q.list();
+                        if (spReps.size() > 0)
+                        {
+                            includeIt = true;
+                            spReport = (SpReport )((Object[] )spReps.get(0))[0];
+                            spReport.forceLoad();
+                            if (spReps.size() > 1)
+                            {
+                                //should never happen
+                                log.error("More than SpReport exists for " + rep.getName());
+                            }
+                        }
+                    }
                 }
-                ids.append(((SpAppResource )res).getId());
-                comma = true;
-            }
-            for (AppResourceIFace res : AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.REPORTS_MIME))
-            {
-                if (comma)
+                catch (Exception ex)
                 {
-                    ids.append(",");
+                    //skip this res
                 }
-                ids.append(((SpAppResource )res).getId());
-                comma = true;
+                if (includeIt)
+                {
+                    repInfo.add(new InvoiceInfo((SpAppResource )rep, spReport));
+                }
             }
             
-            QueryIFace q = session.createQuery("from SpReport spr join spr.query spq join spr.appResource apr "
-                    + "where spq.contextTableId = "
-                    + DBTableIdMgr.getInstance().getIdByShortName("Loan")
-                    + " and apr.id in(" + ids.toString() + ") order by spr.name", false);
-            List<?> reports = q.list();
-            if (reports.size() == 0)
+            if (repInfo.size() == 0)
             {
                 return null;
             }
-            if (reports.size() == 1)
+            
+            if (repInfo.size() == 1)
             {
-                SpReport result = (SpReport )((Object[] )reports.get(0))[0];
-                result.forceLoad();
-                return result;
+                return repInfo.get(0);
             }
-
-            Vector<SpReport> reps = new Vector<SpReport>(reports.size());
-            for (Object rep : reports)
-            {
-                reps.add((SpReport )((Object[] )rep)[0]);
-            }
-            dlg = new ChooseFromListDlg<SpReport>((Frame) UIRegistry
-                    .getTopWindow(), UIRegistry.getResourceString("REP_CHOOSE_SP_REPORT"),
-                    reps);
+            
+            dlg = new ChooseFromListDlg<InvoiceInfo>((Frame) UIRegistry
+                    .getTopWindow(), UIRegistry.getResourceString("REP_CHOOSE_INVOICE"),
+                    repInfo);
             dlg.setVisible(true);
             if (dlg.isCancelled()) 
             { 
                 return null; 
             }
-            SpReport result = dlg.getSelectedObject();
-            result.forceLoad();
-            return result;
+            return dlg.getSelectedObject();
+            
+//            for (AppResourceIFace res : AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.LABELS_MIME))
+//            {
+//                Properties params = res.getMetaDataMap();
+//                String tableid = params.getProperty("tableid"); 
+//                boolean includeIt = false;
+//                try
+//                {
+//                    includeIt = Integer.valueOf(tableid).equals(loanTblId);
+//                }
+//                catch (Exception ex)
+//                {
+//                    //skip this res
+//                }
+//                if (includeIt)
+//                {
+//                    aprs.add((SpAppResource )res);
+//                }
+//            }
+//            for (AppResourceIFace res : AppContextMgr.getInstance().getResourceByMimeType(ReportsBaseTask.REPORTS_MIME))
+//            {
+//                Properties params = res.getMetaDataMap();
+//                String tableid = params.getProperty("tableid"); 
+//                boolean includeIt = false;
+//                try
+//                {
+//                    includeIt = Integer.valueOf(tableid).equals(loanTblId);
+//                }
+//                catch (Exception ex)
+//                {
+//                    // skip this res
+//                }
+//                if (includeIt)
+//                {
+//                    aprs.add((SpAppResource) res);
+//                }
+//            }
+//            
+//            if (aprs.size() == 0)
+//            {
+//                return null;
+//            }
+//            
+//            if (aprs.size() == 1)
+//            {
+//                return aprs.get(0);
+//            }
+            
+            
+//            Vector<String> reportNames = new Vector<String>();
+//            for (Integer id : ids)
+//            {
+//                QueryIFace q = session.createQuery("from SpReport spr join spr.appResource apr "
+//                    + "where apr.id = " + id.toString(), false);
+//                List<?> reports = q.list();
+//                for (Object repObj : reports)
+//                {
+//                    reportNames.add(((SpReport )repObj).getName());
+//                }
+//            if (reports.size() == 0)
+//            {
+//                return null;
+//            }
+//            if (reports.size() == 1)
+//            {
+//                SpReport result = (SpReport )((Object[] )reports.get(0))[0];
+//                result.forceLoad();
+//                return result;
+//            }
+//
+//            Vector<SpReport> reps = new Vector<SpReport>(reports.size());
+//            for (Object rep : reports)
+//            {
+//                reps.add((SpReport )((Object[] )rep)[0]);
+//            }
+            
+//            dlg = new ChooseFromListDlg<SpAppResource>((Frame) UIRegistry
+//                    .getTopWindow(), UIRegistry.getResourceString("REP_CHOOSE_SP_REPORT"),
+//                    aprs);
+//            dlg.setVisible(true);
+//            if (dlg.isCancelled()) 
+//            { 
+//                return null; 
+//            }
+//            return dlg.getSelectedObject();
+//            result.forceLoad();
+//            return result;
         }
         finally
         {
@@ -1448,6 +1617,7 @@ public class InteractionsTask extends BaseTask
     {
         final SwingWorker worker = new SwingWorker()
         {
+            @Override
             public Object construct()
             {
                 JStatusBar statusBar = UIRegistry.getStatusBar();
@@ -1515,6 +1685,7 @@ public class InteractionsTask extends BaseTask
             }
 
             //Runs on the event-dispatching thread.
+            @Override
             public void finished()
             {
                 JStatusBar statusBar = UIRegistry.getStatusBar();
@@ -1581,6 +1752,7 @@ public class InteractionsTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#subPaneRemoved(edu.ku.brc.af.core.SubPaneIFace)
      */
+    @Override
     public void subPaneRemoved(final SubPaneIFace subPane)
     {
         super.subPaneRemoved(subPane);
@@ -1902,7 +2074,7 @@ public class InteractionsTask extends BaseTask
                 });
             } catch (CloneNotSupportedException ex)
             {
-                
+                //ignore
             }
             
         }
@@ -1950,6 +2122,15 @@ public class InteractionsTask extends BaseTask
     }
     
     
+    
+    /**
+     * @return the entries
+     */
+    public Vector<InteractionEntry> getEntries()
+    {
+        return entries;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#canRequestContext()
      */
