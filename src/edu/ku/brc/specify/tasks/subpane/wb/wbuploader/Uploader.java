@@ -220,8 +220,9 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected int rowUploading;
     
-   protected static final Logger                   log                      = Logger
-                                                                                     .getLogger(Uploader.class);
+    protected static final Logger                   log                      = Logger.getLogger(Uploader.class);
+   
+      
     /**
      * @author timbo
      *
@@ -2496,7 +2497,7 @@ public class Uploader implements ActionListener, KeyListener
             }
             else if (rv == JOptionPane.NO_OPTION)
             {
-                undoUpload(true, true, true);
+                undoUpload(shuttingDownSS == null, true, true);
                 result = true;
             }
             //else rv equals JOptionPane.CANCEL_OPTION or CLOSED_OPTION
@@ -3821,12 +3822,24 @@ public class Uploader implements ActionListener, KeyListener
     
     /**
      * @return true if it is possible (i.e. user has permission, ??) to override an upload lock.
+     * 
+     * In this case, override means that the lock will remain in effect, and other users will be locked out,
+     * but the current user will be not be locked out.
      */
     protected static boolean canOverrideLock()
     {
         //XXX Probably a better way to do this...
         return AppContextMgr.getInstance().getClassObject(SpecifyUser.class).getUserType().equals("CollectionManager");
     }
+    
+    /**
+     * @return true if the lock can be removed - i.e. unlocked.
+     */
+    protected static boolean canRemoveLock()
+    {
+        return canOverrideLock();
+    }
+    
     /**
      * Checks to see if a lock has been set for the upload task. 
      * 
@@ -3848,7 +3861,7 @@ public class Uploader implements ActionListener, KeyListener
         return result;
     }
     
-    protected static String getLockTitle()
+    public static String getLockTitle()
     {
         return UIRegistry.getResourceString("Uploader.UploaderTask");
     }
@@ -3861,7 +3874,7 @@ public class Uploader implements ActionListener, KeyListener
     {
         return TaskSemaphoreMgr.lock(getLockTitle(), 
                 "WORKBENCHUPLOAD", null,
-                TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock()) == TaskSemaphoreMgr.USER_ACTION.OK;
+                TaskSemaphoreMgr.SCOPE.Discipline, false, new UploadLocker(canOverrideLock(), canRemoveLock())) == TaskSemaphoreMgr.USER_ACTION.OK;
     }
     
     /**
@@ -3933,4 +3946,5 @@ public class Uploader implements ActionListener, KeyListener
     {
         return wbSS;
     }
-}
+
+ }

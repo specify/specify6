@@ -187,6 +187,14 @@ public class TaskSemaphoreMgr
         return false;
     }
     
+    public static USER_ACTION lock(final String title, 
+                                   final String name, 
+                                   final String context,
+                                   final SCOPE  scope,
+                                   final boolean allViewMode)
+    {
+        return lock(title, name, context, scope, allViewMode, null);
+    }
     /**
      * Locks the semaphore.
      * @param title The human (localized) title of the task 
@@ -200,7 +208,8 @@ public class TaskSemaphoreMgr
                                    final String name, 
                                    final String context,
                                    final SCOPE  scope,
-                                   final boolean allViewMode)
+                                   final boolean allViewMode,
+                                   final TaskSemaphoreMgrCaller caller)
     {
         DataProviderSessionIFace session = null;
         try
@@ -222,6 +231,11 @@ public class TaskSemaphoreMgr
                 
                 if (semaphore == null || previouslyLocked)
                 {
+                    if (caller != null)
+                    {
+                        return caller.resolveConflict(semaphore, previouslyLocked, prevLockedBy);
+                    }
+                    
                     if (semaphore == null)
                     {
                         String msg = UIRegistry.getLocalizedMessage("SpTaskSemaphore.IN_USE", title);//$NON-NLS-1$
