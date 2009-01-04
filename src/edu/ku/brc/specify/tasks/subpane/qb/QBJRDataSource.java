@@ -167,7 +167,10 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         {
             if (!firstRow)
             {
-                rows.get().remove();
+                if (sort == null || sort.size() == 0)
+                {
+                    rows.get().remove();
+                }
             }
             else
             {
