@@ -241,7 +241,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
 
     /**
-     * 
+     * create the query builder UI.
      */
     protected void createUI()
     {
@@ -511,6 +511,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
 
+    /**
+     * cancel the currently exeecuting search.
+     */
     protected void cancelSearch()
     {
         if (runningResults.get() != null)
@@ -530,6 +533,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
 
     
+    /**
+     * @param q
+     * @param container
+     * @param tblTree
+     * @param ttHash
+     * @return a Vector of QueryFieldPanel objects for the supplied fields parameter.
+     */
     protected static Vector<QueryFieldPanel> getQueryFieldPanels(final SpQuery q,
                                                                final QueryFieldPanelContainerIFace container,
                                                                final TableTree tblTree,
@@ -646,6 +656,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
     
+    /**
+     * @return true if query is savable and the current user has permission to save.
+     */
     protected boolean canSave()
     {
         boolean result = true;
@@ -691,7 +704,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param qfps
      * @param tblTree
      * @param keysToRetrieve
-     * @return the hql paired with a list of parameters/objects to assign.
+     * @return HQLSpecs for the current fields and settings.
      */
     protected static HQLSpecs buildHQL(final TableQRI rootTable, 
                                        final boolean distinct, 
@@ -993,6 +1006,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return new HQLSpecs(result, paramsToSet, sortElements);
     }
     
+    /**
+     * @param tblAlias
+     * @param criteria
+     * @return supplied criteria parameter with adjustments to enable synonymy searching.
+     */
     protected static String adjustForSynSearch(final String tblAlias, final String criteria)
     {
         String result = "(" + criteria;
@@ -1784,6 +1802,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
     
+    /**
+     * @return a clone of the current query object.
+     */
     protected SpQuery cloneTheQuery()
     {
         SpQuery result = new SpQuery();
@@ -2360,7 +2381,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
 
     /**
-     * 
+     * Enables or disables the button used to add fields to the query, depending on the
+     * current situation.
      */
     protected void updateAddBtnState()
     {
@@ -2498,6 +2520,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return null;
     }
 
+    /**
+     * @param container
+     * @param fields
+     * @param tblTree
+     * @param ttHash
+     * @param saveBtn
+     * @param missingFlds
+     * 
+     * @return a Vector of QueryFieldPanel objects for the supplied fields parameter.
+     */
     protected static Vector<QueryFieldPanel> getQueryFieldPanels(final QueryFieldPanelContainerIFace container, 
             final Set<SpQueryField> fields, final TableTree tblTree, 
             final Hashtable<String,TableTree> ttHash,
@@ -2541,14 +2573,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return columnDefStr;
     }
 
+    /**
+     * @param container
+     * @param fieldQRI
+     * @param fld
+     * @param colDefStr
+     * @param saveBtn
+     * @return a QueryFieldPanel for the field represented by the fieldQRI object.
+     */
     protected static QueryFieldPanel bldQueryFieldPanel(final QueryFieldPanelContainerIFace container,
                                                         final FieldQRI fieldQRI,
                                                         final SpQueryField fld,
                                                         String colDefStr,
                                                         final Component saveBtn)
     {
-        if (colDefStr == null) { return new QueryFieldPanel(container, fieldQRI,
-                IconManager.IconSize.Std24, colDefStr, saveBtn, null); }
+        if (colDefStr == null) 
+        { 
+            return new QueryFieldPanel(container, fieldQRI,
+                IconManager.IconSize.Std24, colDefStr, saveBtn, null); 
+        }
         return new QueryFieldPanel(container, fieldQRI, IconManager.IconSize.Std24, colDefStr,
                 saveBtn, fld);
     }
@@ -2833,6 +2876,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return result;
     }
     
+    /**
+     * @return true if there are unsaved changes to the query.
+     */
     protected boolean isChanged()
     {
         return saveBtn.isEnabled(); //el cheapo
@@ -2921,6 +2967,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return false;
     }
 
+    /**
+     * @return true if it is possible for the QueryBuilder to execute a search.
+     */
     protected boolean canSearch()
     {
         if (runningResults.get() == null)
@@ -3014,6 +3063,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         return query;
     }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getAddBtn()
      */
