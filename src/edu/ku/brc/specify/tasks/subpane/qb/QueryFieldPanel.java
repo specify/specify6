@@ -12,6 +12,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -67,6 +68,7 @@ import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpQueryField;
+import edu.ku.brc.specify.datamodel.SpQueryField.OperatorType;
 import edu.ku.brc.specify.dbsupport.RecordTypeCodeBuilder;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DateConverter;
 import edu.ku.brc.specify.ui.db.PickListDBAdapterFactory;
@@ -84,7 +86,7 @@ import edu.ku.brc.util.Pair;
  * Oct 18, 2007
  *
  */
-public class QueryFieldPanel extends JPanel 
+public class QueryFieldPanel extends JPanel implements ActionListener 
 {
     protected static final Logger log = Logger.getLogger(QueryFieldPanel.class);
     
@@ -105,7 +107,6 @@ public class QueryFieldPanel extends JPanel
     protected JCheckBox        isNotCheckbox;
     protected JComboBox        operatorCBX;
     protected JComponent       criteria;
-    //protected JComboBox        criteriaList; 
     protected MultiStateIconButon sortCheckbox;
     protected JCheckBox        isDisplayedCkbx;
     protected JCheckBox        isPromptCkbx;
@@ -127,6 +128,153 @@ public class QueryFieldPanel extends JPanel
     protected boolean selected = false;
     
 
+    /**
+     * @author timbo
+     *
+     * @code_status Alpha
+     * 
+     * Deals with pairs of criteria entries.
+     *
+     */
+    private class CriteriaPair extends JPanel
+    {
+        protected JTextField text1;
+        protected JTextField text2;
+        protected JLabel connectorText;
+        protected JPanel rangePanel;
+        protected JTextField text;
+        protected boolean showingPair = false;
+        
+        /**
+         * Constructor
+         */
+        public CriteriaPair()
+        {
+            super();
+            buildUI();
+        }
+        
+        /**
+         * Creates the UI components.
+         */
+        protected void buildUI()
+        {
+            text1 = new JTextField();
+            text2 = new JTextField();
+            connectorText = new JLabel(" " + getResourceString("and") + " ");
+            
+            rangePanel = new JPanel();
+            PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g, f:p, f:p:g", "f:p"), rangePanel);
+            CellConstraints cc = new CellConstraints();
+            pb.add(text1, cc.xy(1, 1));
+            pb.add(connectorText, cc.xy(2, 1));
+            pb.add(text2, cc.xy(3, 1));
+            rangePanel.validate();
+            
+            setLayout(new CardLayout());
+            text = new JTextField();
+            add("text", text);
+            add("rangePanel", rangePanel);
+            validate();
+        }   
+        
+        /**
+         * @param entry
+         * @param op
+         * 
+         * Sets the criteria text, modifying the layout if necessary.
+         */
+        public void setCriteriaText(final String entry, final OperatorType op)
+        {
+            if (op.equals(OperatorType.BETWEEN))
+            {
+                //Currently between operator is not allowed for string fields, so assume no quotes 
+                //and no commas but the one separating the two limits.
+                //Also assuming (more or less) valid entry. 
+                setShowingPair(true);
+                String[] entries = entry.split(",");
+                text1.setText(entries[0]);
+                if (entries.length > 1)
+                {
+                    text2.setText(entries[1]);
+                }
+                else
+                {
+                    text2.setText(null);
+                }
+            }
+            else
+            {
+                setShowingPair(false);
+                text.setText(entry);
+            }
+            
+        }
+        
+        /**
+         * @return a String representation of the entered criteria, parseable by the QueryBuilder.
+         */
+        public String getCriteriaText()
+        {
+            //Assuming isValidPairEntry() is true
+            if (showingPair)
+            {
+                return text1.getText() + "," + text2.getText();
+            }
+            
+            return text.getText();
+        }
+        
+        /**
+         * @return true if the entered criteria is really messed up.
+         */
+        public boolean isValidPairEntry()
+        {
+            if (showingPair)
+            {
+                return (StringUtils.isBlank(text1.getText()) && StringUtils.isBlank(text2.getText()))
+                    || (!StringUtils.isBlank(text1.getText()) && !StringUtils.isBlank(text2.getText()));
+            }
+            
+            return true;
+        }   
+        
+        /**
+         * @return showingPair.
+         */
+        public boolean isShowingPair()
+        {
+            return showingPair;
+        }
+        
+        /**
+         * @param showingPair
+         * 
+         * Switches the UI from single to double criteria controls based on value of showingPair.
+         */
+        public void setShowingPair(final boolean showingPair)
+        {
+            if (this.showingPair != showingPair)
+            {
+                this.showingPair = showingPair;
+                if (showingPair)
+                {
+                    ((CardLayout )getLayout()).last(this);
+                }
+                else
+                {
+                    ((CardLayout )getLayout()).first(this);
+                }
+                
+                //clear old entries, for now.
+                text.setText(null);
+                text1.setText(null);
+                text2.setText(null);
+                
+                validate();
+            }
+        }
+    }
     
     protected PickListDBAdapterIFace buildPickList()
     {
@@ -162,7 +310,7 @@ public class QueryFieldPanel extends JPanel
             labelStrs = new String[]{ " ",
                     UIRegistry.getResourceString("QB_FIELD"), UIRegistry.getResourceString("QB_NOT"),
                     UIRegistry.getResourceString("QB_OPERATOR"),
-                    UIRegistry.getResourceString("QB_CRITERIA"), UIRegistry.getResourceString("QB_SORT"),
+                    UIRegistry.getResourceString("QB_"), UIRegistry.getResourceString("QB_SORT"),
                     //UIRegistry.getResourceString("QB_DISPLAY"), getResourceString("QB_PROMPT"), 
                     //" ", " " 
                     };
@@ -217,6 +365,10 @@ public class QueryFieldPanel extends JPanel
         updateQueryField(queryField);
     }
     
+    /**
+     * @param useValues
+     * @return the text contained in the criteria control.
+     */
     protected String getCriteriaText(final boolean useValues)
     {
         if (criteria instanceof JTextField)
@@ -227,7 +379,10 @@ public class QueryFieldPanel extends JPanel
         {
             return ((PickListCriteriaCombo)criteria).getText(useValues);
         }
-        
+        if (criteria instanceof CriteriaPair)
+        {
+            return ((CriteriaPair )criteria).getCriteriaText();
+        }
         throw new RuntimeException("Unrecognized criteria component: " + criteria.getClass());
     }
     
@@ -283,8 +438,13 @@ public class QueryFieldPanel extends JPanel
         return queryField;
     }
 
-    protected void setCriteriaText(final String text)
+    protected void setCriteriaText(final String text, final OperatorType op)
     {
+        if (op.equals(OperatorType.BETWEEN) && !(criteria instanceof CriteriaPair))
+        {
+            //Probably nothing bad will result but, log situation, in case.
+            log.error("operator is 'BETWEEN' but criteria control is not CriteriaPair");
+        }
         if (criteria instanceof JTextField)
         {
             ((JTextField)criteria).setText(text);
@@ -292,6 +452,10 @@ public class QueryFieldPanel extends JPanel
         else if (criteria instanceof PickListCriteriaCombo)
         {
             ((PickListCriteriaCombo)criteria).setSelections(text);
+        }
+        else if (criteria instanceof CriteriaPair)
+        {
+            ((CriteriaPair )criteria).setCriteriaText(text, op);
         }
         else
         {
@@ -312,7 +476,7 @@ public class QueryFieldPanel extends JPanel
             {
                 isNotCheckbox.setSelected(queryField.getIsNot());
                 operatorCBX.setSelectedIndex(queryField.getOperStart());
-                setCriteriaText(queryField.getStartValue());
+                setCriteriaText(queryField.getStartValue(), (OperatorType )operatorCBX.getSelectedItem());
                 sortCheckbox.setState(queryField.getSortType());
                 if (!ownerQuery.isPromptMode())
                 {
@@ -906,6 +1070,7 @@ public class QueryFieldPanel extends JPanel
         isNotCheckbox.addFocusListener(focusListener);
         operatorCBX = createComboBox(comparators);
         operatorCBX.addFocusListener(focusListener);
+        operatorCBX.addActionListener(this);
         boolean isBool = fieldQRI != null && fieldQRI.getDataClass().equals(Boolean.class);
         if (!isBool)
         {
@@ -922,7 +1087,23 @@ public class QueryFieldPanel extends JPanel
         }
         if (pickList == null)
         {
-            criteria = createTextField();
+            boolean hasBetweenOp = false;
+            for (int o=0; o < comparators.length; o++)
+            {
+                if (comparators[o].equals(OperatorType.BETWEEN))
+                {
+                    hasBetweenOp = true;
+                    break;
+                }
+            }
+            if (hasBetweenOp)
+            {
+                criteria = new CriteriaPair();
+            }
+            else
+            {
+                criteria = createTextField();
+            }
         }
         else
         {
@@ -1358,5 +1539,24 @@ public class QueryFieldPanel extends JPanel
     {
         return pickList;
     }
-    
+
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+        if (e.getSource().equals(operatorCBX))
+        {
+            OperatorType op = (OperatorType )operatorCBX.getSelectedItem();
+            if (op.equals(OperatorType.BETWEEN))
+            {
+                ((CriteriaPair )criteria).setShowingPair(true);
+            }
+            else
+            {
+                ((CriteriaPair )criteria).setShowingPair(false);
+            }
+        }
+    }
 }
