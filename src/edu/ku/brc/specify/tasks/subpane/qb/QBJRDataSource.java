@@ -158,16 +158,16 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
             log.debug("... " + this + " got rows");
         }
         
-        return doGetNext();
+        return doGetNext(false);
     }
 
-    protected boolean doGetNext()
+    protected boolean doGetNext(final boolean sorting)
     {
         if (rows.get().hasNext())
         {
             if (!firstRow)
             {
-                if (sort == null || sort.size() == 0)
+                if (!sorting)
                 {
                     rows.get().remove();
                 }
@@ -229,7 +229,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         if (sort != null && sort.size() > 0)
         {
             cache = new Vector<Vector<Object>>(resultSetSize.get());
-            while (doGetNext())
+            while (doGetNext(true))
             {
                 Vector<Object> row = new Vector<Object>(((Object[] )rowVals).length);
                 for (int fldIdx = recordIdsIncluded ? 1 : 0; fldIdx < ((Object[] )rowVals).length; fldIdx++)
@@ -240,6 +240,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
             }
             Collections.sort(cache, new ResultRowComparator(sort));
             processed = true;
+            firstRow = true;
             rows.set(cache.iterator());
         }
         processing.set(false);
