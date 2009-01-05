@@ -2718,6 +2718,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
 
                   if (localPrefs.getBoolean(VERSION_CHECK, true) && localPrefs.getBoolean(EXTRA_CHECK, true))
                   {
+                	//Both of these trys seem necessary for updates to run correctly--but we do not know why.
                       try
                       {
                           
@@ -2731,6 +2732,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                           if (entry != null)
                           {
                                setLastVersion(entry.getNewVersion());
+                               com.install4j.api.launcher.SplashScreen.hide();
                           }
                           
                           if (StringUtils.isNotEmpty(lastVersion) && lastVersion.equals(entry.getNewVersion()))
@@ -2747,6 +2749,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
                       
                       try
                       {
+                    	 com.install4j.api.launcher.SplashScreen.hide();
                          ApplicationLauncher.Callback callback = new ApplicationLauncher.Callback()
                          {
                              public void exited(int exitValue)
