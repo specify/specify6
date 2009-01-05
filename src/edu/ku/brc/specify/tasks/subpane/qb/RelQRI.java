@@ -12,6 +12,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
+import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.af.ui.forms.formatters.DataObjDataFieldFormatIFace;
@@ -192,7 +193,13 @@ public class RelQRI extends FieldQRI
     @Override
     public boolean isFieldHidden()
     {
-        return relationshipInfo.isHidden();
+        if (relationshipInfo.isHidden())
+        {
+            return true;
+        }
+        
+        //else check if related table is hidden
+        return DBTableIdMgr.getInstance().getInfoByTableName(relationshipInfo.getDataClass().getSimpleName().toLowerCase()).isHidden();
     }
 
 

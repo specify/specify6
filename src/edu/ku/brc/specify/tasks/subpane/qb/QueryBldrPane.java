@@ -588,7 +588,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         if (query != null)
         {
             TableQRI qri = (TableQRI) tableList.getSelectedValue();
-            if (qri == null) { throw new RuntimeException("Invalid context for query."); }
+            if (qri == null) 
+            { 
+                throw new RuntimeException("Invalid context for query."); 
+            }
                 
             qfps = getQueryFieldPanels(this, query.getFields(), tableTree, tableTreeHash, saveBtn, missingFlds);
             
@@ -602,7 +605,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     {
                         fldStr += ", ";
                     }
-                    fldStr += fld;
+                    fldStr += "'" + fld + "'";
                 }
                 if (missingFlds.size() == 1)
                 {

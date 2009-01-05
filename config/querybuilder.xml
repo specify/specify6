@@ -89,9 +89,11 @@
         <alias name="Determination" field="determinations"/>
         
         <table name="PaleoContext" field="paleoContext">
-    		<table name="GeologicTimePeriod"/>
+    		<table name="GeologicTimePeriod" field="bioStrat"/>
+    		<table name="GeologicTimePeriod" field="chronosStrat"/>
     		<table name="LithoStrat"/>
     	</table>
+    	
         <alias name="Preparation" field="preparations"/>
       	<alias name="Appraisal" field="appraisal" />
       	<alias name="Agent" field="cataloger" />
@@ -110,16 +112,33 @@
       		<alias name="Agent" field="technicalContacts" />
       		<table name="SpPrincipal" field="userGroups"/>
       	</table>
-      	<table name="ConservDescription" field="conservDescriptions" />
+      	<table name="ConservDescription" field="conservDescriptions"> 
+      		<table name="ConservDescriptionAttachment" field="conservDescriptionAttachments">
+      			<alias name="Attachment"/>
+      		</table>
+      		<table name="ConservEvent" field="events"/>
+      	</table>
       	<table name="Container" field="container" />
       	<table name="Container" field="containerOwner" />
       	<alias name="Agent" field="createdByAgent" />
       	<table name="DNASequence" field="dnaSequences">
       			<alias name="Agent" field="sequencer" /> 
       	</table>
+      	
       	<table name="FieldNotebookPage" field="fieldNotebookPage" >
-      		<table name="FieldNotebookPageSet" field="pageSet" />  
+      		<table name="FieldNotebookPageSet" field="pageSet">
+      			<table name="FieldNotebookPageSetAttachment" field="attachments">
+      				<alias name="Attachment"/>
+      			</table>
+      			<table name="FieldNotebook" >
+      				<table name="FieldNotebookAttachment" field="attachments" >	
+      					<alias name="Attachment"/>
+      				</table>
+      				<alias name="Agent" field="ownerAgent" />
+      			</table>
+      		</table>  
       	</table>
+      	
       	<!-- <table name="CollectionRelationship" field="leftSideRels" /> -->
       	<alias name="Agent" field="modifiedByAgent" />
       	<table name="OtherIdentifier" field="otherIdentifiers" />
@@ -245,6 +264,9 @@
     </table>
     
     <table name="RepositoryAgreement">
+    	<table name="AddressOfRecord" />
+    	<table name="AccessionAgent" field="repositoryAgreementAgents"/>
+    	<table name="AccessionAuthorization" field="repositoryAgreementAuthorizations"/>
     	<alias name="Agent" field="originator"/>
       	<table name="RepositoryAgreementAttachment" field="repositoryAgreementAttachments">
       		<alias name="Attachment"/>
