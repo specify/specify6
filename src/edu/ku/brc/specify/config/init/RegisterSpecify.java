@@ -592,6 +592,15 @@ public class RegisterSpecify
     }
 
     /**
+     * @return the ISA number or null
+     */
+    public static String getISANumber()
+    {
+        Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+        return collection.getIsaNumber();
+    }
+
+    /**
      * 
      */
     public static void registerISA()
