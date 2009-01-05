@@ -38,19 +38,6 @@
             </altviews>
         </view>
         
-        <view name="Determination"
-            class="edu.ku.brc.specify.datamodel.Determination"
-            busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationBusRules"
-            resourcelabels="false">
-            <desc><![CDATA[Subform within the Collection Object form.]]></desc>
-            <altviews>
-                <altview name="Determination View"       viewdef="Determination" mode="view"/>
-                <altview name="Determination Edit"       viewdef="Determination" mode="edit" default="true"/>
-                <altview name="Determination Table View" viewdef="Determination Table" mode="view"/>
-                <altview name="Determination Table Edit" viewdef="Determination Table" mode="edit"/>
-            </altviews>
-        </view>
-        
         <view name="BirdAttributes"
             class="edu.ku.brc.specify.datamodel.CollectionObjectAttribute"
             resourcelabels="false">
@@ -60,18 +47,7 @@
                 <altview name="BirdAttributes Edit" viewdef="BirdAttributes" mode="edit" default="true"/>
             </altviews>
         </view>
-        
-        <view name="Locality"
-            class="edu.ku.brc.specify.datamodel.Locality"
-            busrules="edu.ku.brc.specify.datamodel.busrules.LocalityBusRules"
-            resourcelabels="false">
-            <desc><![CDATA[Locality form.]]></desc>
-            <altviews>
-                <altview name="Locality View" viewdef="Locality" mode="view"/>
-                <altview name="Locality Edit" viewdef="Locality" mode="edit" default="true"/>
-            </altviews>
-        </view>
-        
+
     </views>
 
 
@@ -220,73 +196,6 @@
             </rows>
         </viewdef>
         
-      
-        <viewdef
-            name="Determination Table"
-            type="formtable"
-            class="edu.ku.brc.specify.datamodel.Determination"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Determination subform table for Collection Object form.]]></desc>
-            <definition>Determination</definition>
-        </viewdef>
-        
-        <viewdef
-            name="Determination"
-            type="form"
-            class="edu.ku.brc.specify.datamodel.Determination"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
-            <enableRules/>
-            
-            <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
-            <!-- <rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>  -->
-            <rowDef auto="true" cell="p" sep="2px"/>
-            <rows>
-            	<row>
-                    <cell type="label" labelfor="13"/>
-                    <cell type="field" id="13" name="activeTaxon" uitype="text"/>
-
-                    <cell type="field" id="3" name="isCurrent" uitype="checkbox" isrequired="true"/>
-             	</row>
-                <row>
-                    <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon"/>
-                    
-                    <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="qualifier" uitype="text"/>
-                    
-                    <cell type="label" labelfor="9"/>
-                    <cell type="field" id="9" name="addendum" uitype="text"/>
-                </row>
- 				<row>
-                    <cell type="label" labelfor="11"/>
-                    <cell type="field" id="11" name="nameUsage" uitype="combobox" picklist="NameUsages"/>
-                    
-                    <cell type="label" labelfor="10"/>
-                    <cell type="field" id="10" name="alternateName" uitype="text"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="typeStatusName" uitype="combobox" picklist="TypeStatus"/>
-                    
-                    <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="determiner" uitype="querycbx" initialize="name=Agent"/>
-
-                    <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" uitype="plugin" name="this" initialize="name=PartialDateUI;df=determinedDate;tp=determinedDatePrecision" uifieldformatter="Date"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="12"/>
-                    <cell type="field" id="12" name="remarks" uitype="textarea" colspan="14" cols="50"/>
-                </row>
-            </rows>
-        </viewdef>
-        
-        
         <viewdef
             type="form"
             name="BirdAttributes"
@@ -315,68 +224,6 @@
                     <cell type="label" labelfor="22"/>
                     <cell type="field" id="22" name="remarks" uitype="textarea" colspan="10"/>
                 </row> 
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="Locality"
-            class="edu.ku.brc.specify.datamodel.Locality"
-            gettable="edu.ku.brc.af.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Locality]]></desc>
-            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            <enableRules>
-                <rule id="georef"><![CDATA[localityName.isNotEmpty() && geography.isNotEmpty()]]></rule>
-            </enableRules>
-            
-            <rows>
-                <row>
-                    <cell type="separator" label="Locality Information" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="localityName"/>
-                    <cell type="field" id="localityName" name="localityName" uitype="text" isrequired="true" colspan="10"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="1" label="Legal Description"/>
-                    <cell type="field" id="1" name="remarks" uitype="text" colspan="10"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="geography"/>
-                    <cell type="field" id="geography" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography" colspan="10"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="this" uitype="plugin" initialize="name=LatLonUI" colspan="10"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="10"/>
-                    <cell type="field" id="10" name="latLongMethod" uitype="combobox" picklist="LatLongMethod"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Tools" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="p,f:p:g,p,f:p:g,p,f:p:g" rowdef="p" colspan="12">
-                        <rows>
-                            <row>
-                                <cell type="label" label=" "/>
-                                <cell type="field" id="georef" name="this" uitype="plugin" initialize="name=LocalityGeoRef;title=Geo Ref" colspan="1"/>
-                                <cell type="field" id="ge" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth" colspan="1"/>
-                            </row>
-                        </rows>
-                    </cell>
-                </row>
-                
-                <row>
-                    <cell type="separator" label="Attachments" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12" initialize="btn=true;icon=LocalityAttachment"/>
-                </row>
             </rows>
         </viewdef>
 

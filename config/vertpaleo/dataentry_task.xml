@@ -34,8 +34,6 @@
 	
 	<misc>
         <!-- <view sidebar="true"  name="Deaccession"        viewset="Common"       view="Deaccession"        iconname="Deaccession"        tooltip=""/> -->  
-	    <view sidebar="true"  name="Accession"          view="Accession"          iconname="Accession"          tooltip=""/>    
-	    <view sidebar="true"  name="Permit"             view="Permit"             iconname="Permit"             tooltip=""/>
 		<view sidebar="true"  name="Storage"            view="Storage"            iconname="Storage"           tooltip=""/>
 	</misc>
 </views>
