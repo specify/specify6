@@ -93,6 +93,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
@@ -125,15 +126,6 @@ import edu.ku.brc.util.Pair;
  */
 public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContainerIFace, CommandListener
 {
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getAddBtn()
-     */
-    //@Override
-    public JButton getAddBtn()
-    {
-        return addBtn;
-    }
-
     protected static final Logger                            log            = Logger.getLogger(QueryBldrPane.class);
     protected static final Color                             TITLEBAR_COLOR = new Color(82, 160, 52);
     
@@ -719,7 +711,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         StringBuilder orderStr = new StringBuilder();
         LinkedList<SortElement> sortElements = new LinkedList<SortElement>();
         boolean postSortPresent = false;
-        boolean debug = true;
+        boolean debug = false;
         ProcessNode root = new ProcessNode(null);
         int fldPosition = distinct ? 0 : 1;
 
@@ -734,7 +726,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
             if (debug)
             {
-                System.out.println("\nNode: " + qfi.getFieldName());
+                log.debug("\nNode: " + qfi.getFieldName());
             }
 
             SortElement orderSpec = qfi.getOrderSpec(distinct ? fldPosition-1 : fldPosition-2);
@@ -792,10 +784,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
             if (debug)
             {
-                System.out.println("Path From Top Down:");
+                log.debug("Path From Top Down:");
                 for (BaseQRI qri : list)
                 {
-                    System.out.println("  " + qri.getTitle());
+                    log.debug("  " + qri.getTitle());
                 }
             }
 
@@ -807,7 +799,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 if (debug)
                 {
-                    System.out.println("ProcessNode[" + qri.getTitle() + "]");
+                    log.debug("ProcessNode[" + qri.getTitle() + "]");
                 }
                 if (!parentNode.contains(qri) && qri instanceof TableQRI)
                 {
@@ -815,7 +807,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     parentNode.getKids().add(newNode);
                     if (debug)
                     {
-                        System.out.println("Adding new node["
+                        log.debug("Adding new node["
                                 + newNode.getQri().getTitle()
                                 + "] to Node["
                                 + (parentNode.getQri() == null ? "root" : parentNode.getQri()
@@ -838,7 +830,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
             if (debug)
             {
-                System.out.println("Current Tree:");
+                log.debug("Current Tree:");
                 printTree(root, 0);
             }
 
@@ -987,11 +979,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         if (debug)
         {
-            System.out.println(sqlStr.toString());
-            System.out.println("sort:");
+            log.debug(sqlStr.toString());
+            log.debug("sort:");
             for (SortElement s : sortElements)
             {
-                System.out.println("  " + s.getColumn() + " - " + s.getDirection());
+                log.debug("  " + s.getColumn() + " - " + s.getDirection());
             }
         }
         
@@ -1783,9 +1775,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         for (int i = 0; i < lvl; i++)
         {
-            System.out.print(" ");
+            log.debug(" ");
         }
-        System.out.println(pn.getQri() == null ? "Root" : pn.getQri().getTitle());
+        log.debug(pn.getQri() == null ? "Root" : pn.getQri().getTitle());
         for (ProcessNode kid : pn.getKids())
         {
             printTree(kid, lvl + 1);
@@ -1888,7 +1880,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 
                 SubPaneMgr.getInstance().renamePane(this, query.getName());
             }
-            return SpQuery.save(true, query);
+            return DataModelObjBase.save(true, query);
         }
         //else
         {
@@ -3021,6 +3013,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     public SpQuery getQuery()
     {
         return query;
+    }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getAddBtn()
+     */
+    //@Override
+    public JButton getAddBtn()
+    {
+        return addBtn;
     }
 }
 
