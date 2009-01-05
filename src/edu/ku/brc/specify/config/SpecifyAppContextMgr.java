@@ -26,10 +26,6 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,13 +69,13 @@ import edu.ku.brc.af.ui.forms.persist.ViewIFace;
 import edu.ku.brc.af.ui.forms.persist.ViewLoader;
 import edu.ku.brc.af.ui.forms.persist.ViewSet;
 import edu.ku.brc.af.ui.forms.persist.ViewSetIFace;
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.init.RegisterSpecify;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataType;
@@ -166,6 +162,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
     protected Agent          currentUserAgent      = null;
 
+    protected boolean        forceReloadViews      = false;
     protected boolean        debug                 = false;
     protected long           lastLoadTime          = 0;
     protected long           lastLoadTimeBS        = 0;
@@ -188,6 +185,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public static SpecifyAppContextMgr getInstance()
     {
         return (SpecifyAppContextMgr)AppContextMgr.getInstance();
+    }
+
+    /**
+     * @param forceReloadViews the forceReloadViews to set
+     */
+    public void setForceReloadViews(boolean forceReloadViews)
+    {
+        this.forceReloadViews = forceReloadViews;
     }
 
     /**
@@ -1380,7 +1385,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         if (debug) log.debug("Looking up["+dir.getUniqueIdentifer()+"]["+dir.getVerboseUniqueIdentifer()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         
         Boolean reloadViews = AppPreferences.getLocalPrefs().getBoolean("reload_views", false); //$NON-NLS-1$
-        if (reloadViews)
+        if (reloadViews || forceReloadViews)
         {
             long rightNow = (Calendar.getInstance().getTimeInMillis()/1000);
             if ((rightNow - lastLoadTime) > 10)
@@ -1388,6 +1393,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 viewSetHash.clear();
                 lastLoadTime = rightNow;
             }
+            forceReloadViews = false;
         }
         
         List<ViewSetIFace> viewSetList = viewSetHash.get(dir.getUniqueIdentifer());
@@ -2556,9 +2562,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public List<String> getAgentListLoggedIn(final Discipline discipline)
     {
-        SpecifyUser spu = getClassObject(SpecifyUser.class);
-        Vector<Integer> ids = new Vector<Integer>();
-
         StringBuilder sb = new StringBuilder();
         
         sb.append("SELECT specifyuser.SpecifyUserID ");
@@ -2575,48 +2578,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
             sb.append(" WHERE specifyuser.IsLoggedIn <> 0");
         }
         
-        Connection conn = null;        
-        Statement  stmt = null;
-        try
+        SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+        sb.append(" AND specifyuser.SpecifyUserID <> " + spUser.getId());
+        
+        Vector<Integer>  ids    = new Vector<Integer>();
+        Vector<Object[]> idList = BasicSQLUtils.query(sb.toString());
+        if (idList != null && idList.size() > 0)
         {
-            conn = DBConnection.getInstance().createConnection();
-            stmt = conn.createStatement();
-
-            ResultSet rs = stmt.executeQuery(sb.toString());
-            while (rs.next())
+            for (Object[] row : idList)
             {
-                int id = rs.getInt(1);
-                if (id != spu.getId() && ids.indexOf(id) == -1)
-                {
-                    ids.add(id);
-                }
-            }
-            rs.close();
-
-        } 
-        catch (SQLException ex)
-        {
-            log.error("SQLException: " + ex.toString()); //$NON-NLS-1$
-            log.error(ex.getMessage());
-            
-            return null;
-            
-        } finally
-        {
-            try 
-            {
-                if (stmt != null)
-                {
-                    stmt.close();
-                }
-                if (conn != null)
-                {
-                    conn.close();
-                }
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
+                ids.add((Integer)row[0]);
             }
         }
         
@@ -2674,7 +2645,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * @param titleKey
      * @param msgKey
-     * @return
+     * @return null on error, an empty list if no one else is logged in, or a populated list
      */
     public boolean displayAgentsLoggedInDlg(final String msgKey)
     {
@@ -2684,11 +2655,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /**
      * @param titleKey
      * @param msgKey
-     * @return
+     * @return true if it is ok to process, false if there are users logged in
      */
     public boolean displayAgentsLoggedInDlg(final String titleKey, final String msgKey)
     {
-        List<String> logins = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getAgentListLoggedIn(AppContextMgr.getInstance().getClassObject(Discipline.class));
+        List<String> logins = getAgentListLoggedIn(getClassObject(Discipline.class));
         if (logins.size() > 0)
         {
             String loginStr = "";

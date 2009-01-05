@@ -16,7 +16,7 @@ package edu.ku.brc.specify.tests;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.auth.MasterPasswordMgr;
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -72,7 +72,7 @@ public class AppPreferenceHelper
             
             String hostName = "localhost";
             
-            Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
+            Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
             // This will log us in and return true/false
             if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", 
                                    "org.hibernate.dialect.MySQLDialect", 

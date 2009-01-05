@@ -26,7 +26,7 @@ import org.dom4j.io.XMLWriter;
 import org.hibernate.EntityMode;
 import org.hibernate.Session;
 
-import edu.ku.brc.af.auth.MasterPasswordMgr;
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBRelationshipInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -49,7 +49,7 @@ public class ImportExportDB
 
     public static void main(String[] args)
     {
-        Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
+        Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
         UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", //$NON-NLS-1$ //$NON-NLS-2$
                 "testfish", "jdbc:mysql://localhost/testfish", //$NON-NLS-1$ //$NON-NLS-2$
                 usernamePassword.first, 

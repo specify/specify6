@@ -209,7 +209,7 @@ public class TaskSemaphoreMgr
                                    final String context,
                                    final SCOPE  scope,
                                    final boolean allViewMode,
-                                   final TaskSemaphoreMgrCaller caller)
+                                   final TaskSemaphoreMgrCallerIFace caller)
     {
         DataProviderSessionIFace session = null;
         try

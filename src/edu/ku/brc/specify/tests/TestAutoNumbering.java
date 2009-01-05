@@ -29,7 +29,7 @@ import org.hibernate.Session;
 import org.junit.After;
 import org.junit.Before;
 
-import edu.ku.brc.af.auth.MasterPasswordMgr;
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
@@ -157,7 +157,7 @@ public class TestAutoNumbering extends TestCase
             connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName);
         }
         
-        Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
+        Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
         if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                 driverInfo.getDialectClassName(), 
                 dbName, 

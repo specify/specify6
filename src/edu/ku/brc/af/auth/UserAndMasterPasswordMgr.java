@@ -12,12 +12,14 @@ import static edu.ku.brc.ui.UIHelper.createPasswordField;
 import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.displayErrorDlgLocalized;
 import static edu.ku.brc.ui.UIRegistry.displayInfoMsgDlgLocalized;
+import static edu.ku.brc.ui.UIRegistry.getFormattedResStr;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getUserHomeDir;
 import static edu.ku.brc.ui.UIRegistry.loadAndPushResourceBundle;
 import static edu.ku.brc.ui.UIRegistry.popResourceBundle;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,6 +31,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.AccessController;
+import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -39,6 +42,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -52,14 +56,29 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.tasks.subpane.FormPane;
+import edu.ku.brc.af.ui.PasswordStrengthUI;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.af.ui.forms.FormViewObj;
+import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
 import edu.ku.brc.helpers.Encryption;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DocumentAdaptor;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
- * This class is used to get the Master Username and Password so the application can log in.
+ * This class is used to get the Master Username and Password so the application can log in. It also
+ * supports the UI and methods needed for changing the user's password and has methods that can be overridden
+ * for when a user is created or removed.
+ * 
+ * This factory does not need ot be registered into the System properties, it will create itself as the default
+ * factory/mgr.
  * 
  * @author rod
  *
@@ -68,17 +87,17 @@ import edu.ku.brc.util.Pair;
  * Jul 31, 2008
  *
  */
-public class MasterPasswordMgr
+public class UserAndMasterPasswordMgr
 {
     //private static final Logger log = Logger.getLogger(SecurityMgr.class);
     
-    public static final String factoryName = "edu.ku.brc.af.auth.MasterPasswordMgr"; //$NON-NLS-1$
+    public static final String factoryName = "edu.ku.brc.af.auth.UserAndMasterPasswordMgr"; //$NON-NLS-1$
     
     public static final String MASTER_LOCAL = "master.islocal";
     public static final String MASTER_PATH  = "master.path";
     
     
-    private static MasterPasswordMgr instance = null;
+    private static UserAndMasterPasswordMgr instance = null;
     
     private boolean              errCreatingFile       = false;
     private char                 currEcho;
@@ -92,14 +111,16 @@ public class MasterPasswordMgr
     /**
      * Protected Constructor
      */
-    protected MasterPasswordMgr()
+    protected UserAndMasterPasswordMgr()
     {
         showPwdLabel = getResourceString("SHOW_PASSWORD");
         hidePwdLabel = getResourceString("HIDE_PASSWORD");
     }
     
     /**
-     * 
+     * Displays a dialog that is used for changing the Mast Username and Password.
+     * @param username the current user's username
+     * @return true if changed successfully
      */
     public boolean editMasterInfo(final String username)
     {
@@ -135,7 +156,7 @@ public class MasterPasswordMgr
     }
 
     /**
-     * Clears db Username and Password
+     * Clears db Username and Password.
      */
     public void clear()
     {
@@ -143,7 +164,7 @@ public class MasterPasswordMgr
     }
     
     /**
-     * @return
+     * @return the Master Username and Password
      */
     public Pair<String, String> getUserNamePassword()
     {
@@ -182,7 +203,7 @@ public class MasterPasswordMgr
                 
             } else
             {
-                keyStr = getKeyFromURL(masterKey, usersUserName, usersPassword);
+                keyStr = getResourceStringFromURL(masterKey, usersUserName, usersPassword);
                 if (StringUtils.isNotEmpty(keyStr))
                 {
                     keyStr = Encryption.decrypt(keyStr, usersPassword);
@@ -205,6 +226,7 @@ public class MasterPasswordMgr
     }
     
     /**
+     * Displays a dialog used for editing the Master Username and Password.
      * @param isLocal whether u/p is stored locally or not
      * @param masterPath the path to the password
      * @return whether to ask for the information because it wasn't found
@@ -490,16 +512,12 @@ public class MasterPasswordMgr
      * @return a single string containing the Master username and password that can be decypted with
      * the user's password.
      */
-    protected String getKeyFromURL(final String urlLoc,
+    protected String getResourceStringFromURL(final String urlLoc,
                                    final String username,
                                    final String password)
     {
-        // Note: This encryption isn't meant to be unbreakable,
-        // it is meant only so that the u/p isn't passed as clear text.
-        String encrytpedUsr = Encryption.encrypt(username, "Specify");
-        String encrytpedPwd = Encryption.encrypt(password, username);
-        
-        String fullURL = urlLoc + "?u=" + encrytpedUsr + "&p=" + encrytpedPwd;
+        String encrytpedStr = Encryption.encrypt(username+","+password, password);
+        String fullURL      = urlLoc + "?data=" + encrytpedStr;
         
         BufferedReader bufRdr = null;
         try 
@@ -562,10 +580,158 @@ public class MasterPasswordMgr
     }
     
     /**
+     * Display a dialog for changing the password.
+     * @return true if successful, false if in error or the user clicked on Cancel
+     */
+    public boolean changePassword()
+    {
+        loadAndPushResourceBundle("masterusrpwd");
+        
+        final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
+                "SystemSetup",
+                "ChangePassword",
+                null,
+                getResourceString(getResourceString("CHG_PWD_TITLE")),
+                "OK",
+                null,
+                null,
+                true,
+                MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE |
+                MultiView.IS_EDITTING);
+        dlg.setWhichBtns(CustomDialog.OK_BTN | CustomDialog.CANCEL_BTN);
+        
+        dlg.setFormAdjuster(new FormPane.FormPaneAdjusterIFace() {
+            @Override
+            public void adjustForm(final FormViewObj fvo)
+            {
+                final ValPasswordField   oldPwdVTF    = fvo.getCompById("1");
+                final ValPasswordField   newPwdVTF    = fvo.getCompById("2");
+                final ValPasswordField   verPwdVTF    = fvo.getCompById("3");
+                final PasswordStrengthUI pwdStrenthUI = fvo.getCompById("4");
+                
+                DocumentAdaptor da = new DocumentAdaptor() {
+                    @Override
+                    protected void changed(DocumentEvent e)
+                    {
+                        super.changed(e);
+                        
+                        // Need to invoke later so the da gets to set the enabled state last.
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                boolean enabled = dlg.getOkBtn().isEnabled();
+                                String  pwdStr  = new String(newPwdVTF.getPassword());
+                                boolean pwdOK   = pwdStrenthUI.checkStrength(pwdStr);
+                                
+                                dlg.getOkBtn().setEnabled(enabled && pwdOK);
+                                pwdStrenthUI.repaint();
+                            }
+                        });
+                    }
+                };
+                
+                oldPwdVTF.getDocument().addDocumentListener(da);
+                verPwdVTF.getDocument().addDocumentListener(da);
+                newPwdVTF.getDocument().addDocumentListener(da);
+            }
+        
+        });
+        Hashtable<String, String> valuesHash = new Hashtable<String, String>();
+        dlg.setData(valuesHash);
+        UIHelper.centerAndShow(dlg);
+        
+        if (!dlg.isCancelled())
+        {
+            int pwdLen = 6;
+            
+            String oldPwd  = valuesHash.get("OldPwd");
+            String newPwd1 = valuesHash.get("NewPwd1");
+            String newPwd2 = valuesHash.get("NewPwd2");
+            
+            if (newPwd1.equals(newPwd2))
+            {
+                if (newPwd1.length() < pwdLen)
+                {
+                    SpecifyUser spUser    = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+                    String      spuOldPwd = spUser.getPassword();
+                    if (oldPwd.equals(spuOldPwd))
+                    {
+                        popResourceBundle();
+                        return changePassword(oldPwd, newPwd2);
+                    }
+                    UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(getResourceString("PWD_ERR_BAD")), Color.RED);
+                } else
+                {
+                    UIRegistry.writeTimedSimpleGlassPaneMsg(getFormattedResStr(getResourceString("PWD_ERR_LEN"), pwdLen), Color.RED);
+                }
+            } else
+            {
+                UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(getResourceString("PWD_ERR_NOTSAME")), Color.RED);
+            }
+        }
+        popResourceBundle();
+        return false;
+    }
+    
+    /**
+     * This method changes the password and will display error dialogs when appropriate.
+     * @param oldPwd the old password
+     * @param newPwd the new password
+     * @return true if successful
+     */
+    protected boolean changePassword(final String oldPwd, 
+                                     final String newPwd)
+    {
+        SpecifyUser spUser    = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
+        String      username  = spUser.getName();
+
+        Pair<String, String> masterPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
+        
+        String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(masterPwd.first, masterPwd.second, newPwd);
+        if (StringUtils.isNotEmpty(encryptedMasterUP))
+        {
+            AppPreferences.getLocalPrefs().put(username+"_"+UserAndMasterPasswordMgr.MASTER_PATH, encryptedMasterUP);
+            spUser.setPassword(newPwd);
+            if (SpecifyUser.save(spUser))
+            {
+                return true;
+            }
+            
+            UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(getResourceString("PWD_ERR_SAVE")), Color.RED);
+        } else
+        {
+            UIRegistry.writeTimedSimpleGlassPaneMsg(getResourceString(getResourceString("PWD_ERR_RTRV")), Color.RED);
+        }
+        return false;
+    }
+    
+    /**
+     * @param username
+     * @param password
+     * @return
+     */
+    public boolean createUser(final String username, final String password)
+    {
+        return true;
+    }
+
+    /**
+     * @param username
+     * @param password
+     * @return
+     */
+    public boolean deleteUser(final String username, final String password)
+    {
+        return true;
+    }
+    
+    
+    /**
      * Returns the instance to the singleton
      * @return  the instance to the singleton
      */
-    public static MasterPasswordMgr getInstance()
+    public static UserAndMasterPasswordMgr getInstance()
     {
         if (instance != null)
         {
@@ -583,16 +749,16 @@ public class MasterPasswordMgr
         {
             try 
             {
-                return instance = (MasterPasswordMgr)Class.forName(factoryNameStr).newInstance();
+                return instance = (UserAndMasterPasswordMgr)Class.forName(factoryNameStr).newInstance();
                  
             } catch (Exception e) 
             {
-                InternalError error = new InternalError("Can't instantiate RecordSet factory " + factoryNameStr); //$NON-NLS-1$
+                InternalError error = new InternalError("Can't instantiate UserAndMasterPasswordMgr factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
             }
         }
-        return instance = new MasterPasswordMgr();
+        return instance = new UserAndMasterPasswordMgr();
     }
 }
 

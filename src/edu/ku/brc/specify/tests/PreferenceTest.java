@@ -10,7 +10,7 @@ import junit.framework.TestCase;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.auth.MasterPasswordMgr;
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -58,7 +58,7 @@ public class PreferenceTest extends TestCase
             localPrefs.setDirPath(UIRegistry.getAppDataDir());
             localPrefs.load();
             
-            Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
+            Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
             String hostName = "localhost";
             // This will log us in and return true/false
             if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", 

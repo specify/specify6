@@ -176,7 +176,7 @@ public class DBTableIdMgr
 					//log.debug("Populating hashtable ID["+tableId+"]for class: " + classname+" "+ inputFile.getName());
                     
                     DBTableInfo tblInfo = new DBTableInfo(tableId, classname, tablename, primaryKeyField, tableNode.attributeValue("abbrv")); //$NON-NLS-1$
-                    tblInfo.setIsSearchable(isSearchable);
+                    tblInfo.setSearchable(isSearchable);
                     tblInfo.setBusinessRuleName(XMLHelper.getAttr(tableNode, "businessrule", null)); //$NON-NLS-1$
                     
                     if (hash.get(tableId) != null)
@@ -308,6 +308,7 @@ public class DBTableIdMgr
     }
     
     /**
+     * Gets the localized title for a table. 
      * @param tableId the table id
      * @return the localized title for a table by id, returns "" if in error
      */

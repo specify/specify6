@@ -354,6 +354,8 @@ public class RegisterSpecify
         
         if (StringUtils.isNotEmpty(responseString))
         {
+            //System.err.println(responseString);
+            
             String[] tokens = StringUtils.split(responseString);
             if (tokens.length == 2 && tokens[0].equals("1"))
             {

@@ -110,4 +110,10 @@ public interface LocalizableIOIFace
      * @return true if the PickLists can be created/updates/deleted.
      */
     public abstract boolean hasUpdatablePickLists();
+    
+    
+    /**
+     * @return whether the application tables should be included to be configured.
+     */
+    public abstract boolean shouldIncludeAppTables();
 }

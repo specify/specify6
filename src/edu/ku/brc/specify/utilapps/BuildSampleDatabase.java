@@ -4343,7 +4343,7 @@ public class BuildSampleDatabase
         
         startTx();
         
-        Division division = createDivision(institution, disciplineType.getName(), "Icthyology", "IT", "Icthyology");
+        Division division = createDivision(institution, disciplineType.getName(), "Ichthyology", "IT", "Ichthyology");
         persist(division);
         
         // create tree defs (later we will make the def items and nodes)

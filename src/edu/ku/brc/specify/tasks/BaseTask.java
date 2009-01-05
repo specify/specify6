@@ -1,26 +1,28 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.tasks;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Collection;
 import java.util.Hashtable;
 
 import org.apache.commons.io.FileUtils;
 
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.PermissionIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -39,14 +41,13 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
     protected static WeakReference<Hashtable<String, PermissionOptionPersist>> taskPermsListWR = null;
     
     /**
-     * @param name
-     * @param title
+     * @param name the name of the task and should have an icon of the same name
+     * @param title the already localized title of the task.
      */
     public BaseTask(final String name, final String title)
     {
         super(name, title);
     }
-
     
     /**
      * @param fileName xml file to be read in
@@ -136,8 +137,47 @@ public abstract class BaseTask extends edu.ku.brc.af.tasks.BaseTask
         }
         return hash;
     }
+    
+    /**
+     * Display a message dialog if not all the tabs are closed (except 'Welcome') and ten returns false.
+     * @return whether any tabs are open except the 'Welcome' tab. 
+     */
+    public boolean isTabsClosed()
+    {
+        Collection<SubPaneIFace> allSubPanes = SubPaneMgr.getInstance().getSubPanes();
+        if (allSubPanes.size() > 0)
+        {
+            for (SubPaneIFace sp : allSubPanes)
+            {
+                if (sp.getTask().getClass() != StartUpTask.class)
+                {
+                    UIRegistry.displayInfoMsgDlgLocalized("BaseTask.PL_CLOSE_TABS");
+                    return false;
+                }
+                
+                if (sp.getTask() == this)
+                {
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Checks to see if anyone else is logged into the Discipline and displays a dialog list the Agent names
+     * of those who need to log off to perform the function.
+     * @return true if no else is logged into the Discipline, false if someone else is logged in
+     */
+    public boolean isAnyOtherUsersOn()
+    {
+        return !((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.CFG_SETUP");
+    }
 
 
+    //---------------------------------------------------------------------------
+    //-- edu.ku.brc.af.tasks.BaseTask
+    //---------------------------------------------------------------------------
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#getDefaultPermissions(java.lang.String)
      */

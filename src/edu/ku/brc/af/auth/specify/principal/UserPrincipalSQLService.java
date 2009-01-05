@@ -11,9 +11,6 @@
  * if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  * 02111-1307 USA
  */
-/**
- * 
- */
 package edu.ku.brc.af.auth.specify.principal;
 
 import java.sql.Connection;
@@ -26,10 +23,12 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.auth.specify.policy.DatabaseService;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 
 /**
  * @author megkumin
+ * @author rods
  * 
  * @code_status Alpha
  * 
@@ -47,8 +46,10 @@ public class UserPrincipalSQLService
 
     /**
      * Retrieves the SpecifyUser ID of a given user principal 
+     * @param principal
+     * @return
      */
-    static public int getSpecifyUserId(SpPrincipal principal)
+    public static int getSpecifyUserId(final SpPrincipal principal)
     {
     	int result = -1; 
         Connection conn = null;
@@ -89,7 +90,11 @@ public class UserPrincipalSQLService
         return result;
     }
     
-    static public ResultSet getUsersPrincipalsByUserId(String userId)
+    /**
+     * @param userId
+     * @return
+     */
+    /*public static ResultSet getUsersPrincipalsByUserId(final String userId)
     {
         Connection conn = null;
         ResultSet rs = null;
@@ -126,56 +131,30 @@ public class UserPrincipalSQLService
             }
         }
         return rs;
-    }
+    }*/
 
-    static public boolean isPrincipalAdmin(Integer principalId)
+    /**
+     * @param principalId
+     * @return
+     */
+    public static boolean isPrincipalAdmin(final Integer principalId)
     {
-        Connection conn = null;
-        ResultSet rs = null;
-        PreparedStatement pstmt = null;
-        boolean result = false;
-        try
-        {
-            log.debug("isAdmin: " + principalId); //$NON-NLS-1$
-            conn = DatabaseService.getInstance().getConnection();
-            if (conn != null)
-            {
-                pstmt = conn.prepareStatement("SELECT count(up.SpPrincipalID) as ct" //$NON-NLS-1$
-                		+ " FROM specifyuser_spprincipal as up" //$NON-NLS-1$
-                		+ " INNER JOIN spprincipal as p on (up.SpPrincipalID=p.SpPrincipalID)" //$NON-NLS-1$
+        String sql = "SELECT count(up.SpPrincipalID) as ct" //$NON-NLS-1$
+                        + " FROM specifyuser_spprincipal as up" //$NON-NLS-1$
+                        + " INNER JOIN spprincipal as p on (up.SpPrincipalID=p.SpPrincipalID)" //$NON-NLS-1$
                         + " WHERE p.GroupSubClass='" + AdminPrincipal.class.getCanonicalName() + "'"
-                        + "  AND up.SpecifyUserID=?"); //$NON-NLS-1$
-                pstmt.setInt(1, principalId);
-                log.debug("executing: " + pstmt.toString()); //$NON-NLS-1$
-                rs = pstmt.executeQuery();
-                if (rs.next()) {
-                    result = rs.getInt(1) >= 1;
-                }
-            } else
-            {
-                log.error("getUsersPrincipalsByUserId - database connection was null"); //$NON-NLS-1$
-            }
-        } catch (SQLException e)
-        {
-            log.error("Exception caught: " + e); //$NON-NLS-1$
-            e.printStackTrace();
-        } finally
-        {
-            try
-            {
-                if (conn != null)  conn.close();
-                if(pstmt != null)  pstmt.close();
-                if   (rs != null)  rs.close();
-            } catch (SQLException e)
-            {
-                log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
-                e.printStackTrace();
-            }
-        }
-        return result;
+                        + " AND up.SpecifyUserID=" + principalId;
+        Integer count = BasicSQLUtils.getCount(sql);
+        return count != null && count > 0;
     }
-
-    static public boolean deleteFromUserGroup(Integer userId, Integer userGroupId)
+    
+    /**
+     * @param msg
+     * @param sql
+     * @param args
+     * @return
+     */
+    protected static boolean performUpdate(final String msg, final String sql, final Object...args)
     {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -184,14 +163,16 @@ public class UserPrincipalSQLService
             conn = DatabaseService.getInstance().getConnection();
             if (conn != null)
             {
-                 pstmt = conn
-                        .prepareStatement("DELETE FROM specifyuser_spprincipal WHERE SpecifyUserID=? AND SpPrincipalID=?"); //$NON-NLS-1$
-                pstmt.setString(1, userId + ""); //$NON-NLS-1$
-                pstmt.setString(2, userGroupId + ""); //$NON-NLS-1$
+                pstmt = conn.prepareStatement(sql); //$NON-NLS-1$
+                for (int i=0;i<args.length;i++)
+                {
+                    pstmt.setString(i+1, args[i].toString());
+                }
                 return 0 < pstmt.executeUpdate();
+                
             } else
             {
-                log.error("deleteFromUserGroup - database connection was null"); //$NON-NLS-1$
+                log.error(msg + " - database connection was null"); //$NON-NLS-1$
             }
         } catch (SQLException e)
         {
@@ -203,6 +184,7 @@ public class UserPrincipalSQLService
             {
                 if (conn != null)  conn.close();
                 if(pstmt != null)  pstmt.close(); 
+                
             } catch (SQLException e)
             {
                 log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
@@ -212,75 +194,49 @@ public class UserPrincipalSQLService
         return false;
     }
 
-    static public boolean addToUserGroup(Integer userId, Integer userGroupId)
+    
+    /**
+     * @param userId
+     * @param userGroupId
+     * @return
+     */
+    public static boolean deleteFromUserGroup(final Integer userId, final Integer userGroupId)
     {
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        try
-        {
-            conn = DatabaseService.getInstance().getConnection();
-            if (conn != null)
-            {
-                pstmt = conn .prepareStatement("INSERT INTO specifyuser_spprincipal VALUES (?, ?)"); //$NON-NLS-1$
-                pstmt.setString(1, userId + ""); //$NON-NLS-1$
-                pstmt.setString(2, userGroupId + ""); //$NON-NLS-1$
-                return 0 < pstmt.executeUpdate();
-            }
-            else
-            {
-                log.error("addToUserGroup - database connection was null"); //$NON-NLS-1$
-            }
-        } catch (SQLException e)
-        {
-            log.error("Exception caught: " + e); //$NON-NLS-1$
-            e.printStackTrace();
-        }finally
-        {
-            try
-            {
-                if (conn != null)   conn.close();
-                if (pstmt != null)  pstmt.close();
-            } catch (SQLException e)
-            {
-                log.error("addToUserGroup Exception caught: " + e.toString()); //$NON-NLS-1$
-                e.printStackTrace();
-            }
-        }
-        return false;
+        return performUpdate("deleteFromUserGroup", 
+                             "DELETE FROM specifyuser_spprincipal WHERE SpecifyUserID=? AND SpPrincipalID=?",
+                             userId, userGroupId);
     }
 
-    static public void addUser(String username, String password) throws SQLException
+
+    /**
+     * @param userId
+     * @param userGroupId
+     * @return
+     */
+    public static boolean addToUserGroup(final Integer userId, final Integer userGroupId)
     {
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        try
-        {
-            conn = DatabaseService.getInstance().getConnection();
-            pstmt = conn.prepareStatement(
-                    "INSERT INTO specifyuser (Name, Password) VALUES (?, ?)"); //$NON-NLS-1$
-            pstmt.setString(2, username);
-            pstmt.setString(3, password);
-            pstmt.executeUpdate();
-        } 
-        catch (SQLException e)
-        {
-            log.error("Exception caught: " + e); //$NON-NLS-1$
-            e.printStackTrace();
-        }finally
-        {
-            try
-            {
-                if (conn != null)   conn.close();
-                if (pstmt != null)  pstmt.close();
-            } catch (SQLException e)
-            {
-                log.error("addUser Exception caught: " + e.toString()); //$NON-NLS-1$
-                e.printStackTrace();
-            }
-        }
+        return performUpdate("addToUserGroup",
+                             "INSERT INTO specifyuser_spprincipal VALUES (?, ?)",
+                             userId, userGroupId);
     }
 
-    static public String getUsersIdByName(String userName)
+    /**
+     * @param username
+     * @param password
+     * @throws SQLException
+     */
+    public static void addUser(final String username, final String password) throws SQLException
+    {
+        performUpdate("addUser",
+                      "INSERT INTO specifyuser (Name, Password) VALUES (?, ?)",
+                      username, password);
+    }
+
+    /**
+     * @param userName
+     * @return
+     */
+    public static String getUsersIdByName(final String userName)
     {
         Connection conn = null;
         String id = null;
@@ -288,7 +244,7 @@ public class UserPrincipalSQLService
         try
         {
             log.debug("getUsersIdByName: " + userName); //$NON-NLS-1$
-            conn = DatabaseService.getInstance().getConnection();
+            conn  = DatabaseService.getInstance().getConnection();
             pstmt = conn.prepareStatement("SELECT specifyuser.SpecifyUserID FROM specifyuser WHERE name=?"); //$NON-NLS-1$
             pstmt.setString(1, userName);
             log.debug("executing: " + pstmt.toString()); //$NON-NLS-1$
@@ -324,29 +280,29 @@ public class UserPrincipalSQLService
      * @return
      * @throws Exception
      */
-    public static Set<SpPrincipal> getUsersGroupsByUsername(String user) throws Exception
+    public static Set<SpPrincipal> getUsersGroupsByUsername(final String user) throws Exception
     {
         log.debug("findGroups() called"); //$NON-NLS-1$
-        Set<SpPrincipal> principals = new HashSet<SpPrincipal>();
-        Connection conn = null;
-        PreparedStatement pstmt =null;
+        Set<SpPrincipal>  principals = new HashSet<SpPrincipal>();
+        Connection        conn       = null;
+        PreparedStatement pstmt      = null;
         try
         {
             conn = DatabaseService.getInstance().getConnection();
             log.debug("findGroups() called.  user:" + user); //$NON-NLS-1$
             conn = DatabaseService.getInstance().getConnection();
             String myUserId = UserPrincipalSQLService.getUsersIdByName(user);
-            String sql = "SELECT specifyuser_spprincipal.SpPrincipalID " //$NON-NLS-1$
-                + "FROM specifyuser_spprincipal WHERE SpecifyUserID=?"; //$NON-NLS-1$
+            String sql = "SELECT specifyuser_spprincipal.SpPrincipalID FROM specifyuser_spprincipal WHERE SpecifyUserID=?"; //$NON-NLS-1$
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, myUserId);
             log.debug("executing: " + pstmt.toString()); //$NON-NLS-1$
+            
             ResultSet spPrincipalIDSet = pstmt.executeQuery();
             while (spPrincipalIDSet.next())
             {
                 String princId = spPrincipalIDSet.getString("SpPrincipalID"); //$NON-NLS-1$
                 Integer princIdInt = spPrincipalIDSet.getInt("SpPrincipalID"); //$NON-NLS-1$
-                sql = "SELECT distinct(spprincipal.name)," + "spprincipal.groupsubclass " //$NON-NLS-1$ //$NON-NLS-2$
+                sql = "SELECT distinct(spprincipal.name), spprincipal.groupsubclass " //$NON-NLS-1$
                         + "FROM specifyuser_spprincipal, spprincipal " //$NON-NLS-1$
                         + "WHERE (specifyuser_spprincipal.specifyuserid= ? " //$NON-NLS-1$
                         + "AND specifyuser_spprincipal.spprincipalid= ? " //$NON-NLS-1$
@@ -359,9 +315,9 @@ public class UserPrincipalSQLService
                 ResultSet rs = pstmt.executeQuery();
                 while (rs.next())
                 {
-                    String groupName = rs.getString("name"); //$NON-NLS-1$
-                    String className = rs.getString("groupsubclass"); //$NON-NLS-1$
-                    SpPrincipal grp = new SpPrincipal(princIdInt);
+                    String      groupName = rs.getString("name"); //$NON-NLS-1$
+                    String      className = rs.getString("groupsubclass"); //$NON-NLS-1$
+                    SpPrincipal grp       = new SpPrincipal(princIdInt);
                     grp.setName(groupName);
                     grp.setGroupSubClass(className);
                     principals.add(grp);
@@ -378,6 +334,7 @@ public class UserPrincipalSQLService
             {
                 if (conn != null)   conn.close();
                 if (pstmt != null)  pstmt.close();
+                
             } catch (SQLException e)
             {
                 log.error("addUser Exception caught: " + e.toString()); //$NON-NLS-1$

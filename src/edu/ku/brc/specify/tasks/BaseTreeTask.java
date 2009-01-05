@@ -370,7 +370,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         // XXX SECURITY - Check to see if they can edit the tree def
         ActionListener treeDefClearLockAction = new ActionListener()
         {
-            public void actionPerformed(ActionEvent arg0)
+            public void actionPerformed(ActionEvent e)
             {
                 String lockName     = treeDefClass.getSimpleName();
                 String formLockName = lockName + "Form";

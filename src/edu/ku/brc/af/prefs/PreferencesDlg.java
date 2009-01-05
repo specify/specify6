@@ -15,36 +15,32 @@
 package edu.ku.brc.af.prefs;
 
 import static edu.ku.brc.ui.UIHelper.createButton;
-import static edu.ku.brc.ui.UIHelper.createLabel;
-import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -53,15 +49,21 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.ui.SearchBox;
+import edu.ku.brc.af.ui.db.JAutoCompTextField;
 import edu.ku.brc.af.ui.forms.validation.DataChangeListener;
 import edu.ku.brc.af.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DocumentAdaptor;
 import edu.ku.brc.ui.JTiledPanel;
+import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.SimpleGlassPane;
 import edu.ku.brc.ui.skin.SkinItem;
 import edu.ku.brc.ui.skin.SkinsMgr;
 
@@ -85,17 +87,19 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
     
     public static final String PREFERENCES = "Preferences"; //$NON-NLS-1$
     
-    protected JTextField    searchText;
-    protected JButton       searchBtn;
+    protected SimpleGlassPane       glassPane;
+    protected JAutoCompTextField    searchText;
 
-    protected PrefsToolbar  prefsToolbar  = null;
-    protected PrefsToolbar  prefsPane     = null;
+    protected PrefsToolbar          prefsToolbar   = null;
+    protected PrefsToolbar          prefsPane      = null;
+    protected PrefIndicatorPanel    delegateRenderer = new PrefIndicatorPanel();
+    
 
-    protected Color         textBGColor    = null;
-    protected Color         badSearchColor = new Color(255,235,235);
+    protected Color                 textBGColor    = null;
+    protected Color                 badSearchColor = new Color(255,235,235);
 
-    protected Component     currentComp    = null;
-    protected SkinItem      skinItem       = null;
+    protected Component             currentComp    = null;
+    protected SkinItem              skinItem       = null;
 
     protected Hashtable<String, Component> compsHash      = new Hashtable<String, Component>();
     protected String                       firstPanelName = null;
@@ -112,6 +116,14 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
 
         this.skinItem = SkinsMgr.getSkinItem("PrefDlg");
         
+        glassPane = new SimpleGlassPane("", 24, false);
+        setGlassPane(glassPane);
+        glassPane.setVisible(false);
+        glassPane.setFillColor(new Color(0,0,0, 96));
+        glassPane.setDelegateRenderer(delegateRenderer);
+        
+        //delegateRenderer.setIndexVisible(inx, visible);
+        
         createUI();
         initAsToolbar(addSearchUI);
         pack();
@@ -125,7 +137,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
     @Override
     protected JPanel createMainPanel()
     {
-        JPanel   panel    = new JTiledPanel();
+        JPanel panel = new JTiledPanel();
 
         if (skinItem != null)
         {
@@ -148,20 +160,21 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         
         if (prefsToolbar.getNumPrefs() > 1)
         {
-            JTiledPanel tiledPanel = new JTiledPanel();
+            JPanel panel = new JPanel();
             if (skinItem != null)
             {
-                skinItem.setupPanel(tiledPanel);
+                skinItem.setupPanel(panel);
             }
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("f:p:g", "p"), tiledPanel); //$NON-NLS-1$ //$NON-NLS-2$
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("f:p:g", "p"), panel); //$NON-NLS-1$ //$NON-NLS-2$
             CellConstraints cc         = new CellConstraints();
     
             builder.add(prefsToolbar, cc.xy(1,1));
             if (addSearchUI)
             {
-                builder.add( createSearchPanel(), cc.xy(3,1));
+                ((ToolbarLayoutManager)prefsToolbar.getLayout()).setAdjustRightLastComp(true);
+                prefsToolbar.add(createSearchPanel());
             }
-    
+            
             mainPanel.add(builder.getPanel(), BorderLayout.NORTH);
             
             prefsToolbar.setPreferredSize(prefsToolbar.getPreferredSize());
@@ -256,8 +269,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
      */
     protected void initAsGrid(final boolean addSearchUI)
     {
-
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p:g, r:p:g", "p")); //$NON-NLS-1$ //$NON-NLS-2$
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p", "p")); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc         = new CellConstraints();
 
         JButton showAllBtn = createButton(getResourceString("PreferencesDlg.SHOW_ALL")); //$NON-NLS-1$
@@ -265,7 +277,8 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
         builder.add(showAllBtn, cc.xy(1,1));
         if (addSearchUI)
         {
-            builder.add( createSearchPanel(), cc.xy(3,1));
+            ((ToolbarLayoutManager)prefsToolbar.getLayout()).setAdjustRightLastComp(true);
+            prefsToolbar.add(createSearchPanel());
         }
 
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -478,60 +491,39 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
      */
     protected JPanel createSearchPanel()
     {
-        // Create Search Panel
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-
-        JPanel     searchPanel = new JPanel(gridbag);
-        JLabel     spacer      = createLabel(" "); //$NON-NLS-1$
-
-        searchBtn   = createButton(getResourceString("PreferencesDlg.SEARCH")); //$NON-NLS-1$
-
-        searchText  = createTextField("", 15); //$NON-NLS-1$
-        textBGColor = searchText.getBackground();
-
-        searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));
-
-        ActionListener doQuery = new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                String text = searchText.getText();
-                if (isNotEmpty(text))
-                {
-                    doPrefSearch();
-                }
-            }
-        };
-
-        searchBtn.addActionListener(doQuery);
-        searchText.addActionListener(doQuery);
-        searchText.addKeyListener(new KeyAdapter()
+        DocumentListener searchDL = new DocumentAdaptor()
         {
             @Override
-            public void keyPressed(KeyEvent e)
-            {
-                if (searchText.getBackground() != textBGColor)
+            protected void changed(@SuppressWarnings("unused") DocumentEvent e)
+            { 
+                delegateRenderer.clearArrows();
+                for (int i=0;i<prefsToolbar.getComponentCount();i++)
                 {
-                    searchText.setBackground(textBGColor);
+                    Component c = prefsToolbar.getComponent(i);
+                    if (c instanceof RolloverCommand)
+                    {
+                        Rectangle r = c.getBounds();
+                        delegateRenderer.addArrow(r.x + r.width/2, 10);
+                        delegateRenderer.setIndexVisible(i, true);
+                    }
                 }
+                
+                glassPane.setMargin(new Insets(prefsToolbar.getSize().height, 0, 0, 0));
+                glassPane.setVisible(true);
+                glassPane.setUseBGImage(true);
+                glassPane.setHideOnClick(true);
+                /*glassPane.addMouseListener(new MouseAdapter() {
+                    @Override public void mousePressed(MouseEvent e)
+                    { 
+                        glassPane.setVisible(false);
+                    }
+                });*/
             }
-        });
-
-
-        c.weightx = 1.0;
-        gridbag.setConstraints(spacer, c);
-        searchPanel.add(spacer);
-
-        c.weightx = 0.0;
-        gridbag.setConstraints(searchText, c);
-        searchPanel.add(searchText);
-
-        searchPanel.add(spacer);
-
-        gridbag.setConstraints(searchBtn, c);
-        searchPanel.add(searchBtn);
-
-        return searchPanel;
+        };
+        searchText = new JAutoCompTextField(UIHelper.isMacOS() ? 15 : 22);
+        searchText.getDocument().addDocumentListener(searchDL);
+        SearchBox searchBox = new SearchBox(searchText, null);
+        return searchBox;
     }
 
    /**
@@ -769,5 +761,5 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener, 
          }
     }
 
-
 }
+

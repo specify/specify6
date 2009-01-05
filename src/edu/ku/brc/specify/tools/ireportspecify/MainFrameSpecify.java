@@ -48,7 +48,7 @@ import org.apache.log4j.Logger;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
-import edu.ku.brc.af.auth.MasterPasswordMgr;
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -1394,17 +1394,17 @@ public class MainFrameSpecify extends MainFrame
                     @Override
                     public Pair<String, String> getUserNamePassword(final String username, final String password)
                     {
-                        MasterPasswordMgr.getInstance().setUsersUserName(username);
-                        MasterPasswordMgr.getInstance().setUsersPassword(password);
+                        UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
+                        UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
                         
-                        Pair<String, String> usrPwd = MasterPasswordMgr.getInstance().getUserNamePassword();
+                        Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
                         
                         return usrPwd;
                     }
                     @Override
                     public boolean editMasterInfo(final String username)
                     {
-                        return MasterPasswordMgr.getInstance().editMasterInfo(username);
+                        return UserAndMasterPasswordMgr.getInstance().editMasterInfo(username);
                     }
                 };
                 String nameAndTitle = "Specify iReport"; // I18N

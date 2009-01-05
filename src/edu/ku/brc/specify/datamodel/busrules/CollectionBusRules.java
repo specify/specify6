@@ -9,16 +9,16 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import java.awt.Dialog;
+import java.awt.Frame;
 import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
@@ -26,16 +26,15 @@ import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.ResultSetController;
+import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.init.NumberingSchemeSetupDlg;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.dbsupport.SpecifyDeleteHelper;
-import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -57,6 +56,25 @@ public class CollectionBusRules extends BaseBusRules
         
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.forms.BaseBusRules#initialize(edu.ku.brc.af.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg)
+    {
+        super.initialize(viewableArg);
+        
+        if (formViewObj != null && formViewObj.getMVParent().isTopLevel())
+        {
+            ResultSetController rsc = formViewObj.getRsController();
+            if (rsc != null)
+            {
+                if (rsc.getNewRecBtn() != null) rsc.getNewRecBtn().setVisible(false);
+                if (rsc.getDelRecBtn() != null) rsc.getDelRecBtn().setVisible(false);
+            }
+        }
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.forms.BaseBusRules#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
@@ -135,9 +153,22 @@ public class CollectionBusRules extends BaseBusRules
         MultiView  disciplineMV = formViewObj.getMVParent().getMultiViewParent();
         Discipline discipline   = (Discipline)disciplineMV.getData();
         
-        NumberingSchemeSetupDlg dlg = new NumberingSchemeSetupDlg(discipline.getDivision(), 
-                                                                  discipline, 
-                                                                  (Collection)newDataObj);
+        
+        NumberingSchemeSetupDlg dlg;
+        if (UIRegistry.getMostRecentWindow() instanceof Dialog)
+        {
+            dlg = new NumberingSchemeSetupDlg((Dialog)UIRegistry.getMostRecentWindow(), 
+                    discipline.getDivision(), 
+                    discipline, 
+                    (Collection)newDataObj);
+        } else
+        {
+            dlg = new NumberingSchemeSetupDlg((Frame)UIRegistry.getMostRecentWindow(), 
+                    discipline.getDivision(), 
+                    discipline, 
+                    (Collection)newDataObj);
+        }
+        
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {

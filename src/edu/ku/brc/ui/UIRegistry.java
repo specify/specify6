@@ -21,6 +21,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -1383,6 +1384,11 @@ public class UIRegistry
     {
         SimpleGlassPane glassPane = new SimpleGlassPane(msg, pointSize);
         
+        JStatusBar statusBar = UIRegistry.getStatusBar();
+        if (statusBar != null)
+        {
+            glassPane.setMargin(new Insets(0, 0, statusBar.getSize().height, 0));
+        }
         oldGlassPane = UIRegistry.getGlassPane();
         
         ((JFrame)UIRegistry.getTopWindow()).setGlassPane(glassPane);

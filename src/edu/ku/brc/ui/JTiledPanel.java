@@ -113,7 +113,7 @@ public class JTiledPanel extends JPanel
     /**
      * Paint this component, including the tiled background image, if any.
      */
-    public void paintComponent(Graphics g)
+    protected void paintComponent(Graphics g)
     {
         super.paintComponent(g);
         

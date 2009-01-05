@@ -341,7 +341,7 @@ public class SecurityAdminPane extends BaseSubPane
         
         // create object that will control the creation of popups
         // constructor will take care of hooking up right listeners to the tree.
-        new NavigationTreeContextMenuMgr(navTreeMgr);
+        //new NavigationTreeContextMenuMgr(navTreeMgr);
         
         IconManager.IconSize iconSize = IconManager.IconSize.Std20;
         ImageIcon sysIcon = IconManager.getIcon("SystemSetup", iconSize);
@@ -434,19 +434,23 @@ public class SecurityAdminPane extends BaseSubPane
         for (Division division : divisions)
         {
             // sort disciplines
-            TreeSet<Discipline> disciplines = new TreeSet<Discipline>(division.getDisciplines()); 
-            for (Discipline discipline : disciplines)
+            if (true)
             {
-                DefaultMutableTreeNode discNode = new DefaultMutableTreeNode(new DataModelObjBaseWrapper(discipline));
-                instNode.add(discNode);
-                addCollectionsRecursively(session, discNode, discipline);
-                addGroup(session, discNode, discipline);
+                TreeSet<Discipline> disciplines = new TreeSet<Discipline>(division.getDisciplines()); 
+                for (Discipline discipline : disciplines)
+                {
+                    DefaultMutableTreeNode discNode = new DefaultMutableTreeNode(new DataModelObjBaseWrapper(discipline));
+                    instNode.add(discNode);
+                    addCollectionsRecursively(session, discNode, discipline);
+                    addGroup(session, discNode, discipline);
+                }
+            } else
+            {
+                // The code below is to add divisions when these are to be visible (in a future release)
+                DefaultMutableTreeNode divNode = new DefaultMutableTreeNode(new DataModelObjBaseWrapper(division));
+                instNode.add(divNode);
+                addDisciplinesRecursively(session, divNode, division);
             }
-            
-            // The code below is to add divisions when these are to be visible (in a future release)
-            //DefaultMutableTreeNode divNode = new DefaultMutableTreeNode(new DataModelObjBaseWrapper(division));
-            //instNode.add(divNode);
-            //addDisciplinesRecursively(session, divNode, division);
         }
     }
 
@@ -743,7 +747,8 @@ public class SecurityAdminPane extends BaseSubPane
             String[] optionLabels = new String[] {getResourceString("SaveChangesBtn"), 
                                                   getResourceString("DiscardChangesBtn"), 
                                                   getResourceString("CANCEL")};
-            int rv = JOptionPane.showOptionDialog(null,
+            
+            int rv = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(),
                         UIRegistry.getLocalizedMessage("SaveChanges", currentTitle),
                         getResourceString("SaveChangesTitle"),
                         JOptionPane.YES_NO_CANCEL_OPTION,
@@ -798,6 +803,7 @@ public class SecurityAdminPane extends BaseSubPane
         createInfoSubPanel("SystemSetup", "Institution", "Institution", Institution.class, "institutionId", editing, formOptions);
         createInfoSubPanel("SystemSetup", "DisciplineWithoutCollections", "Discipline", Discipline.class, "disciplineId", editing, formOptions);
         createInfoSubPanel("SystemSetup", "Collection", "Collection", Collection.class, "collectionId", editing, formOptions);
+        
         createUserPanel();
         createGroupPanel();
     }

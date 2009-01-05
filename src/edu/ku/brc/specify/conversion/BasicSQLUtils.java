@@ -423,10 +423,10 @@ public class BasicSQLUtils
      * @param sql
      * @return
      */
-    public static int getCount(final String sql)
+    public static Integer getCount(final String sql)
     {
-        int count = 0;
-        Statement stmt = null;
+        Integer   count = null;
+        Statement stmt  = null;
         try
         {
             Connection connection = dbConn != null ? dbConn : DBConnection.getInstance().getConnection();
@@ -481,8 +481,8 @@ public class BasicSQLUtils
             stmt = connection.createStatement();
             ResultSet         rs       = stmt.executeQuery(sql);
             ResultSetMetaData metaData = rs.getMetaData();
-            int numCols = metaData.getColumnCount();
-            if (rs.next())
+            int               numCols  = metaData.getColumnCount();
+            while (rs.next())
             {
                 Object[] colData = new Object[numCols];
                 list.add(colData);

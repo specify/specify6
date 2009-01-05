@@ -10,6 +10,7 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Dialog;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -98,9 +99,20 @@ public class CollectionSetupBusRules extends BaseBusRules
         MultiView disciplineMV = formViewObj.getMVParent().getMultiViewParent();
         MultiView divisionMV   = disciplineMV.getMultiViewParent();
         
-        NumberingSchemeSetupDlg dlg = new NumberingSchemeSetupDlg((Division)divisionMV.getData(), 
-                                                                  (Discipline)disciplineMV.getData(), 
-                                                                  (Collection)newDataObj);
+        NumberingSchemeSetupDlg dlg;
+        if (UIRegistry.getMostRecentWindow() instanceof Dialog)
+        {
+            dlg = new NumberingSchemeSetupDlg((Dialog)UIRegistry.getMostRecentWindow(), 
+                    (Division)divisionMV.getData(), 
+                    (Discipline)disciplineMV.getData(), 
+                    (Collection)newDataObj);
+        } else
+        {
+            dlg = new NumberingSchemeSetupDlg((Frame)UIRegistry.getMostRecentWindow(), 
+                    (Division)divisionMV.getData(), 
+                    (Discipline)disciplineMV.getData(), 
+                    (Collection)newDataObj);
+        }
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {

@@ -378,7 +378,8 @@ public class TaskMgr implements CommandListener
                     menu.add((JMenuItem)me);
                 } else
                 {
-                    menu.add((JMenuItem)me, menuItemDesc.getPosition() == MenuItemDesc.Position.Before ? insertPos : insertPos);    
+                    menu.add((JMenuItem)me, insertPos);
+                    found = true;
                 }
                 
                 insertPos++;

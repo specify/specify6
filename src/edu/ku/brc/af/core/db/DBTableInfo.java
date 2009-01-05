@@ -267,7 +267,7 @@ public class DBTableInfo extends DBInfoBase
         return isSearchable;
     }
 
-    public void setIsSearchable(boolean isSearchable)
+    public void setSearchable(boolean isSearchable)
     {
         this.isSearchable = isSearchable;
     }

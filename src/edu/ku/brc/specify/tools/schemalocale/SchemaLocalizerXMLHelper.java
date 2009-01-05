@@ -126,6 +126,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#load()
      */
     @SuppressWarnings("unchecked")
+    @Override
     public boolean load()
     {
         tables = load(null);
@@ -169,8 +170,9 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#load()
+    /**
+     * @param discipline
+     * @return
      */
     @SuppressWarnings("unchecked")
     protected Vector<DisciplineBasedContainer> load(final String discipline)
@@ -532,6 +534,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#didModelChangeDuringLoad()
      */
+    @Override
     public boolean didModelChangeDuringLoad()
     {
         return changesMadeDuringStartup;
@@ -546,6 +549,9 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         return tableHash.get(name);
     }
     
+    /**
+     * 
+     */
     protected void escapeForXML()
     {
         //Vector<LocalizableContainerIFace> containers = new Vector<LocalizableContainerIFace>();
@@ -668,6 +674,9 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     }
     */
     
+    /**
+     * @param xstream
+     */
     protected void configXStream(final XStream xstream)
     {
         xstream.alias("container", DisciplineBasedContainer.class);
@@ -701,9 +710,11 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         xstream.omitField(DataModelObjBase.class,  "lastEditedBy");
         
     }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#save()
      */
+    @Override
     public boolean save()
     {
         return save(XMLHelper.getConfigDirPath(null));
@@ -799,10 +810,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
 
     }
     
-
-    
     /**
-     * @param containers
+     * @param discipline
      * @return
      */
     protected Vector<DisciplineBasedContainer> filterForDisplineContainers(final String discipline)
@@ -864,9 +873,10 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         }
     }
     
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#createResourceFiles()
      */
+    @Override
     public boolean createResourceFiles()
     {
         Hashtable<String, Boolean> localeHash = new Hashtable<String, Boolean>();
@@ -921,7 +931,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainer(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
-    public void getContainer(LocalizableJListItem item, final LocalizableIOIFaceListener l)
+    @Override
+    public void getContainer(final LocalizableJListItem item, final LocalizableIOIFaceListener l)
     {
         if (l != null)
         {
@@ -934,6 +945,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainerDisplayItems()
      */
+    @Override
     public Vector<LocalizableJListItem> getContainerDisplayItems()
     {
         return tableDisplayItems;
@@ -942,8 +954,9 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getItem(edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace, edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
-    public LocalizableItemIFace getItem(LocalizableContainerIFace container,
-                                        LocalizableJListItem      item)
+    @Override
+    public LocalizableItemIFace getItem(final LocalizableContainerIFace container,
+                                        final LocalizableJListItem      item)
     {
         for (LocalizableItemIFace cItem : container.getContainerItems())
         {
@@ -958,7 +971,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getDisplayItems(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
-    public Vector<LocalizableJListItem> getDisplayItems(LocalizableJListItem container)
+    @Override
+    public Vector<LocalizableJListItem> getDisplayItems(final LocalizableJListItem container)
     {
         Vector<LocalizableJListItem> items = itemJListItemsHash.get(container);
         if (items == null)
@@ -987,6 +1001,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#containerChanged(edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace)
      */
+    @Override
     public void containerChanged(LocalizableContainerIFace container)
     {
         // no op - doesn't matter
@@ -1021,6 +1036,10 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
      * @param lndi
      * @param localeHash
      */
+    /**
+     * @param lndi
+     * @param localeHash
+     */
     public static void checkForLocales(final LocalizableItemIFace lndi, final Hashtable<String, Boolean> localeHash)
     {
         Vector<LocalizableStrIFace> namesList = new Vector<LocalizableStrIFace>();
@@ -1039,10 +1058,10 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         }
     }
     
-    /**
-     * @param locale
-     * @return
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#isLocaleInUse(java.util.Locale)
      */
+    @Override
     public boolean isLocaleInUse(final Locale locale)
     {
         Hashtable<String, Boolean> localeHash = new Hashtable<String, Boolean>();
@@ -1057,10 +1076,10 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         return localeHash.get(makeLocaleKey(locale)) != null;
     }
     
-    /**
-     * @param locale
-     * @return
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getLocalesInUse()
      */
+    @Override
     public Vector<Locale> getLocalesInUse()
     {
         Hashtable<String, Boolean> localeHash = new Hashtable<String, Boolean>();
@@ -1128,7 +1147,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#copyLocale(java.util.Locale, java.util.Locale)
      */
-    public void copyLocale(Locale srcLocale, Locale dstLocale)
+    @Override
+    public void copyLocale(final Locale srcLocale, final Locale dstLocale)
     {
         /*for (LocalizableJListItem listItem : getContainerDisplayItems())
         {
@@ -1146,7 +1166,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#export(java.io.File)
      */
-    public boolean exportToDirectory(File expportDirectory)
+    @Override
+    public boolean exportToDirectory(final File expportDirectory)
     {
         return save(expportDirectory.getAbsolutePath() + File.separator);
     }
@@ -1154,6 +1175,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getPickLists()
      */
+    @Override
     public List<PickList> getPickLists(final String disciplineName)
     {
         List<PickList>     pickLists     = new Vector<PickList>();
@@ -1176,11 +1198,21 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#hasUpdatablePickLists()
      */
+    @Override
     public boolean hasUpdatablePickLists()
     {
         return false;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#shouldIncludeAppTables()
+     */
+    @Override
+    public boolean shouldIncludeAppTables()
+    {
+        return true;
+    }
+
     /**
      * @param itemStrs
      * @param locale
@@ -1198,6 +1230,9 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         return null;
     }
     
+    /**
+     * 
+     */
     /**
      * 
      */

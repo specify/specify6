@@ -12,7 +12,7 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
-import edu.ku.brc.af.auth.MasterPasswordMgr;
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.db.DatabaseLoginListener;
@@ -85,7 +85,7 @@ public class BasicHibernateMain implements DatabaseLoginListener
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
         localPrefs.load();
 
-        Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
+        Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
         BasicHibernateMain tester = new BasicHibernateMain();
 		UIHelper.doLogin(usernamePassword.first, usernamePassword.second, true, false, tester, null);
 	}

@@ -17,15 +17,20 @@ package edu.ku.brc.ui;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.GradientPaint;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionListener;
@@ -171,6 +176,11 @@ public final class UIHelper
     protected static boolean         isSecurityOn    = false;
     protected static Font            sysBaseFont;
     
+    private static final Color clrGlowInnerHi = new Color(253, 239, 175, 148);
+    private static final Color clrGlowInnerLo = new Color(255, 209, 0);
+    private static final Color clrGlowOuterHi = new Color(253, 239, 175, 124);
+    private static final Color clrGlowOuterLo = new Color(255, 179, 0);
+
     static {
 
         sysBaseFont = new JLabel("").getFont();
@@ -2802,7 +2812,22 @@ public final class UIHelper
     
     public static JLabel createI18NFormLabel(final String key, final int horzAlignment)
     {
-        JLabel lbl = new JLabel(getResourceString(key)+":", horzAlignment);
+        return createFormLabel(getResourceString(key), null, horzAlignment);
+    }
+    
+    public static JLabel createFormLabel(final String text)
+    {
+        return createFormLabel(text, null, SwingConstants.RIGHT);
+    }
+    
+    public static JLabel createFormLabel(final String text, final int horzAlignment)
+    {
+        return createFormLabel(text, null, horzAlignment);
+    }
+    
+    public static JLabel createFormLabel(final String text, final ImageIcon icon, final int horzAlignment)
+    {
+        JLabel lbl = new JLabel(text+":", horzAlignment);
         setControlSize(lbl);
         return lbl;
     }
@@ -2984,5 +3009,58 @@ public final class UIHelper
         }
         return maskFormatter;
     }
+
+    /**
+     * @param c1
+     * @param pct1
+     * @param c2
+     * @param pct2
+     * @return
+     */
+    public static Color getMixedColor(Color c1, float pct1, Color c2, float pct2)
+    {
+        float[] clr1 = c1.getComponents(null);
+        float[] clr2 = c2.getComponents(null);
+        for (int i = 0; i < clr1.length; i++)
+        {
+            clr1[i] = (clr1[i] * pct1) + (clr2[i] * pct2);
+        }
+        return new Color(clr1[0], clr1[1], clr1[2], clr1[3]);
+    }
+
+    // Here's the trick... To render the glow, we start with a thick pen
+    // of the "inner" color and stroke the desired shape. Then we repeat
+    // with increasingly thinner pens, moving closer to the "outer" color
+    // and increasing the opacity of the color so that it appears to
+    // fade towards the interior of the shape. We rely on the "clip shape"
+    // having been rendered into our destination image already so that
+    // the SRC_ATOP rule will take care of clipping out the part of the
+    // stroke that lies outside our shape.
+    /**
+     * @param g2
+     * @param shape
+     * @param glowWidth
+     */
+    public static void paintBorderGlow(final Graphics2D g2, final Shape shape, final int glowWidth)
+    {
+        int gw = glowWidth * 2;
+        for (int i = gw; i >= 2; i -= 2)
+        {
+            float pct = (float) (gw - i) / (gw - 1);
+
+            Color mixHi = getMixedColor(clrGlowInnerHi, pct, clrGlowOuterHi, 1.0f - pct);
+            Color mixLo = getMixedColor(clrGlowInnerLo, pct, clrGlowOuterLo, 1.0f - pct);
+            g2.setPaint(new GradientPaint(0.0f, 40 * 0.25f, mixHi, 0.0f, 40, mixLo));
+            
+            g2.setColor(Color.WHITE);
+
+            // See my "Java 2D Trickery: Soft Clipping" entry for more
+            // on why we use SRC_ATOP here
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, pct));
+            g2.setStroke(new BasicStroke(i));
+            g2.draw(shape);
+        }
+    }
+
 
 }

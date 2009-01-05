@@ -164,8 +164,8 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
 
     /**
      * Constructor.
-     * @param name the name of the task
-     * @param title the title of the task (already localized)
+     * @param name the name of the task and should have an icon of the same name
+     * @param title the already localized title of the task.
      */
     public BaseTask(final String name, final String title)
     {

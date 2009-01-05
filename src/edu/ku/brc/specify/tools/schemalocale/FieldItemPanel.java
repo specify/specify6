@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -76,12 +77,17 @@ import edu.ku.brc.af.core.db.DBTableChildIFace;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.PickListIFace;
+import edu.ku.brc.af.ui.forms.FormDataObjIFace;
+import edu.ku.brc.af.ui.forms.FormHelper;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.af.ui.forms.formatters.UIFormatterListEdtDlg;
 import edu.ku.brc.af.ui.weblink.WebLinkConfigDlg;
 import edu.ku.brc.af.ui.weblink.WebLinkDef;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.datamodel.AutoNumberingScheme;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
@@ -798,7 +804,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
         {
             for (UIFieldFormatterIFace fmt : fList)
             {
-                log.debug(fmt.getTitle());
+                log.debug("["+(formatter != null ? formatter.getName() : "null")+"]["+fmt.getTitle()+"]");
                 
                 cbxModel.addElement(fmt);
                 
@@ -810,10 +816,32 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             }
         }
         
+        // I think this should be moved to the AppContext and made generic as possible
+        boolean enableFormatter = true;
+        if (tableInfo.getTableId() == CollectionObject.getClassTableId() &&
+            fieldInfo.getName().equals("catalogNumber"))
+        {
+            Collection collection = AppContextMgr.getInstance().getClassObject(Collection.class);
+            if (collection.getNumberingSchemes().size() > 0)
+            {
+                enableFormatter = false;
+            }
+            
+        } else if (tableInfo.getTableId() == CollectionObject.getClassTableId() &&
+            fieldInfo.getName().equals("catalogNumber"))
+        {
+        
+        }
+            
+        
         boolean hasFormat = selectedInx > 0;
         webLinkCombo.setEnabled(hasFormat);
         
         formatCombo.setSelectedIndex(selectedInx);
+        
+        formatSwitcherCombo.setEnabled(enableFormatter);
+        formatCombo.setEnabled(enableFormatter);
+        formatMoreBtn.setEnabled(enableFormatter);
         
         return selectedFmt;
     }
@@ -1421,7 +1449,7 @@ public class FieldItemPanel extends LocalizerBasePanel implements LocalizableIOI
             fieldLengthTxt.setText("");
         }
         
-        fillFormatBox(null);
+        fillFormatBox(fieldInfo != null ? fieldInfo.getFormatter() : null);
         fillWebLinkBox();
         
         String label = SL_NONE;

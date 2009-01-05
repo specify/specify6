@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.hibernate.Session;
 
-import edu.ku.brc.af.auth.MasterPasswordMgr;
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
@@ -172,7 +172,7 @@ public class SiteGen
             connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName);
         }
         
-        Pair<String, String> usernamePassword = MasterPasswordMgr.getInstance().getUserNamePassword();
+        Pair<String, String> usernamePassword = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
         if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                 driverInfo.getDialectClassName(), 
                 dbName, 

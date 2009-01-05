@@ -33,7 +33,7 @@ import javax.swing.event.DocumentEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.auth.MasterPasswordMgr;
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.AppContextMgr;
@@ -190,12 +190,12 @@ public class SecurityAdminTask extends BaseTask
                     String      spuOldPwd = spUser.getPassword();
                     if (oldPwd.equals(spuOldPwd))
                     {
-                        Pair<String, String> masterPwd = MasterPasswordMgr.getInstance().getUserNamePassword();
+                        Pair<String, String> masterPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
                         
-                        String encryptedMasterUP = MasterPasswordMgr.getInstance().encrypt(masterPwd.first, masterPwd.second, newPwd2);
+                        String encryptedMasterUP = UserAndMasterPasswordMgr.getInstance().encrypt(masterPwd.first, masterPwd.second, newPwd2);
                         if (StringUtils.isNotEmpty(encryptedMasterUP))
                         {
-                            AppPreferences.getLocalPrefs().put(username+"_"+MasterPasswordMgr.MASTER_PATH, encryptedMasterUP);
+                            AppPreferences.getLocalPrefs().put(username+"_"+UserAndMasterPasswordMgr.MASTER_PATH, encryptedMasterUP);
                             spUser.setPassword(newPwd1);
                             if (!SpecifyUser.save(spUser))
                             {
@@ -291,7 +291,7 @@ public class SecurityAdminTask extends BaseTask
             public void actionPerformed(ActionEvent ae)
             {
                 SpecifyUser spUser = AppContextMgr.getInstance().getClassObject(SpecifyUser.class);
-                MasterPasswordMgr.getInstance().editMasterInfo(spUser.getName());
+                UserAndMasterPasswordMgr.getInstance().editMasterInfo(spUser.getName());
             }
         });
         MenuItemDesc mid = new MenuItemDesc(mi, UIHelper.isMacOS() ? "HELP" : "HELP/ABOUT", MenuItemDesc.Position.Before); //$NON-NLS-1$ $NON-NLS-2$

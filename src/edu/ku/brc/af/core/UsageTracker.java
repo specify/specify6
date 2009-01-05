@@ -245,8 +245,16 @@ public class UsageTracker
         for (Object keyObj : usageProps.keySet())
         {
             String prefName = keyObj.toString();
-            String valStr   = usageProps.getProperty(prefName);
-            if (StringUtils.isNumeric(valStr))
+            String valStr;
+            
+            if (prefName.equals(USAGE_PREFIX+"RunCount"))
+            {
+                valStr = AppPreferences.getLocalPrefs().get(prefName, "");
+            } else
+            {
+                valStr = usageProps.getProperty(prefName);
+            }
+            if (!valStr.isEmpty() && StringUtils.isNumeric(valStr))
             {
                 int count = Integer.parseInt(valStr);
                 Pair<String,Integer> stat = new Pair<String, Integer>(prefName, count);

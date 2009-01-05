@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.specify.datamodel.SpTaskSemaphore;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCaller;
+import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace;
 import edu.ku.brc.specify.dbsupport.TaskSemaphoreMgr.USER_ACTION;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -28,7 +28,7 @@ import edu.ku.brc.ui.UIRegistry;
  * @code_status Alpha
  *
  */
-public class UploadLocker implements TaskSemaphoreMgrCaller
+public class UploadLocker implements TaskSemaphoreMgrCallerIFace
 {
     protected final boolean canOverride;
     protected final boolean canUnlock;
@@ -46,7 +46,7 @@ public class UploadLocker implements TaskSemaphoreMgrCaller
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCaller#resolveConflict(edu.ku.brc.specify.datamodel.SpTaskSemaphore, boolean, java.lang.String)
+     * @see edu.ku.brc.specify.dbsupport.TaskSemaphoreMgrCallerIFace#resolveConflict(edu.ku.brc.specify.datamodel.SpTaskSemaphore, boolean, java.lang.String)
      */
     @Override
     public USER_ACTION resolveConflict(SpTaskSemaphore semaphore,

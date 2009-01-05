@@ -46,6 +46,7 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.AbstractAction;
@@ -66,6 +67,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -85,7 +87,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
-import edu.ku.brc.af.auth.MasterPasswordMgr;
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.auth.SecurityMgr;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.FrameworkAppIFace;
@@ -121,6 +123,7 @@ import edu.ku.brc.af.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.af.ui.weblink.WebLinkMgr;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -133,6 +136,7 @@ import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyAppPrefs;
 import edu.ku.brc.specify.config.init.RegisterSpecify;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -145,9 +149,11 @@ import edu.ku.brc.specify.datamodel.ConservEventAttachment;
 import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.LoanAttachment;
 import edu.ku.brc.specify.datamodel.LocalityAttachment;
 import edu.ku.brc.specify.datamodel.PermitAttachment;
@@ -176,6 +182,7 @@ import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.VerticalSeparator;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.skin.SkinItem;
@@ -516,10 +523,10 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             @Override
             public Pair<String, String> getUserNamePassword(final String username, final String password)
             {
-                MasterPasswordMgr.getInstance().setUsersUserName(username);
-                MasterPasswordMgr.getInstance().setUsersPassword(password);
+                UserAndMasterPasswordMgr.getInstance().setUsersUserName(username);
+                UserAndMasterPasswordMgr.getInstance().setUsersPassword(password);
                 
-                Pair<String, String> usrPwd = MasterPasswordMgr.getInstance().getUserNamePassword();
+                Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
                 
                 return usrPwd;
             }
@@ -527,7 +534,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
             @Override
             public boolean editMasterInfo(final String username)
             {
-                return MasterPasswordMgr.getInstance().editMasterInfo(username);
+                return UserAndMasterPasswordMgr.getInstance().editMasterInfo(username);
             }
             
         };
@@ -558,7 +565,7 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
         System.setProperty(RecordSetFactory.factoryName,                "edu.ku.brc.specify.config.SpecifyRecordSetFactory");          // Needed for Searching //$NON-NLS-1$
         System.setProperty(DBTableIdMgr.factoryName,                    "edu.ku.brc.specify.config.SpecifyDBTableIdMgr");              // Needed for Tree Field Names //$NON-NLS-1$
         System.setProperty(SecurityMgr.factoryName,                     "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");              // Needed for Tree Field Names //$NON-NLS-1$
-        //System.setProperty(MasterPasswordMgr.factoryName,               "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");              // Needed for Tree Field Names //$NON-NLS-1$
+        //System.setProperty(UserAndMasterPasswordMgr.factoryName,               "edu.ku.brc.af.auth.specify.SpecifySecurityMgr");              // Needed for Tree Field Names //$NON-NLS-1$
         System.setProperty(BackupServiceFactory.factoryName,            "edu.ku.brc.af.core.db.MySQLBackupService");                   // Needed for Backup and Restore //$NON-NLS-1$
     }
 
@@ -1714,22 +1721,73 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     public void doAbout()
     {
-        JPanel panel = new JPanel(new BorderLayout());
-        JLabel iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon")); //$NON-NLS-1$
-        iconLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 8));
-        panel.add(iconLabel, BorderLayout.WEST);
-        panel.add(createLabel("<html>"+appName+" " + appVersion +  //$NON-NLS-1$ //$NON-NLS-2$
+        if (false)
+        {
+            StatsTrackerTask statsTrackerTask = (StatsTrackerTask)TaskMgr.getTask(StatsTrackerTask.STATS_TRACKER);
+            statsTrackerTask.sendStats(false, false); // false means don't do it silently
+            return;
+        }
+        
+        CellConstraints cc  = new CellConstraints();
+        PanelBuilder    pb  = new PanelBuilder(new FormLayout("p,20px,p,10px,p,10px,p", "f:p:g"));
+        PanelBuilder    ipb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p,4px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px"));
+        
+        JLabel iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon"), SwingConstants.CENTER); //$NON-NLS-1$
+        //iconLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 8));
+        
+        DBTableIdMgr  tdb = DBTableIdMgr.getInstance();
+        AppContextMgr acm = AppContextMgr.getInstance();
+        
+        int y = 1;
+        ipb.addSeparator(getResourceString("Specify.SYS_INFO"), cc.xyw(1, y, 3)); y += 2;
+        
+        ipb.add(UIHelper.createI18NFormLabel("Specify.DB"), cc.xy(1, y));
+        ipb.add(UIHelper.createLabel(databaseName),   cc.xy(3, y)); y += 2;
+        
+        ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Institution.getClassTableId())), cc.xy(1, y));
+        ipb.add(UIHelper.createLabel(acm.getClassObject(Institution.class).getName()),      cc.xy(3, y)); y += 2;
+        
+        ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Division.getClassTableId())), cc.xy(1, y));
+        ipb.add(UIHelper.createLabel(acm.getClassObject(Division.class).getName()),      cc.xy(3, y)); y += 2;
+        
+        ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Discipline.getClassTableId())), cc.xy(1, y));
+        ipb.add(UIHelper.createLabel(acm.getClassObject(Discipline.class).getName()),      cc.xy(3, y)); y += 2;
+        
+        ipb.add(UIHelper.createFormLabel(tdb.getTitleForId(Collection.getClassTableId())), cc.xy(1, y));
+        ipb.add(UIHelper.createLabel(acm.getClassObject(Collection.class).getCollectionName()),cc.xy(3, y)); y += 2;
+        
+        ipb.add(UIHelper.createI18NFormLabel("Specify.BLD"), cc.xy(1, y));
+        ipb.add(UIHelper.createLabel(appBuildVersion),cc.xy(3, y)); y += 2;
+        
+        if (StringUtils.contains(DBConnection.getInstance().getConnectionStr(), "mysql"))
+        {
+            Vector<Object[]> list = BasicSQLUtils.query("select version() as ve");
+            if (list != null && list.size() > 0)
+            {
+                ipb.add(UIHelper.createFormLabel("MySQL Version"), cc.xy(1, y));
+                ipb.add(UIHelper.createLabel(list.get(0)[0].toString()),cc.xy(3, y)); y += 2;
+            }
+        }
+
+        
+        ipb.add(UIHelper.createFormLabel("Java Version"), cc.xy(1, y));
+        ipb.add(UIHelper.createLabel(System.getProperty("java.version")),cc.xy(3, y)); y += 2;
+        
+        pb.add(iconLabel,      cc.xy(1, 1));
+        pb.add(createLabel("<html>"+appName+" " + appVersion +  //$NON-NLS-1$ //$NON-NLS-2$
                 "<br><br>Biodiversity Research Center<br>University of Kansas<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
                 "www.specifysoftware.org<br>specify@ku.edu<br><br>" +  //$NON-NLS-1$
                 "<p>The Specify Software Project is<br>"+ //$NON-NLS-1$
                 "funded by the Biological Databases<br>"+ //$NON-NLS-1$
                 "and Informatics Program of the<br>"+ //$NON-NLS-1$
-                "U.S. National Science Foundation <br>(Award DBI-0446544)</P><br>" + //$NON-NLS-1$
-                "Build: " + appBuildVersion + "<br>Java Version: "+System.getProperty("java.version") + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                "</html>"), BorderLayout.EAST); //$NON-NLS-1$
-        panel.setBorder(BorderFactory.createEmptyBorder(6,6,0,6));
+                "U.S. National Science Foundation <br>(Award DBI-0446544)</P></html>"), cc.xy(3, 1)); //$NON-NLS-1$
+        Color bg = getBackground();
+        pb.add(new VerticalSeparator(bg.darker(), bg.brighter()), cc.xy(5, 1));
+        pb.add(ipb.getPanel(), cc.xy(7, 1));
+        
+        pb.setDefaultDialogBorder();
         String title = getResourceString("Specify.ABOUT");//$NON-NLS-1$
-        CustomDialog aboutDlg = new CustomDialog(topFrame,  title + " " +appName, true, CustomDialog.OK_BTN, panel); //$NON-NLS-1$ 
+        CustomDialog aboutDlg = new CustomDialog(topFrame,  title + " " +appName, true, CustomDialog.OK_BTN, pb.getPanel()); //$NON-NLS-1$ 
         String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
         aboutDlg.setOkLabel(okLabel); 
         UIHelper.centerAndShow(aboutDlg);
@@ -2240,8 +2298,9 @@ public class Specify extends JPanel implements DatabaseLoginListener, CommandLis
      */
     protected void setDatabaseNameAndCollection()
     {
-        String dbName = databaseName + (AppContextMgr.getInstance().getClassObject(Collection.class) != null ? " : "+AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName() :""); //$NON-NLS-1$ //$NON-NLS-2$
-        statusField.setSectionText(1, dbName);
+        String divsionName = AppContextMgr.getInstance().getClassObject(Division.class).getName();
+        String divCollName = divsionName + (AppContextMgr.getInstance().getClassObject(Collection.class) != null ? " : "+AppContextMgr.getInstance().getClassObject(Collection.class).getCollectionName() :""); //$NON-NLS-1$ //$NON-NLS-2$
+        statusField.setSectionText(1, divCollName);
         AppPreferences.getLocalPrefs().put("CURRENT_DB", databaseName);
     }
 

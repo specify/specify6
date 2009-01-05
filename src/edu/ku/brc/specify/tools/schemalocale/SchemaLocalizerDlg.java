@@ -12,9 +12,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/**
- * 
- */
 package edu.ku.brc.specify.tools.schemalocale;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -50,6 +47,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.config.SpecifyWebLinkMgr;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -231,6 +229,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 int disciplineeId = AppContextMgr.getInstance().getClassObject(Discipline.class).getDisciplineId();
                 SchemaI18NService.getInstance().loadWithLocale(schemaType, disciplineeId, tableMgr, Locale.getDefault());
                 
+                SpecifyAppContextMgr.getInstance().setForceReloadViews(true);
                 
                 WebLinkMgr.getInstance().reload();
                 
@@ -314,7 +313,24 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             
             while (rs.next())
             {
-                tableDisplayItems.add(new LocalizableJListItem(rs.getString(2), rs.getInt(1), null));
+                String tblName = rs.getString(2);
+                if (shouldIncludeAppTables() || 
+                    !(tblName.startsWith("sp") || 
+                            tblName.startsWith("attachment") || 
+                            tblName.startsWith("autonum") || 
+                            tblName.equals("picklist") || 
+                            tblName.equals("attributedef") || 
+                            tblName.equals("recordset") || 
+                            tblName.equals("inforequest") || 
+                            tblName.startsWith("workbench") || 
+                            tblName.endsWith("treedef") || 
+                            tblName.endsWith("treedefitem") || 
+                            tblName.endsWith("attachment") || 
+                            tblName.endsWith("attr") || 
+                            tblName.endsWith("reltype")))
+                {
+                    tableDisplayItems.add(new LocalizableJListItem(rs.getString(2), rs.getInt(1), null));
+                }
             }
             
         } catch (Exception ex)
@@ -637,6 +653,15 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         return localeList;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#shouldIncludeAppTables()
+     */
+    @Override
+    public boolean shouldIncludeAppTables()
+    {
+        return false;
+    }
+
     /**
      * Return the locales in the database
      * @return the list of locale

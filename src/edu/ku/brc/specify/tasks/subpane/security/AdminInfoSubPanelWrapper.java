@@ -141,7 +141,7 @@ public class AdminInfoSubPanelWrapper
 		        try
 		        {
 		            session  = DataProviderFactory.getInstance().createSession();
-		            session.attach(firstPrincipal);
+		            firstPrincipal = session.merge(firstPrincipal);
 		            userType = firstPrincipal.getPermissions().size() == 0 ? (user != null ? user.getUserType() : null) : null;
 		            
 		        } catch (Exception ex)

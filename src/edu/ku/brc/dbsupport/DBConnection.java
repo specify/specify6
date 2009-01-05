@@ -114,12 +114,12 @@ public class DBConnection
             }
             Class.forName(dbDriver); // load driver
             
-            //log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] "+UIRegistry.getJavaDBPath());
+            //log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] ");
             con = DriverManager.getConnection(dbConnectionStr, dbUsername, dbPassword);
             
         } catch (SQLException sqlEX)
         {
-            //log.error("Error in getConnection", ex);
+            log.error("Error in getConnection", sqlEX);
             if (sqlEX.getNextException() != null)
             {
                 errMsg = sqlEX.getNextException().getMessage();
@@ -130,7 +130,7 @@ public class DBConnection
                 
         } catch (Exception ex)
         {
-            //log.error("Error in getConnection", ex);
+            log.error("Error in getConnection", ex);
             errMsg = ex.getMessage();
         }
         return con;

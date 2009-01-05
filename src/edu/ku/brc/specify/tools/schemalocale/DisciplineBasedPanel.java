@@ -419,6 +419,15 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace,
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#shouldIncludeAppTables()
+     */
+    @Override
+    public boolean shouldIncludeAppTables()
+    {
+        return true;
+    }
+
     /**
      * Helper to get the common or discipline specific PickLists.
      * @param pickLists the list

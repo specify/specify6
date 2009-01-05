@@ -16,7 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import edu.ku.brc.af.auth.MasterPasswordMgr;
+import edu.ku.brc.af.auth.UserAndMasterPasswordMgr;
 import edu.ku.brc.af.ui.forms.BaseBusRules;
 import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.Viewable;
@@ -148,7 +148,7 @@ public class SpecifyUserBusRules extends BaseBusRules
         String pwdStr = password.getText();
         if (!pwdStr.isEmpty())
         {
-            Pair<String, String> usrPwd = MasterPasswordMgr.getInstance().getUserNamePassword();
+            Pair<String, String> usrPwd = UserAndMasterPasswordMgr.getInstance().getUserNamePassword();
             Encryption.setEncryptDecryptPassword(pwdStr);
             String key = Encryption.encrypt(usrPwd.first+","+usrPwd.second, pwdStr);
             Encryption.setEncryptDecryptPassword("Specify");

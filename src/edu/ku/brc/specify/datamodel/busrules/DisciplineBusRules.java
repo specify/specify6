@@ -24,9 +24,6 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import org.hibernate.LockMode;
-import org.hibernate.Session;
-
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
@@ -38,8 +35,8 @@ import edu.ku.brc.af.ui.forms.FormDataObjIFace;
 import edu.ku.brc.af.ui.forms.ResultSetController;
 import edu.ku.brc.af.ui.forms.Viewable;
 import edu.ku.brc.af.ui.forms.validation.ValComboBox;
+import edu.ku.brc.af.ui.forms.validation.ValTextField;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -101,7 +98,8 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         
         if (formViewObj != null && dataObj != null)
         {
-            Component comp = formViewObj.getControlByName("type");
+            Discipline discipline = (Discipline)dataObj;
+            Component  comp       = formViewObj.getControlByName("type");
             if (comp instanceof ValComboBox)
             {
                 final ValComboBox dspCbx = (ValComboBox)comp;
@@ -128,7 +126,13 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
             } else if (comp instanceof TextFieldFromPickListTable)
             {
                 TextFieldFromPickListTable tf = (TextFieldFromPickListTable)comp;
-                tf.setValue(DisciplineType.getByName(tf.getValue().toString()), "");
+                tf.setValue(DisciplineType.getByName(discipline.getType()), "");
+                
+            } else if (comp instanceof ValTextField && discipline.getType() != null)
+            {
+                ValTextField tf = (ValTextField)comp;
+                System.err.println(discipline.getType());
+                tf.setValue(DisciplineType.getByName(discipline.getType()), "");
             }
         }
     }

@@ -57,6 +57,7 @@ import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
+import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.af.ui.forms.FormViewObj;
 import edu.ku.brc.af.ui.forms.MultiView;
@@ -196,42 +197,25 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     public void requestContext()
     {
-        for (SubPaneIFace sp : SubPaneMgr.getInstance().getSubPanes())
+        if (!isAnyOtherUsersOn() && isTabsClosed())
         {
-            if (sp.getTask().getClass() != StartUpTask.class)
+            ContextMgr.requestContext(this);
+    
+            if (starterPane == null)
             {
-                UIRegistry.displayInfoMsgDlgLocalized("SystemSetupTask.PL_CLOSE_TABS");
-                return;
-            }
-            
-            if (sp.getTask() == this)
-            {
-                break;
-            }
-        }
-        
-        boolean ok = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).displayAgentsLoggedInDlg("SystemSetupTask.CFG_SETUP");
-        if (!ok)
-        {
-            return;
-        }
-        
-        ContextMgr.requestContext(this);
-
-        if (starterPane == null)
-        {
-            if (formPane == null)
-            {
-                super.requestContext();
+                if (formPane == null)
+                {
+                    super.requestContext();
+                    
+                } else
+                {
+                    SubPaneMgr.getInstance().showPane(formPane);
+                }
                 
-            } else
+            } else  
             {
-                SubPaneMgr.getInstance().showPane(formPane);
+                SubPaneMgr.getInstance().addPane(starterPane);
             }
-            
-        } else  
-        {
-            SubPaneMgr.getInstance().addPane(starterPane);
         }
     }
     
@@ -553,6 +537,94 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             starterPane = null;
         } 
     }
+    
+    /**
+     * @param clazz
+     * @param iconNameArg
+     * @param viewName
+     */
+    protected void startEditorDlg(final Class<?> clazz, 
+                                  final String viewName)
+    {
+        UsageTracker.incrUsageCount("SS.EDT."+viewName);
+        
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(clazz.getName());
+        String      tiTitle   = tableInfo.getTitle();
+        
+        if (!checkForPaneWithName(tiTitle))
+        {
+            List<?> dataItems = null;
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                StringBuffer sb = new StringBuffer();
+                sb.append("FROM ");
+                sb.append(clazz.getName());
+                sb.append(" as ");
+                sb.append(tableInfo.getAbbrev());
+
+                log.debug(sb.toString());
+                dataItems = session.getDataList(sb.toString());
+                
+                if (dataItems.get(0) instanceof Object[])
+                {
+                    Vector<Object>dataList = new Vector<Object>();
+                    for (Object row : dataItems)
+                    {
+                        Object[] cols = (Object[])row;
+                        dataList.add(cols[0]);
+                    }
+                    dataItems = dataList;
+                }
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+                
+            } finally
+            {
+                session.close();
+            }
+            
+            if (dataItems != null)
+            {
+                if (false)
+                {
+                    //DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(clazz.getSimpleName());
+                    ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
+                            "SystemSetup",
+                            viewName,
+                            null, // displayName
+                            tableInfo.getTitle(),
+                            "CLOSE",
+                            clazz.getName(),
+                            tableInfo.getPrimaryKeyName(),
+                            true,
+                            false,
+                            null,
+                            null,
+                            MultiView.HIDE_SAVE_BTN | 
+                            MultiView.DONT_ADD_ALL_ALTVIEWS | 
+                            MultiView.IS_EDITTING |
+                            MultiView.RESULTSET_CONTROLLER,
+                            CustomDialog.OK_BTN);
+                    dlg.setWhichBtns(CustomDialog.OK_BTN);
+                    dlg.setData(dataItems);
+                    UIHelper.centerAndShow(dlg);
+                } else
+                {
+                    FormPane     pane = new FormPane(tableInfo.getTitle(), this, "SystemSetup", viewName, "edit", null, MultiView.RESULTSET_CONTROLLER, null); // not new data object
+                    CustomDialog dlg  = new CustomDialog((Frame)UIRegistry.getTopWindow(), tableInfo.getTitle(), true, pane);
+                    dlg.setWhichBtns(CustomDialog.OK_BTN);
+                    dlg.setOkLabel(getResourceString("CLOSE"));
+                    pane.getMultiView().setData(dataItems);
+                    UIHelper.centerAndShow(dlg);
+                    
+                }
+            }
+
+        } 
+    }
 
     /**
      * Adds the appropriate flavors to make it draggable
@@ -732,11 +804,17 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         
         menuItems = new Vector<MenuItemDesc>();
         
+        MenuItemDesc mid = createDataObjEditMenu(edu.ku.brc.specify.datamodel.Collection.class, "", FULL_SYSTEM_MENU);
+        mid.setSepPosition(MenuItemDesc.Position.After);
+        menuItems.add(mid);
+        menuItems.add(createDataObjEditMenu(Discipline.class,  "", FULL_SYSTEM_MENU));
+        menuItems.add(createDataObjEditMenu(Division.class,    "", FULL_SYSTEM_MENU));
+        menuItems.add(createDataObjEditMenu(Institution.class, "", FULL_SYSTEM_MENU));
+        
         String    titleArg; 
         String    mneu; 
         JMenuItem mi;
         String    menuDesc = getResourceString(COLSETUP_MENU);
-        MenuItemDesc mid;
         
         if (!UIHelper.isSecurityOn() || 
             (secMgr.getPermission(WBSCHEMACONFIG_SECURITY) != null && 
@@ -816,6 +894,31 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         }
         
         return menuItems;
+    }
+    
+    /**
+     * @param cls
+     * @param titleKey
+     * @param FULL_SYSTEM_MENU
+     * @return
+     */
+    private MenuItemDesc createDataObjEditMenu(final Class<?> cls,
+                                               final String titleKey, 
+                                               final String FULL_SYSTEM_MENU)
+    {
+        String      miTitle = cls.getSimpleName();//getI18NKey(titleKey); 
+        JMenuItem   mi      = UIHelper.createLocalizedMenuItem(miTitle, null, miTitle, true, null);
+        mi.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                startEditorDlg(cls, cls.getSimpleName());
+            }
+        });
+        
+        MenuItemDesc mid = new MenuItemDesc(mi, FULL_SYSTEM_MENU);
+        mid.setPosition(MenuItemDesc.Position.Top, FULL_SYSTEM_MENU); 
+        return mid;
     }
     
     /* (non-Javadoc)
