@@ -12,6 +12,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -26,8 +31,10 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.specify.config.init.RegisterSpecify;
 import edu.ku.brc.specify.config.init.RegisterSpecify.ConnectionException;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
@@ -68,7 +75,8 @@ public class RegProcessor
     
     protected Vector<Pair<String, String>>                       dateTimeVector    = new Vector<Pair<String, String>>();
 
-
+    protected String[] TYPES = {"Institution", "Division", "Discipline", "Collection"};
+    
     protected RegProcEntry root = new RegProcEntry("Root");
     
     /**
@@ -380,7 +388,7 @@ public class RegProcessor
      * @return
      * @throws IOException
      */
-    protected boolean processTrackEntry(final long verTime, final long prevVerTime) throws IOException
+    protected boolean processTrackEntry(final long verTime, final long prevVerTime) throws IOException, SQLException
     {
         //SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
         String     line  = br.readLine();
@@ -500,6 +508,147 @@ public class RegProcessor
                         }*/
                     }
                     
+
+                    if (connection != null && id != null)
+                    {
+                        Vector<String> numKeys = new Vector<String>();
+                        
+                        ResultSet rs = stmt.executeQuery("SELECT TrackID, CountAmt FROM track WHERE Id = '"+id+"'");
+                        if (rs.next())
+                        {
+                            int trackId = rs.getInt(1);
+                            int count   = rs.getInt(2) + 1;
+                            stmt.executeUpdate("UPDATE track SET CountAmt="+count+" WHERE TrackID = "+trackId);
+                            StringBuilder sb = new StringBuilder();
+                            
+                            for (Object key : props.keySet())
+                            {
+                                if (!key.toString().startsWith("num_"))
+                                {
+                                    sb.setLength(0);
+                                    
+                                    ResultSet rs2 = stmt.executeQuery("SELECT TrackItemID FROM trackitem WHERE TrackID = "+trackId+" AND Name ='"+key.toString()+"'");
+                                    if (rs2.next())
+                                    {
+                                        int trackItemId = rs2.getInt(1);
+                                        sb.append("UPDATE trackitem SET ");
+                                        String valStr = props.getProperty(key.toString());
+                                        if (valStr.length() > 0 && StringUtils.isNumeric(valStr))
+                                        {
+                                            sb.append("CountAmt=");
+                                            sb.append(valStr);
+                                        } else
+                                        {
+                                            sb.append("Value=");
+                                            sb.append("'"+valStr+"'");
+                                        }
+                                        sb.append(" WHERE TrackItemID = ");
+                                        sb.append(trackItemId);
+                                        
+                                    } else
+                                    {
+                                        sb.append("INSERT INTO trackitem (TrackID, Name, Value, CountAmt) VALUES (");
+                                        sb.append(trackId+", ");
+                                        sb.append("'"+key+"', ");
+                                        String valStr = props.getProperty(key.toString());
+                                        if (valStr.length() > 0 && StringUtils.isNumeric(valStr))
+                                        {
+                                            sb.append("null, ");
+                                            sb.append(valStr+")");
+                                        } else
+                                        {
+                                            sb.append("'"+valStr+"', null)");
+                                        } 
+                                    }
+
+                                    //System.out.println(sb.toString());
+                                    stmt.executeUpdate(sb.toString());
+                                    
+                                } else
+                                {
+                                    numKeys.add(key.toString());
+                                }                                
+                            }
+                            
+                        } else
+                        {
+                            StringBuilder sb = new StringBuilder("INSERT INTO track (Id, TimestampCreated, CountAmt) VALUES(");
+                            sb.append("'"+id+"', ");
+                            dateStr = props.getProperty("date");
+                            String timeStr = props.getProperty("time");
+                            sb.append("'20"+StringUtils.replace(dateStr, "/", "-"));
+                            sb.append(" ");
+                            sb.append(timeStr+"', 1)");
+                            try
+                            {
+                                //System.out.println(sb.toString());
+                                
+                                stmt.executeUpdate(sb.toString());
+                                int newID = BasicSQLUtils.getInsertedId(stmt);
+                                //System.out.println(newID);
+                                
+                                for (Object key : props.keySet())
+                                {
+                                    if (!key.toString().startsWith("num_"))
+                                    {
+                                        sb.setLength(0);
+                                        sb.append("INSERT INTO trackitem (TrackID, Name, Value, CountAmt) VALUES (");
+                                        sb.append(newID+", ");
+                                        sb.append("'"+key+"', ");
+                                        String valStr = props.getProperty(key.toString());
+                                        if (valStr.length() > 0 && StringUtils.isNumeric(valStr))
+                                        {
+                                            sb.append("null, ");
+                                            sb.append(valStr+")");
+                                        } else
+                                        {
+                                            sb.append("'"+valStr+"', null)");
+                                        }
+                                        //System.out.println(sb.toString());
+                                        stmt.executeUpdate(sb.toString());
+                                    } else
+                                    {
+                                        numKeys.add(key.toString());
+                                    }
+                                }
+                                
+                            } catch (SQLException ex)
+                            {
+                                ex.printStackTrace();
+                            }
+                        }
+                        rs.close();
+                        
+                        if (numKeys.size() > 0 && StringUtils.isNotEmpty(collNumber))
+                        {
+                            String sql = "SELECT RegisterID FROM register WHERE RegNumber = '"+collNumber+"'";
+                            Integer regId  = BasicSQLUtils.getCount(sql);
+                            if (regId != null)
+                            {
+                                for (String key : numKeys)
+                                {
+                                    boolean doItemInsert = true;
+                                    
+                                    sql = "SELECT RegisterItemID FROM registeritem WHERE RegisterID = "+regId+" AND Name ='" + key + "'"; 
+                                    Integer regItemId = BasicSQLUtils.getCount(sql);
+                                    if (regItemId != null)
+                                    {
+                                        doItemInsert = false;
+                                        sql          = "UPDATE registeritem SET CountAmt='" + props.getProperty(key) + "' WHERE RegisterItemID = " + regItemId; 
+                                    }
+                
+                                    if (doItemInsert) 
+                                    {
+                
+                                        sql = "INSERT INTO registeritem (RegisterID, Name, Value, CountAmt) VALUES (" + regId + ", '" + key + "', " +
+                                              "NULL, "  + props.getProperty(key) +  ")";
+                                   }
+                                   stmt.executeUpdate(sql);
+                                }
+                            }
+                        }
+                    }
+                    
                     if (version != null && StringUtils.isNotEmpty(collNumber))
                     {
                         if (!version.equals(versionNum))
@@ -560,7 +709,13 @@ public class RegProcessor
         } while (line != null);
         
         return false;
-    }    
+    }
+    
+    public static Connection connection     = null;
+    public static Statement  stmt           = null;
+    public static String     tableName      = null;
+    public static String     tableItemName  = null;
+    
     /**
      * @return
      * @throws IOException
@@ -608,7 +763,62 @@ public class RegProcessor
                     if (currEntry == null)
                     {
                         currEntry = new RegProcEntry(props);
-                        regNumHash.put(regNumber, currEntry);    
+                        regNumHash.put(regNumber, currEntry);
+                        
+                        String idStr = currEntry.getId();
+                        if (idStr == null)
+                        {
+                            idStr = props.getProperty("id");
+                        }
+                        
+                        if (connection != null && regNumber != null)
+                        {
+                            StringBuilder sb = new StringBuilder("INSERT INTO register (RegNumber, RegType, TimestampCreated) VALUES(");
+                            sb.append("'"+regNumber+"', ");
+                            sb.append("'"+regType+"', ");
+                            String dateStr = props.getProperty("date");
+                            String timeStr = props.getProperty("time");
+                            sb.append("'20"+StringUtils.replace(dateStr, "/", "-"));
+                            sb.append(" ");
+                            sb.append(timeStr+"')");
+                            try
+                            {
+                                //System.out.println(sb.toString());
+                                
+                                stmt.executeUpdate(sb.toString());
+                                int newID = BasicSQLUtils.getInsertedId(stmt);
+                                
+                                //System.out.println(newID);
+                                
+                                for (Object key : props.keySet())
+                                {
+                                    sb.setLength(0);
+                                    sb.append("INSERT INTO registeritem (RegisterID, Name, Value, CountAmt) VALUES (");
+                                    sb.append(newID+", ");
+                                    sb.append("'"+key+"', ");
+                                    String valStr = props.getProperty(key.toString());
+                                    //System.out.println(key+"  "+key.toString().indexOf("_number"));
+                                    if (valStr.length() > 0 && 
+                                        StringUtils.isNumeric(valStr) && 
+                                        key.toString().indexOf("_number") == -1)
+                                    {
+                                        sb.append("NULL, ");
+                                        sb.append(valStr);
+                                        sb.append(")");
+                                    } else
+                                    {
+                                        sb.append("'"+valStr+"', NULL)");
+                                    }
+                                    //System.out.println(sb.toString());
+                                    stmt.executeUpdate(sb.toString());
+                                }
+                                
+                            } catch (SQLException ex)
+                            {
+                                ex.printStackTrace();
+                            }
+                        }
+
                     } else
                     {
                         currEntry.getProps().putAll(props);
@@ -858,13 +1068,27 @@ public class RegProcessor
         fr = new FileReader(inFile);
         br = new BufferedReader(fr);
 
-        // first line is header
-        br.readLine();
-        boolean rv = true;
-        while (rv)
+        try
         {
-            rv = processTrackEntry(versonTime, prevVersionTime);
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/stats", "Specify", "Specify");
+            stmt       = connection.createStatement();
+
+            // first line is header
+            br.readLine();
+            boolean rv = true;
+            while (rv)
+            {
+                rv = processTrackEntry(versonTime, prevVersionTime);
+            }
+            
+            stmt.close();
+            connection.close();
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
         }
+
         
         for (RegProcEntry entry : trackIdHash.values())
         {
@@ -949,9 +1173,102 @@ public class RegProcessor
         return names;
     }
     
+    /**
+     * @param entry
+     * @param className
+     * @param propName
+     * @return
+     */
     protected RegProcEntry getParentFromHash(final RegProcEntry entry, final String className, final String propName)
     {
         return typeHash.get(className).get(entry.getProps().getProperty(propName));
+    }
+    
+    /**
+     * @param inFile
+     */
+    public void processSQL()
+    {
+        String sql = "SELECT register.RegisterID, register.RegNumber, registeritem.Name, registeritem.Value, registeritem.CountAmt" +
+                     " FROM register INNER JOIN registeritem ON register.RegisterID = registeritem.RegisterID ORDER BY register.RegNumber";
+        
+        //Connection connection = DBConnection.getInstance().getConnection();
+        try
+        {
+            Properties props = new Properties();
+            stmt = DBConnection.getInstance().getConnection().createStatement();
+            ResultSet         rs     = stmt.executeQuery(sql);
+            int               prevId = Integer.MAX_VALUE;
+            while (rs.next())
+            {
+                int id = rs.getInt(1);
+                if (id != prevId)
+                {
+                    String regType    = props.getProperty("reg_type");
+                    String regNumber  = props.getProperty("reg_number");
+                    
+                    if (StringUtils.isNotEmpty(regType) && 
+                        StringUtils.isNotEmpty(regNumber))
+                    {
+                        RegProcEntry currEntry = regNumHash.get(regNumber);
+                        if (currEntry == null)
+                        {
+                            currEntry = new RegProcEntry(props);
+                            regNumHash.put(regNumber, currEntry);
+                            currEntry.setId(rs.getString(2));
+
+                        } else
+                        {
+                            currEntry.getProps().putAll(props);
+                        }
+                        
+                        Hashtable<String, RegProcEntry> entryHash = typeHash.get(regType);
+                        if (entryHash == null)
+                        {
+                            entryHash = new  Hashtable<String, RegProcEntry>();
+                            typeHash.put(regType, entryHash);
+                        }
+                        entryHash.put(regNumber, currEntry);
+                        
+                    } else
+                    {
+                        System.err.println("Skipping: "+regNumber);
+                    }
+                    
+                    prevId = id;
+                    props = new Properties();
+                    
+                } else if (prevId == Integer.MAX_VALUE)
+                {
+                    prevId = id;
+                } else
+                {
+                    String value = rs.getString(4);
+                    if (value == null)
+                    {
+                        value = rs.getString(5);
+                    }
+                    props.put(rs.getString(3), value);
+                }
+            }
+            rs.close();
+            
+            buildTree();
+
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (stmt != null)
+            {
+                try
+                {
+                    stmt.close();
+                } catch (Exception ex) {}
+            }
+        }
     }
     
     /**
@@ -963,15 +1280,69 @@ public class RegProcessor
     {
         fr = new FileReader(inFile);
         br = new BufferedReader(fr);
-
-        // first line is header
-        br.readLine();
-        boolean rv = true;
-        while (rv)
+        
+        try
         {
-            rv = processEntry();
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/stats", "Specify", "Specify");
+            stmt       = connection.createStatement();
+
+            // first line is header
+            br.readLine();
+            boolean rv = true;
+            while (rv)
+            {
+                rv = processEntry();
+            }
+            stmt.close();
+            connection.close();
+            
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
         }
         
+        buildTree();
+
+        br.close();
+        fr.close();
+        
+        boolean doDemo = false;
+        if (doDemo)
+        {
+            Hashtable<String, Boolean> siteNamesHash = new Hashtable<String, Boolean>();
+            List<String> lines = (List<String>)FileUtils.readLines(new File("sites.csv"));
+            for (int i=1;i<lines.size();i++)
+            {
+                String[] toks = lines.get(i).split("\t");
+                if (toks.length > 4)
+                {
+                    String   nm   = toks[4];
+                    if (StringUtils.isNotEmpty(nm) && !nm.startsWith("TOTAL"))
+                    {
+                        siteNamesHash.put(toks[4], true);
+                    }
+                }
+            }
+            Vector<String> names = new Vector<String>(siteNamesHash.keySet());
+            int cnt = 0;
+            for (RegProcEntry entry : typeHash.get("Institution").values())
+            {
+                entry.setName(names.get(cnt % names.size()));
+                cnt++;
+            }
+        }
+        
+        root.sortKids();
+        
+        //System.out.println("--------");
+        //printEntries(root, 0);
+    }
+    
+    /**
+     * 
+     */
+    protected void buildTree()
+    {
         String[] regList = {"Institution", "Division", "Discipline", "Collection"};
         
         /*Hashtable<String, RegProcEntry> hh = typeHash.get(regList[0]);
@@ -1044,39 +1415,6 @@ public class RegProcessor
             }
         }
 
-        br.close();
-        fr.close();
-        
-        boolean doDemo = false;
-        if (doDemo)
-        {
-            Hashtable<String, Boolean> siteNamesHash = new Hashtable<String, Boolean>();
-            List<String> lines = (List<String>)FileUtils.readLines(new File("sites.csv"));
-            for (int i=1;i<lines.size();i++)
-            {
-                String[] toks = lines.get(i).split("\t");
-                if (toks.length > 4)
-                {
-                    String   nm   = toks[4];
-                    if (StringUtils.isNotEmpty(nm) && !nm.startsWith("TOTAL"))
-                    {
-                        siteNamesHash.put(toks[4], true);
-                    }
-                }
-            }
-            Vector<String> names = new Vector<String>(siteNamesHash.keySet());
-            int cnt = 0;
-            for (RegProcEntry entry : typeHash.get("Institution").values())
-            {
-                entry.setName(names.get(cnt % names.size()));
-                cnt++;
-            }
-        }
-        
-        root.sortKids();
-        
-        //System.out.println("--------");
-        //printEntries(root, 0);
     }
     
     /**
@@ -1093,6 +1431,28 @@ public class RegProcessor
             printEntries(kid, level+1);
         }
     }
+    
+    /**
+     * 
+     */
+    /*public void createBldSQL()
+    {
+        Hashtable<String, Boolean> allCats = new Hashtable<String, Boolean>();
+        for (Hashtable<String, Integer> hash : trackCatsHash.values())
+        {
+            for (String cat : hash.keySet())
+            {
+                allCats.put(cat, true);
+            }
+        }
+        Vector<String> list = new Vector<String>(allCats.keySet());
+        Collections.sort(list);
+        
+        for (String cat : list)
+        {
+            System.out.println(cat);
+        }
+    }*/
     
     //--------------------------------------------------------
 

@@ -16,6 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
@@ -65,10 +66,12 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.helpers.BrowserLauncher;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.IconManager;
@@ -87,8 +90,12 @@ public class RegisterApp extends JPanel
 {
     private enum CountType {Divs, Disps, Cols}
     private enum DateType  {None, Date, Monthly, Yearly, Time}
+    
+    protected String                    connectStr = "jdbc:mysql://specify6-test.nhm.ku.edu/stats";
+    protected String                    username   = "rods";
+    protected String                    password   = "rods";
 
-    protected boolean                   doLocal = false;
+    protected boolean                   doLocal = true;
     protected JFrame                    frame;
     protected String                    title = "Registration and Statistics Tool";
     protected JTree                     tree;
@@ -120,6 +127,12 @@ public class RegisterApp extends JPanel
     {
         super(new BorderLayout());
         
+        DBConnection dbConn = DBConnection.getInstance();
+        dbConn.setConnectionStr(connectStr);
+        dbConn.setDatabaseName("stats");
+        dbConn.setUsernamePassword(username, password);
+        dbConn.setDriver("com.mysql.jdbc.Driver");
+        
         createUI();
         
         for (Pair<String, String> p : rp.getTrackKeyDescPairs())
@@ -131,7 +144,11 @@ public class RegisterApp extends JPanel
             @Override
             public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2)
             {
-                return o1.second.compareTo(o2.second);
+                if (o1.second != null && o2.second != null)
+                {
+                    return o1.second.compareTo(o2.second);
+                }
+                return 0;
             }
         };
         titleComparator = new Comparator<Pair<String, Integer>>() {
@@ -153,12 +170,16 @@ public class RegisterApp extends JPanel
         rp = new RegProcessor();
         try
         {
-            
-            rp.process(doLocal ? new File("reg.dat") : rp.getDataFromWeb("SpReg.REGISTER_URL", true));
-            rp.processTracks(doLocal ? new File("track.dat") : rp.getDataFromWeb("StatsTrackerTask.URL", true));
-            
-            rp.mergeStats();
-            
+            boolean doBuild = false;
+            if (doBuild)
+            {
+                rp.process(doLocal ? new File("reg.dat") : rp.getDataFromWeb("SpReg.REGISTER_URL", true));
+                rp.processTracks(doLocal ? new File("track.dat") : rp.getDataFromWeb("StatsTrackerTask.URL", true));
+                //rp.mergeStats();
+            } else
+            {
+                rp.processSQL();
+            }
             
             tree       = new JTree(rp.getRoot(false));
             propsTable = new JTable();
@@ -244,10 +265,14 @@ public class RegisterApp extends JPanel
      */
     protected void fillUsageItemsList(final String catName)
     {
-        trackUsageHash = rp.getTrackCatsHash();
-        DefaultListModel           model = (DefaultListModel)trackItemsList.getModel();
-        Hashtable<String, Integer> hash  = trackUsageHash.get(catName);
-        if (hash != null)
+
+        //String sql = "SELECT Name, Total FROM (SELECT Name, SUM(CountAmt) as Total FROM trackitem WHERE SUBSTRING(Name, 1, 8) = 'Usage_"+catName+"' OR SUBSTRING(Name, 1, 2) = '"+catName+"' GROUP BY Name) AS T1 ORDER BY Total";
+        String sql = "SELECT Name, Total FROM (SELECT Name, SUM(CountAmt) as Total FROM trackitem WHERE SUBSTRING(Name, 1, 8) = 'Usage_"+catName+"' GROUP BY Name) AS T1 ORDER BY Total";
+        System.out.println(sql);
+        Vector<Object[]> rows = BasicSQLUtils.query(sql);
+        
+        DefaultListModel model = (DefaultListModel)trackItemsList.getModel();
+        if (rows != null && rows.size() > 0)
         {
             boolean isCatOK     = catName.length() == 2;
             boolean isDataEntry = catName.equals("DE");
@@ -255,19 +280,22 @@ public class RegisterApp extends JPanel
             
             Hashtable<String, Boolean> clsHash = new Hashtable<String, Boolean>();
             
-            Vector<String> tucn = new Vector<String>(hash.keySet());
-            Collections.sort(tucn);
-            
             Vector<Pair<String, Integer>> values = new Vector<Pair<String,Integer>>();
             int total = 0;
-            for (String key : hash.keySet())
+            for (Object[] colData : rows)
             {
-                Integer val = hash.get(key);
+                String  name = (String)colData[0];
+                int     val  = ((BigDecimal)colData[1]).intValue();
+                
+                if (name.startsWith("Usage_"))
+                {
+                    name = name.substring(6);
+                }
                 
                 String str;
-                if (isCatOK && key.charAt(2) == '_')
+                if (isCatOK && name.charAt(2) == '_')
                 {
-                    str = key.substring(catName.length()+1);
+                    str = name.substring(catName.length()+1);
                     /*if (str.startsWith(catName) && str.charAt(2) == '_')
                     {
                         str = str.substring(catName.length()+1);
@@ -295,26 +323,26 @@ public class RegisterApp extends JPanel
 
                 } else
                 {
-                    str = key;
+                    str = name;
                 }
-                
                 values.add(new Pair<String, Integer>(str, val));
                 total += val;
             }
             
             Collections.sort(values, countComparator);
-            /*for (Pair<String, Integer> p : values)
-            {
-                System.out.println(p.second+"  "+p.first);
-            }*/
             
             createBarChart(trackDescHash.get(catName), "Actions", values);
             
             // Fill Model
             model.clear();
-            for (String n : tucn)
+            sql  = "SELECT DISTINCT(Name) FROM trackitem WHERE SUBSTRING(Name, 1, 8) = 'Usage_"+catName+"' ORDER BY Name";
+            rows = BasicSQLUtils.query(sql);
+            if (rows != null && rows.size() > 0)
             {
-                model.addElement(n);
+                for (Object[] colData : rows)
+                {
+                    model.addElement(colData[0]);
+                }
             }
             
             if (clsHash.size() > 0)
@@ -336,6 +364,9 @@ public class RegisterApp extends JPanel
         }
     }
     
+    /**
+     * @param clsHash
+     */
     private void showClassList(final Hashtable<String, Boolean> clsHash)
     {
         boolean wasVisible = false;
@@ -490,6 +521,11 @@ public class RegisterApp extends JPanel
                 keywords.add(desc);
             }
         }
+        Vector<Object[]> rvList = BasicSQLUtils.query("SELECT DISTINCT(Name) FROM registeritem WHERE SUBSTRING(Name, 1, 4) = 'num_'");
+        for (Object[] array : rvList)
+        {
+            keywords.add(array[0].toString());
+        }
         Collections.sort(keywords);
         
         final JList list = new JList(keywords);
@@ -502,16 +538,56 @@ public class RegisterApp extends JPanel
                 if (!e.getValueIsAdjusting())
                 {
                     String statName = (String)list.getSelectedValue();
-                    statName = desc2KeyPairsHash.get(statName);
+                    if (desc2KeyPairsHash.get(statName) != null)
+                    {
+                        statName = desc2KeyPairsHash.get(statName);
+                    }
                     
                     DateType dateType = convertDateType(statName);
                     if (dateType == DateType.None)
                     {
-                        createStatsChart(statName, chartPrefixTitle, entries);
+                        Vector<Pair<String, Integer>> values;
+                        if (statName.startsWith("num_"))
+                        {
+                            values = getCollNumValuesFromList(statName);
+                            Hashtable<String, Boolean>    hash   = new Hashtable<String, Boolean>();
+                            for (Pair<String, Integer> p : values)
+                            {
+                                if (hash.get(p.first) == null)
+                                {
+                                    hash.put(p.first, true);
+                                } else
+                                {
+                                    int i = 0;
+                                    String name = p.first;
+                                    while (hash.get(p.first) != null)
+                                    {
+                                        p.first = name +" _" + i;
+                                        i++;
+                                    }
+                                    hash.put(p.first, true);
+                                }
+                                //p.first += "(" + p.second.toString() + ")";
+                            }
+                            
+                            
+                        } else
+                        {
+                            values = getCollValuesFromList(statName);
+                        }
+                        
+                        Collections.sort(values, countComparator);
+                        Vector<Pair<String, Integer>> top10Values = new Vector<Pair<String,Integer>>();
+                        for (int i=1;i<Math.min(11, values.size());i++)
+                        {
+                            top10Values.insertElementAt(values.get(values.size()-i), 0);
+                        }
+                        createBarChart(chartPrefixTitle + " "+ statName, statName, top10Values);
+                        
                     } else
                     {
                         String                        desc   = getByDateDesc(dateType);
-                        Vector<Pair<String, Integer>> values = getDateValuesFromList(dateType, rp.getDateTimeVector());
+                        Vector<Pair<String, Integer>> values = getDateValuesFromList(dateType);
                         Collections.sort(values, titleComparator);
                         createBarChart(chartPrefixTitle + " "+ desc, desc, values);
                     }
@@ -520,6 +596,52 @@ public class RegisterApp extends JPanel
         });
 
         return pb.getPanel();
+    }
+    
+    protected Vector<Pair<String, Integer>> getCollValuesFromList(final String statName)
+    {
+        String sql = "SELECT Value, COUNT(Value) AS CNT FROM registeritem WHERE Name = '" + statName + "' GROUP BY Value ORDER BY CNT";
+        System.err.println(sql);
+        Vector<Pair<String, Integer>> values = new Vector<Pair<String,Integer>>();
+        
+        Vector<Object[]> list = BasicSQLUtils.query(sql);
+        for (int i=0;i<list.size();i++)
+        {
+            Object[] row = list.get(i);
+            values.add(new Pair<String, Integer>(row[0].toString(), ((Long)row[1]).intValue()));
+        }
+        return values;        
+
+    }
+    
+    protected Vector<Pair<String, Integer>> getCollNumValuesFromList(final String statName)
+    {
+        String sql = "SELECT RegisterID, Value, CountAmt FROM registeritem WHERE Name = '" + statName + "' OR Name = 'Collection_name' ORDER BY RegisterID";
+        
+        Vector<Pair<String, Integer>> values = new Vector<Pair<String,Integer>>();
+        
+        Vector<Object[]> list = BasicSQLUtils.query(sql);
+        for (int i=0;i<list.size();i++)
+        {
+            Object[] row1 = list.get(i);
+            i++;
+            if (i < list.size())
+            {
+                Object[] row2 = list.get(i);
+                int id1 = (Integer)row1[0];
+                int id2 = (Integer)row2[0];
+                if (id1 == id2)
+                {
+                    String  desc  = (String)(row1[1] != null ? row1[1] : row2[1]);
+                    Integer count = (Integer)(row1[2] != null ? row1[2] : row2[2]);
+                    values.add(new Pair<String, Integer>(desc, count));
+                } else
+                {
+                    i--;
+                }
+            }
+        }
+        return values;        
     }
     
     /**
@@ -565,182 +687,71 @@ public class RegisterApp extends JPanel
      * @param srcList
      * @return
      */
-    private Vector<Pair<String, Integer>> getDateValuesFromList(final DateType dateType, 
-                                                                final Collection<Pair<String, String>> srcList)
+    private Vector<Pair<String, Integer>> getDateValuesFromList(final DateType dateType)
     {
-        Hashtable<String, Integer> countHash = new Hashtable<String, Integer>();
-        for (Pair<String, String> pair : srcList)
+        String sql = "";
+        switch (dateType)
         {
-            String valueStr = null;
-            if (dateType == DateType.Time)
-            {
-                valueStr = pair.second;
-                String[] toks = StringUtils.split(valueStr, ':');
-                int minutes = Integer.parseInt(toks[1]);
-                valueStr    = String.format("%02d", Integer.parseInt(toks[0]) + (minutes >= 30 ? 1 : 0));
+            case Time:
+                sql = "SELECT hrs, COUNT(hrs) FROM (SELECT (hr + mn + sc) as hrs FROM (SELECT HOUR(TimestampCreated) as hr, ROUND(MINUTE(TimestampCreated) / 60) as mn, ROUND(SECOND(TimestampCreated) / 3600) as sc FROM track) AS T1) as T2 GROUP BY hrs";
+                break;
                 
+            case Monthly:
+                sql = "SELECT nm,COUNT(mon) FROM (SELECT MONTH(TimestampCreated) as mon, MONTHNAME(TimestampCreated) as nm FROM track) AS T1 GROUP BY mon";
+                break;
+                
+            case Yearly:
+                sql = "SELECT yr,count(yr) FROM (SELECT YEAR(TimestampCreated) as yr FROM track) AS T1 group by yr";
+                break;
+                
+            case Date:
+                sql = "SELECT dt,count(dt) FROM (SELECT DATE(TimestampCreated) as dt FROM track) AS T1 group by dt";
+                break;
+                
+            case None:
+                break;
+        }
+        
+        Vector<Pair<String, Integer>> values = new Vector<Pair<String,Integer>>();
+        for (Object[] colData : BasicSQLUtils.query(sql))
+        {
+            Long longVal = (Long)colData[1];
+            String desc = "";
+            if (colData[0] instanceof String)
+            {
+                desc = (String)colData[0];
+                
+            } else if (colData[0] instanceof Long)
+            {
+                Long val = (Long)colData[0]; 
+                desc = val.toString();
+                
+            } else if (colData[0] instanceof Date)
+            {
+                Date val = (Date)colData[0]; 
+                desc = val.toString();
+                
+            } else if (colData[0] instanceof Integer)
+            {
+                Integer val = (Integer)colData[0]; 
+                desc = val.toString();
+                
+            } else if (colData[0] instanceof BigDecimal)
+            {
+                BigDecimal val = (BigDecimal)colData[0]; 
+                desc = String.format("%02d", val.intValue());
+                
+            }  else if (colData[0] instanceof byte[])
+            {
+                //Byte val = (Byte)colData[0]; 
+                desc = new String((byte[])colData[0]);
             } else
             {
-                valueStr = pair.first;
-                if (valueStr != null)
-                {
-                    if (dateType != DateType.Date)
-                    {
-                        String[] toks = StringUtils.split(valueStr, '/');
-                        if (dateType == DateType.Monthly)
-                        {
-                            valueStr = toks[1];
-                            
-                        } else if (dateType == DateType.Yearly)
-                        {
-                            valueStr = toks[0];
-                        }
-                    }
-                }
+                System.out.println(colData[0].getClass());
             }
-            
-            if (valueStr != null)
-            {
-                Integer count = countHash.get(valueStr);
-                if (count == null)
-                {
-                    count = 1;
-                    
-                } else
-                {
-                    count++;
-                }
-                countHash.put(valueStr, count);
-            }
-        }
-        
-        Vector<Pair<String, Integer>> values = new Vector<Pair<String,Integer>>();
-        for (Object keyObj : countHash.keySet())
-        {
-            Integer value = countHash.get(keyObj);
-            values.add(new Pair<String, Integer>(keyObj.toString(), value));
+            values.add(new Pair<String, Integer>(desc, longVal.intValue()));
         }
         return values;
-    }
-    
-    /**
-     * @param dateType
-     * @param srcList
-     * @return
-     */
-    @SuppressWarnings("unused")
-    private Vector<Pair<String, Integer>> getDateValues(final DateType dateType, 
-                                                        final Collection<RegProcEntry> srcList)
-    {
-        Hashtable<String, Integer> countHash = new Hashtable<String, Integer>();
-        for (RegProcEntry entry : srcList)
-        {
-            String valueStr = null;
-            if (dateType == DateType.Time)
-            {
-                valueStr = entry.getProps().getProperty("time");
-                String[] toks = StringUtils.split(valueStr, ':');
-                int minutes = Integer.parseInt(toks[1]);
-                valueStr    = String.format("%02d", Integer.parseInt(toks[0]) + (minutes >= 30 ? 1 : 0));
-                
-            } else
-            {
-                valueStr = entry.getProps().getProperty("date");
-                if (valueStr != null)
-                {
-                    //String[] toks = StringUtils.split(valueStr, ' ');
-                    //valueStr = toks[0];
-                    
-                    if (dateType != DateType.Date)
-                    {
-                        String[] toks = StringUtils.split(valueStr, '/');
-                        if (dateType == DateType.Monthly)
-                        {
-                            valueStr = toks[1];
-                            
-                        } else if (dateType == DateType.Yearly)
-                        {
-                            valueStr = toks[0];
-                        }
-                    }
-                }
-            }
-            
-            if (valueStr != null)
-            {
-                Integer count = countHash.get(valueStr);
-                if (count == null)
-                {
-                    count = 1;
-                    
-                } else
-                {
-                    count++;
-                }
-                countHash.put(valueStr, count);
-            }
-        }
-        
-        Vector<Pair<String, Integer>> values = new Vector<Pair<String,Integer>>();
-        for (Object keyObj : countHash.keySet())
-        {
-            Integer value = countHash.get(keyObj);
-            values.add(new Pair<String, Integer>(keyObj.toString(), value));
-        }
-        return values;
-    }
-    
-    /**
-     * @param statName
-     * @param prefixTitle
-     * @param entries
-     */
-    private void createStatsChart(final String statName,
-                                  final String prefixTitle,
-                                  final Collection<RegProcEntry> entries)
-    {
-        
-        Properties props  = new Properties();
-        Hashtable<String, Integer> countHash = new Hashtable<String, Integer>();
-        for (RegProcEntry entry : entries)
-        {
-            props.clear();
-            props.putAll(entry.getProps());
-            
-            String os  = props.getProperty("os_name");
-            String ver = props.getProperty("os_version");
-            props.put("platform", os+" "+ver);
-
-            for (Object keywordObj : props.keySet())
-            {
-                if (keywordObj.toString().equals(statName))
-                {
-                    String valueStr = props.getProperty(keywordObj.toString());
-                    Integer count = countHash.get(valueStr);
-                    if (count == null)
-                    {
-                        count = 1;
-                        
-                    } else
-                    {
-                        count++;
-                    }
-                    countHash.put(valueStr, count);
-                    break;
-                }
-            }
-        }
-
-        Vector<Pair<String, Integer>> values = new Vector<Pair<String,Integer>>();
-        for (Object keyObj : countHash.keySet())
-        {
-            Integer value = countHash.get(keyObj);
-           values.add(new Pair<String, Integer>(keyObj.toString(), value));
-        }
-        
-        Collections.sort(values, countComparator);
-        
-        createBarChart(prefixTitle+" Stats for "+statName, "Statistics", values);
     }
     
     /**
@@ -755,11 +766,10 @@ public class RegisterApp extends JPanel
         String cat = ""; //$NON-NLS-1$
         DefaultCategoryDataset dataset = new DefaultCategoryDataset(); 
         
-        int maxStrLen = 0;
         for (Pair<String, Integer> p : values)
         {
-            //System.out.println(p.second+"  "+p.first);
-            maxStrLen = Math.max(maxStrLen, p.first.length());
+            //System.out.println("["+p.second+"]  ["+p.first+"]");
+            //System.out.println("            values.add(new Pair<String, Integer>(\""+p.first+"\", "+p.second+"));");
             dataset.addValue(p.second, p.first, cat);
         }
 
