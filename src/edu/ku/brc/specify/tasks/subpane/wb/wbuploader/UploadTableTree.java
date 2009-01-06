@@ -35,6 +35,7 @@ import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author timbo
@@ -202,7 +203,10 @@ public class UploadTableTree extends UploadTable
     protected DataModelObjBase getParentRecord(final int recNum, UploadTable forChild) throws UploaderException
     {
         DataModelObjBase result = super.getParentRecord(recNum, forChild);
-        if (result != null) { return result; }
+        if (result != null) 
+        { 
+            return result; 
+        }
         result = getParentRec(recNum);
         if (result == null && (forChild instanceof UploadTableTree)) 
         { 
@@ -864,7 +868,22 @@ public class UploadTableTree extends UploadTable
         result.add(table.getField("name"));
         return result;
     }
-    
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getMatchCriteria(edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace, int, java.util.Vector)
+     */
+    @Override
+    protected boolean getMatchCriteria(CriteriaIFace critter,
+                                       int recNum,
+                                       Vector<Pair<String, String>> restrictedVals)
+            throws UploaderException, IllegalAccessException, NoSuchMethodException,
+            InvocationTargetException
+    {
+        boolean result =  super.getMatchCriteria(critter, recNum, restrictedVals);
+        restrictedVals.add(new Pair<String, String>("isAccepted", addRestriction(
+                critter, "isAccepted", new Boolean(true), false)));
+        return result;
+    }
+
     
 }

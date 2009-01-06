@@ -982,5 +982,5 @@ public abstract class DataModelObjBase implements FormDataObjIFace,
     {
         return errMsg;
     }
-    
+
 }

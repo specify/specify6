@@ -150,13 +150,12 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             int row = query.executeUpdate();
             if (row == 0)
             {
-              System.out.println("Doesn't deleted any row!");
+              log.info("no rows deleted");
               return false;
             }
-            else
-            {
-              System.out.println("Deleted Row: " + row);
-            }
+            //else
+            log.info("Deleted Rows: " + row);
+            
             return true;
         }
         
@@ -748,11 +747,18 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         protected Criteria criteriaDelegate;
         
+        /**
+         * @param cls
+         */
         public HibernateCriteria(final Class<?> cls)
         {
             criteriaDelegate = session.createCriteria(cls);
         }
         
+        /* (non-Javadoc)
+         * @see edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace#add(java.lang.Object)
+         */
+        @Override
         public void add(final Object criterion)
         {
             if (criterion instanceof Criterion)
@@ -765,19 +771,38 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             }
         }
         
+        /* (non-Javadoc)
+         * @see edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace#uniqueResult()
+         */
+        @Override
         public Object uniqueResult()
         {
             return criteriaDelegate.uniqueResult();
         }
         
+        /* (non-Javadoc)
+         * @see edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace#list()
+         */
+        @Override
         public List<?> list()
         {
             return criteriaDelegate.list();
         }
         
+        /* (non-Javadoc)
+         * @see edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace#addSubCriterion(java.lang.String, java.lang.Object)
+         */
+        @Override
         public void addSubCriterion(String name, Object criterion)
         {
-        	criteriaDelegate.createCriteria(name).add((Criterion )criterion);
+            if (criterion instanceof Criterion)
+            {
+                criteriaDelegate.createCriteria(name).add((Criterion )criterion);
+            }
+            else
+            {
+                log.error("invalid criterion.");
+            }
         }
     }
 }

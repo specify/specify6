@@ -774,8 +774,14 @@ public class UploadTable implements Comparable<UploadTable>
      */
     public DataModelObjBase getCurrentRecord(int index)
     {
-        if (currentRecords.size() == 0) { return null; }
-        if (index > currentRecords.size() - 1) { return currentRecords.get(0); }
+        if (currentRecords.size() == 0) 
+        { 
+            return null; 
+        }
+        if (index > currentRecords.size() - 1) 
+        { 
+            return currentRecords.get(0); 
+        }
         return currentRecords.get(index);
     }
 
@@ -1414,18 +1420,23 @@ public class UploadTable implements Comparable<UploadTable>
                                     final Object arg,
                                     boolean ignoreNulls)
     {
-        if (arg != null && !arg.equals(""))
+        if (arg != null && (!(arg instanceof String) || StringUtils.isNotBlank((String )arg)))
         {
             critter.add(Restrictions.eq(propName, arg));
-            if (arg instanceof DataModelObjBase) { return ((DataModelObjBase) arg).getId()
-                    .toString(); }
+            if (arg instanceof DataModelObjBase) 
+            { 
+                return ((DataModelObjBase) arg).getId()
+                    .toString(); 
+            }
             return arg.toString();
         }
+        
         if (!ignoreNulls || matchSetting.isMatchEmptyValues())
         {
             critter.add(Restrictions.isNull(propName));
             return "#null#";
         }
+        
         return "";
     }
 
@@ -1518,6 +1529,49 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
     
+    protected boolean getMatchCriteria(CriteriaIFace critter,
+                                       final int recNum,
+                                       Vector<Pair<String, String>> restrictedVals)
+            throws UploaderException, IllegalAccessException, NoSuchMethodException,
+            InvocationTargetException
+    {
+        boolean ignoringBlankCell = false;
+        for (UploadField uf : uploadFields.get(recNum))
+        {
+            if (uf.getSetter() != null)
+            {
+                String restriction = addRestriction(critter, deCapitalize(uf.getField().getName()),
+                        getArgForSetter(uf)[0], true);
+                ignoringBlankCell = ignoringBlankCell || restriction.equals("")
+                        && !matchSetting.isMatchEmptyValues();
+                restrictedVals.add(new Pair<String, String>(uf.getWbFldName(), restriction));
+            }
+        }
+        for (Vector<ParentTableEntry> ptes : parentTables)
+        {
+            for (ParentTableEntry pte : ptes)
+            {
+                restrictedVals.add(new Pair<String, String>(pte.getPropertyName(), addRestriction(
+                        critter, pte.getPropertyName(), pte.getImportTable().getParentRecord(
+                                recNum, this), false)));
+            }
+        }
+        for (RelatedClassSetter rce : relatedClassDefaults)
+        {
+            critter.add(Restrictions.eq(rce.getPropertyName(), rce.getDefaultObj(recNum)));
+        }
+        for (DefaultFieldEntry dfe : missingRequiredFlds)
+        {
+            {
+                critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe
+                        .getDefaultValue(recNum)));
+            }
+        }
+
+        addDomainCriteria(critter);
+
+        return ignoringBlankCell;
+    }
     
     /**
      * @param recNum
@@ -1549,38 +1603,7 @@ public class UploadTable implements Comparable<UploadTable>
         try
         {
             CriteriaIFace critter = session.createCriteria(tblClass);
-            for (UploadField uf : uploadFields.get(recNum))
-            {
-                if (uf.getSetter() != null)
-                {
-                    String restriction = addRestriction(critter, deCapitalize(uf.getField()
-                            .getName()), getArgForSetter(uf)[0], true);
-                    ignoringBlankCell = ignoringBlankCell || restriction.equals("")
-                            && !matchSetting.isMatchEmptyValues();
-                    restrictedVals.add(new Pair<String, String>(uf.getWbFldName(), restriction));
-                }
-            }
-            for (Vector<ParentTableEntry> ptes : parentTables)
-            {
-                for (ParentTableEntry pte : ptes)
-                {
-                    restrictedVals.add(new Pair<String, String>(pte.getPropertyName(),
-                            addRestriction(critter, pte.getPropertyName(), pte.getImportTable().getParentRecord(recNum, this), false)));
-                }
-            }
-            for (RelatedClassSetter rce : relatedClassDefaults)
-            {
-                critter.add(Restrictions.eq(rce.getPropertyName(), rce.getDefaultObj(recNum)));
-            }
-            for (DefaultFieldEntry dfe : missingRequiredFlds)
-            {
-                {
-                    critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe
-                            .getDefaultValue(recNum)));
-                }
-            }
-
-            addDomainCriteria(critter);
+            ignoringBlankCell = getMatchCriteria(critter, recNum, restrictedVals);
             
             List<DataModelObjBase> matches;
             List<DataModelObjBase> matchList = (List<DataModelObjBase>) critter.list();

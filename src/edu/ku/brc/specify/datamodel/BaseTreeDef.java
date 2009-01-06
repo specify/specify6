@@ -627,7 +627,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         else
         {
             TaskSemaphoreMgr.USER_ACTION action = TaskSemaphoreMgr.lock(getNodeNumberingLockTitle(), getNodeNumberingLockName(), null,
-                                                                        TaskSemaphoreMgr.SCOPE.Discipline, canOverrideLock());
+                                                                        TaskSemaphoreMgr.SCOPE.Discipline, false/*canOverrideLock()*/);
             result = action == TaskSemaphoreMgr.USER_ACTION.OK;
         }
         return result;
