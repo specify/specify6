@@ -204,10 +204,25 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         this.params    = paramsArg;
 
         AppResourceIFace appRes    = AppContextMgr.getInstance().getResource(mainReportName); 
-        String hqlStr = appRes.getMetaData("hql");
-        if (StringUtils.isNotEmpty(hqlStr))
+        if (appRes == null)
         {
-            requiresHibernate = Boolean.parseBoolean(hqlStr.toLowerCase());
+            String resName = params.getProperty("name");
+            if (resName != null)
+            {
+                appRes = AppContextMgr.getInstance().getResource(resName); 
+            }
+        }
+        if (appRes != null)
+        {
+            String hqlStr = appRes.getMetaData("hql");
+            if (StringUtils.isNotEmpty(hqlStr))
+            {
+                requiresHibernate = Boolean.parseBoolean(hqlStr.toLowerCase());
+            }
+        }
+        else
+        {
+            log.error("could not find report resource for " + mainReportName);
         }
 
         File compiledFile = (File )params.get("compiled-file");
