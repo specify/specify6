@@ -51,6 +51,7 @@ import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.af.ui.forms.MultiView;
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
@@ -115,23 +116,6 @@ public class MatchHandler
         matchedLbl.setFont(matchedLbl.getFont().deriveFont(Font.BOLD));        
         matchedLbl.setBorder(new EmptyBorder(3, 1, 3, 0));
         matchedPane.add(matchedLbl, BorderLayout.NORTH);
-
-//Vertical layout
-//        Vector<String> headers = new Vector<String>(2);
-//        headers.add(getResourceString("WB_UPLOAD_CELL_HEADER"));
-//        headers.add(getResourceString("WB_UPLOAD_CELL_VALUE"));
-//        Vector<Vector<String>> matchedVec = new Vector<Vector<String>>(restrictedVals.size());
-//        for (int v = 0; v < restrictedVals.size() && v < uploadTable.getUploadFields().get(recNum).size(); v++)
-//        {
-//            Pair<String, String> val = restrictedVals.get(v);
-//            Vector<String> row = new Vector<String>(2);
-//            row.add(val.getFirst());
-//            row.add(val.getSecond());
-//            matchedVec.add(row);
-//        }
-//        JTable matchedTbl = new JTable(matchedVec, headers);
-//        matchedTbl.setPreferredScrollableViewportSize(new Dimension(matchedTbl.getWidth(), matchedTbl.getRowCount()*matchedTbl.getRowHeight()));
-//        matchedPane.add(new JScrollPane(matchedTbl), BorderLayout.CENTER);
         
         //Horizontal layout
         Vector<String> headers = new Vector<String>(restrictedVals.size());
@@ -154,8 +138,8 @@ public class MatchHandler
         JPanel corner = new JPanel(); 
         scrollPane.setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, corner);
         
-//following stuff is stolen from SpreadSheet.buildSpreadSheet().
-//Hopefully most of the stuff from SpreadSheet thats not necessary here has been removed.
+        //following stuff is stolen from SpreadSheet.buildSpreadSheet().
+        //Hopefully most of the stuff from SpreadSheet thats not necessary here has been removed.
         
         //matchedTbl.getModel().fireTableStructureChanged();
         
@@ -191,7 +175,7 @@ public class MatchHandler
         viewPort.setViewSize(dim);
         viewPort.setView(lbl);
         scrollPane.setRowHeader(viewPort);
-//end stolen stuff
+        //end stolen stuff
         
         matchedTbl.setPreferredScrollableViewportSize(new Dimension(matchedTbl.getWidth(), matchedTbl.getRowCount()*matchedTbl.getRowHeight()));
         
@@ -431,6 +415,13 @@ public class MatchHandler
         @Override
         public String toString()
         {
+            String value = DataObjFieldFormatMgr.getInstance().format(dataObj, dataObj.getClass());
+            if (value != null)
+            {
+                return value;
+            }
+            //else
+            log.error("no formatter found for " + dataObj.getClass().toString());
             return dataObj.toString();
         }
         
