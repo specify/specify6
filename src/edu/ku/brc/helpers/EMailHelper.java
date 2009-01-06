@@ -451,7 +451,7 @@ public class EMailHelper
     {
         AppPreferences remotePrefs    = AppPreferences.getRemote();
         boolean        allOK          = true;
-        String[]       emailPrefNames = { "smtp", "username", "password", "email", "port", "security"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        String[]       emailPrefNames = { "smtp", "username", "password", "email", "security"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         
         for (String pName : emailPrefNames)
         {
