@@ -134,7 +134,7 @@ public class DivisionBusRules extends BaseBusRules
                 Division currDivision = AppContextMgr.getInstance().getClassObject(Division.class);
                 if (currDivision.getId().equals(division.getId()))
                 {
-                    UIRegistry.showError("You cannot delete the current Collection.");
+                    UIRegistry.showError("You cannot delete the current Division."); // I18N
                     
                 } else
                 {
@@ -142,7 +142,7 @@ public class DivisionBusRules extends BaseBusRules
                     int count = BasicSQLUtils.getCount(sql);
                     if (count > 0)
                     {
-                        UIRegistry.showError(String.format("There are too many agents associated with this the `%s` Division.", division.getName()));
+                        UIRegistry.showError(String.format("There are too many agents associated with this the `%s` Division.", division.getName())); // I18N
                     } else
                     {
                         try

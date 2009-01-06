@@ -21,8 +21,18 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
 import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Vector;
+
+import javax.swing.JComboBox;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
@@ -53,6 +63,8 @@ import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
+import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 public class DisciplineBusRules extends BaseBusRules implements CommandListener
@@ -157,21 +169,16 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
         
         if (!(dataObj instanceof Discipline))
         {
-            reasonList.add("Object is of wrong type.");
+            reasonList.add("Object is of wrong Class.");
             return STATUS.Error;
         }
         
-        STATUS typeStatus = isCheckDuplicateNumberOK("type", 
-                                                      (FormDataObjIFace)dataObj, 
-                                                      Discipline.class, 
-                                                      "userGroupScopeId");
-        
-        STATUS nameStatus = isCheckDuplicateNumberOK("name", 
+        STATUS nameStatus = isCheckDuplicateNumberOK("name",
                                                     (FormDataObjIFace)dataObj, 
                                                     Discipline.class, 
                                                     "userGroupScopeId");
         
-        return typeStatus != STATUS.OK || nameStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
+        return nameStatus != STATUS.OK ? STATUS.Error : STATUS.OK;
     }
 
     /* (non-Javadoc)
@@ -194,7 +201,7 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                 Discipline currDiscipline = AppContextMgr.getInstance().getClassObject(Discipline.class);
                 if (currDiscipline.getId().equals(discipline.getId()))
                 {
-                    UIRegistry.showError("You cannot delete the current Discipline.");
+                    UIRegistry.showError("You cannot delete the current Discipline."); // I18N
                     
                 } else
                 {
@@ -207,7 +214,6 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
                         // This is called instead of calling 'okToDelete' because we had the SpecifyDeleteHelper
                         // delete the actual dataObj and now we tell the form to remove the dataObj from
                         // the form's list and them update the controller appropriately
-                        
                         formViewObj.updateAfterRemove(true); // true removes item from list and/or set
                         
                     } catch (Exception ex)
@@ -321,12 +327,43 @@ public class DisciplineBusRules extends BaseBusRules implements CommandListener
     {
         super.addChildrenToNewDataObjects(newDataObj);
         
+        Vector<DisciplineType> dispList = new Vector<DisciplineType>();
+        for (DisciplineType disciplineType : DisciplineType.getDisciplineList())
+        {
+            if (disciplineType.getType() == 0)
+            {
+                dispList.add(disciplineType);
+            }
+        }
+        
+        Discipline discipline = (Discipline)newDataObj;
+        
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p", "p,4px,p"));
+        
+        final JComboBox cbx = UIHelper.createComboBox(dispList);
+        pb.add(UIHelper.createI18NLabel("CHOOSEDISP"), cc.xy(1, 1));
+        pb.add(cbx, cc.xy(1, 3));
+        pb.setDefaultDialogBorder();
+        
+        Window parentWin = UIRegistry.getMostRecentWindow();
+        CustomDialog dlg;
+        if (parentWin instanceof Dialog)
+        {
+            dlg = new CustomDialog((Dialog)UIRegistry.getMostRecentWindow(), "", true, CustomDialog.OK_BTN, pb.getPanel());
+        } else
+        {
+            dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "", true, CustomDialog.OK_BTN, pb.getPanel());
+        }
+        UIHelper.centerAndShow(dlg);
+        
+        discipline.setType(((DisciplineType)cbx.getSelectedItem()).getName());
+        
         TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
         GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
         GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
 
-        Discipline discipline = (Discipline)newDataObj;
         
         DataType dataType = AppContextMgr.getInstance().getClassObject(DataType.class);
         discipline.setDataType(dataType);

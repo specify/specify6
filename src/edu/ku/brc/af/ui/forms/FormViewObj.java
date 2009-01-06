@@ -2880,7 +2880,19 @@ public class FormViewObj implements Viewable,
         
         if (doAdjustRS)
         {
-            adjustRSControllerAfterRemove();
+            // Nees to be put out on GUI thread to prevent lock up
+            SwingUtilities.invokeLater(new Runnable() {
+
+                /* (non-Javadoc)
+                 * @see java.lang.Runnable#run()
+                 */
+                @Override
+                public void run()
+                {
+                    adjustRSControllerAfterRemove();
+                }
+                
+            });
         }
     }
 

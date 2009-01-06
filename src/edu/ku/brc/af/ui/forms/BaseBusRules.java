@@ -35,6 +35,7 @@ import edu.ku.brc.af.core.db.DBTableInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -613,7 +614,7 @@ public class BaseBusRules implements BusinessRulesIFace
      * @param dataClass the class for which the field name belongs too.
      * @return
      */
-    protected String getErrorMsg(final String msgKey, final String fieldName, final Class<?> dataClass)
+    protected String getErrorMsg(final String msgKey, final Class<?> dataClass, final String fieldName, final String value)
     {
         String      title = "Unknown Field"; // this should never happen so I am not localizing it
         DBTableInfo ti    = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
@@ -625,12 +626,12 @@ public class BaseBusRules implements BusinessRulesIFace
                 title = ci.getTitle();
             }
         }
-        return String.format(UIRegistry.getResourceString(msgKey), title);
+        return String.format(UIRegistry.getResourceString(msgKey), title, value);
     }
 
     /**
      * Helper method for checking for a duplicate number in a field that is unique.
-     * @param numFieldName the name of the field to be checked
+     * @param fieldName the name of the field to be checked
      * @param dataObj the data object containing the number
      * @param dataClass the class of the object beng checked
      * @param primaryFieldName the primary key field
@@ -638,109 +639,74 @@ public class BaseBusRules implements BusinessRulesIFace
      * @param numberInUseKey  the localization key for the error message
      * @return whether it is ok or in error
      */
-    protected STATUS isCheckDuplicateNumberOK(final String           numFieldName, 
+    protected STATUS isCheckDuplicateNumberOK(final String           fieldName, 
                                               final FormDataObjIFace dataObj,
                                               final Class<?>         dataClass,
                                               final String           primaryFieldName)
     {
-        return isCheckDuplicateNumberOK(numFieldName, dataObj, dataClass, primaryFieldName, false);
+        return isCheckDuplicateNumberOK(fieldName, dataObj, dataClass, primaryFieldName, false);
     }
 
     /**
      * Helper method for checking for a duplicate number in a field that is unique.
-     * @param numFieldName the name of the field to be checked
+     * @param fieldName the name of the field to be checked
      * @param dataObj the data object containing the number
      * @param dataClass the class of the object beng checked
      * @param primaryFieldName the primary key field
      * @param isEmptyOK is it ok for the field to be empty
      * @return whether it is ok or in error
      */
-    protected STATUS isCheckDuplicateNumberOK(final String           numFieldName, 
+    protected STATUS isCheckDuplicateNumberOK(final String           fieldName, 
                                               final FormDataObjIFace dataObj,
                                               final Class<?>         dataClass,
                                               final String           primaryFieldName,
                                               final boolean          isEmptyOK)
     {
-        String fieldValue = (String)FormHelper.getValue(dataObj, numFieldName);
+        String fieldValue = (String)FormHelper.getValue(dataObj, fieldName);
         
         // Let's check for duplicates 
         if (StringUtils.isNotEmpty(fieldValue))
         {
-            Integer id = dataObj.getId();
+            Integer     id      = dataObj.getId();
+            String      colName = null;
+            DBTableInfo ti      = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
+            DBFieldInfo fi      = ti.getFieldByName(primaryFieldName);
+            if (fi != null)
+            {
+               colName = fi.getColumn(); 
+            } else
+            {
+                if (ti.getIdFieldName().equals(primaryFieldName))
+                {
+                    colName = ti.getIdColumnName();
+                }
+            }
+            
+            fi = ti.getFieldByName(fieldName);
+            
+            String quote  = fi.getDataClass() == String.class || fi.getDataClass() == Date.class ? "'" : "";
+            String sql = String.format("SELECT COUNT(%s) FROM %s WHERE %s = %s%s%s", colName, ti.getName(), fi.getColumn(), quote, fieldValue, quote);
             if (id != null)
             {
-                String colName = null;
-                DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
-                DBFieldInfo fi = ti.getFieldByName(primaryFieldName);
-                if (fi != null)
-                {
-                   colName = fi.getColumn(); 
-                } else
-                {
-                    if (ti.getIdFieldName().equals(primaryFieldName))
-                    {
-                        colName = ti.getIdColumnName();
-                    }
-                }
-                
-                fi = ti.getFieldByName(numFieldName);
-
-                
-                Connection conn = null;
-                Statement  stmt = null;
-                try
-                {
-                    conn = DBConnection.getInstance().createConnection();
-                    stmt = conn.createStatement();
-        
-                    String quote  = fi.getDataClass() == String.class || fi.getDataClass() == Date.class ? "'" : "";
-                    String sqlStr = "SELECT "+colName+","+fi.getColumn()+" FROM "+ti.getName()+" WHERE "+fi.getColumn() + " = " + quote + fieldValue + quote;
-                    ResultSet rs = stmt.executeQuery(sqlStr);
-                    int     cnt  = 0;
-                    Integer dbId = null;
-                    while (rs.next())
-                    {
-                        dbId = rs.getInt(1);
-                        cnt++;
-                    }
-                    
-                    if (cnt == 0 || (cnt == 1 && dbId.equals(id)))
-                    {
-                        return STATUS.OK;
-                    }
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                    
-                } finally
-                {
-                    try 
-                    {
-                        if (stmt != null)
-                        {
-                            stmt.close();
-                        }
-                        if (conn != null)
-                        {
-                            conn.close();
-                        }
-                        
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                }
-            } else
+                sql += " AND " + colName + " <> " + id;
+            }
+            log.debug(sql);
+            
+            Integer cnt = BasicSQLUtils.getCount(sql);
+            
+            if (cnt == null || cnt == 0)
             {
                 return STATUS.OK;
             }
+            reasonList.add(getErrorMsg("GENERIC_FIELD_IN_USE", dataClass, fieldName, fieldValue));
+            return STATUS.Error;
+            
         } else if (isEmptyOK)
         {
             return STATUS.OK;
             
         } 
-        reasonList.add(getErrorMsg("GENERIC_NUMBER_MISSING", numFieldName, dataClass));
+        reasonList.add(getErrorMsg("GENERIC_FIELD_MISSING", dataClass, fieldName, ""));
 
         return STATUS.Error;
     }

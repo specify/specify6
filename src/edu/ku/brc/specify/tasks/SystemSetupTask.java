@@ -109,6 +109,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     public static final DataFlavor SYSTEMSETUPTASK_FLAVOR = new DataFlavor(SystemSetupTask.class, SYSTEMSETUPTASK);
 
     // Data Members
+    protected NavBox           globalNavBox     = null;
     protected NavBox           navBox           = null;
     protected PickListBusRules pickListBusRules = new PickListBusRules();
     protected FormPane         formPane         = null;
@@ -168,11 +169,17 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             createSysNavBtn(sysNavBox, Division.getClassTableId(), false);
             createSysNavBtn(sysNavBox, Discipline.getClassTableId(), false);
             createSysNavBtn(sysNavBox, edu.ku.brc.specify.datamodel.Collection.getClassTableId(), false);
+            sysNavBox.add(NavBox.createBtnWithTT(getResourceString("WEBLINKS_EDITOR"), "WebLink", "", IconManager.STD_ICON_SIZE, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    editWebLinks();
+                }
+            })); 
+            navBoxes.add(sysNavBox);
             
-            createSysNavBtn(sysNavBox, PrepType.getClassTableId(), true);
-            //createSysNavBtn(sysNavBox, DeterminationStatus.getClassTableId(), true);
-            
-            sysNavBox.add(NavBox.createBtnWithTT(getResourceString("PICKLIST_EDITOR"), "PickList", "", IconManager.STD_ICON_SIZE, new ActionListener() {
+            NavBox collNavBox = new NavBox(getResourceString("COLL_DATA_OBJECTS"));
+            createSysNavBtn(collNavBox, PrepType.getClassTableId(), true);
+            collNavBox.add(NavBox.createBtnWithTT(getResourceString("PICKLIST_EDITOR"), "PickList", "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     PickListEditorDlg dlg = new PickListEditorDlg(null, true);
@@ -181,13 +188,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     dlg.setVisible(true);
                 }
             })); 
-            sysNavBox.add(NavBox.createBtnWithTT(getResourceString("WEBLINKS_EDITOR"), "WebLink", "", IconManager.STD_ICON_SIZE, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    editWebLinks();
-                }
-            })); 
-            navBoxes.add(sysNavBox);
+            navBoxes.add(collNavBox);
+            
         }
         isShowDefault = true;
     }
@@ -804,12 +806,14 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         
         menuItems = new Vector<MenuItemDesc>();
         
-        MenuItemDesc mid = createDataObjEditMenu(edu.ku.brc.specify.datamodel.Collection.class, "", FULL_SYSTEM_MENU);
+        MenuItemDesc mid;
+        /*mid = createDataObjEditMenu(edu.ku.brc.specify.datamodel.Collection.class, "", FULL_SYSTEM_MENU);
         mid.setSepPosition(MenuItemDesc.Position.After);
         menuItems.add(mid);
         menuItems.add(createDataObjEditMenu(Discipline.class,  "", FULL_SYSTEM_MENU));
         menuItems.add(createDataObjEditMenu(Division.class,    "", FULL_SYSTEM_MENU));
         menuItems.add(createDataObjEditMenu(Institution.class, "", FULL_SYSTEM_MENU));
+        */
         
         String    titleArg; 
         String    mneu; 
@@ -902,7 +906,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      * @param FULL_SYSTEM_MENU
      * @return
      */
-    private MenuItemDesc createDataObjEditMenu(final Class<?> cls,
+    /*private MenuItemDesc createDataObjEditMenu(final Class<?> cls,
                                                final String titleKey, 
                                                final String FULL_SYSTEM_MENU)
     {
@@ -919,7 +923,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         MenuItemDesc mid = new MenuItemDesc(mi, FULL_SYSTEM_MENU);
         mid.setPosition(MenuItemDesc.Position.Top, FULL_SYSTEM_MENU); 
         return mid;
-    }
+    }*/
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
