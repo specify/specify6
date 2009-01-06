@@ -122,7 +122,7 @@ import edu.ku.brc.af.ui.forms.validation.FormValidator;
 import edu.ku.brc.af.ui.forms.validation.FormValidatorInfo;
 import edu.ku.brc.af.ui.forms.validation.UIValidatable;
 import edu.ku.brc.af.ui.forms.validation.UIValidator;
-import edu.ku.brc.af.ui.forms.validation.ValComboBoxFromQuery;
+import edu.ku.brc.af.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.af.ui.forms.validation.ValidationListener;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -198,6 +198,7 @@ public class FormViewObj implements Viewable,
     protected Vector<AltViewIFace>          altViewsList   = null;
     protected Class<?>                      classToCreate  = null;
 
+    protected ArrayList<FVOFieldInfo>          compsList      = new ArrayList<FVOFieldInfo>();
     protected Hashtable<String, FVOFieldInfo>  controlsById   = new Hashtable<String, FVOFieldInfo>();
     protected Hashtable<String, FVOFieldInfo>  controlsByName = new Hashtable<String, FVOFieldInfo>();
     protected Hashtable<String, FVOFieldInfo>  labels         = new Hashtable<String, FVOFieldInfo>(); // ID is the Key
@@ -2956,7 +2957,7 @@ public class FormViewObj implements Viewable,
         int       insertPos = Integer.MAX_VALUE;
         Component focusable = null;
         Component first     = null;
-        for (FVOFieldInfo compFI : controlsById.values())
+        for (FVOFieldInfo compFI : compsList)
         {
             Component comp = compFI.getComp();
 
@@ -2965,11 +2966,15 @@ public class FormViewObj implements Viewable,
                 Object val = ((GetSetValueIFace)comp).getValue();
                 if (val == null || (val instanceof String && StringUtils.isEmpty((String)val)))
                 {
-                    if (comp instanceof ValComboBoxFromQuery)
+                    if (comp instanceof ValFormattedTextFieldSingle)
                     {
-                        //continue;
+                        ValFormattedTextFieldSingle vtf = (ValFormattedTextFieldSingle)comp;
+                        if (vtf.getFormatter() != null && vtf.getFormatter().isIncrementer())
+                        {
+                            continue;
+                        }
                     }
-                    boolean override = focusable instanceof JTextField && !(comp instanceof JTextField);
+                    boolean override = false;//focusable instanceof JTextField && !(comp instanceof JTextField);
                     
                     if (compFI.getInsertPos() < insertPos || override)
                     {
@@ -5052,6 +5057,7 @@ public class FormViewObj implements Viewable,
             FVOFieldInfo fieldInfo = e.nextElement();
             fieldInfo.shutdown();
         }
+        compsList.clear();
         controlsById.clear();
         controlsByName.clear();
         labels.clear();
@@ -5146,7 +5152,7 @@ public class FormViewObj implements Viewable,
             {
                 controlsByName.put(formCell.getName(), fieldInfo);
             }
-
+            compsList.add(fieldInfo);
         }
     }
     
@@ -5174,6 +5180,7 @@ public class FormViewObj implements Viewable,
         if (!isThis)
         {
             controlsByName.put(formCell.getName(), fieldInfo);
+            compsList.add(fieldInfo);
         }
         
     }

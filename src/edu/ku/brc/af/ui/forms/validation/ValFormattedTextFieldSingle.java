@@ -318,6 +318,14 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     }
     
     /**
+     * @return the formatter
+     */
+    public UIFieldFormatterIFace getFormatter()
+    {
+        return formatter;
+    }
+
+    /**
      * Sets the formatter and reset the current value into the new format.
      * @param dataObjFormatterName the formatter to use
      */
@@ -855,6 +863,8 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     {
         this.defaultValue = defaultValue;
 
+        document.setAllowText(true);
+        
         String data;
 
         if (value != null)
@@ -918,6 +928,8 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         {
             undoManager.discardAllEdits();
         }
+        
+        document.setAllowText(false);
 
         validateState();
 
@@ -1013,12 +1025,13 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
     public class JFormattedDoc extends ValPlainTextDocument
     {
-        protected int                     docLimit;
-        protected ValFormattedTextFieldSingle   textField;
-        protected UIFieldFormatterIFace   docFormatter;
-        protected UIFieldFormatterField[] docFields;
-        protected boolean                 ignoreLenForValidation = false;
-        protected boolean                 isReplacingSameSize            = false;
+        protected int                         docLimit;
+        protected ValFormattedTextFieldSingle textField;
+        protected UIFieldFormatterIFace       docFormatter;
+        protected UIFieldFormatterField[]     docFields;
+        protected boolean                     ignoreLenForValidation = false;
+        protected boolean                     isReplacingSameSize    = false;
+        protected boolean                     allowText              = false;
 
         /**
          * Create a special formatted document
@@ -1093,6 +1106,14 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         }
 
         /**
+         * @param allowText the allowText to set
+         */
+        public void setAllowText(boolean allowText)
+        {
+            this.allowText = allowText;
+        }
+
+        /**
          * Checks to see if the incoming string maps correctly to the format and ll the chars match the appropriate type
          * @param str the string
          * @return true - ok, false there was an error
@@ -1126,6 +1147,10 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         @Override
         public void replace(int offset, int length, String text, AttributeSet attrs) throws BadLocationException
         {
+            if (docFormatter.isIncrementer() && !allowText)
+            {
+                return;
+            }
             isReplacingSameSize = text.length() == length;
             super.replace(offset, length, text, attrs);
         }
@@ -1136,6 +1161,10 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         @Override
         public void remove(int offset, int len)
         {
+            if (docFormatter.isIncrementer() && !allowText)
+            {
+                return;
+            }
             /*UIFieldFormatterField field = docFields[offset];
             
             // We can't let them try to delete separator's or incrementers
@@ -1167,6 +1196,11 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         {
             String str = strArg;
             if (str == null)
+            {
+                return;
+            }
+            
+            if (docFormatter.isIncrementer() && !allowText)
             {
                 return;
             }
