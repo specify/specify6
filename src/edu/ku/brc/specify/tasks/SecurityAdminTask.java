@@ -294,7 +294,7 @@ public class SecurityAdminTask extends BaseTask
                 UserAndMasterPasswordMgr.getInstance().editMasterInfo(spUser.getName());
             }
         });
-        MenuItemDesc mid = new MenuItemDesc(mi, UIHelper.isMacOS() ? "HELP" : "HELP/ABOUT", MenuItemDesc.Position.Before); //$NON-NLS-1$ $NON-NLS-2$
+        MenuItemDesc mid = new MenuItemDesc(mi, UIHelper.isMacOS() ? "HELP" : "HELP/ABOUT", UIHelper.isMacOS() ? MenuItemDesc.Position.Bottom : MenuItemDesc.Position.Before); //$NON-NLS-1$ $NON-NLS-2$
         menuItems.add(mid);
 
         menuTitle = getKey("CHANGE_PWD_MENU"); //$NON-NLS-1$
@@ -309,7 +309,7 @@ public class SecurityAdminTask extends BaseTask
             }
         });
         
-        mid = new MenuItemDesc(mi, mid.getMenuPath(), MenuItemDesc.Position.After); //$NON-NLS-1$ $NON-NLS-2$
+        mid = new MenuItemDesc(mi, mid.getMenuPath(), UIHelper.isMacOS() ? MenuItemDesc.Position.Bottom : MenuItemDesc.Position.Before); //$NON-NLS-1$ $NON-NLS-2$
         menuItems.add(mid);
         
         return menuItems;
