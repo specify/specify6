@@ -1513,7 +1513,7 @@ public class BuildSampleDatabase
         log.info("Creating accessions and accession agents");
         calendar.set(2006, 10, 27, 23, 59, 59);
         Accession acc1 = createAccession(division,
-                                         "Gift", "Complete", "2000-PL-001", 
+                                         "gift", "complete", "2000-PL-001", 
                                          DateFormat.getInstance().format(calendar.getTime()), 
                                          calendar, calendar);
         acc1.setText1("Ichthyology");
@@ -1525,21 +1525,21 @@ public class BuildSampleDatabase
         
         List<AccessionAgent> accAgents = new Vector<AccessionAgent>();
         
-        accAgents.add(createAccessionAgent("Donor", donor, acc1, null));
-        accAgents.add(createAccessionAgent("Receiver", receiver, acc1, null));
-        accAgents.add(createAccessionAgent("Reviewer", reviewer, acc1, null));
+        accAgents.add(createAccessionAgent("donor", donor, acc1, null));
+        accAgents.add(createAccessionAgent("receiver", receiver, acc1, null));
+        accAgents.add(createAccessionAgent("reviewer", reviewer, acc1, null));
 
         Accession acc2 = createAccession(division,
-                "Field Work", "In Process", "2004-PL-002", 
+                "field_work", "inprocess", "2004-PL-002", 
                 DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
         Agent donor2 =    agents.get(5);
         Agent receiver2 = agents.get(3);
         Agent reviewer2 = agents.get(1);
         
-        accAgents.add(createAccessionAgent("Donor", donor2, acc2, null));
-        accAgents.add(createAccessionAgent("Receiver", receiver2, acc2, null));
-        accAgents.add(createAccessionAgent("Reviewer", reviewer2, acc2, null));
+        accAgents.add(createAccessionAgent("donor", donor2, acc2, null));
+        accAgents.add(createAccessionAgent("receiver", receiver2, acc2, null));
+        accAgents.add(createAccessionAgent("reviewer", reviewer2, acc2, null));
 
         dataObjects.add(acc1);
         dataObjects.add(acc2);
@@ -2790,7 +2790,7 @@ public class BuildSampleDatabase
         log.info("Creating accessions and accession agents");
         calendar.set(2006, 10, 27, 23, 59, 59);
         Accession acc1 = createAccession(division,
-                                         "Gift", "Complete", "2000-IP-001", 
+                                         "gift", "complete", "2000-IP-001", 
                                          DateFormat.getInstance().format(calendar.getTime()), 
                                          calendar, calendar);
         acc1.setText1(disciplineType.getTitle());
@@ -2802,21 +2802,21 @@ public class BuildSampleDatabase
         
         List<AccessionAgent> accAgents = new Vector<AccessionAgent>();
         
-        accAgents.add(createAccessionAgent("Donor", donor, acc1, null));
-        accAgents.add(createAccessionAgent("Receiver", receiver, acc1, null));
-        accAgents.add(createAccessionAgent("Reviewer", reviewer, acc1, null));
+        accAgents.add(createAccessionAgent("donor", donor, acc1, null));
+        accAgents.add(createAccessionAgent("receiver", receiver, acc1, null));
+        accAgents.add(createAccessionAgent("reviewer", reviewer, acc1, null));
 
         Accession acc2 = createAccession(division,
-                "Field Work", "In Process", "2004-IP-002", 
+                "field_work", "inprocess", "2004-IP-002", 
                 DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
         Agent donor2 =    agents.get(5);
         Agent receiver2 = agents.get(3);
         Agent reviewer2 = agents.get(1);
         
-        accAgents.add(createAccessionAgent("Donor", donor2, acc2, null));
-        accAgents.add(createAccessionAgent("Receiver", receiver2, acc2, null));
-        accAgents.add(createAccessionAgent("Reviewer", reviewer2, acc2, null));
+        accAgents.add(createAccessionAgent("donor", donor2, acc2, null));
+        accAgents.add(createAccessionAgent("receiver", receiver2, acc2, null));
+        accAgents.add(createAccessionAgent("reviewer", reviewer2, acc2, null));
 
         dataObjects.add(acc1);
         dataObjects.add(acc2);
@@ -3887,7 +3887,7 @@ public class BuildSampleDatabase
 
         calendar.set(2006, 10, 27, 23, 59, 59);
         Accession acc1 = createAccession(division,
-                                         "Gift", "Complete", "2000-"+disciplineType.getAbbrev()+"-001", 
+                                         "gift", "complete", "2000-"+disciplineType.getAbbrev()+"-001", 
                                          DateFormat.getInstance().format(calendar.getTime()), 
                                          calendar, calendar);
         acc1.setText1(disciplineType.getTitle());
@@ -3899,21 +3899,21 @@ public class BuildSampleDatabase
         
         List<AccessionAgent> accAgents = new Vector<AccessionAgent>();
         
-        accAgents.add(createAccessionAgent("Donor", donor, acc1, null));
-        accAgents.add(createAccessionAgent("Receiver", receiver, acc1, null));
-        accAgents.add(createAccessionAgent("Reviewer", reviewer, acc1, null));
+        accAgents.add(createAccessionAgent("donor", donor, acc1, null));
+        accAgents.add(createAccessionAgent("receiver", receiver, acc1, null));
+        accAgents.add(createAccessionAgent("reviewer", reviewer, acc1, null));
 
         Accession acc2 = createAccession(division,
-                "Field Work", "In Process", "2004-"+disciplineType.getAbbrev()+"-002", 
+                "field_work", "inprocess", "2004-"+disciplineType.getAbbrev()+"-002", 
                 DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
         Agent donor2 =    agents.get(5);
         Agent receiver2 = agents.get(3);
         Agent reviewer2 = agents.get(1);
         
-        accAgents.add(createAccessionAgent("Donor", donor2, acc2, null));
-        accAgents.add(createAccessionAgent("Receiver", receiver2, acc2, null));
-        accAgents.add(createAccessionAgent("Reviewer", reviewer2, acc2, null));
+        accAgents.add(createAccessionAgent("donor", donor2, acc2, null));
+        accAgents.add(createAccessionAgent("receiver", receiver2, acc2, null));
+        accAgents.add(createAccessionAgent("reviewer", reviewer2, acc2, null));
 
         dataObjects.add(acc1);
         dataObjects.add(acc2);
@@ -5224,7 +5224,7 @@ public class BuildSampleDatabase
         calendar.set(2006, 10, 27, 23, 59, 59);
         int yr = 2000 + (int)(rand.nextDouble() * 7);
         Accession acc1 = createAccession(division,
-                                         "Gift", "Complete", yr + "-IC-001", 
+                                         "gift", "complete", yr + "-IC-001", 
                                          DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         acc1.setText1("Ichthyology");
         acc1.setRepositoryAgreement(repoAg);
@@ -5235,20 +5235,20 @@ public class BuildSampleDatabase
         
         List<AccessionAgent> accAgents = new Vector<AccessionAgent>();
         
-        accAgents.add(createAccessionAgent("Donor", donor, acc1, null));
-        accAgents.add(createAccessionAgent("Receiver", receiver, acc1, null));
-        accAgents.add(createAccessionAgent("Reviewer", reviewer, acc1, null));
+        accAgents.add(createAccessionAgent("donor", donor, acc1, null));
+        accAgents.add(createAccessionAgent("receiver", receiver, acc1, null));
+        accAgents.add(createAccessionAgent("reviewer", reviewer, acc1, null));
 
         Accession acc2 = createAccession(division,
-                "Field Work", "In Process", yr + "-IC-002", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+                "field_work", "inprocess", yr + "-IC-002", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
         Agent donor2 =    agents.get(5);
         Agent receiver2 = agents.get(3);
         Agent reviewer2 = agents.get(1);
         
-        accAgents.add(createAccessionAgent("Donor", donor2, acc2, null));
-        accAgents.add(createAccessionAgent("Receiver", receiver2, acc2, null));
-        accAgents.add(createAccessionAgent("Reviewer", reviewer2, acc2, null));
+        accAgents.add(createAccessionAgent("donor", donor2, acc2, null));
+        accAgents.add(createAccessionAgent("receiver", receiver2, acc2, null));
+        accAgents.add(createAccessionAgent("reviewer", reviewer2, acc2, null));
 
         dataObjects.add(acc1);
         dataObjects.add(acc2);

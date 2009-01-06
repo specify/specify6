@@ -26,6 +26,14 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.util.ComparatorByStringRepresentation;
 
+/**
+ * @author ricardo
+ *
+ * @code_status Alpha
+ *
+ * Jan 6, 2009
+ *
+ */
 @SuppressWarnings("serial")
 public class AddExistingUserDlg extends CustomDialog
 {
@@ -34,13 +42,12 @@ public class AddExistingUserDlg extends CustomDialog
     
     /**
      * @param parentDlg
+     * @param group
      */
     public AddExistingUserDlg(final CustomDialog parentDlg, final SpPrincipal group) 
     {
         super(parentDlg, getResourceString("SecuritySummaryDlg.DLG_TITLE"), true, OKCANCELHELP, null);
         helpContext = "SECURITY_SUMMARY";
-        
-        okLabel = getResourceString("CLOSE");
         
         this.group = group;
     }
@@ -66,6 +73,8 @@ public class AddExistingUserDlg extends CustomDialog
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         mainPB.add(sp, cc.xy(1, 3));
         
+        mainPB.setDefaultDialogBorder();
+        
         // adds panel to custom dialog
         contentPanel = mainPB.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
@@ -73,6 +82,9 @@ public class AddExistingUserDlg extends CustomDialog
         pack();
     }
     
+    /**
+     * @return
+     */
     private JList createUserList()
     {
         DefaultListModel listModel = new DefaultListModel();
@@ -145,7 +157,8 @@ public class AddExistingUserDlg extends CustomDialog
      * Returns the selected user, if OK button was clicked. Returns null if no user was selected.
      * @return the selected user, if OK button was clicked. Returns null if no user was selected.
      */
-    public SpecifyUser[] getSelectedUsers() {
+    public SpecifyUser[] getSelectedUsers() 
+    {
         Object[] objs = userList.getSelectedValues();
         final int n = objs.length;
         if (btnPressed == OK_BTN && n > 0) 

@@ -28,6 +28,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
@@ -78,7 +79,10 @@ import edu.ku.brc.ui.UIRegistry;
         @Index (name="AgentFirstNameIDX", columnNames={"FirstName"}),
         @Index (name="AgentGuidIDX", columnNames={"GUID"})  
     })
-public class Agent extends DataModelObjBase implements java.io.Serializable, AttachmentOwnerIFace<AgentAttachment> {
+public class Agent extends DataModelObjBase implements java.io.Serializable, 
+                                                       AttachmentOwnerIFace<AgentAttachment>,
+                                                       Cloneable
+{
 
     // Fields
     private static Agent                    userAgent = null;
@@ -1018,7 +1022,36 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     {
         return agentAttachments;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        Agent obj = (Agent)super.clone();
+        
+        obj.agentId = null;
+        obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
+        obj.timestampModified    = timestampCreated;
+        
+        obj.orgMembers                = new HashSet<Agent>();
+        obj.groups                    = new HashSet<GroupPerson>();
+        obj.members                   = new HashSet<GroupPerson>();
+        obj.collectors                = new HashSet<Collector>();
+        
+        obj.disciplines               = new HashSet<Discipline>();
+       
+        // Agent
+        obj.addresses                      = new HashSet<Address>();
+        obj.agentAttachments               = new HashSet<AgentAttachment>();
+        obj.variants                       = new HashSet<AgentVariant>();
+        obj.agentGeographies               = new HashSet<AgentGeography>();
+        obj.agentSpecialties               = new HashSet<AgentSpecialty>();
+        
+        return obj;
+    }
+    
     /**
      * @return the userAgent
      */

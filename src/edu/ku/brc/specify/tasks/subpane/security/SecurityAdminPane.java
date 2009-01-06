@@ -341,7 +341,7 @@ public class SecurityAdminPane extends BaseSubPane
         
         // create object that will control the creation of popups
         // constructor will take care of hooking up right listeners to the tree.
-        //new NavigationTreeContextMenuMgr(navTreeMgr);
+        new NavigationTreeContextMenuMgr(navTreeMgr);
         
         IconManager.IconSize iconSize = IconManager.IconSize.Std20;
         ImageIcon sysIcon = IconManager.getIcon("SystemSetup", iconSize);

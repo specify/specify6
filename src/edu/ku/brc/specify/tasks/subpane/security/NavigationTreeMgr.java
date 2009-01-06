@@ -415,7 +415,7 @@ public class NavigationTreeMgr
         
         if (!dlg.isCancelled())
         {
-            addGroupToUser(group, spUser);
+            addGroupToUser(group, spUser, currDiscipline); // XXX !!! I don't think this Discipline is the right one!
             
             Agent userAgent = (Agent)cbx.getValue();
             spUser.getAgents().add(userAgent);
@@ -535,7 +535,10 @@ public class NavigationTreeMgr
         }
         
         SpPrincipal group = (SpPrincipal) parentWrp.getDataObj();
-        addGroupToUser(group, userArray);
+        
+        Discipline discipline = getParentOfClass(grpNode, Discipline.class);
+        
+        addGroupToUser(group, userArray, discipline);
         
         DefaultMutableTreeNode lastUserNode = addUsersToTree(grpNode, userArray);
         
@@ -562,6 +565,22 @@ public class NavigationTreeMgr
             lastUserNode = userNode;
         }
         return lastUserNode;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T> T getParentOfClass(final  DefaultMutableTreeNode node, final Class<?> cls)
+    {
+        DefaultMutableTreeNode parent = node;
+        while (parent != null)
+        {
+            DataModelObjBaseWrapper userData = (DataModelObjBaseWrapper)parent.getUserObject();
+            if (userData.getDataObj().getClass() == cls)
+            {
+                return (T)userData.getDataObj();
+            }
+            parent = (DefaultMutableTreeNode)parent.getParent();
+        }
+        return null;
     }
     
     /**
@@ -727,9 +746,11 @@ public class NavigationTreeMgr
      * @param group
      * @param user
      */
-    private final void addGroupToUser(final SpPrincipal group, final SpecifyUser user)
+    private final void addGroupToUser(final SpPrincipal group, 
+                                      final SpecifyUser user,
+                                      final Discipline  discipline)
     {
-        addGroupToUser(group, new SpecifyUser[] { user });
+        addGroupToUser(group, new SpecifyUser[] { user }, discipline);
     }
     
     /**
@@ -737,7 +758,8 @@ public class NavigationTreeMgr
      * @param users
      */
     private final void addGroupToUser(final SpPrincipal   group, 
-                                      final SpecifyUser[] users)
+                                      final SpecifyUser[] users,
+                                      final Discipline    discipline)
     {
         DataProviderSessionIFace session = null;
         try
@@ -763,10 +785,22 @@ public class NavigationTreeMgr
                 user.getSpPrincipals().add(group);
                 group.getSpecifyUsers().add(user);
                 
+                Agent agentToClone = null;
                 for (Agent agent : user.getAgents())
                 {
                     session.saveOrUpdate(agent);
+                    agentToClone = agent;
                 }
+                session.attach(discipline);
+                
+                Agent newAgent = (Agent)agentToClone.clone();
+                newAgent.getDisciplines().add(discipline);
+                discipline.getAgents().add(newAgent);
+                user.getAgents().add(newAgent);
+                
+                session.saveOrUpdate(agentToClone);
+                session.saveOrUpdate(discipline);
+                
                 session.saveOrUpdate(user);
                 session.saveOrUpdate(userPrincipal);
                 session.saveOrUpdate(group);
