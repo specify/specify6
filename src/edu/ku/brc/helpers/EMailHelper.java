@@ -451,18 +451,17 @@ public class EMailHelper
     {
         AppPreferences remotePrefs    = AppPreferences.getRemote();
         boolean        allOK          = true;
-        String[]       emailPrefNames = { "smtp", "username", "password", "email", "security"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        String[]       emailPrefNames = { "smtp", "username", "password", "email", "port", "security"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         
         for (String pName : emailPrefNames)
         {
-            System.out.println("["+pName+"]");
             String key   = "settings.email."+pName; //$NON-NLS-1$
             String value = remotePrefs.get(key, ""); //$NON-NLS-1$
-            if (StringUtils.isNotEmpty(value) || pName.equals("password")) //$NON-NLS-1$
+            if (StringUtils.isNotEmpty(value) || pName.equals("password") || pName.equals("port")) //$NON-NLS-1$
             {
                 emailPrefs.put(pName, value);
                 
-            } else if (!key.equals("port") && !key.equals("security"))
+            } else if (!key.equals("security"))
             {
                 log.info("Key["+key+"] is empty"); //$NON-NLS-1$ //$NON-NLS-2$
                 allOK = false;
