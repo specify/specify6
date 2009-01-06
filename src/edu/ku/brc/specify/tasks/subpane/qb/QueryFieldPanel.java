@@ -161,7 +161,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         {
             text1 = new JTextField();
             text2 = new JTextField();
-            connectorText = new JLabel(" " + getResourceString("and") + " ");
+            connectorText = new JLabel(" " + getResourceString("AND") + " ");
             
             rangePanel = new JPanel();
             PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g, f:p, f:p:g", "f:p"), rangePanel);
