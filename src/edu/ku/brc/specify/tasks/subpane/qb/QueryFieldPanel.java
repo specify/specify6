@@ -1070,7 +1070,6 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         isNotCheckbox.addFocusListener(focusListener);
         operatorCBX = createComboBox(comparators);
         operatorCBX.addFocusListener(focusListener);
-        operatorCBX.addActionListener(this);
         boolean isBool = fieldQRI != null && fieldQRI.getDataClass().equals(Boolean.class);
         if (!isBool)
         {
@@ -1099,6 +1098,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             if (hasBetweenOp)
             {
                 criteria = new CriteriaPair();
+                operatorCBX.addActionListener(this);
             }
             else
             {
@@ -1555,7 +1555,10 @@ public class QueryFieldPanel extends JPanel implements ActionListener
             }
             else
             {
-                ((CriteriaPair )criteria).setShowingPair(false);
+                if (criteria instanceof CriteriaPair)
+                {
+                    ((CriteriaPair )criteria).setShowingPair(false);
+                }
             }
         }
     }
