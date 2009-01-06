@@ -13,12 +13,12 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.util.Pair;
-
 /**
  * @author timbo
  *
  * @code_status Alpha
+ *
+ *Stores match settings and options for an UploadTable.
  *
  */
 public class UploadMatchSetting
@@ -62,6 +62,9 @@ public class UploadMatchSetting
      */
     protected boolean matchEmptyValues;
     
+    /**
+     * @return a Vector of String names for the match 'modes'.
+     */
     public static Vector<String> getModeTexts()
     {
         Vector<String> result = new Vector<String>();
@@ -72,6 +75,10 @@ public class UploadMatchSetting
         return result;
     }
     
+    /**
+     * @param mode
+     * @return the name of the mode.
+     */
     public static String getModeText(int mode)
     {
         if (mode == ASK_MODE)
@@ -93,6 +100,10 @@ public class UploadMatchSetting
         throw new RuntimeException("Unknown match mode.");
     }
     
+    /**
+     * @param modeName
+     * @return the mode named modeName.
+     */
     public static int getMode(final String modeName)
     {
         if (modeName.equals(getResourceString("WB_UPLOAD_MATCH_MODE_ASK")))
@@ -114,6 +125,9 @@ public class UploadMatchSetting
         return -1;
     }
     
+    /**
+     * Default constructor.
+     */
     public UploadMatchSetting()
     {
         //mode = UploadMatchSetting.ASK_MODE;        
@@ -125,6 +139,9 @@ public class UploadMatchSetting
         matchEmptyValues = true; //for now, default probably should be false
     }
     
+    /**
+     * @param selection
+     */
     public void addSelection(final MatchSelection selection)
     {
         selections.add(selection);
@@ -134,18 +151,26 @@ public class UploadMatchSetting
         }
     }
     
-    public String buildRowValues(final Vector<Pair<String, String>> rowVals)
+    /**
+     * @param rowVals
+     * @return a string descriptions of the values used to find a match.
+     */
+    public String buildRowValues(final Vector<UploadTable.MatchRestriction> rowVals)
     {
         StringBuilder result = new StringBuilder();
-        for (Pair<String, String> val : rowVals)
+        for (UploadTable.MatchRestriction val : rowVals)
         {
-            result.append(val.getSecond());
+            result.append(val.getFieldName());
             result.append("\t");
         }
         return result.toString();
     }
     
-    public Object doLookup(final Vector<Pair<String, String>> values)
+    /**
+     * @param values
+     * @return a previously selected object that matches values.
+     */
+    public Object doLookup(final Vector<UploadTable.MatchRestriction> values)
     {
         MatchSelection match = lookups.get(buildRowValues(values));
         if (match != null)
@@ -155,6 +180,13 @@ public class UploadMatchSetting
         return null;
     }
     
+    /**
+     * @author timbo
+     *
+     * @code_status Alpha
+     *
+     * Stores info about selected matches.
+     */
     public class MatchSelection
     {
         /**
@@ -180,7 +212,7 @@ public class UploadMatchSetting
          * @param rowNumber
          * @param object
          */
-        public MatchSelection(final Vector<Pair<String, String>> rowValues, int rowNumber, Object selectionKeyId, int mode)
+        public MatchSelection(final Vector<UploadTable.MatchRestriction> rowValues, int rowNumber, Object selectionKeyId, int mode)
         {
             super();
             this.rowValues = buildRowValues(rowValues);
@@ -268,6 +300,9 @@ public class UploadMatchSetting
         this.matchEmptyValues = matchEmptyValues;
     }
     
+    /**
+     * Clears selections and lookup table.
+     */
     public void clear()
     {
         lookups.clear();

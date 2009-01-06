@@ -56,7 +56,6 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.util.Pair;
 
 public class MatchHandler 
 {
@@ -76,7 +75,7 @@ public class MatchHandler
      * @param matches
      * @return selected match
      */
-    public DataModelObjBase dealWithMultipleMatches(final List<DataModelObjBase> matches, final Vector<Pair<String,String>> restrictedVals, int recNum) throws UploaderException
+    public DataModelObjBase dealWithMultipleMatches(final List<DataModelObjBase> matches, final Vector<UploadTable.MatchRestriction> restrictedVals, int recNum) throws UploaderException
     {
         if (uploadTable.getMatchSetting().getMode() == UploadMatchSetting.PICK_FIRST_MODE)
         {
@@ -119,15 +118,20 @@ public class MatchHandler
         
         //Horizontal layout
         Vector<String> headers = new Vector<String>(restrictedVals.size());
-        for (Pair<String, String> val : restrictedVals)
+        for (UploadTable.MatchRestriction val : restrictedVals)
         {
-            headers.add(val.getFirst());
+            headers.add(val.getFieldName());
         }
         Vector<Vector<String>> matchedVec = new Vector<Vector<String>>(1);
         Vector<String> row = new Vector<String>(restrictedVals.size());
-         for (int v = 0; v < restrictedVals.size() && v < uploadTable.getUploadFields().get(recNum).size(); v++)
+        for (int v = 0; v < restrictedVals.size(); v++)
         {
-            row.add(restrictedVals.get(v).getSecond());
+            String val = restrictedVals.get(v).getRestriction();
+            if (val.equals(uploadTable.getNullRestrictionText()))
+            {
+                val = "";
+            }
+            row.add(val);
         }
         matchedVec.add(row);
         
@@ -381,11 +385,22 @@ public class MatchHandler
         return false;
     }
     
+    /**
+     * @author timbo
+     *
+     * @code_status Alpha
+     * 
+     * Packages matched objects with their DBTableInfo
+     *
+     */
     private class MatchedRecord
     {
         protected final DataModelObjBase dataObj;
         protected final DBTableInfo      tblInfo;
         
+        /**
+         * @param matchedObj
+         */
         public MatchedRecord(final DataModelObjBase matchedObj)
         {
             this.dataObj = matchedObj;

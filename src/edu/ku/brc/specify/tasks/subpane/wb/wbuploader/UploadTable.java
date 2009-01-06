@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -37,6 +38,7 @@ import edu.ku.brc.af.core.db.DBFieldInfo;
 import edu.ku.brc.af.core.db.DBTableIdMgr;
 import edu.ku.brc.af.ui.db.PickListItemIFace;
 import edu.ku.brc.af.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.af.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.af.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -185,7 +187,7 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * Used in processing new objects added as result of the UploadMatchSetting.ADD_NEW_MODE option.
      */
-    protected Vector<Pair<String, String>>              restrictedValsForAddNewMatch = null;
+    protected Vector<MatchRestriction>              restrictedValsForAddNewMatch = null;
 
     /**
      * internationalized boolean string representations for validation.
@@ -205,6 +207,80 @@ public class UploadTable implements Comparable<UploadTable>
     UploadedRecFinalizerIFace                           finalizer                    = null;
     List<Pair<UploadField, Method>>                     precisionDateFields         = new LinkedList<Pair<UploadField, Method>>();
     
+    
+    /**
+     * @author timbo
+     *
+     * @code_status Alpha
+     * 
+     * Stores info on restrictions used when searching for matching records.
+     *
+     */
+    public class MatchRestriction implements Comparable<MatchRestriction>
+    {
+        protected final String fieldName;
+        protected final String restriction;
+        protected final int    col;
+        
+        /**
+         * @param fieldName
+         * @param restriction
+         * @param col
+         */
+        public MatchRestriction(final String fieldName, final String restriction, 
+                                final int col)
+        {
+            this.fieldName = fieldName;
+            this.restriction = restriction;
+            this.col = col;
+        }
+
+        /**
+         * @return the fieldName
+         */
+        public String getFieldName()
+        {
+            return fieldName;
+        }
+
+        /**
+         * @return the restriction
+         */
+        public String getRestriction()
+        {
+            return restriction;
+        }
+
+        /**
+         * @return the col
+         */
+        public int getCol()
+        {
+            return col;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        @Override
+        public int compareTo(MatchRestriction o)
+        {
+            //first check col == -1 to put the ones without columns at the end of lists.
+            if (col == -1)
+            {
+                return 1;
+            }
+            
+            if (o.col == -1)
+            {
+                return -1;
+            }
+            
+            return col < o.col ? -1 : col == o.col ? 0 : 1;
+        }
+        
+        
+    }
     /**
      * @param table
      * @param relationship
@@ -1425,6 +1501,11 @@ public class UploadTable implements Comparable<UploadTable>
             critter.add(Restrictions.eq(propName, arg));
             if (arg instanceof DataModelObjBase) 
             { 
+                String value = DataObjFieldFormatMgr.getInstance().format(arg, arg.getClass());
+                if (value != null)
+                {
+                    return value;
+                }
                 return ((DataModelObjBase) arg).getId()
                     .toString(); 
             }
@@ -1434,12 +1515,20 @@ public class UploadTable implements Comparable<UploadTable>
         if (!ignoreNulls || matchSetting.isMatchEmptyValues())
         {
             critter.add(Restrictions.isNull(propName));
-            return "#null#";
+            return getNullRestrictionText();
         }
         
         return "";
     }
 
+    /**
+     * @return indicator that a null restriction is in effect.
+     */
+    public String getNullRestrictionText()
+    {
+        return "#null#";
+    }
+    
     protected List<DataModelObjBase> matchChildren(List<DataModelObjBase> matches, int recNum)
             throws UploaderException
     {
@@ -1531,7 +1620,7 @@ public class UploadTable implements Comparable<UploadTable>
     
     protected boolean getMatchCriteria(CriteriaIFace critter,
                                        final int recNum,
-                                       Vector<Pair<String, String>> restrictedVals)
+                                       Vector<MatchRestriction> restrictedVals)
             throws UploaderException, IllegalAccessException, NoSuchMethodException,
             InvocationTargetException
     {
@@ -1544,16 +1633,17 @@ public class UploadTable implements Comparable<UploadTable>
                         getArgForSetter(uf)[0], true);
                 ignoringBlankCell = ignoringBlankCell || restriction.equals("")
                         && !matchSetting.isMatchEmptyValues();
-                restrictedVals.add(new Pair<String, String>(uf.getWbFldName(), restriction));
+                //restrictedVals.add(new Pair<String, String>(uf.getWbFldName(), restriction));
+                restrictedVals.add(new MatchRestriction(uf.getWbFldName(), restriction, uf.getIndex()));
             }
         }
         for (Vector<ParentTableEntry> ptes : parentTables)
         {
             for (ParentTableEntry pte : ptes)
             {
-                restrictedVals.add(new Pair<String, String>(pte.getPropertyName(), addRestriction(
+                restrictedVals.add(new MatchRestriction(pte.getPropertyName(), addRestriction(
                         critter, pte.getPropertyName(), pte.getImportTable().getParentRecord(
-                                recNum, this), false)));
+                                recNum, this), false), -1));
             }
         }
         for (RelatedClassSetter rce : relatedClassDefaults)
@@ -1569,7 +1659,9 @@ public class UploadTable implements Comparable<UploadTable>
         }
 
         addDomainCriteria(critter);
-
+        
+        Collections.sort(restrictedVals);
+        
         return ignoringBlankCell;
     }
     
@@ -1598,7 +1690,7 @@ public class UploadTable implements Comparable<UploadTable>
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         DataModelObjBase match = null;
-        Vector<Pair<String, String>> restrictedVals = new Vector<Pair<String, String>>();
+        Vector<MatchRestriction> restrictedVals = new Vector<MatchRestriction>();
         boolean ignoringBlankCell = false;
         try
         {
@@ -1670,7 +1762,7 @@ public class UploadTable implements Comparable<UploadTable>
         return false;
     }
 
-    public void onAddNewMatch(final Vector<Pair<String, String>> restrictedVals)
+    public void onAddNewMatch(final Vector<MatchRestriction> restrictedVals)
     {
         // yuck. Only want to create one new record for each set values. If cell values 'Roger'
         // 'Johnson' match 2 records in database
@@ -1683,7 +1775,7 @@ public class UploadTable implements Comparable<UploadTable>
      * @return selected match
      */
     protected DataModelObjBase dealWithMultipleMatches(final List<DataModelObjBase> matches,
-                                                       final Vector<Pair<String, String>> restrictedVals,
+                                                       final Vector<MatchRestriction> restrictedVals,
                                                        int recNum) throws UploaderException
     {
         return new MatchHandler(this).dealWithMultipleMatches(matches, restrictedVals, recNum);
@@ -2671,21 +2763,21 @@ public class UploadTable implements Comparable<UploadTable>
          * @param row
          * @param uploadTable
          */
-        public PartialMatchMsg(Vector<Pair<String, String>> cellVals, String matchedText, int row,
+        public PartialMatchMsg(Vector<MatchRestriction> cellVals, String matchedText, int row,
                 UploadTable uploadTable)
         {
 
             super(null);
             StringBuilder sb = new StringBuilder();
-            for (Pair<String, String> p : cellVals)
+            for (MatchRestriction p : cellVals)
             {
                 if (!sb.toString().equals(""))
                 {
                     sb.append(", ");
                 }
-                sb.append(p.getFirst());
+                sb.append(p.getFieldName());
                 sb.append("=");
-                sb.append("\"" + p.getSecond() + "\"");
+                sb.append("\"" + p.getRestriction() + "\"");
             }
             this.matchVals = sb.toString();
             this.matchedText = matchedText;

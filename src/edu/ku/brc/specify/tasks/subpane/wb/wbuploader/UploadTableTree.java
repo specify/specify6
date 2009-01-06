@@ -35,7 +35,6 @@ import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
-import edu.ku.brc.util.Pair;
 
 /**
  * @author timbo
@@ -875,13 +874,13 @@ public class UploadTableTree extends UploadTable
     @Override
     protected boolean getMatchCriteria(CriteriaIFace critter,
                                        int recNum,
-                                       Vector<Pair<String, String>> restrictedVals)
+                                       Vector<UploadTable.MatchRestriction> restrictedVals)
             throws UploaderException, IllegalAccessException, NoSuchMethodException,
             InvocationTargetException
     {
         boolean result =  super.getMatchCriteria(critter, recNum, restrictedVals);
-        restrictedVals.add(new Pair<String, String>("isAccepted", addRestriction(
-                critter, "isAccepted", new Boolean(true), false)));
+        restrictedVals.add(new UploadTable.MatchRestriction("isAccepted", addRestriction(
+                critter, "isAccepted", new Boolean(true), false), -1));
         return result;
     }
 

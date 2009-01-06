@@ -12,8 +12,16 @@ import java.util.List;
 import java.util.Vector;
 
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.util.Pair;
 
+/**
+ * @author timbo
+ *
+ * @code_status Alpha
+ * 
+ * Exception that is thrown when an upload to a table is skipped due to the existence
+ * of a matching record in the database.
+ *
+ */
 public class UploaderMatchSkipException extends UploaderException
 {
     /**
@@ -75,7 +83,13 @@ public class UploaderMatchSkipException extends UploaderException
         this.matchIds = matchIds;
     }
     
-    public static String makeMsg(final Vector<Pair<String, String>> cellVals, int valsToShow, int row)
+    /**
+     * @param cellVals
+     * @param valsToShow
+     * @param row
+     * @return a hopefully human-readable description of the Exception
+     */
+    public static String makeMsg(final Vector<UploadTable.MatchRestriction> cellVals, int valsToShow, int row)
     {
         int maxValsToShow = 2;
         StringBuilder msg = new StringBuilder();
@@ -87,9 +101,9 @@ public class UploaderMatchSkipException extends UploaderException
         msg.append(" (");
         for (int f = 0; f < maxValsToShow && f < valsToShow;)
         {
-            msg.append(cellVals.get(f).getFirst());
+            msg.append(cellVals.get(f).getFieldName());
             msg.append(" = ");
-            msg.append(cellVals.get(f++).getSecond());
+            msg.append(cellVals.get(f++).getRestriction());
             if (f < cellVals.size() && f < valsToShow)
             {
                 msg.append(", ");
