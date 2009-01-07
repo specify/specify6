@@ -278,7 +278,7 @@
             </altviews>
         </view>
 
-	    <view name="DNASequence"
+        <view name="DNASequence"
               objtitle="DNA Sequence"
               class="edu.ku.brc.specify.datamodel.DNASequence"
               busrules="edu.ku.brc.specify.datamodel.busrules.DNASequenceBusRules"
@@ -288,7 +288,19 @@
                 <altview name="DNASequence View" viewdef="DNASequence" mode="view"/>
                 <altview name="DNASequence Edit" viewdef="DNASequence" mode="edit" default="true"/>
             </altviews>
-	    </view>
+        </view>
+        
+        <view name="DNASequenceSubView"
+              objtitle="DNA Sequence"
+              class="edu.ku.brc.specify.datamodel.DNASequence"
+              busrules="edu.ku.brc.specify.datamodel.busrules.DNASequenceBusRules"
+              isinternal="false">
+            <desc><![CDATA[DNA Sequencing form.]]></desc>
+            <altviews>
+                <altview name="DNASequence View" viewdef="DNASequenceSubView" mode="view"/>
+                <!-- <altview name="DNASequence Edit" viewdef="DNASequenceSubView" mode="edit" default="true"/>  -->
+            </altviews>
+        </view>
         
         <view name="ExchangeIn"
             class="edu.ku.brc.specify.datamodel.ExchangeIn"
@@ -1579,7 +1591,7 @@
       	<desc><![CDATA[DNA Sequence Form]]></desc>
         <enableRules/>
         
-            <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
+            <columnDef>p,2px,p,2px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
@@ -1588,21 +1600,62 @@
             		<cell type="field" id="2" name="geneName" uitype="text"/>
             		<cell type="label" labelfor="3"/>
             		<cell type="field" id="3" name="seqDate" uitype="formattedtext" uifieldformatter="Date" default="Today"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject;editbtn=false;newbtn=false" isrequired="true"/>
             		<cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="sequencer" uitype="querycbx" initialize="name=Agent"/>
             	</row>
             	<row>
                      <cell type="label" labelfor="4"/>
-                     <cell type="field" id="4" name="geneSequence" uitype="textarea" colspan="10"/>
+                     <cell type="field" id="4" name="geneSequence" uitype="textarea" colspan="6"/>
             	</row>
                 <row>
-                    <cell type="separator" label="Attachments" colspan="12"/>
+                    <cell type="separator" label="Attachments" colspan="8"/>
                 </row>
                 <row>
                     <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=DNASequenceAttachment;addsearch=true"/>
                 </row>
             </rows>
 	  </viewdef>
+        
+      <viewdef 
+        name="DNASequenceSubView"
+        type="form"
+        class="edu.ku.brc.specify.datamodel.DNASequence" 
+        gettable="edu.ku.brc.af.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.af.ui.forms.DataSetterForObj">
+        
+        <desc><![CDATA[DNA Sequence Form]]></desc>
+        <enableRules/>
+        
+            <columnDef>p,2px,p,2px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="geneName" uitype="text"/>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="seqDate" uitype="formattedtext" uifieldformatter="Date" default="Today"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="sequencer" uitype="querycbx" initialize="name=Agent"/>
+                </row>
+                <row>
+                     <cell type="label" labelfor="4"/>
+                     <cell type="field" id="4" name="geneSequence" uitype="textarea" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Attachments" colspan="8"/>
+                </row>
+                <row>
+                    <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=DNASequenceAttachment;addsearch=true"/>
+                </row>
+            </rows>
+        </viewdef>
         
         <viewdef
             type="form"

@@ -115,10 +115,11 @@
                     <cell type="subview" viewname="DNASequence" id="14" name="dnaSequences" initialize="btn=true"/>
                 </row> -->
                 <row>
-			  <cell type="separator" label="Attachments" colspan="12"/>
+			    <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObjectAttachment"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="1" initialize="btn=true;icon=CollectionObjectAttachment"/>
+                    <cell type="subview" id="dnaSequences" viewname="DNASequenceSubView" name="dnaSequences" colspan="1" initialize="btn=true"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="12"/>
