@@ -226,7 +226,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         }
         
         /**
-         * @return true if the entered criteria is really messed up.
+         * @return true unless the entered criteria is really messed up.
          */
         public boolean isValidPairEntry()
         {
@@ -927,21 +927,20 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     
                 StringBuilder str = new StringBuilder();
 
-                if (operStr.equals("="))
-                {
-                    str.append(fieldQRI.getSQLFldSpec(ta, true) + " ");
-                    str.append(isNotCheckbox.isSelected() ? "!" : "");
-                    str.append(operStr);
-
-                }
-                else
-                {
-                    str.append(isNotCheckbox.isSelected() ? "NOT " : "");
-                    str.append(fieldQRI.getSQLFldSpec(ta, true) + " ");
-                    str.append(operStr);
-                }
+                str.append(isNotCheckbox.isSelected() ? "(NOT " : "");
+                str.append(fieldQRI.getSQLFldSpec(ta, true) + " ");
+                str.append(operStr);
                 str.append(" ");
                 str.append(criteriaFormula);
+                if (isNotCheckbox.isSelected()) 
+                {
+                    if (!operStr.equals(SpQueryField.OperatorType
+                            .getString(SpQueryField.OperatorType.EMPTY.getOrdinal())))
+                    {
+                        str.append(" or " + fieldQRI.getSQLFldSpec(ta, true) + " is null");
+                    }
+                    str.append(")");
+                }
                 return str.toString();
             }
         }
