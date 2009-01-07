@@ -98,6 +98,7 @@ import edu.ku.brc.af.ui.forms.validation.ValPasswordField;
 import edu.ku.brc.af.ui.forms.validation.ValSpinner;
 import edu.ku.brc.af.ui.forms.validation.ValTextArea;
 import edu.ku.brc.af.ui.forms.validation.ValTextField;
+import edu.ku.brc.af.ui.forms.validation.ValTristateCheckBox;
 import edu.ku.brc.af.ui.forms.validation.ValidatedJPanel;
 import edu.ku.brc.af.ui.weblink.WebLinkButton;
 import edu.ku.brc.exceptions.ConfigurationException;
@@ -1266,6 +1267,26 @@ public class ViewFactory
                         checkbox.addChangeListener(dcn);
                     }
                     bi.compToAdd = checkbox;
+                    break;
+                }
+                
+                case tristate:
+                {
+                    String lblStr = cellField.getLabel();
+                    if (lblStr.equals("##"))
+                    {
+                        bi.isDerivedLabel = true;
+                        cellField.setDerived(true);
+                    }
+                    ValTristateCheckBox tristateCB = new ValTristateCheckBox(lblStr, 
+                                                           isReq, 
+                                                           cellField.isReadOnly() || mode == AltViewIFace.CreationMode.VIEW);
+                    if (validator != null)
+                    {
+                        DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getIdent(), tristateCB, null);
+                        tristateCB.addChangeListener(dcn);
+                    }
+                    bi.compToAdd = tristateCB;
                     break;
                 }
                 

@@ -848,6 +848,7 @@ public class ViewLoader
                                     
                                 case list:
                                 case image:
+                                case tristate:
                                 case checkbox:
                                 case password:
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", uitypeStr);
@@ -1180,7 +1181,8 @@ public class ViewLoader
                         }
                     }
                 } else if (cell.getType() == FormCellIFace.CellType.field && 
-                          ((FormCellFieldIFace)cell).getUiType() == FormCellFieldIFace.FieldType.checkbox)
+                          (((FormCellFieldIFace)cell).getUiType() == FormCellFieldIFace.FieldType.checkbox) ||
+                          (((FormCellFieldIFace)cell).getUiType() == FormCellFieldIFace.FieldType.tristate))
                 {
                     FormCellFieldIFace fcf = (FormCellFieldIFace)cell;
                     if (fcf.getLabel().equals("##"))

@@ -596,6 +596,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             case url:
             case list:
             case image:
+            case tristate:
             case checkbox:
             case password:
             case plugin:

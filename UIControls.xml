@@ -307,6 +307,11 @@
                     If the text value doesn't equal a case insensitive value of "true" then it is set to false.</desc>
             </subcontrol>
             
+            <subcontrol type="tristate" dsp="tristate">
+                <desc>Displays a tristate checkbox and can accept boolean or text values where the text value is "true" or "false" or null 
+                    If the text value doesn't equal a case insensitive value of "true" then it is set to false or if it is null it is set to null</desc>
+            </subcontrol>
+            
             <subcontrol type="password" dsp="password">
                 <desc>Displays a password text field that displays "*" as the user types in their password.</desc>
                 <params>
