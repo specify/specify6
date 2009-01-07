@@ -548,7 +548,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
     {
         if (classObj.equals(String.class))
         {
-            return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.LIKE,
+            return new SpQueryField.OperatorType[] {SpQueryField.OperatorType.CONTAINS,
+                    SpQueryField.OperatorType.LIKE,
                     SpQueryField.OperatorType.EQUALS,
                     SpQueryField.OperatorType.IN,
                     SpQueryField.OperatorType.EMPTY};
@@ -707,7 +708,8 @@ public class QueryFieldPanel extends JPanel implements ActionListener
         
         char quoteStr = quote ? '\'' : ' ';
         String result = quoteStr + escape(criteriaObjs[0], quoteStr).toString() + quoteStr;
-        if (SpQueryField.OperatorType.getOrdForName(operatorStr) == SpQueryField.OperatorType.LIKE.getOrdinal())
+        if (SpQueryField.OperatorType.getOrdForName(operatorStr) == SpQueryField.OperatorType.LIKE.getOrdinal()
+                || SpQueryField.OperatorType.getOrdForName(operatorStr) == SpQueryField.OperatorType.CONTAINS.getOrdinal())
         {
             //for Specify 5 compatibility...?
             //replaced unescaped '*' with '%'
@@ -759,7 +761,7 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                 s++;
             }
             
-            if (!unEscapedWildcard)
+            if (SpQueryField.OperatorType.getOrdForName(operatorStr) == SpQueryField.OperatorType.CONTAINS.getOrdinal())
             {
                 //if user didn't purposely include a wildcard then add them
                 result = quoteStr + "%" + result.substring(1, result.length()-1) + "%" + quoteStr;
@@ -918,6 +920,12 @@ public class QueryFieldPanel extends JPanel implements ActionListener
                     criteriaFormula = concatCriteria(criteriaStrs, operStr, false);
                 }
             }
+            if (operStr.equals(SpQueryField.OperatorType
+                            .getString(SpQueryField.OperatorType.CONTAINS.getOrdinal())))
+            {
+                operStr = "Like";
+            }
+                            
             if (criteriaFormula.length() > 0)
             {
                 if (fieldQRI instanceof TreeLevelQRI)
