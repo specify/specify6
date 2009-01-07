@@ -958,7 +958,7 @@
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="invoiceNumber" uitype="text"/>
-                    <cell type="field" id="2" name="isClosed" uitype="checkbox" label="Closed" initialize="editable=true"/>
+                    <cell type="field" id="2" name="isClosed" uitype="checkbox" initialize="editable=true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
@@ -1938,7 +1938,7 @@
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="loanNumber" uitype="formattedtext" uifieldformatter="LoanNumber" isrequired="true"/>
-                    <cell type="field" id="2" name="isClosed" uitype="checkbox" label="Closed" initialize="editable=true"/>
+                    <cell type="field" id="2" name="isClosed" uitype="checkbox" initialize="editable=true"/>
                 </row>
                 <row>
                      <cell type="label" labelfor="5"/>
@@ -2016,7 +2016,7 @@
                     <cell type="label" labelfor="5" />
                     <cell type="field" id="5" name="preparation.count" uitype="dsptextfield"/>
                     
-                   <cell type="field" id="8" name="isResolved" uitype="checkbox" label="Resolved" colspan="3"/>
+                   <cell type="field" id="8" name="isResolved" uitype="checkbox" colspan="3"/>
                     
                     <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="preparation.storageLocation" uitype="dsptextfield" colpsan="2"/>
