@@ -1152,16 +1152,15 @@ public class UploadTable implements Comparable<UploadTable>
                         {
                             if (StringUtils.isBlank(fldStr) && formatter.isIncrementer())
                             {
-                                val = formatter.getNextNumber("");
-                                autoAssignedVal = formatter.formatToUI(val);
+                                if (!this.validatingValues || autoAssignedVal == null)
+                                {
+                                    val = formatter.getNextNumber("");
+                                    autoAssignedVal = formatter.formatToUI(val);
+                                }
                                 if (autoAssignedField == null)
                                 {
                                     autoAssignedField = ufld;
                                 }
-//                                if (!validatingValues)
-//                                {
-//                                    uploader.wbSS.getSpreadSheet().setValueAt(autoAssignedVal, uploader.getRow(), ufld.getIndex());
-//                                }
                             }
                             else
                             {
