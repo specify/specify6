@@ -293,8 +293,7 @@
         <view name="DNASequenceSubView"
               objtitle="DNA Sequence"
               class="edu.ku.brc.specify.datamodel.DNASequence"
-              busrules="edu.ku.brc.specify.datamodel.busrules.DNASequenceBusRules"
-              isinternal="false">
+              busrules="edu.ku.brc.specify.datamodel.busrules.DNASequenceBusRules">
             <desc><![CDATA[DNA Sequencing form.]]></desc>
             <altviews>
                 <altview name="DNASequence View" viewdef="DNASequenceSubView" mode="view"/>
@@ -2598,7 +2597,7 @@
                     <cell type="field" id="3" name="count" uitype="text" isrequired="true"/>
 
                     <cell type="label" labelfor="4"/>
-                    <cell type="field" id="4" name="storageLocation" uitype="text" cols="20"/>
+                    <cell type="field" id="4" name="storageLocation" uitype="querycbx" initialize="name=Storage" cols="20"/>
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" colspan="12" initialize="btn=true;icon=PreparationAttachment"/>
