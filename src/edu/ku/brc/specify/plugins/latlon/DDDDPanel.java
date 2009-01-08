@@ -34,7 +34,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -64,7 +63,7 @@ import edu.ku.brc.util.LatLonConverter.FORMAT;
  */
 public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListener, ItemListener
 {
-    private static final Logger log = Logger.getLogger(DDDDPanel.class);
+    //private static final Logger log = Logger.getLogger(DDDDPanel.class);
             
     protected static final   String[] NORTH_SOUTH = {"N", "S"};
     protected static final   String[] EAST_WEST   = {"E", "W"};
@@ -385,7 +384,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             }
             cnt++;
         }
-        log.debug("["+sb.toString()+"]");
+        //log.debug("["+sb.toString()+"]");
         return sb.toString();
     }
 
@@ -636,6 +635,20 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             
             latitudeTF.setText(srcLatitudeStr);
             longitudeTF.setText(srcLongitudeStr);
+        } else
+        {
+            latInfoOrig = null;
+            lonInfoOrig = null;
+    
+            this.latitudeStr  = "";
+            this.longitudeStr = "";
+            
+            latInfoCnvrt = null;
+            lonInfoCnvrt = null;
+            
+            latitudeTF.setText(srcLatitudeStr);
+            longitudeTF.setText(srcLongitudeStr);
+
         }
         setDataIntoUI();
         hasChanged = false;
@@ -753,7 +766,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
                 
             } else if (completeCnt != cnt && cnt > 0)
             {
-                log.debug(" **** Returning* "+completeCnt+"  "+cnt+"  "+UIValidatable.ErrorType.Error);
+                //log.debug(" **** Returning* "+completeCnt+"  "+cnt+"  "+UIValidatable.ErrorType.Error);
                 return UIValidatable.ErrorType.Error;
                 
             } else
@@ -770,7 +783,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
                 
             }
             cnt++;
-            log.debug(completeCnt+"  "+cnt);
+            //log.debug(completeCnt+"  "+cnt);
         }
         
         /*if (completeCnt > 0 && txtList.size() != completeCnt)
@@ -778,7 +791,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             log.debug(" **** Returning* "+completeCnt+"  "+cnt+"  "+UIValidatable.ErrorType.Incomplete);
             return UIValidatable.ErrorType.Incomplete;
         }*/
-        log.debug(" **** Returning  "+completeCnt+"  "+cnt+"  "+valState);
+        //log.debug(" **** Returning  "+completeCnt+"  "+cnt+"  "+valState);
         return valState;
     }
     /**
