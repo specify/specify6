@@ -29,6 +29,7 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordServiceProviderIFace;
+import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
@@ -94,6 +95,23 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
             session.close();
         }
     }
+    
+    /**
+     * @param sql
+     * @param ids
+     */
+    protected void retrieveIdsSQL(final String sql, final Vector<Integer> ids)
+    {
+        Vector<Object[]> rows = BasicSQLUtils.query(sql);
+        if (rows != null && rows.size() > 0)
+        {
+            for (Object[] r : rows)
+            {
+                ids.add((Integer)r[0]);
+            }
+        }
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.rstools.RecordSetToolsIFace#processRecordSet(edu.ku.brc.dbsupport.RecordSetIFace, java.util.Properties)
@@ -114,13 +132,13 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
         Vector<Integer> ids = new Vector<Integer>();
         if (recordSet.getDbTableId() == CollectionObject.getClassTableId())
         {
-            String sql = "SELECT loc.localityId FROM Locality as loc INNER JOIN loc.collectingEvents as ce INNER JOIN ce.collectionObjects as co where co.collectionObjectId " + DBTableIdMgr.getInstance().getInClause(recordSet);
-            retrieveIds(sql, ids);
+            String sql = "SELECT loc.LocalityID FROM collectingevent ce INNER JOIN locality loc ON ce.LocalityID = loc.LocalityID INNER JOIN collectionobject co ON co.CollectingEventID = ce.CollectingEventID WHERE co.CollectionObjectID " + DBTableIdMgr.getInstance().getInClause(recordSet);
+            retrieveIdsSQL(sql, ids);
             
         } else if (recordSet.getDbTableId() == CollectingEvent.getClassTableId())
         {
-            String sql = "SELECT loc.localityId FROM Locality as loc INNER JOIN loc.collectingEvents as ce where ce.collectingEventId " + DBTableIdMgr.getInstance().getInClause(recordSet);
-            retrieveIds(sql, ids);
+            String sql = "SELECT loc.LocalityID FROM collectingevent ce INNER JOIN locality loc ON ce.LocalityID = loc.LocalityID WHERE ce.CollectingEventID " + DBTableIdMgr.getInstance().getInClause(recordSet);
+            retrieveIdsSQL(sql, ids);
             
         } else if (recordSet.getDbTableId() == Locality.getClassTableId())
         {
