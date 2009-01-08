@@ -1285,7 +1285,11 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     public void clearSelection()
     {
         list.clear();
-        selectedId = null;
+        idList.clear();
+        selectedId  = null;
+        hasNewText  = false;
+        wasCleared  = true;
+        currentText = "";
     }
     
     public boolean hasItem()
