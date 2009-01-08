@@ -1633,7 +1633,24 @@ public class UploadTable implements Comparable<UploadTable>
                 ignoringBlankCell = ignoringBlankCell || restriction.equals("")
                         && !matchSetting.isMatchEmptyValues();
                 //restrictedVals.add(new Pair<String, String>(uf.getWbFldName(), restriction));
-                restrictedVals.add(new MatchRestriction(uf.getWbFldName(), restriction, uf.getIndex()));
+                String fldName = uf.getWbFldName();
+                if (StringUtils.isBlank(fldName))
+                {
+                    if (uf.getField() != null && uf.getField().getFieldInfo() != null)
+                    {
+                        fldName = uf.getField().getFieldInfo().getTitle();
+                    }
+                    else if (uf.getField() != null)
+                    {
+                        fldName = uf.getField().getName();
+                    }
+                    else
+                    {
+                        fldName = "?";
+                        log.error("unable to find field title or name for " + uf);
+                    }
+                }
+                restrictedVals.add(new MatchRestriction(fldName, restriction, uf.getIndex()));
             }
         }
         for (Vector<ParentTableEntry> ptes : parentTables)

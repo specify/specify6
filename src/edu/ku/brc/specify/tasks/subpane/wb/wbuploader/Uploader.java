@@ -2405,7 +2405,7 @@ public class Uploader implements ActionListener, KeyListener
         }
         else if (e.getActionCommand().equals(UploadMainPanel.CLOSE_UI))
         {
-            if (aboutToShutdown(wbSS))
+            if (aboutToShutdown(null))
             {
                 closeMainForm(true);
             }
@@ -2470,7 +2470,7 @@ public class Uploader implements ActionListener, KeyListener
      */
     public boolean aboutToShutdown(final WorkbenchPaneSS shuttingDownSS)
     {
-        if (shuttingDownSS != wbSS)
+        if (shuttingDownSS != null && shuttingDownSS != wbSS)
         {
             return true;
         }
@@ -3099,37 +3099,47 @@ public class Uploader implements ActionListener, KeyListener
                         }
                         logDebug("uploading row " + String.valueOf(rowUploading));
                         
-                        if (wbSS.getWorkbench().getRow(rowUploading).getUploadStatus() != WorkbenchRow.UPLD_SUCCESS)
+                        if (rowUploading == 0)
                         {
-                            for (UploadTable t : uploadTables)
+                            showUploadProgress(1);  
+                        }
+                        for (UploadTable t : uploadTables)
+                        {
+                            if (cancelled)
                             {
-                                if (cancelled)
-                                {
-                                    break;
-                                }
-                                try
+                                break;
+                            }
+                            try
+                            {
+                                if (wbSS.getWorkbench().getRow(rowUploading).getUploadStatus() != WorkbenchRow.UPLD_SUCCESS)
                                 {
                                     uploadRow(t, rowUploading);
                                 }
-                                catch (UploaderException ex)
+                                else
                                 {
-                                    if (ex.getStatus() == UploaderException.ABORT_ROW)
-                                    {
-                                        logDebug(ex.getMessage());
-                                        abortRow(ex, rowUploading);
-                                        break;
-                                    }
-                                    throw ex;
+                                    throw new UploaderException(getResourceString("WB_UPLOAD_ROW_ALREADY_UPLOADED"), 
+                                            UploaderException.ABORT_ROW);
                                 }
-                                updateObjectsCreated();
                             }
-                            
-                            wbSS.getWorkbench().getRow(rowUploading).setUploadStatus(WorkbenchRow.UPLD_SUCCESS);
+                            catch (UploaderException ex)
+                            {
+                                if (ex.getStatus() == UploaderException.ABORT_ROW)
+                                {
+                                    logDebug(ex.getMessage());
+                                    abortRow(ex, rowUploading);
+                                    break;
+                                }
+                                throw ex;
+                            }
+                            updateObjectsCreated();
                         }
+
+                        wbSS.getWorkbench().getRow(rowUploading).setUploadStatus(
+                                WorkbenchRow.UPLD_SUCCESS);
                         rowUploading++;
                         showUploadProgress(rowUploading);
                     }
-                    //But where is the best place to do this?
+                    // But where is the best place to do this?
                     //Potentially the longest step.
                     //Need extra progress info...
                     for (UploadTable t : uploadTables)
