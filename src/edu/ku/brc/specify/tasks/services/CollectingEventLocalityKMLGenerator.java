@@ -294,17 +294,25 @@ public class CollectingEventLocalityKMLGenerator
         BigDecimal lon = loc.getLongitude1();
 
 		// get event times
-		Calendar   start       = ce.getStartDate();
-		DateFormat dfStart     = DateFormat.getDateInstance();
+		Calendar   start   = ce.getStartDate();
+		DateFormat dfStart = DateFormat.getDateInstance();
 		
-		dfStart.setCalendar(start);
-		String     startString = dfStart.format(start.getTime());
+		String startString = "";
+		if (start != null)
+		{
+		    dfStart.setCalendar(start);
+		    startString = dfStart.format(start.getTime());
+		}
 		
-		Calendar   end       = ce.getEndDate();
-		DateFormat dfEnd     = DateFormat.getDateInstance();
+		Calendar   end   = ce.getEndDate();
+		DateFormat dfEnd = DateFormat.getDateInstance();
 		
-		dfEnd.setCalendar(end);
-		String     endString = dfEnd.format(end.getTime());
+		String endString = "";
+		if (end != null)
+		{
+		    dfEnd.setCalendar(end);
+	        endString = dfEnd.format(end.getTime());
+		}
 
 		// get names of collectors
 		List<String> agentNames = new Vector<String>();
@@ -357,11 +365,15 @@ public class CollectingEventLocalityKMLGenerator
         {
             sb.append(label);
         }
-        sb.append(startString);
-        if (!startString.equals(endString))
+        
+        if (StringUtils.isNotEmpty(startString))
         {
-            sb.append(" - ");
-            sb.append(endString);
+            sb.append(startString);
+            if (!startString.equals(endString))
+            {
+                sb.append(" - ");
+                sb.append(endString);
+            }
         }
 		sb.append("</name>\n");
 
