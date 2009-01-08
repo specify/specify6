@@ -95,7 +95,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     protected List<DocumentListener>      documentListeners = null;
 
     protected boolean                     doSetText      = false;
-    
+    protected boolean                     isPartialOK    = false;
     protected boolean                     isAutoFmtOn    = true;
 
     protected JFormattedDoc               document;
@@ -186,11 +186,13 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     protected void init(final UIFieldFormatterIFace formatterArg, 
                         final boolean isViewOnlyArg, 
-                        final boolean isPartialOK,
+                        final boolean isPartialOKArg,
                         final Integer suggNumCols, 
                         final boolean addFocusListeners)
     {
         setControlSize(this);
+        
+        isPartialOK = isPartialOKArg;
 
         this.isViewOnly       = isViewOnlyArg;
         this.suggestedNumCols = suggNumCols;
@@ -254,7 +256,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
         if (!isViewOnlyArg)
         {
-            if (!formatterArg.isUserInputNeeded() && !isPartialOK)
+            if (!formatterArg.isUserInputNeeded() && !isPartialOK && isAutoFmtOn)
             {
                 ViewFactory.changeTextFieldUIForDisplay(this, false);
                 
@@ -1147,7 +1149,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         @Override
         public void replace(int offset, int length, String text, AttributeSet attrs) throws BadLocationException
         {
-            if (docFormatter.isIncrementer() && !allowText)
+            if (docFormatter.isIncrementer() && !allowText && !isPartialOK && isAutoFmtOn)
             {
                 return;
             }
@@ -1161,7 +1163,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         @Override
         public void remove(int offset, int len)
         {
-            if (docFormatter.isIncrementer() && !allowText)
+            if (docFormatter.isIncrementer() && !allowText && !isPartialOK && isAutoFmtOn)
             {
                 return;
             }
@@ -1200,7 +1202,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                 return;
             }
             
-            if (docFormatter.isIncrementer() && !allowText)
+            if (docFormatter.isIncrementer() && !allowText && !isPartialOK && isAutoFmtOn)
             {
                 return;
             }
