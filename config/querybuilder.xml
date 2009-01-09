@@ -25,6 +25,10 @@
 	<table name="AddressOfRecord">
 	</table>
 	
+	<table name="DNASequence">
+		<alias name="CollectionObject"/>
+	</table>
+	
     <table name="Agent">
         <table name="Address" field="addresses"/>
         <table name="AgentAttachment" field="agentAttachments">
@@ -46,11 +50,14 @@
     </table>
     
     <table name="Borrow">
-        <table name="BorrowAgent">
+    	<alias name="AddressOfRecord"/>
+        <alias name="Agent" field="createdByAgent" />
+        <alias name="Agent" field="modifiedByAgent" />
+        <table name="BorrowAgent" field="borrowAgents">
             <alias name="Agent"/>
         </table>
-        <table name="BorrowMaterial"/>
-        <table name="BorrowReturnMaterial"/>
+        <table name="BorrowMaterial" field="borrowMaterials"/>
+        <alias name="Shipment" field="shipments"/>
     </table>
     
     <table name="CollectingEvent">
@@ -177,6 +184,41 @@
         <alias name="Agent" field="determiner"/>
     </table>
     
+    <table name="ExchangeIn" >
+    	<alias name="AddressOfRecord" />
+    	<alias name="Agent" field="agentCatalogedBy"/>
+     	<alias name="Agent" field="agentReceivedFrom"/>
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />    	
+    </table>
+    
+    <table name="ExchangeOut" >
+    	<alias name="AddressOfRecord" />
+    	<alias name="Agent" field="agentCatalogedBy"/>
+     	<alias name="Agent" field="agentSentTo"/>
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />    	
+     	<alias name="Shipment" field="shipments" />    	
+    </table>
+    
+    <table name="Gift">
+   		<alias name="AddressOfRecord"/>
+      	<alias name="Agent" field="createdByAgent" />
+      	<table name="GiftAgent" field="giftAgents">
+      		<alias name="Agent"/>
+     	</table>
+       	<table name="GiftPreparation" field="giftPreparations"/>
+      	<alias name="Agent" field="modifiedByAgent"/>
+      	<alias name="Shipment" field="shipments"/>
+    </table>    
+    
+    <table name="InfoRequest">
+     	<alias name="Agent" field="agent"/>
+      	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />   
+      	<table name="Recordset" field="recordSets" /> 	    
+    </table>
+    
     <table name="Loan">
     	<alias name="LoanPreparation" field="loanPreparations"/>
          <table name="LoanAgent" field="loanAgents">
@@ -185,7 +227,7 @@
          <table name="LoanAttachment" field="loanAttachments">
             <alias name="Attachment"/>
         </table>
-        <table name="Shipment" field="shipments" />
+        <alias name="Shipment" field="shipments" />
     </table>
     
     <table name="LoanPreparation">
@@ -273,6 +315,18 @@
       	</table>
       	<alias name="Agent" field="createdByAgent" />
       	<alias name="Agent" field="modifiedByAgent" />
+    </table>
+    
+    <table name="Shipment" >
+    	<alias name="Agent" field="shippedBy"/>
+    	<alias name="Agent" field="shippedTo"/>
+    	<alias name="Agent" field="shipper"/>
+       	<alias name="Agent" field="createdByAgent" />
+      	<alias name="Agent" field="modifiedByAgent" />
+      	<alias name="Borrow" />
+      	<alias name="ExchangeOut"/>
+      	<alias name="Gift"/>
+      	<alias name="Loan" />
     </table>
     
     <table name="Taxon">
