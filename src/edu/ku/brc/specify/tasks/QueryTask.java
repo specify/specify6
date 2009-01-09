@@ -214,6 +214,7 @@ public class QueryTask extends BaseTask
         query.setName(String.format(getResourceString("QB_NEW_QUERY_NAME"), tableInfo.getTitle()));
         query.setNamed(false);
         query.setContextTableId((short)tableInfo.getTableId());
+        query.setContextName(tableInfo.getShortClassName());
         return query;
     }
 

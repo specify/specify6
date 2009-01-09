@@ -329,11 +329,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     if (inx > -1)
                     {
                         fillNextList(tableList);
-
-                        TableTree node = tableTree.getKid(inx);
-                        query.setContextTableId((short) node.getTableInfo().getTableId());
-                        query.setContextName(node.getName());
-
                     }
                     else
                     {
