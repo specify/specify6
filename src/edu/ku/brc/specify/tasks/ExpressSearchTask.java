@@ -415,18 +415,21 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     
                     for (SearchTableConfig table : config.getTables())
                     {
-                        if (UIHelper.isSecurityOn())
+                        if (!table.getTableInfo().isHidden())
                         {
-                            if (table.getTableInfo().getPermissions().canView())
+                            if (UIHelper.isSecurityOn())
                             {
-                                startSearchJPA(esrPane, table, searchTerm, ESTermParser.getFields());
+                                if (table.getTableInfo().getPermissions().canView())
+                                {
+                                    startSearchJPA(esrPane, table, searchTerm, ESTermParser.getFields());
+                                } else
+                                {
+                                    log.debug("Skipping ["+table.getTableInfo().getTitle()+"]");
+                                }
                             } else
                             {
-                                log.debug("Skipping ["+table.getTableInfo().getTitle()+"]");
+                                startSearchJPA(esrPane, table, searchTerm, ESTermParser.getFields());
                             }
-                        } else
-                        {
-                            startSearchJPA(esrPane, table, searchTerm, ESTermParser.getFields());
                         }
                     }
                     
