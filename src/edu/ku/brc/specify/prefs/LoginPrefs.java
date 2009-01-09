@@ -12,9 +12,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/**
- * 
- */
 package edu.ku.brc.specify.prefs;
 
 import java.awt.event.ActionEvent;
@@ -37,7 +34,6 @@ import edu.ku.brc.af.prefs.GenericPrefsPanel;
  */
 public class LoginPrefs extends GenericPrefsPanel
 {
-
     /**
      * 
      */
@@ -73,6 +69,8 @@ public class LoginPrefs extends GenericPrefsPanel
                 public void actionPerformed(ActionEvent e)
                 {
                     AppPreferences.getLocalPrefs().put("login.username", "");
+                    form.getValidator().setHasChanged(true);
+                    form.getValidator().dataChanged(null, null, null);
                 }
                });
             }
@@ -85,6 +83,8 @@ public class LoginPrefs extends GenericPrefsPanel
                 {
                     AppPreferences.getLocalPrefs().put("login.databases_selected", "");
                     AppPreferences.getLocalPrefs().put("login.databases", "");
+                    form.getValidator().setHasChanged(true);
+                    form.getValidator().dataChanged(null, null, null);
                 }
                });
             }
@@ -96,6 +96,8 @@ public class LoginPrefs extends GenericPrefsPanel
                 public void actionPerformed(ActionEvent e)
                 {
                     AppPreferences.getLocalPrefs().put("login.servers", "");
+                    form.getValidator().setHasChanged(true);
+                    form.getValidator().dataChanged(null, null, null);
                 }
                });
             }
